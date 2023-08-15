@@ -64,7 +64,7 @@ namespace GromovHausdorff
 
 section GHSpace
 
-/- In this section, we define the Gromov-Hausdorff space, denoted `GHSpace` as the quotient
+/-! In this section, we define the Gromov-Hausdorff space, denoted `GHSpace` as the quotient
 of nonempty compact subsets of `ℓ^∞(ℝ)` by identifying isometric sets.
 Using the Kuratwoski embedding, we get a canonical map `toGHSpace` mapping any nonempty
 compact type to `GHSpace`. -/
@@ -561,7 +561,7 @@ end NonemptyCompacts
 
 section
 
-/- In this section, we show that if two metric spaces are isometric up to `ε₂`, then their
+/-! In this section, we show that if two metric spaces are isometric up to `ε₂`, then their
 Gromov-Hausdorff distance is bounded by `ε₂ / 2`. More generally, if there are subsets which are
 `ε₁`-dense and `ε₃`-dense in two spaces, and isometric up to `ε₂`, then the Gromov-Hausdorff
 distance between the spaces is bounded by `ε₁ + ε₂/2 + ε₃`. For this, we construct a suitable
@@ -956,7 +956,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
 
 section Complete
 
-/- We will show that a sequence `u n` of compact metric spaces satisfying
+/-! We will show that a sequence `u n` of compact metric spaces satisfying
 `dist (u n) (u (n+1)) < 1/2^n` converges, which implies completeness of the Gromov-Hausdorff space.
 We need to exhibit the limiting compact metric space. For this, start from
 a sequence `X n` of representatives of `u n`, and glue in an optimal way `X n` to `X (n+1)`

@@ -515,7 +515,7 @@ variable [TopologicalSpace α] [CompactSpace α] [PseudoMetricSpace β]
 
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 
-/- Arzela-Ascoli theorem asserts that, on a compact space, a set of functions sharing
+/-! Arzela-Ascoli theorem asserts that, on a compact space, a set of functions sharing
 a common modulus of continuity and taking values in a compact set forms a compact
 subset for the topology of uniform convergence. In this section, we prove this theorem
 and several useful variations around it. -/
@@ -649,7 +649,7 @@ end One
 
 section LipschitzAdd
 
-/- In this section, if `β` is an `AddMonoid` whose addition operation is Lipschitz, then we show
+/-! In this section, if `β` is an `AddMonoid` whose addition operation is Lipschitz, then we show
 that the space of bounded continuous functions from `α` to `β` inherits a topological `AddMonoid`
 structure, by using pointwise operations and checking that they are compatible with the uniform
 distance.
@@ -778,7 +778,7 @@ end CommHasLipschitzAdd
 
 section NormedAddCommGroup
 
-/- In this section, if `β` is a normed group, then we show that the space of bounded
+/-! In this section, if `β` is a normed group, then we show that the space of bounded
 continuous functions from `α` to `β` inherits a normed group structure, by using
 pointwise operations and checking that they are compatible with the uniform distance. -/
 variable [TopologicalSpace α] [SeminormedAddCommGroup β]

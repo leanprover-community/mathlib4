@@ -149,10 +149,10 @@ theorem convexOn_zpow : ∀ m : ℤ, ConvexOn ℝ (Ioi 0) fun x : ℝ => x ^ m
     · positivity
 #align convex_on_zpow convexOn_zpow
 
-/- `Real.log` is strictly concave on $(0, +∞)$.
 
-We give an elementary proof rather than using the second derivative test, since this lemma is
+/- We give an elementary proof rather than using the second derivative test, since this lemma is
 needed early in the analysis library. -/
+/-- `Real.log` is strictly concave on $(0, +∞)$. -/
 theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log := by
   apply strictConcaveOn_of_slope_strict_anti_adjacent (convex_Ioi (0 : ℝ))
   rintro x y z (hx : 0 < x) (hz : 0 < z) hxy hyz
@@ -228,10 +228,11 @@ theorem one_add_mul_self_le_rpow_one_add {s : ℝ} (hs : -1 ≤ s) {p : ℝ} (hp
   exact (one_add_mul_self_lt_rpow_one_add hs hs' hp).le
 #align one_add_mul_self_le_rpow_one_add one_add_mul_self_le_rpow_one_add
 
-/- For `p : ℝ` with `1 < p`, `fun x ↦ x ^ p` is strictly convex on $[0, +∞)$.
 
-We give an elementary proof rather than using the second derivative test, since this lemma is
+
+/- We give an elementary proof rather than using the second derivative test, since this lemma is
 needed early in the analysis library. -/
+/-- For `p : ℝ` with `1 < p`, `fun x ↦ x ^ p` is strictly convex on $[0, +∞)$. -/
 theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) fun x : ℝ => x ^ p := by
   apply strictConvexOn_of_slope_strict_mono_adjacent (convex_Ici (0 : ℝ))
   rintro x y z (hx : 0 ≤ x) (hz : 0 ≤ z) hxy hyz

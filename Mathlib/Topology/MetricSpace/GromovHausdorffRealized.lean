@@ -52,7 +52,7 @@ set_option linter.uppercaseLean3 false -- `Gromov_Hausdorff`
 
 section GromovHausdorffRealized
 
-/- This section shows that the Gromov-Hausdorff distance
+/-! This section shows that the Gromov-Hausdorff distance
 is realized. For this, we consider candidate distances on the disjoint union
 `X ⊕ Y` of two compact nonempty metric spaces, almost realizing the Gromov-Hausdorff
 distance, and show that they form a compact family by applying Arzela-Ascoli
@@ -285,7 +285,7 @@ def HD (f : Cb X Y) :=
   max (⨆ x, ⨅ y, f (inl x, inr y)) (⨆ y, ⨅ x, f (inl x, inr y))
 #align Gromov_Hausdorff.HD GromovHausdorff.HD
 
-/- We will show that `HD` is continuous on `BoundedContinuousFunction`s, to deduce that its
+/-- We will show that `HD` is continuous on `BoundedContinuousFunction`s, to deduce that its
 minimum on the compact set `candidatesB` is attained. Since it is defined in terms of
 infimum and supremum on `ℝ`, which is only conditionally complete, we will need all the time
 to check that the defining sets are bounded below or above. This is done in the next few
@@ -343,7 +343,7 @@ theorem HD_candidatesBDist_le :
     exact le_trans A B
 #align Gromov_Hausdorff.HD_candidates_b_dist_le GromovHausdorff.HD_candidatesBDist_le
 
-/- To check that `HD` is continuous, we check that it is Lipschitz. As `HD` is a max, we
+/-- To check that `HD` is continuous, we check that it is Lipschitz. As `HD` is a max, we
 prove separately inequalities controlling the two terms (relying too heavily on copy-paste...) -/
 private theorem HD_lipschitz_aux1 (f g : Cb X Y) :
     (⨆ x, ⨅ y, f (inl x, inr y)) ≤ (⨆ x, ⨅ y, g (inl x, inr y)) + dist f g := by
@@ -416,7 +416,7 @@ section Consequences
 variable (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Nonempty X] [MetricSpace Y]
   [CompactSpace Y] [Nonempty Y]
 
-/- Now that we have proved that the set of candidates is compact, and that `HD` is continuous,
+/-- Now that we have proved that the set of candidates is compact, and that `HD` is continuous,
 we can finally select a candidate minimizing `HD`. This will be the candidate realizing the
 optimal coupling. -/
 private theorem exists_minimizer : ∃ f ∈ candidatesB X Y, ∀ g ∈ candidatesB X Y, HD f ≤ HD g :=

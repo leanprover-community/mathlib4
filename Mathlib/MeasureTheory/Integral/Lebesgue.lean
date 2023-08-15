@@ -712,7 +712,7 @@ theorem lintegral_mul_const' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r �
     ∫⁻ a, f a * r ∂μ = (∫⁻ a, f a ∂μ) * r := by simp_rw [mul_comm, lintegral_const_mul' r f hr]
 #align measure_theory.lintegral_mul_const' MeasureTheory.lintegral_mul_const'
 
-/- A double integral of a product where each factor contains only one variable
+/-- A double integral of a product where each factor contains only one variable
   is a product of integrals -/
 theorem lintegral_lintegral_mul {β} [MeasurableSpace β] {ν : Measure β} {f : α → ℝ≥0∞}
     {g : β → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g ν) :
