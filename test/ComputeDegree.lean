@@ -2,6 +2,8 @@ import Mathlib.Tactic.ComputeDegree
 
 open Polynomial
 
+variable {R : Type*}
+
 section native_mathlib4_tests
 
 variable {n : ℕ} {z : ℤ} {f : ℤ[X]} (hn : natDegree f ≤ 5) (hd : degree f ≤ 5)
@@ -196,7 +198,7 @@ example : natDegree (1 : R[X]) ≤ 0 := by compute_degree
 
 example : natDegree (2 : R[X]) ≤ 0 := by compute_degree
 
-example : natDegree ((n : Nat) : R[X]) ≤ 0 := by compute_degree
+example {n : ℕ} : natDegree ((n : Nat) : R[X]) ≤ 0 := by compute_degree
 
 example {R} [Ring R] {n : ℤ} : natDegree ((n : ℤ) : R[X]) ≤ 0 := by compute_degree
 
