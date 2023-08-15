@@ -632,7 +632,7 @@ theorem uniq (h : IsUniversal f) (η : g ⟶ f) : η = h.from g :=
 def lift (h : IsUniversal f) (g : CostructuredArrow S T) : g.left ⟶ f.left :=
   (h.from g).left
 
-/-- Any structured arrow factors through a universal arrow. -/
+/-- Any costructured arrow factors through a universal arrow. -/
 @[reassoc (attr := simp)]
 theorem fac (h : IsUniversal f) (g : CostructuredArrow S T) :
     S.map (h.lift g) ≫ f.hom = g.hom :=

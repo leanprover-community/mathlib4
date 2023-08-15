@@ -11,13 +11,13 @@ import Mathlib.CategoryTheory.Bicategory.Extension
 The left Kan extension of a 1-morphism `g : a ⟶ c` along a 1-morphism `f : a ⟶ b` is the initial
 object in the category of left extensions `LeftExtension f g`.
 
-We introduce a structure `LeftExtension.IsKan t` for an extension `t : LeftExtension f g`. This
-structure consists of a family of 2-morphisms out of `t` together with the fact that such a family
-of 2-morphisms is unique. We have the following definition and lemmas:
-* `LeftExtension.IsKan.desc`: the family of 2-morphisms out of the left Kan extension.
-* `LeftExtension.IsKan.fac`: the unit of any left extension factors through the left Kan extension.
-* `LeftExtension.IsKan.hom_ext`: two 2-morphisms out of a left Kan extension are equal if their
-  compositions with each unit are equal.
+We define `LeftExtension.IsKan t` for an extension `t : LeftExtension f g` as an abbreviation of
+`StructuredArrow.IsUniversal t`. This means that we can use the following definition and lemmas
+for `h : LeftExtension.IsKan t`:
+* `h.desc`: the family of 2-morphisms out of the left Kan extension.
+* `h.fac`: the unit of any left extension factors through the left Kan extension.
+* `h.hom_ext`: two 2-morphisms out of the left Kan extension are equal if their compositions with
+  each unit are equal.
 
 ## Implementation Notes
 We use the Is-Has design pattern, which is used for the implementation of limits and colimits in
