@@ -10,6 +10,8 @@ import Mathlib.Lean.Expr.Traverse
 # Additions to `Lean.Meta.DiscrTree`
 -/
 
+set_option autoImplicit true
+
 namespace Lean.Meta.DiscrTree
 
 /--
