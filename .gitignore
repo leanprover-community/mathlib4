@@ -2,3 +2,5 @@
 /lake-packages
 /.cache
 .DS_Store
+/training_data/
+/training_data.tgz

@@ -17,7 +17,7 @@ structure Lean.Elab.TacticInvocation where
 namespace Lean.Elab.TacticInvocation
 
 /-- Return the range of the tactic, as a pair of file positions. -/
-def range (t : TacticInvocation) : Position × Position := stxRange t.ctx.fileMap t.info.stx
+def range (t : TacticInvocation) : Position × Position := t.ctx.fileMap.stxRange t.info.stx
 
 /-- Pretty print a tactic. -/
 def pp (t : TacticInvocation) : IO Format :=
@@ -57,35 +57,16 @@ def goalStateAfter (t : TacticInvocation) : IO (List Format) := do
 def ppExpr (t : TacticInvocation) (e : Expr) : IO Format :=
   t.runMetaM (fun _ => do Meta.ppExpr (← instantiateMVars e))
 
-inductive Kind
-| refl
-| rw --(symm : Bool) (t : Term)
-| exact (stx : Syntax) (e : Expr)
-| apply (stx : Syntax) (e : Expr)
--- | refine
--- | convert
--- | have (n : Name) (ty : Expr) (v : Option Expr)
--- Feel free to add more as needed!
-| other
-
-instance : Inhabited Kind := ⟨.other⟩
-
-def kind (t : TacticInvocation) : Kind :=
-  match t.info.name? with
-  | some ``Lean.Parser.Tactic.refl =>
-    .refl
-  | some ``Lean.Parser.Tactic.exact =>
-    .exact
-      t.info.stx.getArgs.toList.getLast! -- just the syntax for the term, don't include "exact"
-      (t.children[0]?.bind InfoTree.ofExpr? |>.get!) -- the elaborated expression
-  | some ``Lean.Parser.Tactic.apply =>
-    -- TODO treat this with some scepticism; what happens if there is a configuration option?
-    -- I haven't tested this at all.
-    .apply
-      t.info.stx.getArgs.toList.getLast! -- just the syntax for the term, don't include "exact"
-      (t.children[0]?.bind InfoTree.ofExpr? |>.get!) -- the elaborated expression
-  -- | some `Lean.Parser.Tactic.rwRule =>
-  --   return .rw sorry sorry
-  | _ =>  .other
-
 end Lean.Elab.TacticInvocation
+
+namespace Lean.Elab.InfoTree
+
+/--
+Finds all tactic invocations in an `InfoTree`,
+ignoring structuring tactics (e.g. `by`, `;`, multiline tactics, parenthesized tactics).
+-/
+def tactics (t : InfoTree) : List TacticInvocation :=
+  t.findTacticNodes.map (fun ⟨i, ctx, children⟩ => ⟨i, ctx, children⟩)
+    |>.filter fun i => i.info.isSubstantive
+
+end Lean.Elab.InfoTree

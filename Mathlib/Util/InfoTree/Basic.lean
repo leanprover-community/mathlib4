@@ -2,7 +2,7 @@ import Lean
 
 open Lean Elab
 
-namespace Lean.Elab
+namespace Lean.FileMap
 
 /-- Extract the range of a `Syntax` expressed as lines and columns. -/
 -- Extracted from the private declaration `Lean.Elab.formatStxRange`,
@@ -12,7 +12,9 @@ def stxRange (fileMap : FileMap) (stx : Syntax) : Position × Position :=
   let endPos := stx.getTailPos?.getD pos
   (fileMap.toPosition pos, fileMap.toPosition endPos)
 
-namespace Info
+end Lean.FileMap
+
+namespace Lean.Elab.Info
 
 /-- The type of a `Lean.Elab.Info`, as a string. -/
 def kind : Info → String
@@ -50,9 +52,7 @@ def isOriginal (i : Info) : Bool :=
     | .original .. => true
     | _ => false
 
-end Info
-
-end Lean.Elab
+end Lean.Elab.Info
 
 namespace Lean.Elab.ContextInfo
 
@@ -91,12 +91,13 @@ namespace Lean.Elab.InfoTree
 
 /-- Discard all nodes besides `.context` nodes and `TacticInfo` nodes. -/
 partial def retainTacticInfo : InfoTree → List InfoTree
-  | .context ctx tree => tree.retainTacticInfo |>.map (InfoTree.context ctx)
-  | .node (.ofTacticInfo i) children => [.node (.ofTacticInfo i) (children.toList.map retainTacticInfo).join.toPArray']
+  | .context ctx tree => tree.retainTacticInfo |>.map (.context ctx)
+  | .node (.ofTacticInfo i) children =>
+    [.node (.ofTacticInfo i) (children.toList.map retainTacticInfo).join.toPArray']
   | .node _ children => (children.toList.map retainTacticInfo).join
   | .hole _ => []
 
-/-- Discard all nodes with synthetic syntax. -/
+/-- Retain only nodes with "original" syntax. -/
 partial def retainOriginal : InfoTree → List InfoTree
   | .context ctx tree => tree.retainOriginal |>.map (InfoTree.context ctx)
   | .node i children =>
@@ -132,8 +133,8 @@ def ofExpr? (i : InfoTree) : Option Expr := match i with
 def ofName? (i : InfoTree) : Option Name := i.ofExpr?.bind Expr.constName?
 
 /-- Check if the `InfoTree` is the top level `InfoTree` for a declaration,
-return it along with the declaration name if it is. -/
-def elabDecl? (t : InfoTree) : Option (Name × InfoTree) :=
+if so, return it along with the declaration name. -/
+def elabDecl? (t : InfoTree) : Option Name :=
   match t.consumeContext with
   | .node (.ofCommandInfo i) c =>
     if i.elaborator == `Lean.Elab.Command.elabDeclaration
@@ -141,7 +142,7 @@ def elabDecl? (t : InfoTree) : Option (Name × InfoTree) :=
       -- this is hacky: we are relying on the ordering of the child nodes.
       c.toList.foldr (fun cc acc => match (cc.consumeContext.ofName?, acc) with
                        | (_, some r) => some r
-                       | (some n, none) => some (n, t)
+                       | (some n, none) => some n
                        | (none, none) => none )
                      none
     else

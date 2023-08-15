@@ -8,6 +8,16 @@ import Std.Util.TermUnsafe
 
 open Lean Elab Frontend
 
+namespace Lean.PersistentArray
+
+def drop [Inhabited α] (t : PersistentArray α) (n : Nat) : Array α := Id.run do
+  let mut r := #[]
+  for i in List.range (t.size - n) do
+    r := r.push (t.get! (n + i))
+  return r
+
+end Lean.PersistentArray
+
 namespace Lean.Elab.IO
 
 /--
@@ -22,14 +32,16 @@ structure ProcessedCommand where
   stx : Syntax
   before : Environment
   after : Environment
-  msgs : List Message
-  trees : List InfoTree
+  msgs : Array Message
+  trees : Array InfoTree
+
+namespace ProcessedCommand
 
 /--
 Process one command, returning a `ProcessedCommand` and
 `done : Bool`, indicating whether this was the last command.
 -/
-def ProcessedCommand.one : FrontendM (ProcessedCommand × Bool) := do
+def one : FrontendM (ProcessedCommand × Bool) := do
   let s := (← get).commandState
   let beforePos := (← get).cmdPos
   let before := s.env
@@ -38,17 +50,27 @@ def ProcessedCommand.one : FrontendM (ProcessedCommand × Bool) := do
   let src := ⟨(← read).inputCtx.input, beforePos, (← get).cmdPos⟩
   let s' := (← get).commandState
   let after := s'.env
-  let msgs := s'.messages.msgs.toList.drop s.messages.msgs.size
-  let trees := s'.infoState.trees.toList.drop s.infoState.trees.size
+  let msgs := s'.messages.msgs.drop s.messages.msgs.size
+  let trees := s'.infoState.trees.drop s.infoState.trees.size
   return ({ src, stx, before, after, msgs, trees }, done)
 
 /-- Process all commands in the input. -/
-partial def ProcessedCommand.all : FrontendM (List ProcessedCommand) := do
+partial def all : FrontendM (List ProcessedCommand) := do
   let (cmd, done) ← ProcessedCommand.one
   if done then
     return [cmd]
   else
     return cmd :: (← all)
+
+/-- Return all new `ConstantInfo`s added during the processed command. -/
+def diff (cmd : ProcessedCommand) : Array ConstantInfo := Id.run do
+  let mut r := #[]
+  for (c, i) in cmd.after.constants.map₂.toList do
+    unless cmd.before.constants.map₂.contains c do
+      r := r.push i
+  return r
+
+end ProcessedCommand
 
 /--
 Variant of `processCommands` that returns information for each command in the input.
@@ -58,6 +80,17 @@ def processCommands' (inputCtx : Parser.InputContext) (parserState : Parser.Modu
   let commandState := { commandState with infoState.enabled := true }
   (ProcessedCommand.all.run { inputCtx := inputCtx }).run'
     { commandState := commandState, parserState := parserState, cmdPos := parserState.pos }
+
+/--
+Wrapper for `IO.processCommands` that returns
+* the new environment
+* messages
+-/
+def processCommandsWithMessages
+    (inputCtx : Parser.InputContext) (parserState : Parser.ModuleParserState)
+    (commandState : Command.State) : IO (Environment × List Message) := do
+  let s ← IO.processCommands inputCtx parserState commandState <&> Frontend.State.commandState
+  pure (s.env, s.messages.msgs.toList)
 
 /--
 Wrapper for `IO.processCommands` that enables info states, and returns
@@ -98,6 +131,7 @@ def processInput (input : String) (env? : Option Environment)
 
 open System
 
+-- TODO allow finding Lean 4 sources from the toolchain.
 def findLean (mod : Name) : IO FilePath := do
   return FilePath.mk ((← findOLean mod).toString.replace "build/lib/" "") |>.withExtension "lean"
 
@@ -121,7 +155,7 @@ def moduleSource (mod : Name) : IO String := do
 -- Building a cache is a bit ridiculous when
 -- https://github.com/leanprover/lean4/issues/2408
 -- prevents compiling multiple modules at all.
--- However, it does avoid error messages in the interpreter from attempting to recompile the same
+-- However, it does avoid error messages from attempting to recompile the same
 -- module twice.
 
 /-- Implementation of `compileModule`, which is the cached version of this function. -/

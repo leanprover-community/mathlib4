@@ -31,8 +31,7 @@ deriving ToJson
 def exportInfoTree (args : Cli.Parsed) : IO UInt32 := do
     searchPathRef.set compileTimeSearchPath
     let target := args.positionalArg! "module" |>.as! Name
-    let (_, _, trees) ← compileModule target
-    let mut trees := trees
+    let mut trees ← moduleInfoTrees target
     if args.hasFlag "tactics" then
       trees := (trees.map InfoTree.retainTacticInfo).join
     if args.hasFlag "original" then

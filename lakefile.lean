@@ -72,7 +72,11 @@ lean_exe graph where
   supportInterpreter := true
 
 lean_exe export_infotree where
-  root := `Mathlib.Util.Infotree.Export
+  root := `Mathlib.Util.Infotree.ExportJSON
+  supportInterpreter := true
+
+lean_exe training_data where
+  root := `Mathlib.Util.Infotree.TrainingData
   supportInterpreter := true
 
 /-- Additional documentation in the form of modules that only contain module docstrings. -/
