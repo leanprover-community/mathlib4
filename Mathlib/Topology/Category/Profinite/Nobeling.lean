@@ -93,17 +93,12 @@ lemma continuous_proj :
   · exact continuous_apply _
   · exact continuous_const
 
-lemma isClosedMap_proj [∀ i, CompactSpace (X i)] [∀ i, T2Space (X i)] :
-    IsClosedMap (Proj J : ((i : ι) → X i) → ((i : ι) → X i)) :=
-  fun _ hF ↦ (IsCompact.isClosed (hF.isCompact.image (continuous_proj J)))
-
 def Set.proj : Set ((i : ι) → X i) := (Proj J) '' C
 
 def ProjRestrict : C → C.proj J :=
   Set.codRestrict (Proj J ∘ Subtype.val) (C.proj J) (fun x ↦ Set.mem_image_of_mem _ x.prop)
 
-lemma continuous_projRestrict :
-    Continuous (ProjRestrict C J) :=
+lemma continuous_projRestrict : Continuous (ProjRestrict C J) :=
   Continuous.codRestrict (Continuous.comp (continuous_proj _) continuous_subtype_val) _
 
 lemma surjective_projRestrict :
@@ -115,8 +110,7 @@ lemma surjective_projRestrict :
 
 lemma proj_eq_self {x : (i : ι) → X i} (h : ∀ i, x i ≠ default → J i) : Proj J x = x := by
   ext i
-  dsimp [Proj]
-  simp only [ite_eq_left_iff]
+  simp only [Proj, ite_eq_left_iff]
   rw [← not_imp_not, not_not, eq_comm, ← ne_eq]
   exact h i
 
@@ -340,6 +334,53 @@ end Projections
 namespace LocallyConstant -- This section is PR #6520
 
 variable {X Z : Type*} [TopologicalSpace X]
+
+section Piecewise
+
+variable {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : IsClosed C₁) (h₂ : IsClosed C₂)
+  (f₁ : LocallyConstant C₁ Z) (f₂ : LocallyConstant C₂ Z) [∀ j, Decidable (j ∈ C₁)]
+  (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩  = f₂ ⟨x, hx.2⟩)
+
+def piecewise' : LocallyConstant C₀ Z where
+  toFun i := if hi : i.val ∈ C₁ then f₁ ⟨i.val, hi⟩ else
+    f₂ ⟨i, (or_iff_not_imp_left.mp (h₀ i.prop)) hi⟩
+  isLocallyConstant := by
+    let dZ : TopologicalSpace Z := ⊥
+    haveI : DiscreteTopology Z := discreteTopology_bot Z
+    obtain ⟨f₁, hf₁⟩ := f₁
+    obtain ⟨f₂, hf₂⟩ := f₂
+    rw [IsLocallyConstant.iff_continuous] at hf₁ hf₂ ⊢
+    dsimp only [coe_mk]
+    have h₀' : {i : C₀ | i.val ∈ C₁} ∪ {i : C₀ | i.val ∈ C₂} = Set.univ :=
+      Set.eq_univ_of_subset (s := {i : C₀ | i.val ∈ C₀})
+      (fun i hi ↦ h₀ hi) (Set.eq_univ_of_forall (fun x ↦ x.prop))
+    have hf₁' : Continuous (fun (i : {i : C₀ | i.val ∈ C₁}) ↦ f₁ ⟨i.val.val, i.prop⟩) :=
+      hf₁.comp (Continuous.subtype_mk (continuous_subtype_val.comp continuous_subtype_val) _)
+    have hf₂' : Continuous (fun (i : {i : C₀ | i.val ∈ C₂}) ↦ f₂ ⟨i.val.val, i.prop⟩) :=
+      hf₂.comp (Continuous.subtype_mk (continuous_subtype_val.comp continuous_subtype_val) _)
+    rw [Set.union_eq_iUnion] at h₀'
+    refine' (locallyFinite_of_finite _).continuous h₀' (fun i ↦ _) (fun i ↦ _)
+    · cases i <;> [exact isClosed_induced_iff.mpr ⟨C₂, ⟨h₂, rfl⟩⟩;
+        exact isClosed_induced_iff.mpr ⟨C₁, ⟨h₁, rfl⟩⟩  ]
+    · cases i <;> rw [continuousOn_iff_continuous_restrict]
+      · simp only [cond_false, Set.coe_setOf, Set.mem_setOf_eq]
+        refine Continuous.congr hf₂' ?_
+        intro x
+        rw [Set.restrict_apply]
+        simp only [Set.mem_setOf_eq]
+        split_ifs with h
+        · exact (hf x.val.val ⟨h, x.prop⟩).symm
+        · rfl
+      · simp only [cond_true, Set.coe_setOf, Set.mem_setOf_eq]
+        refine Continuous.congr hf₁' ?_
+        intro x
+        rw [Set.restrict_apply]
+        simp only [Set.mem_setOf_eq]
+        split_ifs with h
+        · rfl
+        · simp only [x.prop, not_true] at h
+
+end Piecewise
 
 def eval (x : X) : (LocallyConstant X Z) → Z :=
   fun f ↦ f x
@@ -1165,7 +1206,7 @@ lemma contained_eq_proj (o : Ordinal) (h : contained C o) :
   exact (this (fun i x hx ↦ h x hx i)).symm
 
 lemma isClosed_proj (o : Ordinal) (hC : IsClosed C) : IsClosed (C.proj (ord I · < o)) :=
-  isClosedMap_proj _ C hC
+  (continuous_proj (ord I · < o)).isClosedMap C hC
 
 lemma contained_proj (o : Ordinal) : contained (C.proj (ord I · < o)) o := by
   intro x hx j hj
@@ -1311,25 +1352,6 @@ lemma isGood_mono {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
 end Products
 
 end ProductsFactorisation
-
-section Nonempty
-
-noncomputable
-instance [Inhabited C] (o : Ordinal) : Inhabited (C.proj (ord I · < o)) where
-  default := ProjRestrict C _ default
-
-noncomputable
-instance [Nonempty C] : Inhabited C where
-  default := ⟨(by rw [← Set.nonempty_coe_sort]; assumption : C.Nonempty).choose,
-    (by rw [← Set.nonempty_coe_sort]; assumption : C.Nonempty).choose_spec⟩
-
-lemma Products.isGood_nil_of_nonempty [Nonempty C] : Products.isGood C Products.nil := by
-  intro h
-  rw [Products.lt_nil_empty] at h
-  simp only [Set.image_empty, Submodule.span_empty, Submodule.mem_bot, eval, List.map,
-    List.prod_nil, one_ne_zero] at h
-
-end Nonempty
 
 section Smaller
 
@@ -1864,28 +1886,23 @@ def C1_homeo : C1 C ho ≃ₜ {i : C.proj (ord I · < o) | i.val ∈ (C1 C ho).p
     (Continuous.comp continuous_subtype_val continuous_subtype_val)) _
 
 open Classical in
-lemma CC_exact {f : LocallyConstant C ℤ} (hf : Linear_CC' C hsC ho f = 0) :
+lemma CC_exact' {f : LocallyConstant C ℤ} (hf : Linear_CC' C hsC ho f = 0) :
     ∃ y, πs C o y = f := by
   dsimp [Linear_CC', Linear_CC'₀, Linear_CC'₁] at hf
   rw [sub_eq_zero] at hf
   dsimp [LocallyConstant.comapₗ] at hf
-  rw [← LocallyConstant.coe_inj] at hf
-  rw [LocallyConstant.coe_comap _ _ (continuous_CC'₁ _ _ _)] at hf
-  rw [LocallyConstant.coe_comap _ _ (continuous_CC'₀ _ _)] at hf
-  have hC₀' : IsClosed ((C0 C ho).proj (ord I · < o)) := isClosed_proj _ _ (isClosed_C0 C hC ho)
-  have hC₁' : IsClosed ((C1 C ho).proj (ord I · < o)) := isClosed_proj _ _ (isClosed_C1 C hC ho)
+  rw [← LocallyConstant.coe_inj, LocallyConstant.coe_comap _ _ (continuous_CC'₁ _ _ _),
+    LocallyConstant.coe_comap _ _ (continuous_CC'₀ _ _)] at hf
   have hC₀ : IsClosed {i : C.proj (ord I · < o) | i.val ∈ (C0 C ho).proj (ord I · < o)}
   · rw [isClosed_induced_iff]
-    exact ⟨(C0 C ho).proj (ord I · < o), ⟨hC₀', rfl⟩⟩
+    exact ⟨(C0 C ho).proj (ord I · < o), ⟨isClosed_proj _ _ (isClosed_C0 C hC ho), rfl⟩⟩
   have hC₁ : IsClosed {i : C.proj (ord I · < o) | i.val ∈ (C1 C ho).proj (ord I · < o)}
   · rw [isClosed_induced_iff]
-    exact ⟨(C1 C ho).proj (ord I · < o), ⟨hC₁', rfl⟩⟩
-  let e₀ : C0 C ho ≃ₜ {i : C.proj (ord I · < o) | i.val ∈ (C0 C ho).proj (ord I · < o)} :=
-    C0_homeo C hsC ho
-  let E₀ : LocallyConstant (C0 C ho) ℤ ≃ LocallyConstant _ ℤ := LocallyConstant.congrLeft e₀
-  let e₁ : C1 C ho ≃ₜ {i : C.proj (ord I · < o) | i.val ∈ (C1 C ho).proj (ord I · < o)} :=
-    C1_homeo C hsC ho
-  let E₁ : LocallyConstant (C1 C ho) ℤ ≃ LocallyConstant _ ℤ := LocallyConstant.congrLeft e₁
+    exact ⟨(C1 C ho).proj (ord I · < o), ⟨isClosed_proj _ _ (isClosed_C1 C hC ho), rfl⟩⟩
+  let E₀ : LocallyConstant (C0 C ho) ℤ ≃ LocallyConstant _ ℤ :=
+    LocallyConstant.congrLeft (C0_homeo C hsC ho)
+  let E₁ : LocallyConstant (C1 C ho) ℤ ≃ LocallyConstant _ ℤ := LocallyConstant.congrLeft
+    (C1_homeo C hsC ho)
   let C₀C : C0 C ho → C := fun x ↦ ⟨x.val, x.prop.1⟩
   have h₀ : Continuous C₀C := Continuous.subtype_mk continuous_induced_dom _
   let C₁C : C1 C ho → C := fun x ↦ ⟨x.val, x.prop.1⟩
@@ -1955,6 +1972,72 @@ lemma CC_exact {f : LocallyConstant C ℤ} (hf : Linear_CC' C hsC ho f = 0) :
         dsimp [C1_homeo]
         rw [C1_projOrd C hsC ho x hx₁]
 
+open Classical in
+lemma CC_exact {f : LocallyConstant C ℤ} (hf : Linear_CC' C hsC ho f = 0) :
+    ∃ y, πs C o y = f := by
+  dsimp [Linear_CC', Linear_CC'₀, Linear_CC'₁] at hf
+  rw [sub_eq_zero] at hf
+  dsimp [LocallyConstant.comapₗ] at hf
+  rw [← LocallyConstant.coe_inj, LocallyConstant.coe_comap _ _ (continuous_CC'₁ _ _ _),
+    LocallyConstant.coe_comap _ _ (continuous_CC'₀ _ _)] at hf
+  let C₀C : C0 C ho → C := fun x ↦ ⟨x.val, x.prop.1⟩
+  have h₀ : Continuous C₀C := Continuous.subtype_mk continuous_induced_dom _
+  let C₁C : (C1 C ho).proj (ord I · < o) → C := fun x ↦ ⟨SwapTrue o x.val, (swapTrue_mem_C1 C hsC ho x).1⟩
+  have h₁ : Continuous C₁C := Continuous.subtype_mk
+    (Continuous.comp (continuous_swapTrue o) continuous_subtype_val) _
+  refine ⟨LocallyConstant.piecewise' ?_ (isClosed_C0 C hC ho)
+      (isClosed_proj _ o (isClosed_C1 C hC ho)) (f.comap C₀C) (f.comap C₁C) ?_, ?_⟩
+  · intro x hx
+    simp only [Set.mem_union, Set.mem_setOf_eq, Set.mem_univ, iff_true]
+    obtain ⟨y, ⟨hyC, hy⟩⟩ := hx
+    rw [← union_C0C1_eq C ho] at hyC
+    cases' hyC with hyC hyC
+    · rw [C0_projOrd C hsC ho y hyC] at hy
+      rw [← hy]
+      exact Or.inl hyC
+    · exact Or.inr ⟨y, ⟨hyC, hy⟩⟩
+  · intro x hx
+    simp only [Set.coe_setOf, Set.mem_setOf_eq, LocallyConstant.congrLeft, Equiv.invFun_as_coe,
+      Homeomorph.coe_symm_toEquiv, Equiv.toFun_as_coe, Homeomorph.coe_toEquiv, Equiv.coe_fn_mk,
+      LocallyConstant.toFun_eq_coe, Homeomorph.continuous, LocallyConstant.coe_comap, h₀,
+      Function.comp_apply, h₁]
+    exact (congrFun hf ⟨x, hx⟩).symm
+  · ext ⟨x,hx⟩
+    rw [← union_C0C1_eq C ho] at hx
+    cases' hx with hx₀ hx₁
+    · rw [coe_πs]
+      simp only [LocallyConstant.piecewise', LocallyConstant.coe_mk, Function.comp_apply]
+      split_ifs with h
+      · simp only [LocallyConstant.congrLeft, Equiv.invFun_as_coe, Homeomorph.coe_symm_toEquiv,
+          Equiv.toFun_as_coe, Homeomorph.coe_toEquiv, Equiv.coe_fn_mk, Set.mem_setOf_eq,
+          Homeomorph.continuous, LocallyConstant.coe_comap, h₀, Function.comp_apply]
+        congr 1
+        ext i
+        dsimp [ProjRestrict] at h ⊢
+        rw [C0_projOrd C hsC ho x hx₀]
+      · dsimp [LocallyConstant.congrLeft]
+        simp only [ProjRestrict, Set.val_codRestrict_apply, Function.comp_apply] at h
+        rw [C0_projOrd C hsC ho x hx₀] at h
+        simp only [hx₀, not_true] at h
+    · rw [coe_πs]
+      simp only [LocallyConstant.piecewise', LocallyConstant.coe_mk, Function.comp_apply]
+      split_ifs with h
+      · simp only [LocallyConstant.congrLeft, Equiv.invFun_as_coe, Homeomorph.coe_symm_toEquiv,
+          Equiv.toFun_as_coe, Homeomorph.coe_toEquiv, Equiv.coe_fn_mk, Set.mem_setOf_eq,
+          Homeomorph.continuous, LocallyConstant.coe_comap, h₀, Function.comp_apply]
+        have hx' : Proj (ord I · < o) x ∈ C' C ho := ⟨h, ⟨x, ⟨hx₁, rfl⟩⟩⟩
+        have := congrFun hf ⟨Proj (ord I · < o) x, hx'⟩
+        dsimp [CC'₁] at this
+        simp_rw [C1_projOrd C hsC ho x hx₁] at this
+        exact this.symm
+      · simp only [LocallyConstant.congrLeft, Equiv.invFun_as_coe, Homeomorph.coe_symm_toEquiv,
+          Equiv.toFun_as_coe, Homeomorph.coe_toEquiv, Equiv.coe_fn_mk, Set.mem_setOf_eq,
+          Homeomorph.continuous, LocallyConstant.coe_comap, h₁, Function.comp_apply]
+        congr 1
+        ext i
+        dsimp [ProjRestrict] at h ⊢
+        rw [C1_projOrd C hsC ho x hx₁]
+
 variable (o) in
 lemma succ_mono : CategoryTheory.Mono (ModuleCat.ofHom (πs C o)) := by
   rw [ModuleCat.mono_iff_injective]
@@ -1966,9 +2049,8 @@ lemma succ_exact : CategoryTheory.Exact
   rw [ModuleCat.exact_iff]
   ext f
   rw [LinearMap.mem_ker, LinearMap.mem_range]
-  refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
-  · obtain ⟨y,hy⟩ := hf
-    rw [← hy]
+  refine ⟨fun ⟨y,hy⟩ ↦ ?_, fun hf ↦ ?_⟩
+  · rw [← hy]
     dsimp [ModuleCat.ofHom]
     exact CC_comp_zero _ _ _ y
   · exact CC_exact _ hC _ ho hf
@@ -2267,31 +2349,22 @@ lemma Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
     rw [← IsLocallyConstant.iff_continuous]
     refine ((IsLocallyConstant.tfae _).out 0 3).mpr ?_
     rintro ⟨⟩
-    · have : (fun a ↦ decide (a ∈ C.1)) ⁻¹' {false} = C.1ᶜ
-      · ext x
-        simp only [Set.mem_preimage, Set.mem_singleton_iff,
-          decide_eq_false_iff_not, Set.mem_compl_iff]
-      · rw [this]
-        refine IsClopen.isOpen ?_
-        simp only [isClopen_compl_iff]
-        exact C.2
-    · have : (fun a ↦ decide (a ∈ C.1)) ⁻¹' {true} = C.1
-      · ext x
-        simp only [Set.mem_preimage, Set.mem_singleton_iff, decide_eq_true_eq]
-      · rw [this]
-        refine IsClopen.isOpen ?_
-        exact C.2
-  · intro a b hab
-    by_contra hnab
-    have h' := exists_clopen_of_totally_separated hnab
-    obtain ⟨C, hC, h₁⟩ := h'
-    apply h₁.2
-    have ha : ι S a ⟨C, hC⟩ = decide (a ∈ C) := rfl
-    have hb : ι S b ⟨C, hC⟩ = decide (b ∈ C) := rfl
-    apply of_decide_eq_true
-    rw [← hb, ← hab, ha]
-    apply decide_eq_true
-    exact h₁.1
+    · refine IsClopen.isOpen (isClopen_compl_iff.mp ?_)
+      convert C.2
+      ext x
+      simp only [Set.mem_compl_iff, Set.mem_preimage, Set.mem_singleton_iff,
+        decide_eq_false_iff_not, not_not]
+    · refine IsClopen.isOpen ?_
+      convert C.2
+      ext x
+      simp only [Set.mem_preimage, Set.mem_singleton_iff, decide_eq_true_eq]
+  · intro a b h
+    by_contra hn
+    obtain ⟨C, hC, hh⟩ := exists_clopen_of_totally_separated hn
+    apply hh.2 ∘ of_decide_eq_true
+    dsimp [ι] at h
+    rw [← congr_fun h ⟨C, hC⟩]
+    exact decide_eq_true hh.1
 
 theorem Nobeling : Module.Free ℤ (LocallyConstant S ℤ) :=
 @NobelingProof.Nobeling {C : Set S // IsClopen C} { default := ⟨∅, isClopen_empty⟩ }
