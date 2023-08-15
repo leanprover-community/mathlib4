@@ -7,7 +7,7 @@ import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Data.ZMod.Algebra
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.IsPoly
-import Mathlib.FieldTheory.PerfectClosure
+import Mathlib.FieldTheory.Perfect
 
 #align_import ring_theory.witt_vector.frobenius from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
@@ -50,7 +50,7 @@ and bundle it into `WittVector.frobenius`.
 
 namespace WittVector
 
-variable {p : ℕ} {R S : Type _} [hp : Fact p.Prime] [CommRing R] [CommRing S]
+variable {p : ℕ} {R S : Type*} [hp : Fact p.Prime] [CommRing R] [CommRing S]
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
@@ -326,10 +326,13 @@ variable (R)
 def frobeniusEquiv [PerfectRing R p] : WittVector p R ≃+* WittVector p R :=
   { (WittVector.frobenius : WittVector p R →+* WittVector p R) with
     toFun := WittVector.frobenius
-    invFun := map (pthRoot R p)
-    left_inv := fun f => ext fun n => by rw [frobenius_eq_map_frobenius]; exact pthRoot_frobenius _
-    right_inv := fun f =>
-      ext fun n => by rw [frobenius_eq_map_frobenius]; exact frobenius_pthRoot _ }
+    invFun := map (_root_.frobeniusEquiv R p).symm
+    left_inv := fun f => ext fun n => by
+      rw [frobenius_eq_map_frobenius]
+      exact frobeniusEquiv_symm_apply_frobenius R p _
+    right_inv := fun f => ext fun n => by
+      rw [frobenius_eq_map_frobenius]
+      exact frobenius_apply_frobeniusEquiv_symm R p _ }
 #align witt_vector.frobenius_equiv WittVector.frobeniusEquiv
 
 theorem frobenius_bijective [PerfectRing R p] :

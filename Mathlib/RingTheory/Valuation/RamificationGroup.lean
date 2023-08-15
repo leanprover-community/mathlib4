@@ -21,7 +21,7 @@ namespace ValuationSubring
 
 open scoped Pointwise
 
-variable (K : Type _) {L : Type _} [Field K] [Field L] [Algebra K L]
+variable (K : Type*) {L : Type*} [Field K] [Field L] [Algebra K L]
 
 /-- The decomposition subgroup defined as the stabilizer of the action
 on the type of all valuation subrings of the field. -/
