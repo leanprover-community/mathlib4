@@ -13,6 +13,8 @@ import Mathlib.Algebra.Group.Basic
 -- `build/lib/MathlibExtras/Rewrites.extra`
 -- so that the cache is rebuilt.
 
+set_option autoImplicit true
+
 /--
 info: Try this: rw [@List.map_append]
 -- "no goals"
