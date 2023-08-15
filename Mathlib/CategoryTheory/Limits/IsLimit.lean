@@ -99,11 +99,12 @@ theorem lift_self {c : Cone F} (t : IsLimit c) : t.lift c = 𝟙 c.pt :=
 def liftConeMorphism {t : Cone F} (h : IsLimit t) (s : Cone F) : s ⟶ t where Hom := h.lift s
 #align category_theory.limits.is_limit.lift_cone_morphism CategoryTheory.Limits.IsLimit.liftConeMorphism
 
+theorem uniq_cone_morphism' {s t : Cone F} (h : IsLimit t) (f : s ⟶ t) :
+    f = h.liftConeMorphism s :=
+  ConeMorphism.ext f (liftConeMorphism h s) (uniq h s f.Hom f.w)
+
 theorem uniq_cone_morphism {s t : Cone F} (h : IsLimit t) {f f' : s ⟶ t} : f = f' :=
-  have : ∀ {g : s ⟶ t}, g = h.liftConeMorphism s := by
-    intro g; apply ConeMorphism.ext; exact h.uniq _ _ g.w
-  this.trans this.symm
-#align category_theory.limits.is_limit.uniq_cone_morphism CategoryTheory.Limits.IsLimit.uniq_cone_morphism
+  (h.uniq_cone_morphism' f).trans (h.uniq_cone_morphism' f').symm
 
 /-- Restating the definition of a limit cone in terms of the ∃! operator. -/
 theorem existsUnique {t : Cone F} (h : IsLimit t) (s : Cone F) :
@@ -600,11 +601,12 @@ theorem desc_self {t : Cocone F} (h : IsColimit t) : h.desc t = 𝟙 t.pt :=
 def descCoconeMorphism {t : Cocone F} (h : IsColimit t) (s : Cocone F) : t ⟶ s where Hom := h.desc s
 #align category_theory.limits.is_colimit.desc_cocone_morphism CategoryTheory.Limits.IsColimit.descCoconeMorphism
 
+theorem uniq_cocone_morphism' {s t : Cocone F} (h : IsColimit t) (f : t ⟶ s) :
+    f = h.descCoconeMorphism s :=
+  CoconeMorphism.ext f (descCoconeMorphism h s) (uniq h s f.Hom f.w)
+
 theorem uniq_cocone_morphism {s t : Cocone F} (h : IsColimit t) {f f' : t ⟶ s} : f = f' :=
-  have : ∀ {g : t ⟶ s}, g = h.descCoconeMorphism s := by
-    intro g; aesop_cat_nonterminal; exact h.uniq _ _ g.w
-  this.trans this.symm
-#align category_theory.limits.is_colimit.uniq_cocone_morphism CategoryTheory.Limits.IsColimit.uniq_cocone_morphism
+  (h.uniq_cocone_morphism' f).trans (h.uniq_cocone_morphism' f').symm
 
 /-- Restating the definition of a colimit cocone in terms of the ∃! operator. -/
 theorem existsUnique {t : Cocone F} (h : IsColimit t) (s : Cocone F) :

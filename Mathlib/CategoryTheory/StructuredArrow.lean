@@ -58,6 +58,10 @@ variable {S S' S'' : D} {Y Y' : C} {T T' : C ⥤ D}
 lemma hom_ext {X Y : StructuredArrow S T} (f g : X ⟶ Y) (h : f.right = g.right) : f = g :=
   CommaMorphism.ext _ _ (Subsingleton.elim _ _) h
 
+@[simp]
+theorem hom_eq_iff {X Y : StructuredArrow S T} (f g : X ⟶ Y) : f = g ↔ f.right = g.right :=
+  ⟨fun h ↦ by rw [h], hom_ext _ _⟩
+
 /-- Construct a structured arrow from a morphism. -/
 def mk (f : S ⟶ T.obj Y) : StructuredArrow S T :=
   ⟨⟨⟨⟩⟩, Y, f⟩
@@ -307,7 +311,6 @@ namespace IsUniversal
 
 variable {f g : StructuredArrow S T}
 
--- Todo: put this in the `IsColimit` file
 theorem uniq (h : IsUniversal f) (η : f ⟶ g) : η = h.to g :=
   h.hom_ext η (h.to g)
 
@@ -367,6 +370,10 @@ variable {T T' T'' : D} {Y Y' : C} {S S' : C ⥤ D}
 @[ext]
 lemma hom_ext {X Y : CostructuredArrow S T} (f g : X ⟶ Y) (h : f.left = g.left) : f = g :=
   CommaMorphism.ext _ _ h (Subsingleton.elim _ _)
+
+@[simp]
+theorem hom_eq_iff {X Y : CostructuredArrow S T} (f g : X ⟶ Y) : f = g ↔ f.left = g.left :=
+  ⟨fun h ↦ by rw [h], hom_ext _ _⟩
 
 /-- Construct a costructured arrow from a morphism. -/
 def mk (f : S.obj Y ⟶ T) : CostructuredArrow S T :=
@@ -618,7 +625,6 @@ namespace IsUniversal
 
 variable {f g : CostructuredArrow S T}
 
--- Todo: put this in the `IsColimit` file
 theorem uniq (h : IsUniversal f) (η : g ⟶ f) : η = h.from g :=
   h.hom_ext η (h.from g)
 

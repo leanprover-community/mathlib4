@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
 import Mathlib.CategoryTheory.Bicategory.Basic
+import Mathlib.CategoryTheory.StructuredArrow
 
 /-!
 # Extensions and lifts in bicategories
@@ -14,6 +15,9 @@ framework, commutative diagrams are replaced by 2-morphisms. Depending on the or
 2-morphisms, we define both left and right extensions (likewise for lifts).
 
 The use of left and right here is a common one in the theory of Kan extensions.
+
+## Implementation notes
+We define extensions and lifts as objects in certain comma categories.
 
 ## References
 * https://ncatlab.org/nlab/show/lifts+and+extensions
@@ -42,11 +46,57 @@ f |     \          | unit
       g
 ```
 -/
-structure LeftExtension (f : a ⟶ b) (g : a ⟶ c) where
-  /-- The extension of `g` along `f`. -/
-  extension : b ⟶ c
-  /-- The 2-morphism filling the triangle diagram. -/
-  unit : g ⟶ f ≫ extension
+abbrev LeftExtension (f : a ⟶ b) (g : a ⟶ c) := StructuredArrow g (precomp _ f)
+
+namespace LeftExtension
+
+variable {f : a ⟶ b} {g : a ⟶ c}
+
+/-- The extension of `g` along `f`. -/
+abbrev extension (t : LeftExtension f g) : b ⟶ c := t.right
+
+/-- The 2-morphism filling the triangle diagram. -/
+abbrev unit (t : LeftExtension f g) : g ⟶ f ≫ t.extension := t.hom
+
+/-- The left extension along the identity. -/
+def alongId (g : a ⟶ c) : LeftExtension (𝟙 a) g := StructuredArrow.mk (λ_ g).inv
+
+instance : Inhabited (LeftExtension (𝟙 a) g) := ⟨alongId g⟩
+
+/-- Whisker an extension by a 1-morphism.
+```
+  b
+  △ \
+  |   \ extension  △
+f |     \          | unit
+  |       ◿
+  a - - - ▷ c - - - ▷ x
+      g         h
+```
+-/
+@[simps!]
+def whisker (t : LeftExtension f g) {x : B} (h : c ⟶ x) : LeftExtension f (g ≫ h) :=
+  StructuredArrow.mk <| t.unit ▷ h ≫ (α_ _ _ _).hom
+
+/-- Whiskering by a 1-morphism is a functor. -/
+@[simps]
+def whiskering {x : B} (h : c ⟶ x) : LeftExtension f g ⥤ LeftExtension f (g ≫ h) where
+  obj t := t.whisker h
+  map η := StructuredArrow.homMk (η.right ▷ h) <| by
+    simp [Functor.const_obj_obj, whisker_right, precomp_obj, whisker_hom, precomp_map,
+      Category.assoc, ← StructuredArrow.w η, comp_whiskerRight, whisker_assoc, Iso.inv_hom_id,
+      Category.comp_id]
+
+/-- Define a morphism between left extensions by cancelling the whiskered identities. -/
+@[simps!]
+def whiskerIdCancel {s t : LeftExtension f g} (τ : s.whisker (𝟙 c) ⟶ t.whisker (𝟙 c)) :
+    s ⟶ t :=
+  StructuredArrow.homMk ((ρ_ _).inv ≫ τ.right ≫ (ρ_ _).hom) <| by
+    have := StructuredArrow.w τ
+    simp at this
+    simp [reassoc_of% this]
+
+end LeftExtension
 
 /-- Triangle diagrams for (left) lifts.
 ```
@@ -59,11 +109,19 @@ structure LeftExtension (f : a ⟶ b) (g : a ⟶ c) where
        g
 ```
 -/
-structure LeftLift (f : b ⟶ a) (g : c ⟶ a) where
-  /-- The lift of `g` along `f`. -/
-  lift : c ⟶ b
-  /-- The 2-morphism filling the triangle diagram. -/
-  unit : g ⟶ lift ≫ f
+abbrev LeftLift (f : b ⟶ a) (g : c ⟶ a) := StructuredArrow g (postcomp _ f)
+
+namespace LeftLift
+
+variable {f : b ⟶ a} {g : c ⟶ a}
+
+/-- The lift of `g` along `f`. -/
+abbrev lift (t : LeftLift f g) : c ⟶ b := t.right
+
+/-- The 2-morphism filling the triangle diagram. -/
+abbrev unit (t : LeftLift f g) : g ⟶ t.lift ≫ f := t.hom
+
+end LeftLift
 
 /-- Triangle diagrams for (right) extensions.
 ```
@@ -76,11 +134,19 @@ f |     \          ▽
       g
 ```
 -/
-structure RightExtension (f : a ⟶ b) (g : a ⟶ c) where
-  /-- The extension of `g` along `f`. -/
-  extension : b ⟶ c
-  /-- The 2-morphism filling the triangle diagram. -/
-  counit : f ≫ extension ⟶ g
+abbrev RightExtension (f : a ⟶ b) (g : a ⟶ c) := CostructuredArrow (precomp _ f) g
+
+namespace RightExtension
+
+variable {f : a ⟶ b} {g : a ⟶ c}
+
+/-- The extension of `g` along `f`. -/
+abbrev extension (t : RightExtension f g) : b ⟶ c := t.left
+
+/-- The 2-morphism filling the triangle diagram. -/
+abbrev counit (t : RightExtension f g) : f ≫ t.extension ⟶ g := t.hom
+
+end RightExtension
 
 /-- Triangle diagrams for (right) lifts.
 ```
@@ -93,54 +159,19 @@ structure RightExtension (f : a ⟶ b) (g : a ⟶ c) where
        g
 ```
 -/
-structure RightLift (f : b ⟶ a) (g : c ⟶ a) where
-  /-- The lift of `g` along `f`. -/
-  lift : c ⟶ b
-  /-- The 2-morphism filling the triangle diagram. -/
-  counit : lift ≫ f ⟶ g
+abbrev RightLift (f : b ⟶ a) (g : c ⟶ a) := CostructuredArrow (postcomp _ f) g
 
-namespace LeftExtension
+namespace RightLift
 
-variable {f : a ⟶ b} {g : a ⟶ c}
+variable {f : b ⟶ a} {g : c ⟶ a}
 
-/-- The left extension along the identity. -/
-def alongId (g : a ⟶ c) : LeftExtension (𝟙 a) g where
-  extension := g
-  unit := (λ_ g).inv
+/-- The lift of `g` along `f`. -/
+abbrev lift (t : RightLift f g) : c ⟶ b := t.left
 
-instance : Inhabited (LeftExtension (𝟙 a) g) := ⟨alongId g⟩
+/-- The 2-morphism filling the triangle diagram. -/
+abbrev counit (t : RightLift f g) : t.lift ≫ f ⟶ g := t.hom
 
-/-- Morphisms between left extensions. -/
-structure Hom (s t : LeftExtension f g) where
-  /-- The underlying 2-morphism between left extensions. -/
-  hom : s.extension ⟶ t.extension
-  /-- The units in the two triangle diagrams and `hom` commutes. -/
-  w : s.unit ≫ f ◁ hom = t.unit := by aesop_cat
-
-attribute [reassoc (attr := simp)] Hom.w
-
-/-- The category of left extensions. -/
-@[simps]
-instance : Category (LeftExtension f g) where
-  Hom := Hom
-  id X := { hom := 𝟙 _ }
-  comp P Q := { hom := P.hom ≫ Q.hom }
-
-variable {s t : LeftExtension f g}
-
-instance : Inhabited (Hom t t) := ⟨𝟙 t⟩
-
-@[ext]
-theorem hom_ext  (η θ : s ⟶ t) (w : η.hom = θ.hom) : η = θ := by
-  cases η
-  cases θ
-  congr
-
-@[simp]
-theorem hom_eq_iff (η θ : s ⟶ t) : η = θ ↔ η.hom = θ.hom :=
-  ⟨fun h ↦ by rw [h], hom_ext _ _⟩
-
-end LeftExtension
+end RightLift
 
 end Bicategory
 

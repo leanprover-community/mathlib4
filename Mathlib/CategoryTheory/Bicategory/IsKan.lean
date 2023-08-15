@@ -46,54 +46,33 @@ namespace LeftExtension
 variable {f : a ⟶ b} {g : a ⟶ c}
 
 /-- A left Kan extension of `g` along `f` is an initial object in `LeftExtension f g`. -/
-structure IsKan (t : LeftExtension f g) where
-  /-- The family of morphisms out of a left Kan extension. -/
-  descHom : ∀ s : LeftExtension f g, t ⟶ s
-  /-- The uniqueness of the family of morphisms out of a left Kan extension. -/
-  uniq : ∀ (s : LeftExtension f g) (τ : t ⟶ s), τ = descHom s
+abbrev IsKan (t : LeftExtension f g) := t.IsUniversal
 
-attribute [nolint simpNF] IsKan.mk.injEq
+/-- An absolute left Kan extension is a Kan extension that commutes with any 1-morphism. -/
+abbrev IsAbsKan (t : LeftExtension f g) := ∀ {x : B} (h : c ⟶ x), IsKan (t.whisker h)
 
-namespace IsKan
+namespace IsAbsKan
 
-variable {s t : LeftExtension f g}
+variable {t : LeftExtension f g}
 
-instance : Subsingleton (IsKan t) :=
-  ⟨by intro P Q; cases P; cases Q; aesop_cat⟩
-
-/-- The family of 2-morphisms out of a left Kan extension. -/
-def desc (H : IsKan t) (s : LeftExtension f g) : t.extension ⟶ s.extension :=
-  (H.descHom s).hom
-
+/-- The family of 2-morphisms out of an absolute left Kan extension. -/
 @[simp]
-theorem descHom_hom (H : IsKan t) (s : LeftExtension f g) :
-    (H.descHom s).hom = H.desc s :=
-  rfl
+def desc (H : IsAbsKan t) {x : B} {h : c ⟶ x} (s : LeftExtension f (g ≫ h)) :
+    t.extension ≫ h ⟶ s.extension :=
+  (H h).desc s
 
-/-- The unit of any left extension factors through the left Kan extension. -/
-@[reassoc (attr := simp)]
-theorem fac (H : IsKan t) (s : LeftExtension f g) :
-    t.unit ≫ f ◁ H.desc s = s.unit :=
-  (H.descHom s).w
+variable {x : B} {h : c ⟶ x} {s : LeftExtension f (g ≫ h)}
 
-theorem uniq_LeftExtensionHom (H : IsKan t) (τ τ' : t ⟶ s) : τ = τ' :=
-  (H.uniq s τ).trans (H.uniq s τ').symm
+/-- An absolute left Kan extension is a left Kan extension. -/
+def IsKan (H : IsAbsKan t) : IsKan t :=
+  Limits.IsInitial.ofUniqueHom (fun s ↦ whiskerIdCancel <| (H (𝟙 _)).to _) <| by
+    intro s τ
+    ext
+    apply (cancel_epi (ρ_ _).hom).mp
+    apply (cancel_mono (ρ_ _).inv).mp
+    simpa using (H (𝟙 _)).uniq ((LeftExtension.whiskering (𝟙 _)).map τ)
 
-theorem hom_desc (H : IsKan t) {k : b ⟶ c} (τ : t.extension ⟶ k) :
-    τ = H.desc ⟨k, t.unit ≫ f ◁ τ⟩ :=
-  congrArg LeftExtension.Hom.hom (H.uniq ⟨k, t.unit ≫ f ◁ τ⟩ ⟨τ, rfl⟩)
-
-/-- Two 2-morphisms out of a left Kan extension are equal if their compositions with
-  each unit 2-morphism are equal. -/
-theorem hom_ext (H : IsKan t) {k : b ⟶ c} {τ τ' : t.extension ⟶ k}
-    (w : t.unit ≫ f ◁ τ = t.unit ≫ f ◁ τ') : τ = τ' := by
-  rw [H.hom_desc τ, H.hom_desc τ']; congr
-
-theorem existsUnique (H : IsKan t) (s : LeftExtension f g) :
-    ∃! τ : t.extension ⟶ s.extension, t.unit ≫ f ◁ τ = s.unit :=
-  ⟨H.desc s, H.fac s, fun τ w ↦ H.hom_ext <| by simp [w]⟩
-
-end IsKan
+end IsAbsKan
 
 end LeftExtension
 
