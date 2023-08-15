@@ -29,9 +29,7 @@ matrix, reindex
 -/
 
 
-universe v w
-
-variable {R : Type v} {n : Type w}
+variable {m n p R : Type*}
 
 namespace Matrix
 
@@ -74,7 +72,7 @@ end Semiring
 
 section Self
 
-variable [Fintype n]
+variable  [Fintype m] [Fintype n] [Fintype p]
 
 @[simp]
 theorem dotProduct_self_eq_zero [LinearOrderedRing R] {v : n → R} : dotProduct v v = 0 ↔ v = 0 :=
@@ -100,19 +98,17 @@ theorem dotProduct_self_star_eq_zero {v : n → R} : dotProduct v (star v) = 0 �
     by simp [Function.funext_iff, mul_eq_zero]
 #align matrix.dot_product_self_star_eq_zero Matrix.dotProduct_self_star_eq_zero
 
-variable {m p: Type _} [Fintype m] [Fintype p]
-
-lemma conjTranspose_mul_self_eq_zero_iff (A : Matrix m n R) : (Aᴴ⬝A) = 0 ↔ A = 0 :=
+@[simp] lemma conjTranspose_mul_self_eq_zero_iff {A : Matrix m n R} : (Aᴴ⬝A) = 0 ↔ A = 0 :=
   ⟨fun h => Matrix.ext fun i j =>
-    (Function.funext_iff.1 (dotProduct_star_self_eq_zero.1 ((Matrix.ext_iff.2 h) j j))) i,
-  fun h => by simp only [h, Matrix.mul_zero] ⟩
+    (congr_fun <| dotProduct_star_self_eq_zero.1 <| Matrix.ext_iff.2 h j j) i,
+  fun h => h ▸ Matrix.mul_zero _⟩
 
 lemma ker_conj_transpose_mul_self_eq_ker (A: Matrix m n R) (B: Matrix n p R) :
     (Aᴴ⬝A)⬝B = 0 ↔ A⬝B = 0 := by
   refine' ⟨ fun h => _, fun h => by simp only [Matrix.mul_assoc, h, Matrix.mul_zero] ⟩
   apply_fun (fun x => Bᴴ.mul x) at h
   rw [Matrix.mul_zero, Matrix.mul_assoc, ← Matrix.mul_assoc, ← conjTranspose_mul] at h
-  exact (conjTranspose_mul_self_eq_zero_iff (A⬝B)).1 h
+  exact conjTranspose_mul_self_eq_zero_iff.1 h
 
 lemma ker_self_mul_conj_transpose_eq_ker_conj_transpose (A: Matrix m n R)(B: Matrix m p R) :
     (A⬝Aᴴ)⬝B = 0 ↔ Aᴴ⬝B = 0 := by
