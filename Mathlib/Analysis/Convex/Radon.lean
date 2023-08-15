@@ -78,10 +78,10 @@ theorem Radon_partition (s : Set E)
   rcases h4 with ⟨h_I_pos, h_J_neg⟩
 
   let w' : { x // x ∈ s} → 𝕜 := fun i => if w i ≥ 0
-    then (w i) / weights_sum_I 
+    then (w i) / weights_sum_I
     else -(w i) / weights_sum_I
   let p : E := ∑ v in I, w' v • (v : E) -- point of intersection
-  
+
   have h5_I : ∑ v in I, w' v = 1 := by
     let w'' : { x // x ∈ s} → 𝕜 := fun i => (w i) / weights_sum_I
     have h5_aux : ∑ v in I, w' v = ∑ v in I, w'' v := by
@@ -97,7 +97,7 @@ theorem Radon_partition (s : Set E)
     rw [←Finset.sum_div]
     apply div_self
     exact ne_of_gt h_I_pos
-  
+
   have h5_J : ∑ v in J, w' v = 1 := by
     let w'' : { x // x ∈ s} → 𝕜 := fun i => (w i) / weights_sum_J
     have h5_aux1 : weights_sum_I = -weights_sum_J := by
