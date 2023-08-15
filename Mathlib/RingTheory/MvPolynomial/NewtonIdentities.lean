@@ -43,8 +43,7 @@ namespace MvPolynomial
 
 open Finset Nat
 
-variable (σ : Type*) [Fintype σ] [DecidableEq σ] (R : Type*) [CommRing R] [NoZeroDivisors R]
-  [CharZero R]
+variable (σ : Type*) [Fintype σ] [DecidableEq σ] (R : Type*) [CommRing R]
 
 namespace NewtonIdentities
 
@@ -61,6 +60,11 @@ private def weight (k : ℕ) (t : Finset σ × σ) : MvPolynomial σ R :=
 
 private def pairMap (t : Finset σ × σ) : Finset σ × σ :=
   if h : t.snd ∈ t.fst then (t.fst.erase t.snd, t.snd) else (t.fst.cons t.snd h, t.snd)
+
+private lemma pairMap_ne_self (t : Finset σ × σ) : pairMap σ t ≠ t := by
+  rw [pairMap]
+  split_ifs with h1
+  all_goals by_contra ht; rw [← ht] at h1; simp_all
 
 private lemma pairMap_of_snd_mem_fst {t : Finset σ × σ} (h : t.snd ∈ t.fst) :
     pairMap σ t = (t.fst.erase t.snd, t.snd) := by
@@ -119,15 +123,9 @@ private theorem weight_add_weight_pairMap {k : ℕ} (t : Finset σ × σ) (h : t
     rw [← neg_neg ((-1 : MvPolynomial σ R) ^ card t.fst), h2]
     simp
 
-private theorem weight_eq_zero_of_pairMapEqSelf {k : ℕ} (t : Finset σ × σ) (h : t ∈ pairs σ k)
-    (h2 : pairMap σ t = t) : weight σ R k t = 0 := by
-  rw [← eq_neg_self_iff, ← add_eq_zero_iff_eq_neg]
-  nth_rw 2 [← h2]
-  exact weight_add_weight_pairMap σ R t h
-
 private theorem weight_sum (k : ℕ) : ∑ t in pairs σ k, weight σ R k t = 0 :=
   sum_involution (fun t _ ↦ pairMap σ t) (weight_add_weight_pairMap σ R)
-    (fun t h ↦ mt $ weight_eq_zero_of_pairMapEqSelf σ R t h) (pairMap_mem_pairs σ)
+    (fun t _ ↦ (fun _ ↦ pairMap_ne_self σ t)) (pairMap_mem_pairs σ)
     (fun t _ ↦ pairMap_involutive σ t)
 
 private theorem sum_filter_pairs_eq_sum_powersetLen_sum (k : ℕ)
