@@ -53,6 +53,8 @@ end NNReal
 
 namespace ENNReal
 
+open NNReal
+
 theorem rpow_add_of_nonneg {x : ℝ≥0∞} (y z : ℝ) (hy : 0 ≤ y) (hz : 0 ≤ z) :
     x ^ (y + z) = x ^ y * x ^ z := by
   induction x using recTopCoe
@@ -63,10 +65,28 @@ theorem rpow_add_of_nonneg {x : ℝ≥0∞} (y z : ℝ) (hy : 0 ≤ y) (hz : 0 �
     simp [top_rpow_of_pos, hy, hz, add_pos hy hz]
   simp [coe_rpow_of_nonneg, hy, hz, add_nonneg hy hz, NNReal.rpow_add_of_nonneg _ hy hz]
 
-theorem prod_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0∞) (r : ℝ) :
-    ∏ i in s, f i ^ r = (∏ i in s, f i) ^ r :=
-  sorry
+theorem prod_rpow_of_nonneg {ι} {s : Finset ι} {f : ι → ℝ≥0∞} {r : ℝ} (hr : 0 ≤ r) :
+    ∏ i in s, f i ^ r = (∏ i in s, f i) ^ r := by
+  induction s using Finset.induction
+  case empty => simp
+  case insert i s hi ih => simp_rw [prod_insert hi, ih, ← mul_rpow_of_nonneg _ _ hr]
 
+-- unused
+theorem prod_rpow_of_ne_top {ι} {s : Finset ι} {f : ι → ℝ≥0∞} (hf : ∀ i ∈ s, f i ≠ ∞) (r : ℝ) :
+    ∏ i in s, f i ^ r = (∏ i in s, f i) ^ r := by
+  induction s using Finset.induction
+  case empty => simp
+  case insert i s hi ih =>
+    have h2f : ∀ i ∈ s, f i ≠ ∞ := fun i hi ↦ hf i <| mem_insert_of_mem hi
+    rw [prod_insert hi, prod_insert hi, ih h2f, ← mul_rpow_of_ne_top <| hf i <| mem_insert_self ..]
+    apply prod_lt_top h2f |>.ne
+
+-- unused
+theorem prod_coe_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0) (r : ℝ) :
+    ∏ i in s, (f i : ℝ≥0∞) ^ r = ((∏ i in s, f i : ℝ≥0) : ℝ≥0∞) ^ r := by
+  induction s using Finset.induction
+  case empty => simp
+  case insert i s hi ih => simp_rw [prod_insert hi, ih, ← coe_mul_rpow, coe_mul]
 
 end ENNReal
 
@@ -876,6 +896,12 @@ def rhsAux (f : (∀ i, π i) → ℝ≥0∞) (s : Finset ι) : (∀ i, π i) �
   (∫⋯∫_s, f ∂μ) ^ ((s.card : ℝ) / (#ι - 1 : ℝ)) *
     ∏ i in sᶜ, (∫⋯∫_insert i s, f ∂μ) ^ ((1 : ℝ) / (#ι - 1 : ℝ))
 
+/--
+The main inductive step
+
+Note: this also holds without assuming `Nontrivial ι`, by tracing through the junk values
+(note that `s = ∅` in that case).
+-/
 theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f)
   (s : Finset ι) (i : ι) (hi : i ∉ s) : ∫⋯∫_{i}, rhsAux μ f s ∂μ ≤ rhsAux μ f (insert i s) := by
   simp_rw [rhsAux, ← insert_compl_insert hi]
@@ -886,7 +912,7 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
   intro x
   dsimp only
   have h2i : i ∈ sᶜ := Finset.mem_compl.mpr hi
-  have hι : 1 < (#ι : ℝ) := Nat.one_lt_cast.mpr Fintype.one_lt_card
+  have hι : 1 ≤ (#ι : ℝ) := by exact_mod_cast Fintype.card_pos
   have h2ι : 0 ≤ (#ι : ℝ) - 1 := by linarith
   rw [lintegral_const_mul]
   simp_rw [prod_apply, Option.elim'_comp₂ (· ^ ·), Pi.pow_apply]
@@ -993,8 +1019,8 @@ theorem nnnorm_integral_le_lintegral_nnnorm {α E : Type _} [MeasurableSpace α]
   · simp
 
 /-- The Sobolev inequality -/
-theorem lintegral_pow_le [Nontrivial ι] [Fintype ι] (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u) :
-    ∫⁻ x, ‖u x‖₊ ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) ≤
+theorem lintegral_pow_le [Nontrivial ι] [Fintype ι] (hu : ContDiff ℝ 1 u)
+    (h2u : HasCompactSupport u) : ∫⁻ x, ‖u x‖₊ ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) ≤
       (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
   have : (1:ℝ) ≤ ↑#ι - 1
   · have hι : (2:ℝ) ≤ #ι := by exact_mod_cast Fintype.one_lt_card
@@ -1010,7 +1036,9 @@ theorem lintegral_pow_le [Nontrivial ι] [Fintype ι] (hu : ContDiff ℝ 1 u) (h
         norm_cast
     _ ≤ ∫⁻ x, (∏ i, ∫⁻ xᵢ, ‖fderiv ℝ u (Function.update x i xᵢ)‖₊) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) := ?_
     _ = ∫⁻ x, ∏ i, (∫⁻ xᵢ, ‖fderiv ℝ u (Function.update x i xᵢ)‖₊) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) := by
-        simp_rw [ENNReal.prod_rpow]
+        gcongr with x
+        rw [ENNReal.prod_rpow_of_nonneg]
+        positivity
     _ ≤ (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
         apply lintegral_prod_lintegral_pow_le
         borelize ((ι → ℝ) →L[ℝ] ℝ)
@@ -1037,7 +1065,8 @@ theorem lintegral_pow_le [Nontrivial ι] [Fintype ι] (hu : ContDiff ℝ 1 u) (h
   calc ‖deriv (u ∘ update x i) y‖₊ = ‖fderiv ℝ u (update x i y) (deriv (update x i) y)‖₊ := by
         rw [fderiv.comp_deriv _ (hu.differentiable le_rfl).differentiableAt
           (hasDerivAt_update y).differentiableAt]
-    _ ≤ ‖fderiv ℝ u (update x i y)‖₊ * ‖deriv (update x i) y‖₊ := ContinuousLinearMap.le_op_nnnorm ..
+    _ ≤ ‖fderiv ℝ u (update x i y)‖₊ * ‖deriv (update x i) y‖₊ :=
+        ContinuousLinearMap.le_op_nnnorm ..
     _ ≤ ‖fderiv ℝ u (update x i y)‖₊ := by simp [deriv_update, Pi.nnnorm_single]
 
 -- /-- The Sobolev inequality for the Lebesgue l=integral(?) -/
@@ -1045,4 +1074,5 @@ theorem lintegral_pow_le [Nontrivial ι] [Fintype ι] (hu : ContDiff ℝ 1 u) (h
 --     ∫⁻ x, ‖u x‖₊ ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) ≤
 --       (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) :=
 --   by sorry
+
 end Sobolev
