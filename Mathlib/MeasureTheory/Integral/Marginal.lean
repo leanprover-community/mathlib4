@@ -1026,19 +1026,15 @@ theorem lintegral_pow_le [Nontrivial ι] [Fintype ι] (hu : ContDiff ℝ 1 u)
   · have hι : (2:ℝ) ≤ #ι := by exact_mod_cast Fintype.one_lt_card
     linarith
   calc ∫⁻ x, ‖u x‖₊ ^ ((#ι : ℝ) / (#ι - 1 : ℝ))
-      = ∫⁻ x, ((‖u x‖₊ : ℝ≥0∞) ^ (#ι : ℝ)) ^ (1 / (#ι - 1 : ℝ)) := by
+      = ∫⁻ x, ((‖u x‖₊ : ℝ≥0∞) ^ (1 / (#ι - 1 : ℝ))) ^ (#ι : ℝ) := by
         gcongr with x
         rw [← ENNReal.coe_rpow_of_nonneg _ (by positivity), ← ENNReal.rpow_mul]
         field_simp
-    _ = ∫⁻ x, (∏ _i : ι, (‖u x‖₊ : ℝ≥0∞)) ^ (1 / (#ι - 1 : ℝ)) := by
+    _ = ∫⁻ x, ∏ _i : ι, (‖u x‖₊ : ℝ≥0∞) ^ (1 / (#ι - 1 : ℝ)) := by
         gcongr with x
         simp_rw [prod_const, card_univ]
         norm_cast
-    _ ≤ ∫⁻ x, (∏ i, ∫⁻ xᵢ, ‖fderiv ℝ u (Function.update x i xᵢ)‖₊) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) := ?_
-    _ = ∫⁻ x, ∏ i, (∫⁻ xᵢ, ‖fderiv ℝ u (Function.update x i xᵢ)‖₊) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) := by
-        gcongr with x
-        rw [ENNReal.prod_rpow_of_nonneg]
-        positivity
+    _ ≤ ∫⁻ x, ∏ i, (∫⁻ xᵢ, ‖fderiv ℝ u (Function.update x i xᵢ)‖₊) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) := ?_
     _ ≤ (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
         apply lintegral_prod_lintegral_pow_le
         borelize ((ι → ℝ) →L[ℝ] ℝ)
