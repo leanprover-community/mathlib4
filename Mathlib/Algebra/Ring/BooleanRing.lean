@@ -56,14 +56,12 @@ variable [BooleanRing α] (a b : α)
 instance : IsIdempotent α (· * ·) :=
   ⟨BooleanRing.mul_self⟩
 
--- Porting note: simpNF linter complains. This causes lemmas in other files not to be in simpNF
--- @[simp]
+@[simp]
 theorem mul_self : a * a = a :=
   BooleanRing.mul_self _
 #align mul_self mul_self
 
--- Porting note: simpNF linter complains. This causes lemmas in other files not to be in simpNF
--- @[simp]
+@[simp]
 theorem add_self : a + a = 0 := by
   have : a + a = a + a + (a + a) :=
     calc
@@ -73,8 +71,7 @@ theorem add_self : a + a = 0 := by
   rwa [self_eq_add_left] at this
 #align add_self add_self
 
--- Porting note: simpNF linter complains. This causes lemmas in other files not to be in simpNF
--- @[simp]
+@[simp]
 theorem neg_eq : -a = a :=
   calc
     -a = -a + 0 := by rw [add_zero]
@@ -88,8 +85,7 @@ theorem add_eq_zero' : a + b = 0 ↔ a = b :=
     _ ↔ a = b := by rw [neg_eq]
 #align add_eq_zero' add_eq_zero'
 
--- Porting note: simpNF linter complains. This causes lemmas in other files not to be in simpNF
--- @[simp]
+@[simp]
 theorem mul_add_mul : a * b + b * a = 0 := by
   have : a + b = a + b + (a * b + b * a) :=
     calc
@@ -100,8 +96,7 @@ theorem mul_add_mul : a * b + b * a = 0 := by
   rwa [self_eq_add_right] at this
 #align mul_add_mul mul_add_mul
 
--- Porting note: simpNF linter complains. This causes lemmas in other files not to be in simpNF
--- @[simp]
+@[simp]
 theorem sub_eq_add : a - b = a + b := by rw [sub_eq_add_neg, add_right_inj, neg_eq]
 #align sub_eq_add sub_eq_add
 
@@ -263,7 +258,7 @@ def toBooleanAlgebra : BooleanAlgebra α :=
       change
         1 + (a + (1 + a) + a * (1 + a)) + 1 * (a + (1 + a) + a * (1 + a)) =
           a + (1 + a) + a * (1 + a)
-      norm_num [mul_add, mul_self]
+      norm_num [mul_add, mul_self, add_self]
       rw [← add_assoc, add_self] }
 #align boolean_ring.to_boolean_algebra BooleanRing.toBooleanAlgebra
 
