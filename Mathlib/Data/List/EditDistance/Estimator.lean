@@ -61,7 +61,7 @@ instance : EstimatorData (Thunk.mk fun _ => (levenshtein C xs ys, ys.length))
         suff := y :: e.suff
         split := by simpa using split
         distances := Levenshtein.impl C xs y e.distances
-        distances_eq := suffixLevenshtein_eq xs y e.suff e.distances_eq
+        distances_eq := e.distances_eq ▸ suffixLevenshtein_eq xs y e.suff
         bound := _
         bound_eq := rfl }
 
