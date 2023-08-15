@@ -1290,7 +1290,8 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
       positivity
   case inr =>  -- p ≠ 0
     refine GrowsPolynomially.of_isTheta (GrowsPolynomially.rpow (p-1))
-      (isTheta_deriv_rpow_p_mul_one_sub_smoothingFn hp) (by aesop (add safe eventually_of_forall)) ?_
+      (isTheta_deriv_rpow_p_mul_one_sub_smoothingFn hp)
+        (by aesop (add safe eventually_of_forall)) ?_
     filter_upwards [eventually_gt_atTop 0] with x hx
     positivity
 
@@ -1322,7 +1323,8 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
       positivity
   case inr =>    -- p ≠ 0
     refine GrowsPolynomially.of_isTheta (GrowsPolynomially.rpow (p-1))
-      (isTheta_deriv_rpow_p_mul_one_add_smoothingFn hp) (by aesop (add safe eventually_of_forall)) ?_
+      (isTheta_deriv_rpow_p_mul_one_add_smoothingFn hp)
+        (by aesop (add safe eventually_of_forall)) ?_
     filter_upwards [eventually_gt_atTop 0] with x hx
     positivity
 
@@ -1333,8 +1335,9 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
   intro i
   set q : ℝ → ℝ := fun x => x ^ (p a b) * (1 - ε x) with hq
   have h_diff_q : DifferentiableOn ℝ q (Set.Ioi 1) := by
-    refine DifferentiableOn.mul (DifferentiableOn.mono (differentiableOn_rpow_const _) fun z hz => ?_)
-      differentiableOn_one_sub_smoothingFn
+    refine DifferentiableOn.mul
+      (DifferentiableOn.mono (differentiableOn_rpow_const _) fun z hz => ?_)
+        differentiableOn_one_sub_smoothingFn
     rw [Set.mem_compl_singleton_iff]
     exact ne_of_gt <| zero_lt_one.trans hz
   have h_deriv_q : deriv q =O[atTop] fun x => x ^ ((p a b) - 1) := calc
@@ -1350,7 +1353,8 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
                     =O[atTop] fun x => x ^ ((p a b) - 1) * (1 - ε x) := by
                       exact IsBigO.mul (isBigO_deriv_rpow_const_atTop (p a b)) (isBigO_refl _ _)
                   _ =O[atTop] fun x => x ^ ((p a b) - 1) * 1 := by
-                      refine IsBigO.mul (isBigO_refl _ _) isEquivalent_one_sub_smoothingFn_one.isBigO
+                      refine IsBigO.mul (isBigO_refl _ _)
+                        isEquivalent_one_sub_smoothingFn_one.isBigO
                   _ = fun x => x ^ ((p a b) - 1) := by ext; rw [mul_one]
               case right => calc
                 (fun x => x ^ (p a b) * deriv (fun z => 1 - ε z) x)
