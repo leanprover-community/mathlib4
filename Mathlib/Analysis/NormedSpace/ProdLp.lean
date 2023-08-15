@@ -41,7 +41,7 @@ open Real Set Filter IsROrC Bornology BigOperators Uniformity Topology NNReal EN
 
 noncomputable section
 
-namespace ProdLp
+namespace WithLp
 
 variable (p : ℝ≥0∞) (𝕜 𝕜' : Type*) (α β : Type*)
 
@@ -87,7 +87,7 @@ separate from `ProdLp.instPseudoEMetric` since the latter requires the type clas
 Registering this separately allows for a future emetric-like structure on `WithLp p (α × β)` for
 `p < 1` satisfying a relaxed triangle inequality. The terminology for this varies throughout the
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
-instance instEDist : EDist (WithLp p (α × β)) where
+instance instProdEDist : EDist (WithLp p (α × β)) where
   edist f g :=
     if _hp : p = 0 then
       (if f.fst = g.fst then 0 else 1) + (if f.snd = g.snd then 0 else 1)
@@ -101,16 +101,16 @@ variable (x y : WithLp p (α × β)) (x' : α × β)
 
 open Classical in
 @[simp]
-protected theorem edist_eq_card (f g : WithLp 0 (α × β)) :
+theorem prod_edist_eq_card (f g : WithLp 0 (α × β)) :
     edist f g = (if f.fst = g.fst then 0 else 1) + (if f.snd = g.snd then 0 else 1) :=
   if_pos rfl
 
-theorem edist_eq_add {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
+theorem prod_edist_eq_add {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
     edist f g = (edist f.fst g.fst ^ p.toReal + edist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal) :=
   let hp' := ENNReal.toReal_pos_iff.mp hp
   (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
 
-theorem edist_eq_sup (f g : WithLp ∞ (α × β)) :
+theorem prod_edist_eq_sup (f g : WithLp ∞ (α × β)) :
     edist f g = edist f.fst g.fst ⊔ edist f.snd g.snd := by
   dsimp [edist]
   exact if_neg ENNReal.top_ne_zero
@@ -124,20 +124,21 @@ variable [PseudoEMetricSpace α] [PseudoEMetricSpace β]
 
 /-- This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
 from `ProdLp.instPseudoEMetricSpace` so it can be used also for `p < 1`. -/
-protected theorem edist_self (f : WithLp p (α × β)) : edist f f = 0 := by
+theorem prod_edist_self (f : WithLp p (α × β)) : edist f f = 0 := by
   rcases p.trichotomy with (rfl | rfl | h)
   · simp
-  · simp [edist_eq_sup]
-  · simp [edist_eq_add h, ENNReal.zero_rpow_of_pos h, ENNReal.zero_rpow_of_pos (inv_pos.2 <| h)]
+  · simp [prod_edist_eq_sup]
+  · simp [prod_edist_eq_add h, ENNReal.zero_rpow_of_pos h,
+    ENNReal.zero_rpow_of_pos (inv_pos.2 <| h)]
 
 open Classical in
 /-- This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
 from `ProdLp.instPseudoEMetricSpace` so it can be used also for `p < 1`. -/
-protected theorem edist_comm (f g : WithLp p (α × β)) : edist f g = edist g f := by
+theorem prod_edist_comm (f g : WithLp p (α × β)) : edist f g = edist g f := by
   rcases p.trichotomy with (rfl | rfl | h)
-  · simp [ProdLp.edist_eq_card, eq_comm]
-  · simp only [edist_eq_sup, edist_comm]
-  · simp only [edist_eq_add h, edist_comm]
+  · simp [prod_edist_eq_card, eq_comm]
+  · simp only [prod_edist_eq_sup, edist_comm]
+  · simp only [prod_edist_eq_add h, edist_comm]
 
 end EdistProp
 
@@ -153,7 +154,7 @@ separate from `ProdLp.instPseudoMetricSpace` since the latter requires the type 
 Registering this separately allows for a future metric-like structure on `WithLp p (α × β)` for
 `p < 1` satisfying a relaxed triangle inequality. The terminology for this varies throughout the
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
-instance instDist : Dist (WithLp p (α × β)) where
+instance instProdDist : Dist (WithLp p (α × β)) where
   dist f g :=
     if _hp : p = 0 then
       (if f.fst = g.fst then 0 else 1) + (if f.snd = g.snd then 0 else 1)
@@ -164,16 +165,16 @@ instance instDist : Dist (WithLp p (α × β)) where
 variable {α β}
 
 open Classical in
-theorem dist_eq_card (f g : WithLp 0 (α × β)) : dist f g =
+theorem prod_dist_eq_card (f g : WithLp 0 (α × β)) : dist f g =
     (if f.fst = g.fst then 0 else 1) + (if f.snd = g.snd then 0 else 1) :=
   if_pos rfl
 
-theorem dist_eq_add {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
+theorem prod_dist_eq_add {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
     dist f g = (dist f.fst g.fst ^ p.toReal + dist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal) :=
   let hp' := ENNReal.toReal_pos_iff.mp hp
   (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
 
-theorem dist_eq_sup (f g : WithLp ∞ (α × β)) :
+theorem prod_dist_eq_sup (f g : WithLp ∞ (α × β)) :
     dist f g = dist f.fst g.fst ⊔ dist f.snd g.snd := by
   dsimp [dist]
   exact if_neg ENNReal.top_ne_zero
@@ -191,7 +192,7 @@ hypothesis `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
 
 Registering this separately allows for a future norm-like structure on `WithLp p (α × β)` for
 `p < 1` satisfying a relaxed triangle inequality. These are called *quasi-norms*. -/
-instance instNorm : Norm (WithLp p (α × β)) where
+instance instProdNorm : Norm (WithLp p (α × β)) where
   norm f :=
     if _hp : p = 0 then
       (if f.fst = 0 then 0 else 1) + (if f.snd = 0 then 0 else 1)
@@ -202,15 +203,15 @@ variable {p α β}
 
 open Classical in
 @[simp]
-protected theorem norm_eq_card (f : WithLp 0 (α × β)) :
+theorem prod_norm_eq_card (f : WithLp 0 (α × β)) :
     ‖f‖ = (if f.fst = 0 then 0 else 1) + (if f.snd = 0 then 0 else 1) :=
   if_pos rfl
 
-theorem norm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖ = ‖f.fst‖ ⊔ ‖f.snd‖ := by
+theorem prod_norm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖ = ‖f.fst‖ ⊔ ‖f.snd‖ := by
   dsimp [Norm.norm]
   exact if_neg ENNReal.top_ne_zero
 
-theorem norm_eq_add (hp : 0 < p.toReal) (f : WithLp p (α × β)) :
+theorem prod_norm_eq_add (hp : 0 < p.toReal) (f : WithLp p (α × β)) :
     ‖f‖ = (‖f.fst‖ ^ p.toReal + ‖f.snd‖ ^ p.toReal) ^ (1 / p.toReal) :=
   let hp' := ENNReal.toReal_pos_iff.mp hp
   (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
@@ -244,16 +245,16 @@ coincide with the product one. Therefore, we do not register it as an instance. 
 temporary pseudoemetric space instance, we will show that the uniform structure is equal (but not
 defeq) to the product one, and then register an instance in which we replace the uniform structure
 by the product one using this pseudoemetric space and `PseudoEMetricSpace.replaceUniformity`. -/
-def pseudoEmetricAux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+def prodPseudoEmetricAux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     PseudoEMetricSpace (WithLp p (α × β)) where
-  edist_self := ProdLp.edist_self p
-  edist_comm := ProdLp.edist_comm p
+  edist_self := prod_edist_self p
+  edist_comm := prod_edist_comm p
   edist_triangle f g h := by
     rcases p.dichotomy with (rfl | hp)
-    · simp only [edist_eq_sup]
+    · simp only [prod_edist_eq_sup]
       exact sup_le ((edist_triangle _ g.fst _).trans <| add_le_add le_sup_left le_sup_left)
         ((edist_triangle _ g.snd _).trans <| add_le_add le_sup_right le_sup_right)
-    · simp only [edist_eq_add (zero_lt_one.trans_le hp)]
+    · simp only [prod_edist_eq_add (zero_lt_one.trans_le hp)]
       calc
         (edist f.fst h.fst ^ p.toReal + edist f.snd h.snd ^ p.toReal) ^ (1 / p.toReal) ≤
             ((edist f.fst g.fst + edist g.fst h.fst) ^ p.toReal +
@@ -271,11 +272,11 @@ def pseudoEmetricAux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
             Finset.sum_singleton] at this
           exact this
 
-attribute [local instance] ProdLp.pseudoEmetricAux
+attribute [local instance] WithLp.prodPseudoEmetricAux
 
 /-- An auxiliary lemma used twice in the proof of `ProdLp.pseudoMetricAux` below. Not intended for
 use outside this file. -/
-theorem sup_edist_ne_top_aux {α β : Type _}
+theorem prod_sup_edist_ne_top_aux {α β : Type _}
     [PseudoMetricSpace α] [PseudoMetricSpace β] (f g : WithLp ∞ (α × β)) :
     edist f.fst g.fst ⊔ edist f.snd g.snd ≠ ⊤ := by
   refine ne_of_lt ?_
@@ -291,25 +292,25 @@ structure and the bornology by the product ones using this pseudometric space,
 
 See note [reducible non-instances] -/
 @[reducible]
-def pseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
+def prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
     PseudoMetricSpace (WithLp p (α × β)) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
     (fun f g => by
       rcases p.dichotomy with (rfl | h)
-      · exact sup_edist_ne_top_aux f g
-      · rw [edist_eq_add (zero_lt_one.trans_le h)]
+      · exact prod_sup_edist_ne_top_aux f g
+      · rw [prod_edist_eq_add (zero_lt_one.trans_le h)]
         refine
           ENNReal.rpow_ne_top_of_nonneg (by positivity) (ne_of_lt ?_)
         simp [ENNReal.add_lt_top, ENNReal.rpow_lt_top_of_nonneg, edist_ne_top] )
     fun f g => by
     rcases p.dichotomy with (rfl | h)
-    · rw [edist_eq_sup, dist_eq_sup]
+    · rw [prod_edist_eq_sup, prod_dist_eq_sup]
       refine' le_antisymm (sup_le _ _) _
-      · rw [← ENNReal.ofReal_le_iff_le_toReal (sup_edist_ne_top_aux f g), ←
-          PseudoMetricSpace.edist_dist]
+      · rw [← ENNReal.ofReal_le_iff_le_toReal (prod_sup_edist_ne_top_aux f g),
+          ← PseudoMetricSpace.edist_dist]
         exact le_sup_left
-      · rw [← ENNReal.ofReal_le_iff_le_toReal (sup_edist_ne_top_aux f g), ←
-          PseudoMetricSpace.edist_dist]
+      · rw [← ENNReal.ofReal_le_iff_le_toReal (prod_sup_edist_ne_top_aux f g),
+          ← PseudoMetricSpace.edist_dist]
         exact le_sup_right
       · refine ENNReal.toReal_le_of_le_ofReal ?_ ?_
         · simp only [ge_iff_le, le_sup_iff, dist_nonneg]
@@ -318,18 +319,18 @@ def pseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
         ENNReal.rpow_ne_top_of_nonneg (zero_le_one.trans h) (edist_ne_top _ _)
       have h2 : edist f.snd g.snd ^ p.toReal ≠ ⊤ :=
         ENNReal.rpow_ne_top_of_nonneg (zero_le_one.trans h) (edist_ne_top _ _)
-      simp only [edist_eq_add (zero_lt_one.trans_le h), dist_edist, ENNReal.toReal_rpow,
-        dist_eq_add (zero_lt_one.trans_le h), ← ENNReal.toReal_add h1 h2]
+      simp only [prod_edist_eq_add (zero_lt_one.trans_le h), dist_edist, ENNReal.toReal_rpow,
+        prod_dist_eq_add (zero_lt_one.trans_le h), ← ENNReal.toReal_add h1 h2]
 
-attribute [local instance] ProdLp.pseudoMetricAux
+attribute [local instance] WithLp.prodPseudoMetricAux
 
-theorem lipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+theorem prod_lipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     LipschitzWith 1 (WithLp.equiv p (α × β)) := by
   intro x y
   rcases p.dichotomy with (rfl | h)
   · simp [edist]
   · have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (zero_lt_one.trans_le h).ne'
-    rw [edist_eq_add (zero_lt_one.trans_le h)]
+    rw [prod_edist_eq_add (zero_lt_one.trans_le h)]
     simp only [edist, forall_prop_of_true, one_mul, ENNReal.coe_one, ge_iff_le,
       sup_le_iff]
     constructor
@@ -348,7 +349,7 @@ theorem lipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β] 
 
 example (a : ENNReal) : a + a = 2*a := by exact Eq.symm (two_mul a)
 
-theorem antilipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+theorem prod_antilipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     AntilipschitzWith ((2 : ℝ≥0) ^ (1 / p).toReal) (WithLp.equiv p (α × β)) := by
   intro x y
   rcases p.dichotomy with (rfl | h)
@@ -356,7 +357,7 @@ theorem antilipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace 
   · have pos : 0 < p.toReal := by positivity
     have nonneg : 0 ≤ 1 / p.toReal := by positivity
     have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (ne_of_gt pos)
-    rw [edist_eq_add pos, ENNReal.toReal_div 1 p]
+    rw [prod_edist_eq_add pos, ENNReal.toReal_div 1 p]
     simp only [edist, ← one_div, ENNReal.one_toReal]
     calc
       (edist x.fst y.fst ^ p.toReal + edist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) ≤
@@ -372,22 +373,22 @@ theorem antilipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace 
           ← ENNReal.rpow_mul, cancel, ENNReal.rpow_one, ← ENNReal.coe_rpow_of_nonneg _ nonneg,
           coe_ofNat]
 
-theorem aux_uniformity_eq [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+theorem prod_aux_uniformity_eq [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     𝓤 (WithLp p (α × β)) = 𝓤[instUniformSpaceProd] := by
   have A : UniformInducing (WithLp.equiv p (α × β)) :=
-    (antilipschitzWith_equiv_aux p α β).uniformInducing
-      (lipschitzWith_equiv_aux p α β).uniformContinuous
+    (prod_antilipschitzWith_equiv_aux p α β).uniformInducing
+      (prod_lipschitzWith_equiv_aux p α β).uniformContinuous
   have : (fun x : WithLp p (α × β) × WithLp p (α × β) =>
     ((WithLp.equiv p (α × β)) x.fst, (WithLp.equiv p (α × β)) x.snd)) = id :=
     by ext i <;> rfl
   rw [← A.comap_uniformity, this, comap_id]
 
-theorem aux_cobounded_eq [PseudoMetricSpace α] [PseudoMetricSpace β] :
+theorem prod_aux_cobounded_eq [PseudoMetricSpace α] [PseudoMetricSpace β] :
     cobounded (WithLp p (α × β)) = @cobounded _ Prod.instBornology :=
   calc
     cobounded (WithLp p (α × β)) = comap (WithLp.equiv p (α × β)) (cobounded _) :=
-      le_antisymm (antilipschitzWith_equiv_aux p α β).tendsto_cobounded.le_comap
-        (lipschitzWith_equiv_aux p α β).comap_cobounded_le
+      le_antisymm (prod_antilipschitzWith_equiv_aux p α β).tendsto_cobounded.le_comap
+        (prod_lipschitzWith_equiv_aux p α β).comap_cobounded_le
     _ = _ := comap_id
 
 end Aux
@@ -423,83 +424,84 @@ variable [Fact (1 ≤ p)]
 
 /-- `PseudoEMetricSpace` instance on the product of two pseudoemetric spaces, using the
 `L^p` pseudoedistance, and having as uniformity the product uniformity. -/
-instance instPseudoEMetricSpace [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+instance instProdPseudoEMetricSpace [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     PseudoEMetricSpace (WithLp p (α × β)) :=
-  (pseudoEmetricAux p α β).replaceUniformity (aux_uniformity_eq p α β).symm
+  (prodPseudoEmetricAux p α β).replaceUniformity (prod_aux_uniformity_eq p α β).symm
 
 /-- `EMetricSpace` instance on the product of two emetric spaces, using the `L^p`
 edistance, and having as uniformity the product uniformity. -/
-instance instEMetricSpace [EMetricSpace α] [EMetricSpace β] : EMetricSpace (WithLp p (α × β)) :=
+instance instProdEMetricSpace [EMetricSpace α] [EMetricSpace β] : EMetricSpace (WithLp p (α × β)) :=
   @EMetricSpace.ofT0PseudoEMetricSpace (WithLp p (α × β)) _ instT0SpaceProdInstTopologicalSpaceProd
 
 /-- `PseudoMetricSpace` instance on the product of two pseudometric spaces, using the
 `L^p` distance, and having as uniformity the product uniformity. -/
-instance instPseudoMetricSpace [PseudoMetricSpace α] [PseudoMetricSpace β] :
+instance instProdPseudoMetricSpace [PseudoMetricSpace α] [PseudoMetricSpace β] :
     PseudoMetricSpace (WithLp p (α × β)) :=
-  ((pseudoMetricAux p α β).replaceUniformity (aux_uniformity_eq p α β).symm).replaceBornology
-    fun s => Filter.ext_iff.1 (aux_cobounded_eq p α β).symm sᶜ
+  ((prodPseudoMetricAux p α β).replaceUniformity
+    (prod_aux_uniformity_eq p α β).symm).replaceBornology
+    fun s => Filter.ext_iff.1 (prod_aux_cobounded_eq p α β).symm sᶜ
 
 /-- `MetricSpace` instance on the product of two metric spaces, using the `L^p` distance,
 and having as uniformity the product uniformity. -/
-instance instMetricSpace [MetricSpace α] [MetricSpace β] : MetricSpace (WithLp p (α × β)) :=
+instance instProdMetricSpace [MetricSpace α] [MetricSpace β] : MetricSpace (WithLp p (α × β)) :=
   MetricSpace.ofT0PseudoMetricSpace _
 
 variable {p α β}
 
-theorem nndist_eq_add [PseudoMetricSpace α] [PseudoMetricSpace β]
+theorem prod_nndist_eq_add [PseudoMetricSpace α] [PseudoMetricSpace β]
     (hp : p ≠ ∞) (x y : WithLp p (α × β)) :
     nndist x y = (nndist x.fst y.fst ^ p.toReal + nndist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) :=
   -- Porting note: was `Subtype.ext`
   NNReal.eq <| by
     push_cast
-    exact dist_eq_add (p.toReal_pos_iff_ne_top.mpr hp) _ _
+    exact prod_dist_eq_add (p.toReal_pos_iff_ne_top.mpr hp) _ _
 
-theorem nndist_eq_sup [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp ∞ (α × β)) :
+theorem prod_nndist_eq_sup [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp ∞ (α × β)) :
     nndist x y = nndist x.fst y.fst ⊔ nndist x.snd y.snd :=
   -- Porting note: was `Subtype.ext`
   NNReal.eq <| by
     push_cast
-    exact dist_eq_sup _ _
+    exact prod_dist_eq_sup _ _
 
 variable (p α β)
 
-theorem lipschitzWith_equiv [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+theorem prod_lipschitzWith_equiv [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     LipschitzWith 1 (WithLp.equiv p (α × β)) :=
-  lipschitzWith_equiv_aux p α β
+  prod_lipschitzWith_equiv_aux p α β
 
-theorem antilipschitzWith_equiv [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+theorem prod_antilipschitzWith_equiv [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     AntilipschitzWith ((2 : ℝ≥0) ^ (1 / p).toReal) (WithLp.equiv p (α × β)) :=
-  antilipschitzWith_equiv_aux p α β
+  prod_antilipschitzWith_equiv_aux p α β
 
 theorem infty_equiv_isometry [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     Isometry (WithLp.equiv ∞ (α × β)) :=
   fun x y =>
-  le_antisymm (by simpa only [ENNReal.coe_one, one_mul] using lipschitzWith_equiv ∞ α β x y)
+  le_antisymm (by simpa only [ENNReal.coe_one, one_mul] using prod_lipschitzWith_equiv ∞ α β x y)
     (by
       simpa only [ENNReal.div_top, ENNReal.zero_toReal, NNReal.rpow_zero, ENNReal.coe_one,
-        one_mul] using antilipschitzWith_equiv ∞ α β x y)
+        one_mul] using prod_antilipschitzWith_equiv ∞ α β x y)
 
 /-- Seminormed group instance on the product of two normed groups, using the `L^p`
 norm. -/
-instance instSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] :
+instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] :
     SeminormedAddCommGroup (WithLp p (α × β)) :=
   { WithLp.instAddCommGroup _ _ with
     dist_eq := fun x y => by
       rcases p.dichotomy with (rfl | h)
-      · simp only [dist_eq_sup, norm_eq_sup, dist_eq_norm]
+      · simp only [prod_dist_eq_sup, prod_norm_eq_sup, dist_eq_norm]
         rfl
       · have : p ≠ ∞ := by
           intro hp
           rw [hp, ENNReal.top_toReal] at h
           linarith
-        simp only [dist_eq_add (zero_lt_one.trans_le h), norm_eq_add (zero_lt_one.trans_le h),
-          dist_eq_norm]
+        simp only [prod_dist_eq_add (zero_lt_one.trans_le h),
+          prod_norm_eq_add (zero_lt_one.trans_le h), dist_eq_norm]
         rfl }
 
 /-- normed group instance on the product of two normed groups, using the `L^p` norm. -/
-instance normedAddCommGroup [NormedAddCommGroup α] [NormedAddCommGroup β] :
+instance instProdNormedAddCommGroup [NormedAddCommGroup α] [NormedAddCommGroup β] :
     NormedAddCommGroup (WithLp p (α × β)) :=
-  { ProdLp.instSeminormedAddCommGroup p α β with
+  { instProdSeminormedAddCommGroup p α β with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 section norm_of
@@ -507,56 +509,57 @@ section norm_of
 variable {p α β}
 variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 
-theorem nnnorm_eq_add (hp : p ≠ ∞) (f : WithLp p (α × β)) :
+theorem prod_nnnorm_eq_add (hp : p ≠ ∞) (f : WithLp p (α × β)) :
     ‖f‖₊ = (‖f.fst‖₊ ^ p.toReal + ‖f.snd‖₊ ^ p.toReal) ^ (1 / p.toReal) := by
   ext
-  simp [norm_eq_add (p.toReal_pos_iff_ne_top.mpr hp)]
+  simp [prod_norm_eq_add (p.toReal_pos_iff_ne_top.mpr hp)]
 
-theorem nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst‖₊ ⊔  ‖f.snd‖₊ := by
+theorem prod_nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst‖₊ ⊔  ‖f.snd‖₊ := by
   ext
   norm_cast
 
-theorem norm_eq_of_nat (n : ℕ) (h : p = n) (f : WithLp p (α × β)) :
+theorem prod_norm_eq_of_nat (n : ℕ) (h : p = n) (f : WithLp p (α × β)) :
     ‖f‖ = (‖f.fst‖ ^ n + ‖f.snd‖ ^ n) ^ (1 / (n : ℝ)) := by
   have := p.toReal_pos_iff_ne_top.mpr (ne_of_eq_of_ne h <| ENNReal.nat_ne_top n)
   simp only [one_div, h, Real.rpow_nat_cast, ENNReal.toReal_nat, eq_self_iff_true, Finset.sum_congr,
-    norm_eq_add this]
+    prod_norm_eq_add this]
 
-theorem norm_eq_of_L2 (x : WithLp 2 (α × β)) : ‖x‖ = sqrt (‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2) := by
-  rw [norm_eq_of_nat 2 (by norm_cast) _] -- Porting note: was `convert`
+theorem prod_norm_eq_of_L2 (x : WithLp 2 (α × β)) : ‖x‖ = sqrt (‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2) := by
+  rw [prod_norm_eq_of_nat 2 (by norm_cast) _] -- Porting note: was `convert`
   rw [Real.sqrt_eq_rpow]
   norm_cast
 
-theorem nnnorm_eq_of_L2 (x : WithLp 2 (α × β)) : ‖x‖₊ = NNReal.sqrt (‖x.fst‖₊ ^ 2 + ‖x.snd‖₊ ^ 2) :=
+theorem prod_nnnorm_eq_of_L2 (x : WithLp 2 (α × β)) :
+    ‖x‖₊ = NNReal.sqrt (‖x.fst‖₊ ^ 2 + ‖x.snd‖₊ ^ 2) :=
   -- Porting note: was `Subtype.ext`
   NNReal.eq <| by
     push_cast
-    exact norm_eq_of_L2 x
+    exact prod_norm_eq_of_L2 x
 
 variable (α β)
 
-theorem norm_sq_eq_of_L2 (x : WithLp 2 (α × β)) : ‖x‖ ^ 2 = ‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2 := by
+theorem prod_norm_sq_eq_of_L2 (x : WithLp 2 (α × β)) : ‖x‖ ^ 2 = ‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2 := by
   suffices ‖x‖₊ ^ 2 = ‖x.fst‖₊ ^ 2 + ‖x.snd‖₊ ^ 2 by
     simpa only [NNReal.coe_sum] using congr_arg ((↑) : ℝ≥0 → ℝ) this
-  rw [nnnorm_eq_of_L2, NNReal.sq_sqrt]
+  rw [prod_nnnorm_eq_of_L2, NNReal.sq_sqrt]
 
 variable {α β}
 
-theorem dist_eq_of_L2 (x y : WithLp 2 (α × β)) :
+theorem prod_dist_eq_of_L2 (x y : WithLp 2 (α × β)) :
     dist x y = (dist x.fst y.fst ^ 2 + dist x.snd y.snd ^ 2).sqrt := by
-  simp_rw [dist_eq_norm, norm_eq_of_L2, Pi.sub_apply]
+  simp_rw [dist_eq_norm, prod_norm_eq_of_L2, Pi.sub_apply]
   rfl
 
-theorem nndist_eq_of_L2 (x y : WithLp 2 (α × β)) :
+theorem prod_nndist_eq_of_L2 (x y : WithLp 2 (α × β)) :
     nndist x y = NNReal.sqrt (nndist x.fst y.fst ^ 2 + nndist x.snd y.snd ^ 2) :=
   -- Porting note: was `Subtype.ext`
   NNReal.eq <| by
     push_cast
-    exact dist_eq_of_L2 _ _
+    exact prod_dist_eq_of_L2 _ _
 
-theorem edist_eq_of_L2 (x y : WithLp 2 (α × β)) :
+theorem prod_edist_eq_of_L2 (x y : WithLp 2 (α × β)) :
     edist x y = (edist x.fst y.fst ^ 2 + edist x.snd y.snd ^ 2) ^ (1 / 2 : ℝ) := by
-  simp [ProdLp.edist_eq_add]
+  simp [prod_edist_eq_add]
 
 end norm_of
 
@@ -568,20 +571,20 @@ variable [SeminormedAddCommGroup α] [NormedSpace 𝕜 α]
   [SeminormedAddCommGroup β] [NormedSpace 𝕜 β]
 
 /-- The product of two normed spaces is a normed space, with the `L^p` norm. -/
-instance instNormedSpace :
+instance instProdNormedSpace :
     NormedSpace 𝕜 (WithLp p (α × β)) :=
   { WithLp.instModule p 𝕜 (α × β) with
     norm_smul_le := fun c f => by
       rcases p.dichotomy with (rfl | hp)
       · letI : Module 𝕜 (WithLp ∞ (α × β)) := Prod.instModule
         suffices ‖c • f‖₊ = ‖c‖₊ * ‖f‖₊ by exact_mod_cast NNReal.coe_mono this.le
-        simp only [nnnorm_eq_sup, NNReal.mul_sup, ← nnnorm_smul]
+        simp only [prod_nnnorm_eq_sup, NNReal.mul_sup, ← nnnorm_smul]
         rfl
       · have : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (zero_lt_one.trans_le hp).ne'
         have smul_fst : (c • f).fst = c • f.fst := rfl
         have smul_snd : (c • f).snd = c • f.snd := rfl
-        simp only [norm_eq_add (zero_lt_one.trans_le hp), norm_smul, Real.mul_rpow, norm_nonneg,
-          smul_fst, smul_snd]
+        simp only [prod_norm_eq_add (zero_lt_one.trans_le hp), norm_smul, Real.mul_rpow,
+          norm_nonneg, smul_fst, smul_snd]
         rw [← mul_add, mul_rpow (rpow_nonneg_of_nonneg (norm_nonneg _) _),
           ← rpow_mul (norm_nonneg _), this, Real.rpow_one]
         positivity }
@@ -644,7 +647,7 @@ section Equiv
 
 /-- The canonical map `ProdLp.equiv` between `ProdLp ∞ β` and `Π i, β i` as a linear isometric
 equivalence. -/
-def equivₗᵢ : WithLp ∞ (α × β) ≃ₗᵢ[𝕜] α × β :=
+def prodEquivₗᵢ : WithLp ∞ (α × β) ≃ₗᵢ[𝕜] α × β :=
   { WithLp.equiv ∞ (α × β) with
     map_add' := fun f g => rfl
     map_smul' := fun c f => rfl
@@ -663,22 +666,22 @@ theorem nnnorm_equiv_symm_fst [hp : Fact (1 ≤ p)] (x : α) :
     ‖(WithLp.equiv p (α × β)).symm (x, 0)‖₊ = ‖x‖₊ := by
   induction p using ENNReal.recTopCoe generalizing hp with
   | top =>
-    simp [nnnorm_eq_sup]
+    simp [prod_nnnorm_eq_sup]
   | coe p =>
     have hp0 : (p : ℝ) ≠ 0 := by
       exact_mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
-    simp [nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel hp0]
+    simp [prod_nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel hp0]
 
 @[simp]
 theorem nnnorm_equiv_symm_snd [hp : Fact (1 ≤ p)] (y : β) :
     ‖(WithLp.equiv p (α × β)).symm (0, y)‖₊ = ‖y‖₊ := by
   induction p using ENNReal.recTopCoe generalizing hp with
   | top =>
-    simp [nnnorm_eq_sup]
+    simp [prod_nnnorm_eq_sup]
   | coe p =>
     have hp0 : (p : ℝ) ≠ 0 := by
       exact_mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
-    simp [nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel hp0]
+    simp [prod_nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel hp0]
 
 @[simp]
 theorem norm_equiv_symm_fst (x : α) : ‖(WithLp.equiv p (α × β)).symm (x, 0)‖ = ‖x‖ :=
@@ -732,9 +735,9 @@ variable (𝕜 p α β)
 
 /-- `WithLp.equiv` as a continuous linear equivalence. -/
 @[simps! (config := { fullyApplied := false }) apply symm_apply]
-protected def continuousLinearEquiv : WithLp p (α × β) ≃L[𝕜] α × β where
+protected def prodContinuousLinearEquiv : WithLp p (α × β) ≃L[𝕜] α × β where
   toLinearEquiv := WithLp.linearEquiv _ _ _
   continuous_toFun := continuous_equiv _ _ _
   continuous_invFun := continuous_equiv_symm _ _ _
 
-end ProdLp
+end WithLp
