@@ -35,6 +35,8 @@ For a module over a normed ring:
 seminorm, locally convex, LCTVS
 -/
 
+set_option autoImplicit true
+
 
 open NormedField Set Filter
 

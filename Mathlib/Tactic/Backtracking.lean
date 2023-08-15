@@ -34,6 +34,8 @@ but with simpler flow control, and no trace messages.
 Currently only `solveByElim` is implemented in terms of `backtrack`.
 -/
 
+set_option autoImplicit true
+
 open Lean Meta
 
 /-- Visualize an `Except` using a checkmark or a cross. -/
