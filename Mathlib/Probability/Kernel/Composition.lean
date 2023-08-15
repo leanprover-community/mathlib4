@@ -67,7 +67,7 @@ namespace ProbabilityTheory
 
 namespace kernel
 
-variable {α β ι : Type _} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
 section CompositionProduct
 
@@ -79,7 +79,7 @@ We define a kernel composition-product
 -/
 
 
-variable {γ : Type _} {mγ : MeasurableSpace γ} {s : Set (β × γ)}
+variable {γ : Type*} {mγ : MeasurableSpace γ} {s : Set (β × γ)}
 
 /-- Auxiliary function for the definition of the composition-product of two kernels.
 For all `a : α`, `compProdFun κ η a` is a countably additive function with value zero on the empty
@@ -548,7 +548,7 @@ section MapComap
 /-! ### map, comap -/
 
 
-variable {γ : Type _} {mγ : MeasurableSpace γ} {f : β → γ} {g : γ → α}
+variable {γ : Type*} {mγ : MeasurableSpace γ} {f : β → γ} {g : γ → α}
 
 /-- The pushforward of a kernel along a measurable function.
 We include measurability in the assumptions instead of using junk values
@@ -652,11 +652,11 @@ open scoped ProbabilityTheory
 section FstSnd
 
 /-- Define a `kernel (γ × α) β` from a `kernel α β` by taking the comap of the projection. -/
-def prodMkLeft (γ : Type _) [MeasurableSpace γ] (κ : kernel α β) : kernel (γ × α) β :=
+def prodMkLeft (γ : Type*) [MeasurableSpace γ] (κ : kernel α β) : kernel (γ × α) β :=
   comap κ Prod.snd measurable_snd
 #align probability_theory.kernel.prod_mk_left ProbabilityTheory.kernel.prodMkLeft
 
-variable {γ : Type _} {mγ : MeasurableSpace γ} {f : β → γ} {g : γ → α}
+variable {γ : Type*} {mγ : MeasurableSpace γ} {f : β → γ} {g : γ → α}
 
 theorem prodMkLeft_apply (κ : kernel α β) (ca : γ × α) : prodMkLeft γ κ ca = κ ca.snd :=
   rfl
@@ -813,7 +813,7 @@ section Comp
 /-! ### Composition of two kernels -/
 
 
-variable {γ : Type _} {mγ : MeasurableSpace γ} {f : β → γ} {g : γ → α}
+variable {γ : Type*} {mγ : MeasurableSpace γ} {f : β → γ} {g : γ → α}
 
 /-- Composition of two kernels. -/
 noncomputable def comp (η : kernel β γ) (κ : kernel α β) : kernel α γ where
@@ -859,7 +859,7 @@ instance IsSFiniteKernel.comp (η : kernel β γ) [IsSFiniteKernel η] (κ : ker
 #align probability_theory.kernel.is_s_finite_kernel.comp ProbabilityTheory.kernel.IsSFiniteKernel.comp
 
 /-- Composition of kernels is associative. -/
-theorem comp_assoc {δ : Type _} {mδ : MeasurableSpace δ} (ξ : kernel γ δ) [IsSFiniteKernel ξ]
+theorem comp_assoc {δ : Type*} {mδ : MeasurableSpace δ} (ξ : kernel γ δ) [IsSFiniteKernel ξ]
     (η : kernel β γ) (κ : kernel α β) : ξ ∘ₖ η ∘ₖ κ = ξ ∘ₖ (η ∘ₖ κ) := by
   refine' ext_fun fun a f hf => _
   simp_rw [lintegral_comp _ _ _ hf, lintegral_comp _ _ _ hf.lintegral_kernel]
@@ -886,7 +886,7 @@ section Prod
 /-! ### Product of two kernels -/
 
 
-variable {γ : Type _} {mγ : MeasurableSpace γ}
+variable {γ : Type*} {mγ : MeasurableSpace γ}
 
 /-- Product of two kernels. This is meaningful only when the kernels are s-finite. -/
 noncomputable def prod (κ : kernel α β) (η : kernel α γ) : kernel α (β × γ) :=
