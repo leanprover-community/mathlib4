@@ -23,7 +23,7 @@ variable {𝕜 : Type _} [IsROrC 𝕜]
 
 instance ProdLp.instInnerProductSpace (E F : Type _) [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
     [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] :
-    InnerProductSpace 𝕜 (ProdLp 2 E F) where
+    InnerProductSpace 𝕜 (WithLp 2 (E × F)) where
   inner x y := inner x.fst y.fst + inner x.snd y.snd
   norm_sq_eq_inner x := by
     simp [ProdLp.norm_sq_eq_of_L2, ← norm_sq_eq_inner]
@@ -41,5 +41,5 @@ variable {E : Type _} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable {F : Type _} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
 
 @[simp]
-theorem ProdLp.inner_apply (x y : ProdLp 2 E F) :
+theorem ProdLp.inner_apply (x y : WithLp 2 (E × F)) :
     @inner 𝕜 _ _ x y = inner x.fst y.fst + inner x.snd y.snd := rfl
