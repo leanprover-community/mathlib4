@@ -20,6 +20,8 @@ We create a typeclass `NeZero n` which carries around the fact that `(n : R) ≠
 * `NeZero`: `n ≠ 0` as a typeclass.
 -/
 
+set_option autoImplicit true
+
 /-- A type-class version of `n ≠ 0`.  -/
 class NeZero {R} [Zero R] (n : R) : Prop where
   /-- The proposition that `n` is not zero. -/
