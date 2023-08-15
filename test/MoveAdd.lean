@@ -1,6 +1,8 @@
 import Mathlib.Tactic.MoveAdd
 import Mathlib.Data.Nat.Basic
 
+universe u
+
 section tactic
 open Mathlib.MoveAdd
 
@@ -24,8 +26,8 @@ run_cmd if reorderUsing [1, 5, 4, 3, 2, 1] [(3, true), (2, false), (1, false)] �
 
 end tactic
 
-section add
 variable {R : Type u}
+section add
 
 section semigroup
 variable [AddCommSemigroup R] {a b c d e f g h : R}
@@ -66,7 +68,7 @@ example [Mul R] (h : a * c + c + b * c = a * d + d + b * d) :
   exact h
 
 end semigroup
-variable [AddCommMonoidWithOne R] [Mul R] {X r s t u : R} (C D E : R → R)
+variable [AddCommMonoidWithOne R] [Mul R] {f g h X r s t u : R} (C D E : R → R)
 
 example (he : E (C r * D X + D X * h + 7 + 42 + f) = C r * D X + h * D X + 7 + 42 + g) :
     E (7 + f + (C r * D X + 42) + D X * h) = C r * D X + h * D X + g + 7 + 42 := by

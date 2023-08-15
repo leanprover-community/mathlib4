@@ -58,7 +58,7 @@ namespace Mathlib.MoveAdd
 section ExprProcessing
 
 section reorder
-variable [BEq α]
+variable {α :Type*} [BEq α]
 
 /-!
 ##  Reordering the variables
