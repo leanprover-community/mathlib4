@@ -45,6 +45,8 @@ the following sources:
 - [nLab, *Coverage*](https://ncatlab.org/nlab/show/coverage)
 -/
 
+set_option autoImplicit true
+
 namespace CategoryTheory
 
 variable {C : Type _} [Category C]
