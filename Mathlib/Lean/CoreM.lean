@@ -10,6 +10,8 @@ import Mathlib.Tactic.ToExpr
 # Additional functions using `CoreM` state.
 -/
 
+set_option autoImplicit true
+
 open Lean Core
 
 /-- Return the current `maxHeartbeats`. -/
