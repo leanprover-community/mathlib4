@@ -147,6 +147,12 @@ theorem cast_card_erase_of_mem [AddGroupWithOne R] {s : Finset α} (hs : a ∈ s
   rw [Nat.add_one_le_iff, Finset.card_pos]
   exact ⟨a, hs⟩
 
+instance : Unique ({i} : Finset δ) :=
+  ⟨⟨⟨i, mem_singleton_self i⟩⟩, fun j ↦ Subtype.ext <| mem_singleton.mp j.2⟩
+
+@[simp]
+lemma default_singleton : ((default : ({i} : Finset δ)) : δ) = i := rfl
+
 end Finset
 
 end Finset
@@ -244,6 +250,22 @@ theorem integral_Iio_of_hasDerivAt_of_tendsto (hcont : ContinuousOn f (Iic a))
     (hcont.mono Icc_subset_Iic_self) fun y hy => hderiv y hy.2
   rw [intervalIntegrable_iff_integrable_Ioc_of_le hx]
   exact f'int.mono (fun y hy => hy.2) le_rfl
+
+theorem atBot_le_cocompact : atBot ≤ cocompact ℝ := by simp
+theorem atTop_le_cocompact : atTop ≤ cocompact ℝ := by simp
+
+theorem _root_.Filter.EventuallyEq.tendsto [TopologicalSpace β] {f : α → β} {l : Filter α} {a : β}
+    (hf : f =ᶠ[l] fun _ ↦ a) : Tendsto f l (𝓝 a) :=
+  tendsto_nhds_of_eventually_eq hf
+
+-- very special case of `integral_Iio_of_hasDerivAt_of_tendsto`.
+theorem _root_.HasCompactSupport.integral_deriv_eq {f : ℝ → E} (hf : ContDiff ℝ 1 f)
+    (h2f : HasCompactSupport f) (b : ℝ) : ∫ x in Iic b, deriv f x = f b := by
+  have := fun x (_ : x ∈ Iio b) ↦ hf.differentiable le_rfl x |>.hasDerivAt
+  rw [integral_Iio_of_hasDerivAt_of_tendsto hf.continuous.continuousOn this, sub_zero]
+  refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
+  rw [hasCompactSupport_iff_eventuallyEq, Filter.coclosedCompact_eq_cocompact] at h2f
+  exact h2f.filter_mono atBot_le_cocompact |>.tendsto
 
 end RealCalculus
 
@@ -394,6 +416,47 @@ theorem pred_update {α} {β : α → Type _} (P : ∀ ⦃a⦄, β a → Prop) (
 theorem surjective_decode_iget (α : Type _) [Encodable α] [Inhabited α] :
     Surjective fun n => (Encodable.decode (α := α) n).iget := fun x =>
   ⟨Encodable.encode x, by simp_rw [Encodable.encodek]⟩
+
+
+variable {ι : Sort _} {π : ι → Sort _} {x : ∀ i, π i}
+
+/-- `updateSet x s y` is the vector `x` with the coordinates in `s` changed to the values of `y`. -/
+def updateSet (x : ∀ i, π i) (s : Finset ι) (y : ∀ i : ↥s, π i) (i : ι) : π i :=
+  if hi : i ∈ s then y ⟨i, hi⟩ else x i
+
+/-
+todo: do `updateSet` this for SetLike, like this:
+```
+def updateSet {𝓢} [SetLike 𝓢 ι] (s : 𝓢) (x : ∀ i, π i) (y : ∀ i : ↥s, π i) (i : ι) : π i :=
+  if hi : i ∈ s then y ⟨i, hi⟩ else x i
+```
+however, `Finset` is not currently `SetLike`.
+```
+instance : SetLike (Finset ι) ι where
+  coe := (·.toSet)
+  coe_injective' := coe_injective
+```
+-/
+
+open Finset
+theorem updateSet_empty {y} : updateSet x ∅ y = x :=
+  rfl
+theorem updateSet_singleton {i y} :
+    updateSet x {i} y = Function.update x i (y ⟨i, mem_singleton_self i⟩) := by
+  congr with j
+  by_cases hj : j = i
+  · cases hj
+    simp only [dif_pos, Finset.mem_singleton, update_same, updateSet]
+  · simp [hj, updateSet]
+
+theorem update_eq_updateSet {i y} :
+    Function.update x i y = updateSet x {i} (uniqueElim y) := by
+  congr with j
+  by_cases hj : j = i
+  · cases hj
+    simp only [dif_pos, Finset.mem_singleton, update_same, updateSet]
+    exact uniqueElim_default (α := fun j : ({i} : Finset ι) => π j) y
+  · simp [hj, updateSet]
 
 end Function
 
@@ -603,17 +666,10 @@ variable [∀ i, SigmaFinite (μ i)]
 variable (μ)
 
 namespace Measure
-/-- Some properties of `Measure.pi` -/
-theorem pi_unique_left [Unique ι] :
-    Measure.pi μ = map (MeasurableEquiv.piUnique α).symm (μ (default : ι)) := by
-  refine pi_eq (fun s hs => ?_)
-  rw [map_apply (MeasurableEquiv.measurable _) (MeasurableSet.univ_pi_fintype hs), MeasurableEquiv.piUnique_symm_apply, uniqueElim_preimage]
-  symm
-  convert Finset.prod_singleton (β := ℝ≥0∞)
-  rw [Finset.ext_iff, Unique.forall_iff]
-  simp
 
 open Sum
+
+/-- Some properties of `Measure.pi` -/
 
 theorem pi_map_left (f : ι' ≃ ι) :
     map (MeasurableEquiv.piCongrLeft α f) (Measure.pi fun i' => μ (f i')) = Measure.pi μ := by
@@ -643,8 +699,8 @@ theorem pi_unique {π : ι → Type _} [Unique ι] [∀ i, MeasurableSpace (π i
 end Measure
 
 open Measure
--- the next lemmas are currently unused
-
+-- todo: use the next lemmas. For them to be useful we want to have a lemma like
+-- `MeasurePreserving.lintegral_comp_equiv`
 theorem measurePreserving_piCongrLeft (f : ι' ≃ ι) :
     MeasurePreserving (MeasurableEquiv.piCongrLeft α f)
       (Measure.pi fun i' => μ (f i')) (Measure.pi μ) where
@@ -657,6 +713,17 @@ theorem measurePreserving_piSum {π : ι ⊕ ι' → Type _} [∀ i, MeasurableS
       ((Measure.pi fun i => μ (.inl i)).prod (Measure.pi fun i => μ (.inr i))) (Measure.pi μ) where
   measurable := (MeasurableEquiv.piSum π).measurable
   map_eq := pi_sum μ
+
+-- generalizes `measurePreserving_funUnique`
+theorem measurePreserving_piUnique {π : ι → Type _} [Unique ι] [∀ i, MeasurableSpace (π i)]
+    (μ : ∀ i, Measure (π i)) :
+    MeasurePreserving (MeasurableEquiv.piUnique π) (Measure.pi μ) (μ default) where
+  measurable := (MeasurableEquiv.piUnique π).measurable
+  map_eq := pi_unique μ
+
+theorem Measure.map_piUnique_symm [Unique ι] :
+    map (MeasurableEquiv.piUnique α).symm (μ (default : ι)) = Measure.pi μ :=
+  (measurePreserving_piUnique μ).symm _ |>.map_eq
 
 end Measure
 
@@ -679,6 +746,7 @@ theorem StronglyMeasurable.integrable_dirac [MeasurableSpace E] [BorelSpace E] {
     (hf : StronglyMeasurable f) {x : α} : Integrable f (Measure.dirac x) :=
   ⟨hf.aestronglyMeasurable, hf.measurable.ennnorm.hasFiniteIntegral_dirac⟩
 
+
 end
 
 section Marginal
@@ -689,79 +757,25 @@ variable {δ : Type _} {π : δ → Type _} [∀ x, MeasurableSpace (π x)]
 
 variable {μ : ∀ i, Measure (π i)} [∀ i, SigmaFinite (μ i)]
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] [MeasurableSpace E]
-  [BorelSpace E]
-
-theorem atBot_le_cocompact : atBot ≤ cocompact ℝ := by simp
-theorem atTop_le_cocompact : atTop ≤ cocompact ℝ := by simp
-
-theorem _root_.Filter.EventuallyEq.tendsto [TopologicalSpace β] {f : α → β} {l : Filter α} {a : β}
-    (hf : f =ᶠ[l] fun _ ↦ a) : Tendsto f l (𝓝 a) :=
-  tendsto_nhds_of_eventually_eq hf
-
--- very special case of `integral_Iio_of_hasDerivAt_of_tendsto`.
-theorem _root_.HasCompactSupport.integral_deriv_eq {f : ℝ → E} (hf : ContDiff ℝ 1 f)
-    (h2f : HasCompactSupport f) (b : ℝ) : ∫ x in Iic b, deriv f x = f b := by
-  have := fun x (_ : x ∈ Iio b) ↦ hf.differentiable le_rfl x |>.hasDerivAt
-  rw [integral_Iio_of_hasDerivAt_of_tendsto hf.continuous.continuousOn this, sub_zero]
-  refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
-  rw [hasCompactSupport_iff_eventuallyEq, Filter.coclosedCompact_eq_cocompact] at h2f
-  exact h2f.filter_mono atBot_le_cocompact |>.tendsto
-
 theorem lintegral_of_isEmpty {α} [MeasurableSpace α] [IsEmpty α] (μ : Measure α) (f : α → ℝ≥0∞) :
     ∫⁻ x, f x ∂μ = 0 := by convert lintegral_zero_measure f
 
--- lemma _root_.has_compact_support.lintegral_deriv_eq {f : ℝ → ℝ} (hf : cont_diff ℝ 1 f)
---   (h2f : has_compact_support f) (b : ℝ) :
---   ennreal.to_real ∫⁻ x in set.Iic b, ennreal.of_real (deriv f x) = f b :=
--- begin
---   sorry
--- end
--- lemma _root_.has_compact_support.norm_lintegral_deriv_eq {f : ℝ → ℝ} (hf : cont_diff ℝ 1 f)
---   (h2f : has_compact_support f) (h3f : 0 ≤ f) (b : ℝ) :
---   (‖ ennreal.to_real ∫⁻ x in set.Iic b, ennreal.of_real (deriv f x)‖₊ : ℝ≥0∞) =
---   ennreal.of_real (f b) :=
--- by rw [h2f.lintegral_deriv_eq hf, ← of_real_norm_eq_coe_nnnorm, real.norm_of_nonneg (h3f b)]
 variable {s t : Finset δ} {f g : (∀ i, π i) → ℝ≥0∞} {x y : ∀ i, π i} {i : δ}
 
-/-- `update' s f x` is the function `f` restricted to the subspace containing only
-  the coordinates in `s`, where the coordinates outside of `s` are chosen using the default value
-  `x`. This is the integrand of the `marginal` function below.
-  Another view: `fun x => update' s f x y` is the function `f` where the coordinates in `s`
-  are updated to `y`. -/
-def update' (s : Finset δ) (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) : (∀ i : s, π i) → ℝ≥0∞ :=
-  fun y => f fun i => if hi : i ∈ s then y ⟨i, hi⟩ else x i
-
-theorem update'_empty {y} : update' ∅ f x y = f x :=
-  rfl
-
-theorem measurable_update_aux :
-    Measurable (fun y i => if hi : i ∈ s then y ⟨i, hi⟩ else x i : (∀ i : s, π i) → ∀ i, π i) := by
-  rw [measurable_pi_iff]; intro i
-  by_cases h : i ∈ s
-  · simp [h, measurable_pi_apply]
-  · simp [h]
-
-/-- The integrand of `∫⋯∫_s, f ∂μ` is measurable if `f` is. -/
-theorem Measurable.update' (hf : Measurable f) {s : Finset δ} {x : ∀ i, π i} :
-    Measurable (update' s f x) :=
-  hf.comp measurable_update_aux
-
-/-- The integrand of `∫⋯∫_s, f ∂μ` is measurable if `f` is. -/
-theorem StronglyMeasurable.update' (hf : StronglyMeasurable f) {s : Finset δ}
-    {x : ∀ i, π i} : StronglyMeasurable (update' s f x) :=
-  hf.comp_measurable measurable_update_aux
+theorem measurable_updateSet : Measurable (updateSet x s) := by
+  simp_rw [updateSet, measurable_pi_iff]
+  intro i
+  by_cases h : i ∈ s <;> simp [h, measurable_pi_apply]
 
 /-- Integrate `f(x₁,…,xₙ)` over all variables `xᵢ` where `i ∈ s`. Return a function in the
   remaining variables (it will be constant in the `xᵢ` for `i ∈ s`).
   This is the marginal distribution of all variables not in `s`. -/
 def marginal (μ : ∀ i, Measure (π i)) (s : Finset δ) (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) :
     ℝ≥0∞ :=
-  ∫⁻ y : ∀ i : s, π i, update' s f x y ∂Measure.pi fun i : s => μ i
+  ∫⁻ y : ∀ i : s, π i, f (updateSet x s y) ∂Measure.pi fun i : s => μ i
 
-notation "∫⋯∫_"
-  -- Note: this notation is not a binder. This is more convenient since it returns a function.
-s ", " f " ∂" μ:70 => marginal μ s f
+-- Note: this notation is not a binder. This is more convenient since it returns a function.
+notation "∫⋯∫_" s ", " f " ∂" μ:70 => marginal μ s f
 
 notation "∫⋯∫_" s ", " f => marginal volume s f
 
@@ -771,11 +785,11 @@ theorem _root_.Measurable.marginal (hf : Measurable f) : Measurable (∫⋯∫_s
   refine' Measurable.lintegral_prod_right _
   refine' hf.comp _
   rw [measurable_pi_iff]; intro i
-  by_cases h : i ∈ s
-  · simp [h]
-    refine measurable_pi_iff.1 measurable_snd _
-  · simp [h]
-    refine measurable_pi_iff.1 measurable_fst _
+  by_cases hi : i ∈ s
+  · simp [hi, updateSet]
+    exact measurable_pi_iff.1 measurable_snd _
+  · simp [hi, updateSet]
+    exact measurable_pi_iff.1 measurable_fst _
 
 theorem marginal_empty (f : (∀ i, π i) → ℝ≥0∞) : ∫⋯∫_∅, f ∂μ = f := by
   ext1 x
@@ -784,10 +798,12 @@ theorem marginal_empty (f : (∀ i, π i) → ℝ≥0∞) : ∫⋯∫_∅, f ∂
   exact Subsingleton.measurable
 
 /-- The marginal distribution is independent of the variables in `s`. -/
--- todo: ∀ i ∉ s, ...
+-- todo: notation `∀ i ∉ s, ...`
 @[gcongr]
-theorem marginal_eq {x y : ∀ i, π i} (f : (∀ i, π i) → ℝ≥0∞) (h : ∀ (i) (_ : i ∉ s), x i = y i) :
-    (∫⋯∫_s, f ∂μ) x = (∫⋯∫_s, f ∂μ) y := by dsimp [marginal, update']; rcongr; exact h _ ‹_›
+theorem marginal_congr {x y : ∀ i, π i} (f : (∀ i, π i) → ℝ≥0∞)
+    (h : ∀ (i) (_ : i ∉ s), x i = y i) :
+    (∫⋯∫_s, f ∂μ) x = (∫⋯∫_s, f ∂μ) y := by
+  dsimp [marginal, updateSet]; rcongr; exact h _ ‹_›
 
 theorem marginal_update (x : ∀ i, π i) (f : (∀ i, π i) → ℝ≥0∞) {i : δ} (y : π i) (hi : i ∈ s) :
     (∫⋯∫_s, f ∂μ) (Function.update x i y) = (∫⋯∫_s, f ∂μ) x := by
@@ -798,7 +814,10 @@ theorem marginal_update (x : ∀ i, π i) (f : (∀ i, π i) → ℝ≥0∞) {i 
 theorem marginal_union (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) (hst : Disjoint s t) :
     ∫⋯∫_s ∪ t, f ∂μ = ∫⋯∫_s, ∫⋯∫_t, f ∂μ ∂μ := by
   ext1 x
-  simp_rw [marginal, update', ← Measure.pi_map_left _ (finsetUnionEquivSum s t hst).symm]
+  set e₁ := (finsetUnionEquivSum s t hst).symm
+  set e₂ := MeasurableEquiv.piCongrLeft (fun i : ↥(s ∪ t) => π i) e₁
+  set e₃ := MeasurableEquiv.piSum fun b ↦ π (e₁ b)
+  simp_rw [marginal, updateSet, ← Measure.pi_map_left _ e₁]
   rw [lintegral_map_equiv, ← Measure.pi_sum, lintegral_map_equiv, lintegral_prod]
   · dsimp only [finsetUnionEquivSum_symm_inl, finsetUnionEquivSum_symm_inr, Subtype.coe_mk]
     congr with x; congr with y; congr with i
@@ -806,23 +825,11 @@ theorem marginal_union (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) (h
       simp only [his, hit, dif_pos, dif_neg, Finset.mem_union, true_or_iff, false_or_iff,
         not_false_iff]
     · exfalso; exact Finset.disjoint_left.mp hst his hit
-    -- this is ugly, but applying lemmas basically doesn't work because of dependent types
-    · change
-        piCongrLeft (fun b : ↥(s ∪ t) => π ↑b) (finsetUnionEquivSum s t hst).symm
-            (piSum (fun i : s ⊕ t => π ↑((finsetUnionEquivSum s t hst).symm i)) (x, y))
-            ((finsetUnionEquivSum s t hst).symm <| Sum.inl ⟨i, his⟩) =
-          x ⟨i, his⟩
-      rw [piCongrLeft_sum_inl]
-    · change
-        piCongrLeft (fun b : ↥(s ∪ t) => π ↑b) (finsetUnionEquivSum s t hst).symm
-            (piSum (fun i : s ⊕ t => π ↑((finsetUnionEquivSum s t hst).symm i)) (x, y))
-            ((finsetUnionEquivSum s t hst).symm <| Sum.inr ⟨i, hit⟩) =
-          y ⟨i, hit⟩
-      rw [piCongrLeft_sum_inr]
-  · set e₁ := (finsetUnionEquivSum s t hst).symm
-    set e₂ := MeasurableEquiv.piCongrLeft (fun i : { x // x ∈ s ∪ t } => π i) e₁
-    set e₃ := MeasurableEquiv.piSum fun b ↦ π (e₁ b)
-    apply Measurable.aemeasurable
+    · change e₂ (e₃ (x, y)) (e₁ <| Sum.inl ⟨i, his⟩) = x ⟨i, his⟩
+      exact piCongrLeft_sum_inl (fun b : ↥(s ∪ t) => π b) e₁ x y ⟨i, his⟩
+    · change e₂ (e₃ (x, y)) (e₁ <| Sum.inr ⟨i, hit⟩) = y ⟨i, hit⟩
+      exact piCongrLeft_sum_inr (fun b : ↥(s ∪ t) => π b) e₁ x y ⟨i, _⟩
+  · apply Measurable.aemeasurable
     refine hf.comp ?_
     rw [measurable_pi_iff]; intro i
     by_cases h : i ∈ s ∨ i ∈ t
@@ -839,15 +846,13 @@ variable {μ}
 
 theorem marginal_singleton (f : (∀ i, π i) → ℝ≥0∞) (i : δ) :
     ∫⋯∫_{i}, f ∂μ = fun x => ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by
-  letI : Unique ({i} : Finset δ) :=
-    ⟨⟨⟨i, mem_singleton_self i⟩⟩, fun j => Subtype.ext <| mem_singleton.mp j.2⟩
+  let α : Type _ := ({i} : Finset δ)
+  let e := (MeasurableEquiv.piUnique fun j : α ↦ π j).symm
   ext1 x
-  simp_rw [marginal, update', Measure.pi_unique_left _, lintegral_map_equiv]
-  congr with y; congr with j
-  by_cases hj : j = i
-  · cases hj.symm; simp only [dif_pos, Finset.mem_singleton, update_same]
-    exact @uniqueElim_default _ (fun i : (({i} : Finset δ) : Set δ) => π i) _ y
-  · simp [hj]
+  calc (∫⋯∫_{i}, f ∂μ) x
+      = ∫⁻ (y : π (default : α)), f (updateSet x {i} (e y)) ∂μ (default : α) := by
+        simp_rw [marginal, ← Measure.map_piUnique_symm, lintegral_map_equiv]
+    _ = ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by simp [update_eq_updateSet]
 
 theorem integral_update (f : (∀ i, π i) → ℝ≥0∞) (i : δ) (x : ∀ i, π i) :
     ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i = (∫⋯∫_{i}, f ∂μ) x := by
@@ -869,7 +874,7 @@ theorem marginal_univ [Fintype δ] {f : (∀ i, π i) → ℝ≥0∞} :
     ∫⋯∫_univ, f ∂μ = fun _ => ∫⁻ x, f x ∂Measure.pi μ := by
   let e : { j // j ∈ Finset.univ } ≃ δ := Equiv.subtypeUnivEquiv mem_univ
   ext1 x
-  simp_rw [marginal, update', ← Measure.pi_map_left μ e, lintegral_map_equiv]
+  simp_rw [marginal, ← Measure.pi_map_left μ e, lintegral_map_equiv, updateSet]
   simp
   rfl
 
@@ -1018,7 +1023,7 @@ theorem nnnorm_integral_le_lintegral_nnnorm {α E : Type _} [MeasurableSpace α]
       _ = _ := hf.nnnorm_toL1
   · simp
 
-/-- The Sobolev inequality -/
+/-- The Gagliardo-Nirenberg-Sobolev inequality -/
 theorem lintegral_pow_le [Nontrivial ι] [Fintype ι] (hu : ContDiff ℝ 1 u)
     (h2u : HasCompactSupport u) : ∫⁻ x, ‖u x‖₊ ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) ≤
       (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
