@@ -178,7 +178,7 @@ theorem nthLe_index_of [DecidableEq α] {l : List α} (H : Nodup l) (n h) :
 theorem nodup_iff_count_le_one [DecidableEq α] {l : List α} : Nodup l ↔ ∀ a, count a l ≤ 1 :=
   nodup_iff_sublist.trans <|
     forall_congr' fun a =>
-      have : [a, a] <+ l ↔ 1 < count a l := (@le_count_iff_replicate_sublist _ _ 2 _).symm
+      have : replicate 2 a <+ l ↔ 1 < count a l := (le_count_iff_replicate_sublist ..).symm
       (not_congr this).trans not_lt
 #align list.nodup_iff_count_le_one List.nodup_iff_count_le_one
 
