@@ -31,6 +31,8 @@ linear algebra, module, free
 
 -/
 
+set_option autoImplicit true
+
 namespace ModuleCat
 
 variable {ι ι' R : Type*}[Ring R] {N P : ModuleCat R} {v : ι → N}
