@@ -179,27 +179,32 @@ theorem fderiv_update {x : ∀ i, E i} {i : ι} (y : E i) :
       ContinuousLinearMap.pi (Function.update 0 i (ContinuousLinearMap.id 𝕜 (E i))) :=
   (hasFDerivAt_update y).fderiv
 
-theorem ContinuousLinearMap.norm_le_norm_pi (f : ∀ i, F →L[𝕜] E i) (i : ι) :
-    ‖f i‖ ≤ ‖ContinuousLinearMap.pi f‖ :=
-  sorry
-#align continuous_linear_map.norm_le_norm_pi ContinuousLinearMap.norm_le_norm_pi
+theorem hasDerivAt_update {x : ι → 𝕜} {i : ι} (y : 𝕜) :
+    HasDerivAt (Function.update x i) (Pi.single i (1:𝕜)) y := by
+  convert (hasFDerivAt_update (E := fun _ ↦ 𝕜) y).hasDerivAt
+  ext z j
+  rw [Pi.single, Function.update_apply]
+  split_ifs with h
+  · simp [h]
+  · simp [Function.update_noteq h]
 
-theorem ContinuousLinearMap.norm_pi [Nonempty ι] (f : ∀ i, F →L[𝕜] E i) :
-    ‖ContinuousLinearMap.pi f‖ =
-      (Finset.univ.image fun i => ‖f i‖).max' (Finset.univ_nonempty.image _) :=
-  sorry
-#align continuous_linear_map.norm_pi ContinuousLinearMap.norm_pi
+theorem deriv_update {x : ι → 𝕜} {i : ι} (y : 𝕜) :
+    deriv (Function.update x i) y = (Pi.single i (1:𝕜)) :=
+  (hasDerivAt_update y).deriv
 
-variable (E)
+open NNReal
 
-theorem ContinuousLinearMap.norm_pi_update_eq_one {i : ι} :
-    ‖ContinuousLinearMap.pi (Function.update 0 i (ContinuousLinearMap.id 𝕜 (E i)))‖ = 1 :=
-  sorry
+theorem Pi.nnnorm_single (y : E i) : ‖Pi.single i y‖₊ = ‖y‖₊ := by
+  classical
+  have H : ∀ b, ‖single i y b‖₊ = single (f := fun _ ↦ ℝ≥0) i ‖y‖₊ b
+  · intro b
+    refine Pi.apply_single (fun i (x : E i) ↦ ‖x‖₊) ?_ i y b
+    simp
+  simp [Pi.nnnorm_def, H, Pi.single_apply, Finset.sup_ite,
+    Finset.filter_eq' (Finset.univ : Finset ι)]
 
--- this is the lemma that's actually used
-theorem ContinuousLinearMap.nnnorm_pi_update_eq_one {i : ι} :
-    ‖ContinuousLinearMap.pi (Function.update 0 i (ContinuousLinearMap.id 𝕜 (E i)))‖₊ = 1 :=
-  Subtype.ext (ContinuousLinearMap.norm_pi_update_eq_one ..)
+theorem Pi.norm_single (y : E i) : ‖Pi.single i y‖ = ‖y‖ :=
+  congr_arg Subtype.val (Pi.nnnorm_single y)
 
 end Calculus
 
@@ -1021,53 +1026,49 @@ theorem nnnorm_integral_le_lintegral_nnnorm {α E : Type _} [MeasurableSpace α]
 theorem lintegral_pow_le [Nontrivial ι] [Fintype ι] (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u) :
     ∫⁻ x, ‖u x‖₊ ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) ≤
       (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
-  have hu' : Measurable (fun x ↦ (‖fderiv ℝ u x‖₊ : ℝ≥0∞))
-  · borelize ((ι → ℝ) →L[ℝ] ℝ)
-    have : Measurable (fun x ↦ fderiv ℝ u x) := (hu.continuous_fderiv (le_refl _)).measurable
-    measurability
-  refine' le_trans _ (lintegral_prod_lintegral_pow_le (fun _ => volume) hu')
-  have hι₀ : 1 < #ι := Fintype.one_lt_card
-  have hι₁ : (2:ℝ) ≤ #ι := by exact_mod_cast hι₀
-  have hι₂ : (1:ℝ) ≤ ↑#ι - 1 := by linarith
-  have hι₃ : 0 ≤ (#ι : ℝ) / (#ι - 1 : ℝ) := by positivity
-  refine' lintegral_mono fun x => _ -- should be `gcongr`
-  dsimp only
-  rw [← ENNReal.coe_rpow_of_nonneg _ hι₃]
-  simp_rw [div_eq_mul_inv, one_mul, ENNReal.rpow_mul, ENNReal.prod_rpow]
-  gcongr
-  rw [← card_univ]
-  norm_cast
-  rw [← prod_const]
-  push_cast
-  gcongr with i _
-  have h3u : ContDiff ℝ 1 (u ∘ update x i) := hu.comp (contDiff_update 1 x i)
-  have h4u : HasCompactSupport (u ∘ update x i)
-  · apply h2u.comp_closedEmbedding
-    -- `update x i` is a closed embedding -- make this a lemma
-    have h5u : LeftInverse (fun v ↦ v i) (update x i) := fun t ↦ update_same i t x
-    apply h5u.closedEmbedding
-    · exact continuous_apply i
-    · have : Continuous (fun t : ℝ ↦ (x, t)) := continuous_const.prod_mk continuous_id
-      exact (continuous_update i).comp this
-  have := h4u.integral_deriv_eq h3u (x i)
-  dsimp only [comp_def, comp_apply] at this
-  simp_rw [update_eq_self] at this
-  rw [← this]
-  refine' (nnnorm_integral_le_lintegral_nnnorm _).trans _
-  refine (lintegral_mono' (Measure.restrict_le_self) (le_refl _)).trans ?_ -- `gcongr`
-  refine' lintegral_mono fun y => _ -- `gcongr`
-  rw [← Function.comp_def u (update x i), deriv]
-  rw [fderiv.comp y (hu.differentiable le_rfl).differentiableAt (hasFDerivAt_update y).differentiableAt]
-  rw [ContinuousLinearMap.comp_apply]
-  norm_cast
-  refine' (ContinuousLinearMap.le_op_nnnorm _ _).trans _
-  conv_rhs => rw [← mul_one ‖_‖₊]
-  simp_rw [fderiv_update]
-  gcongr
-  refine' (ContinuousLinearMap.le_op_nnnorm _ _).trans_eq _
-  rw [nnnorm_one, mul_one]
-  exact ContinuousLinearMap.nnnorm_pi_update_eq_one fun _ => ℝ
-#align lintegral_pow_le lintegral_pow_le
+  have : (1:ℝ) ≤ ↑#ι - 1
+  · have hι : (2:ℝ) ≤ #ι := by exact_mod_cast Fintype.one_lt_card
+    linarith
+  calc ∫⁻ x, ‖u x‖₊ ^ ((#ι : ℝ) / (#ι - 1 : ℝ))
+      = ∫⁻ x, ((‖u x‖₊ : ℝ≥0∞) ^ (#ι : ℝ)) ^ (1 / (#ι - 1 : ℝ)) := by
+        congr; ext x -- `congrm ∫⁻ x, ?_`
+        rw [← ENNReal.coe_rpow_of_nonneg _ (by positivity), ← ENNReal.rpow_mul]
+        field_simp
+    _ = ∫⁻ x, (∏ _i : ι, (‖u x‖₊ : ℝ≥0∞)) ^ (1 / (#ι - 1 : ℝ)) := by
+        congr; ext x; congr -- `congrm ∫⁻ x, ?_ ^ (1 / (#ι - 1 : ℝ)`
+        simp_rw [prod_const, card_univ]
+        norm_cast
+    _ ≤ ∫⁻ x, (∏ i, ∫⁻ xᵢ, ‖fderiv ℝ u (Function.update x i xᵢ)‖₊) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) := ?_
+    _ = ∫⁻ x, ∏ i, (∫⁻ xᵢ, ‖fderiv ℝ u (Function.update x i xᵢ)‖₊) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) := by
+        simp_rw [ENNReal.prod_rpow]
+    _ ≤ (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
+        apply lintegral_prod_lintegral_pow_le
+        borelize ((ι → ℝ) →L[ℝ] ℝ)
+        have : Measurable (fun x ↦ fderiv ℝ u x) := (hu.continuous_fderiv (le_refl _)).measurable
+        measurability
+  refine' lintegral_mono fun x => _; gcongr with i -- should be `gcongr with x i`
+  calc (‖u x‖₊ : ℝ≥0∞)
+      = (‖∫ xᵢ : ℝ in Set.Iic (x i), deriv (u ∘ update x i) xᵢ‖₊ : ℝ≥0∞) := by
+        have h3u : ContDiff ℝ 1 (u ∘ update x i) := hu.comp (contDiff_update 1 x i)
+        have h4u : HasCompactSupport (u ∘ update x i)
+        · apply h2u.comp_closedEmbedding
+          -- `update x i` is a closed embedding -- make this a lemma
+          have h5u : LeftInverse (fun v ↦ v i) (update x i) := fun t ↦ update_same i t x
+          apply h5u.closedEmbedding
+          · exact continuous_apply i
+          · have : Continuous (fun t : ℝ ↦ (x, t)) := continuous_const.prod_mk continuous_id
+            exact (continuous_update i).comp this
+        rw [h4u.integral_deriv_eq h3u (x i)]
+        simp
+    _ ≤ ∫⁻ xᵢ : ℝ in Set.Iic (x i), ‖deriv (u ∘ update x i) xᵢ‖₊ :=
+        nnnorm_integral_le_lintegral_nnnorm _
+    _ ≤ ∫⁻ (xᵢ : ℝ), ↑‖fderiv ℝ u (update x i xᵢ)‖₊ := ?_
+  refine lintegral_mono' (Measure.restrict_le_self) (fun y ↦ ?_); apply ENNReal.coe_mono -- `gcongr with y`
+  calc ‖deriv (u ∘ update x i) y‖₊ = ‖fderiv ℝ u (update x i y) (deriv (update x i) y)‖₊ := by
+        rw [fderiv.comp_deriv _ (hu.differentiable le_rfl).differentiableAt
+          (hasDerivAt_update y).differentiableAt]
+    _ ≤ ‖fderiv ℝ u (update x i y)‖₊ * ‖deriv (update x i) y‖₊ := ContinuousLinearMap.le_op_nnnorm ..
+    _ ≤ ‖fderiv ℝ u (update x i y)‖₊ := by simp [deriv_update, Pi.nnnorm_single]
 
 -- /-- The Sobolev inequality for the Lebesgue l=integral(?) -/
 -- theorem lintegral_pow_le :
