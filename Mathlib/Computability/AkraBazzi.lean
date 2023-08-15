@@ -98,8 +98,8 @@ lemma eventually_atTop_le {b : ℝ} (hb : b ∈ Set.Ioo 0 1) :
 
 lemma eventually_atTop_le_nat {b : ℝ} (hb : b ∈ Set.Ioo 0 1) :
     ∃ c ∈ Set.Ioi 0, ∀ᶠ (n:ℕ) in atTop, ∀ u ∈ Set.Icc (b * n) n, f u ≤ c * f n := by
-  obtain ⟨c, ⟨hc_mem, hc⟩⟩ := hf.eventually_atTop_le hb
-  exact ⟨c, ⟨hc_mem, hc.nat_cast_atTop⟩⟩
+  obtain ⟨c, hc_mem, hc⟩ := hf.eventually_atTop_le hb
+  exact ⟨c, hc_mem, hc.nat_cast_atTop⟩
 
 lemma eventually_atTop_ge {b : ℝ} (hb : b ∈ Set.Ioo 0 1) :
     ∃ c ∈ Set.Ioi 0, ∀ᶠ x in atTop, ∀ u ∈ Set.Icc (b * x) x, c * f x ≤ f u := by
@@ -110,13 +110,13 @@ lemma eventually_atTop_ge {b : ℝ} (hb : b ∈ Set.Ioo 0 1) :
 
 lemma eventually_atTop_ge_nat {b : ℝ} (hb : b ∈ Set.Ioo 0 1) :
     ∃ c ∈ Set.Ioi 0, ∀ᶠ (n:ℕ) in atTop, ∀ u ∈ Set.Icc (b * n) n, c * f n ≤ f u := by
-  obtain ⟨c, ⟨hc_mem, hc⟩⟩ := hf.eventually_atTop_ge hb
-  exact ⟨c, ⟨hc_mem, hc.nat_cast_atTop⟩⟩
+  obtain ⟨c, hc_mem, hc⟩ := hf.eventually_atTop_ge hb
+  exact ⟨c, hc_mem, hc.nat_cast_atTop⟩
 
 protected lemma const {c : ℝ} : GrowsPolynomially (fun _ => c) := by
   intro b _
-  refine ⟨1, ⟨by norm_num, ?_⟩⟩
-  refine ⟨1, ⟨by norm_num, ?_⟩⟩
+  refine ⟨1, by norm_num, ?_⟩
+  refine ⟨1, by norm_num, ?_⟩
   filter_upwards [] with x
   intro u _
   simp
@@ -132,8 +132,8 @@ protected lemma mul {f g : ℝ → ℝ} (hf : GrowsPolynomially f) (hg : GrowsPo
   have c₂_pos : 0 < c₂ := hc₂_mem
   have c₃_pos : 0 < c₃ := hc₃_mem
   have c₄_pos : 0 < c₄ := hc₄_mem
-  refine ⟨c₁ * c₃, ⟨by show 0 < c₁ * c₃; positivity, ?_⟩⟩
-  refine ⟨c₂ * c₄, ⟨by show 0 < c₂ * c₄; positivity, ?_⟩⟩
+  refine ⟨c₁ * c₃, by show 0 < c₁ * c₃; positivity, ?_⟩
+  refine ⟨c₂ * c₄, by show 0 < c₂ * c₄; positivity, ?_⟩
   filter_upwards [hf, hg,
                   (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hf',
                   (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hg',
@@ -174,8 +174,8 @@ protected lemma add {f g : ℝ → ℝ} (hf : GrowsPolynomially f) (hg : GrowsPo
   have c₁_pos : 0 < c₁ := hc₁_mem
   have c₂_pos : 0 < c₂ := hc₂_mem
   have c₃_pos : 0 < c₃ := hc₃_mem
-  refine ⟨min c₁ c₃, ⟨by show 0 < min c₁ c₃; positivity, ?_⟩⟩
-  refine ⟨max c₂ c₄, ⟨by show 0 < max c₂ c₄; positivity, ?_⟩⟩
+  refine ⟨min c₁ c₃, by show 0 < min c₁ c₃; positivity, ?_⟩
+  refine ⟨max c₂ c₄, by show 0 < max c₂ c₄; positivity, ?_⟩
   filter_upwards [hf, hg,
                   (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hf',
                   (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hg',
@@ -213,8 +213,8 @@ protected lemma inv {f : ℝ → ℝ} (hf : GrowsPolynomially f) (hf' : ∀ᶠ x
   obtain ⟨c₁, ⟨hc₁_mem, ⟨c₂, ⟨hc₂_mem, hf⟩⟩⟩⟩ := hf b hb
   have c₁_pos : 0 < c₁ := hc₁_mem
   have c₂_pos : 0 < c₂ := hc₂_mem
-  refine ⟨c₂⁻¹, ⟨by show 0 < c₂⁻¹; positivity, ?_⟩⟩
-  refine ⟨c₁⁻¹, ⟨by show 0 < c₁⁻¹; positivity, ?_⟩⟩
+  refine ⟨c₂⁻¹, by show 0 < c₂⁻¹; positivity, ?_⟩
+  refine ⟨c₁⁻¹, by show 0 < c₁⁻¹; positivity, ?_⟩
   filter_upwards [hf, hf', (tendsto_id.const_mul_atTop hb_pos).eventually_forall_ge_atTop hf']
     with x hx hx' hx''
   intro u hu
@@ -242,8 +242,8 @@ lemma congr_eventuallyEq {f g : ℝ → ℝ} (hfg : f =ᶠ[atTop] g) (hg : Grows
     GrowsPolynomially f := by
   intro b hb
   have hg' := hg b hb
-  obtain ⟨c₁, ⟨hc₁_mem, ⟨c₂, ⟨hc₂_mem, hg'⟩⟩⟩⟩ := hg'
-  refine ⟨c₁, ⟨hc₁_mem, ⟨c₂, ⟨hc₂_mem, ?_⟩⟩⟩⟩
+  obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hg'⟩ := hg'
+  refine ⟨c₁, hc₁_mem, c₂, hc₂_mem, ?_⟩
   filter_upwards [hg', (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hfg, hfg]
     with x hx₁ hx₂ hx₃
   intro u hu
@@ -254,10 +254,10 @@ protected lemma rpow (p : ℝ) : GrowsPolynomially fun x => x ^ p := by
   intro b hb
   have hb₀ : 0 < b := hb.1
   have hbp₀ : 0 < b ^ p := Real.rpow_pos_of_pos hb₀ _
-  by_cases hp : 0 ≤ p
-  case pos =>
-    refine ⟨b^p, ⟨hbp₀, ?_⟩⟩
-    refine ⟨1, ⟨by norm_num, ?_⟩⟩
+  obtain _ | hp := le_or_lt 0 p
+  case inl =>    -- 0 ≤ p
+    refine ⟨b^p, hbp₀, ?_⟩
+    refine ⟨1, by norm_num, ?_⟩
     filter_upwards [eventually_gt_atTop 0] with x hx
     intro u hu
     refine ⟨?lb, ?ub⟩
@@ -270,10 +270,9 @@ protected lemma rpow (p : ℝ) : GrowsPolynomially fun x => x ^ p := by
       · calc 0 ≤ b * x   := by positivity
              _ ≤ u       := hu.1
       · exact hu.2
-  case neg =>
-    push_neg at hp
-    refine ⟨1, ⟨by norm_num, ?_⟩⟩
-    refine ⟨b^p, ⟨hbp₀, ?_⟩⟩
+  case inr =>   -- p < 0
+    refine ⟨1, by norm_num, ?_⟩
+    refine ⟨b^p, hbp₀, ?_⟩
     filter_upwards [eventually_gt_atTop 0] with x hx
     intro u hu
     refine ⟨?lb, ?ub⟩
@@ -290,8 +289,8 @@ protected lemma rpow (p : ℝ) : GrowsPolynomially fun x => x ^ p := by
 protected lemma log : GrowsPolynomially Real.log := by
   intro b hb
   have hb₀ : 0 < b := hb.1
-  refine ⟨1 / 2, ⟨by norm_num, ?_⟩⟩
-  refine ⟨1, ⟨by norm_num, ?_⟩⟩
+  refine ⟨1 / 2, by norm_num, ?_⟩
+  refine ⟨1, by norm_num, ?_⟩
   have h_tendsto : Tendsto (fun x => 1 / 2 * Real.log x) atTop atTop :=
     Tendsto.const_mul_atTop (by norm_num) Real.tendsto_log_atTop
   filter_upwards [eventually_gt_atTop 1,
@@ -325,8 +324,8 @@ protected lemma norm (f : ℝ → ℝ) (hf : GrowsPolynomially f) (hf' : ∀ᶠ 
 
 protected lemma id : GrowsPolynomially (fun x => x) := by
   intro b hb
-  refine ⟨b, ⟨hb.1, ?_⟩⟩
-  refine ⟨1, ⟨by norm_num, ?_⟩⟩
+  refine ⟨b, hb.1, ?_⟩
+  refine ⟨1, by norm_num, ?_⟩
   refine eventually_of_forall fun x u hu => ?_
   simp only [one_mul, ge_iff_le, gt_iff_lt, not_le, Set.mem_Icc]
   exact ⟨hu.1, hu.2⟩
@@ -337,15 +336,15 @@ lemma of_isTheta {f g : ℝ → ℝ} (hg : GrowsPolynomially g) (hf : f =Θ[atTo
   have hb_pos := hb.1
   have hf_lb := isBigO_iff''.mp hf.isBigO_symm
   have hf_ub := isBigO_iff'.mp hf.isBigO
-  obtain ⟨c₁, ⟨hc₁_pos : 0 < c₁, hf_lb⟩⟩ := hf_lb
-  obtain ⟨c₂, ⟨hc₂_pos : 0 < c₂, hf_ub⟩⟩ := hf_ub
+  obtain ⟨c₁, hc₁_pos : 0 < c₁, hf_lb⟩ := hf_lb
+  obtain ⟨c₂, hc₂_pos : 0 < c₂, hf_ub⟩ := hf_ub
   have hg := hg b hb
-  obtain ⟨c₃, ⟨hc₃_pos : 0 < c₃, hg⟩⟩ := hg
-  obtain ⟨c₄, ⟨hc₄_pos : 0 < c₄, hg⟩⟩ := hg
+  obtain ⟨c₃, hc₃_pos : 0 < c₃, hg⟩ := hg
+  obtain ⟨c₄, hc₄_pos : 0 < c₄, hg⟩ := hg
   have h_lb_pos : 0 < c₁ * c₂⁻¹ * c₃ := by positivity
   have h_ub_pos : 0 < c₂ * c₄ * c₁⁻¹ := by positivity
-  refine ⟨c₁ * c₂⁻¹ * c₃, ⟨h_lb_pos, ?_⟩⟩
-  refine ⟨c₂ * c₄ * c₁⁻¹, ⟨h_ub_pos, ?_⟩⟩
+  refine ⟨c₁ * c₂⁻¹ * c₃, h_lb_pos, ?_⟩
+  refine ⟨c₂ * c₄ * c₁⁻¹, h_ub_pos, ?_⟩
   have c₂_cancel : c₂⁻¹ * c₂ = 1 := inv_mul_cancel (by positivity)
   have c₁_cancel : c₁⁻¹ * c₁ = 1 := inv_mul_cancel (by positivity)
   filter_upwards [(tendsto_id.const_mul_atTop hb_pos).eventually_forall_ge_atTop hf',
@@ -536,7 +535,7 @@ lemma exists_eventually_const_mul_le_r :
   exact ⟨b R.min_bi / 2, ⟨⟨by positivity, R.bi_min_div_two_lt_one⟩, R.eventually_bi_mul_le_r⟩⟩
 
 lemma eventually_r_ge (C : ℝ) : ∀ᶠ (n:ℕ) in atTop, ∀ i, C ≤ r i n := by
-  obtain ⟨c, ⟨hc_mem, hc⟩⟩ := R.exists_eventually_const_mul_le_r
+  obtain ⟨c, hc_mem, hc⟩ := R.exists_eventually_const_mul_le_r
   filter_upwards [eventually_ge_atTop ⌈C / c⌉₊, hc] with n hn₁ hn₂
   have h₁ := hc_mem.1
   intro i
@@ -570,7 +569,7 @@ lemma exists_eventually_r_le_const_mul :
                                                   gcongr
                                                   exact R.b_lt_one _
                                              _ = 1 := by norm_num
-  refine ⟨c, ⟨⟨hc_pos, hc_lt_one⟩, ?_⟩⟩
+  refine ⟨c, ⟨hc_pos, hc_lt_one⟩, ?_⟩
   have hlo := isLittleO_self_div_log_id
   rw [Asymptotics.isLittleO_iff] at hlo
   have hlo' := hlo h₁
@@ -607,10 +606,9 @@ lemma fin_univ_nonempty {R : AkraBazziRecurrence T g a b r} :
 @[aesop safe apply] lemma T_pos (n : ℕ) : 0 < T n := by
   induction n using Nat.strongInductionOn
   case ind n h_ind =>
-    by_cases hn : n < R.n₀
-    case pos => exact R.T_gt_zero' n hn
-    case neg =>
-      push_neg at hn
+    rcases lt_or_le n R.n₀ with hn|hn
+    case inl => exact R.T_gt_zero' n hn   -- n < R.n₀
+    case inr =>   -- R.n₀ ≤ n
       rw [R.h_rec n hn]
       have := R.g_nonneg
       refine add_pos_of_pos_of_nonneg (Finset.sum_pos ?sum_elems R.fin_univ_nonempty) (by aesop)
@@ -953,18 +951,18 @@ lemma eventually_asymBound_r_pos : ∀ᶠ (n:ℕ) in atTop, ∀ i, 0 < asymBound
 
 lemma eventually_atTop_sumTransform_le :
     ∃ c > 0, ∀ᶠ (n:ℕ) in atTop, ∀ i, sumTransform (p a b) g (r i n) n ≤ c * g n := by
-  obtain ⟨c₁, ⟨hc₁_mem, hc₁⟩⟩ := R.exists_eventually_const_mul_le_r
-  obtain ⟨c₂, ⟨hc₂_mem, hc₂⟩⟩ := R.g_grows_poly.eventually_atTop_le_nat hc₁_mem
+  obtain ⟨c₁, hc₁_mem, hc₁⟩ := R.exists_eventually_const_mul_le_r
+  obtain ⟨c₂, hc₂_mem, hc₂⟩ := R.g_grows_poly.eventually_atTop_le_nat hc₁_mem
   have hc₂_pos : 0 < c₂ := hc₂_mem
   have hc₁_pos : 0 < c₁ := hc₁_mem.1
-  refine ⟨max c₂ (c₂ / c₁ ^ (p a b + 1)), ⟨by positivity, ?_⟩⟩
+  refine ⟨max c₂ (c₂ / c₁ ^ (p a b + 1)), by positivity, ?_⟩
   filter_upwards [hc₁, hc₂, R.eventually_r_pos, R.eventually_r_lt_n, eventually_gt_atTop 0]
     with n hn₁ hn₂ hrpos hr_lt_n hn_pos
   intro i
   have hrpos_i := hrpos i
   have g_nonneg : 0 ≤ g n := R.g_nonneg n (by positivity)
-  by_cases hp : 0 ≤ p a b + 1
-  case pos =>
+  rcases le_or_lt 0 (p a b + 1) with hp|hp
+  case h.inl =>   -- 0 ≤ p a b + 1
     calc sumTransform (p a b) g (r i n) n
            = n^(p a b) * (∑ u in Finset.Ico (r i n) n, g u / u^((p a b) + 1)) := by rfl
          _ ≤ n^(p a b) * (∑ u in Finset.Ico (r i n) n, c₂ * g n / u^((p a b) + 1)) := by
@@ -996,8 +994,7 @@ lemma eventually_atTop_sumTransform_le :
          _ = c₂ * g n / c₁ ^ ((p a b) + 1) := by rw [div_self (by positivity), mul_one]
          _ = (c₂ / c₁ ^ ((p a b) + 1)) * g n := by ring
          _ ≤ max c₂ (c₂ / c₁ ^ ((p a b) + 1)) * g n := by gcongr; exact le_max_right _ _
-  case neg =>
-    push_neg at hp
+  case h.inr =>   -- p a b + 1 < 0
     calc sumTransform (p a b) g (r i n) n
            = n^(p a b) * (∑ u in Finset.Ico (r i n) n, g u / u^((p a b) + 1))     := by rfl
          _ ≤ n^(p a b) * (∑ u in Finset.Ico (r i n) n, c₂ * g n / u^((p a b) + 1)) := by
@@ -1032,13 +1029,13 @@ lemma eventually_atTop_sumTransform_le :
 
 lemma eventually_atTop_sumTransform_ge :
     ∃ c > 0, ∀ᶠ (n:ℕ) in atTop, ∀ i, c * g n ≤ sumTransform (p a b) g (r i n) n := by
-  obtain ⟨c₁, ⟨hc₁_mem, hc₁⟩⟩ := R.exists_eventually_const_mul_le_r
-  obtain ⟨c₂, ⟨hc₂_mem, hc₂⟩⟩ := R.g_grows_poly.eventually_atTop_ge_nat hc₁_mem
-  obtain ⟨c₃, ⟨hc₃_mem, hc₃⟩⟩ := R.exists_eventually_r_le_const_mul
+  obtain ⟨c₁, hc₁_mem, hc₁⟩ := R.exists_eventually_const_mul_le_r
+  obtain ⟨c₂, hc₂_mem, hc₂⟩ := R.g_grows_poly.eventually_atTop_ge_nat hc₁_mem
+  obtain ⟨c₃, hc₃_mem, hc₃⟩ := R.exists_eventually_r_le_const_mul
   have hc₂_pos : 0 < c₂ := hc₂_mem
   have hc₁_pos : 0 < c₁ := hc₁_mem.1
   have hc₃' : 0 < (1 - c₃) := by have := hc₃_mem.2; linarith
-  refine ⟨min (c₂ * (1 - c₃)) ((1 - c₃) * c₂ / c₁^((p a b) + 1)), ⟨by positivity, ?_⟩⟩
+  refine ⟨min (c₂ * (1 - c₃)) ((1 - c₃) * c₂ / c₁^((p a b) + 1)), by positivity, ?_⟩
   filter_upwards [hc₁, hc₂, hc₃, R.eventually_r_pos, R.eventually_r_lt_n, eventually_gt_atTop 0]
     with n hn₁ hn₂ hn₃ hrpos hr_lt_n hn_pos
   intro i
@@ -1140,7 +1137,7 @@ lemma isBigO_apply_r_sub_b (q : ℝ → ℝ) (hq_diff : DifferentiableOn ℝ q (
   have hb' : ∀ i, b' ≤ b i := fun i => calc
     b R.min_bi / 2 ≤ b i / 2   := by gcongr; aesop
                _ ≤ b i       := by exact le_of_lt <| div_two_lt_of_pos (R.b_pos i)
-  obtain ⟨c₁, ⟨_, ⟨c₂, ⟨_, hq_poly⟩⟩⟩⟩ := hq_poly b' hb
+  obtain ⟨c₁, _, c₂, _, hq_poly⟩ := hq_poly b' hb
   rw [isBigO_iff]
   refine ⟨c₂, ?_⟩
   have h_tendsto : Tendsto (fun x => b' * x) atTop atTop :=
@@ -1537,7 +1534,7 @@ lemma T_isBigO_smoothingFn_mul_asymBound :
   let b' := b R.min_bi / 2
   have hb_pos : 0 < b' := R.bi_min_div_two_pos
   rw [isBigO_atTop_iff_eventually_exists]
-  obtain ⟨c₁, ⟨hc₁, h_sumTransform_aux⟩⟩ := R.eventually_atTop_sumTransform_ge
+  obtain ⟨c₁, hc₁, h_sumTransform_aux⟩ := R.eventually_atTop_sumTransform_ge
   filter_upwards [eventually_ge_atTop R.n₀,       -- n₀_ge_Rn₀
       eventually_forall_ge_atTop.mpr eventually_one_sub_smoothingFn_pos,    -- h_smoothing_pos
       eventually_forall_ge_atTop.mpr
@@ -1664,7 +1661,7 @@ lemma smoothingFn_mul_asymBound_isBigO_T :
   let b' := b R.min_bi / 2
   have hb_pos : 0 < b' := R.bi_min_div_two_pos
   rw [isBigO_atTop_iff_eventually_exists_pos]
-  obtain ⟨c₁, ⟨hc₁, h_sumTransform_aux⟩⟩ := R.eventually_atTop_sumTransform_le
+  obtain ⟨c₁, hc₁, h_sumTransform_aux⟩ := R.eventually_atTop_sumTransform_le
   filter_upwards [eventually_ge_atTop R.n₀,                                 -- n₀_ge_Rn₀
       (tendsto_nat_floor_mul_atTop b' hb_pos).eventually_gt_atTop 0,        -- h_b_floor
       eventually_forall_ge_atTop.mpr eventually_one_add_smoothingFn_pos,    -- h_smoothing_pos
@@ -1695,7 +1692,7 @@ lemma smoothingFn_mul_asymBound_isBigO_T :
   let C := min (2 * c₁)⁻¹ base_min
   have hC_pos : 0 < C := by
     refine lt_min (by positivity) ?_
-    obtain ⟨m, ⟨hm_mem, hm⟩⟩ :=
+    obtain ⟨m, hm_mem, hm⟩ :=
       Finset.exists_mem_eq_inf' h_base_nonempty (fun n => T n / ((1 + ε n) * asymBound g a b n))
     calc 0 < T m / ((1 + ε m) * asymBound g a b m)      := by
               have H₁ : 0 < T m := by exact R.T_pos _
@@ -1710,7 +1707,7 @@ lemma smoothingFn_mul_asymBound_isBigO_T :
                                 exact hm_mem.1
               positivity
          _ = base_min := by rw [base_min_def, hm]
-  refine ⟨C, ⟨hC_pos, fun n hn => ?_⟩⟩
+  refine ⟨C, hC_pos, fun n hn => ?_⟩
   -- Base case: statement is true for b' * n₀ ≤ n < n₀
   have h_base : ∀ n ∈ Finset.Ico (⌊b' * n₀⌋₊) n₀, C * ((1 + ε n) * asymBound g a b n) ≤ T n := by
     intro n hn
@@ -1740,11 +1737,10 @@ lemma smoothingFn_mul_asymBound_isBigO_T :
             -- Apply the induction hypothesis, or use the base case depending on how large n is
               gcongr (∑ i, a i * ?_) + g n with i _
               · exact le_of_lt <| R.a_pos _
-              · by_cases ri_lt_n₀ : r i n < n₀
-                case pos => exact h_base _ <| Finset.mem_Ico.mpr ⟨b_mul_n₀_le_ri i, ri_lt_n₀⟩
-                case neg =>
-                  push_neg at ri_lt_n₀
-                  exact h_ind (r i n) (R.r_lt_n _ _ (n₀_ge_Rn₀.trans hn)) ri_lt_n₀
+              · rcases lt_or_le (r i n) n₀ with ri_lt_n₀ | n₀_le_ri
+                case inl => exact h_base _ <| Finset.mem_Ico.mpr ⟨b_mul_n₀_le_ri i, ri_lt_n₀⟩
+                case inr =>
+                  exact h_ind (r i n) (R.r_lt_n _ _ (n₀_ge_Rn₀.trans hn)) n₀_le_ri
                     (h_asymBound_r_pos _ hn _) (h_smoothing_r_pos n hn i)
         _ = (∑ i, a i * (C * ((1 + ε (r i n)) * ((r i n)^(p a b)
                   * (1 + (∑ u in range (r i n), g u / u^((p a b) + 1))))))) + g n := by
