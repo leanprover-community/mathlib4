@@ -215,10 +215,10 @@ theorem fromUnit_ker [hn : Fact <| 0 < n] :
     have hi : ↑(_ ^ n : Kˣ)⁻¹ = algebraMap R K _ := by exact congr_arg Units.inv hx
     rw [Units.val_pow_eq_pow_val] at hv
     rw [← inv_pow, Units.inv_mk, Units.val_pow_eq_pow_val] at hi
-    rcases@IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow R _ _ _ _ _ _ _ v _ hn.out
+    rcases IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow (R := R) (x := v) hn.out
         (hv.symm ▸ isIntegral_algebraMap) with
       ⟨v', rfl⟩
-    rcases@IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow R _ _ _ _ _ _ _ i _ hn.out
+    rcases IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow (R := R) (x := i) hn.out
         (hi.symm ▸ isIntegral_algebraMap) with
       ⟨i', rfl⟩
     rw [← map_mul, map_eq_one_iff _ <| NoZeroSMulDivisors.algebraMap_injective R K] at vi

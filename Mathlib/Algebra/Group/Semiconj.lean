@@ -28,6 +28,8 @@ This file provides only basic operations (`mul_left`, `mul_right`, `inv_right` e
 operations (`pow_right`, field inverse etc) are in the files that define corresponding notions.
 -/
 
+set_option autoImplicit true
+
 /-- `x` is semiconjugate to `y` by `a`, if `a * x = y * a`. -/
 @[to_additive AddSemiconjBy "`x` is additive semiconjugate to `y` by `a` if `a + x = y + a`"]
 def SemiconjBy [Mul M] (a x y : M) : Prop :=

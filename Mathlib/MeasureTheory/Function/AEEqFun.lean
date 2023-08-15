@@ -69,6 +69,8 @@ function space, almost everywhere equal, `L⁰`, ae_eq_fun
 
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 
