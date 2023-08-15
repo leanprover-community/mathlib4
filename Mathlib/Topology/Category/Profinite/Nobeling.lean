@@ -331,7 +331,7 @@ def finsetsCone_isLimit [DecidableEq ι] : CategoryTheory.Limits.IsLimit (Finset
 end Profinite
 end Projections
 
-namespace LocallyConstant -- This section is PR #6520
+namespace LocallyConstant -- This section is PR #6520 and #6589
 
 variable {X Z : Type*} [TopologicalSpace X]
 
@@ -1790,7 +1790,8 @@ lemma CC_exact {f : LocallyConstant C ℤ} (hf : Linear_CC' C hsC ho f = 0) :
     LocallyConstant.coe_comap _ _ (continuous_CC'₀ _ _)] at hf
   let C₀C : C0 C ho → C := fun x ↦ ⟨x.val, x.prop.1⟩
   have h₀ : Continuous C₀C := Continuous.subtype_mk continuous_induced_dom _
-  let C₁C : (C1 C ho).proj (ord I · < o) → C := fun x ↦ ⟨SwapTrue o x.val, (swapTrue_mem_C1 C hsC ho x).1⟩
+  let C₁C : (C1 C ho).proj (ord I · < o) → C :=
+    fun x ↦ ⟨SwapTrue o x.val, (swapTrue_mem_C1 C hsC ho x).1⟩
   have h₁ : Continuous C₁C := Continuous.subtype_mk
     (Continuous.comp (continuous_swapTrue o) continuous_subtype_val) _
   refine ⟨LocallyConstant.piecewise' ?_ (isClosed_C0 C hC ho)
