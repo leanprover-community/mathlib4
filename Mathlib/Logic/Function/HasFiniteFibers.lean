@@ -16,7 +16,7 @@ means that the preimage by `f` of any finite set is finite. This has been expres
 API cleaner.
 -/
 
-open Function Set Filter List
+open Function Set Filter
 
 variable {α α' β β' γ : Type*}
 
@@ -28,9 +28,19 @@ of fibers. -/
 def HasFiniteFibers (f : α → β) : Prop :=
   ∀ ⦃S : Set β⦄, S.Finite → (f ⁻¹' S).Finite
 
-variable {f : α → β}
+/-- `Function.HasFiniteFibers f` means that the preimage by `f` of any finite set is finite. We
+show in `Function.hasFiniteFibers_iff_finite_fibers` that this is actually equivalent to finiteness
+of fibers. -/
+def HasFiniteFibersOn (f : α → β) (U : Set α) : Prop :=
+  ∀ ⦃S : Set β⦄, S.Finite → (f ⁻¹' S ∩ U).Finite
+
+variable {f : α → β} {U : Set α}
 
 lemma hasFiniteFibers_iff_finite_preimage : HasFiniteFibers f ↔ ∀ S, S.Finite → (f ⁻¹' S).Finite :=
+  Iff.rfl
+
+lemma hasFiniteFibersOn_iff_finite_preimage_inter : HasFiniteFibersOn f U ↔
+    ∀ S, S.Finite → (f ⁻¹' S ∩ U).Finite :=
   Iff.rfl
 
 lemma HasFiniteFibers.finite_preimage (hf : HasFiniteFibers f) {S : Set β} (hS : S.Finite) :
@@ -38,15 +48,45 @@ lemma HasFiniteFibers.finite_preimage (hf : HasFiniteFibers f) {S : Set β} (hS 
 
 alias HasFiniteFibers.finite_preimage ← _root_.Set.Finite.preimage'
 
+lemma HasFiniteFibersOn.finite_preimage_inter (hf : HasFiniteFibersOn f U) {S : Set β} (hS : S.Finite) :
+    (f ⁻¹' S ∩ U).Finite := hf hS
+
+alias HasFiniteFibersOn.finite_preimage_inter ← _root_.Set.Finite.preimage_inter
+
+lemma HasFiniteFibersOn.finite_preimage {S : Set β} (hf : HasFiniteFibersOn f (f ⁻¹' S))
+    (hS : S.Finite) : (f ⁻¹' S).Finite := inter_self (f ⁻¹' S) ▸ hf hS
+
+-- to be renamed `Set.Finite.preimage`
+alias HasFiniteFibersOn.finite_preimage ← _root_.Set.Finite.preimage''
+
+lemma HasFiniteFibers.hasFiniteFibersOn (hf : HasFiniteFibers f) :
+    HasFiniteFibersOn f U :=
+  fun _ hS ↦ (hf hS).subset <| inter_subset_left _ _
+
+lemma HasFiniteFibersOn.mono {V : Set α} (hf : HasFiniteFibersOn f U) (hUV : V ⊆ U) :
+    HasFiniteFibersOn f V :=
+  fun _ hS ↦ (hf hS).subset <| inter_subset_inter_right _ hUV
+
 lemma HasFiniteFibers.comp {g : β → γ} (hg : HasFiniteFibers g) (hf : HasFiniteFibers f) :
     HasFiniteFibers (g ∘ f) :=
   fun _ hS ↦ (hS.preimage' hg).preimage' hf
+
+lemma HasFiniteFibersOn.comp {g : β → γ} {V : Set β} (hg : HasFiniteFibersOn g V)
+    (hf : HasFiniteFibersOn f U) (h : MapsTo f U V) :
+    HasFiniteFibersOn (g ∘ f) U := by
+  intro S hS
+  convert (hS.preimage_inter hg).preimage_inter hf using 1
+  rw [preimage_inter, inter_assoc, inter_eq_self_of_subset_right h.subset_preimage, preimage_comp]
 
 lemma Injective.hasFiniteFibers (hf : Injective f) :
     HasFiniteFibers f :=
   fun _ hS ↦ hS.preimage <| hf.injOn _
 
-lemma hasFiniteFibers_TFAE : TFAE
+lemma InjOn.hasFiniteFibersOn {U : Set α} (hf : InjOn f U) :
+    HasFiniteFibersOn f U :=
+  sorry
+
+lemma hasFiniteFibers_TFAE : List.TFAE
     [ HasFiniteFibers f,
       Tendsto f cofinite cofinite,
       ∀ y, (f ⁻¹' {y}).Finite ] := by
