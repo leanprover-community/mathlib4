@@ -63,39 +63,6 @@ def alongId (g : a ⟶ c) : LeftExtension (𝟙 a) g := StructuredArrow.mk (λ_ 
 
 instance : Inhabited (LeftExtension (𝟙 a) g) := ⟨alongId g⟩
 
-/-- Whisker an extension by a 1-morphism.
-```
-  b
-  △ \
-  |   \ extension  △
-f |     \          | unit
-  |       ◿
-  a - - - ▷ c - - - ▷ x
-      g         h
-```
--/
-@[simps!]
-def whisker (t : LeftExtension f g) {x : B} (h : c ⟶ x) : LeftExtension f (g ≫ h) :=
-  StructuredArrow.mk <| t.unit ▷ h ≫ (α_ _ _ _).hom
-
-/-- Whiskering by a 1-morphism is a functor. -/
-@[simps]
-def whiskering {x : B} (h : c ⟶ x) : LeftExtension f g ⥤ LeftExtension f (g ≫ h) where
-  obj t := t.whisker h
-  map η := StructuredArrow.homMk (η.right ▷ h) <| by
-    simp [Functor.const_obj_obj, whisker_right, precomp_obj, whisker_hom, precomp_map,
-      Category.assoc, ← StructuredArrow.w η, comp_whiskerRight, whisker_assoc, Iso.inv_hom_id,
-      Category.comp_id]
-
-/-- Define a morphism between left extensions by cancelling the whiskered identities. -/
-@[simps!]
-def whiskerIdCancel {s t : LeftExtension f g} (τ : s.whisker (𝟙 c) ⟶ t.whisker (𝟙 c)) :
-    s ⟶ t :=
-  StructuredArrow.homMk ((ρ_ _).inv ≫ τ.right ≫ (ρ_ _).hom) <| by
-    have := StructuredArrow.w τ
-    simp at this
-    simp [reassoc_of% this]
-
 end LeftExtension
 
 /-- Triangle diagrams for (left) lifts.

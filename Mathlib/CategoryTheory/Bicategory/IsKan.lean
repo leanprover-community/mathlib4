@@ -48,32 +48,6 @@ variable {f : a ⟶ b} {g : a ⟶ c}
 /-- A left Kan extension of `g` along `f` is an initial object in `LeftExtension f g`. -/
 abbrev IsKan (t : LeftExtension f g) := t.IsUniversal
 
-/-- An absolute left Kan extension is a Kan extension that commutes with any 1-morphism. -/
-abbrev IsAbsKan (t : LeftExtension f g) := ∀ {x : B} (h : c ⟶ x), IsKan (t.whisker h)
-
-namespace IsAbsKan
-
-variable {t : LeftExtension f g}
-
-/-- The family of 2-morphisms out of an absolute left Kan extension. -/
-@[simp]
-def desc (H : IsAbsKan t) {x : B} {h : c ⟶ x} (s : LeftExtension f (g ≫ h)) :
-    t.extension ≫ h ⟶ s.extension :=
-  (H h).desc s
-
-variable {x : B} {h : c ⟶ x} {s : LeftExtension f (g ≫ h)}
-
-/-- An absolute left Kan extension is a left Kan extension. -/
-def IsKan (H : IsAbsKan t) : IsKan t :=
-  Limits.IsInitial.ofUniqueHom (fun s ↦ whiskerIdCancel <| (H (𝟙 _)).to _) <| by
-    intro s τ
-    ext
-    apply (cancel_epi (ρ_ _).hom).mp
-    apply (cancel_mono (ρ_ _).inv).mp
-    simpa using (H (𝟙 _)).uniq ((LeftExtension.whiskering (𝟙 _)).map τ)
-
-end IsAbsKan
-
 end LeftExtension
 
 end Bicategory
