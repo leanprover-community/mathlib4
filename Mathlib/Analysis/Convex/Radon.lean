@@ -7,14 +7,10 @@ import Mathlib.Analysis.Convex.Combination
 import Mathlib.LinearAlgebra.AffineSpace.Independent
 import Mathlib.Tactic.Linarith
 
-universe u
-
-variable {𝕜 : Type*} {E : Type u} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 /-!
 # Radon's convexity theorem
 
-Radon's theorem on convex sets states that any affine dependent set can be partitioned into two sets 
+Radon's theorem on convex sets states that any affine dependent set can be partitioned into two sets
 whose convex hulls intersect.
 
 ## Main results
@@ -26,16 +22,18 @@ convex hull, radon
 
 -/
 
-open Set Finset
 
+open Set Finset
 open BigOperators
 
-namespace Radon
+universe u
+
+variable {𝕜 : Type*} {E : Type u} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 /-- If `s` is a set of affine dependent vectors, it has subset `I` with the property that
 convex hulls of `I` and `s \ I` intersect. -/
-theorem Radon_partition (s : Set E) 
-(h : ¬AffineIndependent 𝕜 ((↑) : s → E)) : ∃ (I : Set E), (I ⊆ s) ∧ 
+theorem Radon_partition (s : Set E)
+(h : ¬AffineIndependent 𝕜 ((↑) : s → E)) : ∃ (I : Set E), (I ⊆ s) ∧
 (Set.Nonempty ((convexHull 𝕜 I) ∩ (convexHull 𝕜 (s \ I)))) := by
   unfold AffineIndependent at h; push_neg at h
   rcases h with ⟨s1, w, h_wsum, h_vsum, nonzero_w_index, h1, h2⟩
@@ -51,7 +49,7 @@ theorem Radon_partition (s : Set E)
     rw [←h_wsum]; simp
     have h3_aux := Finset.sum_filter_add_sum_filter_not s1 (fun x => 0 ≤ w x) w
     simp at h3_aux; exact h3_aux
-  
+
   have h4 : (weights_sum_I > 0) ∧ (weights_sum_J < 0) := by
     rcases (lt_or_gt_of_ne h2) with h_neg | h_pos
     have h_J_neg : weights_sum_J < 0 := by
@@ -79,7 +77,7 @@ theorem Radon_partition (s : Set E)
     linarith
   rcases h4 with ⟨h_I_pos, h_J_neg⟩
 
-  let w' : { x // x ∈ s} → 𝕜 := fun i => if w i ≥ 0 
+  let w' : { x // x ∈ s} → 𝕜 := fun i => if w i ≥ 0
     then (w i) / weights_sum_I 
     else -(w i) / weights_sum_I
   let p : E := ∑ v in I, w' v • (v : E) -- point of intersection
@@ -118,17 +116,17 @@ theorem Radon_partition (s : Set E)
     rw [←Finset.sum_div]
     apply div_self
     exact ne_of_lt h_J_neg
-  
+
   have h6 : ∀ v, w' v ≥ 0 := by
     intro; simp; split_ifs
     repeat {apply div_nonneg; linarith; linarith}
-  
+
   let p' : E := (Finset.sum J fun v => w' v • (v : E))
   have h7 : p = p' := by
     suffices h7_suf1 : p -ᵥ p' = 0 by
       exact eq_of_vsub_eq_zero h7_suf1
-    
-    rw [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero s1 w Subtype.val h_wsum 0] 
+
+    rw [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero s1 w Subtype.val h_wsum 0]
       at h_vsum
     simp at h_vsum; simp
 
@@ -142,7 +140,7 @@ theorem Radon_partition (s : Set E)
       ring; split_ifs
       rw [mul_comm, mul_smul]
       exfalso; linarith
-    
+
     have h7_aux3 : ∑ v in J, (w' v) • (v : E) = -∑ v in J, g v := by
       rw [←Finset.sum_neg_distrib]
       apply Finset.sum_congr; rfl
@@ -153,16 +151,16 @@ theorem Radon_partition (s : Set E)
       ring; split_ifs
       exfalso; linarith
       rw [mul_comm, ←neg_smul, ←neg_mul, mul_smul]
-    
+
     rw [h7_aux2, h7_aux3]
     simp
     have h7_aux4 := Finset.sum_filter_add_sum_filter_not s1 (fun x => 0 ≤ w x) g
     simp at h7_aux4; rw [h7_aux4]
     rw [←Finset.smul_sum, h_vsum, smul_zero]
-  
+
   use p
   apply Set.mem_inter
-  
+
   apply Convex.sum_mem
   exact convex_convexHull 𝕜 _
   intros i _; exact h6 i
