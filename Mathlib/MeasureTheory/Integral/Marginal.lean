@@ -581,6 +581,19 @@ open Finset
 
 namespace MeasureTheory
 
+-- workaround for `@[gcongr]` not recognizing some existing lemmas, like `lintegral_mono`, as valid
+@[gcongr] theorem lintegral_mono2 ⦃f g : α → ℝ≥0∞⦄ (hfg : ∀ x, f x ≤ g x) :
+    lintegral μ f ≤ lintegral μ g :=
+lintegral_mono hfg
+
+@[gcongr] theorem lintegral_mono3 ⦃f g : α → ℝ≥0∞⦄ (hfg : ∀ x, f x ≤ g x) (h2 : μ ≤ ν) :
+    lintegral μ f ≤ lintegral ν g :=
+lintegral_mono' h2 hfg
+
+alias ENNReal.coe_le_coe ↔ _ ENNReal.monotone2
+attribute [gcongr] ENNReal.monotone2 ENNReal.rpow_le_rpow
+
+
 theorem Subsingleton.measurableSingletonClass {α} [MeasurableSpace α] [Subsingleton α] :
     MeasurableSingletonClass α := by
   refine' ⟨fun i => _⟩
@@ -1031,8 +1044,6 @@ theorem lintegral_prod_lintegral_pow_le [Nontrivial ι] (hf : Measurable f) :
 --   by sorry
 -- #align integral_prod_integral_pow_le integral_prod_integral_pow_le
 
-attribute [gcongr] ENNReal.rpow_le_rpow
-
 section
 
 -- move to MeasureTheory.Function.L1Space
@@ -1090,7 +1101,7 @@ theorem lintegral_pow_le [Nontrivial ι] [Fintype ι] (hu : ContDiff ℝ 1 u) (h
         borelize ((ι → ℝ) →L[ℝ] ℝ)
         have : Measurable (fun x ↦ fderiv ℝ u x) := (hu.continuous_fderiv (le_refl _)).measurable
         measurability
-  refine' lintegral_mono fun x => _; gcongr with i -- should be `gcongr with x i`
+  gcongr with x i
   calc (‖u x‖₊ : ℝ≥0∞)
       = (‖∫ xᵢ : ℝ in Set.Iic (x i), deriv (u ∘ update x i) xᵢ‖₊ : ℝ≥0∞) := by
         have h3u : ContDiff ℝ 1 (u ∘ update x i) := hu.comp (contDiff_update 1 x i)
@@ -1107,7 +1118,7 @@ theorem lintegral_pow_le [Nontrivial ι] [Fintype ι] (hu : ContDiff ℝ 1 u) (h
     _ ≤ ∫⁻ xᵢ : ℝ in Set.Iic (x i), ‖deriv (u ∘ update x i) xᵢ‖₊ :=
         nnnorm_integral_le_lintegral_nnnorm _
     _ ≤ ∫⁻ (xᵢ : ℝ), ↑‖fderiv ℝ u (update x i xᵢ)‖₊ := ?_
-  refine lintegral_mono' (Measure.restrict_le_self) (fun y ↦ ?_); apply ENNReal.coe_mono -- `gcongr with y`
+  gcongr with y; swap; exact Measure.restrict_le_self
   calc ‖deriv (u ∘ update x i) y‖₊ = ‖fderiv ℝ u (update x i y) (deriv (update x i) y)‖₊ := by
         rw [fderiv.comp_deriv _ (hu.differentiable le_rfl).differentiableAt
           (hasDerivAt_update y).differentiableAt]
