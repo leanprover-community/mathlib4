@@ -83,11 +83,20 @@ directly. -/
 instance : CoeFun (α →ᵇ β) fun _ => α → β :=
   FunLike.hasCoeToFun
 
+@[coe] def _root_.BoundedContinuousMapClass.toBoundedContinuousFunction
+    [BoundedContinuousMapClass F α β] (f : F) : α →ᵇ β where
+  toFun := f
+  continuous_toFun := map_continuous f
+  map_bounded' := map_bounded f
+
 instance [BoundedContinuousMapClass F α β] : CoeTC F (α →ᵇ β) :=
-  ⟨fun f =>
-    { toFun := f
-      continuous_toFun := map_continuous f
-      map_bounded' := map_bounded f }⟩
+  ⟨BoundedContinuousMapClass.toBoundedContinuousFunction⟩
+
+@[simp]
+lemma _root_.BoundedContinuousMapClass.coe_toBoundedContinuousFunction
+    [BoundedContinuousMapClass F α β] (f : F) :
+    (f : α →ᵇ β) = (f : α → β) :=
+  rfl
 
 @[simp]
 theorem coe_to_continuous_fun (f : α →ᵇ β) : (f.toContinuousMap : α → β) = f := rfl

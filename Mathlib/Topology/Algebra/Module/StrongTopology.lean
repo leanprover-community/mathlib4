@@ -87,7 +87,6 @@ def strongUniformity [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
     (by rw [strongTopology, UniformAddGroup.toUniformSpace_eq]; rfl)
 #align continuous_linear_map.strong_uniformity ContinuousLinearMap.strongUniformity
 
-@[simp]
 theorem strongUniformity_topology_eq [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
     (strongUniformity σ F 𝔖).toTopologicalSpace = strongTopology σ F 𝔖 :=
   rfl

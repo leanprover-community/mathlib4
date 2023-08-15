@@ -476,7 +476,7 @@ theorem SeminormFamily.withSeminorms_iff_uniformSpace_eq_iInf [u : UniformSpace 
   refine Eq.to_iff ?_
   congr
   funext i
-  exact @comap_norm_nhds_zero _ (p i).toAddGroupSeminorm.toSeminormedAddGroup
+  exact @comap_norm_nhds_zero _ (p i).toSeminormedAddGroup
 #align seminorm_family.with_seminorms_iff_uniform_space_eq_infi SeminormFamily.withSeminorms_iff_uniformSpace_eq_iInf
 
 end TopologicalAddGroup
@@ -601,7 +601,7 @@ variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 variable {τ₁₂ : 𝕝 →+* 𝕝₂} [RingHomIsometric τ₁₂]
 
-variable [Nonempty ι] [Nonempty ι']
+variable {_ : Nonempty ι} {_ : Nonempty ι'}
 
 theorem continuous_of_continuous_comp {q : SeminormFamily 𝕝₂ F ι'} [TopologicalSpace E]
     [TopologicalAddGroup E] [TopologicalSpace F] (hq : WithSeminorms q)
@@ -952,11 +952,13 @@ protected def SeminormFamily.sigma {κ : ι → Type*} (p : (i : ι) → Seminor
     SeminormFamily 𝕜 E ((i : ι) × κ i) :=
   fun ⟨i, k⟩ => p i k
 
-theorem withSeminorms_iInf {κ : ι → Type*} [Nonempty ((i : ι) × κ i)] [∀ i, Nonempty (κ i)]
-    {p : (i : ι) → SeminormFamily 𝕜 E (κ i)} {t : ι → TopologicalSpace E}
-    [∀ i, @TopologicalAddGroup E (t i) _] (hp : ∀ i, WithSeminorms (topology := t i) (p i)) :
+theorem withSeminorms_iInf {κ : ι → Type*} {_ : Nonempty ((i : ι) × κ i)}
+    {_ : ∀ i, Nonempty (κ i)} {p : (i : ι) → SeminormFamily 𝕜 E (κ i)}
+    {t : ι → TopologicalSpace E} (hp : ∀ i, WithSeminorms (topology := t i) (p i)) :
     WithSeminorms (topology := ⨅ i, t i) (SeminormFamily.sigma p) := by
-  have : @TopologicalAddGroup E (⨅ i, t i) _ := topologicalAddGroup_iInf (fun i ↦ inferInstance)
+  have : ∀ i, @TopologicalAddGroup E (t i) _ :=
+    fun i ↦ @WithSeminorms.topologicalAddGroup _ _ _ _ _ _ _ (t i) _ (hp i)
+  have : @TopologicalAddGroup E (⨅ i, t i) _ := topologicalAddGroup_iInf fun i ↦ inferInstance
   simp_rw [@SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf _ _ _ _ _ _ _ (_)] at hp ⊢
   rw [iInf_sigma]
   exact iInf_congr hp
