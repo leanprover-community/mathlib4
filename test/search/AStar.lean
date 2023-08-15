@@ -1,7 +1,7 @@
-import Mathlib.Data.ListM.AStar
+import Mathlib.Data.MLList.AStar
 import Mathlib.Data.Nat.Sqrt
 
-open Lean ListM AStar
+open Lean MLList AStar
 
 def wall : Int × Int → Bool :=
 /-
