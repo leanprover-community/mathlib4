@@ -5,6 +5,7 @@ import Mathlib.Data.Nat.Basic
 
 /-! ### Test `nontriviality` with inequality hypotheses -/
 
+set_option autoImplicit true
 
 example {R : Type} [OrderedRing R] {a : R} (h : 0 < a) : 0 < a := by
   nontriviality
