@@ -41,19 +41,27 @@ namespace ShortComplex
 /-- A homology data for a short complex consists of two compatible left and
 right homology data -/
 structure HomologyData where
+  /-- a left homology data -/
   left : S.LeftHomologyData
+  /-- a right homology data -/
   right : S.RightHomologyData
   /-- the compatibility isomorphism relating the two dual notions of
     `LeftHomologyData` and `RightHomologyData`  -/
   iso : left.H ≅ right.H
+  /-- the pentagon relation expressing the compatibility of the left
+  and right homology data -/
   comm : left.π ≫ iso.hom ≫ right.ι = left.i ≫ right.p := by aesop_cat
 
 attribute [reassoc (attr := simp)] HomologyData.comm
 
 variable (φ : S₁ ⟶ S₂) (h₁ : S₁.HomologyData) (h₂ : S₂.HomologyData)
 
+/-- An homology map data for a morphism `φ : S₁ ⟶ S₂` where both `S₁` and `S₂` are
+equipped with homology data consist of left and right homology map data. -/
 structure HomologyMapData where
+  /-- a left homology map data -/
   left : LeftHomologyMapData φ h₁.left h₂.left
+  /-- a right homology map data -/
   right : RightHomologyMapData φ h₁.right h₂.right
 
 namespace HomologyMapData
@@ -80,6 +88,9 @@ instance : Unique (HomologyMapData φ h₁ h₂) := Unique.mk' _
 
 variable (φ h₁ h₂)
 
+/-- A choice of the (unique) homology map data associated with a morphism
+`φ : S₁ ⟶ S₂` where both short complexes `S₁` and `S₂` are equipped with
+homology data. -/
 def homologyMapData : HomologyMapData φ h₁ h₂ := default
 
 variable {φ h₁ h₂}
@@ -184,6 +195,7 @@ end HomologyData
 
 /-- A short complex `S` has homology when there exists a `S.HomologyData` -/
 class HasHomology : Prop where
+  /-- the condition that there exists an homology data -/
   condition : Nonempty S.HomologyData
 
 end ShortComplex
