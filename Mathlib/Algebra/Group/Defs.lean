@@ -769,12 +769,14 @@ Use instead `a ^ n`, which has better definitional behavior. -/
 def zpowRec [One G] [Mul G] [Inv G] (npow : ℕ → G → G := npowRec) : ℤ → G → G
   | Int.ofNat n, a => npow n a
   | Int.negSucc n, a => (npow n.succ a)⁻¹
+#align zpow_rec zpowRec
 
 /-- The fundamental scalar multiplication in an additive group. `zpowRec n a = a+a+...+a` n
 times, for integer `n`. Use instead `n • a`, which has better definitional behavior. -/
 def zsmulRec [Zero G] [Add G] [Neg G] (nsmul : ℕ → G → G := nsmulRec) : ℤ → G → G
   | Int.ofNat n, a => nsmul n a
   | Int.negSucc n, a => -nsmul n.succ a
+#align zsmul_rec zsmulRec
 
 attribute [to_additive existing] zpowRec
 
