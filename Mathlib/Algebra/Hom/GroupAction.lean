@@ -109,7 +109,7 @@ lemma apply {M N P : outParam (Type _)}
   rw [← h.comp_eq, Function.comp_apply]
 
 @[simp]
-theorem comp_assoc {M N P Q : outParam (Type _)} [SMul Q T]
+theorem comp_assoc {M N P Q : outParam (Type _)}
   {φ₁ : outParam (M → N)} {φ₂ : outParam (N → P)} {φ₁₂ : outParam (M → P)}
   (κ : CompTriple φ₁ φ₂ φ₁₂)
   {φ₃ : outParam (P → Q)} {φ₂₃ : outParam (N → Q)} (κ' : CompTriple φ₂ φ₃ φ₂₃)
@@ -199,6 +199,7 @@ initialize_simps_projections MulActionHom (toFun → apply)
 namespace MulActionHom
 
 variable {φ X Y}
+variable {F : Type*}
 
 /- porting note: inserted following def & instance for consistent coercion behaviour,
 see also Algebra.Hom.Group -/
@@ -318,13 +319,6 @@ theorem id_comp (f : X →ₑ[φ] Y) :
 
 #align mul_action_hom.id_comp MulActionHom.id_comp
 
-
-
-@[simp]
-theorem comp'_id (f : X →ₑ[φ] Y) :
-  f.comp' (MulActionHom.id M) (CompTriple.comp_id)= f :=
-  ext fun x => by rw [comp'_apply, id_apply]
-
 @[simp]
 theorem comp'_id (f : X →ₑ[φ] Y) :
   f.comp' (MulActionHom.id M) (CompTriple.comp_id)= f :=
@@ -365,7 +359,6 @@ def inverse (f : X →ₑ[φ] Y) (g : Y → X) (k : Function.RightInverse φ' φ
       _ = g ((φ (φ' m)) • f (g x)) := by rw [k]
       _ = g (f (φ' m • g x)) := by rw [map_smul]
       _ = φ' m • g x := by rw [h₁]
-#align mul_action_hom.inverse_to_fun MulActionHom.inverse_toFun
 #align mul_action_hom.inverse MulActionHom.inverse
 
 -- Useful/necessary ?
@@ -374,7 +367,7 @@ theorem inverse_inverse
   {k₁ : Function.LeftInverse φ' φ} {k₂ : Function.RightInverse φ' φ}
   {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
     inverse (inverse f g k₂ h₁ h₂) f k₁ h₂ h₁ = f :=
-  ext fun b => by simp only [inverse_toFun]
+  ext fun _ => rfl
 
 theorem comp_inv {f : X →ₑ[φ] Y } {g : Y → X}
   {k₁ : Function.LeftInverse φ' φ} {k₂ : Function.RightInverse φ' φ}
@@ -382,7 +375,7 @@ theorem comp_inv {f : X →ₑ[φ] Y } {g : Y → X}
   (inverse f g k₂ h₁ h₂).comp' f (CompTriple.comp_inv k₁) = MulActionHom.id M := by
   rw [ext_iff]
   intro x
-  simp only [comp'_apply, inverse_toFun, id_apply]
+  simp only [comp'_apply, inverse_apply, id_apply]
   exact h₁ x
 
 theorem inv_comp {f : X →ₑ[φ] Y } {g : Y → X}
@@ -391,7 +384,7 @@ theorem inv_comp {f : X →ₑ[φ] Y } {g : Y → X}
   f.comp' (inverse f g k₂ h₁ h₂) (CompTriple.comp_inv k₂) = MulActionHom.id N := by
   rw [ext_iff]
   intro x
-  simp only [comp'_apply, inverse_toFun, id_apply]
+  simp only [comp'_apply, inverse_apply, id_apply]
   exact h₂ x
 
 /-- If actions of `M` and `N` on `α` commute,
@@ -412,7 +405,7 @@ section DistribMulAction
 variable {M : Type _} [Monoid M]
 variable {N : Type _} [Monoid N]
 variable {P : Type _} [Monoid P]
-variable (φ: M → N) (ψ : N → P) (χ : M → P)
+variable (φ: M → N) (φ' : N → M) (ψ : N → P) (χ : M → P)
 variable (A : Type _) [AddMonoid A] [DistribMulAction M A]
 variable (B : Type _) [AddMonoid B] [DistribMulAction N B]
 variable (C : Type _) [AddMonoid C] [DistribMulAction P C]
@@ -505,7 +498,8 @@ instance : DistribMulActionHomClass (A →ₑ+[φ] B) φ A B
   map_zero := DistribMulActionHom.map_zero'
   map_add := DistribMulActionHom.map_add'
 
-variable {φ A B}
+variable {φ φ' A B}
+variable {F : Type*}
 
 /- porting note: inserted following def & instance for consistent coercion behaviour,
 see also Algebra.Hom.Group -/
@@ -828,6 +822,7 @@ instance : MulSemiringActionHomClass (R →ₑ+*[φ] S) φ R S
   map_mul := MulSemiringActionHom.map_mul'
 
 variable {φ R S}
+variable {F : Type*}
 
 /- porting note: inserted following def & instance for consistent coercion behaviour,
 see also Algebra.Hom.Group -/
@@ -915,7 +910,7 @@ open MulSemiringActionHom
 
 variable {R S T}
 
-variable {φ ψ χ}
+variable {φ φ' ψ χ}
 
 /-- Composition of two equivariant additive ring homomorphisms. -/
 def comp' (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S)  (κ : CompTriple φ ψ χ) : R →ₑ+*[χ] T :=
