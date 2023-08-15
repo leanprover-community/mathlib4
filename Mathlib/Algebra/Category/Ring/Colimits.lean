@@ -12,7 +12,8 @@ import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 /-!
 # The category of commutative rings has all colimits.
 
-This file uses a "pre-automated" approach, just as for `MonCat/Colimits.lean`.
+This file uses a "pre-automated" approach, just as for
+`Mathlib/Algebra/Category/MonCat/Colimits.lean`.
 It is a very uniform approach, that conceivably could be synthesised directly
 by a tactic that analyses the shape of `CommRing` and `RingHom`.
 -/

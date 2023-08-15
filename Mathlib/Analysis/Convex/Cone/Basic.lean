@@ -36,7 +36,7 @@ We prove two extension theorems:
   then `f` can be extended to the whole space to a linear map `g` such that `g x ≤ N x`
   for all `x`
 
-In `Analysis/Convex/Cone/Dual.lean`, we prove the following theorems:
+In `Mathlib/Analysis/Convex/Cone/Dual.lean`, we prove the following theorems:
 * `ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem`:
   This variant of the
   [hyperplane separation theorem](https://en.wikipedia.org/wiki/Hyperplane_separation_theorem)
