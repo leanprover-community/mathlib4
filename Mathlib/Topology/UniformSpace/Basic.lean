@@ -74,7 +74,7 @@ The uniform space axioms ask the filter `𝓤 X` to satisfy the following:
 These three axioms are stated more abstractly in the definition below, in terms of
 operations on filters, without directly manipulating entourages.
 
-## Main definitions
+## Main definitions
 
 * `UniformSpace X` is a uniform space structure on a type `X`
 * `UniformContinuous f` is a predicate saying a function `f : α → β` between uniform spaces
@@ -607,7 +607,7 @@ theorem comp_comp_symm_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤
 #align comp_comp_symm_mem_uniformity_sets comp_comp_symm_mem_uniformity_sets
 
 /-!
-### Balls in uniform spaces
+### Balls in uniform spaces
 -/
 
 /-- The ball around `(x : β)` with respect to `(V : Set (β × β))`. Intended to be
