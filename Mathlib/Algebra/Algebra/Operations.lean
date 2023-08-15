@@ -5,6 +5,7 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.Equiv
+import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Module.Submodule.Bilinear
 import Mathlib.Algebra.Module.Opposites
@@ -561,7 +562,7 @@ def span.ringHom : SetSemiring A →+* Submodule R A where
 
 section
 
-variable {α : Type _} [Monoid α] [MulSemiringAction α A] [SMulCommClass α R A]
+variable {α : Type*} [Monoid α] [MulSemiringAction α A] [SMulCommClass α R A]
 
 /-- The action on a submodule corresponding to applying the action to every element.
 
@@ -602,7 +603,7 @@ protected theorem mul_comm : M * N = N * M :=
 instance : IdemCommSemiring (Submodule R A) :=
   { Submodule.idemSemiring with mul_comm := Submodule.mul_comm }
 
-theorem prod_span {ι : Type _} (s : Finset ι) (M : ι → Set A) :
+theorem prod_span {ι : Type*} (s : Finset ι) (M : ι → Set A) :
     (∏ i in s, Submodule.span R (M i)) = Submodule.span R (∏ i in s, M i) := by
   letI := Classical.decEq ι
   refine' Finset.induction_on s _ _
@@ -611,7 +612,7 @@ theorem prod_span {ι : Type _} (s : Finset ι) (M : ι → Set A) :
     rw [Finset.prod_insert H, Finset.prod_insert H, ih, span_mul_span]
 #align submodule.prod_span Submodule.prod_span
 
-theorem prod_span_singleton {ι : Type _} (s : Finset ι) (x : ι → A) :
+theorem prod_span_singleton {ι : Type*} (s : Finset ι) (x : ι → A) :
     (∏ i in s, span R ({x i} : Set A)) = span R {∏ i in s, x i} := by
   rw [prod_span, Set.finset_prod_singleton]
 #align submodule.prod_span_singleton Submodule.prod_span_singleton
@@ -723,7 +724,7 @@ theorem mul_one_div_le_one {I : Submodule R A} : I * (1 / I) ≤ 1 := by
 #align submodule.mul_one_div_le_one Submodule.mul_one_div_le_one
 
 @[simp]
-protected theorem map_div {B : Type _} [CommSemiring B] [Algebra R B] (I J : Submodule R A)
+protected theorem map_div {B : Type*} [CommSemiring B] [Algebra R B] (I J : Submodule R A)
     (h : A ≃ₐ[R] B) : (I / J).map h.toLinearMap = I.map h.toLinearMap / J.map h.toLinearMap := by
   ext x
   simp only [mem_map, mem_div_iff_forall_mul_mem]

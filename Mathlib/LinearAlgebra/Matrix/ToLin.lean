@@ -79,9 +79,9 @@ instance {n m} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] (R) [Fint
 
 section ToMatrixRight
 
-variable {R : Type _} [Semiring R]
+variable {R : Type*} [Semiring R]
 
-variable {l m n : Type _}
+variable {l m n : Type*}
 
 /-- `Matrix.vecMul M` is a linear map. -/
 @[simps]
@@ -197,9 +197,9 @@ This should eventually be remedied.
 
 section ToMatrix'
 
-variable {R : Type _} [CommSemiring R]
+variable {R : Type*} [CommSemiring R]
 
-variable {k l m n : Type _}
+variable {k l m n : Type*}
 
 /-- `Matrix.mulVec M` is a linear map. -/
 def Matrix.mulVecLin [Fintype n] (M : Matrix m n R) : (n → R) →ₗ[R] m → R where
@@ -514,11 +514,11 @@ end ToMatrix'
 
 section ToMatrix
 
-variable {R : Type _} [CommSemiring R]
+variable {R : Type*} [CommSemiring R]
 
-variable {l m n : Type _} [Fintype n] [Fintype m] [DecidableEq n]
+variable {l m n : Type*} [Fintype n] [Fintype m] [DecidableEq n]
 
-variable {M₁ M₂ : Type _} [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
+variable {M₁ M₂ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
 
 variable (v₁ : Basis n R M₁) (v₂ : Basis m R M₂)
 
@@ -638,7 +638,7 @@ theorem LinearMap.toMatrix_reindexRange [DecidableEq M₁] [DecidableEq M₂] (f
   by simp_rw [LinearMap.toMatrix_apply, Basis.reindexRange_self, Basis.reindexRange_repr]
 #align linear_map.to_matrix_reindex_range LinearMap.toMatrix_reindexRange
 
-variable {M₃ : Type _} [AddCommMonoid M₃] [Module R M₃] (v₃ : Basis l R M₃)
+variable {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃] (v₃ : Basis l R M₃)
 
 theorem LinearMap.toMatrix_comp [Fintype l] [DecidableEq m] (f : M₂ →ₗ[R] M₃) (g : M₁ →ₗ[R] M₂) :
     LinearMap.toMatrix v₁ v₃ (f.comp g) =
@@ -839,9 +839,9 @@ namespace Algebra
 
 section Lmul
 
-variable {R S : Type _} [CommRing R] [Ring S] [Algebra R S]
+variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
 
-variable {m : Type _} [Fintype m] [DecidableEq m] (b : Basis m R S)
+variable {m : Type*} [Fintype m] [DecidableEq m] (b : Basis m R S)
 
 theorem toMatrix_lmul' (x : S) (i j) :
     LinearMap.toMatrix b b (lmul R S x) i j = b.repr (x * b j) i := by
@@ -850,7 +850,7 @@ theorem toMatrix_lmul' (x : S) (i j) :
 
 @[simp]
 theorem toMatrix_lsmul (x : R) :
-    LinearMap.toMatrix b b (Algebra.lsmul R S x) = Matrix.diagonal fun _ => x :=
+    LinearMap.toMatrix b b (Algebra.lsmul R R S x) = Matrix.diagonal fun _ => x :=
   toMatrix_distrib_mul_action_toLinearMap b x
 #align algebra.to_matrix_lsmul Algebra.toMatrix_lsmul
 
@@ -914,11 +914,11 @@ end Lmul
 
 section LmulTower
 
-variable {R S T : Type _} [CommRing R] [CommRing S] [Ring T]
+variable {R S T : Type*} [CommRing R] [CommRing S] [Ring T]
 
 variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 
-variable {m n : Type _} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
+variable {m n : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
 
 variable (b : Basis m R S) (c : Basis n S T)
 
@@ -952,9 +952,9 @@ end Algebra
 
 section
 
-variable {R : Type v} [CommRing R] {n : Type _} [DecidableEq n]
+variable {R : Type v} [CommRing R] {n : Type*} [DecidableEq n]
 
-variable {M M₁ M₂ : Type _} [AddCommGroup M] [Module R M]
+variable {M M₁ M₂ : Type*} [AddCommGroup M] [Module R M]
 
 variable [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
 

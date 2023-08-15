@@ -28,7 +28,7 @@ that is solvable by radicals has a solvable Galois group.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open scoped Classical Polynomial
 
@@ -36,7 +36,7 @@ open Polynomial IntermediateField
 
 section AbelRuffini
 
-variable {F : Type _} [Field F] {E : Type _} [Field E] [Algebra F E]
+variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 
 theorem gal_zero_isSolvable : IsSolvable (0 : F[X]).Gal := by infer_instance
 #align gal_zero_is_solvable gal_zero_isSolvable
@@ -158,7 +158,7 @@ set_option linter.uppercaseLean3 false in
 #align gal_X_pow_sub_C_is_solvable_aux gal_X_pow_sub_C_isSolvable_aux
 
 set_option maxHeartbeats 300000 in
-theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type _} [Field F] {E : Type _} [Field E]
+theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [Field E]
     (i : F →+* E) (n : ℕ) {a : F} (ha : a ≠ 0) (h : (X ^ n - C a).Splits i) :
     (X ^ n - 1 : F[X]).Splits i := by
   have ha' : i a ≠ 0 := mt ((injective_iff_map_eq_zero i).mp i.injective a) ha

@@ -109,7 +109,7 @@ lemma apply {M N P : outParam (Type _)}
   rw [← h.comp_eq, Function.comp_apply]
 
 @[simp]
-theorem comp_assoc {M N P Q : outParam (Type _)} [SMul Q T]
+theorem comp_assoc {M N P Q : outParam (Type _)} -- [SMul Q T]
   {φ₁ : outParam (M → N)} {φ₂ : outParam (N → P)} {φ₁₂ : outParam (M → P)}
   (κ : CompTriple φ₁ φ₂ φ₁₂)
   {φ₃ : outParam (P → Q)} {φ₂₃ : outParam (N → Q)} (κ' : CompTriple φ₂ φ₃ φ₂₃)
@@ -131,7 +131,7 @@ assert_not_exists Submonoid
 section MulActionHom
 
 variable {M : Type _} {N : Type _} {P : Type _}
-variable (φ : M → N) (ψ : N → P) (χ : M → P)
+variable (φ : M → N) (φ' : N → M) (ψ : N → P) (χ : M → P)
 variable (X : Type _) [SMul M X]
 variable (Y : Type _) [SMul N Y]
 variable (Z : Type _) [SMul P Z]
@@ -194,9 +194,11 @@ instance : MulActionHomClass (X →ₑ[φ] Y) φ X Y
   coe_injective' f g h := by cases f; cases g; congr
   map_smul := MulActionHom.map_smul'
 
+initialize_simps_projections MulActionHom (toFun → apply)
+
 namespace MulActionHom
 
-variable {φ X Y}
+variable {φ X Y} {F : Type*}
 
 /- porting note: inserted following def & instance for consistent coercion behaviour,
 see also Algebra.Hom.Group -/
@@ -206,7 +208,7 @@ see also Algebra.Hom.Group -/
 @[coe]
 def _root_.MulActionHomClass.toMulActionHom
     [MulActionHomClass F φ X Y] (f : F) :
-  X →ₑ[φ] Y where
+    X →ₑ[φ] Y where
   toFun := FunLike.coe f
   map_smul' := map_smul f
 
@@ -357,7 +359,7 @@ def inverse (f : X →ₑ[φ] Y) (g : Y → X) (k : Function.RightInverse φ' φ
       _ = g ((φ (φ' m)) • f (g x)) := by rw [k]
       _ = g (f (φ' m • g x)) := by rw [map_smul]
       _ = φ' m • g x := by rw [h₁]
-#align mul_action_hom.inverse_to_fun MulActionHom.inverse_toFun
+-- #align mul_action_hom.inverse_to_fun MulActionHom.inverse_toFun
 #align mul_action_hom.inverse MulActionHom.inverse
 
 -- Useful/necessary ?
@@ -366,7 +368,7 @@ theorem inverse_inverse
   {k₁ : Function.LeftInverse φ' φ} {k₂ : Function.RightInverse φ' φ}
   {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
     inverse (inverse f g k₂ h₁ h₂) f k₁ h₂ h₁ = f :=
-  ext fun b => by simp only [inverse_toFun]
+  ext fun b => by rfl
 
 theorem comp_inv {f : X →ₑ[φ] Y } {g : Y → X}
   {k₁ : Function.LeftInverse φ' φ} {k₂ : Function.RightInverse φ' φ}
@@ -374,7 +376,7 @@ theorem comp_inv {f : X →ₑ[φ] Y } {g : Y → X}
   (inverse f g k₂ h₁ h₂).comp' f (CompTriple.comp_inv k₁) = MulActionHom.id M := by
   rw [ext_iff]
   intro x
-  simp only [comp'_apply, inverse_toFun, id_apply]
+  simp only [comp'_apply, inverse_apply, id_apply]
   exact h₁ x
 
 theorem inv_comp {f : X →ₑ[φ] Y } {g : Y → X}
@@ -383,7 +385,7 @@ theorem inv_comp {f : X →ₑ[φ] Y } {g : Y → X}
   f.comp' (inverse f g k₂ h₁ h₂) (CompTriple.comp_inv k₂) = MulActionHom.id N := by
   rw [ext_iff]
   intro x
-  simp only [comp'_apply, inverse_toFun, id_apply]
+  simp only [comp'_apply, inverse_apply, id_apply]
   exact h₂ x
 
 /-- If actions of `M` and `N` on `α` commute,
@@ -391,7 +393,7 @@ theorem inv_comp {f : X →ₑ[φ] Y } {g : Y → X}
 @[simps]
 def _root_.SMulCommClass.toMulActionHom {M} (N α : Type _)
     [SMul M α] [SMul N α] [SMulCommClass M N α] (c : M) :
-  α →[N] α where
+    α →[N] α where
   toFun := (c • ·)
   map_smul' := smul_comm _
 
@@ -404,7 +406,7 @@ section DistribMulAction
 variable {M : Type _} [Monoid M]
 variable {N : Type _} [Monoid N]
 variable {P : Type _} [Monoid P]
-variable (φ: M → N) (ψ : N → P) (χ : M → P)
+variable (φ: M → N) (φ' : N → M) (ψ : N → P) (χ : M → P)
 variable (A : Type _) [AddMonoid A] [DistribMulAction M A]
 variable (B : Type _) [AddMonoid B] [DistribMulAction N B]
 variable (C : Type _) [AddMonoid C] [DistribMulAction P C]
@@ -497,7 +499,7 @@ instance : DistribMulActionHomClass (A →ₑ+[φ] B) φ A B
   map_zero := DistribMulActionHom.map_zero'
   map_add := DistribMulActionHom.map_add'
 
-variable {φ A B}
+variable {φ A B} {F : Type*}
 
 /- porting note: inserted following def & instance for consistent coercion behaviour,
 see also Algebra.Hom.Group -/
@@ -634,7 +636,7 @@ namespace DistribMulActionHom
 
 open DistribMulActionHom
 
-variable {φ ψ χ A B C}
+variable {φ φ' ψ χ A B C}
 
 /-- Composition of two equivariant additive monoid homomorphisms. -/
 def comp (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) : A →ₑ+[ψ ∘ φ] C :=
@@ -819,7 +821,7 @@ instance : MulSemiringActionHomClass (R →ₑ+*[φ] S) φ R S
   map_one := MulSemiringActionHom.map_one'
   map_mul := MulSemiringActionHom.map_mul'
 
-variable {φ R S}
+variable {φ R S} {F : Type*}
 
 /- porting note: inserted following def & instance for consistent coercion behaviour,
 see also Algebra.Hom.Group -/

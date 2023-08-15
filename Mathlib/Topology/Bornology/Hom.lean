@@ -27,10 +27,10 @@ be satisfied by itself and all stricter types.
 
 open Bornology Filter Function Set
 
-variable {F α β γ δ : Type _}
+variable {F α β γ δ : Type*}
 
 /-- The type of bounded maps from `α` to `β`, the maps which send a bounded set to a bounded set. -/
-structure LocallyBoundedMap (α β : Type _) [Bornology α] [Bornology β] where
+structure LocallyBoundedMap (α β : Type*) [Bornology α] [Bornology β] where
   /-- The function underlying a locally bounded map -/
   toFun : α → β
   /-- The pullback of the `Bornology.cobounded` filter under the function is contained in the
@@ -43,7 +43,7 @@ section
 /-- `LocallyBoundedMapClass F α β` states that `F` is a type of bounded maps.
 
 You should extend this class when you extend `LocallyBoundedMap`. -/
-class LocallyBoundedMapClass (F : Type _) (α β : outParam <| Type _) [Bornology α]
+class LocallyBoundedMapClass (F : Type*) (α β : outParam <| Type*) [Bornology α]
     [Bornology β] extends FunLike F α fun _ => β where
   /-- The pullback of the `Bornology.cobounded` filter under the function is contained in the
   cobounded filter. Equivalently, the function maps bounded sets to bounded sets. -/
