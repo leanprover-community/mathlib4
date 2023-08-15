@@ -872,10 +872,9 @@ lemma tendsto_atTop_sumCoeffsExp : Tendsto (fun p => ∑ i, a i * (b i)^p) atBot
     Tendsto.mul_atTop (R.a_pos 0) (by simp)
       <| tendsto_rpow_atBot_of_base_lt_one _ (by have := R.b_pos 0; linarith) (R.b_lt_one _)
   refine tendsto_atTop_mono (fun p => ?_) h₁
-  set f := fun i => (a i : ℝ) * b i ^ p with hf
+  let f := fun i => (a i : ℝ) * b i ^ p
   show f 0 ≤ Finset.univ.sum f
   refine Finset.single_le_sum (fun i _ => ?_) (mem_univ 0)
-  simp only [hf]
   have h₁ : 0 < a i := R.a_pos i
   have h₂ : 0 < b i := R.b_pos i
   positivity
@@ -1330,7 +1329,7 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
       ≤ (b i)^(p a b) * n^(p a b) * (1 - ε n) := by
   rw [Filter.eventually_all]
   intro i
-  set q : ℝ → ℝ := fun x => x ^ (p a b) * (1 - ε x) with hq
+  let q : ℝ → ℝ := fun x => x ^ (p a b) * (1 - ε x)
   have h_diff_q : DifferentiableOn ℝ q (Set.Ioi 1) := by
     refine DifferentiableOn.mul
       (DifferentiableOn.mono (differentiableOn_rpow_const _) fun z hz => ?_)
@@ -1414,7 +1413,7 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
   have h₁ : q (b i * n) + (b i)^(p a b) * n^(p a b) * (ε (b i * n) - ε n)
       = (b i)^(p a b) * n^(p a b) * (1 - ε n) := by
     have := R.b_pos i
-    simp only [hq, mul_rpow (by positivity : (0:ℝ) ≤ b i) (by positivity : (0:ℝ) ≤ n)]
+    simp only [mul_rpow (by positivity : (0:ℝ) ≤ b i) (by positivity : (0:ℝ) ≤ n)]
     ring
   show q (r i n) ≤ (b i)^(p a b) * n^(p a b) * (1 - ε n)
   rw [←h₁, ←sub_le_iff_le_add']
@@ -1425,7 +1424,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
       ≤ (r i n)^(p a b) * (1 + ε (r i n)) := by
   rw [Filter.eventually_all]
   intro i
-  set q : ℝ → ℝ := fun x => x ^ (p a b) * (1 + ε x) with hq
+  let q : ℝ → ℝ := fun x => x ^ (p a b) * (1 + ε x)
   have h_diff_q : DifferentiableOn ℝ q (Set.Ioi 1) := by
     refine DifferentiableOn.mul
         (DifferentiableOn.mono (differentiableOn_rpow_const _) fun z hz => ?_)
@@ -1509,7 +1508,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
   have h₁ : q (b i * n) - (b i)^(p a b) * n^(p a b) * (ε (b i * n) - ε n)
       = (b i)^(p a b) * n^(p a b) * (1 + ε n) := by
     have := R.b_pos i
-    simp only [hq, mul_rpow (by positivity : (0:ℝ) ≤ b i) (by positivity : (0:ℝ) ≤ n)]
+    simp only [mul_rpow (by positivity : (0:ℝ) ≤ b i) (by positivity : (0:ℝ) ≤ n)]
     ring
   show (b i)^(p a b) * n^(p a b) * (1 + ε n) ≤ q (r i n)
   rw [←h₁, sub_le_iff_le_add', ←sub_le_iff_le_add]
