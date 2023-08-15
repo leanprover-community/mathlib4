@@ -765,7 +765,7 @@ instance (priority := 100) CancelMonoid.toIsCancelMul (M : Type u) [CancelMonoid
 end CancelMonoid
 
 /-- The fundamental power operation in a group. `zpowRec n a = a*a*...*a` n times, for integer `n`.
-Use instead `a ^ n`,  which has better definitional behavior. -/
+Use instead `a ^ n`, which has better definitional behavior. -/
 def zpowRec [One G] [Mul G] [Inv G] (npow : ℕ → G → G := npowRec) : ℤ → G → G
   | Int.ofNat n, a => npow n a
   | Int.negSucc n, a => (npow n.succ a)⁻¹
