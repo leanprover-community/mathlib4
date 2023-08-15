@@ -3,6 +3,12 @@ import Mathlib.Order.Bounded
 import Mathlib.SetTheory.Ordinal.Topology
 import Mathlib.Data.Nat.Parity
 
+
+universe u
+variable {α : Type u}
+class CountablyCompleteLinearOrder (α : Type*) extends LinearOrder α where
+  /-- The supremum of a countable set -/
+  supω : (s : Set α) → Set.Countable s → ∃ x, IsLUB s x
 namespace Order
 variable [TopologicalSpace α] [Preorder α] [OrderTopology α]
 
@@ -20,63 +26,19 @@ variable [NoTopOrder α]
     use b
     simp[hb]
   closed := by simp
-
-@[simp] theorem Nat.even_succ_succ {n : ℕ} : Even (n.succ.succ) ↔ Even n := by
-  simp[Even]
-  constructor
-  · rintro ⟨r,x⟩
-    match r with
-    | 0 => linarith
-    | h + 1 =>
-      use h
-      linarith
-  · rintro ⟨r,x⟩
-    use r+1
-    linarith
-
-def Nat.even_odd_rec {p q : ℕ → Sort u} (p0 : p 0)
-  (even_odd: (n : ℕ) → p (2 * n) → q (2 * n + 1))
-  (odd_even : (n : ℕ) → q (2 * n + 1) → p (2 * n + 2))
-  (n : ℕ) :
-  if Even n then p n else q n := by
-  induction n with
-  | zero => exact p0
-  | succ m ind =>
-    split_ifs with h₁
-    · simp only at h₁
-      rw[Nat.even_add_one] at h₁
-      simp only [h₁, ite_false] at ind
-      rw[← Nat.odd_iff_not_even] at h₁
-      have h₁ := Nat.two_mul_div_two_add_one_of_odd h₁
-      rw[← h₁] at ind
-      rw[← h₁]
-      apply odd_even _ ind
-    · simp only [Nat.even_add_one, not_not] at h₁
-      simp only [h₁, ite_true] at ind
-      have h₁ := Nat.two_mul_div_two_of_even h₁
-      rw[← h₁] at ind
-      rw[← h₁]
-      apply even_odd _ ind
-
-def Nat.even_odd_rec' {α : Type} (p0 : α)
-  (even_odd: (n : ℕ) → α → α)
-  (odd_even : (n : ℕ) → α → α)
-  (n : ℕ) :
-  α := by
-  rw[← ite_self (c := Even n) (a := α)]
-  apply Nat.even_odd_rec (p := λ _ ↦ α) (q := λ _ ↦ α) p0 even_odd odd_even n
 end
 end Order
 namespace Order
 section
 
-variable [LinearOrder α] [NoTopOrder α] [TopologicalSpace α]
+variable [CountablyCompleteLinearOrder α] [NoTopOrder α] [TopologicalSpace α] [OrderTopology α]
+
 
 def IsClub.inter {s t : Set α} (hs : IsClub s) (ht : IsClub t) : IsClub (s ∩ t) where
   closed := IsClosed.inter hs.closed ht.closed
   unbounded := by
     intro a
-    let f := Nat.rec (motive := λ n ↦ α × α)
+    let f := Nat.rec (motive := λ _ ↦ α × α)
               (Classical.choose (ht.unbounded a), Classical.choose (hs.unbounded a))
               (λ n p ↦ (Classical.choose (ht.unbounded p.snd), Classical.choose (hs.unbounded p.fst)))
     have h₁ (n) : f n ∈ t.prod s := by
@@ -88,15 +50,15 @@ def IsClub.inter {s t : Set α} (hs : IsClub s) (ht : IsClub t) : IsClub (s ∩ 
           tauto
         · have := Classical.choose_spec (hs.unbounded a)
           tauto
-      | succ n ih =>
+      | succ n _ =>
         dsimp only
         apply Set.mk_mem_prod
-        · have := Classical.choose_spec (ht.unbounded (Nat.rec (motive := λ n ↦ α × α)
+        · have := Classical.choose_spec (ht.unbounded (Nat.rec (motive := λ _ ↦ α × α)
               (Classical.choose (unbounded ht a), Classical.choose (unbounded hs a))
             (fun n p ↦ (Classical.choose (unbounded ht p.snd),
                          Classical.choose (unbounded hs p.fst))) n).snd)
           tauto
-        · have := Classical.choose_spec (hs.unbounded (Nat.rec (motive := λ n ↦ α × α)
+        · have := Classical.choose_spec (hs.unbounded (Nat.rec (motive := λ _ ↦ α × α)
               (Classical.choose (unbounded ht a), Classical.choose (unbounded hs a))
             (fun n p ↦ (Classical.choose (unbounded ht p.snd),
                          Classical.choose (unbounded hs p.fst))) n).fst )
@@ -113,7 +75,7 @@ def IsClub.inter {s t : Set α} (hs : IsClub s) (ht : IsClub t) : IsClub (s ∩ 
       | n =>
         simp only [Nat.rec_add_one]
         have := (Classical.choose_spec
-                (hs.unbounded  (Nat.rec (motive := λ n ↦ α × α)
+                (hs.unbounded  (Nat.rec (motive := λ _ ↦ α × α)
                 (Classical.choose (unbounded ht a), Classical.choose (unbounded hs a))
                 (fun n p ↦ (Classical.choose (unbounded ht p.snd),
                              Classical.choose (unbounded hs p.fst))) n).fst)).right
@@ -121,11 +83,90 @@ def IsClub.inter {s t : Set α} (hs : IsClub s) (ht : IsClub t) : IsClub (s ∩ 
         rw[← GE.ge] at this
         have := lt_of_not_ge (α := α) this
         tauto
+    have h₃ (n) : (f n).snd < (f (n+1)).fst := by
+      match n with
+      | 0 =>
+        dsimp only
+        have := (Classical.choose_spec (ht.unbounded (Classical.choose (hs.unbounded a)))).right
+        dsimp at this
+        rw[← GE.ge] at this
+        have := lt_of_not_ge (α := α) this
+        tauto
+      | n =>
+        simp only [Nat.rec_add_one]
+        have := (Classical.choose_spec
+                (ht.unbounded  (Nat.rec (motive := λ _ ↦ α × α)
+                (Classical.choose (unbounded ht a), Classical.choose (unbounded hs a))
+                (fun n p ↦ (Classical.choose (unbounded ht p.snd),
+                             Classical.choose (unbounded hs p.fst))) n).snd)).right
+        dsimp at this
+        rw[← GE.ge] at this
+        have := lt_of_not_ge (α := α) this
+        tauto
+    have ha : a < (f 0).fst := by
+      dsimp
+      have := Classical.choose_spec (ht.unbounded a)
+      dsimp at this
+      rw[← GE.ge] at this
+      exact lt_of_not_ge (α := α) this.right
 
+    clear_value f
+    obtain ⟨sup, prf_sp⟩ := CountablyCompleteLinearOrder.supω {(f n).fst | n} (Set.countable_range _)
 
+    have sup_in_closure : sup ∈ closure {(f n).fst | n} := by
+      apply prf_sp.mem_closure
+      · use (f 0).fst
+        exact ⟨0, rfl⟩
+    obtain ⟨sup', prf_sp'⟩ := CountablyCompleteLinearOrder.supω {(f n).snd | n} (Set.countable_range _)
 
+    have sup_is_other_sup : sup = sup' := by
+      apply le_antisymm
+      · rw[isLUB_le_iff prf_sp]
+        simp[upperBounds]
+        intro n
+        apply le_of_lt
+        apply lt_of_lt_of_le (h₂ n)
+        replace prf_sp' := And.left prf_sp'
+        simp [upperBounds] at prf_sp'
+        tauto
+      · rw[isLUB_le_iff prf_sp']
+        simp[upperBounds]
+        intro n
+        apply le_of_lt
+        apply lt_of_lt_of_le (h₃ n)
+        replace prf_sp := And.left prf_sp
+        simp [upperBounds] at prf_sp
+        tauto
 
+    have sup_in_other_closure : sup ∈ closure {x | ∃ n, (f n).snd = x}
+      := by
+      rw[sup_is_other_sup]
+      apply prf_sp'.mem_closure
+      · use (f 0).snd
+        exact ⟨0, rfl⟩
 
+    use sup
+    simp
+    constructor
+    · constructor
+      · have h4 := (IsClosed.closure_subset_iff (s := {x | ∃ n, (f n).snd = x}) hs.closed).mpr
+        apply h4
+        · rintro x ⟨n, prf_n⟩
+          rw[← prf_n]
+          specialize h₁ n
+          rw[Set.prod] at h₁
+          exact h₁.right
+        · assumption
+      · have h4 := (IsClosed.closure_subset_iff (s := {x | ∃ n, (f n).fst = x}) ht.closed).mpr
+        apply h4
+        · rintro x ⟨n, prf_n⟩
+          rw[← prf_n]
+          specialize h₁ n
+          rw[Set.prod] at h₁
+          exact h₁.left
+        · assumption
+    · replace prf_sp := And.left prf_sp ⟨0, rfl⟩
+      exact lt_of_lt_of_le ha prf_sp
 
 noncomputable def isClub_FilterBasis : FilterBasis α where
   sets := IsClub
@@ -137,13 +178,8 @@ noncomputable def isClub_FilterBasis : FilterBasis α where
     exact IsClub.inter hx hy
 
 
-def Filter.club : Filter α where
-  sets := {x | ∃ y, IsClub y ∧ y ⊆ x}
-  univ_sets := by
-    use Set.univ
-    simp
-  sets_of_superset
-end
+def Filter.club : Filter α := isClub_FilterBasis.filter
+
 end
 
 
