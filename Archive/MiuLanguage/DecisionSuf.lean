@@ -262,7 +262,7 @@ theorem count_I_eq_length_of_count_U_zero_and_neg_mem {ys : Miustr} (hu : count 
     · -- case `x = M` gives a contradiction.
       exfalso; exact hm (mem_cons_self M xs)
     · -- case `x = I`
-      rw [count_cons, if_pos rfl, length, succ_eq_add_one, succ_inj']
+      rw [count_cons, if_pos rfl, length, succ_inj']
       apply hxs
       · simpa only [count]
       · rw [mem_cons, not_or] at hm; exact hm.2
