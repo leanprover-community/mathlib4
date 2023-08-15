@@ -1472,11 +1472,12 @@ section Successor
 variable {o : Ordinal} (hC : IsClosed C) (hsC : contained C (Order.succ o))
   (ho : o < Ordinal.type (·<· : I → I → Prop))
 
-def GoodProducts.StartingWithMax : Set (Products I) :=
+namespace GoodProducts
+
+def StartingWithMax : Set (Products I) :=
 {l | l.isGood C ∧ term I ho ∈ l.val}
 
-lemma GoodProducts.union_succ :
-    GoodProducts C = GoodProducts (C.proj (ord I · < o)) ∪ StartingWithMax C ho := by
+lemma union_succ : GoodProducts C = GoodProducts (C.proj (ord I · < o)) ∪ StartingWithMax C ho := by
   ext l
   dsimp [GoodProducts, StartingWithMax]
   simp only [Set.mem_union, Set.mem_setOf_eq]
@@ -1503,11 +1504,10 @@ lemma GoodProducts.union_succ :
       rwa [contained_eq_proj C (Order.succ o) hsC]
     · exact hh.1
 
-def GoodProducts.sum_to :
-    (GoodProducts (C.proj (ord I · < o))) ⊕ (StartingWithMax C ho) → Products I :=
+def sum_to : (GoodProducts (C.proj (ord I · < o))) ⊕ (StartingWithMax C ho) → Products I :=
   Sum.elim Subtype.val Subtype.val
 
-lemma GoodProducts.injective_sum_to : Function.Injective (sum_to C ho) := by
+lemma injective_sum_to : Function.Injective (sum_to C ho) := by
   refine Function.Injective.sum_elim Subtype.val_injective Subtype.val_injective
     (fun ⟨a,ha⟩ ⟨b,hb⟩  ↦ (fun (hab : a = b) ↦ ?_))
   rw [← hab] at hb
@@ -1515,40 +1515,40 @@ lemma GoodProducts.injective_sum_to : Function.Injective (sum_to C ho) := by
   simp only [ord_term_aux, lt_self_iff_false] at ha'
 
 noncomputable
-def GoodProducts.sum_to_equiv := Equiv.ofInjective (sum_to C ho) (injective_sum_to C ho)
+def sum_to_equiv := Equiv.ofInjective (sum_to C ho) (injective_sum_to C ho)
 
-lemma GoodProducts.sum_to_range :
+lemma sum_to_range :
     Set.range (sum_to C ho) = GoodProducts (C.proj (ord I · < o)) ∪ StartingWithMax C ho := by
   have h : Set.range (sum_to C ho) = _ ∪ _ := Set.Sum.elim_range _ _; rw [h]; congr<;> ext l
   · exact ⟨fun ⟨m,hm⟩ ↦ by rw [← hm]; exact m.prop, fun hl ↦ ⟨⟨l,hl⟩, rfl⟩⟩
   · exact ⟨fun ⟨m,hm⟩ ↦ by rw [← hm]; exact m.prop, fun hl ↦ ⟨⟨l,hl⟩, rfl⟩⟩
 
 noncomputable
-def GoodProducts.sum_equiv :
-    GoodProducts (C.proj (ord I · < o)) ⊕ (StartingWithMax C ho) ≃ GoodProducts C :=
+def sum_equiv : GoodProducts (C.proj (ord I · < o)) ⊕ (StartingWithMax C ho) ≃ GoodProducts C :=
   Equiv.trans (Equiv.trans (sum_to_equiv C ho) (Equiv.Set.ofEq (sum_to_range C ho)))
     (Equiv.Set.ofEq (union_succ C hsC ho).symm)
 
-lemma GoodProducts.sum_equiv_comp_eval_eq_elim : eval C ∘ (sum_equiv C hsC ho).toFun =
+lemma sum_equiv_comp_eval_eq_elim : eval C ∘ (sum_equiv C hsC ho).toFun =
     (Sum.elim (fun (l : GoodProducts (C.proj (ord I · < o))) ↦ Products.eval C l.1)
     (fun (l : StartingWithMax C ho) ↦ Products.eval C l.1)) := by
   ext ⟨_,_⟩ <;> [rfl; rfl]
 
-def GoodProducts.u : GoodProducts (C.proj (ord I · < o)) ⊕ StartingWithMax C ho →
+def u : GoodProducts (C.proj (ord I · < o)) ⊕ StartingWithMax C ho →
     LocallyConstant C ℤ :=
 Sum.elim (fun l ↦ l.1.eval C) (fun l ↦ l.1.eval C)
 
-lemma GoodProducts.linearIndependent_iff_sum :
+lemma linearIndependent_iff_sum :
     LinearIndependent ℤ (eval C) ↔ LinearIndependent ℤ (u C ho) := by
   rw [← linearIndependent_equiv (sum_equiv C hsC ho), u, ← sum_equiv_comp_eval_eq_elim C hsC ho]
   exact Iff.rfl
 
-lemma GoodProducts.span_sum :
-    Set.range (eval C) = Set.range (Sum.elim
+lemma span_sum : Set.range (eval C) = Set.range (Sum.elim
     (fun (l : GoodProducts (C.proj (ord I · < o))) ↦ Products.eval C l.1)
     (fun (l : StartingWithMax C ho) ↦ Products.eval C l.1)) := by
   rw [← sum_equiv_comp_eval_eq_elim C hsC ho]
   simp only [Equiv.toFun_as_coe, EquivLike.range_comp]
+
+end GoodProducts
 
 def C0 := C ∩ {f | f (term I ho) = false}
 
