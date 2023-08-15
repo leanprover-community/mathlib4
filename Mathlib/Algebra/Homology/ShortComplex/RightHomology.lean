@@ -26,6 +26,8 @@ In `Homology.lean`, when `S` has two compatible left and right homology data
 
 -/
 
+set_option autoImplicit true
+
 namespace CategoryTheory
 
 open Category Limits

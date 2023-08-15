@@ -1106,7 +1106,7 @@ theorem pow_apply_eq_pow_mod_orderOf_cycleOf_apply (f : Perm α) (n : ℕ) (x : 
   rw [← cycleOf_pow_apply_self f, ← cycleOf_pow_apply_self f, pow_eq_mod_orderOf]
 #align equiv.perm.pow_apply_eq_pow_mod_order_of_cycle_of_apply Equiv.Perm.pow_apply_eq_pow_mod_orderOf_cycleOf_apply
 
-theorem cycleOf_mul_of_apply_right_eq_self (h : _root_.Commute f g) (x : α) (hx : g x = x) :
+theorem cycleOf_mul_of_apply_right_eq_self (h : Commute f g) (x : α) (hx : g x = x) :
     (f * g).cycleOf x = f.cycleOf x := by
   ext y
   by_cases hxy : (f * g).SameCycle x y
