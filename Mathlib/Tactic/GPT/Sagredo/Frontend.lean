@@ -55,6 +55,8 @@ along with everything between the two blank lines.
 That is, modulo some assumptions about there being blank lines before and after declarations,
 we return everything up to the current declaration, and the current declaration.
 -/
+-- TODO: the positions of newlines are already encoded in the `fileMap`,
+-- there is no need to look at the source again!
 def getSourceUpTo (s : Syntax) : CoreM (String × String) := do
   let fileMap := (← readThe Core.Context).fileMap
   let ({ line := line, column := _ }, _) := stxRange fileMap s
