@@ -42,18 +42,18 @@ Equiv, MulEquiv, AddEquiv, RingEquiv, MulAut, AddAut, RingAut
 variable {F α β R S S' : Type*}
 
 
-/-- makes a `NonUnitalRingHom` from the bijective inverse of a `NonUnitalRingHom` -/  
+/-- makes a `NonUnitalRingHom` from the bijective inverse of a `NonUnitalRingHom` -/
 @[simps] def NonUnitalRingHom.inverse
     [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
     (f : R →ₙ+* S) (g : S → R)
     (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : S →ₙ+* R :=
   { (f : R →+ S).inverse g h₁ h₂, (f : R →ₙ* S).inverse g h₁ h₂ with toFun := g }
 
-/-- makes a `RingHom` from the bijective inverse of a `RingHom` -/  
+/-- makes a `RingHom` from the bijective inverse of a `RingHom` -/
 @[simps] def RingHom.inverse [NonAssocSemiring R] [NonAssocSemiring S]
     (f : RingHom R S) (g : S → R)
     (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : S →+* R :=
-  { (f : OneHom R S).inverse g h₁, 
+  { (f : OneHom R S).inverse g h₁,
     (f : MulHom R S).inverse g h₁ h₂,
     (f : R →+ S).inverse g h₁ h₂ with toFun := g }
 
@@ -401,6 +401,12 @@ protected def op {α β} [Add α] [Mul α] [Add β] [Mul β] :
 protected def unop {α β} [Add α] [Mul α] [Add β] [Mul β] : αᵐᵒᵖ ≃+* βᵐᵒᵖ ≃ (α ≃+* β) :=
   RingEquiv.op.symm
 #align ring_equiv.unop RingEquiv.unop
+
+/-- A ring is isomorphic to the opposite of its opposite. -/
+@[simps!]
+def opOp (R : Type*) [Add R] [Mul R] : R ≃+* Rᵐᵒᵖᵐᵒᵖ where
+  __ := MulEquiv.opOp R
+  map_add' _ _ := rfl
 
 section NonUnitalCommSemiring
 
