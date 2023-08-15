@@ -5,6 +5,8 @@ Authors: Scott Morrison
 -/
 import Mathlib.Init.ZeroOne
 import Std.Data.MLList.Basic
+import Std.Data.RBMap.Alter
+import Std.Data.HashMap
 
 /-!
 # A^* search
@@ -13,7 +15,10 @@ This implementation is only intended for use in meta code, rather than algorithm
 Someone might enjoy writing a "mathematical" version.
 -/
 
+set_option autoImplicit true
+
 open Std MLList
+
 variable (m : Type u → Type u) [Monad m] [Alternative m]
   (P V E : Type u) [Ord P] [Zero P] [Add P] [BEq V] [Hashable V]
 
