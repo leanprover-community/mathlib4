@@ -52,6 +52,9 @@ theorem trace_zero : trace (0 : Matrix n n R) = 0 :=
 variable {n R}
 
 @[simp]
+lemma trace_eq_zero_of_isEmpty [IsEmpty n] (A : Matrix n n R) : trace A = 0 := by simp [trace]
+
+@[simp]
 theorem trace_add (A B : Matrix n n R) : trace (A + B) = trace A + trace B :=
   Finset.sum_add_distrib
 #align matrix.trace_add Matrix.trace_add

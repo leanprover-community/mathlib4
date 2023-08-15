@@ -6,6 +6,7 @@ Authors: Aaron Anderson, Jalex Stark
 import Mathlib.Data.Polynomial.Expand
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 import Mathlib.Data.Polynomial.Laurent
+import Mathlib.RingTheory.Polynomial.Nilpotent
 
 #align_import linear_algebra.matrix.charpoly.coeff from "leanprover-community/mathlib"@"9745b093210e9dac443af24da9dba0f9e2b6c912"
 
@@ -123,7 +124,7 @@ theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
   apply h
 #align matrix.charpoly_degree_eq_dim Matrix.charpoly_degree_eq_dim
 
-theorem charpoly_natDegree_eq_dim [Nontrivial R] (M : Matrix n n R) :
+@[simp] theorem charpoly_natDegree_eq_dim [Nontrivial R] (M : Matrix n n R) :
     M.charpoly.natDegree = Fintype.card n :=
   natDegree_eq_of_degree_eq_some (charpoly_degree_eq_dim M)
 #align matrix.charpoly_nat_degree_eq_dim Matrix.charpoly_natDegree_eq_dim
@@ -150,6 +151,7 @@ theorem charpoly_monic (M : Matrix n n R) : M.charpoly.Monic := by
   apply h
 #align matrix.charpoly_monic Matrix.charpoly_monic
 
+/-- See also `Matrix.trace_eq_neg_coeff_det_one_sub_X_smul_C`. -/
 theorem trace_eq_neg_charpoly_coeff [Nonempty n] (M : Matrix n n R) :
     trace M = -M.charpoly.coeff (Fintype.card n - 1) := by
   rw [charpoly_coeff_eq_prod_coeff_of_le _ le_rfl, Fintype.card,
@@ -261,6 +263,8 @@ theorem coeff_charpoly_mem_ideal_pow {I : Ideal R} (h : ∀ i j, M i j ∈ I) (k
 
 end Ideal
 
+namespace Matrix
+
 section reverse
 
 open Polynomial
@@ -271,17 +275,17 @@ open LaurentPolynomial hiding C
 
 It has some advantages over the characteristic polynomial, including the fact that it can be
 extended to infinite dimensions (for appropriate operators). -/
-lemma Matrix.reverse_charpoly (M : Matrix n n R) :
-    M.charpoly.reverse = det (1 - (X : R[X]) • C.mapMatrix M) := by
+lemma reverse_charpoly (M : Matrix n n R) :
+    M.charpoly.reverse = det (1 - (X : R[X]) • M.map C) := by
   nontriviality R
   let t : R[T;T⁻¹] := T 1
   let t_inv : R[T;T⁻¹] := T (-1)
-  let p : R[T;T⁻¹] := det (scalar n t - LaurentPolynomial.C.mapMatrix M)
-  let q : R[T;T⁻¹] := det (1 - scalar n t * LaurentPolynomial.C.mapMatrix M)
+  let p : R[T;T⁻¹] := det (scalar n t - M.map LaurentPolynomial.C)
+  let q : R[T;T⁻¹] := det (1 - scalar n t * M.map LaurentPolynomial.C)
   have ht : t_inv * t = 1 := by rw [← T_add, add_left_neg, T_zero]
   have hp : toLaurentAlg M.charpoly = p := by
     simp [charpoly_def, AlgHom.map_det, map_sub, map_smul']
-  have hq : toLaurentAlg (det (1 - (X : R[X]) • C.mapMatrix M)) = q := by
+  have hq : toLaurentAlg (det (1 - (X : R[X]) • M.map C)) = q := by
     simp [AlgHom.map_det, map_sub, map_smul']
   suffices : t_inv ^ Fintype.card n * p = invert q
   · apply toLaurent_injective
@@ -291,4 +295,50 @@ lemma Matrix.reverse_charpoly (M : Matrix n n R) :
   rw [← det_smul, smul_sub, coe_scalar, ← smul_assoc, smul_eq_mul, ht, one_smul, invert.map_det]
   simp [map_smul']
 
+@[simp] lemma eval_zero_det_one_sub_X_smul_C :
+    eval 0 (det (1 - (X : R[X]) • M.map C)) = 1 := by
+  rw [← coe_evalRingHom, RingHom.map_det, ← det_one (R := R) (n := n)]
+  have : (1 - (X : R[X]) • M.map C).map (eval 0) = 1 := by
+    ext i j; cases' eq_or_ne i j with hij hij <;> simp [hij]
+  congr
+
+lemma trace_eq_neg_coeff_det_one_sub_X_smul_C (M : Matrix n n R) :
+    trace M = - coeff (det (1 - (X : R[X]) • M.map C)) 1 := by
+  nontriviality R
+  cases isEmpty_or_nonempty n; simp
+  simp [trace_eq_neg_charpoly_coeff M, neg_inj, ← M.reverse_charpoly, coeff_one_reverse, nextCoeff]
+
+lemma isUnit_det_one_sub_X_smul_C_of_IsNilpotent (hM : IsNilpotent M) :
+    IsUnit (det (1 - (X : R[X]) • M.map C)) := by
+  obtain ⟨k, hk⟩ := hM
+  replace hk : 1 - (X : R[X]) • M.map C ∣ 1 := by
+    convert one_sub_dvd_one_sub_pow ((X : R[X]) • M.map C) k
+    rw [← C.mapMatrix_apply, smul_pow, ← map_pow, hk, map_zero, smul_zero, sub_zero]
+  apply isUnit_of_dvd_one
+  rw [← det_one (R := R[X]) (n := n)]
+  exact map_dvd detMonoidHom hk
+
+lemma isNilpotent_trace_of_isNilpotent (hM : IsNilpotent M) :
+    IsNilpotent (trace M) := by
+  cases isEmpty_or_nonempty n; simp
+  rw [trace_eq_neg_coeff_det_one_sub_X_smul_C M, isNilpotent_neg_iff]
+  exact (isUnit_iff_coeff_isUnit_isNilpotent.mp (isUnit_det_one_sub_X_smul_C_of_IsNilpotent hM)).2
+    _ one_ne_zero
+
+lemma isNilpotent_charpoly_sub_pow_of_isNilpotent (hM : IsNilpotent M) :
+    IsNilpotent (M.charpoly - X ^ (Fintype.card n)) := by
+  nontriviality R
+  let p : R[X] := det (1 - (X : R[X]) • map M C)
+  have hp : p - 1 = X * (p /ₘ X) := by
+    conv_lhs => rw [← modByMonic_add_div p monic_X]
+    simp [modByMonic_X]
+  have : IsNilpotent (p /ₘ X) :=
+    (Polynomial.isUnit_iff'.mp (isUnit_det_one_sub_X_smul_C_of_IsNilpotent hM)).2
+  have aux : (M.charpoly - X ^ (Fintype.card n)).natDegree ≤ M.charpoly.natDegree :=
+    le_trans (natDegree_sub_le _ _) (by simp)
+  rw [← isNilpotent_reflect_iff aux, reflect_sub, ← reverse, M.reverse_charpoly]
+  simpa [hp]
+
 end reverse
+
+end Matrix

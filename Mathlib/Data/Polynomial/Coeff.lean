@@ -37,10 +37,6 @@ variable [Semiring R] {p q r : R[X]}
 
 section Coeff
 
-theorem coeff_one (n : ℕ) : coeff (1 : R[X]) n = if 0 = n then 1 else 0 :=
-  coeff_monomial
-#align polynomial.coeff_one Polynomial.coeff_one
-
 @[simp]
 theorem coeff_add (p q : R[X]) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q n := by
   rcases p with ⟨⟩

@@ -683,9 +683,12 @@ theorem coeff_zero (n : ℕ) : coeff (0 : R[X]) n = 0 :=
 #align polynomial.coeff_zero Polynomial.coeff_zero
 
 @[simp]
-theorem coeff_one_zero : coeff (1 : R[X]) 0 = 1 := by
-  rw [← monomial_zero_one, coeff_monomial]
-  simp
+theorem coeff_one {n : ℕ} : coeff (1 : R[X]) n = if n = 0 then 1 else 0 := by
+  simp_rw [eq_comm (a := n) (b := 0)]
+  exact coeff_monomial
+#align polynomial.coeff_one Polynomial.coeff_one
+
+theorem coeff_one_zero : coeff (1 : R[X]) 0 = 1 := by simp
 #align polynomial.coeff_one_zero Polynomial.coeff_one_zero
 
 @[simp]
