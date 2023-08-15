@@ -43,8 +43,11 @@ namespace Levenshtein
 
 /-- A cost structure for Levenshtein edit distance. -/
 structure Cost (α β : Type _) (δ : Type _) where
+  /-- Cost to delete an element from a list. -/
   delete : α → δ
+  /-- Cost in insert an element into a list. -/
   insert : β → δ
+  /-- Cost to substitute one elemenet for another in a list. -/
   substitute : α → β → δ
 
 /-- The default cost structure, for which all operations cost `1`. -/
@@ -152,9 +155,8 @@ theorem suffixLevenshtein_length (xs : List α) (ys : List β) :
     exact ih
 
 -- This is only used in keeping track of estimates.
-theorem suffixLevenshtein_eq (xs : List α) (y ys) {d} (w : d = suffixLevenshtein C xs ys) :
-    impl C xs y d = suffixLevenshtein C xs (y :: ys) := by
-  subst d
+theorem suffixLevenshtein_eq (xs : List α) (y ys) :
+    impl C xs y (suffixLevenshtein C xs ys) = suffixLevenshtein C xs (y :: ys) := by
   rfl
 
 variable (C)
