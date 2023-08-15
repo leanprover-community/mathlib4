@@ -41,7 +41,9 @@ Given `[EstimatorData a ε]`
 The value `a` in `α` that we are estimating is hidden inside a `Thunk` to avoid evaluation.
  -/
 class EstimatorData (a : Thunk α) (ε : Type _) where
+  /-- The value of the bound for `a` representation by a term of `ε`. -/
   bound : ε → α
+  /-- Generate an improved lower bound. -/
   improve : ε → Option ε
 
 /--
@@ -51,7 +53,10 @@ Given `[Estimator a ε]`
   and otherwise it returns a strictly better bound.
 -/
 class Estimator [Preorder α] (a : Thunk α) (ε : Type _) extends EstimatorData a ε where
+  /-- The calculated bounds are always lower bounds. -/
   bound_le e : bound e ≤ a.get
+  /-- Calling `improve` either gives a strictly better bound,
+  or a proof that the current bound is exact. -/
   improve_spec e : match improve e with
     | none => bound e = a.get
     | some e' => bound e < bound e'
@@ -68,6 +73,7 @@ instance [Preorder α] (a : α) : Estimator (Thunk.pure a) { x // x = a } where
   improve_spec e := e.property
 
 attribute [local instance] WellFoundedGT.toWellFoundedRelation in
+/-- Implementation of `Estimator.improveUntil`. -/
 def Estimator.improveUntilAux [PartialOrder α]
     (a : Thunk α) (p : α → Bool) [Estimator a ε]
     [WellFoundedGT (range (bound a : ε → α))]
@@ -140,6 +146,8 @@ The hypothesis that `>` is well-founded on `{ q // q ≤ (a, b) }` ensures this 
 -/
 structure Estimator.fst [Preorder α] [Preorder β]
     (p : Thunk (α × β)) (ε : Type _) [Estimator p ε] where
+  /-- The wrapped bound for a value in `α × β`,
+  which we will use as a bound for the first component. -/
   inner : ε
 
 instance [PartialOrder α] [DecidableRel ((· : α) < ·)] [PartialOrder β] {a : Thunk α} {b : Thunk β}

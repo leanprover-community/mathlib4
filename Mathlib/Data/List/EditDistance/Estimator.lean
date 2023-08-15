@@ -41,12 +41,20 @@ the Levenshtein distance from `xs` to `ys`,
 along with the length of `ys`.
 -/
 structure LevenshteinEstimator' : Type _ where
+  /-- The prefix of `ys` that is not is not involved in the bound, in reverse order. -/
   pre_rev : List β
+  /-- The suffix of `ys`, such that the distance from `xs` to `ys` is bounded below
+  by the minimum distance from any suffix of `xs` to this suffix. -/
   suff : List β
+  /-- Witness that `ys` has been decomposed into a prefix and suffix. -/
   split : pre_rev.reverse ++ suff = ys
+  /-- The distances from each suffix of `xs` to `suff`. -/
   distances : {r : List δ // 0 < r.length}
+  /-- Witness that `distances` are correct. -/
   distances_eq : distances = suffixLevenshtein C xs suff
+  /-- The current bound on the pair (distance from `xs` to `ys`, length of `ys`). -/
   bound : δ × ℕ
+  /-- Predicate describing the current bound. -/
   bound_eq : bound = match pre_rev with
     | [] => (distances.1[0]'(distances.2), ys.length)
     | _ => (List.minimum_of_length_pos distances.2, suff.length)
