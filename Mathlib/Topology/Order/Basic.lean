@@ -2648,6 +2648,12 @@ theorem Antitone.map_iSup_of_continuousAt' {ι : Sort*} [Nonempty ι] {f : α �
   rfl
 #align antitone.map_supr_of_continuous_at' Antitone.map_iSup_of_continuousAt'
 
+theorem csSup_mem_closure {s : Set α} (hs : s.Nonempty) (H : BddAbove s) : sSup s ∈ closure s :=
+  (isLUB_csSup hs H).mem_closure hs
+
+theorem csInf_mem_closure {s : Set α} (hs : s.Nonempty) (H : BddBelow s) : sInf s ∈ closure s :=
+  (isGLB_csInf hs H).mem_closure hs
+
 end ConditionallyCompleteLinearOrder
 
 section CompleteLinearOrder
