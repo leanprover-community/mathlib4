@@ -110,7 +110,7 @@ theorem two_mul_count_bool_eq_ite (hl : Chain' (· ≠ ·) l) (b : Bool) :
   · rw [if_pos h2, hl.two_mul_count_bool_of_even h2]
   · cases' l with x l
     · exact (h2 even_zero).elim
-    simp only [if_neg h2, count_cons', mul_add, head?, Option.mem_some_iff, @eq_comm _ x]
+    simp only [if_neg h2, count_cons, mul_add, head?, Option.mem_some_iff, @eq_comm _ x]
     rw [length_cons, Nat.even_add_one, not_not] at h2
     replace hl : l.Chain' (· ≠ ·) := hl.tail
     rw [hl.two_mul_count_bool_of_even h2]

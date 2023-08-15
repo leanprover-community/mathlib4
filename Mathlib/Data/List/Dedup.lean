@@ -148,7 +148,7 @@ theorem sum_map_count_dedup_filter_eq_countp (p : α → Bool) (l : List α) :
     ((l.dedup.filter p).map fun x => l.count x).sum = l.countp p := by
   induction' l with a as h
   · simp
-  · simp_rw [List.countp_cons, List.count_cons', List.sum_map_add]
+  · simp_rw [List.countp_cons, List.count_cons, List.sum_map_add]
     congr 1
     · refine' _root_.trans _ h
       by_cases ha : a ∈ as

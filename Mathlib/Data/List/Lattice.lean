@@ -239,7 +239,7 @@ theorem count_bagInter {a : α} :
   | l₁, [] => by simp
   | b :: l₁, l₂ => by
     by_cases hb : b ∈ l₂
-    · rw [cons_bagInter_of_pos _ hb, count_cons', count_cons', count_bagInter, count_erase, ←
+    · rw [cons_bagInter_of_pos _ hb, count_cons, count_cons, count_bagInter, count_erase, ←
         min_add_add_right]
       by_cases ab : a = b
       · rw [if_pos ab, @tsub_add_cancel_of_le]

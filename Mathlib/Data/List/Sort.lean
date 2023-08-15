@@ -234,7 +234,6 @@ theorem perm_orderedInsert (a) : ∀ l : List α, orderedInsert r a l ~ a :: l
 theorem orderedInsert_count [DecidableEq α] (L : List α) (a b : α) :
     count a (L.orderedInsert r b) = count a L + if a = b then 1 else 0 := by
   rw [(L.perm_orderedInsert r b).count_eq, count_cons]
-  split_ifs <;> simp only [Nat.succ_eq_add_one, add_zero]
 #align list.ordered_insert_count List.orderedInsert_count
 
 theorem perm_insertionSort : ∀ l : List α, insertionSort r l ~ l
