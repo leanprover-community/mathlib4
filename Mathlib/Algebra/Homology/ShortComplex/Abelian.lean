@@ -8,7 +8,7 @@ import Mathlib.Algebra.Homology.ShortComplex.Homology
 import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
-# Homology data in abelian categories
+# Abelian categories have homology
 
 In this file, it is shown that all short complexes `S` in abelian
 categories have terms of type `S.HomologyData`.
@@ -176,3 +176,7 @@ noncomputable def HomologyData.ofAbelian : S.HomologyData where
   left := LeftHomologyData.ofAbelian S
   right := RightHomologyData.ofAbelian S
   iso := Abelian.coimageIsoImage (kernel.ι S.g ≫ cokernel.π S.f)
+
+instance : S.HasHomology := ⟨⟨HomologyData.ofAbelian S⟩⟩
+
+end ShortComplex
