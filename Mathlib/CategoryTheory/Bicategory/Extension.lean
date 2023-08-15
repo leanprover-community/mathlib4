@@ -12,12 +12,14 @@ import Mathlib.CategoryTheory.StructuredArrow
 We introduce the concept of extensions and lifts within the bicategorical framework. These concepts
 are defined by commutative diagrams in the (1-)categorical context. Within the bicategorical
 framework, commutative diagrams are replaced by 2-morphisms. Depending on the orientation of the
-2-morphisms, we define both left and right extensions (likewise for lifts).
-
-The use of left and right here is a common one in the theory of Kan extensions.
+2-morphisms, we define both left and right extensions (likewise for lifts). The use of left and
+right here is a common one in the theory of Kan extensions.
 
 ## Implementation notes
-We define extensions and lifts as objects in certain comma categories.
+We define extensions and lifts as objects in certain comma categories (`StructuredArrow` for left,
+and `CostructuredArrow` for right). See the file `CategoryTheory.StructuredArrow` for properties
+about these categories. We introduce some intuitive aliases. For example, `LeftExtension.extension`
+is an alias for `Comma.right`.
 
 ## References
 * https://ncatlab.org/nlab/show/lifts+and+extensions
