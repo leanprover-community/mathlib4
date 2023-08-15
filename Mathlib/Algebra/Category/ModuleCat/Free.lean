@@ -145,6 +145,8 @@ theorem span_rightExact {w : ι' → P} (hv : ⊤ ≤ span R (range v))
 
 end Span
 
+/-- In a short exact sequence `0 ⟶ N ⟶ M ⟶ P ⟶ 0`, given bases for `N` and `P` indexed by `ι` and
+    `ι'` respectively, we get a basis for `M` indexed by `ι ⊕ ι'`. -/
 noncomputable
 def Basis.ofShortExact {M : ModuleCat R} {f : N ⟶ M} {g : M ⟶ P} (h : ShortExact f g)
     (bN : Basis ι R N) (bP : Basis ι' R P) : Basis (ι ⊕ ι') R M :=
