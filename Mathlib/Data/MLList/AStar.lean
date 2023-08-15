@@ -28,8 +28,11 @@ section GraphData
 
 /-- Representation of a path in a graph for A^* search. We cache the priority. -/
 structure Path where
+  /-- The cached priority of a path. -/
   prio : P
+  /-- The vertex the path ends at. -/
   to : V
+  /-- The list of edges in the path. -/
   edges : List E
 
 /--
@@ -41,10 +44,17 @@ the weight of each edge,
 and the heuristic distance to a goal for each vertex.
 -/
 structure GraphData where
+  /-- Function assigning the source vertex to each edge. -/
   s : E → V
+  /-- Function assigning the target vertex to each edge. -/
   t : E → V
+  /-- Function return all edges leaving a given vertex. -/
   nbhd : V → MLList m E
+  /-- The weight of an edge.
+  The priority of a path is the sum of its edge weights plus the heuristic of its final vertex. -/
   weight : E → P
+  /-- The heuristic of a vertex.
+  The priority of a path is the sum of its edge weights plus the heuristic of its final vertex. -/
   heuristic : V → P
 
 variable {m P V E}
@@ -62,10 +72,15 @@ Data associated to a vertex during A^* search.
 We record the best seen path so far, and track which edges are `explored` and `remaining`.
 -/
 structure VertexData [Inhabited P] [Inhabited V] [Inhabited E] where
+  /-- The best so far path to the vertex. -/
   bestPath : Path P V E
+  /-- The heuristic associated to the vertex. -/
   heuristicPrio : P
+  /-- The sum of the edge weights of the best so far path, plus the heuristic of the vertex. -/
   totalPrio : P
+  /-- The edges leaving the vertex which have already been explored. -/
   explored : List E
+  /-- The remaining unexplored edges leaving the vertex. -/
   remaining : MLList m E
 
 variable [Inhabited P] [Inhabited V] [Inhabited E]
@@ -88,7 +103,10 @@ We additionally maintain vertex data
 for each vertex visited so far.
 -/
 structure State where
+  /-- A priority queue: for each currently seen priority,
+  the list of vertices with that priority. -/
   queue : RBMap P (List V) compare
+  /-- A lookup table from visited vertices to their `VertexData`. -/
   data : HashMap V (VertexData m P V E)
 
 /-- State monad for A^* search. -/
