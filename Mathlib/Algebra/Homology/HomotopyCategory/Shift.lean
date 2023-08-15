@@ -232,11 +232,11 @@ def mapCochainComplexShiftIso (n : ℤ) :
     (by aesop_cat)) (fun _ => by ext ; dsimp ; rw [id_comp, comp_id])
 
 @[simp]
-lemma mapCochainComplexShiftIso_hom_app_f (K : CochainComplex C ℤ) (i : ℤ) :
+lemma mapCochainComplexShiftIso_hom_app_f (K : CochainComplex C ℤ) (n i : ℤ) :
     ((F.mapCochainComplexShiftIso n).hom.app K).f i = 𝟙 _ := rfl
 
 @[simp]
-lemma mapCochainComplexShiftIso_inv_app_f (K : CochainComplex C ℤ) (i : ℤ) :
+lemma mapCochainComplexShiftIso_inv_app_f (K : CochainComplex C ℤ) (n i : ℤ) :
     ((F.mapCochainComplexShiftIso n).inv.app K).f i = 𝟙 _ := rfl
 
 instance commShiftMapCochainComplex :

@@ -1,9 +1,11 @@
 import Mathlib.Algebra.Homology.DerivedCategory.IsLE
 
+universe w v u
+
 open CategoryTheory Category Limits Preadditive ZeroObject
 
-variable {C : Type u} [Category C] [Abelian C]
-  [HasDerivedCategory C]
+variable {C : Type u} [Category.{v} C] [Abelian C]
+  [HasDerivedCategory.{w} C]
 
 namespace CochainComplex
 
@@ -285,7 +287,7 @@ lemma isIso_homologyMap_truncLEmap_iff (n i : ℤ) (hi : i ≤ n) :
   dsimp
   simp only [← homologyMap_comp, truncLEι_naturality]
 
-lemma qis_truncLEmap_iff :
+lemma qis_truncLEmap_iff (n : ℤ) :
     qis _ _ (truncLEmap φ n) ↔ ∀ (i : ℤ) (_ : i ≤ n), IsIso (homologyMap φ i) := by
   constructor
   . intro h i hi
@@ -342,16 +344,16 @@ lemma qis_isInvertedBy_functorTruncLE_comp_Q (n : ℤ) :
   intro i _
   exact hf i
 
-instance : (K.truncLE n).IsStrictlyLE n := ⟨K.isZero_truncLEX n⟩
+instance (n : ℤ) : (K.truncLE n).IsStrictlyLE n := ⟨K.isZero_truncLEX n⟩
 
-instance (i : ℤ) [K.IsStrictlyLE i] : (K.truncLE n).IsStrictlyLE i := ⟨fun j hj => by
+instance (n i : ℤ) [K.IsStrictlyLE i] : (K.truncLE n).IsStrictlyLE i := ⟨fun j hj => by
   by_cases hj' : n < j
   . exact K.isZero_truncLEX _ _ hj'
   . rw [IsZero.iff_id_eq_zero, ← cancel_mono (K.truncLEιf n j)]
     apply IsZero.eq_of_tgt
     exact K.isZero_of_isStrictlyLE i j (by linarith)⟩
 
-instance (i : ℤ) [K.IsStrictlyGE i] : (K.truncLE n).IsStrictlyGE i := ⟨fun j hj => by
+instance (n i : ℤ) [K.IsStrictlyGE i] : (K.truncLE n).IsStrictlyGE i := ⟨fun j hj => by
   by_cases hj' : n < j
   . exact K.isZero_truncLEX _ _ hj'
   . rw [IsZero.iff_id_eq_zero, ← cancel_mono (K.truncLEιf n j)]
@@ -401,7 +403,7 @@ noncomputable def functorTruncLEFactors (n : ℤ) :
     Q ⋙ functorTruncLE C n ≅ CochainComplex.functorTruncLE C n ⋙ Q :=
   Localization.fac _ _ _
 
-noncomputable instance : Localization.Lifting Q (HomologicalComplex.qis C _)
+noncomputable instance (n : ℤ) : Localization.Lifting Q (HomologicalComplex.qis C _)
     (CochainComplex.functorTruncLE C n ⋙ Q) (functorTruncLE C n) :=
   ⟨functorTruncLEFactors C n⟩
 

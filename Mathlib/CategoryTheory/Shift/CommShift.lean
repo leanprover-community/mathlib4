@@ -282,7 +282,8 @@ namespace Functor
 
 section hasShiftOfFullyFaithful
 
-variable {C D : Type _} [Category C] [Category D] [AddMonoid A] [HasShift D A]
+variable {C D : Type _} [Category C] [Category D]
+  {A : Type _} [AddMonoid A] [HasShift D A]
   (F : C ⥤ D) [Full F] [Faithful F]
   (s : A → C ⥤ C) (i : ∀ i, s i ⋙ F ≅ F ⋙ shiftFunctor D i)
 

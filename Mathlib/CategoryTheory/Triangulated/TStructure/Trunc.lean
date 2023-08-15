@@ -1230,10 +1230,10 @@ lemma truncGEt_obj_obj_isGE (n : ℤ) (i : ℤt) (h : ℤt.mk n ≤ i) (X : C) :
 
 noncomputable def homology' (n : ℤ) : C ⥤ C := t.truncGELE n n ⋙ shiftFunctor C n
 
-instance (X : C) : t.IsLE ((t.homology' n).obj X) 0 :=
+instance (X : C) (n : ℤ) : t.IsLE ((t.homology' n).obj X) 0 :=
   t.isLE_shift _ n n 0 (add_zero n)
 
-instance (X : C) : t.IsGE ((t.homology' n).obj X) 0 :=
+instance (X : C) (n : ℤ) : t.IsGE ((t.homology' n).obj X) 0 :=
   t.isGE_shift _ n n 0 (add_zero n)
 
 lemma homology'_obj_mem_heart (n : ℤ) (X : C) : (t.homology' n).obj X ∈ t.heart := by
@@ -1478,7 +1478,7 @@ instance (a b : ℤ) (X : C) : IsIso ((t.natTransTruncGELTTruncLTGE a b).app X) 
       apply IsZero.eq_of_src
       refine' t.isZero _ (b-1) a (by linarith)
 
-instance : IsIso (t.natTransTruncGELTTruncLTGE a b) :=
+instance (a b : ℤ) : IsIso (t.natTransTruncGELTTruncLTGE a b) :=
   NatIso.isIso_of_isIso_app _
 
 instance (a b : ℤ) (X : C) :

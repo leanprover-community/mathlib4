@@ -20,7 +20,7 @@ We define the pointwise category structure on indexed families of objects in a c
 
 namespace CategoryTheory
 
-universe w₀ w₁ w₂ v₁ v₂ u₁ u₂
+universe w₀ w₁ w₂ v₁ v₂ v₄ u₁ u₂ u₃ u₄
 
 variable {I : Type w₀} {J : Type w₁} (C : I → Type u₁) [∀ i, Category.{v₁} (C i)]
 

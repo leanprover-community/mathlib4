@@ -348,7 +348,7 @@ end Homology
 
 section Homotopy
 
-variable (φ₁ φ₂ φ₃ : S₁ ⟶ S₂)
+variable (φ₁ φ₂ φ₃ φ₄ : S₁ ⟶ S₂)
 
 @[ext]
 structure Homotopy where
@@ -378,7 +378,7 @@ namespace Homotopy
 
 attribute [local simp] neg_comp
 
-variable {S₁ S₂ φ₁ φ₂ φ₃}
+variable {S₁ S₂ φ₁ φ₂ φ₃ φ₄}
 
 @[simps]
 def ofEq (h : φ₁ = φ₂) : Homotopy φ₁ φ₂ where

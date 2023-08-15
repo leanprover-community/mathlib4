@@ -172,7 +172,7 @@ lemma induction_Q_obj (P : DerivedCategory C → Prop)
 variable (C)
 
 -- this should be moved (and generalized)
-instance : (HomologicalComplex.single C (ComplexShape.up ℤ) n).Additive where
+instance (n : ℤ) : (HomologicalComplex.single C (ComplexShape.up ℤ) n).Additive where
 
 noncomputable def singleFunctor (n : ℤ) : C ⥤ DerivedCategory C :=
   HomologicalComplex.single _ _ n ⋙ Q
@@ -212,13 +212,13 @@ noncomputable def singleFunctorCompHomologyFunctorIso (n : ℤ) :
   Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (homologyFunctorFactors C n) ≪≫
     HomologicalComplex.singleCompHomologyFunctorIso C (ComplexShape.up ℤ) n
 
-instance : (homologyFunctor C n).PreservesZeroMorphisms :=
+instance (n : ℤ) : (homologyFunctor C n).PreservesZeroMorphisms :=
   Functor.preservesZeroMorphisms_of_fac_of_essSurj _ _ _
     (homologyFunctorFactorsh C n)
 
 -- could be better to have `IsHomological` extend `PreservesZeroMorphisms` so that
 -- we do not have to prove both statement separately
-instance : (homologyFunctor C n).IsHomological :=
+instance (n : ℤ) : (homologyFunctor C n).IsHomological :=
   Functor.isHomological_of_localization Qh
     (homologyFunctor C n) _ (homologyFunctorFactorsh C n)
 

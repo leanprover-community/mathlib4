@@ -838,7 +838,7 @@ lemma leftShift_comp (a n' : ℤ) (hn' : n + a = n') {m t t' : ℤ} (γ' : Cocha
 
 @[simp]
 lemma leftShift_comp_zero_cochain (a n' : ℤ) (hn' : n + a = n') (γ' : Cochain L M 0) :
-    (γ •[h] γ').leftShift a n' hn' = (γ.leftShift a n' hn') •[add_zero n'] γ' := by
+    (γ •[add_zero n] γ').leftShift a n' hn' = (γ.leftShift a n' hn') •[add_zero n'] γ' := by
   rw [leftShift_comp γ a n' hn' γ' (add_zero _) hn', mul_zero, ε_0, one_smul]
 
 def shift (a : ℤ) : Cochain (K⟦a⟧) (L⟦a⟧) n :=
@@ -1024,7 +1024,7 @@ end Shift
 
 namespace HomComplex
 
-variable {K L : CochainComplex C ℤ}
+variable {F G K L : CochainComplex C ℤ}
 
 @[simp]
 lemma δ_comp_zero_cocycle {n : ℤ} (z₁ : Cochain F G n) (z₂ : Cocycle G K 0) (m : ℤ) :

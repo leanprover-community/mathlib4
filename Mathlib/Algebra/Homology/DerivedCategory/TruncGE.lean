@@ -288,7 +288,7 @@ lemma isIso_homologyMap_truncGEmap_iff (n i : ℤ) (hi : n ≤ i) :
   dsimp
   simp only [← homologyMap_comp, truncGEπ_naturality]
 
-lemma qis_truncGEmap_iff :
+lemma qis_truncGEmap_iff (n : ℤ) :
     qis _ _ (truncGEmap φ n) ↔ ∀ (i : ℤ) (_ : n ≤ i), IsIso (homologyMap φ i) := by
   constructor
   . intro h i hi
@@ -305,7 +305,7 @@ lemma qis_truncGEmap_iff :
 
 variable (K)
 
-lemma qis_truncGEπ_iff :
+lemma qis_truncGEπ_iff (n : ℤ) :
     qis _ _ (K.truncGEπ n) ↔ K.IsGE n := by
   constructor
   . intro h
@@ -345,16 +345,16 @@ lemma qis_isInvertedBy_functorTruncGE_comp_Q (n : ℤ) :
   intro i _
   exact hf i
 
-instance : (K.truncGE n).IsStrictlyGE n := ⟨K.isZero_truncGEX n⟩
+instance (n : ℤ)  : (K.truncGE n).IsStrictlyGE n := ⟨K.isZero_truncGEX n⟩
 
-instance (i : ℤ) [K.IsStrictlyLE i] : (K.truncGE n).IsStrictlyLE i := ⟨fun j hj => by
+instance (n i : ℤ) [K.IsStrictlyLE i] : (K.truncGE n).IsStrictlyLE i := ⟨fun j hj => by
   by_cases hj' : j < n
   . exact K.isZero_truncGEX _ _ hj'
   . rw [IsZero.iff_id_eq_zero, ← cancel_epi (K.truncGEπf n j)]
     apply IsZero.eq_of_src
     exact K.isZero_of_isStrictlyLE i j (by linarith)⟩
 
-instance (i : ℤ) [K.IsStrictlyGE i] : (K.truncGE n).IsStrictlyGE i := ⟨fun j hj => by
+instance (n i : ℤ) [K.IsStrictlyGE i] : (K.truncGE n).IsStrictlyGE i := ⟨fun j hj => by
   by_cases hj' : j < n
   . exact K.isZero_truncGEX _ _ hj'
   . rw [IsZero.iff_id_eq_zero, ← cancel_epi (K.truncGEπf n j)]
@@ -403,7 +403,7 @@ noncomputable def functorTruncGEFactors (n : ℤ) :
     Q ⋙ functorTruncGE C n ≅ CochainComplex.functorTruncGE C n ⋙ Q :=
   Localization.fac _ _ _
 
-noncomputable instance : Localization.Lifting Q (HomologicalComplex.qis C _)
+noncomputable instance (n : ℤ) : Localization.Lifting Q (HomologicalComplex.qis C _)
     (CochainComplex.functorTruncGE C n ⋙ Q) (functorTruncGE C n) :=
   ⟨functorTruncGEFactors C n⟩
 

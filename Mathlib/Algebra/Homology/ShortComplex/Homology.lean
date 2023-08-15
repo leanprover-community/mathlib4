@@ -947,7 +947,7 @@ noncomputable def homologyFunctorOpNatIso [CategoryWithHomology C] :
     (homologyFunctor C).op ≅ opFunctor C ⋙ homologyFunctor Cᵒᵖ :=
   NatIso.ofComponents (fun S => Iso.symm S.unop.homologyOpIso) (by simp)
 
-variable {C}
+variable {C} {A : C}
 
 lemma liftCycles_homologyπ_eq_zero_of_boundary [S.HasHomology]
     (k : A ⟶ S.X₂) (x : A ⟶ S.X₁) (hx : k = x ≫ S.f) :
@@ -957,7 +957,7 @@ lemma liftCycles_homologyπ_eq_zero_of_boundary [S.HasHomology]
 
 @[reassoc]
 lemma homologyι_descOpcycles_π_eq_zero_of_boundary [S.HasHomology]
-    (x : S.X₃ ⟶ A) (hx : k = S.g ≫ x) :
+    (k : S.X₂ ⟶ A) (x : S.X₃ ⟶ A) (hx : k = S.g ≫ x) :
     S.homologyι ≫ S.descOpcycles k (by rw [hx, S.zero_assoc, zero_comp]) = 0 := by
   dsimp only [homologyι]
   rw [assoc, S.rightHomologyι_descOpcycles_π_eq_zero_of_boundary k x hx, comp_zero]

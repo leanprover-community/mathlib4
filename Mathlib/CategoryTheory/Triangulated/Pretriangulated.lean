@@ -485,7 +485,7 @@ def productTriangle.π {J : Type _} (T : J → Triangle C)
     rw [← piComparison_comp_π, assoc, IsIso.inv_hom_id_assoc]
     simp only [limMap_π, Discrete.natTrans_app]
 
-lemma productTriangle.π_zero₃₁ (T : J → Triangle C)
+lemma productTriangle.π_zero₃₁ {J : Type _} (T : J → Triangle C)
     [HasProduct (fun j => (T j).obj₁)] [HasProduct (fun j => (T j).obj₂)]
     [HasProduct (fun j => (T j).obj₃)]
     [HasProduct (fun j => (T j).obj₁⟦(1 : ℤ)⟧)]

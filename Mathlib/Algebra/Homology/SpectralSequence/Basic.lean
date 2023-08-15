@@ -347,7 +347,7 @@ noncomputable def isoPageSucc (r r' : ℤ) [E.HasPage r] [E.HasPage r']
     . exact E.d_to_eq_zero pq r ((E.rToMin_le_rMin pq).trans hr) _ _
     . exact E.d_from_eq_zero pq r ((E.rFromMin_le_rMin pq).trans hr) _ _
 
-instance [E.HasPage r] (k : ℕ) : E.HasPage (r + k) :=
+instance (r : ℤ) [E.HasPage r] (k : ℕ) : E.HasPage (r + k) :=
   E.hasPage_of_le r (r+k) (by simp only [le_add_iff_nonneg_right, Nat.cast_nonneg])
 
 noncomputable def isoPageOfAddNat (r : ℤ) [E.HasPage r] (hr : E.rMin pq ≤ r) (k : ℕ) :

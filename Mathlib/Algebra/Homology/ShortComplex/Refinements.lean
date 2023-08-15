@@ -15,6 +15,7 @@ namespace CategoryTheory
 open Category Limits Preadditive
 
 variable {C : Type _} [Category C] [Abelian C] {X Y : C} (S : ShortComplex C)
+  {S₁ S₂ : ShortComplex C}
 
 attribute [local instance] epi_comp
 

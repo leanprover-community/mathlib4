@@ -245,7 +245,7 @@ lemma isZero_H_of_isIso (D : Arrow ι) (hD : IsIso D.hom) :
 @[reassoc]
 lemma zero₃' {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) (fg : i ⟶ k)
     (hfg : f ≫ g = fg) (φ : Arrow.mk fg ⟶ Arrow.mk g) (hφ₁ : φ.left = f) (hφ₂ : φ.right = 𝟙 k) :
-      (X.H n₀).map φ ≫ (X.δ n₀ n₁ h).app (Arrow₂.mk f g) = 0 := by
+      (X.H n₀).map φ ≫ (X.δ n₀ n₁ hn₁).app (Arrow₂.mk f g) = 0 := by
   subst hfg
   obtain rfl : φ = (Arrow₂.δ₁Toδ₀.app (Arrow₂.mk f g)) := by
     ext
@@ -1647,7 +1647,7 @@ lemma filtrationShortComplex_shortExact (i j : ι) (φ : i ⟶ j) :
     (X.filtrationShortComplex n₀ n₁ n₂ hn₁ hn₂ _ _ φ).ShortExact :=
   X.imagesCokernelSequenceE_shortExact n₀ n₁ n₂ hn₁ hn₂ ((Arrow₃.ιArrow ι).obj (Arrow.mk φ))
 
-instance : Epi (X.filtrationπ n₀ n₁ n₂ hn₁ hn₂ _ _ φ) :=
+instance (i j : ι) (φ : i ⟶ j) : Epi (X.filtrationπ n₀ n₁ n₂ hn₁ hn₂ _ _ φ) :=
   (X.filtrationShortComplex_shortExact n₀ n₁ n₂ hn₁ hn₂ _ _ φ).epi_g
 
 variable (ι)

@@ -340,7 +340,7 @@ noncomputable def yonedaEquiv (X : C) [HasBinaryProduct X X] [HasBinaryProduct X
   ObjOperation₃ X ≃ Types.functorOperation₃ (yoneda.obj X) :=
   yonedaEquiv' X X X X
 
-noncomputable def map [HasBinaryProduct X X] [HasBinaryProduct X (X ⨯ X)]
+noncomputable def map {X : C} [HasBinaryProduct X X] [HasBinaryProduct X (X ⨯ X)]
     (h : ObjOperation₃ X) (F : C ⥤ D) [HasBinaryProduct (F.obj X) (F.obj X)]
     [HasBinaryProduct (F.obj X) (F.obj X ⨯ F.obj X)]
     [HasBinaryProduct (F.obj X) (F.obj (X ⨯ X))]

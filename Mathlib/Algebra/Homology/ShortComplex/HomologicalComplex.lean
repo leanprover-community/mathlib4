@@ -887,7 +887,7 @@ noncomputable def homologyFunctorFactors (i : ι) :
 -- this is to prevent any abuse of defeq
 attribute [irreducible] homologyFunctor homologyFunctorFactors
 
-instance : (homologyFunctor C c i).Additive := by
+instance (i : ι) : (homologyFunctor C c i).Additive := by
   have := Functor.additive_of_iso (homologyFunctorFactors C c i).symm
   exact Functor.additive_of_full_essSurj_comp (quotient C c) _
 
