@@ -165,8 +165,7 @@ theorem coeff_le_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (i : ℕ) (h1 
   obtain hB | hB := lt_or_le B 0
   · rw [eq_one_of_roots_le hB h1 h2 h3, Polynomial.map_one, natDegree_one, zero_tsub, pow_zero,
       one_mul, coeff_one]
-    split_ifs <;> norm_num [h]
-    simp [‹0 = i›]
+    split_ifs with h <;> simp [h]
   rw [← h1.natDegree_map f]
   obtain hi | hi := lt_or_le (map f p).natDegree i
   · rw [coeff_eq_zero_of_natDegree_lt hi, norm_zero]
