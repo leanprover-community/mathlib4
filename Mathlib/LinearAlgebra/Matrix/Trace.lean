@@ -186,7 +186,6 @@ with `Matrix.det_fin_two` etc.
 -/
 
 
-@[simp]
 theorem trace_fin_zero (A : Matrix (Fin 0) (Fin 0) R) : trace A = 0 :=
   rfl
 #align matrix.trace_fin_zero Matrix.trace_fin_zero
