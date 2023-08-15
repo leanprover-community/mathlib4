@@ -11,7 +11,7 @@ import Mathlib.RingTheory.Localization.NormTrace
 This file defines the discriminant of a number field.
 
 ## Main definitions
- - `discr` the discriminant of a number field.
+ - `discr` the absolute discriminant of a number field.
 
 ## Tags
 number field, discriminant
@@ -26,7 +26,7 @@ open NumberField Matrix
 
 variable (K : Type*) [Field K] [NumberField K]
 
-/-- The discriminant of a number field. -/
+/-- The absolute discriminant of a number field. -/
 noncomputable abbrev discr : ℤ := Algebra.discr ℤ (RingOfIntegers.basis K)
 
 theorem coe_discr : (discr K : ℚ) = Algebra.discr ℚ (integralBasis K) :=
@@ -47,6 +47,7 @@ namespace Rat
 
 open NumberField
 
+/-- The absolute discriminant of the number field `ℚ` is 1. -/
 theorem numberField_discr : discr ℚ = 1 := by
   let b : Basis (Fin 1) ℤ (𝓞 ℚ) :=
     Basis.map (Basis.singleton (Fin 1) ℤ) ringOfIntegersEquiv.toAddEquiv.toIntLinearEquiv.symm
