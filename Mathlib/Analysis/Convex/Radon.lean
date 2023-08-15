@@ -137,7 +137,7 @@ theorem Radon_partition (s : Set E)
       rw [Finset.mem_filter] at hi
       rcases hi
       simp
-      ring; split_ifs
+      ring_nf; split_ifs
       rw [mul_comm, mul_smul]
       exfalso; linarith
 
@@ -148,7 +148,7 @@ theorem Radon_partition (s : Set E)
       rw [Finset.mem_filter] at hi
       rcases hi
       simp
-      ring; split_ifs
+      ring_nf; split_ifs
       exfalso; linarith
       rw [mul_comm, ←neg_smul, ←neg_mul, mul_smul]
 
