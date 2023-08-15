@@ -117,6 +117,8 @@ structure RewriteResult where
   /-- Can the new goal in `result` be closed by `with_reducible rfl`? -/
   -- This is an `Option` so that it can be computed lazily.
   rfl? : Option Bool
+  /-- The metavariable context after the rewrite.
+  This needs to be stored as part of the result so we can backtrack the state. -/
   mctx : MetavarContext
 
 /-- Update a `RewriteResult` by filling in the `rfl?` field if it is currently `none`,
