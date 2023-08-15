@@ -82,21 +82,42 @@ theorem dotProduct_self_eq_zero [LinearOrderedRing R] {v : n → R} : dotProduct
     simp [Function.funext_iff]
 #align matrix.dot_product_self_eq_zero Matrix.dotProduct_self_eq_zero
 
+section StarOrderedRing
+
+variable [PartialOrder R] [NonUnitalRing R] [StarOrderedRing R] [NoZeroDivisors R]
+
 /-- Note that this applies to `ℂ` via `Complex.strictOrderedCommRing`. -/
 @[simp]
-theorem dotProduct_star_self_eq_zero [PartialOrder R] [NonUnitalRing R] [StarOrderedRing R]
-    [NoZeroDivisors R] {v : n → R} : dotProduct (star v) v = 0 ↔ v = 0 :=
+theorem dotProduct_star_self_eq_zero {v : n → R} : dotProduct (star v) v = 0 ↔ v = 0 :=
   (Finset.sum_eq_zero_iff_of_nonneg fun i _ => (@star_mul_self_nonneg _ _ _ _ (v i) : _)).trans <|
     by simp [Function.funext_iff, mul_eq_zero]
 #align matrix.dot_product_star_self_eq_zero Matrix.dotProduct_star_self_eq_zero
 
 /-- Note that this applies to `ℂ` via `Complex.strictOrderedCommRing`. -/
 @[simp]
-theorem dotProduct_self_star_eq_zero [PartialOrder R] [NonUnitalRing R] [StarOrderedRing R]
-    [NoZeroDivisors R] {v : n → R} : dotProduct v (star v) = 0 ↔ v = 0 :=
+theorem dotProduct_self_star_eq_zero {v : n → R} : dotProduct v (star v) = 0 ↔ v = 0 :=
   (Finset.sum_eq_zero_iff_of_nonneg fun i _ => (@star_mul_self_nonneg' _ _ _ _ (v i) : _)).trans <|
     by simp [Function.funext_iff, mul_eq_zero]
 #align matrix.dot_product_self_star_eq_zero Matrix.dotProduct_self_star_eq_zero
+
+variable {m p: Type _} [Fintype m] [Fintype p]
+
+lemma conjTranspose_mul_self_eq_zero_iff (A : Matrix m n R) : (Aᴴ⬝A) = 0 ↔ A = 0 := by
+  refine' ⟨ fun h => Matrix.ext fun _ _ => ?_, fun h => by simp only [h, Matrix.mul_zero] ⟩
+  apply (Function.funext_iff.1 (dotProduct_star_self_eq_zero.1 ((Matrix.ext_iff.2 h) _ _)))
+
+lemma ker_conj_transpose_mul_self_eq_ker (A: Matrix m n R) (B: Matrix n p R) :
+    (Aᴴ⬝A)⬝B = 0 ↔ A⬝B = 0 := by
+  refine' ⟨ fun h => _, fun h => by simp only [Matrix.mul_assoc, h, Matrix.mul_zero] ⟩
+  apply_fun (fun x => Bᴴ.mul x) at h
+  rw [Matrix.mul_zero, Matrix.mul_assoc, ← Matrix.mul_assoc, ← conjTranspose_mul] at h
+  exact (conjTranspose_mul_self_eq_zero_iff (A⬝B)).1 h
+
+lemma ker_self_mul_conj_transpose_eq_ker_conj_transpose (A: Matrix m n R)(B: Matrix m p R) :
+    (A⬝Aᴴ)⬝B = 0 ↔ Aᴴ⬝B = 0 := by
+  simpa only [conjTranspose_conjTranspose] using ker_conj_transpose_mul_self_eq_ker Aᴴ _
+
+end StarOrderedRing
 
 end Self
 
