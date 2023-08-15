@@ -708,10 +708,7 @@ def codRestrict (f : E →ₗ.[R] F) (p : Submodule R F) (H : ∀ x, f x ∈ p) 
   toFun := f.toFun.codRestrict p H
 #align linear_pmap.cod_restrict LinearPMap.codRestrict
 
-/-- Compose two `LinearPMap`s -/
-def comp (g : F →ₗ.[R] G) (f : E →ₗ.[R] F) (H : ∀ x : f.domain, f x ∈ g.domain) : E →ₗ.[R] G :=
-  g.toFun.compPMap <| f.codRestrict _ H
-#align linear_pmap.comp LinearPMap.comp
+#noalign linear_pmap.comp
 
 /-- `f.coprod g` is the partially defined linear map defined on `f.domain × g.domain`,
 and sending `p` to `f p.1 + g p.2`. -/
@@ -724,8 +721,8 @@ def coprod (f : E →ₗ.[R] G) (g : F →ₗ.[R] G) : E × F →ₗ.[R] G where
     HAdd.hAdd
       (α := f.domain.prod g.domain →ₗ[R] G)
       (β := f.domain.prod g.domain →ₗ[R] G)
-      (f.comp (LinearPMap.fst f.domain g.domain) fun x => x.2.1).toFun
-      (g.comp (LinearPMap.snd f.domain g.domain) fun x => x.2.2).toFun
+      (f.toFun.comp <| (LinearPMap.fst f.domain g.domain).toFun.codRestrict _ fun x => x.2.1)
+      (g.toFun.comp <| (LinearPMap.snd f.domain g.domain).toFun.codRestrict _ fun x => x.2.2)
 #align linear_pmap.coprod LinearPMap.coprod
 
 @[simp]
@@ -757,6 +754,53 @@ theorem domRestrict_apply {f : E →ₗ.[R] F} {S : Submodule R E} ⦃x : ↥(S 
 theorem domRestrict_le {f : E →ₗ.[R] F} {S : Submodule R E} : f.domRestrict S ≤ f :=
   ⟨by simp, fun x y hxy => domRestrict_apply hxy⟩
 #align linear_pmap.dom_restrict_le LinearPMap.domRestrict_le
+
+/-- The domain of the composition of two `LinearPMap`s is `{x : f.domain | f x ∈ g.domain }`. -/
+def comp_domain (g : F →ₗ.[R] G) (f : E →ₗ.[R] F) : Submodule R E where
+  carrier := { x | ∃ y : f.domain, x = y ∧ f y ∈ g.domain }
+  add_mem' := by
+    rintro x1 x2 ⟨y1, h1⟩ ⟨y2, h2⟩
+    use y1 + y2
+    simp only [h1.1, h2.1, AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid, true_and, map_add]
+    exact add_mem h1.2 h2.2
+  zero_mem' := by
+    simp only [Subtype.exists, exists_and_left, exists_eq_left', mem_setOf_eq, Submodule.zero_mem,
+      exists_true_left]
+    change f 0 ∈ _
+    simp
+  smul_mem' := by
+    rintro c x ⟨y1, h1⟩
+    use c • y1
+    simp only [h1.1, SetLike.val_smul, map_smul, true_and]
+    exact Submodule.smul_mem _ c h1.2
+
+@[simp]
+theorem mem_comp_domain {g : F →ₗ.[R] G} {f : E →ₗ.[R] F} (x : E) :
+    x ∈ g.comp_domain f ↔ ∃ y : f.domain, x = y ∧ f y ∈ g.domain := by
+  rfl
+
+theorem comp_domain_le (g : F →ₗ.[R] G) (f : E →ₗ.[R] F) :
+    g.comp_domain f ≤ f.domain := by
+  rintro x ⟨y, hx⟩
+  rw [hx.1]
+  exact y.2
+
+/-- Compose two `LinearPMap`s by restricting the domain to `{x : f.domain | f x ∈ g.domain }`. -/
+def comp (g : F →ₗ.[R] G) (f : E →ₗ.[R] F) : E →ₗ.[R] G where
+  domain := g.comp_domain f
+  toFun := g.toFun.comp <| (f.toFun.comp (Submodule.ofLe (comp_domain_le _ _))).codRestrict _
+    (fun ⟨_, ⟨_, hx⟩⟩ => by simp [Submodule.ofLe_apply, hx.1, hx.2])
+
+theorem comp_apply {g : F →ₗ.[R] G} {f : E →ₗ.[R] F} ⦃x : g.comp_domain f⦄ ⦃y : g.domain⦄
+    ⦃x' : f.domain⦄ (hx : (x : E) = x') (h : f x' = y) :
+    g.comp f x = g y := by
+  simp only [comp, mk_apply, LinearMap.coe_comp, Function.comp_apply, toFun_eq_coe]
+  congr
+  apply Subtype.eq
+  simp only [LinearMap.codRestrict_apply, LinearMap.coe_comp, Function.comp_apply, toFun_eq_coe,
+    ← h]
+  congr
+  simp [Submodule.ofLe_apply, hx]
 
 /-! ### Graph -/
 
