@@ -27,35 +27,9 @@ move ordered monoid instances on `Lex (σ →₀ β)`
 move maxDegree API
 -/
 
-namespace MvPolynomial
+section OrderedAddMonoidLex
 
-open BigOperators Finset
-
-variable (σ τ R : Type*) (n m : ℕ)
-
-section CommSemiring
-
-variable [CommSemiring R]
-
-noncomputable def esymmAlgHom [Fintype σ] :
-    MvPolynomial (Fin n) R →ₐ[R] symmetricSubalgebra σ R :=
-  aeval (fun i => ⟨esymm σ R (i + 1), esymm_isSymmetric σ R _⟩)
-
-variable {σ τ R n}
-
-lemma esymmAlgHom_apply [Fintype σ] (p : MvPolynomial (Fin n) R) :
-    (esymmAlgHom σ R n p).val = aeval (fun i : Fin n => esymm σ R (i + 1)) p :=
-  (Subalgebra.mvPolynomial_aeval_coe _ _ _).symm
-
-lemma rename_esymmAlgHom [Fintype σ] [Fintype τ] (e : σ ≃ τ) :
-    (rename_symmetricSubalgebra e).toAlgHom.comp (esymmAlgHom σ R n) = esymmAlgHom τ R n := by
-  refine' algHom_ext (fun i => Subtype.ext _)
-  simp_rw [AlgHom.comp_apply, esymmAlgHom, aeval_X]
-  exact rename_esymm σ R _ e
-
-section maxDegree
-
-variable [LinearOrder σ] (p q : MvPolynomial σ R)
+variable (σ : Type*) [LinearOrder σ]
 
 instance (β) [CanonicallyOrderedAddMonoid β] : OrderBot (Lex (σ →₀ β)) where
   bot := 0
@@ -80,6 +54,18 @@ noncomputable instance (β) [LinearOrderedCancelAddCommMonoid β] :
 #check LinearOrderedAddCommGroup
 #check OrderedCancelAddCommMonoid
 #check LinearOrderedCancelAddCommMonoid -/
+
+end OrderedAddMonoidLex
+
+namespace MvPolynomial
+
+open BigOperators Finset
+
+variable {σ τ R : Type*} {n m : ℕ}
+
+section maxDegree
+
+variable [LinearOrder σ] [CommSemiring R] (p q : MvPolynomial σ R)
 
 def maxDegree : Lex (σ →₀ ℕ) := p.support.sup toLex
 def leadingCoeff : R := p.coeff (ofLex p.maxDegree)
@@ -165,9 +151,9 @@ lemma maxDegree_le_of_support {t : Lex (σ →₀ ℕ)} (ht : ∀ s ∈ p.suppor
 
 lemma maxDegree_le_of_coeff {t : Lex (σ →₀ ℕ)} (ht : ∀ s, t < toLex s → p.coeff s = 0) :
     p.maxDegree ≤ t := maxDegree_le_of_support fun s h => by
-  rw [mem_support_iff] at h; contrapose! h; exact (ht s h)
+  rw [mem_support_iff] at h; contrapose! h; exact ht s h
 
---lemma maxDegree_lt_of_support {t : Lex (σ →₀ ℕ)} ...
+--lemma maxDegree_lt_of_support {t : Lex (σ →₀ ℕ)} ... 0 < t or p ≠ 0
 
 lemma maxDegree_add_le : (p + q).maxDegree ≤ max p.maxDegree q.maxDegree := by
   refine' maxDegree_le_of_coeff fun s h => _
@@ -229,9 +215,8 @@ lemma ne_zero_of_injOn' {α} {s : Finset α} (f : α → MvPolynomial σ R) (hs 
 lemma ne_zero_of_injOn {α} {s : Finset α} (hs : s ≠ ∅) (f : α → MvPolynomial σ R)
     (hf : ∀ a ∈ s, f a ≠ 0) (hd : (s : Set α).InjOn (maxDegree ∘ f)) :
     ∑ a in s, f a ≠ 0 := by
-  refine' ne_zero_of_injOn' f _ hd
   obtain ⟨a, ha⟩ := nonempty_iff_ne_empty.2 hs
-  exact ⟨a, ha, hf a ha⟩
+  exact ne_zero_of_injOn' f ⟨a, ha, hf a ha⟩ hd
 
 lemma maxDegree_neg {R} [CommRing R] {p : MvPolynomial σ R} : (-p).maxDegree = p.maxDegree := by
   rw [maxDegree, maxDegree, support_neg]
@@ -297,6 +282,10 @@ lemma Monic.maxDegree_pow {n} (hp : p.Monic) : maxDegree (p ^ n) = n • maxDegr
   · rw [pow_zero, zero_nsmul]; exact maxDegree_C 1
   · rw [pow_succ', hp.pow.maxDegree_mul hp, ih, succ_nsmul']
 
+end maxDegree
+
+section accumulate
+
 /-- The `j`th entry of `accumulate m t` is the sum of `t i` over all `i ≤ j`. -/
 @[simps] def accumulate (n m : ℕ) : (Fin n → ℕ) →+ (Fin m → ℕ) where
   toFun t j := ∑ i in univ.filter (fun i : Fin n => (j : ℕ) ≤ i), t i
@@ -349,6 +338,28 @@ lemma surjective_accumulate {n m} (hmn : m ≤ n) {s : Fin m → ℕ} (hs : Anti
     · exact this.not_gt
     intro j hj
     rw [inv_accumulate, dif_neg hj.not_lt, Nat.zero_sub]
+
+end accumulate
+
+section CommSemiring
+
+variable (σ R n) [CommSemiring R]
+
+noncomputable def esymmAlgHom [Fintype σ] :
+    MvPolynomial (Fin n) R →ₐ[R] symmetricSubalgebra σ R :=
+  aeval (fun i => ⟨esymm σ R (i + 1), esymm_isSymmetric σ R _⟩)
+
+variable {σ R n}
+
+lemma esymmAlgHom_apply [Fintype σ] (p : MvPolynomial (Fin n) R) :
+    (esymmAlgHom σ R n p).val = aeval (fun i : Fin n => esymm σ R (i + 1)) p :=
+  (Subalgebra.mvPolynomial_aeval_coe _ _ _).symm
+
+lemma rename_esymmAlgHom [Fintype σ] [Fintype τ] (e : σ ≃ τ) :
+    (rename_symmetricSubalgebra e).toAlgHom.comp (esymmAlgHom σ R n) = esymmAlgHom τ R n := by
+  refine' algHom_ext (fun i => Subtype.ext _)
+  simp_rw [AlgHom.comp_apply, esymmAlgHom, aeval_X]
+  exact rename_esymm σ R _ e
 
 noncomputable def esymmAlgHom_monomial (σ) [Fintype σ] (t : Fin n →₀ ℕ) (r : R) :
     MvPolynomial σ R := (esymmAlgHom σ R n <| monomial t r).val
@@ -439,13 +450,11 @@ lemma maxDegree_esymmAlgHom_monomial (t : Fin n →₀ ℕ) (hnm : n ≤ m) :
       Finsupp.coe_smul, maxDegree_esymm him, ← map_nsmul, Finsupp.smul_single, nsmul_one]; rfl
   exacts [monic_esymm him, (monic_esymm him).pow] -/
 
-end maxDegree
-
 end CommSemiring
 
 section CommRing
 
-variable [Fintype σ] [CommRing R] {σ n m}
+variable (R) [Fintype σ] [CommRing R]
 
 -- shortcut instance necessary to avoid timeout
 instance {K} [CommRing K] : AddCommMonoid K := inferInstance
