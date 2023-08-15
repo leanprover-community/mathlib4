@@ -125,8 +125,9 @@ def RewriteResult.computeRfl (r : RewriteResult) : MetaM RewriteResult := do
   if let some _ := r.rfl? then
     return r
   try
-    (← mkFreshExprMVar r.result.eNew).mvarId!.rfl
-    pure { r with rfl? := some true }
+    withoutModifyingState <| withMCtx r.mctx do
+      (← mkFreshExprMVar r.result.eNew).mvarId!.rfl
+      pure { r with rfl? := some true, mctx := ← getMCtx }
   catch _ =>
     pure { r with rfl? := some false }
 
@@ -212,7 +213,7 @@ elab_rules : tactic |
       if results.isEmpty then
         throwError "Could not find any lemmas which can rewrite the hypothesis {
           ← f.getUserName}"
-      for r in results do
+      for r in results do withMCtx r.mctx do
         addRewriteSuggestion tk [(← mkConstWithFreshMVarLevels r.name, r.symm)]
           r.result.eNew (loc? := .some (.fvar f)) (origSpan? := ← getRef)
       if lucky.isSome then
@@ -229,7 +230,7 @@ elab_rules : tactic |
       reportOutOfHeartbeats `rewrites tk
       if results.isEmpty then
         throwError "Could not find any lemmas which can rewrite the goal"
-      for r in results do
+      for r in results do withMCtx r.mctx do
         let newGoal := if r.rfl? = some true then Expr.lit (.strVal "no goals") else r.result.eNew
         addRewriteSuggestion tk [(← mkConstWithFreshMVarLevels r.name, r.symm)]
           newGoal (origSpan? := ← getRef)
