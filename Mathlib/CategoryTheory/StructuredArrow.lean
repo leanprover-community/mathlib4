@@ -643,7 +643,7 @@ theorem hom_desc (h : IsUniversal f) {c : C} (η : c ⟶ f.left) :
   let g := mk <| S.map η ≫ f.hom
   congrArg CommaMorphism.left (h.hom_ext (homMk η rfl : g ⟶ f) (h.from g))
 
-/-- Two morphisms into a universal `S`-structured arrow are equal if their image under `S` are
+/-- Two morphisms into a universal `S`-costructured arrow are equal if their image under `S` are
 equal after postcomposing the universal arrow. -/
 theorem hom_ext (h : IsUniversal f) {c : C} {η η' : c ⟶ f.left}
     (w : S.map η ≫ f.hom = S.map η' ≫ f.hom) : η = η' := by
