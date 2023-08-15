@@ -5,13 +5,15 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Tactic.LibrarySearch
+
+#align_import algebra.order.sub.canonical from "leanprover-community/mathlib"@"62a5626868683c104774de8d85b9855234ac807c"
+
 /-!
 # Lemmas about subtraction in canonically ordered monoids
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 section ExistsAddOfLE
 
@@ -43,7 +45,7 @@ theorem tsub_le_tsub_iff_right (h : c ≤ b) : a - c ≤ b - c ↔ a ≤ b := by
 #align tsub_le_tsub_iff_right tsub_le_tsub_iff_right
 
 theorem tsub_left_inj (h1 : c ≤ a) (h2 : c ≤ b) : a - c = b - c ↔ a = b := by
-  simp_rw [le_antisymm_iff, tsub_le_tsub_iff_right h1, tsub_le_tsub_iff_right h2]; rfl
+  simp_rw [le_antisymm_iff, tsub_le_tsub_iff_right h1, tsub_le_tsub_iff_right h2]
 #align tsub_left_inj tsub_left_inj
 
 theorem tsub_inj_left (h₁ : a ≤ b) (h₂ : a ≤ c) : b - a = c - a → b = c :=
@@ -105,8 +107,8 @@ protected theorem le_tsub_iff_left (ha : AddLECancellable a) (h : a ≤ c) : b �
   ⟨add_le_of_le_tsub_left_of_le h, ha.le_tsub_of_add_le_left⟩
 #align add_le_cancellable.le_tsub_iff_left AddLECancellable.le_tsub_iff_left
 
-protected theorem le_tsub_iff_right (ha : AddLECancellable a) (h : a ≤ c) : b ≤ c - a ↔ b + a ≤ c :=
-  by
+protected theorem le_tsub_iff_right (ha : AddLECancellable a) (h : a ≤ c) :
+    b ≤ c - a ↔ b + a ≤ c := by
   rw [add_comm]
   exact ha.le_tsub_iff_left h
 #align add_le_cancellable.le_tsub_iff_right AddLECancellable.le_tsub_iff_right
@@ -157,8 +159,7 @@ protected theorem lt_of_tsub_lt_tsub_left_of_le [ContravariantClass α α (· + 
     (hb : AddLECancellable b) (hca : c ≤ a) (h : a - b < a - c) : c < b := by
   conv_lhs at h => rw [← tsub_add_cancel_of_le hca]
   exact lt_of_add_lt_add_left (hb.lt_add_of_tsub_lt_right h)
-#align
-  add_le_cancellable.lt_of_tsub_lt_tsub_left_of_le AddLECancellable.lt_of_tsub_lt_tsub_left_of_le
+#align add_le_cancellable.lt_of_tsub_lt_tsub_left_of_le AddLECancellable.lt_of_tsub_lt_tsub_left_of_le
 
 protected theorem tsub_lt_tsub_left_of_le (hab : AddLECancellable (a - b)) (h₁ : b ≤ a)
     (h : c < b) : a - b < a - c :=
@@ -175,9 +176,7 @@ protected theorem tsub_lt_tsub_iff_left_of_le_of_le [ContravariantClass α α (�
     (hb : AddLECancellable b) (hab : AddLECancellable (a - b)) (h₁ : b ≤ a) (h₂ : c ≤ a) :
     a - b < a - c ↔ c < b :=
   ⟨hb.lt_of_tsub_lt_tsub_left_of_le h₂, hab.tsub_lt_tsub_left_of_le h₁⟩
-#align
-  add_le_cancellable.tsub_lt_tsub_iff_left_of_le_of_le
-  AddLECancellable.tsub_lt_tsub_iff_left_of_le_of_le
+#align add_le_cancellable.tsub_lt_tsub_iff_left_of_le_of_le AddLECancellable.tsub_lt_tsub_iff_left_of_le_of_le
 
 @[simp]
 protected theorem add_tsub_tsub_cancel (hac : AddLECancellable (a - c)) (h : c ≤ a) :
@@ -327,6 +326,7 @@ theorem tsub_eq_zero_iff_le : a - b = 0 ↔ a ≤ b := by
 #align tsub_eq_zero_iff_le tsub_eq_zero_iff_le
 
 alias tsub_eq_zero_iff_le ↔ _ tsub_eq_zero_of_le
+#align tsub_eq_zero_of_le tsub_eq_zero_of_le
 
 attribute [simp] tsub_eq_zero_of_le
 
@@ -371,7 +371,7 @@ protected theorem tsub_le_tsub_iff_left (ha : AddLECancellable a) (hc : AddLECan
 protected theorem tsub_right_inj (ha : AddLECancellable a) (hb : AddLECancellable b)
     (hc : AddLECancellable c) (hba : b ≤ a) (hca : c ≤ a) : a - b = a - c ↔ b = c := by
   simp_rw [le_antisymm_iff, ha.tsub_le_tsub_iff_left hb hba, ha.tsub_le_tsub_iff_left hc hca,
-    and_comm]; rfl
+    and_comm]
 #align add_le_cancellable.tsub_right_inj AddLECancellable.tsub_right_inj
 
 end AddLECancellable
@@ -395,7 +395,7 @@ theorem tsub_right_inj (hba : b ≤ a) (hca : c ≤ a) : a - b = a - c ↔ b = c
 variable (α)
 
 /-- A `CanonicallyOrderedAddMonoid` with ordered subtraction and order-reflecting addition is
-cancellative. This is not an instance at it would form a typeclass loop.
+cancellative. This is not an instance as it would form a typeclass loop.
 
 See note [reducible non-instances]. -/
 @[reducible]
@@ -403,9 +403,7 @@ def CanonicallyOrderedAddMonoid.toAddCancelCommMonoid : AddCancelCommMonoid α :
   { (by infer_instance : AddCommMonoid α) with
     add_left_cancel := fun a b c h => by
       simpa only [add_tsub_cancel_left] using congr_arg (fun x => x - a) h }
-#align
-  canonically_ordered_add_monoid.to_add_cancel_comm_monoid
-  CanonicallyOrderedAddMonoid.toAddCancelCommMonoid
+#align canonically_ordered_add_monoid.to_add_cancel_comm_monoid CanonicallyOrderedAddMonoid.toAddCancelCommMonoid
 
 end Contra
 
@@ -507,7 +505,7 @@ theorem tsub_min : a - min a b = a - b := by
 #align tsub_min tsub_min
 
 theorem tsub_add_min : a - b + min a b = a := by
-  rw [← tsub_min, tsub_add_cancel_of_le]
+  rw [← tsub_min, @tsub_add_cancel_of_le]
   apply min_le_left
 #align tsub_add_min tsub_add_min
 

@@ -7,6 +7,8 @@ import Mathlib.Data.Nat.Units
 import Mathlib.Data.Int.Basic
 import Mathlib.Algebra.Ring.Units
 
+#align_import data.int.units from "leanprover-community/mathlib"@"641b6a82006416ec431b2987b354af9311fed4f2"
+
 /-!
 # Lemmas about units in `ℤ`.
 -/
@@ -49,19 +51,20 @@ theorem eq_one_or_neg_one_of_mul_eq_one {z w : ℤ} (h : z * w = 1) : z = 1 ∨ 
   isUnit_iff.mp (isUnit_of_mul_eq_one z w h)
 #align int.eq_one_or_neg_one_of_mul_eq_one Int.eq_one_or_neg_one_of_mul_eq_one
 
--- Porting note: this was proven in mathlib3 with `tauto` which hasn't been ported yet
 theorem eq_one_or_neg_one_of_mul_eq_one' {z w : ℤ} (h : z * w = 1) :
     z = 1 ∧ w = 1 ∨ z = -1 ∧ w = -1 := by
   have h' : w * z = 1 := mul_comm z w ▸ h
   rcases eq_one_or_neg_one_of_mul_eq_one h with (rfl | rfl) <;>
-      rcases eq_one_or_neg_one_of_mul_eq_one h' with (rfl | rfl) <;>
-    try cases h
-  · exact Or.inl ⟨rfl, rfl⟩
-  · exact Or.inr ⟨rfl, rfl⟩
+      rcases eq_one_or_neg_one_of_mul_eq_one h' with (rfl | rfl) <;> tauto
 #align int.eq_one_or_neg_one_of_mul_eq_one' Int.eq_one_or_neg_one_of_mul_eq_one'
 
-theorem mul_eq_one_iff_eq_one_or_neg_one {z w : ℤ} : z * w = 1 ↔ z = 1 ∧ w = 1 ∨ z = -1 ∧ w = -1 :=
-  by
+theorem eq_of_mul_eq_one {z w : ℤ} (h : z * w = 1) : z = w :=
+  (eq_one_or_neg_one_of_mul_eq_one' h).elim
+    (and_imp.2 (·.trans ·.symm)) (and_imp.2 (·.trans ·.symm))
+#align int.eq_of_mul_eq_one Int.eq_of_mul_eq_one
+
+theorem mul_eq_one_iff_eq_one_or_neg_one {z w : ℤ} :
+    z * w = 1 ↔ z = 1 ∧ w = 1 ∨ z = -1 ∧ w = -1 := by
   refine' ⟨eq_one_or_neg_one_of_mul_eq_one', fun h => Or.elim h (fun H => _) fun H => _⟩ <;>
       rcases H with ⟨rfl, rfl⟩ <;>
     rfl
@@ -85,7 +88,8 @@ theorem isUnit_iff_natAbs_eq {n : ℤ} : IsUnit n ↔ n.natAbs = 1 := by
   simp [natAbs_eq_iff, isUnit_iff, Nat.cast_zero]
 #align int.is_unit_iff_nat_abs_eq Int.isUnit_iff_natAbs_eq
 
-alias isUnit_iff_natAbs_eq ↔ isUnit.natAbs_eq _
+alias isUnit_iff_natAbs_eq ↔ IsUnit.natAbs_eq _
+#align int.is_unit.nat_abs_eq Int.IsUnit.natAbs_eq
 
 -- Porting note: `rw` didn't work on `natAbs_ofNat`, so had to change to `simp`,
 -- presumably because `(n : ℤ)` is `Nat.cast` and not just `ofNat`

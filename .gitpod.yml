@@ -1,0 +1,9 @@
+image:
+  file: .docker/gitpod/Dockerfile
+
+vscode:
+  extensions:
+    - leanprover.lean4
+
+tasks:
+  - init: lake exe cache get

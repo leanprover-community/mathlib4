@@ -31,42 +31,4 @@ def replaceRec (f? : (Expr → Expr) → Expr → Option Expr) : Expr → Expr :
     | some x => x
     | none   => traverseChildren (M := Id) r e
 
-/-- replaceRec under a monad. -/
-partial def replaceRecM [Monad M] (f? : (Expr → M Expr) → Expr → M (Option Expr)) (e : Expr) :
-    M Expr := do
-  match ← f? (replaceRecM f?) e with
-  | some x => return x
-  | none => traverseChildren (replaceRecM f?) e
-
-/-- Similar to `replaceRecM` except that bound variables are instantiated with free variables
-(like `Lean.Meta.transform`).
-This means that MetaM tactics can be used inside the replacement function.
-
-If you don't need recursive calling,
-you should prefer using `Lean.Meta.transform` because it also caches visits.
- -/
-partial def replaceRecMeta [Monad M] [MonadLiftT MetaM M] [MonadControlT MetaM M]
-    (f? : (Expr → M Expr) → Expr → M (Option Expr)) (e : Expr) : M Expr := do
-  match ← f? (replaceRecMeta f?) e with
-  | some x => return x
-  | none => Lean.Meta.traverseChildren (replaceRecMeta f?) e
-
-/-- A version of `Expr.replace` where we can use recursive calls even if we replace a subexpression.
-  When reaching a subexpression `e` we call `traversal e` to see if we want to do anything with this
-  expression. If `traversal e = none` we proceed to the children of `e`. If
-  `traversal e = some (#[e₁, ..., eₙ], g)`, we first recursively apply this function to
-  `#[e₁, ..., eₙ]` to get new expressions `#[f₁, ..., fₙ]`.
-  Then we replace `e` by `g [f₁, ..., fₙ]`.
-
-  Important: In order for this function to terminate, the `[e₁, ..., eₙ]` must all be smaller than
-  `e` according to some measure  (and this measure must also be strictly decreasing on the w.r.t.
-  the structural subterm relation).
-  -/
-def replaceRecTraversal (traversal : Expr → Option (Array Expr × (Array Expr → Expr))) :
-    Expr → Expr :=
-  replaceRec fun r e ↦
-    match traversal e with
-    | none => none
-    | some (get, set) => some <| set <| .map r <| get
-
 end Lean.Expr

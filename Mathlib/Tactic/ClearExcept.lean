@@ -4,14 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joshua Clune
 -/
 import Lean
-import Mathlib.Util.MapsTo
 
 open Lean.Meta
 
 namespace Lean.Elab.Tactic
 
 /-- Clears all hypotheses it can besides those provided -/
-syntax (name := clearExcept) "clear " "*" " - " (colGt ident)* : tactic
+syntax (name := clearExcept) "clear " "*" " -" (ppSpace colGt ident)* : tactic
 
 elab_rules : tactic
   | `(tactic| clear * - $hs:ident*) => do

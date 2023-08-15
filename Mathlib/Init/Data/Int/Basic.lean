@@ -6,7 +6,7 @@ Authors: Jeremy Avigad
 The integers, with addition, multiplication, and subtraction.
 -/
 import Mathlib.Mathport.Rename
-import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Init.ZeroOne
 import Std.Data.Int.Lemmas
 
@@ -19,6 +19,10 @@ open Nat
 notation "ℤ" => Int
 
 namespace Int
+
+protected theorem coe_nat_eq (n : ℕ) : ↑n = Int.ofNat n :=
+  rfl
+#align int.coe_nat_eq Int.coe_nat_eq
 
 /-- The number `0 : ℤ`, as a standalone definition. -/
 @[deprecated] protected def zero : ℤ := ofNat 0
@@ -33,13 +37,9 @@ namespace Int
 #align int.of_nat_add Int.ofNat_add
 #align int.of_nat_mul Int.ofNat_mul
 #align int.of_nat_succ Int.ofNat_succ
-#align int.neg_of_nat_of_succ Int.neg_ofNat_of_succ
-
-theorem neg_negSucc (n : ℕ) : - -[n+1] = ofNat (succ n) := rfl
+#align int.neg_of_nat_of_succ Int.neg_ofNat_succ
 #align int.neg_neg_of_nat_succ Int.neg_negSucc
 
-@[deprecated, nolint synTaut]
-theorem ofNat_eq_coe (n : ℕ) : ofNat n = ↑n := rfl
 #align int.of_nat_eq_coe Int.ofNat_eq_coe
 
 #align int.neg_succ_of_nat_coe Int.negSucc_coe
@@ -131,4 +131,11 @@ theorem natAbs_pos_of_ne_zero {a : ℤ} (h : a ≠ 0) : 0 < natAbs a := natAbs_p
 #align int.coe_nat_sub Int.ofNat_sub
 #align int.sub_nat_nat_eq_coe Int.subNatNat_eq_coe
 #align int.to_nat_sub Int.toNat_sub
+
+/-- The modulus of an integer by another as a natural. Uses the E-rounding convention. -/
+def natMod (m n : ℤ) : ℕ := (m % n).toNat
+#align int.nat_mod Int.natMod
+
 #align int.sign_mul_nat_abs Int.sign_mul_natAbs
+
+#align int.to_nat' Int.toNat'

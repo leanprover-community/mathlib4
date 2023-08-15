@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Control.SimpSet
-import Mathlib.Tactic.CasesM
 import Mathlib.Init.Control.Combinators
+import Mathlib.Tactic.CasesM
+import Mathlib.Tactic.Attr.Core
+
+#align_import control.basic from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
 /-!
 Extends the theory on functors, applicatives and monads.
@@ -24,7 +26,6 @@ theorem Functor.map_map (m : α → β) (g : β → γ) (x : f α) : g <$> m <$>
 #align functor.map_map Functor.map_mapₓ
 -- order of implicits
 
-attribute [simp] id_map'
 #align id_map' id_map'ₓ
 -- order of implicits
 
@@ -49,14 +50,10 @@ def zipWithM' (f : α → β → F γ) : List α → List β → F PUnit
 
 variable [LawfulApplicative F]
 
-attribute [functor_norm] seq_assoc pure_seq
-
 @[simp]
 theorem pure_id'_seq (x : F α) : (pure fun x => x) <*> x = x :=
   pure_id_seq x
 #align pure_id'_seq pure_id'_seq
-
-attribute [functor_norm] seq_assoc pure_seq
 
 @[functor_norm]
 theorem seq_map_assoc (x : F (α → β)) (f : γ → α) (y : F γ) :
@@ -73,9 +70,6 @@ theorem map_seq (f : β → γ) (x : F (α → β)) (y : F α) :
 #align map_seq map_seq
 
 end Applicative
-
--- TODO: setup `functor_norm` for `monad` laws
-attribute [functor_norm] pure_bind bind_assoc bind_pure
 
 section Monad
 
@@ -95,13 +89,13 @@ def List.partitionM {f : Type → Type} [Monad f] {α : Type} (p : α → f Bool
 
 theorem map_bind (x : m α) {g : α → m β} {f : β → γ} :
     f <$> (x >>= g) = x >>= fun a => f <$> g a := by
-  rw [← bind_pure_comp, bind_assoc] <;> simp [bind_pure_comp]
+  rw [← bind_pure_comp, bind_assoc]; simp [bind_pure_comp]
 #align map_bind map_bind
 
 theorem seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
     f <$> x >>= g = x >>= g ∘ f :=
   show bind (f <$> x) g = bind x (g ∘ f)
-  by rw [← bind_pure_comp, bind_assoc] <;> simp [pure_bind, (· ∘ ·)]
+  by rw [← bind_pure_comp, bind_assoc]; simp [pure_bind, (· ∘ ·)]
 #align seq_bind_eq seq_bind_eq
 
 #align seq_eq_bind_map seq_eq_bind_mapₓ
@@ -177,7 +171,7 @@ section Alternative
 
 variable {F : Type → Type v} [Alternative F]
 
--- [todo] add notation for `Functor.mapConst` and port `functor.map_const_rev`
+-- [todo] add notation for `Functor.mapConst` and port `Functor.mapConstRev`
 /-- Returns `pure true` if the computation succeeds and `pure false` otherwise. -/
 def succeeds {α} (x : F α) : F Bool :=
   Functor.mapConst true x <|> pure false
@@ -187,6 +181,10 @@ def succeeds {α} (x : F α) : F Bool :=
 def tryM {α} (x : F α) : F Unit :=
   Functor.mapConst () x <|> pure ()
 #align mtry tryM
+
+/-- Attempts to perform the computation, and returns `none` if it doesn't succeed. -/
+def try? {α} (x : F α) : F (Option α) :=
+  some <$> x <|> pure none
 
 @[simp]
 theorem guard_true {h : Decidable True} : @guard F _ True h = pure () := by simp [guard, if_pos]
@@ -214,7 +212,8 @@ instance : Monad (Sum.{v, u} e) where
   pure := @Sum.inr e
   bind := @Sum.bind e
 
-instance : LawfulFunctor (Sum.{v, u} e) := by refine' { .. } <;> intros <;> casesm Sum _ _ <;> rfl
+instance : LawfulFunctor (Sum.{v, u} e) := by
+  refine' { .. } <;> intros <;> (try casesm Sum _ _) <;> rfl
 
 instance : LawfulMonad (Sum.{v, u} e) where
   seqRight_eq := by
@@ -258,12 +257,9 @@ theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative
     [CommApplicative m] {α β γ} (a : m α) (b : m β) {f : α → β → γ} :
   f <$> a <*> b = flip f <$> b <*> a :=
   calc
-    f <$> a <*> b = (fun p : α × β => f p.1 p.2) <$> (Prod.mk <$> a <*> b) :=
-      by
-        simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map] <;> rfl
-    _ = (fun b a => f a b) <$> b <*> a :=
-      by
-        rw [@CommApplicative.commutative_prod m h] <;>
-        simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]
-
+    f <$> a <*> b = (fun p : α × β => f p.1 p.2) <$> (Prod.mk <$> a <*> b) := by
+      simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map]; rfl
+    _ = (fun b a => f a b) <$> b <*> a := by
+      rw [@CommApplicative.commutative_prod m h]
+      simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]
 #align is_comm_applicative.commutative_map CommApplicative.commutative_map

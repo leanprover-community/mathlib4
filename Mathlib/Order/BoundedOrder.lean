@@ -5,10 +5,9 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Option.Basic
 import Mathlib.Order.Lattice
-import Mathlib.Tactic.Classical
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.PushNeg
-import Mathlib.Tactic.SimpRw
+import Mathlib.Order.ULift
+
+#align_import order.bounded_order from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # ⊤ and ⊥, bounded lattices and variants
@@ -36,7 +35,7 @@ open Function OrderDual
 
 universe u v
 
-variable {α : Type u} {β : Type v} {γ δ : Type _}
+variable {α : Type u} {β : Type v} {γ δ : Type*}
 
 /-! ### Top, bottom element -/
 
@@ -82,14 +81,12 @@ section OrderTop
 
 /-- An order is (noncomputably) either an `OrderTop` or a `NoTopOrder`. Use as
 `casesI topOrderOrNoTopOrder α`. -/
-noncomputable def topOrderOrNoTopOrder (α : Type _) [LE α] : PSum (OrderTop α) (NoTopOrder α) := by
+noncomputable def topOrderOrNoTopOrder (α : Type*) [LE α] : PSum (OrderTop α) (NoTopOrder α) := by
   by_cases H : ∀ a : α, ∃ b, ¬b ≤ a
   · exact PSum.inr ⟨H⟩
-
   · push_neg at H
     letI : Top α := ⟨Classical.choose H⟩
     exact PSum.inl ⟨Classical.choose_spec H⟩
-
 #align top_order_or_no_top_order topOrderOrNoTopOrder
 
 section LE
@@ -150,8 +147,10 @@ theorem not_isTop_iff_ne_top : ¬IsTop a ↔ a ≠ ⊤ :=
 #align not_is_top_iff_ne_top not_isTop_iff_ne_top
 
 alias isMax_iff_eq_top ↔ IsMax.eq_top _
+#align is_max.eq_top IsMax.eq_top
 
 alias isTop_iff_eq_top ↔ IsTop.eq_top _
+#align is_top.eq_top IsTop.eq_top
 
 @[simp]
 theorem top_le_iff : ⊤ ≤ a ↔ a = ⊤ :=
@@ -248,14 +247,12 @@ section OrderBot
 
 /-- An order is (noncomputably) either an `OrderBot` or a `NoBotOrder`. Use as
 `casesI botOrderOrNoBotOrder α`. -/
-noncomputable def botOrderOrNoBotOrder (α : Type _) [LE α] : PSum (OrderBot α) (NoBotOrder α) := by
+noncomputable def botOrderOrNoBotOrder (α : Type*) [LE α] : PSum (OrderBot α) (NoBotOrder α) := by
   by_cases H : ∀ a : α, ∃ b, ¬a ≤ b
   · exact PSum.inr ⟨H⟩
-
   · push_neg at H
     letI : Bot α := ⟨Classical.choose H⟩
     exact PSum.inl ⟨Classical.choose_spec H⟩
-
 #align bot_order_or_no_bot_order botOrderOrNoBotOrder
 
 section LE
@@ -356,8 +353,10 @@ theorem not_isBot_iff_ne_bot : ¬IsBot a ↔ a ≠ ⊥ :=
 #align not_is_bot_iff_ne_bot not_isBot_iff_ne_bot
 
 alias isMin_iff_eq_bot ↔ IsMin.eq_bot _
+#align is_min.eq_bot IsMin.eq_bot
 
 alias isBot_iff_eq_bot ↔ IsBot.eq_bot _
+#align is_bot.eq_bot IsBot.eq_bot
 
 @[simp]
 theorem le_bot_iff : a ≤ ⊥ ↔ a = ⊥ :=
@@ -591,6 +590,22 @@ theorem Antitone.ball {P : β → α → Prop} {s : Set β} (hP : ∀ x ∈ s, A
     Antitone fun y => ∀ x ∈ s, P x y := fun _ _ hy h x hx => hP x hx hy (h x hx)
 #align antitone.ball Antitone.ball
 
+theorem Monotone.exists {P : β → α → Prop} (hP : ∀ x, Monotone (P x)) :
+    Monotone fun y => ∃ x, P x y :=
+  fun _ _ hy ⟨x, hx⟩ ↦ ⟨x, hP x hy hx⟩
+
+theorem Antitone.exists {P : β → α → Prop} (hP : ∀ x, Antitone (P x)) :
+    Antitone fun y => ∃ x, P x y :=
+  fun _ _ hy ⟨x, hx⟩ ↦ ⟨x, hP x hy hx⟩
+
+theorem forall_ge_iff {P : α → Prop} {x₀ : α} (hP : Monotone P) :
+    (∀ x ≥ x₀, P x) ↔ P x₀ :=
+  ⟨fun H ↦ H x₀ le_rfl, fun H _ hx ↦ hP hx H⟩
+
+theorem forall_le_iff {P : α → Prop} {x₀ : α} (hP : Antitone P) :
+    (∀ x ≤ x₀, P x) ↔ P x₀ :=
+  ⟨fun H ↦ H x₀ le_rfl, fun H _ hx ↦ hP hx H⟩
+
 end Preorder
 
 section SemilatticeSup
@@ -623,7 +638,7 @@ end Logic
 
 namespace Pi
 
-variable {ι : Type _} {α' : ι → Type _}
+variable {ι : Type*} {α' : ι → Type*}
 
 instance [∀ i, Bot (α' i)] : Bot (∀ i, α' i) :=
   ⟨fun _ => ⊥⟩
@@ -811,6 +826,11 @@ instance top [Top α] [Top β] : Top (α × β) :=
 instance bot [Bot α] [Bot β] : Bot (α × β) :=
   ⟨⟨⊥, ⊥⟩⟩
 
+theorem fst_top [Top α] [Top β] : (⊤ : α × β).fst = ⊤ := rfl
+theorem snd_top [Top α] [Top β] : (⊤ : α × β).snd = ⊤ := rfl
+theorem fst_bot [Bot α] [Bot β] : (⊥ : α × β).fst = ⊥ := rfl
+theorem snd_bot [Bot α] [Bot β] : (⊥ : α × β).snd = ⊥ := rfl
+
 instance orderTop [LE α] [LE β] [OrderTop α] [OrderTop β] : OrderTop (α × β) where
   __ := inferInstanceAs (Top (α × β))
   le_top _ := ⟨le_top, le_top⟩
@@ -824,6 +844,28 @@ instance boundedOrder [LE α] [LE β] [BoundedOrder α] [BoundedOrder β] : Boun
   __ := inferInstanceAs (OrderBot (α × β))
 
 end Prod
+
+namespace ULift
+
+instance [Top α] : Top (ULift.{v} α) where top := up ⊤
+
+@[simp] theorem up_top [Top α] : up (⊤ : α) = ⊤ := rfl
+@[simp] theorem down_top [Top α] : down (⊤ : ULift α) = ⊤ := rfl
+
+instance [Bot α] : Bot (ULift.{v} α) where bot := up ⊥
+
+@[simp] theorem up_bot [Bot α] : up (⊥ : α) = ⊥ := rfl
+@[simp] theorem down_bot [Bot α] : down (⊥ : ULift α) = ⊥ := rfl
+
+instance [LE α] [OrderBot α] : OrderBot (ULift.{v} α) :=
+  OrderBot.lift ULift.down (fun _ _ => down_le.mp) down_bot
+
+instance [LE α] [OrderTop α] : OrderTop (ULift.{v} α) :=
+  OrderTop.lift ULift.down (fun _ _ => down_le.mp) down_top
+
+instance [LE α] [BoundedOrder α] : BoundedOrder (ULift.{v} α) where
+
+end ULift
 
 section LinearOrder
 
@@ -864,7 +906,7 @@ theorem max_top_right [OrderTop α] (a : α) : max a ⊤ = ⊤ :=
 
 @[simp]
 theorem min_eq_bot [OrderBot α] {a b : α} : min a b = ⊥ ↔ a = ⊥ ∨ b = ⊥ := by
-  simp only [← inf_eq_min, ← le_bot_iff, inf_le_iff]; rfl
+  simp only [← inf_eq_min, ← le_bot_iff, inf_le_iff]
 #align min_eq_bot min_eq_bot
 
 @[simp]

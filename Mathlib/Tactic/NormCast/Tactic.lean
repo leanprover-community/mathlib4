@@ -7,7 +7,7 @@ Authors: Paul-Nicolas Madelaine, Robert Y. Lewis, Mario Carneiro, Gabriel Ebner
 import Std.Tactic.NormCast.Ext
 import Std.Tactic.CoeExt
 import Mathlib.Tactic.SudoSetOption
-import Mathlib.Util.Simp
+import Mathlib.Lean.Meta.Simp
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Nat.Cast.Defs
 
@@ -32,16 +32,12 @@ def proveEqUsing (s : SimpTheorems) (a b : Expr) : MetaM (Option Simp.Result) :=
 
 /-- Prove `a = b` by simplifying using move and squash lemmas. -/
 def proveEqUsingDown (a b : Expr) : MetaM (Option Simp.Result) := do
-  trace[Tactic.norm_cast] "proving: {← mkEq a b}"
+  withTraceNode `Tactic.norm_cast (return m!"{exceptOptionEmoji ·} proving: {← mkEq a b}") do
   proveEqUsing (← normCastExt.down.getTheorems) a b
 
 def mkCoe (e : Expr) (ty : Expr) : MetaM Expr := do
-  let eType ← inferType e
-  let u ← getLevel eType
-  let v ← getLevel ty
-  let coeTInstType := mkAppN (mkConst ``CoeT [u, v]) #[eType, e, ty]
-  let inst ← synthInstance coeTInstType
-  expandCoe <| mkAppN (mkConst ``CoeT.coe [u, v]) #[eType, e, ty, inst]
+  let .some e' ← coerce? e ty | failure
+  return e'
 
 def isCoeOf? (e : Expr) : MetaM (Option Expr) := do
   if let Expr.const fn .. := e.getAppFn then
@@ -72,6 +68,13 @@ def splittingProcedure (expr : Expr) : MetaM Simp.Result := do
   let Expr.forallE _ γ (Expr.forallE _ γ' ty ..) .. ← inferType op | return {expr}
   if γ'.hasLooseBVars || ty.hasLooseBVars then return {expr}
   unless ← isDefEq γ γ' do return {expr}
+
+  let msg := m!"splitting {expr}"
+  let msg
+    | .error _ => return m!"{bombEmoji} {msg}"
+    | .ok r => return if r.expr == expr then m!"{crossEmoji} {msg}" else
+      m!"{checkEmoji} {msg} to {r.expr}"
+  withTraceNode `Tactic.norm_cast msg do
 
   try
     let some x' ← isCoeOf? x | failure
@@ -109,10 +112,10 @@ def splittingProcedure (expr : Expr) : MetaM Simp.Result := do
 Discharging function used during simplification in the "squash" step.
 
 TODO: normCast takes a list of expressions to use as lemmas for the discharger
-TODO: a tactic to print the results the discharger fails to proove
+TODO: a tactic to print the results the discharger fails to prove
 -/
 def prove (e : Expr) : SimpM (Option Expr) := do
-  trace[Tactic.norm_cast] "discharging {e}"
+  withTraceNode `Tactic.norm_cast (return m!"{exceptOptionEmoji ·} discharging: {e}") do
   return (← findLocalDeclWithType? e).map mkFVar
 
 /--
@@ -144,6 +147,7 @@ def numeralToCoe (e : Expr) : MetaM Simp.Result := do
 The core simplification routine of `normCast`.
 -/
 def derive (e : Expr) : MetaM Simp.Result := do
+  withTraceNode `Tactic.norm_cast (fun _ => return m!"{e}") do
   let e ← instantiateMVars e
 
   let config : Simp.Config := {
@@ -157,22 +161,24 @@ def derive (e : Expr) : MetaM Simp.Result := do
 
   let r := {expr := e}
 
-  trace[Tactic.norm_cast] "before: {r.expr}"
+  let withTrace phase := withTraceNode `Tactic.norm_cast fun
+    | .ok r => return m!"{r.expr} (after {phase})"
+    | .error _ => return m!"{bombEmoji} {phase}"
 
   -- step 1: pre-processing of numerals
-  let post e := return Simp.Step.done (← try numeralToCoe e catch _ => pure {expr := e})
-  let r ← Simp.mkEqTrans r (← Simp.main r.expr { config, congrTheorems } (methods := { post })).1
-  trace[Tactic.norm_cast] "after numeralToCoe: {r.expr}"
+  let r ← withTrace "pre-processing numerals" do
+    let post e := return Simp.Step.done (← try numeralToCoe e catch _ => pure {expr := e})
+    Simp.mkEqTrans r (← Simp.main r.expr { config, congrTheorems } (methods := { post })).1
 
   -- step 2: casts are moved upwards and eliminated
-  let post := upwardAndElim (← normCastExt.up.getTheorems)
-  let r ← Simp.mkEqTrans r (← Simp.main r.expr { config, congrTheorems } (methods := { post })).1
-  trace[Tactic.norm_cast] "after upwardAndElim: {r.expr}"
+  let r ← withTrace "moving upward, splitting and eliminating" do
+    let post := upwardAndElim (← normCastExt.up.getTheorems)
+    Simp.mkEqTrans r (← Simp.main r.expr { config, congrTheorems } (methods := { post })).1
 
   -- step 3: casts are squashed
-  let simpTheorems := #[← normCastExt.squash.getTheorems]
-  let r ← mkEqTrans r (← simp r.expr { simpTheorems, config, congrTheorems }).1
-  trace[Tactic.norm_cast] "after squashing: {r.expr}"
+  let r ← withTrace "squashing" do
+    let simpTheorems := #[← normCastExt.squash.getTheorems]
+    mkEqTrans r (← simp r.expr { simpTheorems, config, congrTheorems }).1
 
   return r
 
@@ -204,7 +210,7 @@ def normCastHyp (fvarId : FVarId) : TacticM Unit :=
     let prf ← derive hyp
     return (← applySimpResultToLocalDecl goal fvarId prf false).map (·.snd)
 
-elab "norm_cast0" loc:((ppSpace location)?) : tactic =>
+elab "norm_cast0" loc:((location)?) : tactic =>
   withMainContext do
     match expandOptLocation loc with
     | Location.targets hyps target =>
@@ -221,13 +227,13 @@ macro "assumption_mod_cast" : tactic => `(tactic| norm_cast0 at * <;> assumption
 /--
 Normalize casts at the given locations by moving them "upwards".
 -/
-macro "norm_cast" loc:(ppSpace location)? : tactic =>
+macro "norm_cast" loc:(location)? : tactic =>
   `(tactic| norm_cast0 $[$loc]? <;> try trivial)
 
 /--
 Rewrite with the given rules and normalize casts between steps.
 -/
-syntax "rw_mod_cast" (config)? rwRuleSeq (ppSpace location)? : tactic
+syntax "rw_mod_cast" (config)? rwRuleSeq (location)? : tactic
 macro_rules
   | `(tactic| rw_mod_cast $[$config]? [$rules,*] $[$loc]?) => do
     let tacs ← rules.getElems.mapM fun rule ↦
@@ -249,8 +255,8 @@ syntax (name := convNormCast) "norm_cast" : conv
   open Elab.Tactic.Conv in fun _ ↦ withMainContext do
     applySimpResult (← derive (← getLhs))
 
-syntax (name := pushCast) "push_cast " (config)? (discharger)? (&"only ")?
-  ("[" (simpStar <|> simpErase <|> simpLemma),* "]")? (location)? : tactic
+syntax (name := pushCast) "push_cast " (config)? (discharger)? (&" only")?
+  (" [" (simpStar <|> simpErase <|> simpLemma),* "]")? (location)? : tactic
 @[tactic pushCast] def evalPushCast : Tactic := fun stx ↦ do
   let { ctx, dischargeWrapper, .. } ← withMainContext do
     mkSimpContext' (← pushCastExt.getTheorems) stx (eraseLocal := false)

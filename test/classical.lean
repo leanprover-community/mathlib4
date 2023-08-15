@@ -21,7 +21,7 @@ def bar : Bool := by
 def bar' : Bool := by
   fail_if_success have := ∀ p, decide p -- no classical in scope
   exact decide (0 < 1) -- uses the decidable instance
-  
+
 -- check that classical respects tactic blocks
 def bar'' : Bool := by
   fail_if_success have := ∀ p, decide p -- no classical in scope

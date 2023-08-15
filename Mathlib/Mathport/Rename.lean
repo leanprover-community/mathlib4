@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Selsam
 -/
 import Lean
-import Mathlib.Util.MapsTo
+
+set_option autoImplicit true
 
 namespace Mathlib.Prelude.Rename
 
@@ -87,6 +88,16 @@ def removeX : Name → Name
 
 open Lean.Elab Lean.Elab.Command
 
+/-- Because lean 3 uses a lowercase snake case convention, it is expected that all lean 3
+declaration names should use lowercase, with a few rare exceptions for categories and the set union
+operator. This linter warns if you use uppercase in the lean 3 part of an `#align` statement,
+because this is most likely a typo. But if the declaration actually uses capitals it is not unusual
+to disable this lint locally or at file scope. -/
+register_option linter.uppercaseLean3 : Bool := {
+  defValue := true
+  descr := "enable the lean 3 casing lint"
+}
+
 /-- Check that the referenced lean 4 definition exists in an `#align` directive. -/
 register_option align.precheck : Bool := {
   defValue := true
@@ -107,7 +118,7 @@ that a specific definition is in fact being called. Or a specific definition may
 name altogether because the existing name is already taken in lean 4 for something else. For
 these reasons, you should use `#align` on any theorem that needs to be renamed from the default.
 -/
-syntax (name := align) "#align " ident ident : command
+syntax (name := align) "#align " ident ppSpace ident : command
 
 /-- Checks that `id` has not already been `#align`ed or `#noalign`ed. -/
 def ensureUnused [Monad m] [MonadEnv m] [MonadError m] (id : Name) : m Unit := do
@@ -116,6 +127,21 @@ def ensureUnused [Monad m] [MonadEnv m] [MonadError m] (id : Name) : m Unit := d
       throwError "{id} has already been no-aligned"
     else
       throwError "{id} has already been aligned (to {n})"
+
+/--
+Purported Lean 3 names containing capital letters are suspicious.
+However, we disregard capital letters occurring in a few common names.
+-/
+def suspiciousLean3Name (s : String) : Bool := Id.run do
+  let allowed : List String :=
+    ["Prop", "Type", "Pi", "Exists", "End",
+     "Inf", "Sup", "Union", "Inter",
+     "Hausdorff", "is_R_or_C",
+     "Ioo", "Ico", "Iio", "Icc", "Iic", "Ioc", "Ici", "Ioi", "Ixx"]
+  let mut s := s
+  for a in allowed do
+    s := s.replace a ""
+  return s.any (·.isUpper)
 
 /-- Elaborate an `#align` command. -/
 @[command_elab align] def elabAlign : CommandElab
@@ -134,6 +160,12 @@ def ensureUnused [Monad m] [MonadEnv m] [MonadError m] (id : Name) : m Unit := d
           }\n\n#align inputs have to be fully qualified.{""
           } (Double check the lean 3 name too, we can't check that!)"
         throwErrorAt id4 "Declaration {c} not found.{inner}\n{note}"
+      if Linter.getLinterValue linter.uppercaseLean3 (← getOptions) then
+        if id3.getId.anyS suspiciousLean3Name then
+          Linter.logLint linter.uppercaseLean3 id3 $
+            "Lean 3 names are usually lowercase. This might be a typo.\n" ++
+            "If the Lean 3 name is correct, then above this line, add:\n" ++
+            "set_option linter.uppercaseLean3 false in\n"
     withRef id3 <| ensureUnused id3.getId
     liftCoreM <| addNameAlignment id3.getId id4.getId
   | _ => throwUnsupportedSyntax
@@ -174,4 +206,24 @@ syntax (name := lookup3) "#lookup3 " ident : command
           match m.toLean3.find? n4 with
           | none | some (_, []) => msg
           | some (n, l) => m!"{msg} (aliases {n :: l})"
+  | _ => throwUnsupportedSyntax
+
+open Lean Lean.Parser Lean.PrettyPrinter
+
+/-- Declare the corresponding mathlib3 module for the current mathlib4 module. -/
+syntax (name := alignImport) "#align_import " ident " from " str "@" str : command
+
+/-- Elaborate a `#align_import` command.
+
+TODO: do something with this information beyond ignore it. -/
+@[command_elab alignImport] def elabAlignImport : CommandElab
+  | `(#align_import $f3:ident from $_repo:str @ $sha:str ) => do
+    if !sha.getString.all ("abcdef0123456789".contains) then
+      throwErrorAt sha "not a valid hex sha, bad digits"
+    else if sha.getString.length ≠ 40 then
+      throwErrorAt sha "must be a full sha"
+    else
+      let _f3 : Name := f3.getId
+      let _f4 := (← getEnv).mainModule
+      pure ()
   | _ => throwUnsupportedSyntax

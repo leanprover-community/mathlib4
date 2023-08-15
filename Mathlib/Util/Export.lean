@@ -4,13 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Lean
-import Mathlib.Util.MapsTo
 
 /-!
 A rudimentary export format, adapted from
 <https://github.com/leanprover-community/lean/blob/master/doc/export_format.md>
 with support for lean 4 kernel primitives.
 -/
+
+set_option autoImplicit true
+
 open Lean (HashMap HashSet)
 
 namespace Lean
@@ -23,10 +25,10 @@ private opaque MethodsRefPointed : NonemptyType.{0}
 private def MethodsRef : Type := MethodsRefPointed.type
 
 inductive Entry
-| name (n : Name)
-| level (n : Level)
-| expr (n : Expr)
-| defn (n : Name)
+  | name (n : Name)
+  | level (n : Level)
+  | expr (n : Expr)
+  | defn (n : Name)
 deriving Inhabited
 
 instance : Coe Name Entry := ⟨Entry.name⟩
@@ -97,10 +99,10 @@ def exportLevel (L : Level) : ExportM Nat := do
     | .mvar _ => unreachable!
 
 def biStr : BinderInfo → String
-| BinderInfo.default        => "#BD"
-| BinderInfo.implicit       => "#BI"
-| BinderInfo.strictImplicit => "#BS"
-| BinderInfo.instImplicit   => "#BC"
+  | BinderInfo.default        => "#BD"
+  | BinderInfo.implicit       => "#BI"
+  | BinderInfo.strictImplicit => "#BS"
+  | BinderInfo.instImplicit   => "#BC"
 
 open ConstantInfo in
 mutual
@@ -111,7 +113,7 @@ partial def exportExpr (E : Expr) : ExportM Nat := do
   | none => match E with
     | .bvar n => let i ← alloc E; IO.println s!"{i} #EV {n}"; pure i
     | .fvar _ => unreachable!
-    | .mvar _  => unreachable!
+    | .mvar _ => unreachable!
     | .sort l => let i ← alloc E; IO.println s!"{i} #ES {← exportLevel l}"; pure i
     | .const n ls =>
       exportDef n

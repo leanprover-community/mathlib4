@@ -7,6 +7,8 @@ import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.GroupWithZero.InjSurj
 
+#align_import algebra.ring.inj_surj from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
+
 /-!
 # Pulling back rings along injective maps, and pushing them forward along surjective maps.
 
@@ -111,8 +113,7 @@ protected def Function.Surjective.nonUnitalNonAssocSemiring {α : Type u}
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x) : NonUnitalNonAssocSemiring β :=
   { hf.mulZeroClass f zero mul, hf.addCommMonoid f zero add nsmul, hf.distrib f add mul with }
-#align function.surjective.non_unital_non_assoc_semiring
-  Function.Surjective.nonUnitalNonAssocSemiring
+#align function.surjective.non_unital_non_assoc_semiring Function.Surjective.nonUnitalNonAssocSemiring
 
 /-- Pushforward a `NonUnitalSemiring` instance along a surjective function.
 See note [reducible non-instances]. -/
@@ -219,7 +220,7 @@ preserves `-` and `*` to a type which has distributive negation. -/
 @[reducible]
 protected def Function.Injective.hasDistribNeg [Neg β] [Mul β] (f : β → α) (hf : Injective f)
     (neg : ∀ a, f (-a) = -f a) (mul : ∀ a b, f (a * b) = f a * f b) : HasDistribNeg β :=
-  { hf.hasInvolutiveNeg _ neg, ‹Mul β› with
+  { hf.involutiveNeg _ neg, ‹Mul β› with
     neg_mul := fun x y => hf <| by erw [neg, mul, neg, neg_mul, mul],
     mul_neg := fun x y => hf <| by erw [neg, mul, neg, mul_neg, mul] }
 #align function.injective.has_distrib_neg Function.Injective.hasDistribNeg
@@ -230,7 +231,7 @@ preserves `-` and `*` from a type which has distributive negation. -/
 @[reducible]
 protected def Function.Surjective.hasDistribNeg [Neg β] [Mul β] (f : α → β) (hf : Surjective f)
     (neg : ∀ a, f (-a) = -f a) (mul : ∀ a b, f (a * b) = f a * f b) : HasDistribNeg β :=
-  { hf.hasInvolutiveNeg _ neg, ‹Mul β› with
+  { hf.involutiveNeg _ neg, ‹Mul β› with
     neg_mul := hf.forall₂.2 fun x y => by erw [← neg, ← mul, neg_mul, neg, mul]
     mul_neg := hf.forall₂.2 fun x y => by erw [← neg, ← mul, mul_neg, neg, mul] }
 #align function.surjective.has_distrib_neg Function.Surjective.hasDistribNeg
@@ -323,7 +324,7 @@ section NonAssocRing
 
 variable [NonAssocRing α]
 
--- porting note: for some reaso this declaration is very slow?
+-- porting note: for some reason this declaration is very slow?
 /-- Pullback a `NonAssocRing` instance along an injective function.
 See note [reducible non-instances]. -/
 @[reducible]

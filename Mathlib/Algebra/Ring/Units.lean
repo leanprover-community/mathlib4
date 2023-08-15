@@ -6,6 +6,8 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Group.Units
 
+#align_import algebra.ring.units from "leanprover-community/mathlib"@"2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c"
+
 /-!
 # Units in semirings and rings
 
@@ -53,12 +55,14 @@ section Ring
 
 variable [Ring α] {a b : α}
 
-@[field_simps]
+-- Needs to have higher simp priority than divp_add_divp. 1000 is the default priority.
+@[field_simps 1010]
 theorem divp_add_divp_same (a b : α) (u : αˣ) : a /ₚ u + b /ₚ u = (a + b) /ₚ u := by
   simp only [divp, add_mul]
 #align units.divp_add_divp_same Units.divp_add_divp_same
 
-@[field_simps]
+-- Needs to have higher simp priority than divp_sub_divp. 1000 is the default priority.
+@[field_simps 1010]
 theorem divp_sub_divp_same (a b : α) (u : αˣ) : a /ₚ u - b /ₚ u = (a - b) /ₚ u := by
   rw [sub_eq_add_neg, sub_eq_add_neg, neg_divp, divp_add_divp_same]
 #align units.divp_sub_divp_same Units.divp_sub_divp_same
@@ -118,5 +122,9 @@ theorem divp_sub_divp [CommRing α] (a b : α) (u₁ u₂ : αˣ) :
     a /ₚ u₁ - b /ₚ u₂ = (a * u₂ - u₁ * b) /ₚ (u₁ * u₂) := by
   simp only [sub_eq_add_neg, neg_divp, divp_add_divp, mul_neg]
 #align units.divp_sub_divp Units.divp_sub_divp
+
+theorem add_eq_mul_one_add_div [Semiring R] {a : Rˣ} {b : R} : ↑a + b = a * (1 + ↑a⁻¹ * b) := by
+  rw [mul_add, mul_one, ← mul_assoc, Units.mul_inv, one_mul]
+#align units.add_eq_mul_one_add_div Units.add_eq_mul_one_add_div
 
 end Units

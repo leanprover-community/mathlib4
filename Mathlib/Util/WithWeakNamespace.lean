@@ -5,13 +5,14 @@ Authors: Mario Carneiro, Daniel Selsam, Gabriel Ebner
 -/
 
 import Lean
-import Mathlib.Util.MapsTo
 
 /-!
 # Defines `with_weak_namespace` command.
 
 Changes the current namespace without causing scoped things to go out of scope.
 -/
+
+set_option autoImplicit true
 
 namespace Lean.Elab.Command
 

@@ -1,4 +1,4 @@
-TESTS = $(wildcard test/*.lean)
+TESTS := $(shell find test -name '*.lean')
 
 .PHONY: all build test lint
 

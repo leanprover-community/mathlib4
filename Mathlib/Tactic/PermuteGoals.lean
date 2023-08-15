@@ -6,7 +6,7 @@ Authors: Arthur Paulino, Mario Carneiro
 
 import Lean
 import Std.Data.List.Basic
-import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Init.Data.Nat.Notation
 
 namespace Mathlib.Tactic
 

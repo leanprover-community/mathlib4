@@ -5,6 +5,9 @@ Authors: Daniel Selsam, Mario Carneiro
 -/
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Logic
+import Mathlib.Tactic.Relation.Rfl
+import Mathlib.Tactic.Relation.Symm
+import Mathlib.Tactic.Relation.Trans
 
 /-!
 # Realignments from lean 3 `init`
@@ -40,9 +43,6 @@ set_option align.precheck false in #align _sorry_placeholder_ _sorry_placeholder
 #align has_coe_to_sort CoeSort
 #align has_coe_to_sort.coe CoeSort.coe
 
-#align coe_trans coeTransₓ
-#align coe_base coeBaseₓ
-
 /-! ## `init.control.alternative` -/
 
 /-! ## `init.control.applicative` -/
@@ -59,12 +59,6 @@ set_option align.precheck false in #align _sorry_placeholder_ _sorry_placeholder
 #align except.bind Except.bindₓ
 
 /-! ## `init.control.functor` -/
-
-/-! ## `init.control.lawful` -/
-
-#align is_lawful_applicative LawfulApplicative
-#align is_lawful_monad LawfulMonad
-#align is_lawful_applicative.pure_seq_eq_map LawfulApplicative.pure_seq
 
 /-! ## `init.control.lift` -/
 
@@ -99,7 +93,7 @@ set_option align.precheck false in #align mk_array mkArray'
 #align list.erase List.eraseₓ
 #align list.bag_inter List.bagInterₓ
 #align list.diff List.diffₓ
-#align list.head List.headₓ
+#align list.empty List.isEmpty
 #align list.filter List.filterₓ
 #align list.partition List.partitionₓ
 #align list.drop_while List.dropWhileₓ
@@ -166,9 +160,9 @@ set_option align.precheck false in #align nat.to_digits Nat.toDigits'
 
 /-! ## `init.data.setoid` -/
 
--- attribute [refl] Setoid.refl
--- attribute [symm] Setoid.symm
--- attribute [trans] Setoid.trans
+attribute [refl] Setoid.refl
+attribute [symm] Setoid.symm
+attribute [trans] Setoid.trans
 
 /-! ## `init.data.sigma.basic` -/
 
@@ -227,6 +221,20 @@ set_option align.precheck false in #align nat.to_digits Nat.toDigits'
 /-! ## `init.meta.widget.replace_save_info` -/
 
 /-! ## `init.meta.widget.tactic_component` -/
+
+/-! ## `init.prelude` -/
+
+#align function.comp Function.comp
+#align function.const Function.const
+
+#align infer_instance inferInstance
+
+#align inhabited Inhabited
+#align nonempty Nonempty
+#align classical.choice Classical.choice
+#align nonempty.elim Nonempty.elim
+
+#align fin Fin
 
 /-! ## `init.propext` -/
 

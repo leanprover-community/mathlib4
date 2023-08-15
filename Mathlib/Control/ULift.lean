@@ -6,6 +6,8 @@ Authors: Scott Morrison, Jannis Limperg
 
 import Mathlib.Mathport.Rename
 
+#align_import control.ulift from "leanprover-community/mathlib"@"99e8971dc62f1f7ecf693d75e75fbbabd55849de"
+
 /-!
 # Monadic instances for `ULift` and `PLift`
 
@@ -82,7 +84,6 @@ instance : LawfulMonad PLift where
 @[simp]
 theorem rec.constant {α : Sort u} {β : Type v} (b : β) :
     (@PLift.rec α (fun _ => β) fun _ => b) = fun _ => b := rfl
-
 #align plift.rec.constant PLift.rec.constant
 
 end PLift
@@ -115,17 +116,17 @@ protected def seq {α β} (f : ULift (α → β)) (x : Unit → ULift α) : ULif
 @[simp]
 theorem seq_up (f : α → β) (x : α) : (ULift.up f).seq (fun _ => ULift.up x) = ULift.up (f x) :=
   rfl
-#align ULift.seq_up ULift.seq_up
+#align ulift.seq_up ULift.seq_up
 
 /-- Monadic bind. -/
 protected def bind (a : ULift α) (f : α → ULift β) : ULift β :=
   f a.down
-#align ULift.bind ULift.bind
+#align ulift.bind ULift.bind
 
 @[simp]
 theorem bind_up (a : α) (f : α → ULift β) : (ULift.up a).bind f = f a :=
   rfl
-#align ULift.bind_up ULift.bind_up
+#align ulift.bind_up ULift.bind_up
 
 instance : Monad ULift where
   map := @ULift.map
@@ -155,7 +156,6 @@ instance : LawfulMonad ULift where
 @[simp]
 theorem rec.constant {α : Type u} {β : Sort v} (b : β) :
      (@ULift.rec α (fun _ => β) fun _ => b) = fun _ => b := rfl
-
-#align ULift.rec.constant ULift.rec.constant
+#align ulift.rec.constant ULift.rec.constant
 
 end ULift

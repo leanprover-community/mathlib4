@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
 import Mathlib.Mathport.Rename
+import Mathlib.Tactic.Basic
+
+#align_import algebra.abs from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 /-!
 # Absolute value
 
@@ -33,7 +36,7 @@ absolute
 /--
 Absolute value is a unary operator with properties similar to the absolute value of a real number.
 -/
-class Abs (α : Type _) where
+class Abs (α : Type*) where
   /-- The absolute value function. -/
   abs : α → α
 
@@ -41,27 +44,37 @@ class Abs (α : Type _) where
 
 export Abs (abs)
 
-/-- The positive part of an element admiting a decomposition into positive and negative parts.
+/-- The positive part of an element admitting a decomposition into positive and negative parts.
 -/
-class PosPart (α : Type _) where
+class PosPart (α : Type*) where
   /-- The positive part function. -/
   pos : α → α
 
 #align has_pos_part PosPart
 
-/-- The negative part of an element admiting a decomposition into positive and negative parts.
+/-- The negative part of an element admitting a decomposition into positive and negative parts.
 -/
-class NegPart (α : Type _) where
+class NegPart (α : Type*) where
   /-- The negative part function. -/
   neg : α → α
 
 #align has_neg_part NegPart
 
 @[inherit_doc Abs.abs]
-macro atomic("|" noWs) a:term noWs "|" : term => `(abs $a)
+macro:max atomic("|" noWs) a:term noWs "|" : term => `(abs $a)
+
+/-- Unexpander for the notation `|a|` for `abs a`.
+Tries to add discretionary parentheses in unparseable cases. -/
+@[app_unexpander Abs.abs]
+def Abs.abs.unexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ $a) =>
+    match a with
+    | `(|$_|) | `(-$_) => `(|($a)|)
+    | _ => `(|$a|)
+  | _ => throw ()
 
 @[inherit_doc]
-postfix:1000 "⁺" => PosPart.pos
+postfix:max "⁺" => PosPart.pos
 
 @[inherit_doc]
-postfix:1000 "⁻" => NegPart.neg
+postfix:max "⁻" => NegPart.neg

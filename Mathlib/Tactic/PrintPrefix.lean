@@ -4,14 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam, Daniel Selsam, Mario Carneiro
 -/
 import Lean.Elab.Command
-import Mathlib.Util.MapsTo
 
 open Lean Meta Elab Command
 
 namespace Lean
 namespace Meta
-
-deriving instance Inhabited for ConstantInfo -- required for Array.qsort
 
 structure FindOptions where
   stage1       : Bool := true

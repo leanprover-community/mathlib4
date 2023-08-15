@@ -6,7 +6,9 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Data.Nat.Basic
 import Mathlib.Algebra.Group.Units
 
-/-! # The units of the natural numbers as a `monoid` and `add_monoid` -/
+#align_import data.nat.units from "leanprover-community/mathlib"@"2258b40dacd2942571c8ce136215350c702dc78f"
+
+/-! # The units of the natural numbers as a `Monoid` and `AddMonoid` -/
 
 
 namespace Nat

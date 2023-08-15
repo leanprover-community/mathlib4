@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, David Renshaw
 -/
 import Lean
-import Mathlib.Util.MapsTo
 
 /-!
 # The `alias` command
@@ -49,10 +48,11 @@ namespace Alias
 open Lean Elab Parser.Command
 
 /-- Adds some copies of a theorem or definition. -/
-syntax (name := alias) (docComment)? "alias " ident " ← " ident* : command
+syntax (name := alias) (docComment)? "alias " ident " ←" (ppSpace ident)* : command
 
 /-- Adds one-way implication declarations. -/
-syntax (name := aliasLR) (docComment)? "alias " ident " ↔ " binderIdent binderIdent : command
+syntax (name := aliasLR) (docComment)?
+  "alias " ident " ↔ " binderIdent ppSpace binderIdent : command
 
 /-- Adds one-way implication declarations, inferring names for them. -/
 syntax (name := aliasLRDots) (docComment)? "alias " ident " ↔ " ".." : command
@@ -67,28 +67,28 @@ appendNamespace `a.b `_root_.c.d = `c.d
 TODO: Move this declaration to a more central location.
 -/
 def appendNamespace (ns : Name) : Name → Name
-| .str .anonymous s => if s = "_root_" then Name.anonymous else Name.mkStr ns s
-| .str p s          => Name.mkStr (appendNamespace ns p) s
-| .num p n          => Name.mkNum (appendNamespace ns p) n
-| .anonymous        => ns
+  | .str .anonymous s => if s = "_root_" then Name.anonymous else Name.mkStr ns s
+  | .str p s          => Name.mkStr (appendNamespace ns p) s
+  | .num p n          => Name.mkNum (appendNamespace ns p) n
+  | .anonymous        => ns
 
 /-- An alias can be in one of three forms -/
 inductive Target
-| plain : Name → Target
-| forward : Name → Target
-| backwards : Name → Target
+  | plain : Name → Target
+  | forward : Name → Target
+  | backwards : Name → Target
 
 /-- The name underlying an alias target -/
 def Target.toName : Target → Name
-| Target.plain n => n
-| Target.forward n => n
-| Target.backwards n => n
+  | Target.plain n => n
+  | Target.forward n => n
+  | Target.backwards n => n
 
 /-- The docstring for an alias. -/
 def Target.toString : Target → String
-| Target.plain n => s!"**Alias** of `{n}`."
-| Target.forward n => s!"**Alias** of the forward direction of `{n}`."
-| Target.backwards n => s!"**Alias** of the reverse direction of `{n}`."
+  | Target.plain n => s!"**Alias** of `{n}`."
+  | Target.forward n => s!"**Alias** of the forward direction of `{n}`."
+  | Target.backwards n => s!"**Alias** of the reverse direction of `{n}`."
 
 /-- Elaborates an `alias ←` command. -/
 @[command_elab «alias»] def elabAlias : Command.CommandElab
@@ -117,7 +117,11 @@ def Target.toString : Target → String
     }
     -- TODO add @alias attribute
     Command.liftTermElabM do
-      Lean.addDecl decl
+      if isNoncomputable (← getEnv) resolved then
+        addDecl decl
+        setEnv $ addNoncomputable (← getEnv) declName
+      else
+        addAndCompile decl
       Term.addTermInfo' a (← mkConstWithLevelParams declName) (isBinder := true)
       let target := Target.plain resolved
       let docString := match doc with | none => target.toString
@@ -129,8 +133,8 @@ def Target.toString : Target → String
   Given a possibly forall-quantified iff expression `prf`, produce a value for one
   of the implication directions (determined by `mp`).
 -/
-def mkIffMpApp (mp : Bool) (prf : Expr) : MetaM Expr := do
-  Meta.forallTelescope (← Meta.inferType prf) fun xs ty ↦ do
+def mkIffMpApp (mp : Bool) (ty prf : Expr) : MetaM Expr := do
+  Meta.forallTelescope ty fun xs ty ↦ do
     let some (lhs, rhs) := ty.iff?
       | throwError "Target theorem must have the form `∀ x y z, a ↔ b`"
     Meta.mkLambdaFVars xs <|
@@ -144,7 +148,7 @@ def aliasIff (doc : Option (TSyntax `Lean.Parser.Command.docComment)) (ci : Cons
   (ref : Syntax) (al : Name) (isForward : Bool) :
   TermElabM Unit := do
   let ls := ci.levelParams
-  let v ← mkIffMpApp isForward ci.value!
+  let v ← mkIffMpApp isForward ci.type ci.value!
   let t' ← Meta.inferType v
   -- TODO add @alias attribute
   addDeclarationRanges al {

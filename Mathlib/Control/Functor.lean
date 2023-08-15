@@ -5,6 +5,10 @@ Authors: Simon Hudon
 -/
 import Mathlib.Control.Basic
 import Mathlib.Init.Set
+import Mathlib.Tactic.Basic
+import Std.Tactic.Lint
+
+#align_import control.functor from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # Functors
@@ -24,9 +28,6 @@ This module provides additional lemmas, definitions, and instances for `Functor`
 functor, applicative
 -/
 
-
-attribute [functor_norm] seq_assoc pure_seq map_pure seq_map_assoc map_seq
-
 universe u v w
 
 section Functor
@@ -37,7 +38,7 @@ variable {α β γ : Type u}
 
 variable [Functor F] [LawfulFunctor F]
 
-theorem Functor.map_id : (· <$> ·) id = (id : F α → F α) := by apply funext <;> apply id_map
+theorem Functor.map_id : (· <$> ·) id = (id : F α → F α) := funext id_map
 #align functor.map_id Functor.map_id
 
 theorem Functor.map_comp_map (f : α → β) (g : β → γ) :
@@ -61,8 +62,8 @@ theorem Functor.ext {F} :
 
 end Functor
 
-/-- Introduce the `id` functor. Incidentally, this is `Pure` for
-`id` as a `Monad` and as an `Applicative` functor. -/
+/-- Introduce `id` as a quasi-functor. (Note that where a lawful `Monad` or
+`Applicative` or `Functor` is needed, `Id` is the correct definition). -/
 def id.mk {α : Sort u} : α → id α :=
   id
 #align id.mk id.mk
@@ -73,7 +74,7 @@ namespace Functor
 `α` has a monoid structure, `Const α` has an `Applicative` instance.
 (If `α` has an additive monoid structure, see `Functor.AddConst`.) -/
 @[nolint unusedArguments]
-def Const (α : Type _) (_β : Type _) :=
+def Const (α : Type*) (_β : Type*) :=
   α
 #align functor.const Functor.Const
 
@@ -117,10 +118,10 @@ instance {α β} [Inhabited α] : Inhabited (Const α β) :=
 end Const
 
 /-- `AddConst α` is a synonym for constant functor `Const α`, mapping
-every type to `α`. When `α` has a additive monoid structure,
+every type to `α`. When `α` has an additive monoid structure,
 `AddConst α` has an `Applicative` instance. (If `α` has a
 multiplicative monoid structure, see `Functor.Const`.) -/
-def AddConst (α : Type _) :=
+def AddConst (α : Type*) :=
   Const α
 #align functor.add_const Functor.AddConst
 
@@ -149,7 +150,7 @@ instance {α β} [Inhabited α] : Inhabited (AddConst α β) :=
 
 /-- `Functor.Comp` is a wrapper around `Function.Comp` for types.
     It prevents Lean's type class resolution mechanism from trying
-    a `Functor (Comp F id)` when `functor F` would do. -/
+    a `Functor (Comp F id)` when `Functor F` would do. -/
 def Comp (F : Type u → Type w) (G : Type v → Type u) (α : Type v) : Type w :=
   F <| G α
 #align functor.comp Functor.Comp
@@ -206,8 +207,6 @@ protected theorem id_map : ∀ x : Comp F G α, Comp.map id x = x
   -- porting note: `rfl` wasn't needed in mathlib3
 #align functor.comp.id_map Functor.Comp.id_map
 
--- porting note: because `LawfulFunctor G` wasn't needed in the proof we need `autoImplicit`s off
-set_option autoImplicit false in
 protected theorem comp_map (g' : α → β) (h : β → γ) :
     ∀ x : Comp F G α, Comp.map (h ∘ g') x = Comp.map h (Comp.map g' x)
   | Comp.mk x => by simp [Comp.map, Comp.mk, Functor.map_comp_map, functor_norm]
@@ -266,8 +265,8 @@ protected theorem run_seq {α β : Type v} (f : Comp F G (α → β)) (x : Comp 
   rfl
 #align functor.comp.run_seq Functor.Comp.run_seq
 
-instance : Applicative (Comp F G) :=
-  { instPureComp with map := @Comp.map F G _ _, seq := @Comp.seq F G _ _ }
+instance instApplicativeComp : Applicative (Comp F G) :=
+  { map := @Comp.map F G _ _, seq := @Comp.seq F G _ _ }
 
 end Comp
 
@@ -297,5 +296,17 @@ def supp {α : Type u} (x : F α) : Set α :=
 theorem of_mem_supp {α : Type u} {x : F α} {p : α → Prop} (h : Liftp p x) : ∀ y ∈ supp x, p y :=
   fun _ hy => hy h
 #align functor.of_mem_supp Functor.of_mem_supp
+
+/-- If `f` is a functor, if `fb : f β` and `a : α`, then `mapConstRev fb a` is the result of
+  applying `f.map` to the constant function `β → α` sending everything to `a`, and then
+  evaluating at `fb`. In other words it's `const a <$> fb`. -/
+@[reducible] def mapConstRev {f : Type u → Type v} [Functor f] {α β : Type u} :
+    f β → α → f α :=
+  fun a b => Functor.mapConst b a
+#align functor.map_const_rev Functor.mapConstRev
+/-- If `f` is a functor, if `fb : f β` and `a : α`, then `mapConstRev fb a` is the result of
+  applying `f.map` to the constant function `β → α` sending everything to `a`, and then
+  evaluating at `fb`. In other words it's `const a <$> fb`. -/
+infix:100 " $> " => Functor.mapConstRev
 
 end Functor

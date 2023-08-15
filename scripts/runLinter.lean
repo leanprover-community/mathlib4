@@ -1,5 +1,5 @@
 import Std.Tactic.Lint
-import Mathlib.Data.Array.Defs
+import Mathlib.Tactic.ToExpr
 
 open Lean Core Elab Command Std.Tactic.Lint
 
@@ -11,11 +11,6 @@ def readJsonFile (α) [FromJson α] (path : System.FilePath) : IO α := do
 
 def writeJsonFile (α) [ToJson α] (path : System.FilePath) (a : α) : IO Unit :=
   IO.FS.writeFile path <| toJson a |>.pretty
-
-open System in
-instance : ToExpr FilePath where
-  toTypeExpr := mkConst ``FilePath
-  toExpr path := mkApp (mkConst ``FilePath.mk) (toExpr path.1)
 
 elab "compileTimeSearchPath" : term =>
   return toExpr (← searchPathRef.get)
@@ -53,7 +48,7 @@ unsafe def main (args : List String) : IO Unit := do
       if failed then
         let fmtResults ←
           formatLinterResults results decls (groupByFilename := true)
-            "in mathlib" (runSlowLinters := true) .medium linters.size
+            "in mathlib" (runSlowLinters := true) (useErrorFormat := true) .medium linters.size
         IO.print (← fmtResults.toString)
         IO.Process.exit 1
       else

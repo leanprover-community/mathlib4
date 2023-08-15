@@ -17,7 +17,7 @@ open Lean Meta Elab.Tactic
 namespace Mathlib.Tactic
 
 /-- The parser for swap rules -/
-syntax swapRule := ident " ↔ "? ident
+syntax swapRule := ident " ↔"? ppSpace ident
 
 /--
 `swap_var swap_rule₁, swap_rule₂, ⋯` applies `swap_rule₁` then `swap_rule₂` then `⋯`.

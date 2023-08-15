@@ -5,7 +5,6 @@ Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.NormCast
-import Mathlib.Tactic.Zify.Attr
 import Mathlib.Data.Int.Basic
 
 /-!
@@ -57,7 +56,7 @@ integer `z` (in the supertype) to `ℕ` (the subtype), given a proof that `z ≥
 propositions concerning `z` will still be over `ℤ`. `zify` changes propositions about `ℕ` (the
 subtype) to propositions about `ℤ` (the supertype), without changing the type of any variable.
 -/
-syntax (name := zify) "zify" (simpArgs)? (ppSpace location)? : tactic
+syntax (name := zify) "zify" (simpArgs)? (location)? : tactic
 
 macro_rules
 | `(tactic| zify $[[$simpArgs,*]]? $[at $location]?) =>
@@ -94,4 +93,5 @@ def zifyProof (simpArgs : Option (Syntax.TSepArray `Lean.Parser.Tactic.simpStar 
 @[zify_simps] lemma nat_cast_eq (a b : ℕ) : a = b ↔ (a : ℤ) = (b : ℤ) := Int.ofNat_inj.symm
 @[zify_simps] lemma nat_cast_le (a b : ℕ) : a ≤ b ↔ (a : ℤ) ≤ (b : ℤ) := Int.ofNat_le.symm
 @[zify_simps] lemma nat_cast_lt (a b : ℕ) : a < b ↔ (a : ℤ) < (b : ℤ) := Int.ofNat_lt.symm
-@[zify_simps] lemma nat_cast_ne (a b : ℕ) : a ≠ b ↔ (a : ℤ) ≠ (b : ℤ) := by simp
+@[zify_simps] lemma nat_cast_ne (a b : ℕ) : a ≠ b ↔ (a : ℤ) ≠ (b : ℤ) := by
+  simp only [ne_eq, Int.cast_eq_cast_iff_Nat]

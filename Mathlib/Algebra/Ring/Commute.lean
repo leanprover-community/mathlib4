@@ -7,6 +7,8 @@ import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.Group.Commute
 
+#align_import algebra.ring.commute from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
+
 /-!
 # Semirings and rings
 

@@ -6,6 +6,8 @@ Authors: Yaël Dillies
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Order.RelClasses
 
+#align_import data.sigma.lex from "leanprover-community/mathlib"@"41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3"
+
 /-!
 # Lexicographic order on a sigma type
 
@@ -30,7 +32,7 @@ Related files are:
 
 namespace Sigma
 
-variable {ι : Type _} {α : ι → Type _} {r r₁ r₂ : ι → ι → Prop} {s s₁ s₂ : ∀ i, α i → α i → Prop}
+variable {ι : Type*} {α : ι → Type*} {r r₁ r₂ : ι → ι → Prop} {s s₁ s₂ : ∀ i, α i → α i → Prop}
   {a b : Σ i, α i}
 
 /-- The lexicographical order on a sigma type. It takes in a relation on the index type and a
@@ -95,10 +97,10 @@ instance [IsIrrefl ι r] [∀ i, IsIrrefl (α i) (s i)] : IsIrrefl _ (Lex r s) :
 instance [IsTrans ι r] [∀ i, IsTrans (α i) (s i)] : IsTrans _ (Lex r s) :=
   ⟨by
     rintro _ _ _ (⟨a, b, hij⟩ | ⟨a, b, hab⟩) (⟨_, c, hk⟩ | ⟨_, c, hc⟩)
-    · exact Lex.left _ _ (trans hij hk)
+    · exact Lex.left _ _ (_root_.trans hij hk)
     · exact Lex.left _ _ hij
     · exact Lex.left _ _ hk
-    · exact Lex.right _ _ (trans hab hc)⟩
+    · exact Lex.right _ _ (_root_.trans hab hc)⟩
 
 instance [IsSymm ι r] [∀ i, IsSymm (α i) (s i)] : IsSymm _ (Lex r s) :=
   ⟨by
@@ -107,7 +109,7 @@ instance [IsSymm ι r] [∀ i, IsSymm (α i) (s i)] : IsSymm _ (Lex r s) :=
     · exact Lex.right _ _ (symm hab)
       ⟩
 
-attribute [local instance] IsAsymm.is_irrefl
+attribute [local instance] IsAsymm.isIrrefl
 
 instance [IsAsymm ι r] [∀ i, IsAntisymm (α i) (s i)] : IsAntisymm _ (Lex r s) :=
   ⟨by
@@ -145,7 +147,7 @@ end Sigma
 
 namespace PSigma
 
-variable {ι : Sort _} {α : ι → Sort _} {r r₁ r₂ : ι → ι → Prop} {s s₁ s₂ : ∀ i, α i → α i → Prop}
+variable {ι : Sort*} {α : ι → Sort*} {r r₁ r₂ : ι → ι → Prop} {s s₁ s₂ : ∀ i, α i → α i → Prop}
 
 theorem lex_iff {a b : Σ' i, α i} :
     Lex r s a b ↔ r a.1 b.1 ∨ ∃ h : a.1 = b.1, s b.1 (h.rec a.2) b.2 := by
@@ -159,8 +161,6 @@ theorem lex_iff {a b : Σ' i, α i} :
     rintro (h | ⟨rfl, h⟩)
     · exact Lex.left _ _ h
     · exact Lex.right _ h
-
-
 #align psigma.lex_iff PSigma.lex_iff
 
 instance Lex.decidable (r : ι → ι → Prop) (s : ∀ i, α i → α i → Prop) [DecidableEq ι]

@@ -6,6 +6,8 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 import Mathlib.Algebra.Group.OrderSynonym
 import Mathlib.Algebra.Order.Monoid.Cancel.Defs
 
+#align_import algebra.order.monoid.order_dual from "leanprover-community/mathlib"@"2258b40dacd2942571c8ce136215350c702dc78f"
+
 /-! # Ordered monoid structures on the order dual. -/
 
 
@@ -78,9 +80,11 @@ instance covariantClass_swap_mul_lt [LT α] [Mul α]
 #align order_dual.covariant_class_swap_mul_lt OrderDual.covariantClass_swap_mul_lt
 
 @[to_additive]
-instance [OrderedCommMonoid α] : OrderedCommMonoid αᵒᵈ :=
-  { OrderDual.instPartialOrderOrderDual α, instCommMonoidOrderDual with
+instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid αᵒᵈ :=
+  { OrderDual.instPartialOrder α, instCommMonoidOrderDual with
     mul_le_mul_left := fun _ _ h c => mul_le_mul_left' h c }
+#align order_dual.ordered_comm_monoid OrderDual.orderedCommMonoid
+#align order_dual.ordered_add_comm_monoid OrderDual.orderedAddCommMonoid
 
 @[to_additive OrderDual.OrderedCancelAddCommMonoid.to_contravariantClass]
 instance OrderedCancelCommMonoid.to_contravariantClass [OrderedCancelCommMonoid α] :
@@ -89,24 +93,22 @@ instance OrderedCancelCommMonoid.to_contravariantClass [OrderedCancelCommMonoid 
     -- https://github.com/leanprover/lean4/issues/1892
     -- We should be able to remove this after nightly-2022-11-30 arrives.
     elim a b c := @OrderedCancelCommMonoid.le_of_mul_le_mul_left α _ a c b
-#align
-  order_dual.ordered_cancel_add_comm_monoid.to_contravariant_class
-  OrderDual.OrderedCancelAddCommMonoid.to_contravariantClass
-#align
-  order_dual.ordered_cancel_comm_monoid.to_contravariant_class
-  OrderDual.OrderedCancelCommMonoid.to_contravariantClass
+-- Porting note: Lean 3 to_additive name omits first namespace part
+#align ordered_cancel_add_comm_monoid.to_contravariant_class OrderDual.OrderedCancelAddCommMonoid.to_contravariantClass
+#align order_dual.ordered_cancel_comm_monoid.to_contravariant_class OrderDual.OrderedCancelCommMonoid.to_contravariantClass
 
 @[to_additive]
-instance [OrderedCancelCommMonoid α] : OrderedCancelCommMonoid αᵒᵈ :=
-  { instOrderedCommMonoidOrderDual, @instCancelCommMonoidOrderDual α _ with
+instance orderedCancelCommMonoid [OrderedCancelCommMonoid α] : OrderedCancelCommMonoid αᵒᵈ :=
+  { OrderDual.orderedCommMonoid, @instCancelCommMonoidOrderDual α _ with
     le_of_mul_le_mul_left := fun _ _ _ : α => le_of_mul_le_mul_left' }
 
 @[to_additive]
-instance [LinearOrderedCancelCommMonoid α] : LinearOrderedCancelCommMonoid αᵒᵈ :=
-  { instLinearOrderOrderDual α, instOrderedCancelCommMonoidOrderDual with }
+instance linearOrderedCancelCommMonoid [LinearOrderedCancelCommMonoid α] :
+    LinearOrderedCancelCommMonoid αᵒᵈ :=
+  { OrderDual.instLinearOrder α, OrderDual.orderedCancelCommMonoid with }
 
 @[to_additive]
-instance [LinearOrderedCommMonoid α] : LinearOrderedCommMonoid αᵒᵈ :=
-  { instLinearOrderOrderDual α, instOrderedCommMonoidOrderDual with }
+instance linearOrderedCommMonoid [LinearOrderedCommMonoid α] : LinearOrderedCommMonoid αᵒᵈ :=
+  { OrderDual.instLinearOrder α, OrderDual.orderedCommMonoid with }
 
 end OrderDual

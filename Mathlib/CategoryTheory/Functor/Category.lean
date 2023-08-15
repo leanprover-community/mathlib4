@@ -6,6 +6,8 @@ Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Iso
 
+#align_import category_theory.functor.category from "leanprover-community/mathlib"@"8350c34a64b9bc3fc64335df8006bffcadc7baa6"
+
 /-!
 # The category of functors and natural transformations between two fixed categories.
 
@@ -21,7 +23,7 @@ this is a small category at the next higher level.
 
 namespace CategoryTheory
 
--- declare the `v`'s first; see note [category_theory universes].
+-- declare the `v`'s first; see note [CategoryTheory universes].
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 open NatTrans Category CategoryTheory.Functor
@@ -52,7 +54,7 @@ namespace NatTrans
 -- Porting note: the behaviour of `ext` has changed here.
 -- We need to provide a copy of the `NatTrans.ext` lemma,
 -- written in terms of `F ⟶ G` rather than `NatTrans F G`,
--- or the `ext` will not retrieve it from the cache.
+-- or `ext` will not retrieve it from the cache.
 @[ext]
 theorem ext' {α β : F ⟶ G} (w : α.app = β.app) : α = β := NatTrans.ext _ _ w
 
@@ -74,6 +76,8 @@ theorem id_app (F : C ⥤ D) (X : C) : (𝟙 F : F ⟶ F).app X = 𝟙 (F.obj X)
 theorem comp_app {F G H : C ⥤ D} (α : F ⟶ G) (β : G ⟶ H) (X : C) :
     (α ≫ β).app X = α.app X ≫ β.app X := rfl
 #align category_theory.nat_trans.comp_app CategoryTheory.NatTrans.comp_app
+
+attribute [reassoc] comp_app
 
 theorem app_naturality {F G : C ⥤ D ⥤ E} (T : F ⟶ G) (X : C) {Y Z : D} (f : Y ⟶ Z) :
     (F.obj X).map f ≫ (T.app X).app Z = (T.app X).app Y ≫ (G.obj X).map f :=
@@ -107,6 +111,7 @@ def hcomp {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) : F ⋙ H ⟶ G ⋙ I wh
     rw [Functor.comp_map, Functor.comp_map, ← assoc, naturality, assoc, ← map_comp I, naturality,
       map_comp, assoc]
 #align category_theory.nat_trans.hcomp CategoryTheory.NatTrans.hcomp
+#align category_theory.nat_trans.hcomp_app CategoryTheory.NatTrans.hcomp_app
 
 /-- Notation for horizontal composition of natural transformations. -/
 infixl:80 " ◫ " => hcomp
@@ -133,7 +138,7 @@ open NatTrans
 
 namespace Functor
 
-/-- Flip the arguments of a bifunctor. See also `currying.lean`. -/
+/-- Flip the arguments of a bifunctor. See also `Currying.lean`. -/
 @[simps]
 protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
   obj k :=
@@ -141,19 +146,24 @@ protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
       map := fun f => (F.map f).app k, }
   map f := { app := fun j => (F.obj j).map f }
 #align category_theory.functor.flip CategoryTheory.Functor.flip
+#align category_theory.functor.flip_obj_map CategoryTheory.Functor.flip_obj_map
+#align category_theory.functor.flip_obj_obj CategoryTheory.Functor.flip_obj_obj
+#align category_theory.functor.flip_map_app CategoryTheory.Functor.flip_map_app
 
 end Functor
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem map_hom_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
     (F.map e.hom).app Z ≫ (F.map e.inv).app Z = 𝟙 _ := by
   simp [← NatTrans.comp_app, ← Functor.map_comp]
 #align category_theory.map_hom_inv_app CategoryTheory.map_hom_inv_app
+#align category_theory.map_hom_inv_app_assoc CategoryTheory.map_hom_inv_app_assoc
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem map_inv_hom_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
     (F.map e.inv).app Z ≫ (F.map e.hom).app Z = 𝟙 _ := by
   simp [← NatTrans.comp_app, ← Functor.map_comp]
 #align category_theory.map_inv_hom_app CategoryTheory.map_inv_hom_app
+#align category_theory.map_inv_hom_app_assoc CategoryTheory.map_inv_hom_app_assoc
 
 end CategoryTheory

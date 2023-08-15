@@ -6,6 +6,8 @@ Authors: Mario Carneiro
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Nat.Basic
 
+#align_import data.nat.psub from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
+
 /-!
 # Partial predecessor and partial subtraction on the natural numbers
 
@@ -19,6 +21,8 @@ wrap the result in an `Option` type instead:
 - `Nat.psub`: a partial subtraction operation
 
 -/
+
+set_option autoImplicit true
 
 
 namespace Nat
@@ -49,7 +53,6 @@ theorem psub_zero : psub m 0 = some m := rfl
 @[simp]
 theorem psub_succ : psub m (succ n) = psub m n >>= ppred := rfl
 
--- Porting note: mathport failed to align `option.get_or_else` with `Option.getD`
 theorem pred_eq_ppred (n : ℕ) : pred n = (ppred n).getD 0 := by cases n <;> rfl
 #align nat.pred_eq_ppred Nat.pred_eq_ppred
 
@@ -102,12 +105,10 @@ theorem psub_eq_sub {m n} (h : n ≤ m) : psub m n = some (m - n) :=
 
 -- Porting note: we only have the simp lemma `Option.bind_some` which uses `Option.bind` not `>>=`
 theorem psub_add (m n k) :
-    psub m (n + k) = (do psub (← psub m n) k) :=
-  by
+    psub m (n + k) = (do psub (← psub m n) k) := by
     induction k
     simp [Option.bind_eq_bind, Option.bind_some]
     simp [*, Nat.add_succ]
-
 #align nat.psub_add Nat.psub_add
 
 /-- Same as `psub`, but with a more efficient implementation. -/
@@ -118,7 +119,7 @@ def psub' (m n : ℕ) : Option ℕ :=
 
 theorem psub'_eq_psub (m n) : psub' m n = psub m n := by
   rw [psub']
-  split_ifs with h h
+  split_ifs with h
   exact (psub_eq_sub h).symm
   exact (psub_eq_none.2 (not_le.1 h)).symm
 #align nat.psub'_eq_psub Nat.psub'_eq_psub

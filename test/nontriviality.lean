@@ -1,5 +1,5 @@
 import Mathlib.Tactic.Nontriviality
-import Mathlib.Algebra.Order.Ring
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Nat.Basic
 -- import Mathlib.Data.Set.Basic
 
@@ -21,10 +21,6 @@ example {R : Type} [CommRing R] {r s : R} : r * s = s * r := by
 
 /-! ### Test deducing `nontriviality` by instance search -/
 
-instance [OrderedRing R] : OrderedSemiring R := by refine' { ‹OrderedRing R› with .. } <;> sorry
-theorem zero_le_one {R : Type} [OrderedSemiring R] : 0 ≤ (1 : R) := sorry
-theorem zero_le_two {R : Type} [OrderedSemiring R] : 0 ≤ (2 : R) := sorry
-
 example {R : Type} [OrderedRing R] : 0 ≤ (1 : R) := by
   nontriviality R
   rename_i inst; guard_hyp inst : Nontrivial R
@@ -44,7 +40,7 @@ example {R : Type} [OrderedRing R] {a : R} (h : 0 < a) : 2 ∣ 4 := by
   rename_i inst; guard_hyp inst : Nontrivial R
   decide
 
-/-! Test using `@[nontriviality]` lemmas in `nontriviality and custom `simp` lemmas -/
+/-! Test using `@[nontriviality]` lemmas in `nontriviality` and custom `simp` lemmas -/
 
 
 def EmptyOrUniv {α : Type _} (s : Set α) : Prop :=
@@ -89,3 +85,16 @@ example (α : ℕ → Type) (a b : α 0) (h : a = b) : a = b := by
   nontriviality α 0 using Nat.zero_lt_one
   rename_i inst; guard_hyp inst : Nontrivial (α 0)
   exact h
+
+class Foo (α : Type) : Prop
+instance : Foo α := {}
+
+example (α : Type) : Foo α := by nontriviality α; infer_instance
+
+-- simulate the type of MvPolynomial
+def R : Type u → Type v → Sort (max (u+1) (v+1)) := sorry
+instance : CommRing (R c d) := sorry
+
+example (p : R PUnit.{u+1} PUnit.{v+1}) : p = p := by
+  nontriviality
+  sorry

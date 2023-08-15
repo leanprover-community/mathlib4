@@ -6,11 +6,13 @@ Authors: Mario Carneiro, Gabriel Ebner
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Algebra.Group.Basic
 
+#align_import data.int.cast.basic from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
+
 /-!
 # Cast of integers (additional theorems)
 
 This file proves additional properties about the *canonical* homomorphism from
-the integers into an additive group with a one (`int.cast`).
+the integers into an additive group with a one (`Int.cast`).
 
 There is also `Data.Int.Cast.Lemmas`,
 which includes lemmas stated in terms of algebraic homomorphisms,
@@ -58,11 +60,17 @@ theorem cast_zero : ((0 : ℤ) : R) = 0 :=
 #align int.cast_zero Int.cast_zeroₓ
 -- type had `HasLiftT`
 
-@[simp high, nolint simpNF] -- this lemma competes with `Int.ofNat_eq_cast` to come later
+@[simp high, nolint simpNF, norm_cast] -- this lemma competes with `Int.ofNat_eq_cast` to come later
 theorem cast_ofNat (n : ℕ) : ((n : ℤ) : R) = n :=
   AddGroupWithOne.intCast_ofNat _
 #align int.cast_coe_nat Int.cast_ofNatₓ
 -- expected `n` to be implicit, and `HasLiftT`
+#align int.cast_of_nat Int.cast_ofNatₓ
+
+@[simp, norm_cast]
+theorem int_cast_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((no_index (OfNat.ofNat n) : ℤ) : R) = OfNat.ofNat n := by
+  simpa only [OfNat.ofNat] using AddGroupWithOne.intCast_ofNat (R := R) n
 
 @[simp, norm_cast]
 theorem cast_one : ((1 : ℤ) : R) = 1 := by
@@ -82,7 +90,7 @@ theorem cast_neg : ∀ n, ((-n : ℤ) : R) = -n
 theorem cast_subNatNat (m n) : ((Int.subNatNat m n : ℤ) : R) = m - n := by
   unfold subNatNat
   cases e : n - m
-  · rw [cast_ofNat]
+  · simp only [ofNat_eq_coe]
     simp [e, Nat.le_of_sub_eq_zero e]
   · rw [cast_negSucc, Nat.add_one, ← e, Nat.cast_sub <| _root_.le_of_lt <| Nat.lt_of_sub_eq_succ e,
       neg_sub]

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Keeley Hoek, Patrick Massot, Scott Morrison
 -/
 import Mathlib.Lean.Expr.Basic
-import Mathlib.Order.Monotone
+import Mathlib.Order.Monotone.Basic
 
 /-!
 # The `apply_fun` tactic.
@@ -22,34 +22,33 @@ open Lean Parser Tactic Elab Tactic Meta
 
 initialize registerTraceClass `apply_fun
 
-/--
-`g.note n ty by` creates a new hypothesis with name `n`, type `ty`, and proof `by`.
-If `ty` is omitted it is inferred from `by`.
--/
-def _root_.Lean.MVarId.note (g : MVarId) (n : Name := .anonymous) (type : Option Expr)
-    (body : Expr) : MetaM (FVarId × MVarId) := do
-  (←(g.assert n (type.getD (← inferType body)) body)).intro1P
-
 /-- Apply a function to a hypothesis. -/
-def applyFunHyp (f : Expr) (using? : Option Expr) (h : FVarId) (g : MVarId) :
-    MetaM (List MVarId) := do
+def applyFunHyp (f : Term) (using? : Option Expr) (h : FVarId) (g : MVarId) :
+    TacticM (List MVarId) := do
   let d ← h.getDecl
-  let (prf, newGoals) ← match d.type.getAppFnArgs with
-  | (``Eq, #[α, _, _]) => do
-    -- We have to jump through a hoop here!
-    -- At this point Lean may think `f` is a dependently-typed function,
-    -- so we can't just feed it to `congrArg`.
-    -- To solve this, we first unify `f` with a metavariable `_ : α → _`
-    -- (i.e. an arrow, but with the target as some fresh type metavariable).
-    if ¬ (← isDefEq f (← mkFreshExprMVar (← mkArrow α (← mkFreshTypeMVar)))) then
-      throwError "Can not use `apply_fun` with a dependently typed function."
-    pure (← mkCongrArg f d.toExpr, [])
+  let (prf, newGoals) ← match (← whnfR (← instantiateMVars d.type)).getAppFnArgs with
+  | (``Eq, #[_, lhs, rhs]) => do
+    let (eq', gs) ← withCollectingNewGoalsFrom (tagSuffix := `apply_fun) <|
+      withoutRecover <| runTermElab <| do
+        let f ← Term.elabTerm f none
+        let lhs' ← Term.elabAppArgs f #[] #[.expr lhs] none false false
+        let rhs' ← Term.elabAppArgs f #[] #[.expr rhs] none false false
+        unless ← isDefEq (← inferType lhs') (← inferType rhs') do
+          let msg ← mkHasTypeButIsExpectedMsg (← inferType rhs') (← inferType lhs')
+          throwError "In generated equality, right-hand side {msg}"
+        let eq ← mkEq lhs'.headBeta rhs'.headBeta
+        Term.synthesizeSyntheticMVarsUsingDefault
+        instantiateMVars eq
+    let mvar ← mkFreshExprMVar eq'
+    let [] ← mvar.mvarId!.congrN! | throwError "`apply_fun` could not construct congruence"
+    pure (mvar, gs)
   | (``LE.le, _) =>
     let (monotone_f, newGoals) ← match using? with
     -- Use the expression passed with `using`
     | some r => pure (r, [])
     -- Create a new `Monotone f` goal
     | none => do
+      let f ← elabTermForApply f
       let ng ← mkFreshExprMVar (← mkAppM ``Monotone #[f])
       -- TODO attempt to solve this goal using `mono` when it has been ported,
       -- via `synthesizeUsing`.
@@ -58,19 +57,53 @@ def applyFunHyp (f : Expr) (using? : Option Expr) (h : FVarId) (g : MVarId) :
   | _ => throwError "apply_fun can only handle hypotheses of the form `a = b` or `a ≤ b`."
 
   let g ← g.clear h
-  let (_, g) ← g.note d.userName none prf
+  let (_, g) ← g.note d.userName prf
   return g :: newGoals
 
 /-- Failure message for `applyFunTarget`. -/
-def applyFunTargetFailure (f : Expr) : MetaM (List MVarId) := do
+def applyFunTargetFailure (f : Term) : MetaM (List MVarId) := do
   throwError "`apply_fun` could not apply `{f}` to the main goal."
 
+/-- Given a metavariable `ginj` of type `Injective f`, try to prove it.
+Returns whether it was successful. -/
+def maybeProveInjective (ginj : Expr) (using? : Option Expr) : MetaM Bool := do
+  -- Try the `using` clause
+  if let some u := using? then
+    if ← isDefEq ginj u then
+      ginj.mvarId!.assign u
+      return true
+    else
+      let err ← mkHasTypeButIsExpectedMsg (← inferType u) (← inferType ginj)
+      throwError "Using clause {err}"
+  -- Try an assumption
+  try ginj.mvarId!.assumption; return true catch _ => pure ()
+  -- Try using that this is an equivalence
+  -- Note: if `f` is itself a metavariable, this can cause it to become an equivalence;
+  -- perhaps making sure `f` is an equivalence would be correct, but maybe users
+  -- shouldn't do `apply_fun _`.
+  let ok ← observing? do
+    let [] ← ginj.mvarId!.apply (← mkConstWithFreshMVarLevels ``Equiv.injective) | failure
+  if ok.isSome then return true
+  return false
+
 /-- Apply a function to the main goal. -/
-def applyFunTarget (f : Expr) (using? : Option Expr) (g : MVarId) : MetaM (List MVarId) := do
-  match (← g.getType).getAppFnArgs with
-  | (``Ne, #[_, _, _]) => g.apply (← mkAppM ``ne_of_apply_ne #[f])
+def applyFunTarget (f : Term) (using? : Option Expr) (g : MVarId) : TacticM (List MVarId) := do
+  -- handle applying a two-argument theorem whose first argument is f
+  let handle (thm : Name) : TacticM (List MVarId) := do
+    let ng ← mkFreshExprMVar none
+    let (pf, gs) ← withCollectingNewGoalsFrom (tagSuffix := `apply_fun) <|
+      withoutRecover <| runTermElab do
+        -- This coerces `f` to be a function as necessary:
+        let pf ← Term.elabTermEnsuringType (← `($(mkIdent thm) $f $(← Term.exprToSyntax ng)))
+                    (← g.getType)
+        Term.synthesizeSyntheticMVarsUsingDefault
+        return pf
+    g.assign pf
+    return ng.mvarId! :: gs
+  let gty ← whnfR (← instantiateMVars (← g.getType))
+  match gty.getAppFnArgs with
   | (``Not, #[p]) => match p.getAppFnArgs with
-    | (``Eq, #[_, _, _]) => g.apply (← mkAppM ``ne_of_apply_ne #[f])
+    | (``Eq, #[_, _, _]) => handle ``ne_of_apply_ne
     | _ => applyFunTargetFailure f
   -- TODO Once `Order.Hom.Basic` has been ported, verify these work.
   -- | (``LE.le, _) => g.apply (← mkAppM ``OrderIso.le_iff_le #[f])
@@ -78,15 +111,27 @@ def applyFunTarget (f : Expr) (using? : Option Expr) (g : MVarId) : MetaM (List 
   -- | (``LT.lt, _) => g.apply (← mkAppM ``OrderIso.lt_iff_lt #[f])
   -- | (``GT.gt, _) => g.apply (← mkAppM ``OrderIso.lt_iff_lt #[f])
   | (``Eq, #[_, _, _]) => do
-    let ng ← mkFreshExprMVar (← mkAppM ``Function.Injective #[f])
-    -- Try the `using` clause
-    if let some u := using? then _ ← isDefEq ng u
-    -- Try an assumption
-    try ng.mvarId!.assumption catch _ =>
-      -- TODO Once `Logic.Equiv.Basic` has been ported, verify this works.
-      -- try return ← ng.mvarId!.apply (mkConst ``Equiv.injective) catch _ =>
-      pure ()
-    g.apply ng
+    -- g' is for the `f lhs = f rhs` goal
+    let g' ← mkFreshExprSyntheticOpaqueMVar (← mkFreshTypeMVar) (← g.getTag)
+    -- ginj is for the `Injective f` goal
+    let ginj ← mkFreshExprSyntheticOpaqueMVar (← mkFreshTypeMVar) (appendTag (← g.getTag) `inj)
+    -- `withCollectingNewGoalsFrom` does not expect the goal to be closed, so here is "the goal"
+    let gDefer ← mkFreshExprMVar (← g.getType)
+    let (_, gs) ← withCollectingNewGoalsFrom (tagSuffix := `apply_fun) <|
+      withoutRecover <| runTermElab do
+        let inj ← Term.elabTerm (← ``(Function.Injective $f)) none
+        _ ← isDefEq (← inferType ginj) inj
+        let pf ← Term.elabAppArgs ginj #[] #[.expr g'] (← g.getType) false false
+        let pf ← Term.ensureHasType (← g.getType) pf
+        -- In the current context, let's try proving injectivity since it might fill in some holes
+        _ ← withAssignableSyntheticOpaque <| maybeProveInjective ginj using?
+        Term.synthesizeSyntheticMVarsUsingDefault
+        gDefer.mvarId!.assign pf
+        -- Return `inj` so that `withCollectingNewGoalsFrom` detects holes in `f`.
+        return inj
+    g.assign gDefer
+    -- Perhaps ginj was assigned by `proveInjective`, but it's OK putting `ginj` in the list.
+    return [g'.mvarId!, ginj.mvarId!] ++ gs
   | _ => applyFunTargetFailure f
 
 /--
@@ -94,18 +139,18 @@ Apply a function to an equality or inequality in either a local hypothesis or th
 
 * If we have `h : a = b`, then `apply_fun f at h` will replace this with `h : f a = f b`.
 * If we have `h : a ≤ b`, then `apply_fun f at h` will replace this with `h : f a ≤ f b`,
-  and create a subsidiary goal `monotone f`.
+  and create a subsidiary goal `Monotone f`.
   `apply_fun` will automatically attempt to discharge this subsidiary goal using `mono`,
-  or an explicit solution can be provided with `apply_fun f at h using P`, where `P : monotone f`.
+  or an explicit solution can be provided with `apply_fun f at h using P`, where `P : Monotone f`.
 * If the goal is `a ≠ b`, `apply_fun f` will replace this with `f a ≠ f b`.
 * If the goal is `a = b`, `apply_fun f` will replace this with `f a = f b`,
   and create a subsidiary goal `injective f`.
   `apply_fun` will automatically attempt to discharge this subsidiary goal using local hypotheses,
-  or if `f` is actually an `equiv`,
+  or if `f` is actually an `Equiv`,
   or an explicit solution can be provided with `apply_fun f using P`, where `P : Injective f`.
-* If the goal is `a ≤ b` (or similarly for `a < b`), and `f` is actually an `order_iso`,
+* If the goal is `a ≤ b` (or similarly for `a < b`), and `f` is actually an `OrderIso`,
   `apply_fun f` will replace the goal with `f a ≤ f b`.
-  If `f` is anything else (e.g. just a function, or an `equiv`), `apply_fun` will fail.
+  If `f` is anything else (e.g. just a function, or an `Equiv`), `apply_fun` will fail.
 
 
 Typical usage is:
@@ -118,13 +163,16 @@ example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective <| g ∘ f) :
   apply_fun g at h
   exact H h
 ```
+
+The function `f` is handled similarly to how it would be handled by `refine` in that `f` can contain
+placeholders. Named placeholders (like `?a` or `?_`) will produce new goals.
  -/
-syntax (name := applyFun) "apply_fun " term (ppSpace location)? (" using " term)? : tactic
+syntax (name := applyFun) "apply_fun " term (location)? (" using " term)? : tactic
 
 elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do
-  let f ← elabTermForApply f
   let P ← P.mapM (elabTerm · none)
   withLocation (expandOptLocation (Lean.mkOptionalNode loc))
-    (atLocal := fun h ↦ liftMetaTactic <| applyFunHyp f P h)
-    (atTarget := liftMetaTactic <| applyFunTarget f P)
+    (atLocal := fun h ↦ do replaceMainGoal <| ← applyFunHyp f P h (← getMainGoal))
+    (atTarget := withMainContext do
+      replaceMainGoal <| ← applyFunTarget f P (← getMainGoal))
     (failed := fun _ ↦ throwError "apply_fun failed")

@@ -3,8 +3,11 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
+import Mathlib.Init.Control.Lawful
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Control.SimpSet
+import Mathlib.Tactic.Common
+
+#align_import control.monad.basic from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
 /-!
 # Monad
@@ -20,8 +23,8 @@ import Mathlib.Control.SimpSet
 Set of rewrite rules and automation for monads in general and
 `ReaderT`, `StateT`, `ExceptT` and `OptionT` in particular.
 
-The rewrite rules for monads are carefully chosen so that `simp with
-functor_norm` will not introduce monadic vocabulary in a context where
+The rewrite rules for monads are carefully chosen so that `simp with functor_norm`
+will not introduce monadic vocabulary in a context where
 applicatives would do just fine but will handle monadic notation
 already present in an expression.
 
@@ -35,12 +38,9 @@ functor, applicative, monad, simp
 
 -/
 
-attribute [ext] ReaderT.ext StateT.ext ExceptT.ext Option.ext
+set_option autoImplicit true
 
-attribute [functor_norm] bind_assoc pure_bind bind_pure
-
-attribute [monad_norm] seq_eq_bind_map
-
+attribute [ext] ReaderT.ext StateT.ext ExceptT.ext OptionT.ext
 
 @[monad_norm]
 theorem map_eq_bind_pure_comp (m : Type u → Type v) [Monad m] [LawfulMonad m]

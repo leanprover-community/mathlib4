@@ -6,9 +6,8 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Order.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.PushNeg
-import Mathlib.Tactic.Use
+
+#align_import data.nat.basic from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
 
 /-!
 # Basic operations on the natural numbers
@@ -23,7 +22,7 @@ This file contains:
   * `strong_rec'`: recursion based on strong inequalities
 - decidability instances on predicates about the natural numbers
 
-Many theorems that used to live in this file have been moved to `data.nat.order`,
+Many theorems that used to live in this file have been moved to `Data.Nat.Order`,
 so that this file requires fewer imports.
 For each section here there is a corresponding section in that file with additional results.
 It may be possible to move some of these results here, by tweaking their proofs.
@@ -34,13 +33,14 @@ It may be possible to move some of these results here, by tweaking their proofs.
 
 universe u v
 
+namespace Nat
+
 /-! ### instances -/
 
-
-instance : Nontrivial ℕ :=
+instance nontrivial : Nontrivial ℕ :=
   ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
 
-instance : CommSemiring ℕ where
+instance commSemiring : CommSemiring ℕ where
   add := Nat.add
   add_assoc := Nat.add_assoc
   zero := Nat.zero
@@ -70,49 +70,47 @@ instance : CommSemiring ℕ where
 /-! Extra instances to short-circuit type class resolution and ensure computability -/
 
 
-instance : AddCommMonoid ℕ :=
+instance addCommMonoid : AddCommMonoid ℕ :=
   inferInstance
 
-instance : AddMonoid ℕ :=
+instance addMonoid : AddMonoid ℕ :=
   inferInstance
 
-instance : Monoid ℕ :=
+instance monoid : Monoid ℕ :=
   inferInstance
 
-instance : CommMonoid ℕ :=
+instance commMonoid : CommMonoid ℕ :=
   inferInstance
 
-instance : CommSemigroup ℕ :=
+instance commSemigroup : CommSemigroup ℕ :=
   inferInstance
 
-instance : Semigroup ℕ :=
+instance semigroup : Semigroup ℕ :=
   inferInstance
 
-instance : AddCommSemigroup ℕ :=
+instance addCommSemigroup : AddCommSemigroup ℕ :=
   inferInstance
 
-instance : AddSemigroup ℕ :=
+instance addSemigroup : AddSemigroup ℕ :=
   inferInstance
 
-instance : Distrib ℕ :=
+instance distrib : Distrib ℕ :=
   inferInstance
 
-instance : Semiring ℕ :=
+instance semiring : Semiring ℕ :=
   inferInstance
 
-protected theorem Nat.nsmul_eq_mul (m n : ℕ) : m • n = m * n :=
+protected theorem nsmul_eq_mul (m n : ℕ) : m • n = m * n :=
   rfl
 #align nat.nsmul_eq_mul Nat.nsmul_eq_mul
 
 -- Moved to core
 #align nat.eq_of_mul_eq_mul_right Nat.eq_of_mul_eq_mul_right
 
-instance Nat.cancelCommMonoidWithZero : CancelCommMonoidWithZero ℕ :=
+instance cancelCommMonoidWithZero : CancelCommMonoidWithZero ℕ :=
   { (inferInstance : CommMonoidWithZero ℕ) with
     mul_left_cancel_of_ne_zero :=
-      fun {_ _ _} h1 h2 => Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero h1) h2,
-    mul_right_cancel_of_ne_zero :=
-      fun {_ _ _} h1 h2 => Nat.eq_of_mul_eq_mul_right (Nat.pos_of_ne_zero h1) h2 }
+      fun h1 h2 => Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero h1) h2 }
 #align nat.cancel_comm_monoid_with_zero Nat.cancelCommMonoidWithZero
 
 attribute [simp]
@@ -121,8 +119,6 @@ attribute [simp]
   -- Nat.bit1_ne_bit0
 
 variable {m n k : ℕ}
-
-namespace Nat
 
 /-!
 ### Recursion and `forall`/`exists`
@@ -141,7 +137,7 @@ theorem and_forall_succ {p : ℕ → Prop} : (p 0 ∧ ∀ n, p (n + 1)) ↔ ∀ 
 theorem or_exists_succ {p : ℕ → Prop} : (p 0 ∨ ∃ n, p (n + 1)) ↔ ∃ n, p n :=
   ⟨fun h => h.elim (fun h0 => ⟨0, h0⟩) fun ⟨n, hn⟩ => ⟨n + 1, hn⟩, by
     rintro ⟨_ | n, hn⟩
-    exacts[Or.inl hn, Or.inr ⟨n, hn⟩]⟩
+    exacts [Or.inl hn, Or.inr ⟨n, hn⟩]⟩
 #align nat.or_exists_succ Nat.or_exists_succ
 
 /-! ### `succ` -/
@@ -149,7 +145,7 @@ theorem or_exists_succ {p : ℕ → Prop} : (p 0 ∨ ∃ n, p (n + 1)) ↔ ∃ n
 
 theorem _root_.LT.lt.nat_succ_le {n m : ℕ} (h : n < m) : succ n ≤ m :=
   succ_le_of_lt h
-#align nat._root_.has_lt.lt.nat_succ_le LT.lt.nat_succ_le
+#align has_lt.lt.nat_succ_le LT.lt.nat_succ_le
 
 -- Moved to Std
 #align nat.succ_eq_one_add Nat.succ_eq_one_add
@@ -199,7 +195,6 @@ theorem max_succ_succ {m n : ℕ} : max (succ m) (succ n) = succ (max m n) := by
   · rw [not_le] at h1
     have h2 := le_of_lt h1
     rw [max_eq_left h2, max_eq_left (succ_le_succ h2)]
-
 #align nat.max_succ_succ Nat.max_succ_succ
 
 theorem not_succ_lt_self {n : ℕ} : ¬succ n < n :=
@@ -217,13 +212,13 @@ theorem succ_le_iff {m n : ℕ} : succ m ≤ n ↔ m < n :=
 theorem lt_iff_add_one_le {m n : ℕ} : m < n ↔ m + 1 ≤ n := by rw [succ_le_iff]
 #align nat.lt_iff_add_one_le Nat.lt_iff_add_one_le
 
--- Just a restatement of `nat.lt_succ_iff` using `+1`.
+-- Just a restatement of `Nat.lt_succ_iff` using `+1`.
 theorem lt_add_one_iff {a b : ℕ} : a < b + 1 ↔ a ≤ b :=
   lt_succ_iff
 #align nat.lt_add_one_iff Nat.lt_add_one_iff
 
 -- A flipped version of `lt_add_one_iff`.
-theorem lt_one_add_iff {a b : ℕ} : a < 1 + b ↔ a ≤ b := by simp only [add_comm, lt_succ_iff]; rfl
+theorem lt_one_add_iff {a b : ℕ} : a < 1 + b ↔ a ≤ b := by simp only [add_comm, lt_succ_iff]
 #align nat.lt_one_add_iff Nat.lt_one_add_iff
 
 -- This is true reflexively, by the definition of `≤` on ℕ,
@@ -232,15 +227,13 @@ theorem add_one_le_iff {a b : ℕ} : a + 1 ≤ b ↔ a < b :=
   Iff.refl _
 #align nat.add_one_le_iff Nat.add_one_le_iff
 
-theorem one_add_le_iff {a b : ℕ} : 1 + a ≤ b ↔ a < b := by simp only [add_comm, add_one_le_iff]; rfl
+theorem one_add_le_iff {a b : ℕ} : 1 + a ≤ b ↔ a < b := by simp only [add_comm, add_one_le_iff]
 #align nat.one_add_le_iff Nat.one_add_le_iff
 
 theorem of_le_succ {n m : ℕ} (H : n ≤ m.succ) : n ≤ m ∨ n = m.succ :=
   H.lt_or_eq_dec.imp le_of_lt_succ id
 #align nat.of_le_succ Nat.of_le_succ
 
-theorem succ_lt_succ_iff {m n : ℕ} : succ m < succ n ↔ m < n :=
-  ⟨lt_of_succ_lt_succ, succ_lt_succ⟩
 #align nat.succ_lt_succ_iff Nat.succ_lt_succ_iff
 
 theorem div_le_iff_le_mul_add_pred {m n k : ℕ} (n0 : 0 < n) : m / n ≤ k ↔ m ≤ n * k + (n - 1) := by
@@ -260,7 +253,7 @@ theorem two_lt_of_ne : ∀ {n}, n ≠ 0 → n ≠ 1 → n ≠ 2 → 2 < n
 #align nat.two_lt_of_ne Nat.two_lt_of_ne
 
 theorem forall_lt_succ {P : ℕ → Prop} {n : ℕ} : (∀ m < n + 1, P m) ↔ (∀ m < n, P m) ∧ P n := by
-  simp only [lt_succ_iff, Decidable.le_iff_eq_or_lt, forall_eq_or_imp, and_comm]; rfl
+  simp only [lt_succ_iff, Decidable.le_iff_eq_or_lt, forall_eq_or_imp, and_comm]
 #align nat.forall_lt_succ Nat.forall_lt_succ
 
 theorem exists_lt_succ {P : ℕ → Prop} {n : ℕ} : (∃ m < n + 1, P m) ↔ (∃ m < n, P m) ∨ P n := by
@@ -271,8 +264,7 @@ theorem exists_lt_succ {P : ℕ → Prop} {n : ℕ} : (∃ m < n + 1, P m) ↔ (
 
 /-! ### `add` -/
 
-
--- Sometimes a bare `nat.add` or similar appears as a consequence of unfolding
+-- Sometimes a bare `Nat.add` or similar appears as a consequence of unfolding
 -- during pattern matching. These lemmas package them back up as typeclass
 -- mediated operations.
 @[simp]
@@ -285,24 +277,19 @@ theorem mul_def {a b : ℕ} : Nat.mul a b = a * b :=
   rfl
 #align nat.mul_def Nat.mul_def
 
-theorem exists_eq_add_of_le : ∀ {m n : ℕ}, m ≤ n → ∃ k : ℕ, n = m + k
-  | 0, 0, _ => ⟨0, by simp⟩
-  | 0, n + 1, h => ⟨n + 1, by simp⟩
-  | m + 1, n + 1, h =>
-    let ⟨k, hk⟩ := exists_eq_add_of_le (Nat.le_of_succ_le_succ h)
-    ⟨k, by simp [hk, add_comm, add_left_comm]; rfl⟩
+theorem exists_eq_add_of_le (h : m ≤ n) : ∃ k : ℕ, n = m + k :=
+  ⟨n - m, (add_sub_of_le h).symm⟩
 #align nat.exists_eq_add_of_le Nat.exists_eq_add_of_le
 
-theorem exists_eq_add_of_lt : ∀ {m n : ℕ}, m < n → ∃ k : ℕ, n = m + k + 1
-  | 0, 0, h => False.elim <| lt_irrefl _ h
-  | 0, n + 1, _ => ⟨n, by simp⟩
-  | m + 1, n + 1, h =>
-    let ⟨k, hk⟩ := exists_eq_add_of_le (Nat.le_of_succ_le_succ h)
-    ⟨k, by simp [hk]⟩
+theorem exists_eq_add_of_le' (h : m ≤ n) : ∃ k : ℕ, n = k + m :=
+  ⟨n - m, (Nat.sub_add_cancel h).symm⟩
+#align nat.exists_eq_add_of_le' Nat.exists_eq_add_of_le'
+
+theorem exists_eq_add_of_lt (h : m < n) : ∃ k : ℕ, n = m + k + 1 :=
+  ⟨n - (m + 1), by rw [add_right_comm, add_sub_of_le h]⟩
 #align nat.exists_eq_add_of_lt Nat.exists_eq_add_of_lt
 
 /-! ### `pred` -/
-
 
 @[simp]
 theorem add_succ_sub_one (n m : ℕ) : n + succ m - 1 = n + m := by rw [add_succ, succ_sub_one]
@@ -378,16 +365,18 @@ This section is here due to dependencies -- the lemmas here require some of the 
 proved above, and some of the results in later sections depend on the definitions in this section.
 -/
 
+-- Porting note: The type ascriptions of these two theorems need to be changed,
+-- as mathport wrote a lambda that wasn't there in mathlib3, that prevents `simp` applying them.
 
 @[simp]
 theorem rec_zero {C : ℕ → Sort u} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) :
-    (Nat.rec h0 h : ∀ n, C n) 0 = h0 :=
+    Nat.rec h0 h 0 = h0 :=
   rfl
 #align nat.rec_zero Nat.rec_zero
 
 @[simp]
 theorem rec_add_one {C : ℕ → Sort u} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) (n : ℕ) :
-    (Nat.rec h0 h : ∀ n, C n) (n + 1) = h n ((Nat.rec h0 h : ∀ n, C n) n) :=
+    Nat.rec h0 h (n + 1) = h n (Nat.rec h0 h n) :=
   rfl
 #align nat.rec_add_one Nat.rec_add_one
 
@@ -471,44 +460,47 @@ protected def strongRec' {p : ℕ → Sort u} (H : ∀ n, (∀ m, m < n → p m)
 
 /-- Recursion principle based on `<` applied to some natural number. -/
 @[elab_as_elim]
-def strongRecOn' {P : ℕ → Sort _} (n : ℕ) (h : ∀ n, (∀ m, m < n → P m) → P n) : P n :=
+def strongRecOn' {P : ℕ → Sort*} (n : ℕ) (h : ∀ n, (∀ m, m < n → P m) → P n) : P n :=
   Nat.strongRec' h n
 #align nat.strong_rec_on' Nat.strongRecOn'
 
-theorem strongRecOn'_beta {P : ℕ → Sort _} {h} {n : ℕ} :
+theorem strongRecOn'_beta {P : ℕ → Sort*} {h} {n : ℕ} :
     (strongRecOn' n h : P n) = h n fun m _ => (strongRecOn' m h : P m) := by
   simp only [strongRecOn']
   rw [Nat.strongRec']
 #align nat.strong_rec_on_beta' Nat.strongRecOn'_beta
 
-/-- Induction principle starting at a non-zero number. For maps to a `Sort*` see `le_rec_on`. -/
+/-- Induction principle starting at a non-zero number. For maps to a `Sort*` see `le_rec_on`.
+To use in an induction proof, the syntax is `induction n, hn using Nat.le_induction` (or the same
+for `induction'`). -/
 @[elab_as_elim]
-theorem le_induction {P : Nat → Prop} {m} (h0 : P m) (h1 : ∀ n, m ≤ n → P n → P (n + 1)) :
-    ∀ n, m ≤ n → P n := by
+theorem le_induction {m} {P : ∀ (n : Nat) (_ : m ≤ n), Prop} (base : P m le_rfl)
+    (succ : ∀ (n : Nat) (hn : m ≤ n), P n hn → P (n + 1) (hn.trans <| Nat.le_succ _)) :
+    ∀ (n : Nat) (hn : m ≤ n), P n hn := by
   apply Nat.le.rec
-  · exact h0
+  · exact base
   · intros n hn
-    apply h1 n hn
+    apply succ n hn
 #align nat.le_induction Nat.le_induction
 
 /-- Decreasing induction: if `P (k+1)` implies `P k`, then `P n` implies `P m` for all `m ≤ n`.
 Also works for functions to `Sort*`. For a version assuming only the assumption for `k < n`, see
 `decreasing_induction'`. -/
 @[elab_as_elim]
-def decreasingInduction {P : ℕ → Sort _} (h : ∀ n, P (n + 1) → P n) {m n : ℕ} (mn : m ≤ n)
+def decreasingInduction {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n) {m n : ℕ} (mn : m ≤ n)
     (hP : P n) : P m :=
   leRecOn mn (fun {k} ih hsk => ih <| h k hsk) (fun h => h) hP
 #align nat.decreasing_induction Nat.decreasingInduction
 
 @[simp]
-theorem decreasingInduction_self {P : ℕ → Sort _} (h : ∀ n, P (n + 1) → P n) {n : ℕ} (nn : n ≤ n)
+theorem decreasingInduction_self {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n) {n : ℕ} (nn : n ≤ n)
     (hP : P n) :
     (decreasingInduction h nn hP : P n) = hP := by
   dsimp only [decreasingInduction]
   rw [leRecOn_self]
 #align nat.decreasing_induction_self Nat.decreasingInduction_self
 
-theorem decreasingInduction_succ {P : ℕ → Sort _} (h : ∀ n, P (n + 1) → P n) {m n : ℕ} (mn : m ≤ n)
+theorem decreasingInduction_succ {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n) {m n : ℕ} (mn : m ≤ n)
     (msn : m ≤ n + 1) (hP : P (n + 1)) :
     (decreasingInduction h msn hP : P m) = decreasingInduction h mn (h n hP) := by
   dsimp only [decreasingInduction]
@@ -516,13 +508,13 @@ theorem decreasingInduction_succ {P : ℕ → Sort _} (h : ∀ n, P (n + 1) → 
 #align nat.decreasing_induction_succ Nat.decreasingInduction_succ
 
 @[simp]
-theorem decreasingInduction_succ' {P : ℕ → Sort _} (h : ∀ n, P (n + 1) → P n) {m : ℕ}
+theorem decreasingInduction_succ' {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n) {m : ℕ}
     (msm : m ≤ m + 1) (hP : P (m + 1)) : (decreasingInduction h msm hP : P m) = h m hP := by
   dsimp only [decreasingInduction]
   rw [leRecOn_succ']
 #align nat.decreasing_induction_succ' Nat.decreasingInduction_succ'
 
-theorem decreasingInduction_trans {P : ℕ → Sort _} (h : ∀ n, P (n + 1) → P n) {m n k : ℕ}
+theorem decreasingInduction_trans {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n) {m n k : ℕ}
     (mn : m ≤ n) (nk : n ≤ k) (hP : P k) :
     (decreasingInduction h (le_trans mn nk) hP : P m) =
     decreasingInduction h mn (decreasingInduction h nk hP) := by
@@ -531,7 +523,7 @@ theorem decreasingInduction_trans {P : ℕ → Sort _} (h : ∀ n, P (n + 1) →
   · rw [decreasingInduction_succ h (le_trans mn nk), ih, decreasingInduction_succ]
 #align nat.decreasing_induction_trans Nat.decreasingInduction_trans
 
-theorem decreasingInduction_succ_left {P : ℕ → Sort _} (h : ∀ n, P (n + 1) → P n) {m n : ℕ}
+theorem decreasingInduction_succ_left {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n) {m n : ℕ}
     (smn : m + 1 ≤ n) (mn : m ≤ n) (hP : P n) :
     (decreasingInduction h mn hP : P m) = h m (decreasingInduction h smn hP) := by
   rw [Subsingleton.elim mn (le_trans (le_succ m) smn), decreasingInduction_trans,
@@ -543,7 +535,7 @@ theorem decreasingInduction_succ_left {P : ℕ → Sort _} (h : ∀ n, P (n + 1)
 strictly below `(a,b)` to `P a b`, then we have `P n m` for all `n m : ℕ`.
 Note that for non-`Prop` output it is preferable to use the equation compiler directly if possible,
 since this produces equation lemmas. -/
-def strongSubRecursion {P : ℕ → ℕ → Sort _} (H : ∀ a b, (∀ x y, x < a → y < b → P x y) → P a b) :
+def strongSubRecursion {P : ℕ → ℕ → Sort*} (H : ∀ a b, (∀ x y, x < a → y < b → P x y) → P a b) :
     ∀ n m : ℕ, P n m
   | n, m => H n m fun x y _ _ => strongSubRecursion H x y
 #align nat.strong_sub_recursion Nat.strongSubRecursion
@@ -558,7 +550,7 @@ and for any `x y : ℕ` we can extend `P` from `(x,y+1)` and `(x+1,y)` to `(x+1,
 then we have `P n m` for all `n m : ℕ`.
 Note that for non-`Prop` output it is preferable to use the equation compiler directly if possible,
 since this produces equation lemmas. -/
-def pincerRecursion {P : ℕ → ℕ → Sort _} (Ha0 : ∀ a : ℕ, P a 0) (H0b : ∀ b : ℕ, P 0 b)
+def pincerRecursion {P : ℕ → ℕ → Sort*} (Ha0 : ∀ a : ℕ, P a 0) (H0b : ∀ b : ℕ, P 0 b)
     (H : ∀ x y : ℕ, P x y.succ → P x.succ y → P x.succ y.succ) : ∀ n m : ℕ, P n m
   | a, 0 => Ha0 a
   | 0, b => H0b b
@@ -569,12 +561,12 @@ termination_by pincerRecursion Ha0 Hab H n m => n + m
 -- Porting note:
 -- we can't put this on the definition itself because of
 -- https://github.com/leanprover/lean4/issues/1900
-attribute [elab_as_elim] strongSubRecursion
+attribute [elab_as_elim] pincerRecursion
 
 /-- Recursion starting at a non-zero number: given a map `C k → C (k+1)` for each `k ≥ n`,
 there is a map from `C n` to each `C m`, `n ≤ m`. -/
 @[elab_as_elim]
-def leRecOn' {C : ℕ → Sort _} {n : ℕ} :
+def leRecOn' {C : ℕ → Sort*} {n : ℕ} :
     ∀ {m : ℕ}, n ≤ m → (∀ ⦃k⦄, n ≤ k → C k → C (k + 1)) → C n → C m
   | 0, H, _, x => Eq.recOn (Nat.eq_zero_of_le_zero H) x
   | m + 1, H, next, x =>
@@ -585,7 +577,7 @@ def leRecOn' {C : ℕ → Sort _} {n : ℕ} :
 /-- Decreasing induction: if `P (k+1)` implies `P k` for all `m ≤ k < n`, then `P n` implies `P m`.
 Also works for functions to `Sort*`. Weakens the assumptions of `decreasing_induction`. -/
 @[elab_as_elim]
-def decreasingInduction' {P : ℕ → Sort _} {m n : ℕ} (h : ∀ k < n, m ≤ k → P (k + 1) → P k)
+def decreasingInduction' {P : ℕ → Sort*} {m n : ℕ} (h : ∀ k < n, m ≤ k → P (k + 1) → P k)
     (mn : m ≤ n) (hP : P n) :
     P m := by
   revert h hP
@@ -596,14 +588,13 @@ def decreasingInduction' {P : ℕ → Sort _} {m n : ℕ} (h : ∀ k < n, m ≤ 
     · exact h n (lt_succ_self n) mn hP
   · intro _ hP
     exact hP
-
 #align nat.decreasing_induction' Nat.decreasingInduction'
 
 /-! ### `div` -/
 
 attribute [simp] Nat.div_self
 
-/-- A version of `nat.div_lt_self` using successors, rather than additional hypotheses. -/
+/-- A version of `Nat.div_lt_self` using successors, rather than additional hypotheses. -/
 theorem div_lt_self' (n b : ℕ) : (n + 1) / (b + 2) < n + 1 :=
   Nat.div_lt_self (Nat.succ_pos n) (Nat.succ_lt_succ (Nat.succ_pos _))
 #align nat.div_lt_self' Nat.div_lt_self'
@@ -677,14 +668,7 @@ protected theorem mul_div_cancel_left' {a b : ℕ} (Hd : a ∣ b) : a * (b / a) 
   rw [mul_comm, Nat.div_mul_cancel Hd]
 #align nat.mul_div_cancel_left' Nat.mul_div_cancel_left'
 
---TODO: Update `nat.mul_div_mul` in the core?
-/-- Alias of `nat.mul_div_mul` -/
-protected theorem mul_div_mul_left (a b : ℕ) {c : ℕ} (hc : 0 < c) : c * a / (c * b) = a / b :=
-  Nat.mul_div_mul a b hc
 #align nat.mul_div_mul_left Nat.mul_div_mul_left
-
-protected theorem mul_div_mul_right (a b : ℕ) {c : ℕ} (hc : 0 < c) : a * c / (b * c) = a / b := by
-  rw [mul_comm, mul_comm b, a.mul_div_mul_left b hc]
 #align nat.mul_div_mul_right Nat.mul_div_mul_right
 
 theorem lt_div_mul_add {a b : ℕ} (hb : 0 < b) : a < a / b * b + b := by
@@ -724,6 +708,7 @@ theorem div_add_mod' (m k : ℕ) : m / k * k + m % k = m := by
   exact div_add_mod _ _
 #align nat.div_add_mod' Nat.div_add_mod'
 
+/-- See also `Nat.divModEquiv` for a similar statement as an `Equiv`. -/
 protected theorem div_mod_unique {n k m d : ℕ} (h : 0 < k) :
     n / k = d ∧ n % k = m ↔ m + k * d = n ∧ m < k :=
   ⟨fun ⟨e₁, e₂⟩ => e₁ ▸ e₂ ▸ ⟨mod_add_div _ _, mod_lt _ h⟩, fun ⟨h₁, h₂⟩ =>
@@ -830,10 +815,8 @@ theorem find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < 
   constructor
   · rintro rfl
     exact ⟨Nat.find_spec h, fun _ => Nat.find_min h⟩
-
   · rintro ⟨hm, hlt⟩
     exact le_antisymm (Nat.find_min' h hm) (not_lt.1 <| imp_not_comm.1 (hlt _) <| Nat.find_spec h)
-
 #align nat.find_eq_iff Nat.find_eq_iff
 
 @[simp]
@@ -844,17 +827,17 @@ theorem find_lt_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h < n ↔ ∃ m 
 
 @[simp]
 theorem find_le_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h ≤ n ↔ ∃ m ≤ n, p m := by
-  simp only [exists_prop, ← lt_succ_iff, find_lt_iff]; rfl
+  simp only [exists_prop, ← lt_succ_iff, find_lt_iff]
 #align nat.find_le_iff Nat.find_le_iff
 
 @[simp]
 theorem le_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n ≤ Nat.find h ↔ ∀ m < n, ¬p m := by
-  simp_rw [← not_lt, find_lt_iff, not_exists, not_and]; rfl
+  simp_rw [← not_lt, find_lt_iff, not_exists, not_and]
 #align nat.le_find_iff Nat.le_find_iff
 
 @[simp]
 theorem lt_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n < Nat.find h ↔ ∀ m ≤ n, ¬p m := by
-  simp only [← succ_le_iff, le_find_iff, succ_le_succ_iff]; rfl
+  simp only [← succ_le_iff, le_find_iff, succ_le_succ_iff]
 #align nat.lt_find_iff Nat.lt_find_iff
 
 @[simp]
@@ -874,7 +857,7 @@ theorem find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬p 0
     Nat.find h₁ = Nat.find h₂ + 1 := by
   refine' (find_eq_iff _).2 ⟨Nat.find_spec h₂, fun n hn => _⟩
   cases' n with n
-  exacts[h0, @Nat.find_min (fun n => p (n + 1)) _ h₂ _ (succ_lt_succ_iff.1 hn)]
+  exacts [h0, @Nat.find_min (fun n => p (n + 1)) _ h₂ _ (succ_lt_succ_iff.1 hn)]
 #align nat.find_comp_succ Nat.find_comp_succ
 
 end Find
@@ -919,11 +902,11 @@ end FindGreatest
 
 /-! ### decidability of predicates -/
 
-instance decidableBallLt :
+instance decidableBallLT :
     ∀ (n : Nat) (P : ∀ k < n, Prop) [∀ n h, Decidable (P n h)], Decidable (∀ n h, P n h)
 | 0, P, _ => isTrue fun n h => by cases h
 | (n+1), P, H => by
-  cases' decidableBallLt n fun k h => P k (lt_succ_of_lt h) with h h
+  cases' decidableBallLT n fun k h => P k (lt_succ_of_lt h) with h h
   · refine' isFalse (mt _ h)
     intro hn k h
     apply hn
@@ -934,8 +917,7 @@ instance decidableBallLt :
           match k, e, h' with
           | _, rfl, _ => p
   · exact isFalse (mt (fun hn => hn _ _) p)
-
-#align nat.decidable_ball_lt Nat.decidableBallLt
+#align nat.decidable_ball_lt Nat.decidableBallLT
 
 instance decidableForallFin {n : ℕ} (P : Fin n → Prop) [DecidablePred P] :
     Decidable (∀ i, P i) :=
@@ -948,13 +930,13 @@ instance decidableBallLe (n : ℕ) (P : ∀ k ≤ n, Prop) [∀ n h, Decidable (
     ⟨fun a k h => a k (lt_succ_of_le h), fun a k _ => a k _⟩
 #align nat.decidable_ball_le Nat.decidableBallLe
 
-instance decidableExistsLt {P : ℕ → Prop} [h : DecidablePred P] :
+instance decidableExistsLT {P : ℕ → Prop} [h : DecidablePred P] :
     DecidablePred fun n => ∃ m : ℕ, m < n ∧ P m
   | 0 => isFalse (by simp)
   | n + 1 =>
-    @decidable_of_decidable_of_iff _ _ (@instDecidableOr _ _ (decidableExistsLt n) (h n))
+    @decidable_of_decidable_of_iff _ _ (@instDecidableOr _ _ (decidableExistsLT n) (h n))
       (by simp only [lt_succ_iff_lt_or_eq, or_and_right, exists_or, exists_eq_left]; apply Iff.refl)
-#align nat.decidable_exists_lt Nat.decidableExistsLt
+#align nat.decidable_exists_lt Nat.decidableExistsLT
 
 instance decidableExistsLe {P : ℕ → Prop} [DecidablePred P] :
     DecidablePred fun n => ∃ m : ℕ, m ≤ n ∧ P m :=

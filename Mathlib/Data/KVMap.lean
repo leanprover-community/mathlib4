@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best
 -/
 import Lean.Data.KVMap
-import Mathlib.Util.MapsTo
 
 /-!
 # Additional functionality for `KVMap`
