@@ -351,7 +351,6 @@ theorem trans_symm (γ : Path x y) (γ' : Path y z) : (γ.trans γ').symm = γ'.
     norm_num
   · refine' congr_arg _ (Subtype.ext _)
     norm_num [unitInterval.symm, sub_sub_eq_add_sub, mul_sub]
-    ring
   · refine' congr_arg _ (Subtype.ext _)
     norm_num [mul_sub, h]
     ring

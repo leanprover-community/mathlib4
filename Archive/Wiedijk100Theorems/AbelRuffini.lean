@@ -138,10 +138,7 @@ theorem real_roots_Phi_ge_aux (hab : b < a) :
     have hf1 : f 1 = 0 := by simp [hf, hb]
     have hfa :=
       calc
-        f (-a) = (a : ℝ) ^ 2 - (a : ℝ) ^ 5 + b := by
-            -- Porting note: was `norm_num [hf, ← sq]`
-            simp only [hf, mul_neg, ← sq, sub_neg_eq_add, Nat.cast_pow, add_left_inj]
-            rw [Odd.neg_pow (by norm_num), neg_add_eq_sub]
+        f (-a) = (a : ℝ) ^ 2 - (a : ℝ) ^ 5 + b := by norm_num [hf, ← sq]
         _ ≤ (a : ℝ) ^ 2 - (a : ℝ) ^ 3 + (a - 1) := by
           refine' add_le_add (sub_le_sub_left (pow_le_pow ha _) _) _ <;> linarith
         _ = -((a : ℝ) - 1) ^ 2 * (a + 1) := by ring

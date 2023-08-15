@@ -50,9 +50,7 @@ theorem continuous_reflTransSymmAux : Continuous reflTransSymmAux := by
   · continuity
   · continuity
   intro x hx
-  -- Porting note: norm_num ignores arguments.
-  rw [hx, mul_assoc]
-  norm_num
+  norm_num [hx, mul_assoc]
 #align path.homotopy.continuous_refl_trans_symm_aux Path.Homotopy.continuous_reflTransSymmAux
 
 theorem reflTransSymmAux_mem_I (x : I × I) : reflTransSymmAux x ∈ I := by
@@ -100,9 +98,7 @@ def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.sy
       · simp only [Set.Icc.coe_one, one_mul, coe_mk_mk, Function.comp_apply]
         congr 1
         ext
-        -- Porting note: norm_num ignores arguments.
-        simp [sub_sub_eq_add_sub]
-        norm_num
+        norm_num [sub_sub_eq_add_sub]
       · rw [unitInterval.two_mul_sub_one_mem_iff]
         exact ⟨(not_le.1 h).le, unitInterval.le_one x⟩
   prop' t x hx := by
@@ -137,7 +133,6 @@ theorem continuous_transReflReparamAux : Continuous transReflReparamAux := by
   refine' continuous_if_le _ _ (Continuous.continuousOn _) (Continuous.continuousOn _) _ <;>
     [continuity; continuity; continuity; continuity; skip]
   intro x hx
-  -- Porting note: norm_num ignores arguments.
   simp [hx]
 #align path.homotopy.continuous_trans_refl_reparam_aux Path.Homotopy.continuous_transReflReparamAux
 
@@ -148,15 +143,11 @@ set_option linter.uppercaseLean3 false in
 #align path.homotopy.trans_refl_reparam_aux_mem_I Path.Homotopy.transReflReparamAux_mem_I
 
 theorem transReflReparamAux_zero : transReflReparamAux 0 = 0 := by
-  -- Porting note: norm_num ignores arguments.
-  simp [transReflReparamAux]
-  norm_num
+  norm_num [transReflReparamAux]
 #align path.homotopy.trans_refl_reparam_aux_zero Path.Homotopy.transReflReparamAux_zero
 
 theorem transReflReparamAux_one : transReflReparamAux 1 = 1 := by
-  -- Porting note: norm_num ignores arguments.
-  simp [transReflReparamAux]
-  norm_num
+  norm_num [transReflReparamAux]
 #align path.homotopy.trans_refl_reparam_aux_one Path.Homotopy.transReflReparamAux_one
 
 theorem trans_refl_reparam (p : Path x₀ x₁) :
@@ -203,9 +194,7 @@ theorem continuous_transAssocReparamAux : Continuous transAssocReparamAux := by
     [continuity; continuity; continuity; continuity; continuity; continuity; continuity; skip;
       skip] <;>
     · intro x hx
-      -- Porting note: norm_num ignores arguments.
-      simp [hx]
-      norm_num
+      norm_num [hx]
 #align path.homotopy.continuous_trans_assoc_reparam_aux Path.Homotopy.continuous_transAssocReparamAux
 
 theorem transAssocReparamAux_mem_I (t : I) : transAssocReparamAux t ∈ I := by
@@ -215,15 +204,11 @@ set_option linter.uppercaseLean3 false in
 #align path.homotopy.trans_assoc_reparam_aux_mem_I Path.Homotopy.transAssocReparamAux_mem_I
 
 theorem transAssocReparamAux_zero : transAssocReparamAux 0 = 0 := by
-  -- Porting note: norm_num ignores arguments.
-  simp [transAssocReparamAux]
-  norm_num
+  norm_num [transAssocReparamAux]
 #align path.homotopy.trans_assoc_reparam_aux_zero Path.Homotopy.transAssocReparamAux_zero
 
 theorem transAssocReparamAux_one : transAssocReparamAux 1 = 1 := by
-  -- Porting note: norm_num ignores arguments.
-  simp [transAssocReparamAux]
-  norm_num
+  norm_num [transAssocReparamAux]
 #align path.homotopy.trans_assoc_reparam_aux_one Path.Homotopy.transAssocReparamAux_one
 
 theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x₁ x₂) (r : Path x₂ x₃) :

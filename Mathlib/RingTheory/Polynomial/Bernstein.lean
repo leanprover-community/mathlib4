@@ -53,10 +53,7 @@ def bernsteinPolynomial (n ν : ℕ) : R[X] :=
 #align bernstein_polynomial bernsteinPolynomial
 
 example : bernsteinPolynomial ℤ 3 2 = 3 * X ^ 2 - 3 * X ^ 3 := by
-  -- Porting note: Originally was just `norm_num [bernsteinPolynomial, choose]; ring`,
-  -- but `norm_num` ignores arguments
-  simp [bernsteinPolynomial, choose]
-  norm_num
+  norm_num [bernsteinPolynomial, choose]
   ring
 
 namespace bernsteinPolynomial
