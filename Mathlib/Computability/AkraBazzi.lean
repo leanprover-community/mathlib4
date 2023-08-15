@@ -46,10 +46,7 @@ where p is the unique real number such that ∑ a_i b_i^p = 1.
 
 Note that the original version of the theorem has an integral rather than a sum in the above
 expression, and first considers the `T : ℝ → ℝ` case before moving on to `ℕ → ℝ`. We prove the
-above version with a sum, as it is simpler and more relevant for algorithms. We also specialize
-this theorem to the very common case where the recurrence is of the form
-T(n) = ℓT(r_i(n)) + g(n)
-where g(n) ∈ Θ(n^t) for some t.
+above version with a sum, as it is simpler and more relevant for algorithms.
 
 ## TODO
 
