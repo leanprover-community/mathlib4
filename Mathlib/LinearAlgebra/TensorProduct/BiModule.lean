@@ -80,3 +80,5 @@ lemma Algebra.TensorProduct.moduleMap_apply (a : A) (b : B) (m : M) (n : N) :
 
 example (a : A) (b : B) (m : M) (n : N) :
   Algebra.TensorProduct.moduleMap.toFun (a ⊗ₜ[R] b) (m ⊗ₜ[R] n) = (a • m) ⊗ₜ[R] (b • n) := rfl
+
+example : Module (A ⊗[R] B) (M ⊗[R] N) :=
