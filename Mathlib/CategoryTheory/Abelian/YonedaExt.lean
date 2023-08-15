@@ -102,7 +102,7 @@ attribute [instance] IteratedExtCategory.hK₀ IteratedExtCategory.hK₁
 
 inductive YonedaExt' (X₁ X₂ : C) : ℕ → Type _
   | ofHom (f : X₁ ⟶ X₂) : YonedaExt' X₁ X₂ 0
-  | ofExt (E : IteratedExtCategory X₁ X₂ n) : YonedaExt' X₁ X₂ (n+1)
+  | ofExt {n : ℕ} (E : IteratedExtCategory X₁ X₂ n) : YonedaExt' X₁ X₂ (n+1)
 
 namespace IteratedExtCategory
 

@@ -83,7 +83,7 @@ class ExactCategory [HasZeroObject C] [HasBinaryBiproducts C] where
     (ShortComplex.gAdmissible shortExact').StableUnderBaseChange
 
 variable [HasZeroObject C] [HasBinaryBiproducts C] [ExactCategory C]
-  {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+  {X Y Z X' Z' : C} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 def ExactCategory.shortExact : Set (ShortComplex C) := ExactCategory.shortExact'
 
