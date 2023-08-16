@@ -26,7 +26,7 @@
     "inputRev?": "master",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/JLimperg/aesop",
+   {"url": "https://github.com/semorrison/aesop",
     "subDir?": null,
     "rev": "147e0c7320733aa9a05d6c3ac1ba0cc889f176b8",
     "opts": {},
