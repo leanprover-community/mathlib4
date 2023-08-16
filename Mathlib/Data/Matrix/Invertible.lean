@@ -1,3 +1,4 @@
+
 /-
 Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -27,8 +28,16 @@ namespace Matrix
 
 #align matrix.inv_of_mul_self invOf_mul_self
 #align matrix.mul_inv_of_self mul_invOf_self
-#align matrix.inv_of_mul_self_assoc invOf_mul_self_assoc
-#align matrix.mul_inv_of_self_assoc mul_invOf_self_assoc
+
+/-- A copy of `invOf_mul_self_assoc` for rectangular matrices. -/
+protected theorem invOf_mul_self_assoc (A : Matrix n n α) (B : Matrix n m α) [Invertible A] :
+    ⅟ A * (A * B) = B := by rw [← Matrix.mul_assoc, invOf_mul_self, Matrix.one_mul]
+#align matrix.inv_of_mul_self_assoc Matrix.invOf_mul_self_assoc
+
+/-- A copy of `mul_invOf_self_assoc` for rectangular matrices. -/
+protected theorem mul_invOf_self_assoc (A : Matrix n n α) (B : Matrix n m α) [Invertible A] :
+    A * (⅟ A * B) = B := by rw [← Matrix.mul_assoc, mul_invOf_self, Matrix.one_mul]
+#align matrix.mul_inv_of_self_assoc Matrix.mul_invOf_self_assoc
 
 /-- A copy of `mul_invOf_mul_self_cancel` for rectangular matrices. -/
 protected theorem mul_invOf_mul_self_cancel (A : Matrix m n α) (B : Matrix n n α) [Invertible B] :

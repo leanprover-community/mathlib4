@@ -57,7 +57,7 @@ theorem fromBlocks_eq_of_invertible₁₁ (A : Matrix m m α) (B : Matrix m n α
       fromBlocks 1 0 (C * ⅟ A) 1 * fromBlocks A 0 0 (D - C * ⅟ A * B) *
         fromBlocks 1 (⅟ A * B) 0 1 := by
   simp only [fromBlocks_multiply, Matrix.mul_zero, Matrix.zero_mul, add_zero, zero_add,
-    Matrix.one_mul, Matrix.mul_one, Matrix.invOf_mul_self, Matrix.mul_invOf_self_assoc,
+    Matrix.one_mul, Matrix.mul_one, invOf_mul_self, Matrix.mul_invOf_self_assoc,
     Matrix.mul_invOf_mul_self_cancel, Matrix.mul_assoc, add_sub_cancel'_right]
 #align matrix.from_blocks_eq_of_invertible₁₁ Matrix.fromBlocks_eq_of_invertible₁₁
 
@@ -84,7 +84,7 @@ def fromBlocksZero₂₁Invertible (A : Matrix m m α) (B : Matrix m n α) (D : 
     [Invertible A] [Invertible D] : Invertible (fromBlocks A B 0 D) :=
   invertibleOfLeftInverse _ (fromBlocks (⅟ A) (-(⅟ A * B * ⅟ D)) 0 (⅟ D)) <| by
     simp_rw [fromBlocks_multiply, Matrix.mul_zero, Matrix.zero_mul, zero_add, add_zero,
-      Matrix.neg_mul, Matrix.invOf_mul_self, Matrix.mul_invOf_mul_self_cancel, add_right_neg,
+      Matrix.neg_mul, invOf_mul_self, Matrix.mul_invOf_mul_self_cancel, add_right_neg,
       fromBlocks_one]
 #align matrix.from_blocks_zero₂₁_invertible Matrix.fromBlocksZero₂₁Invertible
 
@@ -95,7 +95,7 @@ def fromBlocksZero₁₂Invertible (A : Matrix m m α) (C : Matrix n m α) (D : 
       (fromBlocks (⅟ A) 0 (-(⅟ D * C * ⅟ A))
         (⅟ D)) <| by -- a symmetry argument is more work than just copying the proof
     simp_rw [fromBlocks_multiply, Matrix.mul_zero, Matrix.zero_mul, zero_add, add_zero,
-      Matrix.neg_mul, Matrix.invOf_mul_self, Matrix.mul_invOf_mul_self_cancel, add_left_neg,
+      Matrix.neg_mul, invOf_mul_self, Matrix.mul_invOf_mul_self_cancel, add_left_neg,
       fromBlocks_one]
 #align matrix.from_blocks_zero₁₂_invertible Matrix.fromBlocksZero₁₂Invertible
 
@@ -119,14 +119,14 @@ def invertibleOfFromBlocksZero₂₁Invertible (A : Matrix m m α) (B : Matrix m
     [Invertible (fromBlocks A B 0 D)] : Invertible A × Invertible D where
   fst :=
     invertibleOfLeftInverse _ (⅟ (fromBlocks A B 0 D)).toBlocks₁₁ <| by
-      have := Matrix.invOf_mul_self (fromBlocks A B 0 D)
+      have := invOf_mul_self (fromBlocks A B 0 D)
       rw [← fromBlocks_toBlocks (⅟ (fromBlocks A B 0 D)), fromBlocks_multiply] at this
       replace := congr_arg Matrix.toBlocks₁₁ this
       simpa only [Matrix.toBlocks_fromBlocks₁₁, Matrix.mul_zero, add_zero, ← fromBlocks_one] using
         this
   snd :=
     invertibleOfRightInverse _ (⅟ (fromBlocks A B 0 D)).toBlocks₂₂ <| by
-      have := Matrix.mul_invOf_self (fromBlocks A B 0 D)
+      have := mul_invOf_self (fromBlocks A B 0 D)
       rw [← fromBlocks_toBlocks (⅟ (fromBlocks A B 0 D)), fromBlocks_multiply] at this
       replace := congr_arg Matrix.toBlocks₂₂ this
       simpa only [Matrix.toBlocks_fromBlocks₂₂, Matrix.zero_mul, zero_add, ← fromBlocks_one] using
@@ -139,14 +139,14 @@ def invertibleOfFromBlocksZero₁₂Invertible (A : Matrix m m α) (C : Matrix n
     [Invertible (fromBlocks A 0 C D)] : Invertible A × Invertible D where
   fst :=
     invertibleOfRightInverse _ (⅟ (fromBlocks A 0 C D)).toBlocks₁₁ <| by
-      have := Matrix.mul_invOf_self (fromBlocks A 0 C D)
+      have := mul_invOf_self (fromBlocks A 0 C D)
       rw [← fromBlocks_toBlocks (⅟ (fromBlocks A 0 C D)), fromBlocks_multiply] at this
       replace := congr_arg Matrix.toBlocks₁₁ this
       simpa only [Matrix.toBlocks_fromBlocks₁₁, Matrix.zero_mul, add_zero, ← fromBlocks_one] using
         this
   snd :=
     invertibleOfLeftInverse _ (⅟ (fromBlocks A 0 C D)).toBlocks₂₂ <| by
-      have := Matrix.invOf_mul_self (fromBlocks A 0 C D)
+      have := invOf_mul_self (fromBlocks A 0 C D)
       rw [← fromBlocks_toBlocks (⅟ (fromBlocks A 0 C D)), fromBlocks_multiply] at this
       replace := congr_arg Matrix.toBlocks₂₂ this
       simpa only [Matrix.toBlocks_fromBlocks₂₂, Matrix.mul_zero, zero_add, ← fromBlocks_one] using
@@ -326,8 +326,8 @@ def invertibleOfFromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n �
   letI iBD : Invertible (fromBlocks 1 (B * ⅟ D) 0 1 : Matrix (Sum m n) (Sum m n) α) :=
     fromBlocksZero₂₁Invertible _ _ _
   letI iBDC := Invertible.copy ‹_› _ (fromBlocks_eq_of_invertible₂₂ A B C D).symm
-  refine' (iBD.matrixMulLeft _).symm _
-  refine' (iDC.matrixMulRight _).symm iBDC
+  refine' (iBD.mulLeft _).symm _
+  refine' (iDC.mulRight _).symm iBDC
 #align matrix.invertible_of_from_blocks₂₂_invertible Matrix.invertibleOfFromBlocks₂₂Invertible
 
 /-- If a block matrix is invertible and so is its bottom left element, then so is the corresponding
