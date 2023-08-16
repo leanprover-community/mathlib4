@@ -571,7 +571,7 @@ theorem isNoetherian_of_fg_of_noetherian' {R M} [Ring R] [AddCommGroup M] [Modul
   isNoetherian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl)
 #align is_noetherian_of_fg_of_noetherian' isNoetherian_of_fg_of_noetherian'
 
-instance _instIsNoetherian_of_isNoetherianRing_of_finite {R M : Type*}
+instance instIsNoetherian_of_isNoetherianRing_of_finite {R M : Type*}
     [Ring R] [AddCommGroup M] [Module R M] [IsNoetherianRing R] [Module.Finite R M] :
     IsNoetherian R M :=
   isNoetherian_of_fg_of_noetherian' $ Module.finite_def.mp inferInstance
