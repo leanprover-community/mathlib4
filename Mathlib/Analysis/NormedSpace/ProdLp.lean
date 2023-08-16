@@ -48,6 +48,9 @@ namespace WithLp
 
 section algebra
 
+/- Register simplification lemmas for the applications of `WithLp p (α × β)` elements, as the usual
+lemmas for `Prod` will not trigger. -/
+
 variable {p 𝕜 α β}
 
 variable [Semiring 𝕜] [AddCommGroup α] [AddCommGroup β]
@@ -465,6 +468,11 @@ theorem continuous_equiv : Continuous (WithLp.equiv p (α × β)) :=
 theorem continuous_equiv_symm : Continuous (WithLp.equiv p (α × β)).symm :=
   continuous_id
 
+variable [T0Space α] [T0Space β]
+
+instance instT0Space : T0Space (WithLp p (α × β)) :=
+  instT0SpaceProdInstTopologicalSpaceProd
+
 end TopologicalSpace
 
 section UniformSpace
@@ -479,6 +487,11 @@ theorem uniformContinuous_equiv : UniformContinuous (WithLp.equiv p (α × β)) 
 
 theorem uniformContinuous_equiv_symm : UniformContinuous (WithLp.equiv p (α × β)).symm :=
   uniformContinuous_id
+
+variable [CompleteSpace α] [CompleteSpace β]
+
+instance instCompleteSpace : CompleteSpace (WithLp p (α × β)) :=
+  CompleteSpace.prod
 
 end UniformSpace
 
@@ -512,7 +525,7 @@ instance instProdPseudoEMetricSpace [PseudoEMetricSpace α] [PseudoEMetricSpace 
 /-- `EMetricSpace` instance on the product of two emetric spaces, using the `L^p`
 edistance, and having as uniformity the product uniformity. -/
 instance instProdEMetricSpace [EMetricSpace α] [EMetricSpace β] : EMetricSpace (WithLp p (α × β)) :=
-  @EMetricSpace.ofT0PseudoEMetricSpace (WithLp p (α × β)) _ instT0SpaceProdInstTopologicalSpaceProd
+  EMetricSpace.ofT0PseudoEMetricSpace (WithLp p (α × β))
 
 /-- `PseudoMetricSpace` instance on the product of two pseudometric spaces, using the
 `L^p` distance, and having as uniformity the product uniformity. -/
@@ -641,50 +654,7 @@ end norm_of
 
 variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 
-section InstNormedSpace
-
-variable [NormedField 𝕜] [NormedSpace 𝕜 α] [NormedSpace 𝕜 β]
-
-/-- The product of two normed spaces is a normed space, with the `L^p` norm. -/
-instance instProdNormedSpace : NormedSpace 𝕜 (WithLp p (α × β)) where
-  norm_smul_le := fun c f => by
-    rcases p.dichotomy with (rfl | hp)
-    · letI : Module 𝕜 (WithLp ∞ (α × β)) := Prod.instModule
-      suffices ‖c • f‖₊ = ‖c‖₊ * ‖f‖₊ by exact_mod_cast NNReal.coe_mono this.le
-      simp only [prod_nnnorm_eq_sup, NNReal.mul_sup, ← nnnorm_smul]
-      rfl
-    · have : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (zero_lt_one.trans_le hp).ne'
-      have smul_fst : (c • f).fst = c • f.fst := rfl
-      have smul_snd : (c • f).snd = c • f.snd := rfl
-      simp only [prod_norm_eq_add (zero_lt_one.trans_le hp), norm_smul, Real.mul_rpow,
-        norm_nonneg, smul_fst, smul_snd]
-      rw [← mul_add, mul_rpow (rpow_nonneg_of_nonneg (norm_nonneg _) _),
-        ← rpow_mul (norm_nonneg _), this, Real.rpow_one]
-      positivity
-
-end InstNormedSpace
-
-/- Register simplification lemmas for the applications of `WithLp p (α × β)` elements, as the usual
-lemmas for `Prod` will not trigger. -/
-variable {𝕜 p α β}
-
-section Equiv
-
-variable [NormedField 𝕜] [NormedSpace 𝕜 α] [NormedSpace 𝕜 β]
-
-/-- The canonical map `WithLp.equiv` between `WithLp ∞ (α × β)` and `α × β` as a linear isometric
-equivalence. -/
-def prodEquivₗᵢ : WithLp ∞ (α × β) ≃ₗᵢ[𝕜] α × β :=
-  { WithLp.equiv ∞ (α × β) with
-    map_add' := fun f g => rfl
-    map_smul' := fun c f => rfl
-    norm_map' := fun f => by simp [Norm.norm] }
-
-end Equiv
-
 section Single
-
-variable (p α β)
 
 @[simp]
 theorem nnnorm_equiv_symm_fst (x : α) :
@@ -755,5 +725,38 @@ theorem edist_equiv_symm_single_snd (y₁ y₂ : β) :
   simp only [edist_nndist, nndist_equiv_symm_single_snd p α β y₁ y₂]
 
 end Single
+
+section NormedSpace
+
+variable [NormedField 𝕜] [NormedSpace 𝕜 α] [NormedSpace 𝕜 β]
+
+/-- The product of two normed spaces is a normed space, with the `L^p` norm. -/
+instance instProdNormedSpace : NormedSpace 𝕜 (WithLp p (α × β)) where
+  norm_smul_le := fun c f => by
+    rcases p.dichotomy with (rfl | hp)
+    · letI : Module 𝕜 (WithLp ∞ (α × β)) := Prod.instModule
+      suffices ‖c • f‖₊ = ‖c‖₊ * ‖f‖₊ by exact_mod_cast NNReal.coe_mono this.le
+      simp only [prod_nnnorm_eq_sup, NNReal.mul_sup, ← nnnorm_smul]
+      rfl
+    · have : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (zero_lt_one.trans_le hp).ne'
+      have smul_fst : (c • f).fst = c • f.fst := rfl
+      have smul_snd : (c • f).snd = c • f.snd := rfl
+      simp only [prod_norm_eq_add (zero_lt_one.trans_le hp), norm_smul, Real.mul_rpow,
+        norm_nonneg, smul_fst, smul_snd]
+      rw [← mul_add, mul_rpow (rpow_nonneg_of_nonneg (norm_nonneg _) _),
+        ← rpow_mul (norm_nonneg _), this, Real.rpow_one]
+      positivity
+
+variable {𝕜 p α β}
+
+/-- The canonical map `WithLp.equiv` between `WithLp ∞ (α × β)` and `α × β` as a linear isometric
+equivalence. -/
+def prodEquivₗᵢ : WithLp ∞ (α × β) ≃ₗᵢ[𝕜] α × β :=
+  { WithLp.equiv ∞ (α × β) with
+    map_add' := fun f g => rfl
+    map_smul' := fun c f => rfl
+    norm_map' := fun f => by simp [Norm.norm] }
+
+end NormedSpace
 
 end WithLp
