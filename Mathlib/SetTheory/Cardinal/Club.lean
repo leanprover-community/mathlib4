@@ -229,6 +229,8 @@ noncomputable instance inst_uncountable_regular_countably_complete : CountablyCo
   inst_uncountable_cofinal_countably_complete (lt_of_lt_of_le uncnt reg.right)
 end
 
-def IsStronglyMahlo (c : Cardinal) := Order.IsStationary {x ∈ Set.Iio c.ord | IsInaccessible x.card}
+structure IsStronglyMahlo (c : Cardinal) where
+  club_stationary : Order.IsStationary {x ∈ Set.Iio c.ord | IsInaccessible x.card ∧ x = x.card.ord}
+  inaccessible : IsInaccessible c
 
 end Cardinal
