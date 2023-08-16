@@ -134,8 +134,8 @@ lemma mulVec_self_mul_conjTranspose_eq_zero_iff (A : Matrix m n R) (v : m → R)
   simpa only [conjTranspose_conjTranspose] using mulVec_conjTranspose_mul_self_eq_zero_iff Aᴴ _
 
 lemma vecMul_self_mul_conjTranspose_eq_zero_iff (A : Matrix m n R) (v : m → R) :
-    mulVec (A * Aᴴ) v = 0 ↔ mulVec Aᴴ v = 0 := by
-  simpa only [conjTranspose_conjTranspose] using mulVec_conjTranspose_mul_self_eq_zero_iff Aᴴ _
+    vecMul v (A * Aᴴ) = 0 ↔ vecMul v A = 0 := by
+  simpa only [conjTranspose_conjTranspose] using vecMul_conjTranspose_mul_self_eq_zero_iff Aᴴ _
 
 
 end StarOrderedRing
