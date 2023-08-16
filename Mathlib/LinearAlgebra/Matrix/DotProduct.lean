@@ -99,39 +99,44 @@ theorem dotProduct_self_star_eq_zero {v : n → R} : dotProduct v (star v) = 0 �
 #align matrix.dot_product_self_star_eq_zero Matrix.dotProduct_self_star_eq_zero
 
 @[simp]
-lemma conjTranspose_mul_self_eq_zero_iff {A : Matrix m n R} : (Aᴴ ⬝ A) = 0 ↔ A = 0 :=
+lemma conjTranspose_mul_self_eq_zero_iff {A : Matrix m n R} : (Aᴴ * A) = 0 ↔ A = 0 :=
   ⟨fun h => Matrix.ext fun i j =>
     (congr_fun <| dotProduct_star_self_eq_zero.1 <| Matrix.ext_iff.2 h j j) i,
   fun h => h ▸ Matrix.mul_zero _⟩
 
 @[simp]
-lemma self_mul_conjTranspose_eq_zero_iff {A : Matrix m n R} : (A ⬝ Aᴴ) = 0 ↔ A = 0 :=
+lemma self_mul_conjTranspose_eq_zero_iff {A : Matrix m n R} : (A * Aᴴ) = 0 ↔ A = 0 :=
   ⟨fun h => Matrix.ext fun i j =>
     (congr_fun <| dotProduct_self_star_eq_zero.1 <| Matrix.ext_iff.2 h i i) j,
   fun h => h ▸ Matrix.zero_mul _⟩
 
-lemma conjTranspose_mul_self_mul_eq_zero_iff  (A: Matrix m n R) (B: Matrix n p R) :
-    (Aᴴ ⬝ A) ⬝ B = 0 ↔ A ⬝ B = 0 := by
+lemma conjTranspose_mul_self_mul_eq_zero_iff  (A : Matrix m n R) (B : Matrix n p R) :
+    (Aᴴ * A) * B = 0 ↔ A * B = 0 := by
   refine' ⟨ fun h => _, fun h => by simp only [Matrix.mul_assoc, h, Matrix.mul_zero] ⟩
   apply_fun (fun x => Bᴴ.mul x) at h
   rw [Matrix.mul_zero, Matrix.mul_assoc, ← Matrix.mul_assoc, ← conjTranspose_mul] at h
   exact conjTranspose_mul_self_eq_zero_iff.1 h
 
-lemma self_mul_conjTranspose_mul_eq_zero_iff (A: Matrix m n R)(B: Matrix m p R) :
-    (A⬝Aᴴ)⬝B = 0 ↔ Aᴴ⬝B = 0 := by
+lemma self_mul_conjTranspose_mul_eq_zero_iff (A : Matrix m n R) (B : Matrix m p R) :
+    (A * Aᴴ) * B = 0 ↔ Aᴴ * B = 0 := by
   simpa only [conjTranspose_conjTranspose] using conjTranspose_mul_self_mul_eq_zero_iff  Aᴴ _
 
-lemma mulVec_conjTranspose_mul_self_eq_zero_iff (A: Matrix m n R) (v : n → R) :
-    mulVec (Aᴴ ⬝ A) v = 0 ↔ mulVec A v = 0 := by
+lemma mulVec_conjTranspose_mul_self_eq_zero_iff (A : Matrix m n R) (v : n → R) :
+    mulVec (Aᴴ * A) v = 0 ↔ mulVec A v = 0 := by
   rw [← mulVec_mulVec]
   refine ⟨ fun h => ?_ , fun h => by simp only [h, mulVec_zero] ⟩
   apply_fun (fun x => dotProduct (star v) x) at h
   rwa [dotProduct_mulVec, dotProduct_zero, vecMul_conjTranspose, star_star,
     dotProduct_star_self_eq_zero] at h
 
-lemma mulVec_self_mul_conjTranspose_eq_zero_iff (A: Matrix m n R) (v : m → R) :
-    mulVec (A ⬝ Aᴴ) v = 0 ↔ mulVec Aᴴ v = 0 := by
+lemma mulVec_self_mul_conjTranspose_eq_zero_iff (A : Matrix m n R) (v : m → R) :
+    mulVec (A * Aᴴ) v = 0 ↔ mulVec Aᴴ v = 0 := by
   simpa only [conjTranspose_conjTranspose] using mulVec_conjTranspose_mul_self_eq_zero_iff Aᴴ _
+
+lemma vecMul_self_mul_conjTranspose_eq_zero_iff (A : Matrix m n R) (v : m → R) :
+    mulVec (A * Aᴴ) v = 0 ↔ mulVec Aᴴ v = 0 := by
+  simpa only [conjTranspose_conjTranspose] using mulVec_conjTranspose_mul_self_eq_zero_iff Aᴴ _
+
 
 end StarOrderedRing
 
