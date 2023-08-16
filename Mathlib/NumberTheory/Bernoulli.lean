@@ -127,7 +127,7 @@ theorem bernoulli'_three : bernoulli' 3 = 0 := by
 theorem bernoulli'_four : bernoulli' 4 = -1 / 30 := by
   have : Nat.choose 4 2 = 6 := by norm_num -- shrug
   rw [bernoulli'_def]
-  norm_num [sum_range_succ, sum_range_succ, sum_range_zero]
+  norm_num [sum_range_succ, sum_range_succ, sum_range_zero, this]
 #align bernoulli'_four bernoulli'_four
 
 end Examples
