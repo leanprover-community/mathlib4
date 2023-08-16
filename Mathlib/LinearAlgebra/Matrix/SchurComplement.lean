@@ -259,9 +259,9 @@ def fromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
   · -- the product is invertible because all the factors are
     letI : Invertible (1 : Matrix n n α) := invertibleOne
     letI : Invertible (1 : Matrix m m α) := invertibleOne
-    refine' Invertible.matrixMul _ (fromBlocksZero₁₂Invertible _ _ _)
+    refine' Invertible.mul _ (fromBlocksZero₁₂Invertible _ _ _)
     exact
-      Invertible.matrixMul (fromBlocksZero₂₁Invertible _ _ _)
+      Invertible.mul (fromBlocksZero₂₁Invertible _ _ _)
         (fromBlocksZero₂₁Invertible _ _ _)
   · -- unfold the `Invertible` instances to get the raw factors
     show
