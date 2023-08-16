@@ -49,7 +49,7 @@ the continuum hypothesis*][flypitch_itp]
 -/
 
 
-universe u v w u' v'
+universe u v w u' v' w'
 
 namespace FirstOrder
 
@@ -59,7 +59,7 @@ variable {L : Language.{u, v}} {L' : Language}
 
 variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
 
-variable {α : Type u'} {β : Type v'}
+variable {α : Type u'} {β : Type v'} {γ : Type w'}
 
 open FirstOrder Cardinal
 
@@ -908,7 +908,7 @@ theorem realize_exs {φ : L.BoundedFormula α n} {v : α → M} :
 
 @[simp]
 theorem _root_.FirstOrder.Language.Formula.realize_iAlls
-    {α β γ : Type _} [Finite γ] (f : α → β ⊕ γ)
+    [Finite γ] (f : α → β ⊕ γ)
     (φ : L.Formula α) (v : β → M) : (φ.iAlls f).Realize v ↔
       ∀ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
   let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
@@ -926,15 +926,15 @@ theorem _root_.FirstOrder.Language.Formula.realize_iAlls
       exact i.elim0
 
 @[simp]
-theorem realize_iAlls {α β γ : Type _} [Finite γ] (f : α → β ⊕ γ)
+theorem realize_iAlls [Finite γ] (f : α → β ⊕ γ)
     (φ : L.Formula α) (v : β → M) (v' : Fin 0 → M) :
     BoundedFormula.Realize (φ.iAlls f) v v' ↔
       ∀ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
   rw [← Formula.realize_iAlls f φ v, iff_iff_eq]; congr; simp
 
 @[simp]
-theorem _root_.FirstOrder.Language.Formula.realize_exsᵢ
-    {α β γ : Type _} [Finite γ] (f : α → β ⊕ γ)
+theorem _root_.FirstOrder.Language.Formula.realize_iExs
+    [Finite γ] (f : α → β ⊕ γ)
     (φ : L.Formula α) (v : β → M) : (φ.iExs f).Realize v ↔
       ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
   let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
@@ -953,11 +953,11 @@ theorem _root_.FirstOrder.Language.Formula.realize_exsᵢ
       exact i.elim0
 
 @[simp]
-theorem realize_exsᵢ {α β γ : Type _} [Finite γ] (f : α → β ⊕ γ)
+theorem realize_iExs [Finite γ] (f : α → β ⊕ γ)
     (φ : L.Formula α) (v : β → M) (v' : Fin 0 → M) :
     BoundedFormula.Realize (φ.iExs f) v v' ↔
       ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
-  rw [← Formula.realize_exsᵢ f φ v, iff_iff_eq]; congr; simp
+  rw [← Formula.realize_iExs f φ v, iff_iff_eq]; congr; simp
 
 @[simp]
 theorem realize_toFormula (φ : L.BoundedFormula α n) (v : Sum α (Fin n) → M) :
