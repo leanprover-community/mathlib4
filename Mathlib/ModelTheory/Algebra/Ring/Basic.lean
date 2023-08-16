@@ -34,7 +34,8 @@ on any theorem that requires both a `Ring` instance and a `Language.ring.Structu
 in order to state the theorem. To apply such a theorem to a ring `R` with a `Ring` instance,
 use the tactic `letI := compatibleRingOfRing R`. To apply the theorem to `K`
 a `Language.ring.Structure K` instance and for example an instance of `Theory.field.Model K`,
-you must add local instances with definitions like `ModelTheory.Field.fieldOfModelField K`
+you must add local instances with definitions like `ModelTheory.Field.fieldOfModelField K` and
+`FirstOrder.Ring.compatibleRingOfModelField K`.
 (in `Mathlib/ModelTheory/Algebra/Field/Basic.lean`), depending on the Theory.
 
 -/

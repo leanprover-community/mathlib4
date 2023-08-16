@@ -9,14 +9,17 @@ import Mathlib.ModelTheory.Semantics
 import Mathlib.ModelTheory.Algebra.Ring.Basic
 import Mathlib.Algebra.Field.MinimalAxioms
 
+variable {K : Type*}
+
 namespace FirstOrder
 
 namespace Field
 
-open FirstOrder
-
 open Language Ring Structure BoundedFormula
 
+/-- An indexing type to name each of the field axioms. The theory
+of fields is defined as the range of a function `FieldAxiom ->
+Language.ring.Sentence` -/
 inductive FieldAxiom : Type
   | addAssoc : FieldAxiom
   | zeroAdd : FieldAxiom
@@ -28,6 +31,7 @@ inductive FieldAxiom : Type
   | leftDistrib : FieldAxiom
   | existsPairNe : FieldAxiom
 
+/-- The first order sentence corresponding to each field axiom -/
 @[simp]
 def FieldAxiom.toSentence : FieldAxiom → Language.ring.Sentence
   | .addAssoc => ∀' ∀' ∀' (((&0 + &1) + &2) =' (&0 + (&1 + &2)))
@@ -40,19 +44,21 @@ def FieldAxiom.toSentence : FieldAxiom → Language.ring.Sentence
   | .leftDistrib => ∀' ∀' ∀' ((&0 * (&1 + &2)) =' ((&0 * &1) + (&0 * &2)))
   | .existsPairNe => ∃' ∃' (∼(&0 =' &1))
 
-@[simp, reducible]
-def FieldAxiom.toProp (M : Type*) [Add M] [Mul M] [Neg M] [Zero M] [One M] :
+/-- The Proposition corresponding to each field axiom -/
+@[simp]
+def FieldAxiom.toProp (K : Type*) [Add K] [Mul K] [Neg K] [Zero K] [One K] :
     FieldAxiom → Prop
-  | .addAssoc => ∀ x y z : M, (x + y) + z = x + (y + z)
-  | .zeroAdd => ∀ x : M, 0 + x = x
-  | .addLeftNeg => ∀ x : M, -x + x = 0
-  | .mulAssoc => ∀ x y z : M, (x * y) * z = x * (y * z)
-  | .mulComm => ∀ x y : M, x * y = y * x
-  | .oneMul => ∀ x : M, 1 * x = x
-  | .existsInv => ∀ x : M, x ≠ 0 → ∃ y, x * y = 1
-  | .leftDistrib => ∀ x y z : M, x * (y + z) = x * y + x * z
-  | .existsPairNe => ∃ x y : M, x ≠ y
+  | .addAssoc => ∀ x y z : K, (x + y) + z = x + (y + z)
+  | .zeroAdd => ∀ x : K, 0 + x = x
+  | .addLeftNeg => ∀ x : K, -x + x = 0
+  | .mulAssoc => ∀ x y z : K, (x * y) * z = x * (y * z)
+  | .mulComm => ∀ x y : K, x * y = y * x
+  | .oneMul => ∀ x : K, 1 * x = x
+  | .existsInv => ∀ x : K, x ≠ 0 → ∃ y, x * y = 1
+  | .leftDistrib => ∀ x y z : K, x * (y + z) = x * y + x * z
+  | .existsPairNe => ∃ x y : K, x ≠ y
 
+/-- The first order theory of fields, as a theory over the language of rings -/
 def _root_.FirstOrder.Language.Theory.field : Language.ring.Theory :=
   Set.range FieldAxiom.toSentence
 
@@ -61,7 +67,7 @@ theorem FieldAxiom.realize_toSentence_iff_toProp {K : Type*}
     (ax : FieldAxiom) :
     (K ⊨ (ax.toSentence : Sentence Language.ring)) ↔ ax.toProp K := by
   cases ax <;>
-  simp [Sentence.Realize, Formula.Realize, toProp, Fin.snoc, constantMap,
+  simp [Sentence.Realize, Formula.Realize, Fin.snoc, constantMap,
     add_def, mul_def, neg_def, zero_def, one_def]
 
 theorem FieldAxiom.toProp_of_model {K : Type*}
@@ -73,6 +79,11 @@ theorem FieldAxiom.toProp_of_model {K : Type*}
 
 open FieldAxiom
 
+/-- A model for the theory of fields is a field. To introduced locally on Types that don't
+already have instances for ring operations.
+
+When this is used, it is almost always useful to also add locally the instance
+`compatibleFieldOfModelField` afterwards. -/
 @[reducible]
 noncomputable def fieldOfModelField (K : Type*) [Language.ring.Structure K]
     [Theory.field.Model K] : Field K :=
@@ -103,6 +114,12 @@ section
 
 attribute [local instance] fieldOfModelField
 
+/-- The instances given by `fieldOfModelField` are compatible with the `Language.ring.Structure`
+instance on `K`. This instance is to be used on models for the language of fields that do
+not already have the ring operations on the Type.
+
+Always add `fieldOfModelField` as a local instance first before using this instance.
+  -/
 @[reducible]
 noncomputable def compatibleRingOfModelField (K : Type*) [Language.ring.Structure K]
     [Theory.field.Model K] : CompatibleRing K :=
