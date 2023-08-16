@@ -1973,6 +1973,10 @@ theorem transpose_zero [Zero α] : (0 : Matrix m n α)ᵀ = 0 := by
 #align matrix.transpose_zero Matrix.transpose_zero
 
 @[simp]
+theorem transpose_eq_zero [Zero α] {M : Matrix m n α} : Mᵀ = 0 ↔ M = 0 :=
+  Matrix.ext_iff.symm.trans <| forall_comm.trans Matrix.ext_iff
+
+@[simp]
 theorem transpose_one [DecidableEq n] [Zero α] [One α] : (1 : Matrix n n α)ᵀ = 1 := by
   ext i j
   rw [transpose_apply, ← diagonal_one]
@@ -1980,6 +1984,10 @@ theorem transpose_one [DecidableEq n] [Zero α] [One α] : (1 : Matrix n n α)�
   · simp only [h, diagonal_apply_eq]
   · simp only [diagonal_apply_ne _ h, diagonal_apply_ne' _ h]
 #align matrix.transpose_one Matrix.transpose_one
+
+@[simp]
+theorem transpose_eq_one [DecidableEq n] [Zero α] [One α] {M : Matrix n n α} : Mᵀ = 1 ↔ M = 1 :=
+  (Function.Involutive.eq_iff transpose_transpose).trans <| by rw [transpose_one]
 
 @[simp]
 theorem transpose_add [Add α] (M : Matrix m n α) (N : Matrix m n α) : (M + N)ᵀ = Mᵀ + Nᵀ := by
@@ -2138,9 +2146,21 @@ theorem conjTranspose_zero [AddMonoid α] [StarAddMonoid α] : (0 : Matrix m n �
 #align matrix.conj_transpose_zero Matrix.conjTranspose_zero
 
 @[simp]
+theorem conjTranspose_eq_zero [AddMonoid α] [StarAddMonoid α] {M : Matrix m n α} :
+    Mᴴ = 0 ↔ M = 0 := by
+  simp_rw [←Matrix.ext_iff, conjTranspose_apply, zero_apply, star_eq_zero]
+  exact forall_comm
+
+@[simp]
 theorem conjTranspose_one [DecidableEq n] [Semiring α] [StarRing α] : (1 : Matrix n n α)ᴴ = 1 := by
   simp [conjTranspose]
 #align matrix.conj_transpose_one Matrix.conjTranspose_one
+
+@[simp]
+theorem conjTranspose_eq_one [DecidableEq n] [Semiring α] [StarRing α] {M : Matrix n n α} :
+    Mᴴ = 1 ↔ M = 1 :=
+  (Function.Involutive.eq_iff conjTranspose_conjTranspose).trans <|
+    by rw [conjTranspose_one]
 
 @[simp]
 theorem conjTranspose_add [AddMonoid α] [StarAddMonoid α] (M N : Matrix m n α) :
