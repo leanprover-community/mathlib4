@@ -342,7 +342,7 @@ def PB :=
 variable [Fintype l]
 
 theorem pb_inv [Invertible (2 : R)] : PB l R * Matrix.fromBlocks 1 0 0 (⅟ (PD l R)) = 1 := by
-  rw [PB, Matrix.fromBlocks_multiply, Matrix.mul_invOf_self]
+  rw [PB, Matrix.fromBlocks_multiply, mul_invOf_self]
   simp only [Matrix.mul_zero, Matrix.mul_one, Matrix.zero_mul, zero_add, add_zero,
     Matrix.fromBlocks_one]
 #align lie_algebra.orthogonal.PB_inv LieAlgebra.Orthogonal.pb_inv
