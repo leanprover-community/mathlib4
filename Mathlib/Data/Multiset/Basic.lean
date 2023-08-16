@@ -2305,11 +2305,11 @@ theorem countp_pos {s} : 0 < countp p s ↔ ∃ a ∈ s, p a :=
 #align multiset.countp_pos Multiset.countp_pos
 
 theorem countp_eq_zero {s} : countp p s = 0 ↔ ∀ a ∈ s, ¬p a :=
-  Quot.inductionOn s fun _l => by simp
+  Quot.inductionOn s fun _l => by simp [List.countp_eq_zero]
 #align multiset.countp_eq_zero Multiset.countp_eq_zero
 
 theorem countp_eq_card {s} : countp p s = card s ↔ ∀ a ∈ s, p a :=
-  Quot.inductionOn s fun _l => by simp
+  Quot.inductionOn s fun _l => by simp [List.countp_eq_length]
 #align multiset.countp_eq_card Multiset.countp_eq_card
 
 theorem countp_pos_of_mem {s a} (h : a ∈ s) (pa : p a) : 0 < countp p s :=

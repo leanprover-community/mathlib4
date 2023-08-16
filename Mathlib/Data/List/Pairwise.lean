@@ -297,7 +297,7 @@ theorem pairwise_of_forall_mem_list {l : List α} {r : α → α → Prop} (h : 
   classical
     refine'
       pairwise_of_reflexive_on_dupl_of_forall_ne (fun a ha' => _) fun a ha b hb _ => h a ha b hb
-    have ha := List.one_le_count_iff_mem.1 ha'.le
+    have ha := List.count_pos_iff_mem.1 ha'.le
     exact h a ha a ha
 #align list.pairwise_of_forall_mem_list List.pairwise_of_forall_mem_list
 
