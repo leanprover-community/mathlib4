@@ -69,7 +69,7 @@ homomorphisms from `A` to `B`. -/
 class NonUnitalStarAlgHomClass (F : Type*) (R : outParam (Type*)) (A : outParam (Type*))
   (B : outParam (Type*)) [Monoid R] [Star A] [Star B] [NonUnitalNonAssocSemiring A]
   [NonUnitalNonAssocSemiring B] [DistribMulAction R A] [DistribMulAction R B] extends
-  NonUnitalAlgHomClass F R A B, StarHomClass F A B
+  NonUnitalAlgHomClass F (@id R) A B, StarHomClass F A B
 #align non_unital_star_alg_hom_class NonUnitalStarAlgHomClass
 
 -- Porting note: no longer needed
@@ -110,7 +110,7 @@ instance : NonUnitalStarAlgHomClass (A →⋆ₙₐ[R] B) R A B
     where
   coe f := f.toFun
   coe_injective' := by rintro ⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩ h; congr
-  map_smul f := f.map_smul'
+  map_smulₛₗ f := f.map_smul'
   map_add f := f.map_add'
   map_zero f := f.map_zero'
   map_mul f := f.map_mul'
@@ -149,7 +149,7 @@ to fix definitional equalities. -/
 protected def copy (f : A →⋆ₙₐ[R] B) (f' : A → B) (h : f' = f) : A →⋆ₙₐ[R] B
     where
   toFun := f'
-  map_smul' := h.symm ▸ map_smul f
+  map_smul' := h.symm ▸ map_smulₛₗ f
   map_zero' := h.symm ▸ map_zero f
   map_add' := h.symm ▸ map_add f
   map_mul' := h.symm ▸ map_mul f
@@ -202,13 +202,16 @@ theorem coe_id : ⇑(NonUnitalStarAlgHom.id R A) = id :=
 
 end
 
+-- TODO : remove the change
 /-- The composition of non-unital ⋆-algebra homomorphisms, as a non-unital ⋆-algebra
 homomorphism. -/
 def comp (f : B →⋆ₙₐ[R] C) (g : A →⋆ₙₐ[R] B) : A →⋆ₙₐ[R] C :=
   { f.toNonUnitalAlgHom.comp g.toNonUnitalAlgHom with
-    map_star' := by
-      simp only [map_star, NonUnitalAlgHom.toFun_eq_coe, eq_self_iff_true, NonUnitalAlgHom.coe_comp,
-        coe_toNonUnitalAlgHom, Function.comp_apply, forall_const] }
+    map_star' := fun a ↦ by
+      change f (g (star a)) = star (f (g a))
+      simp only [map_star]
+      /- simp only [map_star, NonUnitalAlgHom.toFun_eq_coe, eq_self_iff_true, NonUnitalAlgHom.coe_comp,
+        coe_toNonUnitalAlgHom, Function.comp_apply, forall_const] -/ }
 #align non_unital_star_alg_hom.comp NonUnitalStarAlgHom.comp
 
 @[simp]
@@ -265,7 +268,7 @@ variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [StarAddMonoid A]
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [StarAddMonoid B]
 
 instance : Zero (A →⋆ₙₐ[R] B) :=
-  ⟨{ (0 : NonUnitalAlgHom R A B) with map_star' := by simp }⟩
+  ⟨{ (0 : NonUnitalAlgHom (@id R) A B) with map_star' := by simp }⟩
 
 instance : Inhabited (A →⋆ₙₐ[R] B) :=
   ⟨0⟩
@@ -332,7 +335,7 @@ instance (priority := 100) toNonUnitalStarAlgHomClass [CommSemiring R] [Semiring
   [StarAlgHomClass F R A B] :
   NonUnitalStarAlgHomClass F R A B :=
   { StarAlgHomClass.toAlgHomClass, StarAlgHomClass.toStarHomClass R with
-    map_smul := map_smul }
+    map_smulₛₗ := map_smul }
 #align star_alg_hom_class.to_non_unital_star_alg_hom_class StarAlgHomClass.toNonUnitalStarAlgHomClass
 
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Star A]
@@ -698,7 +701,7 @@ class StarAlgEquivClass (F : Type*) (R : outParam (Type*)) (A : outParam (Type*)
   /-- By definition, a ⋆-algebra equivalence preserves the `star` operation. -/
   map_star : ∀ (f : F) (a : A), f (star a) = star (f a)
   /-- By definition, a ⋆-algebra equivalence commutes with the action of scalars. -/
-  map_smul : ∀ (f : F) (r : R) (a : A), f (r • a) = r • f a
+  map_smulₛₗ : ∀ (f : F) (r : R) (a : A), f (r • a) = r • f a
 #align star_alg_equiv_class StarAlgEquivClass
 
 -- Porting note: no longer needed
@@ -723,7 +726,7 @@ instance (priority := 50) {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A]
 -- See note [lower instance priority]
 instance (priority := 50) {F R A B : Type*} [Add A] [Mul A] [Star A] [SMul R A]
     [Add B] [Mul B] [SMul R B] [Star B] [hF : StarAlgEquivClass F R A B] :
-    SMulHomClass F R A B :=
+    MulActionSemiHomClass F (@id R) A B :=
   { hF with
     coe := fun f => f
     coe_injective' := FunLike.coe_injective }
@@ -751,7 +754,7 @@ instance (priority := 100) instStarAlgHomClass (F R A B : Type*) [CommSemiring R
     coe_injective' := FunLike.coe_injective
     map_one := map_one
     map_zero := map_zero
-    commutes := fun f r => by simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
+    commutes := fun f r => by simp only [Algebra.algebraMap_eq_smul_one, map_smulₛₗ, map_one] }
 
 -- See note [lower instance priority]
 instance (priority := 100) toAlgEquivClass {F R A B : Type*} [CommSemiring R]
@@ -784,7 +787,7 @@ instance : StarAlgEquivClass (A ≃⋆ₐ[R] B) R A B
   map_mul f := f.map_mul'
   map_add f := f.map_add'
   map_star := map_star'
-  map_smul := map_smul'
+  map_smulₛₗ := map_smul'
 
 @[simp]
 theorem toRingEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toRingEquiv = e :=
@@ -831,7 +834,7 @@ nonrec def symm (e : A ≃⋆ₐ[R] B) : B ≃⋆ₐ[R] A :=
         congr_arg (inv e) (map_star e (inv e b)).symm
     map_smul' := fun r b => by
       simpa only [apply_inv_apply, inv_apply_apply] using
-        congr_arg (inv e) (map_smul e r (inv e b)).symm }
+        congr_arg (inv e) (map_smulₛₗ e r (inv e b)).symm }
 #align star_alg_equiv.symm StarAlgEquiv.symm
 
 -- Porting note: in mathlib3 we didn't need the `Simps.apply` hint.
