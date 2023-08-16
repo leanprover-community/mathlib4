@@ -2017,6 +2017,15 @@ theorem transpose_map {f : α → β} {M : Matrix m n α} : Mᵀ.map f = (M.map 
   rfl
 #align matrix.transpose_map Matrix.transpose_map
 
+theorem transpose_inj (A B : Matrix m n α) : Aᵀ = Bᵀ → A = B :=
+  (fun h => ext fun i j => by simpa [transpose_apply] using ext_iff.2 h j i)
+
+theorem tranpose_injecitve : Function.Injective (fun M : Matrix m n α => Mᵀ) :=
+  fun _ _ => transpose_inj _ _
+
+theorem transpose_eq_transpose_iff (A B : Matrix m n α) : Aᵀ = Bᵀ ↔ A = B := by
+  refine' ⟨transpose_inj _ _, fun h => congr_arg transpose h ⟩
+
 variable (m n α)
 
 /-- `Matrix.transpose` as an `AddEquiv` -/
@@ -2254,6 +2263,15 @@ are the same operation. -/
 @[simp]
 theorem conjTranspose_eq_transpose_of_trivial [Star α] [TrivialStar α] (A : Matrix m n α) :
     Aᴴ = Aᵀ := Matrix.ext fun _ _ => star_trivial _
+
+theorem conjTranspose_inj [InvolutiveStar α] (A B : Matrix m n α) : Aᴴ = Bᴴ → A = B :=
+  (fun h => ext fun i j => by simpa [star_inj, conjTranspose_apply] using ext_iff.2 h j i)
+
+theorem conjTranpose_injecitve [InvolutiveStar α] :
+  Function.Injective (fun M : Matrix m n α => Mᴴ) := fun _ _ => conjTranspose_inj _ _
+
+theorem conjTranspose_eq_conjTranspose_iff [InvolutiveStar α] (A B : Matrix m n α) :
+    Aᴴ = Bᴴ ↔ A = B := ⟨conjTranspose_inj _ _, fun h => congr_arg conjTranspose h ⟩
 
 variable (m n α)
 
