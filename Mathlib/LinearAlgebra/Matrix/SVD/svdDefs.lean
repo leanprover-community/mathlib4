@@ -434,7 +434,7 @@ lemma mul_V₂_eq_zero (A : Matrix (Fin M) (Fin N) 𝕂) :
 
 lemma conjTranspose_mul_U₂_eq_zero (A : Matrix (Fin M) (Fin N) 𝕂) : Aᴴ  *  A.svdU₂ = 0 := by
   suffices h : A * Aᴴ * A.svdU₂ = 0
-  · exact (ker_self_mul_conj_transpose_eq_ker_conj_transpose _ _).1 h
+  · exact (self_mul_conjTranspose_mul_eq_zero _ _).1 h
   rw [reduced_spectral_theorem', Matrix.mul_assoc, U₁'_conjTranspose_mul_U₂]
   simp only [Matrix.mul_zero]
 
