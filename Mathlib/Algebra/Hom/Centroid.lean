@@ -532,11 +532,11 @@ instance : Star (CentroidHom α) where
 
 @[simp] lemma star_apply (f : CentroidHom α) (a : α) : (star f) a = star (f (star a)) := rfl
 
-instance starAddMonoidOfCentroidHom : StarAddMonoid (CentroidHom α) where
-  star_involutive := fun f => by
+instance instStarAddMonoid : StarAddMonoid (CentroidHom α) where
+  star_involutive f := by
     ext
     rw [star_apply, star_apply, star_star, star_star]
-  star_add := fun f g => by
+  star_add f g := by
     ext
     rw [star_apply, add_apply, star_add, add_apply, star_apply, star_apply]
 
