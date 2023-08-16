@@ -928,48 +928,65 @@ Note: this also holds without assuming `Nontrivial ι`, by tracing through the j
 (note that `s = ∅` in that case).
 -/
 theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f)
-  (s : Finset ι) (i : ι) (hi : i ∉ s) : ∫⋯∫_{i}, rhsAux μ f s ∂μ ≤ rhsAux μ f (insert i s) := by
-  simp_rw [rhsAux, ← insert_compl_insert hi]
-  rw [prod_insert (not_mem_compl.mpr <| mem_insert_self i s)]
-  rw [mul_left_comm, mul_prod_eq_prod_insertNone]
-  simp_rw [marginal_singleton]
-  simp_rw [Pi.mul_apply, Pi.pow_apply, fun x xᵢ => marginal_update μ x f xᵢ (s.mem_insert_self i)]
-  intro x
-  dsimp only
+    (s : Finset ι) (i : ι) (hi : i ∉ s) : ∫⋯∫_{i}, rhsAux μ f s ∂μ ≤ rhsAux μ f (insert i s) := by
   have h2i : i ∈ sᶜ := Finset.mem_compl.mpr hi
   have hι : 1 ≤ (#ι : ℝ) := by exact_mod_cast Fintype.card_pos
   have h2ι : 0 ≤ (#ι : ℝ) - 1 := by linarith
-  rw [lintegral_const_mul]
-  simp_rw [prod_apply, Option.elim'_comp₂ (· ^ ·), Pi.pow_apply]
-  refine' (ENNReal.mul_left_mono (lintegral_prod_norm_pow_le _ _ _)).trans_eq _
-  · simp_rw [sum_insertNone, compl_insert, not_not, Option.elim, sum_const, nsmul_eq_mul]
-    rw [Finset.cast_card_erase_of_mem h2i, mul_one_div, ← add_div, ← add_sub_assoc,
-      ← Nat.cast_add, card_add_card_compl, div_self]
-    · rw [sub_ne_zero, Nat.cast_ne_one]
-      exact Fintype.one_lt_card.ne'
-  · rintro (_|i) -
-    · exact div_nonneg (by simp) h2ι
-    · simp_rw [Option.elim, one_div_nonneg, h2ι]
-  simp_rw [prod_insertNone]
-  dsimp
-  rw [marginal_insert_rev _ hf hi, ← mul_assoc]
-  congr
-  · rw [← ENNReal.rpow_add_of_nonneg, ← add_div, Finset.card_insert_of_not_mem hi, Nat.cast_add,
-      Nat.cast_one, add_comm]
-    · simp_rw [one_div_nonneg, h2ι]
-    · exact div_nonneg (by simp) h2ι
-  simp_rw [prod_apply, Pi.pow_apply]
-  refine' prod_congr rfl fun j hj => _
-  have h2 : i ∉ insert j s := by
-    have : i ≠ j
-    · simp [-ne_eq] at hj
-      exact hj.1.symm
-    simp [this, not_or, hi]
-  rw [Insert.comm, marginal_insert_rev _ hf h2]
-  · simp
-    refine (hf.marginal μ).comp (measurable_update x) |>.pow measurable_const |>.mul ?_
-    refine Finset.measurable_prod _ fun i _ ↦ ?_
-    exact (hf.marginal μ).comp (measurable_update x) |>.pow measurable_const
+  intro x
+  calc (∫⋯∫_{i}, rhsAux μ f s ∂μ) x
+      = (∫⋯∫_{i}, (∫⋯∫_s, f ∂μ) ^ ((s.card : ℝ) / (#ι - 1 : ℝ))
+          * ∏ j in sᶜ, (∫⋯∫_insert j s, f ∂μ) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) ∂μ) x := by rw [rhsAux]
+    _ = (∫⋯∫_insert i s, f ∂μ) x ^ (1 / (#ι - 1 : ℝ)) *
+          ∫⁻ (a : π i),
+            ∏ j in insertNone (insert i s)ᶜ,
+              Option.elim j (∫⋯∫_s, f ∂μ) (fun j ↦ ∫⋯∫_insert j s, f ∂μ) (update x i a) ^
+                Option.elim j ((card s : ℝ) / (#ι - 1)) fun j ↦ 1 / (#ι - 1) ∂μ i := by
+              simp_rw [rhsAux, ← insert_compl_insert hi]
+              rw [prod_insert (not_mem_compl.mpr <| mem_insert_self i s)]
+              rw [mul_left_comm, mul_prod_eq_prod_insertNone]
+              simp_rw [marginal_singleton]
+              simp_rw [Pi.mul_apply, Pi.pow_apply, fun x xᵢ => marginal_update μ x f xᵢ (s.mem_insert_self i)]
+              dsimp only
+              rw [lintegral_const_mul]
+              swap
+              · simp
+                refine (hf.marginal μ).comp (measurable_update x) |>.pow measurable_const |>.mul ?_
+                refine Finset.measurable_prod _ fun i _ ↦ ?_
+                exact (hf.marginal μ).comp (measurable_update x) |>.pow measurable_const
+              simp_rw [prod_apply, Option.elim'_comp₂ (· ^ ·), Pi.pow_apply]
+    _ ≤ (∫⋯∫_insert i s, f ∂μ) x ^ (1 / (#ι - 1 : ℝ)) *
+          (∏ i_1 in insertNone (insert i s)ᶜ,
+            (∫⁻ (a : π i), Option.elim i_1 (∫⋯∫_s, f ∂μ) (fun j ↦ ∫⋯∫_insert j s, f ∂μ) (update x i a) ∂μ i) ^
+              Option.elim i_1 ((card s : ℝ) / (#ι - 1 : ℝ)) fun j ↦ 1 / (#ι - 1 : ℝ)) := by
+              refine ENNReal.mul_left_mono ?_
+              refine lintegral_prod_norm_pow_le _ ?_ ?_
+              · simp_rw [sum_insertNone, compl_insert, not_not, Option.elim, sum_const, nsmul_eq_mul]
+                rw [Finset.cast_card_erase_of_mem h2i, mul_one_div, ← add_div, ← add_sub_assoc,
+                  ← Nat.cast_add, card_add_card_compl, div_self]
+                · rw [sub_ne_zero, Nat.cast_ne_one]
+                  exact Fintype.one_lt_card.ne'
+              · rintro (_|i) -
+                · exact div_nonneg (by simp) h2ι
+                · simp_rw [Option.elim, one_div_nonneg, h2ι]
+    _ = ((∫⋯∫_insert i s, f ∂μ) ^ ((card (insert i s) : ℝ) / (#ι - 1 : ℝ)) *
+            ∏ j in (insert i s)ᶜ, (∫⋯∫_insert j (insert i s), f ∂μ) ^ ((1:ℝ) / (#ι - 1 : ℝ))) x := by
+              simp_rw [prod_insertNone]
+              dsimp
+              rw [marginal_insert_rev _ hf hi, ← mul_assoc]
+              congr
+              · rw [← ENNReal.rpow_add_of_nonneg, ← add_div, Finset.card_insert_of_not_mem hi, Nat.cast_add,
+                  Nat.cast_one, add_comm]
+                · simp_rw [one_div_nonneg, h2ι]
+                · exact div_nonneg (by simp) h2ι
+              simp_rw [prod_apply, Pi.pow_apply]
+              refine' prod_congr rfl fun j hj => _
+              have h2 : i ∉ insert j s
+              · have : i ≠ j
+                · simp [-ne_eq] at hj
+                  exact hj.1.symm
+                simp [this, not_or, hi]
+              rw [Insert.comm, marginal_insert_rev _ hf h2]
+    _ ≤ (rhsAux μ f (insert i s)) x := by rw [rhsAux]
 
 lemma Measurable.rhsAux (hf : Measurable f) : Measurable (rhsAux μ f s) := by
   simp [_root_.rhsAux]
