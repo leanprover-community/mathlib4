@@ -67,6 +67,8 @@ def main (args : List String) : IO Unit := do
   let hashMap := hashMemo.hashMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
   if leanTarArgs.contains (args.headD "") then validateLeanTar
+  -- For now we hard code the build directory, to avoid having to process the lakefile.
+  -- Perhaps if https://github.com/leanprover/lake/issues/176 is addressed this can be revisited.
   Lake.withLockFile (FilePath.mk "build" / "lake.lock") do
   match args with
   | ["get"] => getFiles hashMap false false goodCurl true
