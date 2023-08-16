@@ -66,10 +66,16 @@ protected theorem mul_mul_invOf_self_cancel (A : Matrix m n α) (B : Matrix n n 
 section conj_transpose
 variable [StarRing α] (A : Matrix n n α)
 
-/-- `Aᴴ` is invertible when `A` is. -/
+/-- The conjugate transpose of an invertible matrix is invertible. -/
 @[reducible] def invertibleConjTranspose [Invertible A] : Invertible Aᴴ := Invertible.star _
 
 @[simp] lemma conjTranspose_invOf [Invertible A] [Invertible Aᴴ] : (⅟A)ᴴ = ⅟(Aᴴ) := star_invOf _
+
+/-- A matrix is invertible if the conjugate transpose is invertible. -/
+def invertibleOfInvertibleConjTranspose [Invertible Aᴴ] : Invertible A := by
+  rw [← conjTranspose_conjTranspose A, ← star_eq_conjTranspose]
+  infer_instance
+#align matrix.invertible_of_invertible_conj_transpose Matrix.invertibleOfInvertibleConjTranspose
 
 @[simp] lemma isUnit_conjTranspose : IsUnit Aᴴ ↔ IsUnit A := isUnit_star
 
@@ -81,11 +87,12 @@ section CommSemiring
 
 variable [CommSemiring α] (A : Matrix n n α)
 
-/-- `Aᵀ` is invertible when `A` is. -/
+/-- The transpose of an invertible matrix is invertible. -/
 @[reducible] def invertibleTranspose [Invertible A] : Invertible Aᵀ where
   invOf := (⅟A)ᵀ
   invOf_mul_self := by rw [←transpose_mul, mul_invOf_self, transpose_one]
   mul_invOf_self := by rw [←transpose_mul, invOf_mul_self, transpose_one]
+#align matrix.invertible_transpose Matrix.invertibleTranspose
 
 @[simp] lemma transpose_invOf [Invertible A] [Invertible Aᵀ] : (⅟A)ᵀ = ⅟(Aᵀ) := by
   letI := invertibleTranspose A
@@ -100,6 +107,7 @@ variable [CommSemiring α] (A : Matrix n n α)
   mul_invOf_self := calc
     _ = Aᵀᵀ * (⅟Aᵀ)ᵀ := by rw [transpose_transpose]
     _ = _ := by rw [←transpose_mul, invOf_mul_self, transpose_one]
+#align matrix.invertible__of_invertible_transpose Matrix.invertibleOfInvertibleTranspose
 
 /-- Together `Matrix.invertibleTranspose` and `Matrix.invertibleOfInvertibleTranspose` form an
 equivalence, although both sides of the equiv are subsingleton anyway. -/
