@@ -185,6 +185,11 @@ abbrev MulActionHomClass (F : Type _) (M : outParam (Type _))
 
 attribute [simp] map_smulₛₗ
 
+@[simp]
+lemma map_smul {F M X Y : Type*} [SMul M X] [SMul M Y] [MulActionHomClass F M X Y]
+  (f : F) (m : M) (x : X) :
+  f (m • x) = m • (f x) := map_smulₛₗ f m x
+
 -- porting note: removed has_coe_to_fun instance, coercions handled differently now
 #noalign mul_action_hom.has_coe_to_fun
 
@@ -345,10 +350,22 @@ theorem comp_assoc {Q T : Type _} [SMul Q T]
 #align equivariant_map.comp_assoc MulActionHom.comp_assoc
 
 variable {φ' : N → M}
+variable {Y₁ : Type*} [SMul M Y₁]
+/-- The inverse of a bijective equivariant map is equivariant. -/
+@[simps]
+def inverse (f : X →[M] Y₁) (g : Y₁ → X)
+  (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : Y₁ →[M] X
+    where
+  toFun := g
+  map_smul' m x :=
+    calc
+      g (m • x) = g (m • f (g x)) := by rw [h₂]
+      _ = g (f (m • g x)) := by simp only [map_smulₛₗ, id_eq]
+      _ = m • g x := by rw [h₁]
 
 /-- The inverse of a bijective equivariant map is equivariant. -/
 @[simps]
-def inverse (f : X →ₑ[φ] Y) (g : Y → X) (k : Function.RightInverse φ' φ)
+def inverse' (f : X →ₑ[φ] Y) (g : Y → X) (k : Function.RightInverse φ' φ)
   (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : Y →ₑ[φ'] X
     where
   toFun := g
@@ -358,29 +375,34 @@ def inverse (f : X →ₑ[φ] Y) (g : Y → X) (k : Function.RightInverse φ' φ
       _ = g ((φ (φ' m)) • f (g x)) := by rw [k]
       _ = g (f (φ' m • g x)) := by rw [map_smulₛₗ]
       _ = φ' m • g x := by rw [h₁]
-#align mul_action_hom.inverse MulActionHom.inverse
+#align mul_action_hom.inverse MulActionHom.inverse'
+
+lemma inverse_eq_inverse' (f : X →[M] Y₁) (g : Y₁ → X)
+  (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) :
+  inverse f g h₁ h₂ =  inverse' f g (congrFun rfl) h₁ h₂ := by
+  rfl
 
 -- Useful/necessary ?
-theorem inverse_inverse
+theorem inverse'_inverse'
   {f : X →ₑ[φ] Y} {g : Y → X}
   {k₁ : Function.LeftInverse φ' φ} {k₂ : Function.RightInverse φ' φ}
   {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
-    inverse (inverse f g k₂ h₁ h₂) f k₁ h₂ h₁ = f :=
+    inverse' (inverse' f g k₂ h₁ h₂) f k₁ h₂ h₁ = f :=
   ext fun _ => rfl
 
-theorem comp_inv {f : X →ₑ[φ] Y } {g : Y → X}
+theorem comp_inverse' {f : X →ₑ[φ] Y } {g : Y → X}
   {k₁ : Function.LeftInverse φ' φ} {k₂ : Function.RightInverse φ' φ}
   {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
-  (inverse f g k₂ h₁ h₂).comp' f (CompTriple.comp_inv k₁) = MulActionHom.id M := by
+  (inverse' f g k₂ h₁ h₂).comp' f (CompTriple.comp_inv k₁) = MulActionHom.id M := by
   rw [ext_iff]
   intro x
   simp only [comp'_apply, inverse_apply, id_apply]
   exact h₁ x
 
-theorem inv_comp {f : X →ₑ[φ] Y } {g : Y → X}
+theorem inverse'_comp' {f : X →ₑ[φ] Y } {g : Y → X}
   {k₂ : Function.RightInverse φ' φ}
   {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
-  f.comp' (inverse f g k₂ h₁ h₂) (CompTriple.comp_inv k₂) = MulActionHom.id N := by
+  f.comp' (inverse' f g k₂ h₁ h₂) (CompTriple.comp_inv k₂) = MulActionHom.id N := by
   rw [ext_iff]
   intro x
   simp only [comp'_apply, inverse_apply, id_apply]
@@ -407,6 +429,7 @@ variable {P : Type _} [Monoid P]
 variable (φ: M → N) (φ' : N → M) (ψ : N → P) (χ : M → P)
 variable (A : Type _) [AddMonoid A] [DistribMulAction M A]
 variable (B : Type _) [AddMonoid B] [DistribMulAction N B]
+variable (B₁ : Type _) [AddMonoid B₁] [DistribMulAction M B₁]
 variable (C : Type _) [AddMonoid C] [DistribMulAction P C]
 
 variable (A' : Type _) [AddGroup A'] [DistribMulAction M A']
@@ -671,10 +694,16 @@ theorem comp'_id (f : A →ₑ+[φ] B) :
 
 /-- The inverse of a bijective `DistribMulActionSemiHom` is a `DistribMulActionSemiHom`. -/
 @[simps]
-def inverse (f : A →ₑ+[φ] B) (g : B → A) (k : Function.RightInverse φ' φ)
-    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B →ₑ+[φ'] A :=
-  { (f : A →+ B).inverse g h₁ h₂, (f : A →ₑ[φ] B).inverse g k h₁ h₂ with toFun := g }
+def inverse (f : A →+[M] B₁) (g : B₁ → A)
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B₁ →+[M] A :=
+  { (f : A →+ B₁).inverse g h₁ h₂, (f : A →[M] B₁).inverse g h₁ h₂ with toFun := g }
 #align distrib_mul_action_hom.inverse DistribMulActionSemiHom.inverse
+
+/-- The inverse of a bijective `DistribMulActionSemiHom` is a `DistribMulActionSemiHom`. -/
+@[simps]
+def inverse' (f : A →ₑ+[φ] B) (g : B → A) (k : Function.RightInverse φ' φ)
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B →ₑ+[φ'] A :=
+  { (f : A →+ B).inverse g h₁ h₂, (f : A →ₑ[φ] B).inverse' g k h₁ h₂ with toFun := g }
 
 section Semiring
 
@@ -940,11 +969,20 @@ theorem comp_id (f : R →ₑ+*[φ] S) :
 
 /-- The inverse of a bijective `MulSemiringActionHom` is a `MulSemiringActionHom`. -/
 @[simps]
-def inverse (f : R →ₑ+*[φ] S) (g : S → R) (k : Function.RightInverse φ' φ)
+def inverse' (f : R →ₑ+*[φ] S) (g : S → R) (k : Function.RightInverse φ' φ)
     (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : S →ₑ+*[φ'] R :=
   { (f : R →+ S).inverse g h₁ h₂,
     (f : R →* S).inverse g h₁ h₂,
-    (f : R →ₑ[φ] S).inverse g k h₁ h₂ with toFun := g, }
+    (f : R →ₑ[φ] S).inverse' g k h₁ h₂ with toFun := g, }
+
+/-- The inverse of a bijective `MulSemiringActionHom` is a `MulSemiringActionHom`. -/
+@[simps]
+def inverse {S₁ : Type*} [Semiring S₁] [MulSemiringAction M S₁]
+    (f : R →+*[M] S₁) (g : S₁ → R)
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : S₁ →+*[M] R :=
+  { (f : R →+ S₁).inverse g h₁ h₂,
+    (f : R →* S₁).inverse g h₁ h₂,
+    (f : R →[M] S₁).inverse g h₁ h₂ with toFun := g, }
 #align mul_semiring_action_hom.inverse MulSemiringActionHom.inverse
 
 end MulSemiringActionHom
