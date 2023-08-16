@@ -155,7 +155,7 @@ theorem even_odd_of_coprime (hc : Int.gcd x y = 1) :
     rw [show z * z = 4 * (x0 * x0 + x0 + y0 * y0 + y0) + 2 by
         rw [← h.eq]
         ring]
-    field_simp [Int.add_emod] -- Porting note: norm_num is not enough to close this
+    norm_num [Int.add_emod]
 #align pythagorean_triple.even_odd_of_coprime PythagoreanTriple.even_odd_of_coprime
 
 theorem gcd_dvd : (Int.gcd x y : ℤ) ∣ z := by

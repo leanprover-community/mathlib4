@@ -108,9 +108,7 @@ def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.sy
     | inl hx
     | inr hx =>
       rw [hx]
-      simp only [reflTransSymmAux, Set.Icc.coe_zero, Set.Icc.coe_one, one_div, mul_one,
-        inv_nonneg, mul_zero, sub_zero, sub_self, Path.source, Path.target, and_self]
-      norm_num
+      norm_num [reflTransSymmAux]
 #align path.homotopy.refl_trans_symm Path.Homotopy.reflTransSymm
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₁` to
