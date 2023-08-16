@@ -113,7 +113,7 @@ lemma self_mul_conjTranspose_eq_zero_iff {A : Matrix m n R} : (A * Aᴴ) = 0 ↔
 lemma conjTranspose_mul_self_mul_eq_zero_iff  (A : Matrix m n R) (B : Matrix n p R) :
     (Aᴴ * A) * B = 0 ↔ A * B = 0 := by
   refine' ⟨ fun h => _, fun h => by simp only [Matrix.mul_assoc, h, Matrix.mul_zero] ⟩
-  apply_fun (fun x => Bᴴ.mul x) at h
+  apply_fun (fun x => Bᴴ * x) at h
   rw [Matrix.mul_zero, Matrix.mul_assoc, ← Matrix.mul_assoc, ← conjTranspose_mul] at h
   exact conjTranspose_mul_self_eq_zero_iff.1 h
 
