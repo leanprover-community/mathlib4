@@ -2682,7 +2682,7 @@ theorem row_injective : Function.Injective (row : (n → α) → _) :=
 
 @[simp] theorem row_zero [Zero α] : row (0 : n → α) = 0 := rfl
 
-@[simp] theorem row_eq_zero [Zero α] (v : m → α) : row v = 0 ↔ v = 0 := row_inj
+@[simp] theorem row_eq_zero [Zero α] (v : n → α) : row v = 0 ↔ v = 0 := row_inj
 
 @[simp]
 theorem row_add [Add α] (v w : m → α) : row (v + w) = row v + row w := by
