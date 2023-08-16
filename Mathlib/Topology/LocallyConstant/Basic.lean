@@ -609,7 +609,9 @@ section Piecewise
 
 /-- Given two closed sets covering a topological space, and locally constant maps on these two sets,
     then if these two locally constant maps agree on the intersection, we get a piecewise defined
-    locally constant map on the whole space. -/
+    locally constant map on the whole space.
+
+TODO: Generalise this construction to `ContinuousMap`. -/
 def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) (h : C₁ ∪ C₂ = Set.univ)
     (f : LocallyConstant C₁ Z) (g : LocallyConstant C₂ Z)
     (hfg : ∀ (x : X) (hx : x ∈ C₁ ∩ C₂), f ⟨x, hx.1⟩ = g ⟨x, hx.2⟩)
@@ -645,7 +647,9 @@ theorem _root_.Continuous.restrictPreimage{α β : Type*} [TopologicalSpace α] 
     Continuous (s.restrictPreimage f) :=
   h.restrict _
 
-/-- A variant of `LocallyConstant.piecewise` where the two closed sets cover a subset. -/
+/-- A variant of `LocallyConstant.piecewise` where the two closed sets cover a subset.
+
+TODO: Generalise this construction to `ContinuousMap`. -/
 noncomputable def piecewise' {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : IsClosed C₁)
     (h₂ : IsClosed C₂) (f₁ : LocallyConstant C₁ Z) (f₂ : LocallyConstant C₂ Z)
     [DecidablePred (· ∈ C₁)] (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩ = f₂ ⟨x, hx.2⟩) :
