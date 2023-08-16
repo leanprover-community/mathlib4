@@ -41,12 +41,67 @@ open Real Set Filter IsROrC Bornology BigOperators Uniformity Topology NNReal EN
 
 noncomputable section
 
+variable (p : ℝ≥0∞) (𝕜 𝕜' α β : Type*)
+
 namespace WithLp
 
-variable (p : ℝ≥0∞) (𝕜 𝕜' : Type*) (α β : Type*)
+section algebra
+
+variable {p 𝕜 α β}
+
+variable [Semiring 𝕜] [AddCommGroup α] [AddCommGroup β]
+variable (x y : WithLp p (α × β)) (c : 𝕜)
+
+@[simp]
+theorem zero_fst : (0 : WithLp p (α × β)).fst = 0 :=
+  rfl
+
+@[simp]
+theorem zero_snd : (0 : WithLp p (α × β)).snd = 0 :=
+  rfl
+
+@[simp]
+theorem add_fst : (x + y).fst = x.fst + y.fst :=
+  rfl
+
+@[simp]
+theorem add_snd : (x + y).snd = x.snd + y.snd :=
+  rfl
+
+@[simp]
+theorem sub_fst : (x - y).fst = x.fst - y.fst :=
+  rfl
+
+@[simp]
+theorem sub_snd : (x - y).snd = x.snd - y.snd :=
+  rfl
+
+@[simp]
+theorem neg_fst : (-x).fst = -x.fst :=
+  rfl
+
+@[simp]
+theorem neg_snd : (-x).snd = -x.snd :=
+  rfl
+
+variable [Module 𝕜 α] [Module 𝕜 β]
+
+@[simp]
+theorem smul_fst : (c • x).fst = c • x.fst :=
+  rfl
+
+@[simp]
+theorem smul_snd : (c • x).snd = c • x.snd :=
+  rfl
+
+end algebra
 
 /-! Note that the unapplied versions of these lemmas are deliberately omitted, as they break
 the use of the type synonym. -/
+
+section equiv
+
+variable {p α β}
 
 @[simp]
 theorem equiv_fst (x : WithLp p (α × β)) : (WithLp.equiv p (α × β) x).fst = x.fst :=
@@ -64,6 +119,8 @@ theorem equiv_symm_fst (x : α × β) : ((WithLp.equiv p (α × β)).symm x).fst
 theorem equiv_symm_snd (x : α × β) : ((WithLp.equiv p (α × β)).symm x).snd = x.snd :=
   rfl
 
+end equiv
+
 section DistNorm
 
 /-!
@@ -71,11 +128,11 @@ section DistNorm
 
 In this section we define the `edist`, `dist` and `norm` functions on `WithLp p (α × β)` without
 assuming `[Fact (1 ≤ p)]` or metric properties of the spaces `α` and `β`. This allows us to provide
-the rewrite lemmas for each of three cases `p = 0`, `p = ∞` and `0 < p.to_real`.
+the rewrite lemmas for each of three cases `p = 0`, `p = ∞` and `0 < p.toReal`.
 -/
 
 
-section Edist
+section EDist
 
 variable [EDist α] [EDist β]
 
@@ -95,8 +152,7 @@ instance instProdEDist : EDist (WithLp p (α × β)) where
       if p = ∞ then edist f.fst g.fst ⊔ edist f.snd g.snd
       else (edist f.fst g.fst ^ p.toReal + edist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal)
 
-variable {α β}
-
+variable {p α β}
 variable (x y : WithLp p (α × β)) (x' : α × β)
 
 open Classical in
@@ -105,7 +161,7 @@ theorem prod_edist_eq_card (f g : WithLp 0 (α × β)) :
     edist f g = (if f.fst = g.fst then 0 else 1) + (if f.snd = g.snd then 0 else 1) :=
   if_pos rfl
 
-theorem prod_edist_eq_add {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
+theorem prod_edist_eq_add (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
     edist f g = (edist f.fst g.fst ^ p.toReal + edist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal) :=
   let hp' := ENNReal.toReal_pos_iff.mp hp
   (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
@@ -115,15 +171,15 @@ theorem prod_edist_eq_sup (f g : WithLp ∞ (α × β)) :
   dsimp [edist]
   exact if_neg ENNReal.top_ne_zero
 
-end Edist
+end EDist
 
-section EdistProp
+section EDistProp
 
 variable {α β}
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β]
 
 /-- This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
-from `ProdLp.instPseudoEMetricSpace` so it can be used also for `p < 1`. -/
+from `WithLp.instProdPseudoEMetricSpace` so it can be used also for `p < 1`. -/
 theorem prod_edist_self (f : WithLp p (α × β)) : edist f f = 0 := by
   rcases p.trichotomy with (rfl | rfl | h)
   · simp
@@ -133,14 +189,14 @@ theorem prod_edist_self (f : WithLp p (α × β)) : edist f f = 0 := by
 
 open Classical in
 /-- This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
-from `ProdLp.instPseudoEMetricSpace` so it can be used also for `p < 1`. -/
+from `WithLp.instProdPseudoEMetricSpace` so it can be used also for `p < 1`. -/
 theorem prod_edist_comm (f g : WithLp p (α × β)) : edist f g = edist g f := by
   rcases p.trichotomy with (rfl | rfl | h)
   · simp [prod_edist_eq_card, eq_comm]
   · simp only [prod_edist_eq_sup, edist_comm]
   · simp only [prod_edist_eq_add h, edist_comm]
 
-end EdistProp
+end EDistProp
 
 section Dist
 
@@ -148,7 +204,7 @@ variable [Dist α] [Dist β]
 
 open Classical in
 /-- Endowing the space `WithLp p (α × β)` with the `L^p` distance. We register this instance
-separate from `ProdLp.instPseudoMetricSpace` since the latter requires the type class hypothesis
+separate from `WithLp.instProdPseudoMetricSpace` since the latter requires the type class hypothesis
 `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
 
 Registering this separately allows for a future metric-like structure on `WithLp p (α × β)` for
@@ -162,14 +218,14 @@ instance instProdDist : Dist (WithLp p (α × β)) where
       if p = ∞ then dist f.fst g.fst ⊔ dist f.snd g.snd
       else (dist f.fst g.fst ^ p.toReal + dist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal)
 
-variable {α β}
+variable {p α β}
 
 open Classical in
 theorem prod_dist_eq_card (f g : WithLp 0 (α × β)) : dist f g =
     (if f.fst = g.fst then 0 else 1) + (if f.snd = g.snd then 0 else 1) :=
   if_pos rfl
 
-theorem prod_dist_eq_add {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
+theorem prod_dist_eq_add (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
     dist f g = (dist f.fst g.fst ^ p.toReal + dist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal) :=
   let hp' := ENNReal.toReal_pos_iff.mp hp
   (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
@@ -187,7 +243,7 @@ variable [Norm α] [Zero α] [Norm β] [Zero β]
 
 open Classical in
 /-- Endowing the space `WithLp p (α × β)` with the `L^p` norm. We register this instance
-separate from `ProdLp.instSeminormedAddCommGroup` since the latter requires the type class
+separate from `WithLp.instProdSeminormedAddCommGroup` since the latter requires the type class
 hypothesis `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
 
 Registering this separately allows for a future norm-like structure on `WithLp p (α × β)` for
@@ -274,13 +330,17 @@ def prodPseudoEmetricAux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
 
 attribute [local instance] WithLp.prodPseudoEmetricAux
 
-/-- An auxiliary lemma used twice in the proof of `ProdLp.pseudoMetricAux` below. Not intended for
-use outside this file. -/
-theorem prod_sup_edist_ne_top_aux {α β : Type _}
-    [PseudoMetricSpace α] [PseudoMetricSpace β] (f g : WithLp ∞ (α × β)) :
+variable {α β}
+
+/-- An auxiliary lemma used twice in the proof of `WithLp.prodPseudoMetricAux` below. Not intended
+for use outside this file. -/
+theorem prod_sup_edist_ne_top_aux [PseudoMetricSpace α] [PseudoMetricSpace β]
+    (f g : WithLp ∞ (α × β)) :
     edist f.fst g.fst ⊔ edist f.snd g.snd ≠ ⊤ := by
   refine ne_of_lt ?_
   simp [edist, PseudoMetricSpace.edist_dist]
+
+variable (α β)
 
 /-- Endowing the space `WithLp p (α × β)` with the `L^p` pseudometric structure. This definition is
 not satisfactory, as it does not register the fact that the topology, the uniform structure, and the
@@ -346,8 +406,6 @@ theorem prod_lipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace
         _ ≤ (edist x.fst y.fst ^ p.toReal + edist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) := by
           apply ENNReal.rpow_le_rpow _ (by positivity)
           simp only [self_le_add_left]
-
-example (a : ENNReal) : a + a = 2*a := by exact Eq.symm (two_mul a)
 
 theorem prod_antilipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     AntilipschitzWith ((2 : ℝ≥0) ^ (1 / p).toReal) (WithLp.equiv p (α × β)) := by
@@ -565,7 +623,7 @@ end norm_of
 
 variable [NormedField 𝕜] [NormedField 𝕜']
 
-section normed_space_inst
+section InstNormedSpace
 
 variable [SeminormedAddCommGroup α] [NormedSpace 𝕜 α]
   [SeminormedAddCommGroup β] [NormedSpace 𝕜 β]
@@ -589,59 +647,13 @@ instance instProdNormedSpace :
           ← rpow_mul (norm_nonneg _), this, Real.rpow_one]
         positivity }
 
-end normed_space_inst
+end InstNormedSpace
 
-/- Register simplification lemmas for the applications of `ProdLp` elements, as the usual lemmas
-for Prod types will not trigger. -/
+/- Register simplification lemmas for the applications of `WithLp p (α × β)` elements, as the usual
+lemmas for `Prod` will not trigger. -/
 variable {𝕜 𝕜' p α β}
 variable [SeminormedAddCommGroup α] [NormedSpace 𝕜 α]
   [SeminormedAddCommGroup β] [NormedSpace 𝕜 β]
-
-section algebra
-
-variable (x y : WithLp p (α × β)) (c : 𝕜)
-
-@[simp]
-theorem zero_fst : (0 : WithLp p (α × β)).fst = 0 :=
-  rfl
-
-@[simp]
-theorem zero_snd : (0 : WithLp p (α × β)).snd = 0 :=
-  rfl
-
-@[simp]
-theorem add_fst : (x + y).fst = x.fst + y.fst :=
-  rfl
-
-@[simp]
-theorem add_snd : (x + y).snd = x.snd + y.snd :=
-  rfl
-
-@[simp]
-theorem sub_fst : (x - y).fst = x.fst - y.fst :=
-  rfl
-
-@[simp]
-theorem sub_snd : (x - y).snd = x.snd - y.snd :=
-  rfl
-
-@[simp]
-theorem smul_fst : (c • x).fst = c • x.fst :=
-  rfl
-
-@[simp]
-theorem smul_snd : (c • x).snd = c • x.snd :=
-  rfl
-
-@[simp]
-theorem neg_fst : (-x).fst = -x.fst :=
-  rfl
-
-@[simp]
-theorem neg_snd : (-x).snd = -x.snd :=
-  rfl
-
-end algebra
 
 section Equiv
 
@@ -652,8 +664,6 @@ def prodEquivₗᵢ : WithLp ∞ (α × β) ≃ₗᵢ[𝕜] α × β :=
     map_add' := fun f g => rfl
     map_smul' := fun c f => rfl
     norm_map' := fun f => by simp [Norm.norm] }
-
-variable (x y : WithLp p (α × β)) (x' y' : α × β) (c : 𝕜)
 
 end Equiv
 
