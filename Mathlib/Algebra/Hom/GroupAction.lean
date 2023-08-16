@@ -581,12 +581,15 @@ protected theorem map_smulₑ (f : A →ₑ+[φ] B) (m : M) (x : A) : f (m • x
   map_smulₛₗ f m x
 #align distrib_mul_action_hom.map_smul DistribMulActionHom.map_smulₑ
 
-open DistribMulActionHom
+theorem map_smulₑ' (f : A →ₑ+[φ] B) (m : M) (x : A) : f (m • x) = (φ m) • f x :=
+  map_smulₛₗ f m x
 
+/- MWE for EW -/
 variable (f : A →ₑ+[φ] B)
 #check DistribMulActionHom.map_smulₑ f
 #check map_smulₑ f
-#check _root_.map_smulₑ f
+#check map_smulₑ' f
+
 
 variable (M)
 
