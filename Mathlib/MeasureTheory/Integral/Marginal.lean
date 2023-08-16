@@ -946,6 +946,7 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
   calc (∫⋯∫_{i}, rhsAux μ f s ∂μ) x
       = (∫⋯∫_{i}, (∫⋯∫_s, f ∂μ) ^ (m * p) * ∏ j in sᶜ, (∫⋯∫_insert j s, f ∂μ) ^ p ∂μ) x := by
               rw [rhsAux]
+              -- this proof could be `ring_nf` but that's too slow`
               congr
               dsimp only
               ring
@@ -980,7 +981,9 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
     _ = ((∫⋯∫_insert i s, f ∂μ) x) ^ p *
           ((∫⁻ t, (∫⋯∫_s, f ∂μ) (update x i t) ∂μ i) ^ (m * p) *
             ∏ j in (insert i s)ᶜ, (∫⁻ t, (∫⋯∫_insert j s, f ∂μ) (update x i t) ∂(μ i)) ^ p) := by
-              simp [prod_insertNone]
+              -- this proof could be `simp [prod_insertNone]` but that's too slow
+              simp_rw [prod_insertNone]
+              dsimp
     _ = ((∫⋯∫_insert i s, f ∂μ) x) ^ p * (((∫⋯∫_insert i s, f ∂μ) x) ^ (m * p) *
             ∏ j in (insert i s)ᶜ, ((∫⋯∫_insert i (insert j s), f ∂μ) x) ^ p) := by
               rw [marginal_insert_rev _ hf hi]
@@ -994,15 +997,22 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
               rw [← mul_assoc]
               congr
               rw [← ENNReal.rpow_add_of_nonneg]
-              · congr
+              · -- this proof could be `ring_nf` but that's too slow`
+                congr
                 ring
               · positivity
               · positivity
     _ = ((∫⋯∫_insert i s, f ∂μ) ^ ((card (insert i s) : ℝ) * p) *
             ∏ j in (insert i s)ᶜ, (∫⋯∫_insert j (insert i s), f ∂μ) ^ p) x := by
-              simp [Insert.comm, Finset.card_insert_of_not_mem hi]
+              -- this proof could be `simp [Insert.comm, Finset.card_insert_of_not_mem hi]` but
+              -- that's too slow
+              dsimp
+              simp_rw [Insert.comm, prod_apply, Finset.card_insert_of_not_mem hi]
+              push_cast
+              rfl
     _ = rhsAux μ f (insert i s) x := by
               rw [rhsAux]
+              -- this proof could be `ring_nf` but that's too slow`
               congr! 2
               ring
 
