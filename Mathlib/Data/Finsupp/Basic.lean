@@ -1665,7 +1665,8 @@ theorem distribMulActionSemiHom_ext {f g : (α →₀ M) →+[R] N}
 /-- See note [partially-applied ext lemmas]. -/
 @[ext]
 theorem distribMulActionSemiHom_ext' {f g : (α →₀ M) →+[R] N}
-    (h : ∀ a : α, f.comp (DistribMulActionSemiHom.single a) = g.comp (DistribMulActionSemiHom.single a)) :
+    (h : ∀ a : α, f.comp (DistribMulActionSemiHom.single a) =
+      g.comp (DistribMulActionSemiHom.single a)) :
     f = g :=
   distribMulActionSemiHom_ext fun a => DistribMulActionSemiHom.congr_fun (h a)
 #align finsupp.distrib_mul_action_hom_ext' Finsupp.distribMulActionSemiHom_ext'
