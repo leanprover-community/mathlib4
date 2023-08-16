@@ -125,10 +125,11 @@ theorem insert_compl_insert [Fintype ι] {s : Finset ι} {i : ι} (hi : i ∉ s)
     insert i (insert i s)ᶜ = sᶜ := by
   simp_rw [@eq_compl_comm _ _ s, compl_insert, compl_erase, compl_compl, erase_insert hi]
 
-@[to_additive]
-theorem mul_prod_eq_prod_insertNone {α} {M} [CommMonoid M] (f : α → M) (x : M) (s : Finset α) :
-    x * ∏ i in s, f i = ∏ i in insertNone s, i.elim x f :=
-  (prod_insertNone (fun i => i.elim x f) _).symm
+-- no longer needed
+-- @[to_additive]
+-- theorem mul_prod_eq_prod_insertNone {α} {M} [CommMonoid M] (f : α → M) (x : M) (s : Finset α) :
+--     x * ∏ i in s, f i = ∏ i in insertNone s, i.elim x f :=
+--   (prod_insertNone (fun i => i.elim x f) _).symm
 
 -- to Fintype/Sum
 @[to_additive]
@@ -870,9 +871,9 @@ theorem integral_update (f : (∀ i, π i) → ℝ≥0∞) (i : δ) (x : ∀ i, 
     ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i = (∫⋯∫_{i}, f ∂μ) x := by
   simp_rw [marginal_singleton f i]
 
-theorem marginal_insert_rev (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {i : δ} (hi : i ∉ s)
+theorem marginal_insert (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {i : δ} (hi : i ∉ s)
     (x : ∀ i, π i) :
-    ∫⁻ xᵢ, (∫⋯∫_s, f ∂μ) (Function.update x i xᵢ) ∂μ i = (∫⋯∫_insert i s, f ∂μ) x := by
+    (∫⋯∫_insert i s, f ∂μ) x = ∫⁻ xᵢ, (∫⋯∫_s, f ∂μ) (Function.update x i xᵢ) ∂μ i := by
   rw [Finset.insert_eq, marginal_union μ f hf (Finset.disjoint_singleton_left.mpr hi),
     marginal_singleton]
 
@@ -921,6 +922,7 @@ lemma rhsAux_univ (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) :
    rhsAux μ f univ x = (∫⁻ x, f x ∂(Measure.pi μ)) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
   simp [rhsAux, marginal_univ, Finset.card_univ]
 
+set_option maxHeartbeats 300000 in
 /--
 The main inductive step
 
@@ -928,7 +930,8 @@ Note: this also holds without assuming `Nontrivial ι`, by tracing through the j
 (note that `s = ∅` in that case).
 -/
 theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f)
-    (s : Finset ι) (i : ι) (hi : i ∉ s) : ∫⋯∫_{i}, rhsAux μ f s ∂μ ≤ rhsAux μ f (insert i s) := by
+    (s : Finset ι) (i : ι) (hi : i ∉ s) (x : ∀ i, π i):
+    ∫⁻ t, rhsAux μ f s (update x i t) ∂(μ i) ≤ rhsAux μ f (insert i s) x := by
   have h2i : i ∈ sᶜ := Finset.mem_compl.mpr hi
   have hι : 2 ≤ (#ι : ℝ) := by exact_mod_cast Fintype.one_lt_card
   have : 1 ≤ (#ι:ℝ) - 1 := by linarith
@@ -942,32 +945,43 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
       field_simp [this]
     linear_combination p * H₁ + p * H₂ + H₃
   let m : ℝ := s.card
-  intro x
-  calc (∫⋯∫_{i}, rhsAux μ f s ∂μ) x
-      = (∫⋯∫_{i}, (∫⋯∫_s, f ∂μ) ^ (m * p) * ∏ j in sᶜ, (∫⋯∫_insert j s, f ∂μ) ^ p ∂μ) x := by
+  calc ∫⁻ t, rhsAux μ f s (update x i t) ∂(μ i)
+      = ∫⁻ t, ((∫⋯∫_s, f ∂μ) ^ (m * p) * ∏ j in sᶜ, (∫⋯∫_insert j s, f ∂μ) ^ p) (update x i t) ∂(μ i) := by
               rw [rhsAux]
               -- this proof could be `ring_nf` but that's too slow`
               congr
+              ext t
               dsimp only
+              congr! 2
               ring
+    _ = ∫⁻ t, ((∫⋯∫_s, f ∂μ) ^ (m * p) * ((∫⋯∫_insert i s, f ∂μ) ^ p
+          * ∏ x in (insert i s)ᶜ, (∫⋯∫_insert x s, f ∂μ) ^ p)) (update x i t) ∂(μ i) := by
+              simp_rw [← insert_compl_insert hi]
+              rw [prod_insert (not_mem_compl.mpr <| mem_insert_self i s)]
+    _ = ∫⁻ t, ((∫⋯∫_insert i s, f ∂μ) ^ p * ((∫⋯∫_s, f ∂μ) ^ (m * p)
+          * ∏ x in (insert i s)ᶜ, (∫⋯∫_insert x s, f ∂μ) ^ p)) (update x i t) ∂(μ i) := by
+              rw [mul_left_comm]
+    _ = (∫⋯∫_insert i s, f ∂μ) x ^ p * (∫⁻ t, ((∫⋯∫_s, f ∂μ) ^ (m * p)
+          * ∏ x in (insert i s)ᶜ, (∫⋯∫_insert x s, f ∂μ) ^ p) (update x i t) ∂(μ i)) := by
+              clear_value p m
+              simp_rw [Pi.mul_apply, Pi.pow_apply, fun x xᵢ => marginal_update μ x f xᵢ (s.mem_insert_self i)]
+              rw [lintegral_const_mul]
+              simp
+              refine (hf.marginal μ).comp (measurable_update x) |>.pow measurable_const |>.mul ?_
+              refine Finset.measurable_prod _ fun i _ ↦ ?_
+              exact (hf.marginal μ).comp (measurable_update x) |>.pow measurable_const
     _ = (∫⋯∫_insert i s, f ∂μ) x ^ p *
           ∫⁻ (a : π i),
             ∏ j in insertNone (insert i s)ᶜ,
               Option.elim j (∫⋯∫_s, f ∂μ) (fun k ↦ ∫⋯∫_insert k s, f ∂μ) (update x i a) ^
                 Option.elim j (m * p) (fun _ ↦ p) ∂(μ i) := by
-              clear_value p
-              simp_rw [rhsAux, ← insert_compl_insert hi]
-              rw [prod_insert (not_mem_compl.mpr <| mem_insert_self i s)]
-              rw [mul_left_comm, mul_prod_eq_prod_insertNone]
-              simp_rw [marginal_singleton]
-              simp_rw [Pi.mul_apply, Pi.pow_apply, fun x xᵢ => marginal_update μ x f xᵢ (s.mem_insert_self i)]
-              dsimp only
-              rw [lintegral_const_mul]
-              · simp_rw [prod_apply, Option.elim'_comp₂ (· ^ ·), Pi.pow_apply]
-              · simp
-                refine (hf.marginal μ).comp (measurable_update x) |>.pow measurable_const |>.mul ?_
-                refine Finset.measurable_prod _ fun i _ ↦ ?_
-                exact (hf.marginal μ).comp (measurable_update x) |>.pow measurable_const
+              clear_value p m
+              congr! 2
+              ext t
+              rw [prod_insertNone]
+              dsimp
+              rw [prod_apply]
+              dsimp
     _ ≤ (∫⋯∫_insert i s, f ∂μ) x ^ p *
           (∏ j in insertNone (insert i s)ᶜ,
             (∫⁻ t, Option.elim j (∫⋯∫_s, f ∂μ) (fun k ↦ ∫⋯∫_insert k s, f ∂μ) (update x i t) ∂(μ i))
@@ -986,12 +1000,12 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
               dsimp
     _ = ((∫⋯∫_insert i s, f ∂μ) x) ^ p * (((∫⋯∫_insert i s, f ∂μ) x) ^ (m * p) *
             ∏ j in (insert i s)ᶜ, ((∫⋯∫_insert i (insert j s), f ∂μ) x) ^ p) := by
-              rw [marginal_insert_rev _ hf hi]
+              rw [marginal_insert _ hf hi]
               congr! 2; refine prod_congr rfl fun j hj => ?_
               have hi' : i ∉ insert j s
               · simp only [Finset.mem_insert, compl_insert, Finset.mem_compl, mem_erase] at hj ⊢
                 tauto
-              rw [marginal_insert_rev _ hf hi']
+              rw [marginal_insert _ hf hi']
     _ = ((∫⋯∫_insert i s, f ∂μ) x) ^ ((m + 1 : ℝ) * p) *
             ∏ j in (insert i s)ᶜ, ((∫⋯∫_insert i (insert j s), f ∂μ) x) ^ p := by
               rw [← mul_assoc]
@@ -1030,12 +1044,16 @@ theorem marginal_rhsAux_empty_le [Nontrivial ι] (f : (∀ i, π i) → ℝ≥0�
     (s : Finset ι) : ∫⋯∫_s, rhsAux μ f ∅ ∂μ ≤ rhsAux μ f s := by
   induction' s using Finset.induction with i s hi ih
   · simp [marginal_empty]
-  calc ∫⋯∫_insert i s, rhsAux μ f ∅ ∂μ
-      = ∫⋯∫_{i}, ∫⋯∫_s, rhsAux μ f ∅ ∂μ ∂μ := by
-        rw [← Finset.disjoint_singleton_left] at hi
-        rw [Finset.insert_eq, marginal_union μ _ (hf.rhsAux μ) hi]
-    _ ≤ ∫⋯∫_{i}, rhsAux μ f s ∂μ := by gcongr
-    _ ≤ rhsAux μ f (insert i s) := marginal_singleton_rhsAux_le _ _ hf _ _ hi
+  intro x
+  calc (∫⋯∫_insert i s, rhsAux μ f ∅ ∂μ) x
+      = ∫⁻ t, (∫⋯∫_s, rhsAux μ f ∅ ∂μ) (update x i t) ∂(μ i) := by
+        rw [marginal_insert]
+        · exact hf.rhsAux μ
+        · exact hi
+    _ ≤ ∫⁻ t, rhsAux μ f s (update x i t) ∂(μ i) := by
+        apply lintegral_mono; intro t; dsimp -- should be `gcongr`
+        apply ih
+    _ ≤ rhsAux μ f (insert i s) x := marginal_singleton_rhsAux_le _ _ hf _ _ hi x
 
 theorem lintegral_prod_lintegral_pow_le [Nontrivial ι] (hf : Measurable f) :
     ∫⁻ x, ∏ i, (∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) ∂Measure.pi μ ≤
