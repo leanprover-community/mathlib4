@@ -50,12 +50,6 @@ results for general rings are instead stated about `Ring.inverse`:
 * `Matrix.exp_conj`
 * `Matrix.exp_conj'`
 
-## Implementation notes
-
-This file runs into some sharp edges on typeclass search in lean 3, especially regarding pi types.
-To work around this, we copy a handful of instances for when lean can't find them by itself.
-Hopefully we will be able to remove these in Lean 4.
-
 ## TODO
 
 * Show that `Matrix.det (exp 𝕂 A) = exp 𝕂 (Matrix.trace A)`
@@ -67,35 +61,6 @@ Hopefully we will be able to remove these in Lean 4.
 
 
 open scoped Matrix BigOperators
-
-section HacksForPiInstanceSearch
-
-/-- A special case of `Pi.instTopologicalRing` for when `R` is not dependently typed. -/
-instance Function.topologicalRing (I : Type*) (R : Type*) [NonUnitalRing R] [TopologicalSpace R]
-    [TopologicalRing R] : TopologicalRing (I → R) :=
-  Pi.instTopologicalRing
-#align function.topological_ring Function.topologicalRing
-
-/-- A special case of `Function.algebra` for when A is a `Ring` not a `Semiring` -/
-instance Function.algebraRing (I : Type*) {R : Type*} (A : Type*) [CommSemiring R] [Ring A]
-    [Algebra R A] : Algebra R (I → A) :=
-  Pi.algebra _ _
-#align function.algebra_ring Function.algebraRing
-
-/-- A special case of `Pi.algebra` for when `f = λ i, Matrix (m i) (m i) A`. -/
-instance Pi.matrixAlgebra (I R A : Type*) (m : I → Type*) [CommSemiring R] [Semiring A]
-    [Algebra R A] [∀ i, Fintype (m i)] [∀ i, DecidableEq (m i)] :
-    Algebra R (∀ i, Matrix (m i) (m i) A) :=
-  @Pi.algebra I R (fun i => Matrix (m i) (m i) A) _ _ fun _ => Matrix.instAlgebra
-#align pi.matrix_algebra Pi.matrixAlgebra
-
-/-- A special case of `Pi.instTopologicalRing` for when `f = λ i, Matrix (m i) (m i) A`. -/
-instance Pi.matrix_topologicalRing (I A : Type*) (m : I → Type*) [Ring A] [TopologicalSpace A]
-    [TopologicalRing A] [∀ i, Fintype (m i)] : TopologicalRing (∀ i, Matrix (m i) (m i) A) :=
-  @Pi.instTopologicalRing _ (fun i => Matrix (m i) (m i) A) _ _ fun _ => Matrix.topologicalRing
-#align pi.matrix_topological_ring Pi.matrix_topologicalRing
-
-end HacksForPiInstanceSearch
 
 variable (𝕂 : Type*) {m n p : Type*} {n' : m → Type*} {𝔸 : Type*}
 
