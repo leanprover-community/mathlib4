@@ -933,7 +933,7 @@ theorem realize_iAlls {α β γ : Type _} [Finite γ] (f : α → β ⊕ γ)
   rw [← Formula.realize_iAlls f φ v, iff_iff_eq]; congr; simp
 
 @[simp]
-theorem _root_.FirstOrder.Language.Formula.realize_exsᵢ
+theorem _root_.FirstOrder.Language.Formula.realize_iExs
     {α β γ : Type _} [Finite γ] (f : α → β ⊕ γ)
     (φ : L.Formula α) (v : β → M) : (φ.iExs f).Realize v ↔
       ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
@@ -953,7 +953,7 @@ theorem _root_.FirstOrder.Language.Formula.realize_exsᵢ
       exact i.elim0
 
 @[simp]
-theorem realize_exsᵢ {α β γ : Type _} [Finite γ] (f : α → β ⊕ γ)
+theorem realize_iExs {α β γ : Type _} [Finite γ] (f : α → β ⊕ γ)
     (φ : L.Formula α) (v : β → M) (v' : Fin 0 → M) :
     BoundedFormula.Realize (φ.iExs f) v v' ↔
       ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
