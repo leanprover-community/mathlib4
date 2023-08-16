@@ -23,6 +23,10 @@ whenever `K` is an algebraically closed field.
 * `ax_grothendieck_of_locally_finite`: any injective polynomial map `R^n → R^n` is also surjective
 whenever `R` is an algebraic extension of a finite field.
 
+## TODO
+
+Generalize to polynomial maps from a definable set to itself.
+
 -/
 
 
@@ -133,7 +137,7 @@ noncomputable def genericPolyMapSurjectiveOfInjective {ι : Type*} [Fintype ι]
   let f2 : Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
     l2.foldr (. ⊓ .) ⊤
   let inj : Language.ring.Formula (Σ i : ι, mons i) :=
-    Formula.allsᵢ (γ := Fin 2 × ι) id (f1 ⟹ f2)
+    Formula.iAlls (γ := Fin 2 × ι) id (f1 ⟹ f2)
   let l3 : List (Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι))) :=
     (Finset.univ : Finset ι).toList.map  (fun i =>
       (termOfFreeCommRing (genericPolyMap mons i)).relabel
@@ -142,13 +146,13 @@ noncomputable def genericPolyMapSurjectiveOfInjective {ι : Type*} [Fintype ι]
   let f3 : Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
     l3.foldr (. ⊓ .) ⊤
   let surj : Language.ring.Formula (Σ i : ι, mons i) :=
-    Formula.allsᵢ (γ := ι) id
-      (Formula.exsᵢ (γ := ι)
+    Formula.iAlls (γ := ι) id
+      (Formula.iExs (γ := ι)
         (fun (i : (Σ i : ι, mons i) ⊕ (Fin 2 × ι)) =>
           show ((Σ i : ι, mons i) ⊕ ι) ⊕ ι
           from Sum.elim (Sum.inl ∘ Sum.inl)
             (fun i => if i.1 = 0 then Sum.inr i.2 else (Sum.inl (Sum.inr i.2))) i) f3)
-  Formula.allsᵢ (γ := Σ i : ι, mons i) Sum.inr (inj ⟹ surj)
+  Formula.iAlls (γ := Σ i : ι, mons i) Sum.inr (inj ⟹ surj)
 
 theorem realize_genericPolyMapSurjectiveOfInjective
     {K : Type*} [Field K] [CompatibleRing K] {ι : Type*} [Fintype ι]
@@ -161,13 +165,13 @@ theorem realize_genericPolyMapSurjectiveOfInjective
   letI := Classical.decEq ι
   rw [Equiv.forall_congr_left' (mvPolynomialSupportLEEquiv ι K mons)]
   simp only [Sentence.Realize, Formula.Realize, genericPolyMapSurjectiveOfInjective, Function.comp,
-    Sum.map, id_eq, BoundedFormula.realize_allsᵢ, Sum.elim_inr, BoundedFormula.realize_imp,
+    Sum.map, id_eq, BoundedFormula.realize_iAlls, Sum.elim_inr, BoundedFormula.realize_imp,
     BoundedFormula.realize_foldr_inf, List.mem_map, Finset.mem_toList, Finset.mem_univ, true_and,
     forall_exists_index, forall_apply_eq_imp_iff', BoundedFormula.realize_bdEqual,
     Term.realize_relabel, Sum.elim_inl, realize_termOfFreeCommRing, lift_genericPolyMap,
     Term.realize_var, Equiv.forall_congr_left' (Equiv.curry (Fin 2) ι K), Equiv.curry_symm_apply,
     Function.uncurry_apply_pair, Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi,
-    BoundedFormula.realize_exsᵢ, ite_true, one_ne_zero, ite_false, Function.Injective,
+    BoundedFormula.realize_iExs, ite_true, one_ne_zero, ite_false, Function.Injective,
     Function.funext_iff, Function.Surjective]
   rfl
 

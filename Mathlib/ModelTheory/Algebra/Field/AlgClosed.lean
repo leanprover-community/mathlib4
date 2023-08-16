@@ -10,16 +10,16 @@ import Mathlib.FieldTheory.IsAlgClosed.Classification
 import Mathlib.ModelTheory.Satisfiability
 import Mathlib.Data.Nat.PrimeFin
 
+variable {K : Type*}
+
 namespace FirstOrder
 
 namespace Field
 
 open Ring FreeCommRing BigOperators Polynomial Language
 
-variable {K : Type*}
-
 def genericMonicPoly (n : ℕ) : FreeCommRing (Fin (n + 1)) :=
-    of (Fin.last _) ^ n + ∑ i : Fin n, of i.castSucc * of (Fin.last _) ^ (i : ℕ)
+  of (Fin.last _) ^ n + ∑ i : Fin n, of i.castSucc * of (Fin.last _) ^ (i : ℕ)
 
 noncomputable def monicPolyEquivFin {R : Type*} [CommRing R]
     [Nontrivial R] (n : ℕ) :
