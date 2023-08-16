@@ -2674,6 +2674,15 @@ Simplification lemmas for `Matrix.row` and `Matrix.col`.
 
 open Matrix
 
+theorem col_injective : Function.Injective (col : (m → α) → _) :=
+  fun _x _y h => funext fun i => congr_fun₂ h i ()
+
+@[simp] theorem col_inj {v w : m → α} : col v = col w ↔ v = w := col_injective.eq_iff
+
+@[simp] theorem col_zero [Zero α] : col (0 : m → α) = 0 := rfl
+
+@[simp] theorem col_eq_zero [Zero α] (v : m → α) : col v = 0 ↔ v = 0 := col_inj
+
 @[simp]
 theorem col_add [Add α] (v w : m → α) : col (v + w) = col v + col w := by
   ext
@@ -2685,6 +2694,15 @@ theorem col_smul [SMul R α] (x : R) (v : m → α) : col (x • v) = x • col 
   ext
   rfl
 #align matrix.col_smul Matrix.col_smul
+
+theorem row_injective : Function.Injective (row : (n → α) → _) :=
+  fun _x _y h => funext fun j => congr_fun₂ h () j
+
+@[simp] theorem row_inj {v w : n → α} : row v = row w ↔ v = w := row_injective.eq_iff
+
+@[simp] theorem row_zero [Zero α] : row (0 : n → α) = 0 := rfl
+
+@[simp] theorem row_eq_zero [Zero α] (v : n → α) : row v = 0 ↔ v = 0 := row_inj
 
 @[simp]
 theorem row_add [Add α] (v w : m → α) : row (v + w) = row v + row w := by
