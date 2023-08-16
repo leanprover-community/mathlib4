@@ -12,7 +12,7 @@ namespace Lean.Elab.TacticInvocation
 def trainingData (module : Name) (i : TacticInvocation) : IO String := do
   let mut result := "===\n"
   result := result ++ s!"{module}\n---\n"
-  let sourceUpToTactic := Substring.mk (← Lean.Elab.IO.moduleSource module) 0 (i.info.stx.getPos?.getD 0)
+  let sourceUpToTactic := Substring.mk (← moduleSource module) 0 (i.info.stx.getPos?.getD 0)
   let chunks := sourceUpToTactic.splitOn "\n\n"
   let declUpToTactic := chunks.getLast!.toString
   let offset := chunks.dropLast.foldl (init := 0) (fun t c => t + (c.toString.count '\n') + 2)

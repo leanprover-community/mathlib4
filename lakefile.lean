@@ -71,6 +71,14 @@ lean_exe graph where
   root := `ImportGraph.Main
   supportInterpreter := true
 
+lean_exe frontend_test where
+  root := `Mathlib.Util.FrontendTest2
+  supportInterpreter := true
+
+lean_exe run_tactic where
+  root := `Mathlib.Util.RunTactic
+  supportInterpreter := true
+
 lean_exe export_infotree where
   root := `Mathlib.Util.Infotree.ExportJSON
   supportInterpreter := true

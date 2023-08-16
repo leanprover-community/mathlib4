@@ -10,11 +10,8 @@ open Lean Elab Frontend
 
 namespace Lean.PersistentArray
 
-def drop [Inhabited α] (t : PersistentArray α) (n : Nat) : Array α := Id.run do
-  let mut r := #[]
-  for i in List.range (t.size - n) do
-    r := r.push (t.get! (n + i))
-  return r
+def drop [Inhabited α] (t : PersistentArray α) (n : Nat) : List α :=
+  List.range (t.size - n) |>.map fun i => t.get! (n + i)
 
 end Lean.PersistentArray
 
@@ -32,8 +29,8 @@ structure ProcessedCommand where
   stx : Syntax
   before : Environment
   after : Environment
-  msgs : Array Message
-  trees : Array InfoTree
+  msgs : List Message
+  trees : List InfoTree
 
 namespace ProcessedCommand
 
@@ -47,7 +44,7 @@ def one : FrontendM (ProcessedCommand × Bool) := do
   let before := s.env
   let done ← processCommand
   let stx := (← get).commands.back
-  let src := ⟨(← read).inputCtx.input, beforePos, (← get).cmdPos⟩
+  let src := ⟨(← read).inputCtx.input, beforePos, (← get).cmdPos⟩ -- FIXME this is incorrect
   let s' := (← get).commandState
   let after := s'.env
   let msgs := s'.messages.msgs.drop s.messages.msgs.size
@@ -63,12 +60,9 @@ partial def all : FrontendM (List ProcessedCommand) := do
     return cmd :: (← all)
 
 /-- Return all new `ConstantInfo`s added during the processed command. -/
-def diff (cmd : ProcessedCommand) : Array ConstantInfo := Id.run do
-  let mut r := #[]
-  for (c, i) in cmd.after.constants.map₂.toList do
-    unless cmd.before.constants.map₂.contains c do
-      r := r.push i
-  return r
+def diff (cmd : ProcessedCommand) : List ConstantInfo :=
+  cmd.after.constants.map₂.toList.filterMap
+    fun (c, i) => if cmd.before.constants.map₂.contains c then none else some i
 
 end ProcessedCommand
 
@@ -80,6 +74,30 @@ def processCommands' (inputCtx : Parser.InputContext) (parserState : Parser.Modu
   let commandState := { commandState with infoState.enabled := true }
   (ProcessedCommand.all.run { inputCtx := inputCtx }).run'
     { commandState := commandState, parserState := parserState, cmdPos := parserState.pos }
+
+/--
+Process some text input, with or without an existing environment.
+If there is no existing environment, we parse the input for headers (e.g. import statements),
+and create a new environment.
+Otherwise, we add to the existing environment.
+Returns a list containing data about each processed command.
+
+Be aware of https://github.com/leanprover/lean4/issues/2408 when using the frontend.
+-/
+def processInput' (input : String) (env? : Option Environment)
+    (opts : Options) (fileName : Option String := none) :
+    IO (List ProcessedCommand) := unsafe do
+  let fileName   := fileName.getD "<input>"
+  let inputCtx   := Parser.mkInputContext input fileName
+  let (parserState, commandState) ← match env? with
+  | none => do
+    enableInitializersExecution
+    let (header, parserState, messages) ← Parser.parseHeader inputCtx
+    let (env, messages) ← processHeader header opts messages inputCtx
+    pure (parserState, (Command.mkState env messages opts))
+  | some env => do
+    pure ({ : Parser.ModuleParserState }, Command.mkState env {} opts)
+  processCommands' inputCtx parserState commandState
 
 /--
 Wrapper for `IO.processCommands` that returns
@@ -159,10 +177,10 @@ def moduleSource (mod : Name) : IO String := do
 -- module twice.
 
 /-- Implementation of `compileModule`, which is the cached version of this function. -/
-def compileModule' (mod : Name) : IO (Environment × List Message × List InfoTree) := do
-  Lean.Elab.IO.processInput (← moduleSource mod) none {}
+def compileModule' (mod : Name) : IO (List ProcessedCommand) := do
+  Lean.Elab.IO.processInput' (← moduleSource mod) none {}
 
-initialize compilationCache : IO.Ref <| HashMap Name (Environment × List Message × List InfoTree) ←
+initialize compilationCache : IO.Ref <| HashMap Name (List ProcessedCommand) ←
   IO.mkRef .empty
 
 /--
@@ -171,7 +189,7 @@ resulting environment, any generated messages, and all info trees.
 
 The results are cached.
 -/
-def compileModule (mod : Name) : IO (Environment × List Message × List InfoTree) := do
+def compileModule (mod : Name) : IO (List ProcessedCommand) := do
   let m ← compilationCache.get
   match m.find? mod with
   | some r => return r
@@ -182,5 +200,5 @@ def compileModule (mod : Name) : IO (Environment × List Message × List InfoTre
 
 /-- Compile the source file for the named module, returning all info trees. -/
 def moduleInfoTrees (mod : Name) : IO (List InfoTree) := do
-  let (_env, _msgs, trees) ← compileModule mod
-  return trees
+  let steps ← compileModule mod
+  return steps.bind (fun c => c.trees)
