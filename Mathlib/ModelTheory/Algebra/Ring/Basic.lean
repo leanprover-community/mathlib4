@@ -14,6 +14,22 @@ import Mathlib.Algebra.Ring.Equiv
 This file defines the first order language of rings, as well as defining instance of `Add`, `Mul`,
 etc. on terms in the language.
 
+## Main Definitions
+
+* `FirstOrder.Language.ring` : the language of rings, with function symbols `+`, `*`, `-`, `0`, `1`
+* `FirstOrder.Ring.CompatibleRing` : A class stating that a type is a `Language.ring.Structure`, and that this
+structure is the same as the structure given by the classes `Add`, `Mul`, etc. already on `R`.
+* `FirstOrder.Ring.compatibleRingOfRing` : Given a type `R` with instances for each of the `Ring`
+operations, make a `compatibleRing` instance.
+
+## Implementation Notes
+
+There are implementation difficulties with the model theory of rings caused by the fact that there
+are two different ways to say that `R` is a `Ring`. We can say `Ring R` or
+`Language.ring.Structure R` and `Theory.ring.Model R` (The theory of rings is not implemented yet).
+
+The recommended way to use this library is to use the hypotheses `CompatibleRing R` and `Ring R`
+on any theorem that mentions
 -/
 
 
@@ -115,12 +131,15 @@ theorem card_ring : card Language.ring = 5 := by
 
 open Language ring Structure
 
-/-- A Type, `R` is a `CompatibleRing` if it is structure for the language of rings and this structure
+/-- A Type `R` is a `CompatibleRing` if it is structure for the language of rings and this structure
 is the same as the structure already given on `R` by the classes `Add`, `Mul` etc.
 
 It is recommended to use this type class as a hypothesis to any theorem whose statement
 requires a type to have be both a `Ring` (or `Field` etc.) and a
 `Language.ring.Structure`  -/
+/- This class does not extend `Add` etc, because this way it can be used in
+combination with a `Ring`, or `Field` instance without having multiple different
+`Add` structures on the Type. -/
 class CompatibleRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R]
     extends Language.ring.Structure R where
   ( funMap_add : ∀ x, funMap addFunc x = x 0 + x 1 )
@@ -186,29 +205,51 @@ def languageEquivEquivRingEquiv {R S : Type*}
 
 variable (R : Type*) [Language.ring.Structure R]
 
-/-- A def to put an `Add` instance on a type with a `Language.ring.Structure` instance. -/
+/-- A def to put an `Add` instance on a type with a `Language.ring.Structure` instance.
+
+To be used sparingly, usually only when defining a more useful definition like,
+`[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
 @[reducible] def addOfRingStructure : Add R :=
   { add := fun x y => funMap addFunc ![x, y] }
 
-/-- A def to put an `Mul` instance on a type with a `Language.ring.Structure` instance. -/
+/-- A def to put an `Mul` instance on a type with a `Language.ring.Structure` instance.
+
+To be used sparingly, usually only when defining a more useful definition like,
+`[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
 @[reducible] def mulOfRingStructure : Mul R :=
   { mul := fun x y => funMap mulFunc ![x, y] }
 
-/-- A def to put an `Neg` instance on a type with a `Language.ring.Structure` instance. -/
+/-- A def to put an `Neg` instance on a type with a `Language.ring.Structure` instance.
+
+To be used sparingly, usually only when defining a more useful definition like,
+`[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
 @[reducible] def negOfRingStructure : Neg R :=
   { neg := fun x => funMap negFunc ![x] }
 
-/-- A def to put an `Zero` instance on a type with a `Language.ring.Structure` instance. -/
+/-- A def to put an `Zero` instance on a type with a `Language.ring.Structure` instance.
+
+To be used sparingly, usually only when defining a more useful definition like,
+`[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
 @[reducible] def zeroOfRingStructure : Zero R :=
   { zero := funMap zeroFunc ![] }
 
-/-- A def to put an `One` instance on a type with a `Language.ring.Structure` instance. -/
+/-- A def to put an `One` instance on a type with a `Language.ring.Structure` instance.
+
+To be used sparingly, usually only when defining a more useful definition like,
+`[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
 @[reducible] def oneOfRingStructure : One R :=
   { one := funMap oneFunc ![] }
 
 attribute [local instance] addOfRingStructure mulOfRingStructure negOfRingStructure
   zeroOfRingStructure oneOfRingStructure
 
+/--
+Given a Type `R` with a `Language.ring.Structure R`, the instance given by
+`addOfRingStructure` etc are compatible with the `Language.ring.Structure` instance on `R`.
+
+This definition is only to be used when `addOfRingStructure`, `mulOfRingStructure` etc
+are local instances.
+-/
 @[reducible] def compatibleRingOfRingStructure : CompatibleRing R :=
   { funMap_add := by
       simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
