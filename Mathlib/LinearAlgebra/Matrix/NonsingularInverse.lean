@@ -123,10 +123,10 @@ theorem mul_eq_one_comm : A * B = 1 ↔ B * A = 1 :=
   letI : Invertible B.det := detInvertibleOfLeftInverse _ _ h
   letI : Invertible B := invertibleOfDetInvertible B
   calc
-    B * A = B * A * (B * ⅟ B) := by rw [Matrix.mul_invOf_self, Matrix.mul_one]
+    B * A = B * A * (B * ⅟ B) := by rw [mul_invOf_self, Matrix.mul_one]
     _ = B * (A * B * ⅟ B) := by simp only [Matrix.mul_assoc]
     _ = B * ⅟ B := by rw [h, Matrix.one_mul]
-    _ = 1 := Matrix.mul_invOf_self B
+    _ = 1 := mul_invOf_self B
 
 #align matrix.mul_eq_one_comm Matrix.mul_eq_one_comm
 
@@ -275,14 +275,14 @@ theorem conjTranspose_nonsing_inv [StarRing α] : A⁻¹ᴴ = Aᴴ⁻¹ := by
 @[simp]
 theorem mul_nonsing_inv (h : IsUnit A.det) : A * A⁻¹ = 1 := by
   cases (A.isUnit_iff_isUnit_det.mpr h).nonempty_invertible
-  rw [← invOf_eq_nonsing_inv, Matrix.mul_invOf_self]
+  rw [← invOf_eq_nonsing_inv, mul_invOf_self]
 #align matrix.mul_nonsing_inv Matrix.mul_nonsing_inv
 
 /-- The `nonsing_inv` of `A` is a left inverse. -/
 @[simp]
 theorem nonsing_inv_mul (h : IsUnit A.det) : A⁻¹ * A = 1 := by
   cases (A.isUnit_iff_isUnit_det.mpr h).nonempty_invertible
-  rw [← invOf_eq_nonsing_inv, Matrix.invOf_mul_self]
+  rw [← invOf_eq_nonsing_inv, invOf_mul_self]
 #align matrix.nonsing_inv_mul Matrix.nonsing_inv_mul
 
 instance [Invertible A] : Invertible A⁻¹ := by
@@ -619,7 +619,7 @@ variable [DecidableEq m]
 def submatrixEquivInvertible (A : Matrix m m α) (e₁ e₂ : n ≃ m) [Invertible A] :
     Invertible (A.submatrix e₁ e₂) :=
   invertibleOfRightInverse _ ((⅟ A).submatrix e₂ e₁) <| by
-    rw [Matrix.submatrix_mul_equiv, Matrix.mul_invOf_self, submatrix_one_equiv]
+    rw [Matrix.submatrix_mul_equiv, mul_invOf_self, submatrix_one_equiv]
 #align matrix.submatrix_equiv_invertible Matrix.submatrixEquivInvertible
 
 /-- `A` is invertible if `A.submatrix e₁ e₂` is -/
@@ -632,7 +632,7 @@ def invertibleOfSubmatrixEquivInvertible (A : Matrix m m α) (e₁ e₂ : n ≃ 
     --   congr
     --   rw [this]
     rw [congr_arg₂ (· * ·) this rfl]
-    rw [Matrix.submatrix_mul_equiv, Matrix.mul_invOf_self, submatrix_one_equiv]
+    rw [Matrix.submatrix_mul_equiv, mul_invOf_self, submatrix_one_equiv]
 #align matrix.invertible_of_submatrix_equiv_invertible Matrix.invertibleOfSubmatrixEquivInvertible
 
 theorem invOf_submatrix_equiv_eq (A : Matrix m m α) (e₁ e₂ : n ≃ m) [Invertible A]
