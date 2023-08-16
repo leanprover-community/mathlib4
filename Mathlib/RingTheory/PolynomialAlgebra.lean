@@ -37,7 +37,7 @@ open Algebra.TensorProduct (algHomOfLinearMapTensorProduct includeLeft)
 
 noncomputable section
 
-variable (R A : Type _)
+variable (R A : Type*)
 
 variable [CommSemiring R]
 
@@ -236,7 +236,7 @@ theorem matPolyEquiv_coeff_apply_aux_1 (i j : n) (k : ℕ) (x : R) :
   simp only [AlgEquiv.apply_symm_apply,Algebra.TensorProduct.comm_tmul,
     polyEquivTensor_apply, eval₂_monomial]
   simp only [Algebra.TensorProduct.tmul_mul_tmul, one_pow, one_mul, Matrix.mul_one,
-    Algebra.TensorProduct.tmul_pow, Algebra.TensorProduct.includeLeft_apply, mul_eq_mul]
+    Algebra.TensorProduct.tmul_pow, Algebra.TensorProduct.includeLeft_apply]
   rw [← smul_X_eq_monomial, ← TensorProduct.smul_tmul]
   congr with i' <;> simp [stdBasisMatrix]
 #align mat_poly_equiv_coeff_apply_aux_1 matPolyEquiv_coeff_apply_aux_1
