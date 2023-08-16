@@ -356,17 +356,13 @@ theorem finprod_prop (P : Prop) [Decidable P] (b : M) : ∏ᶠ _x : P, b = if P 
   rw [finprod, dif_pos (toFinite _), Finset.prod_const, mulSupport]
   simp only [comp_apply, ne_eq]
   by_cases hb : b = 1
-    · simp [hb]
-    · simp only [hb, not_false_eq_true, setOf_true, toFinite_toFinset, toFinset_univ]
-      split_ifs with h
-      · have : Unique (P) := uniqueProp h
-        have : Unique (PLift P)
-        infer_instance
-        simp
-      · have : IsEmpty P := ⟨h⟩
-        have : IsEmpty (PLift P)
-        infer_instance
-        simp
+  · simp [hb]
+  · simp only [hb, not_false_eq_true, setOf_true, toFinite_toFinset, toFinset_univ]
+    split_ifs with h
+    · have : Unique (P) := uniqueProp h
+      simp
+    · have : IsEmpty P := ⟨h⟩
+      simp
 
 end sort
 
