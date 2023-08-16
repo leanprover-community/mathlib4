@@ -911,7 +911,7 @@ local prefix:max "#" => Fintype.card
 -/
 def rhsAux (f : (∀ i, π i) → ℝ≥0∞) (s : Finset ι) : (∀ i, π i) → ℝ≥0∞ :=
   (∫⋯∫_s, f ∂μ) ^ ((s.card : ℝ) / (#ι - 1 : ℝ)) *
-    ∏ i in sᶜ, (∫⋯∫_insert i s, f ∂μ) ^ ((1 : ℝ) / (#ι - 1 : ℝ))
+    ∏ i in sᶜ, (∫⋯∫_insert i s, f ∂μ) ^ (1 / (#ι - 1 : ℝ))
 
 lemma rhsAux_empty (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) :
     rhsAux μ f ∅ x = ∏ i, (∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) := by
@@ -930,18 +930,32 @@ Note: this also holds without assuming `Nontrivial ι`, by tracing through the j
 theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f)
     (s : Finset ι) (i : ι) (hi : i ∉ s) : ∫⋯∫_{i}, rhsAux μ f s ∂μ ≤ rhsAux μ f (insert i s) := by
   have h2i : i ∈ sᶜ := Finset.mem_compl.mpr hi
-  have hι : 1 ≤ (#ι : ℝ) := by exact_mod_cast Fintype.card_pos
-  have h2ι : 0 ≤ (#ι : ℝ) - 1 := by linarith
+  have hι : 2 ≤ (#ι : ℝ) := by exact_mod_cast Fintype.one_lt_card
+  have : 1 ≤ (#ι:ℝ) - 1 := by linarith
+  let p : ℝ := 1 / ((#ι:ℝ) - 1)
+  have hp₁ : 0 ≤ p := by positivity
+  have hp₂ : s.card * p + (erase sᶜ i).card * p = 1
+  · have H₁ : ((erase sᶜ i).card : ℝ) = (sᶜ).card - 1 := Finset.cast_card_erase_of_mem h2i
+    have H₂ : (s.card : ℝ) + (sᶜ).card = #ι := by exact_mod_cast s.card_add_card_compl
+    have H₃ : p * (#ι - 1) = 1
+    · dsimp only
+      have : (#ι:ℝ) - 1 ≠ 0 := by positivity
+      field_simp [this]
+    linear_combination p * H₁ + p * H₂ + H₃
   let k : ℝ := s.card
   intro x
   calc (∫⋯∫_{i}, rhsAux μ f s ∂μ) x
-      = (∫⋯∫_{i}, (∫⋯∫_s, f ∂μ) ^ (k / (#ι - 1 : ℝ))
-          * ∏ j in sᶜ, (∫⋯∫_insert j s, f ∂μ) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) ∂μ) x := by rw [rhsAux]
-    _ = (∫⋯∫_insert i s, f ∂μ) x ^ (1 / (#ι - 1 : ℝ)) *
+      = (∫⋯∫_{i}, (∫⋯∫_s, f ∂μ) ^ (k * p) * ∏ j in sᶜ, (∫⋯∫_insert j s, f ∂μ) ^ p ∂μ) x := by
+              rw [rhsAux]
+              congr
+              dsimp only
+              ring
+    _ = (∫⋯∫_insert i s, f ∂μ) x ^ p *
           ∫⁻ (a : π i),
             ∏ j in insertNone (insert i s)ᶜ,
               Option.elim j (∫⋯∫_s, f ∂μ) (fun k ↦ ∫⋯∫_insert k s, f ∂μ) (update x i a) ^
-                Option.elim j (k / (#ι - 1)) (fun _ ↦ 1 / (#ι - 1)) ∂(μ i) := by
+                Option.elim j (k * p) (fun _ ↦ p) ∂(μ i) := by
+              clear_value p
               simp_rw [rhsAux, ← insert_compl_insert hi]
               rw [prod_insert (not_mem_compl.mpr <| mem_insert_self i s)]
               rw [mul_left_comm, mul_prod_eq_prod_insertNone]
@@ -954,25 +968,26 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
                 refine (hf.marginal μ).comp (measurable_update x) |>.pow measurable_const |>.mul ?_
                 refine Finset.measurable_prod _ fun i _ ↦ ?_
                 exact (hf.marginal μ).comp (measurable_update x) |>.pow measurable_const
-    _ ≤ (∫⋯∫_insert i s, f ∂μ) x ^ (1 / (#ι - 1 : ℝ)) *
+    _ ≤ (∫⋯∫_insert i s, f ∂μ) x ^ p *
           (∏ j in insertNone (insert i s)ᶜ,
             (∫⁻ (a : π i), Option.elim j (∫⋯∫_s, f ∂μ) (fun k ↦ ∫⋯∫_insert k s, f ∂μ) (update x i a) ∂(μ i))
-              ^ Option.elim j (k / (#ι - 1 : ℝ)) (fun _ ↦ 1 / (#ι - 1 : ℝ))) := by
+              ^ Option.elim j (k * p) (fun _ ↦ p)) := by
               gcongr
               refine lintegral_prod_norm_pow_le _ ?_ ?_ -- Hölder's inequality
-              · simp_rw [sum_insertNone, compl_insert, not_not, Option.elim, sum_const, nsmul_eq_mul]
-                rw [Finset.cast_card_erase_of_mem h2i, mul_one_div, ← add_div, ← add_sub_assoc,
-                  ← Nat.cast_add, card_add_card_compl, div_self]
-                · rw [sub_ne_zero, Nat.cast_ne_one]
-                  exact Fintype.one_lt_card.ne'
+              · clear_value p
+                simp_rw [sum_insertNone, compl_insert, Option.elim, sum_const, nsmul_eq_mul]
+                exact hp₂
               · rintro (_|j) - <;> dsimp <;> positivity
-    _ = ((∫⋯∫_insert i s, f ∂μ) ^ ((k + 1 : ℝ) / (#ι - 1 : ℝ)) *
-            ∏ j in (insert i s)ᶜ, (∫⋯∫_insert i (insert j s), f ∂μ) ^ ((1:ℝ) / (#ι - 1 : ℝ))) x := by
+    _ = ((∫⋯∫_insert i s, f ∂μ) ^ ((k + 1 : ℝ) * p) *
+            ∏ j in (insert i s)ᶜ, (∫⋯∫_insert i (insert j s), f ∂μ) ^ p) x := by
+              clear_value p
               simp_rw [prod_insertNone]
               dsimp
               rw [marginal_insert_rev _ hf hi, ← mul_assoc]
               congr
-              · rw [← ENNReal.rpow_add_of_nonneg, ← add_div, add_comm]
+              · rw [← ENNReal.rpow_add_of_nonneg]
+                · congr
+                  ring
                 · positivity
                 · positivity
               simp_rw [prod_apply, Pi.pow_apply]
@@ -983,11 +998,14 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
                   exact hj.1.symm
                 simp [this, not_or, hi]
               rw [marginal_insert_rev _ hf h2]
-    _ = ((∫⋯∫_insert i s, f ∂μ) ^ ((card (insert i s) : ℝ) / (#ι - 1 : ℝ)) *
-            ∏ j in (insert i s)ᶜ, (∫⋯∫_insert j (insert i s), f ∂μ) ^ ((1:ℝ) / (#ι - 1 : ℝ))) x := by
+    _ = ((∫⋯∫_insert i s, f ∂μ) ^ ((card (insert i s) : ℝ) * p) *
+            ∏ j in (insert i s)ᶜ, (∫⋯∫_insert j (insert i s), f ∂μ) ^ p) x := by
               rw [Finset.card_insert_of_not_mem hi, Nat.cast_add, Nat.cast_one]
               simp_rw [Insert.comm]
-    _ ≤ (rhsAux μ f (insert i s)) x := by rw [rhsAux]
+    _ = rhsAux μ f (insert i s) x := by
+            rw [rhsAux]
+            congr! 2
+            ring
 
 lemma Measurable.rhsAux (hf : Measurable f) : Measurable (rhsAux μ f s) := by
   simp [_root_.rhsAux]
