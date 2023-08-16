@@ -16,7 +16,8 @@ is given by
 $$
 d(x, y) = \left(d(x_1, y_1)^p + d(x_2, y_2)^p\right)^{1/p}.
 $$
-For `p = ∞` the distance is the supremum of the distances.
+For `p = ∞` the distance is the supremum of the distances and `p = 0` the distance is the
+cardinality of the elements that are not equal.
 
 We give instances of this construction for emetric spaces, metric spaces, normed groups and normed
 spaces.
@@ -185,7 +186,7 @@ theorem prod_edist_self (f : WithLp p (α × β)) : edist f f = 0 := by
   · simp
   · simp [prod_edist_eq_sup]
   · simp [prod_edist_eq_add h, ENNReal.zero_rpow_of_pos h,
-    ENNReal.zero_rpow_of_pos (inv_pos.2 <| h)]
+      ENNReal.zero_rpow_of_pos (inv_pos.2 <| h)]
 
 open Classical in
 /-- This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
@@ -336,9 +337,8 @@ variable {α β}
 for use outside this file. -/
 theorem prod_sup_edist_ne_top_aux [PseudoMetricSpace α] [PseudoMetricSpace β]
     (f g : WithLp ∞ (α × β)) :
-    edist f.fst g.fst ⊔ edist f.snd g.snd ≠ ⊤ := by
-  refine ne_of_lt ?_
-  simp [edist, PseudoMetricSpace.edist_dist]
+    edist f.fst g.fst ⊔ edist f.snd g.snd ≠ ⊤ :=
+  ne_of_lt <| by simp [edist, PseudoMetricSpace.edist_dist]
 
 variable (α β)
 
@@ -657,7 +657,7 @@ variable [SeminormedAddCommGroup α] [NormedSpace 𝕜 α]
 
 section Equiv
 
-/-- The canonical map `ProdLp.equiv` between `ProdLp ∞ β` and `Π i, β i` as a linear isometric
+/-- The canonical map `WithLp.equiv` between `WithLp ∞ (α × β)` and `α × β` as a linear isometric
 equivalence. -/
 def prodEquivₗᵢ : WithLp ∞ (α × β) ≃ₗᵢ[𝕜] α × β :=
   { WithLp.equiv ∞ (α × β) with
