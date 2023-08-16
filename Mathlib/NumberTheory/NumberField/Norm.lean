@@ -93,7 +93,6 @@ theorem isUnit_norm [CharZero K] {x : 𝓞 F} : IsUnit (norm K x) ↔ IsUnit x :
   letI : Algebra K (AlgebraicClosure K) := AlgebraicClosure.instAlgebra K
   let L := normalClosure K F (AlgebraicClosure F)
   haveI : FiniteDimensional F L := FiniteDimensional.right K F L
-  have :  NoZeroSMulDivisors K (AlgebraicClosure F) := Module.Free.noZeroSMulDivisors K _
   haveI : IsAlgClosure K (AlgebraicClosure F) :=
     IsAlgClosure.ofAlgebraic K F (AlgebraicClosure F) (Algebra.isAlgebraic_of_finite K F)
   haveI : IsGalois F L := IsGalois.tower_top_of_isGalois K F L

@@ -139,8 +139,6 @@ theorem gelfandTransform_map_star (a : A) :
 
 variable (A)
 
-attribute [-instance] instIsNoetherian_of_isNoetherianRing_of_finite
-
 /-- The Gelfand transform is an isometry when the algebra is a C⋆-algebra over `ℂ`. -/
 theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
   nontriviality A
