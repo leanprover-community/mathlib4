@@ -121,17 +121,17 @@ lemma self_mul_conjTranspose_mul_eq_zero_iff (A : Matrix m n R) (B : Matrix m p 
     (A * Aᴴ) * B = 0 ↔ Aᴴ * B = 0 := by
   simpa only [conjTranspose_conjTranspose] using conjTranspose_mul_self_mul_eq_zero_iff  Aᴴ _
 
-lemma mulVec_conjTranspose_mul_self_eq_zero_iff (A : Matrix m n R) (v : n → R) :
-    mulVec (Aᴴ * A) v = 0 ↔ mulVec A v = 0 := by
+lemma conjTranspose_mul_self_mulVec_eq_zero_iff (A : Matrix m n R) (v : n → R) :
+    (Aᴴ * A).mulVec v = 0 ↔ A.mulVec v = 0 := by
   rw [← mulVec_mulVec]
   refine ⟨ fun h => ?_ , fun h => by simp only [h, mulVec_zero] ⟩
   apply_fun (fun x => dotProduct (star v) x) at h
   rwa [dotProduct_mulVec, dotProduct_zero, vecMul_conjTranspose, star_star,
     dotProduct_star_self_eq_zero] at h
 
-lemma mulVec_self_mul_conjTranspose_eq_zero_iff (A : Matrix m n R) (v : m → R) :
-    mulVec (A * Aᴴ) v = 0 ↔ mulVec Aᴴ v = 0 := by
-  simpa only [conjTranspose_conjTranspose] using mulVec_conjTranspose_mul_self_eq_zero_iff Aᴴ _
+lemma self_mul_conjTranspose_mulVec_eq_zero_iff (A : Matrix m n R) (v : m → R) :
+    (A * Aᴴ).mulVec v = 0 ↔ Aᴴ.mulVec v = 0 := by
+  simpa only [conjTranspose_conjTranspose] using conjTranspose_mul_self_mulVec_eq_zero_iff Aᴴ _
 
 lemma vecMul_conjTranspose_mul_self_eq_zero_iff (A : Matrix m n R) (v : n → R) :
     vecMul v (Aᴴ * A) = 0 ↔ vecMul v Aᴴ = 0 := by
