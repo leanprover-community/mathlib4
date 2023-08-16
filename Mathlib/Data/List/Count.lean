@@ -120,7 +120,7 @@ theorem count_join (l : List (List α)) (a : α) : l.join.count a = (l.map (coun
 
 #align list.count_pos List.count_pos_iff_mem
 
-#align list.one_le_count_iff_mem List.one_le_count_iff_mem
+#align list.one_le_count_iff_mem List.count_pos_iff_mem
 
 #align list.count_eq_zero_of_not_mem List.count_eq_zero_of_not_mem
 
