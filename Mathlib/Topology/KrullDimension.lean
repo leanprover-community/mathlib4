@@ -15,7 +15,7 @@ collection of all its subsets that are closed and irreducible. Unfolding this de
 the length of longest series of closed irreducible subsets ordered by inclusion.
 -/
 
-/-
+/--
 The Krull dimension of a topological space is the supremum of length of chains of
 closed irreducible sets.
 -/
