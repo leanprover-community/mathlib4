@@ -451,7 +451,10 @@ theorem integral_one_div_of_neg (ha : a < 0) (hb : b < 0) :
 
 @[simp]
 theorem integral_exp : ∫ x in a..b, exp x = exp b - exp a := by
-  rw [integral_deriv_eq_sub'] <;> norm_num [continuousOn_exp]
+  rw [integral_deriv_eq_sub']
+  · simp
+  · exact fun _ _ => differentiableAt_exp
+  · exact continuousOn_exp
 #align integral_exp integral_exp
 
 theorem integral_exp_mul_complex {c : ℂ} (hc : c ≠ 0) :
