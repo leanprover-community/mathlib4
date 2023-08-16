@@ -1966,6 +1966,11 @@ theorem transpose_transpose (M : Matrix m n α) : Mᵀᵀ = M := by
   rfl
 #align matrix.transpose_transpose Matrix.transpose_transpose
 
+theorem transpose_injective : Function.Injective (transpose : Matrix m n α → Matrix n m α) :=
+  fun _ _ h => ext fun i j => ext_iff.2 h j i
+
+theorem transpose_inj {A B : Matrix m n α} : Aᵀ = Bᵀ ↔ A = B := transpose_injective.eq_iff
+
 @[simp]
 theorem transpose_zero [Zero α] : (0 : Matrix m n α)ᵀ = 0 := by
   ext
@@ -1973,8 +1978,7 @@ theorem transpose_zero [Zero α] : (0 : Matrix m n α)ᵀ = 0 := by
 #align matrix.transpose_zero Matrix.transpose_zero
 
 @[simp]
-theorem transpose_eq_zero [Zero α] {M : Matrix m n α} : Mᵀ = 0 ↔ M = 0 :=
-  Matrix.ext_iff.symm.trans <| forall_comm.trans Matrix.ext_iff
+theorem transpose_eq_zero [Zero α] {M : Matrix m n α} : Mᵀ = 0 ↔ M = 0 := transpose_inj
 
 @[simp]
 theorem transpose_one [DecidableEq n] [Zero α] [One α] : (1 : Matrix n n α)ᵀ = 1 := by
@@ -2024,11 +2028,6 @@ theorem transpose_map {f : α → β} {M : Matrix m n α} : Mᵀ.map f = (M.map 
   ext
   rfl
 #align matrix.transpose_map Matrix.transpose_map
-
-theorem transpose_injective : Function.Injective (transpose : Matrix m n α → Matrix n m α) :=
-  fun _ _ h => ext fun i j => ext_iff.2 h j i
-
-theorem transpose_inj {A B : Matrix m n α} : Aᵀ = Bᵀ ↔ A = B := transpose_injective.eq_iff
 
 variable (m n α)
 
@@ -2145,6 +2144,13 @@ theorem conjTranspose_conjTranspose [InvolutiveStar α] (M : Matrix m n α) : M�
   Matrix.ext <| by simp
 #align matrix.conj_transpose_conj_transpose Matrix.conjTranspose_conjTranspose
 
+theorem conjTranspose_injective [InvolutiveStar α] :
+    Function.Injective (conjTranspose : Matrix m n α → Matrix n m α) :=
+  (map_injective star_injective).comp transpose_injective
+
+theorem conjTranspose_inj [InvolutiveStar α] {A B : Matrix m n α} : Aᴴ = Bᴴ ↔ A = B :=
+  conjTranspose_injective.eq_iff
+
 @[simp]
 theorem conjTranspose_zero [AddMonoid α] [StarAddMonoid α] : (0 : Matrix m n α)ᴴ = 0 :=
   Matrix.ext <| by simp
@@ -2152,9 +2158,8 @@ theorem conjTranspose_zero [AddMonoid α] [StarAddMonoid α] : (0 : Matrix m n �
 
 @[simp]
 theorem conjTranspose_eq_zero [AddMonoid α] [StarAddMonoid α] {M : Matrix m n α} :
-    Mᴴ = 0 ↔ M = 0 := by
-  simp_rw [←Matrix.ext_iff, conjTranspose_apply, zero_apply, star_eq_zero]
-  exact forall_comm
+    Mᴴ = 0 ↔ M = 0 :=
+  by rw [←conjTranspose_inj (A := M), conjTranspose_zero]
 
 @[simp]
 theorem conjTranspose_one [DecidableEq n] [Semiring α] [StarRing α] : (1 : Matrix n n α)ᴴ = 1 := by
@@ -2279,13 +2284,6 @@ are the same operation. -/
 @[simp]
 theorem conjTranspose_eq_transpose_of_trivial [Star α] [TrivialStar α] (A : Matrix m n α) :
     Aᴴ = Aᵀ := Matrix.ext fun _ _ => star_trivial _
-
-theorem conjTranspose_injective [InvolutiveStar α] :
-    Function.Injective (conjTranspose : Matrix m n α → Matrix n m α) :=
-  (map_injective star_injective).comp transpose_injective
-
-theorem conjTranspose_inj [InvolutiveStar α] {A B : Matrix m n α} : Aᴴ = Bᴴ ↔ A = B :=
-  conjTranspose_injective.eq_iff
 
 variable (m n α)
 
