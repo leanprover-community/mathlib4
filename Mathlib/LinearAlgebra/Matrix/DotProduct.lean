@@ -110,16 +110,16 @@ lemma self_mul_conjTranspose_eq_zero_iff {A : Matrix m n R} : (A ⬝ Aᴴ) = 0 �
     (congr_fun <| dotProduct_self_star_eq_zero.1 <| Matrix.ext_iff.2 h i i) j,
   fun h => h ▸ Matrix.zero_mul _⟩
 
-lemma ker_conj_transpose_mul_self_eq_ker (A: Matrix m n R) (B: Matrix n p R) :
+lemma conjTranspose_mul_self_mul_eq_zero_iff  (A: Matrix m n R) (B: Matrix n p R) :
     (Aᴴ ⬝ A) ⬝ B = 0 ↔ A ⬝ B = 0 := by
   refine' ⟨ fun h => _, fun h => by simp only [Matrix.mul_assoc, h, Matrix.mul_zero] ⟩
   apply_fun (fun x => Bᴴ.mul x) at h
   rw [Matrix.mul_zero, Matrix.mul_assoc, ← Matrix.mul_assoc, ← conjTranspose_mul] at h
   exact conjTranspose_mul_self_eq_zero_iff.1 h
 
-lemma ker_self_mul_conj_transpose_eq_ker_conj_transpose (A: Matrix m n R)(B: Matrix m p R) :
+lemma self_mul_conjTranspose_mul_eq_zero_iff (A: Matrix m n R)(B: Matrix m p R) :
     (A⬝Aᴴ)⬝B = 0 ↔ Aᴴ⬝B = 0 := by
-  simpa only [conjTranspose_conjTranspose] using ker_conj_transpose_mul_self_eq_ker Aᴴ _
+  simpa only [conjTranspose_conjTranspose] using conjTranspose_mul_self_mul_eq_zero_iff  Aᴴ _
 
 lemma mulVec_conjTranspose_mul_self_eq_zero_iff (A: Matrix m n R) (v : n → R) :
     mulVec (Aᴴ ⬝ A) v = 0 ↔ mulVec A v = 0 := by
