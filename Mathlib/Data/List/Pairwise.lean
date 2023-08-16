@@ -279,7 +279,7 @@ theorem pairwise_of_reflexive_on_dupl_of_forall_ne [DecidableEq α] {l : List α
       by_cases H : hd = x
       · rw [H]
         refine' hr _ _
-        simpa [count_cons, H, Nat.succ_lt_succ_iff, count_pos] using hx
+        simpa [count_cons, H, Nat.succ_lt_succ_iff, count_pos_iff_mem] using hx
       · exact h hd (mem_cons_self _ _) x (mem_cons_of_mem _ hx) H
     · refine' IH _ _
       · intro x hx

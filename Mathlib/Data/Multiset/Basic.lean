@@ -2275,7 +2275,9 @@ theorem countp_filter (q) [DecidablePred q] (s : Multiset α) :
 
 theorem countp_eq_countp_filter_add (s) (p q : α → Prop) [DecidablePred p] [DecidablePred q] :
     countp p s = (filter q s).countp p + (filter (fun a => ¬q a) s).countp p :=
-  Quot.inductionOn s fun l => by convert l.countp_eq_countp_filter_add (p ·) (q ·); simp
+  Quot.inductionOn s fun l => by
+    convert l.countp_eq_countp_filter_add (p ·) (q ·)
+    simp [countp_filter]
 #align multiset.countp_eq_countp_filter_add Multiset.countp_eq_countp_filter_add
 
 @[simp]
