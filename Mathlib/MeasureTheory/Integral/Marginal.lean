@@ -386,6 +386,79 @@ end Option
 
 open Function MeasureTheory.OuterMeasure MeasurableSpace Equiv
 
+section Set
+
+open Set
+
+-- @[simps apply symm_apply]
+/-- `s ∪ t` (using finset union) is equivalent to `s ∪ t` (using set union) -/
+def Equiv.finsetUnion {α} (s t : Finset α) : ((s ∪ t : Finset α) : Set α) ≃ (s ∪ t : Set α) :=
+  subtypeEquivRight <| by simp
+
+/-- The disjoint union of finsets is a sum -/
+def finsetUnionEquivSum {α} (s t : Finset α) (h : Disjoint s t) : (s ∪ t : Finset α) ≃ s ⊕ t :=
+  (Equiv.finsetUnion s t).trans <| Equiv.Set.union <| by
+    rw [← Finset.coe_inter, ← Finset.coe_empty]
+    exact h.le_bot
+
+@[simp]
+theorem finsetUnionEquivSum_symm_inl {α} {s t : Finset α} (h : Disjoint s t) (x : s) :
+    (finsetUnionEquivSum s t h).symm (Sum.inl x) = ⟨x, Finset.mem_union.mpr <| Or.inl x.2⟩ :=
+  rfl
+
+@[simp]
+theorem finsetUnionEquivSum_symm_inr {α} {s t : Finset α} (h : Disjoint s t) (y : t) :
+    (finsetUnionEquivSum s t h).symm (Sum.inr y) = ⟨y, Finset.mem_union.mpr <| Or.inr y.2⟩ :=
+  rfl
+
+@[simp]
+theorem finsetUnionEquivSum_symm_inl' {α} {s t : Finset α} (h : Disjoint s t) (x : α) (hx : x ∈ s)
+    (h2x : x ∈ s ∪ t) : (finsetUnionEquivSum s t h).symm (Sum.inl ⟨x, hx⟩) = ⟨x, h2x⟩ :=
+  rfl
+
+@[simp]
+theorem finsetUnionEquivSum_symm_inr' {α} {s t : Finset α} (h : Disjoint s t) (y : t) :
+    (finsetUnionEquivSum s t h).symm (Sum.inr y) = ⟨y, Finset.mem_union.mpr <| Or.inr y.2⟩ :=
+  rfl
+
+-- @[simp]
+-- theorem finsetUnionEquivSum_left {α} {s t : Finset α} (h : Disjoint s t) (x : (s ∪ t : Finset α))
+--     (hx : ↑x ∈ s) :
+--     finsetUnionEquivSum s t h x = Sum.inl ⟨x, hx⟩ :=
+--   sorry
+
+-- -- equiv.set.union_apply_left _ $ finset.mem_coe.mp hx
+-- @[simp]
+-- theorem finsetUnionEquivSum_right {α} {s t : Finset α} (h : Disjoint s t) (x : (s ∪ t : Finset α))
+--     (hx : ↑x ∈ t) : finsetUnionEquivSum s t h x = Sum.inr ⟨x, hx⟩ :=
+--   sorry
+
+theorem iUnion_univ_pi {ι ι₂} {α : ι → Type _} (t : ∀ i, ι₂ → Set (α i)) :
+    (⋃ x : ι → ι₂, pi univ fun i => t i (x i)) = pi univ fun i => ⋃ j : ι₂, t i j := by
+  ext
+  simp [Classical.skolem]
+
+theorem eval_preimage {ι} {α : ι → Type _} {i : ι} {s : Set (α i)} :
+    eval i ⁻¹' s = pi univ (update (fun i => univ) i s) := by
+  ext x
+  simp [@forall_update_iff _ (fun i => Set (α i)) _ _ _ _ fun i' y => x i' ∈ y]
+
+theorem eval_preimage' {ι} {α : ι → Type _} {i : ι} {s : Set (α i)} :
+    eval i ⁻¹' s = pi {i} (update (fun i => univ) i s) := by ext; simp
+
+theorem mem_pi_univ {ι : Type _} {α : ι → Type _} (t : ∀ i, Set (α i)) (x : ∀ i, α i) :
+    x ∈ pi univ t ↔ ∀ i, x i ∈ t i := by simp
+
+theorem pi_univ_ite {ι} {α : ι → Type _} (s : Set ι) (t : ∀ i, Set (α i)) :
+    (pi univ fun i => if i ∈ s then t i else univ) = s.pi t := by
+  ext; simp_rw [Set.mem_pi]; apply forall_congr'; intro i; split_ifs with h <;> simp [h]
+
+theorem pi_univ_eq_iInter {ι} {α : ι → Type _} (t : ∀ i, Set (α i)) :
+    pi univ t = ⋂ i, eval i ⁻¹' t i := by simp_rw [pi_def, mem_univ, iInter_true]
+
+end Set
+
+
 section Function
 
 open Set
@@ -458,79 +531,21 @@ theorem update_eq_updateSet {i y} :
     exact uniqueElim_default (α := fun j : ({i} : Finset ι) => π j) y
   · simp [hj, updateSet]
 
+theorem updateSet_updateSet {s t : Finset ι} (hst : Disjoint s t) {y z} :
+    updateSet (updateSet x s y) t z =
+    updateSet x (s ∪ t)
+      (Equiv.piCongrLeft (fun i : ↥(s ∪ t) ↦ π i) (finsetUnionEquivSum s t hst).symm <|
+      Equiv.piSum _ ⟨y, z⟩) := by
+  set e₁ := finsetUnionEquivSum s t hst |>.symm
+  congr with i
+  by_cases his : i ∈ s <;> by_cases hit : i ∈ t <;>
+    simp only [updateSet, his, hit, dif_pos, dif_neg, Finset.mem_union, true_or_iff, false_or_iff,
+      not_false_iff]
+  · exfalso; exact Finset.disjoint_left.mp hst his hit
+  · exact piCongrLeft_sum_inl (fun b : ↥(s ∪ t) => π b) e₁ y z ⟨i, his⟩ |>.symm
+  · exact piCongrLeft_sum_inr (fun b : ↥(s ∪ t) => π b) e₁ y z ⟨i, _⟩ |>.symm
+
 end Function
-
-section Set
-
-open Set
-
--- @[simps apply symm_apply]
-/-- `s ∪ t` (using finset union) is equivalent to `s ∪ t` (using set union) -/
-def Equiv.finsetUnion {α} (s t : Finset α) : ((s ∪ t : Finset α) : Set α) ≃ (s ∪ t : Set α) :=
-  subtypeEquivRight <| by simp
-
-/-- The disjoint union of finsets is a sum -/
-def finsetUnionEquivSum {α} (s t : Finset α) (h : Disjoint s t) : (s ∪ t : Finset α) ≃ s ⊕ t :=
-  (Equiv.finsetUnion s t).trans <| Equiv.Set.union <| by
-    rw [← Finset.coe_inter, ← Finset.coe_empty]
-    exact h.le_bot
-
-@[simp]
-theorem finsetUnionEquivSum_symm_inl {α} {s t : Finset α} (h : Disjoint s t) (x : s) :
-    (finsetUnionEquivSum s t h).symm (Sum.inl x) = ⟨x, Finset.mem_union.mpr <| Or.inl x.2⟩ :=
-  rfl
-
-@[simp]
-theorem finsetUnionEquivSum_symm_inr {α} {s t : Finset α} (h : Disjoint s t) (y : t) :
-    (finsetUnionEquivSum s t h).symm (Sum.inr y) = ⟨y, Finset.mem_union.mpr <| Or.inr y.2⟩ :=
-  rfl
-
-@[simp]
-theorem finsetUnionEquivSum_symm_inl' {α} {s t : Finset α} (h : Disjoint s t) (x : α) (hx : x ∈ s)
-    (h2x : x ∈ s ∪ t) : (finsetUnionEquivSum s t h).symm (Sum.inl ⟨x, hx⟩) = ⟨x, h2x⟩ :=
-  rfl
-
-@[simp]
-theorem finsetUnionEquivSum_symm_inr' {α} {s t : Finset α} (h : Disjoint s t) (y : t) :
-    (finsetUnionEquivSum s t h).symm (Sum.inr y) = ⟨y, Finset.mem_union.mpr <| Or.inr y.2⟩ :=
-  rfl
-
--- @[simp]
--- theorem finsetUnionEquivSum_left {α} {s t : Finset α} (h : Disjoint s t) (x : (s ∪ t : Finset α))
---     (hx : ↑x ∈ s) :
---     finsetUnionEquivSum s t h x = Sum.inl ⟨x, hx⟩ :=
---   sorry
-
--- -- equiv.set.union_apply_left _ $ finset.mem_coe.mp hx
--- @[simp]
--- theorem finsetUnionEquivSum_right {α} {s t : Finset α} (h : Disjoint s t) (x : (s ∪ t : Finset α))
---     (hx : ↑x ∈ t) : finsetUnionEquivSum s t h x = Sum.inr ⟨x, hx⟩ :=
---   sorry
-
-theorem iUnion_univ_pi {ι ι₂} {α : ι → Type _} (t : ∀ i, ι₂ → Set (α i)) :
-    (⋃ x : ι → ι₂, pi univ fun i => t i (x i)) = pi univ fun i => ⋃ j : ι₂, t i j := by
-  ext
-  simp [Classical.skolem]
-
-theorem eval_preimage {ι} {α : ι → Type _} {i : ι} {s : Set (α i)} :
-    eval i ⁻¹' s = pi univ (update (fun i => univ) i s) := by
-  ext x
-  simp [@forall_update_iff _ (fun i => Set (α i)) _ _ _ _ fun i' y => x i' ∈ y]
-
-theorem eval_preimage' {ι} {α : ι → Type _} {i : ι} {s : Set (α i)} :
-    eval i ⁻¹' s = pi {i} (update (fun i => univ) i s) := by ext; simp
-
-theorem mem_pi_univ {ι : Type _} {α : ι → Type _} (t : ∀ i, Set (α i)) (x : ∀ i, α i) :
-    x ∈ pi univ t ↔ ∀ i, x i ∈ t i := by simp
-
-theorem pi_univ_ite {ι} {α : ι → Type _} (s : Set ι) (t : ∀ i, Set (α i)) :
-    (pi univ fun i => if i ∈ s then t i else univ) = s.pi t := by
-  ext; simp_rw [Set.mem_pi]; apply forall_congr'; intro i; split_ifs with h <;> simp [h]
-
-theorem pi_univ_eq_iInter {ι} {α : ι → Type _} (t : ∀ i, Set (α i)) :
-    pi univ t = ⋂ i, eval i ⁻¹' t i := by simp_rw [pi_def, mem_univ, iInter_true]
-
-end Set
 
 section Measurable
 
@@ -817,26 +832,23 @@ theorem marginal_union (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) (h
   set e₁ := (finsetUnionEquivSum s t hst).symm
   set e₂ := MeasurableEquiv.piCongrLeft (fun i : ↥(s ∪ t) => π i) e₁
   set e₃ := MeasurableEquiv.piSum fun b ↦ π (e₁ b)
-  simp_rw [marginal, updateSet, ← Measure.pi_map_left _ e₁]
-  rw [lintegral_map_equiv, ← Measure.pi_sum, lintegral_map_equiv, lintegral_prod]
-  · dsimp only [finsetUnionEquivSum_symm_inl, finsetUnionEquivSum_symm_inr, Subtype.coe_mk]
-    congr with x; congr with y; congr with i
-    by_cases his : i ∈ s <;> by_cases hit : i ∈ t <;>
-      simp only [his, hit, dif_pos, dif_neg, Finset.mem_union, true_or_iff, false_or_iff,
-        not_false_iff]
-    · exfalso; exact Finset.disjoint_left.mp hst his hit
-    · change e₂ (e₃ (x, y)) (e₁ <| Sum.inl ⟨i, his⟩) = x ⟨i, his⟩
-      exact piCongrLeft_sum_inl (fun b : ↥(s ∪ t) => π b) e₁ x y ⟨i, his⟩
-    · change e₂ (e₃ (x, y)) (e₁ <| Sum.inr ⟨i, hit⟩) = y ⟨i, hit⟩
-      exact piCongrLeft_sum_inr (fun b : ↥(s ∪ t) => π b) e₁ x y ⟨i, _⟩
-  · apply Measurable.aemeasurable
-    refine hf.comp ?_
-    rw [measurable_pi_iff]; intro i
-    by_cases h : i ∈ s ∨ i ∈ t
-    · simp [h, measurable_pi_apply]
-      refine measurable_pi_iff.1 ?_ _
-      refine' e₂.measurable.comp e₃.measurable
-    · simp [h]
+  calc (∫⋯∫_s ∪ t, f ∂μ) x
+      = ∫⁻ (y : (i : ↥(s ∪ t)) → π i), f (updateSet x (s ∪ t) y)
+          ∂.pi fun i' : ↥(s ∪ t) ↦ μ i' := by rfl
+    _ = ∫⁻ (y : (i : s ⊕ t) → π (e₁ i)), f (updateSet x (s ∪ t) (e₂ y))
+          ∂.pi fun i' : s ⊕ t ↦ μ (e₁ i') := by
+        simp_rw [marginal, ← Measure.pi_map_left _ e₁, lintegral_map_equiv]
+    _ = ∫⁻ (y : ((i : s) → π i) × ((j : t) → π j)), f (updateSet x (s ∪ t) (e₂ (e₃ y)))
+          ∂(Measure.pi fun i : s ↦ μ i).prod (.pi fun j : t ↦ μ j) := by
+        simp_rw [← Measure.pi_sum, lintegral_map_equiv]; rfl
+    _ = ∫⁻ (y : (i : s) → π i), ∫⁻ (z : (j : t) → π j), f (updateSet x (s ∪ t) (e₂ (e₃ (y, z))))
+          ∂.pi fun j : t ↦ μ j ∂.pi fun i : s ↦ μ i := by
+        apply lintegral_prod
+        apply Measurable.aemeasurable
+        exact hf.comp <| measurable_updateSet.comp <| e₂.measurable.comp e₃.measurable
+    _ = (∫⋯∫_s, ∫⋯∫_t, f ∂μ ∂μ) x := by
+        simp_rw [marginal, updateSet_updateSet hst]
+        rfl
 
 theorem marginal_union' (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {s t : Finset δ}
     (hst : Disjoint s t) : ∫⋯∫_s ∪ t, f ∂μ = ∫⋯∫_t, ∫⋯∫_s, f ∂μ ∂μ := by
