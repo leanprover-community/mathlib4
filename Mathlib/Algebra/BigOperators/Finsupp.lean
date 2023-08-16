@@ -7,6 +7,8 @@ import Mathlib.Data.Finsupp.Indicator
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Data.Finsupp.Fin
 import Mathlib.GroupTheory.Submonoid.Membership
 
 #align_import algebra.big_operators.finsupp from "leanprover-community/mathlib"@"842328d9df7e96fd90fc424e115679c15fb23a71"
@@ -209,6 +211,11 @@ theorem prod_congr {f : α →₀ M} {g1 g2 : α → M → N} (h : ∀ x ∈ f.s
   Finset.prod_congr rfl h
 #align finsupp.prod_congr Finsupp.prod_congr
 #align finsupp.sum_congr Finsupp.sum_congr
+
+lemma sum_cons [AddCommMonoid M] (n : ℕ) (σ : Fin n →₀ M) (i : M) :
+    (sum (Finsupp.cons i σ) fun _ e ↦ e) = i + sum σ (fun _ e ↦ e) := by
+  rw [sum_fintype _ _ (fun _ => rfl), sum_fintype _ _ (fun _ => rfl)]
+  exact Fin.sum_cons i σ
 
 end SumProd
 

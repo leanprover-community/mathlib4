@@ -7,8 +7,6 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Fin
 import Mathlib.Data.List.FinRange
 import Mathlib.Logic.Equiv.Fin
-import Mathlib.Algebra.BigOperators.Finsupp
-import Mathlib.Data.Finsupp.Fin
 
 #align_import algebra.big_operators.fin from "leanprover-community/mathlib"@"cc5dd6244981976cc9da7afc4eee5682b037a013"
 
@@ -307,15 +305,6 @@ theorem inv_partialProd_mul_eq_contractNth {G : Type*} [Group G] (g : Fin (n + 1
 end PartialProd
 
 end Fin
-
-namespace Finsupp
-
-lemma sum_cons {M} [AddCommMonoid M] (n : ℕ) (σ : Fin n →₀ M) (i : M) :
-    (sum (Finsupp.cons i σ) fun _ e ↦ e) = i + sum σ (fun _ e ↦ e) := by
-  rw [sum_fintype _ _ (fun _ => rfl), sum_fintype _ _ (fun _ => rfl)]
-  exact Fin.sum_cons i σ
-
-end Finsupp
 
 /-- Equivalence between `Fin n → Fin m` and `Fin (m ^ n)`. -/
 @[simps!]
