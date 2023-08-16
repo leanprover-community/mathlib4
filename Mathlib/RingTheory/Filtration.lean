@@ -402,7 +402,7 @@ theorem submodule_fg_iff_stable (hF' : ∀ i, (F.N i).FG) : F.submodule.FG ↔ F
 
 variable {F}
 
-theorem Stable.of_le [IsNoetherianRing R] [h : Module.Finite R M] (hF : F.Stable)
+theorem Stable.of_le [IsNoetherianRing R] [Module.Finite R M] (hF : F.Stable)
     {F' : I.Filtration M} (hf : F' ≤ F) : F'.Stable := by
   have := isNoetherian_of_isNoetherianRing_of_finite R M
   rw [← submodule_fg_iff_stable] at hF ⊢
@@ -432,7 +432,7 @@ theorem Ideal.exists_pow_inf_eq_pow_smul [IsNoetherianRing R] [Module.Finite R M
   ((I.stableFiltration_stable ⊤).inter_right (I.trivialFiltration N)).exists_pow_smul_eq_of_ge
 #align ideal.exists_pow_inf_eq_pow_smul Ideal.exists_pow_inf_eq_pow_smul
 
-theorem Ideal.mem_iInf_smul_pow_eq_bot_iff [IsNoetherianRing R] [hM : Module.Finite R M] (x : M) :
+theorem Ideal.mem_iInf_smul_pow_eq_bot_iff [IsNoetherianRing R] [Module.Finite R M] (x : M) :
     x ∈ (⨅ i : ℕ, I ^ i • ⊤ : Submodule R M) ↔ ∃ r : I, (r : R) • x = x := by
   let N := (⨅ i : ℕ, I ^ i • ⊤ : Submodule R M)
   have hN : ∀ k, (I.stableFiltration ⊤ ⊓ I.trivialFiltration N).N k = N :=
