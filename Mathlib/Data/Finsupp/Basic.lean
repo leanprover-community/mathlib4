@@ -1638,16 +1638,16 @@ instance noZeroSMulDivisors [Semiring R] [AddCommMonoid M] [Module R M] {ι : Ty
       Finsupp.ext fun i => (smul_eq_zero.mp (FunLike.ext_iff.mp h i)).resolve_left hc⟩
 #align finsupp.no_zero_smul_divisors Finsupp.noZeroSMulDivisors
 
-section DistribMulActionHom
+section DistribMulActionSemiHom
 
 variable [Semiring R]
 
 variable [AddCommMonoid M] [AddCommMonoid N] [DistribMulAction R M] [DistribMulAction R N]
 
-/-- `Finsupp.single` as a `DistribMulActionHom`.
+/-- `Finsupp.single` as a `DistribMulActionSemiHom`.
 
 See also `Finsupp.lsingle` for the version as a linear map. -/
-def DistribMulActionHom.single (a : α) : M →+[R] α →₀ M :=
+def DistribMulActionSemiHom.single (a : α) : M →+[R] α →₀ M :=
   { singleAddHom a with
     map_smul' := fun k m => by
       simp only
@@ -1655,22 +1655,22 @@ def DistribMulActionHom.single (a : α) : M →+[R] α →₀ M :=
       change Finsupp.single a (k • m) = k • (Finsupp.single a m)
       -- porting note: because `singleAddHom_apply` is missing
       simp only [smul_single] }
-#align finsupp.distrib_mul_action_hom.single Finsupp.DistribMulActionHom.single
+#align finsupp.distrib_mul_action_hom.single Finsupp.DistribMulActionSemiHom.single
 
-theorem distribMulActionHom_ext {f g : (α →₀ M) →+[R] N}
+theorem distribMulActionSemiHom_ext {f g : (α →₀ M) →+[R] N}
     (h : ∀ (a : α) (m : M), f (single a m) = g (single a m)) : f = g :=
-  DistribMulActionHom.toAddMonoidHom_injective <| addHom_ext h
-#align finsupp.distrib_mul_action_hom_ext Finsupp.distribMulActionHom_ext
+  DistribMulActionSemiHom.toAddMonoidHom_injective <| addHom_ext h
+#align finsupp.distrib_mul_action_hom_ext Finsupp.distribMulActionSemiHom_ext
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext]
-theorem distribMulActionHom_ext' {f g : (α →₀ M) →+[R] N}
-    (h : ∀ a : α, f.comp (DistribMulActionHom.single a) = g.comp (DistribMulActionHom.single a)) :
+theorem distribMulActionSemiHom_ext' {f g : (α →₀ M) →+[R] N}
+    (h : ∀ a : α, f.comp (DistribMulActionSemiHom.single a) = g.comp (DistribMulActionSemiHom.single a)) :
     f = g :=
-  distribMulActionHom_ext fun a => DistribMulActionHom.congr_fun (h a)
-#align finsupp.distrib_mul_action_hom_ext' Finsupp.distribMulActionHom_ext'
+  distribMulActionSemiHom_ext fun a => DistribMulActionSemiHom.congr_fun (h a)
+#align finsupp.distrib_mul_action_hom_ext' Finsupp.distribMulActionSemiHom_ext'
 
-end DistribMulActionHom
+end DistribMulActionSemiHom
 
 section
 
