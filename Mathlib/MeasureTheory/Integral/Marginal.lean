@@ -901,6 +901,14 @@ def rhsAux (f : (∀ i, π i) → ℝ≥0∞) (s : Finset ι) : (∀ i, π i) �
   (∫⋯∫_s, f ∂μ) ^ ((s.card : ℝ) / (#ι - 1 : ℝ)) *
     ∏ i in sᶜ, (∫⋯∫_insert i s, f ∂μ) ^ ((1 : ℝ) / (#ι - 1 : ℝ))
 
+lemma rhsAux_empty (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) :
+    rhsAux μ f ∅ x = ∏ i, (∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) := by
+  simp [rhsAux, marginal_singleton]
+
+lemma rhsAux_univ (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) :
+   rhsAux μ f univ x = (∫⁻ x, f x ∂(Measure.pi μ)) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
+  simp [rhsAux, marginal_univ, Finset.card_univ]
+
 /--
 The main inductive step
 
@@ -962,20 +970,15 @@ lemma Measurable.rhsAux (hf : Measurable f) : Measurable (rhsAux μ f s) := by
   exact hf.marginal μ |>.pow measurable_const
 
 theorem marginal_rhsAux_empty_le [Nontrivial ι] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f)
-    (s t : Finset ι) (hst : Disjoint s t) : ∫⋯∫_t, rhsAux μ f s ∂μ ≤ rhsAux μ f (s ∪ t) := by
-  induction' t using Finset.induction with i t hi ih
+    (s : Finset ι) : ∫⋯∫_s, rhsAux μ f ∅ ∂μ ≤ rhsAux μ f s := by
+  induction' s using Finset.induction with i s hi ih
   · simp [marginal_empty]
-  rw [Finset.insert_eq, Finset.disjoint_union_right, Finset.disjoint_singleton_right] at hst
-  calc ∫⋯∫_insert i t, rhsAux μ f s ∂μ
-      ≤ ∫⋯∫_{i}, ∫⋯∫_t, rhsAux μ f s ∂μ ∂μ := by
-        have hi' : Disjoint {i} t := Finset.disjoint_singleton_left.mpr hi
-        rw [Finset.insert_eq, marginal_union μ _ (hf.rhsAux μ) hi']
-    _ ≤ ∫⋯∫_{i}, rhsAux μ f (s ∪ t) ∂μ := marginal_mono <| ih hst.2
-    _ ≤ rhsAux μ f (insert i (s ∪ t)) := by
-          apply marginal_singleton_rhsAux_le _ _ hf
-          rw [Finset.not_mem_union]
-          exact ⟨hst.1, hi⟩
-    _ = rhsAux μ f (s ∪ insert i t) := by rw [Finset.union_insert]
+  calc ∫⋯∫_insert i s, rhsAux μ f ∅ ∂μ
+      = ∫⋯∫_{i}, ∫⋯∫_s, rhsAux μ f ∅ ∂μ ∂μ := by
+        rw [← Finset.disjoint_singleton_left] at hi
+        rw [Finset.insert_eq, marginal_union μ _ (hf.rhsAux μ) hi]
+    _ ≤ ∫⋯∫_{i}, rhsAux μ f s ∂μ := by gcongr
+    _ ≤ rhsAux μ f (insert i s) := marginal_singleton_rhsAux_le _ _ hf _ _ hi
 
 theorem lintegral_prod_lintegral_pow_le [Nontrivial ι] (hf : Measurable f) :
     ∫⁻ x, ∏ i, (∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) ∂Measure.pi μ ≤
@@ -983,12 +986,8 @@ theorem lintegral_prod_lintegral_pow_le [Nontrivial ι] (hf : Measurable f) :
   cases isEmpty_or_nonempty (∀ i, π i)
   · simp_rw [lintegral_of_isEmpty]; refine' zero_le _
   inhabit ∀ i, π i
-  have := marginal_rhsAux_empty_le μ f hf ∅ Finset.univ (by simp) default
-  simp_rw [Finset.empty_union, rhsAux, marginal_univ, Finset.compl_univ, Finset.prod_empty,
-    marginal_empty, Finset.card_empty, Nat.cast_zero, zero_div, Finset.compl_empty, mul_one,
-    Pi.mul_def, Pi.pow_apply, ENNReal.rpow_zero, one_mul, Finset.prod_fn, Pi.pow_apply,
-    insert_emptyc_eq, marginal_singleton f] at this
-  exact this
+  simpa [marginal_univ, rhsAux_empty, rhsAux_univ] using
+    marginal_rhsAux_empty_le μ f hf Finset.univ default
 
 -- theorem integral_prod_integral_pow_le {f : (∀ i, π i) → ℝ} (hf : Measurable f)
 --     (h2f : ∀ x, 0 ≤ f x) :
