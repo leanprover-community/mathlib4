@@ -207,6 +207,7 @@ theorem ACF_models_genericPolyMapSurjectiveOfInjective_of_prime_or_zero
 end FirstOrder
 
 open Function FirstOrder Language Field
+
 /-- The **Ax-Grothendieck** theorem
 
 Any injective polynomial map `K^n → K^n` is also surjective if `K` is an
