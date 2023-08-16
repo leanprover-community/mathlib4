@@ -294,7 +294,7 @@ explaining why having definitionally the right uniformity is often important.
 -/
 
 
-variable [Fact (1 ≤ p)]
+variable [hp : Fact (1 ≤ p)]
 
 /-- Endowing the space `WithLp p (α × β)` with the `L^p` pseudoemetric structure. This definition is
 not satisfactory, as it does not register the fact that the topology and the uniform structure
@@ -501,7 +501,7 @@ protected def prodContinuousLinearEquiv : WithLp p (α × β) ≃L[𝕜] α × �
 end ContinuousLinearEquiv
 
 -- throughout the rest of the file, we assume `1 ≤ p`
-variable [Fact (1 ≤ p)]
+variable [hp : Fact (1 ≤ p)]
 
 /-- `PseudoEMetricSpace` instance on the product of two pseudoemetric spaces, using the
 `L^p` pseudoedistance, and having as uniformity the product uniformity. -/
@@ -639,12 +639,11 @@ theorem prod_edist_eq_of_L2 (x y : WithLp 2 (α × β)) :
 
 end norm_of
 
-variable [NormedField 𝕜]
+variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 
 section InstNormedSpace
 
-variable [SeminormedAddCommGroup α] [NormedSpace 𝕜 α]
-  [SeminormedAddCommGroup β] [NormedSpace 𝕜 β]
+variable [NormedField 𝕜] [NormedSpace 𝕜 α] [NormedSpace 𝕜 β]
 
 /-- The product of two normed spaces is a normed space, with the `L^p` norm. -/
 instance instProdNormedSpace : NormedSpace 𝕜 (WithLp p (α × β)) where
@@ -667,11 +666,11 @@ end InstNormedSpace
 
 /- Register simplification lemmas for the applications of `WithLp p (α × β)` elements, as the usual
 lemmas for `Prod` will not trigger. -/
-variable {𝕜 𝕜' p α β}
-variable [SeminormedAddCommGroup α] [NormedSpace 𝕜 α]
-  [SeminormedAddCommGroup β] [NormedSpace 𝕜 β]
+variable {𝕜 p α β}
 
 section Equiv
+
+variable [NormedField 𝕜] [NormedSpace 𝕜 α] [NormedSpace 𝕜 β]
 
 /-- The canonical map `WithLp.equiv` between `WithLp ∞ (α × β)` and `α × β` as a linear isometric
 equivalence. -/
@@ -688,7 +687,7 @@ section Single
 variable (p α β)
 
 @[simp]
-theorem nnnorm_equiv_symm_fst [hp : Fact (1 ≤ p)] (x : α) :
+theorem nnnorm_equiv_symm_fst (x : α) :
     ‖(WithLp.equiv p (α × β)).symm (x, 0)‖₊ = ‖x‖₊ := by
   induction p using ENNReal.recTopCoe generalizing hp with
   | top =>
@@ -699,7 +698,7 @@ theorem nnnorm_equiv_symm_fst [hp : Fact (1 ≤ p)] (x : α) :
     simp [prod_nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel hp0]
 
 @[simp]
-theorem nnnorm_equiv_symm_snd [hp : Fact (1 ≤ p)] (y : β) :
+theorem nnnorm_equiv_symm_snd (y : β) :
     ‖(WithLp.equiv p (α × β)).symm (0, y)‖₊ = ‖y‖₊ := by
   induction p using ENNReal.recTopCoe generalizing hp with
   | top =>
