@@ -542,8 +542,7 @@ def star_ring (mul_comm : ∀ f g : CentroidHom α, f * g = g * f) : StarRing (C
   star_mul := fun f g => by
     rw [mul_comm]
     ext
-    rw [star_apply, mul_apply, mul_apply, star_apply]
-    simp
+    rw [star_apply, mul_apply, mul_apply, star_apply, star_apply, star_star]
   star_add := fun f g => by
     ext
     rw [star_apply, add_apply, star_add, add_apply, star_apply, star_apply] }
