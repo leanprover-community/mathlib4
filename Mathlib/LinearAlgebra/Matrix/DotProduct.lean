@@ -72,7 +72,7 @@ end Semiring
 
 section Self
 
-variable  [Fintype m] [Fintype n] [Fintype p]
+variable [Fintype m] [Fintype n] [Fintype p]
 
 @[simp]
 theorem dotProduct_self_eq_zero [LinearOrderedRing R] {v : n → R} : dotProduct v v = 0 ↔ v = 0 :=
