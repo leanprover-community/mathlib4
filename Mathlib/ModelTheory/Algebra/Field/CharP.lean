@@ -9,20 +9,37 @@ import Mathlib.ModelTheory.Algebra.Field.Basic
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Data.Nat.Prime
 
+/-!
+
+# First order theory of fields
+
+This file defines the first order theory of fields of characteristic `p` as a theory over the
+language of rings
+
+## Main definitions
+* `FirstOrder.Language.Theory.fieldOfChar` : the first order theory of fields of characteristic `p`
+  as a theory over the language of rings
+
+-/
+
+variable {K : Type*} {p : ℕ}
+
 namespace FirstOrder
 
 namespace Field
 
 open Language Ring
 
+/-- For a given natural number `n`, `eqZero n` is the sentence in the language of rings
+saying that `n` is zero. -/
 noncomputable def eqZero (n : ℕ) : Language.ring.Sentence :=
   Term.equal (termOfFreeCommRing n) 0
 
-@[simp] theorem realize_eqZero {R : Type*} [CommRing R] [CompatibleRing R] (n : ℕ)
-    (v : Empty → R) : (Formula.Realize (eqZero n) v) ↔ ((n : R) = 0) := by
-    simp [eqZero, Term.realize]
+@[simp] theorem realize_eqZero [CommRing K] [CompatibleRing K] (n : ℕ)
+    (v : Empty → K) : (Formula.Realize (eqZero n) v) ↔ ((n : K) = 0) := by
+  simp [eqZero, Term.realize]
 
---TODO: Think about the name and namespace of this
+/-- The first order theory of fields of characteristic `p` as a theory over the language of rings -/
 def _root_.FirstOrder.Language.Theory.fieldOfChar (p : ℕ) : Language.ring.Theory :=
   Theory.field ∪
   if p = 0
@@ -30,7 +47,7 @@ def _root_.FirstOrder.Language.Theory.fieldOfChar (p : ℕ) : Language.ring.Theo
   else if p.Prime then {eqZero p}
   else {⊥}
 
-theorem model_hasChar_of_charP {K : Type*} [Field K] [CompatibleRing K] {p : ℕ} [CharP K p] :
+instance model_hasChar_of_charP [Field K] [CompatibleRing K] [CharP K p] :
     (Theory.fieldOfChar p).Model K := by
   refine Language.Theory.model_union_iff.2 ⟨inferInstance, ?_⟩
   cases CharP.char_is_prime_or_zero K p with
@@ -43,7 +60,7 @@ theorem model_hasChar_of_charP {K : Type*} [Field K] [CompatibleRing K] {p : ℕ
       Formula.realize_not, realize_eqZero, ← CharZero.charZero_iff_forall_prime_ne_zero]
     exact CharP.charP_to_charZero K
 
-instance charP_iff_model_fieldOfChar {K : Type*} [Field K] [CompatibleRing K] {p : ℕ}:
+theorem charP_iff_model_fieldOfChar [Field K] [CompatibleRing K] :
     (Theory.fieldOfChar p).Model K ↔ CharP K p := by
   simp only [Theory.fieldOfChar, Theory.model_union_iff,
     (show (Theory.field.Model K) by infer_instance), true_and]
@@ -60,11 +77,11 @@ instance charP_iff_model_fieldOfChar {K : Type*} [Field K] [CompatibleRing K] {p
     intro H
     cases (CharP.char_is_prime_or_zero K p) <;> simp_all
 
-instance model_fieldOfChar_of_charP {K : Type*} [Field K] [CompatibleRing K] {p : ℕ}
+instance model_fieldOfChar_of_charP [Field K] [CompatibleRing K]
     [CharP K p] : (Theory.fieldOfChar p).Model K :=
   charP_iff_model_fieldOfChar.2 inferInstance
 
-instance charP_of_model_fieldOfChar {K : Type*} [Field K] [CompatibleRing K] {p : ℕ}
+instance charP_of_model_fieldOfChar [Field K] [CompatibleRing K]
     [h : (Theory.fieldOfChar p).Model K] : CharP K p :=
   charP_iff_model_fieldOfChar.1 h
 
