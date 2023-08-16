@@ -14,6 +14,13 @@ A few of the `Invertible` lemmas generalize to multiplication of rectangular mat
 
 For lemmas about the matrix inverse in terms of the determinant and adjugate, see `Matrix.inv`
 in `LinearAlgebra/Matrix/NonsingularInverse.lean`.
+
+## Main results
+
+* `Matrix.invertibleConjTranspose`
+* `Matrix.invertibleTranspose`
+* `Matrix.isUnit_conjTranpose`
+* `Matrix.isUnit_tranpose`
 -/
 
 
@@ -21,9 +28,12 @@ open scoped Matrix
 
 variable {m n : Type*} {α : Type*}
 
-variable [Fintype n] [DecidableEq n] [Semiring α]
+variable [Fintype n] [DecidableEq n]
 
 namespace Matrix
+
+section Semiring
+variable [Semiring α]
 
 #align matrix.inv_of_mul_self invOf_mul_self
 #align matrix.mul_inv_of_self mul_invOf_self
@@ -52,6 +62,59 @@ protected theorem mul_mul_invOf_self_cancel (A : Matrix m n α) (B : Matrix n n 
 #align matrix.inv_of_mul invOf_mul
 #align matrix.invertible_of_invertible_mul invertibleOfInvertibleMul
 #align matrix.invertible_of_mul_invertible invertibleOfMulInvertible
+
+section conj_transpose
+variable [StarRing α] (A : Matrix n n α)
+
+/-- `Aᴴ` is invertible when `A` is. -/
+@[reducible] def invertibleConjTranspose [Invertible A] : Invertible Aᴴ := Invertible.star _
+
+@[simp] lemma conjTranspose_invOf [Invertible A] [Invertible Aᴴ] : (⅟A)ᴴ = ⅟(Aᴴ) := star_invOf _
+
+@[simp] lemma isUnit_conjTranspose : IsUnit Aᴴ ↔ IsUnit A := isUnit_star
+
+end conj_transpose
+
+end Semiring
+
+section CommSemiring
+
+variable [CommSemiring α] (A : Matrix n n α)
+
+/-- `Aᵀ` is invertible when `A` is. -/
+@[reducible] def invertibleTranspose [Invertible A] : Invertible Aᵀ where
+  invOf := (⅟A)ᵀ
+  invOf_mul_self := by rw [←transpose_mul, mul_invOf_self, transpose_one]
+  mul_invOf_self := by rw [←transpose_mul, invOf_mul_self, transpose_one]
+
+@[simp] lemma transpose_invOf [Invertible A] [Invertible Aᵀ] : (⅟A)ᵀ = ⅟(Aᵀ) := by
+  letI := invertibleTranspose A
+  convert (rfl : _ = ⅟(Aᵀ))
+
+/-- `Aᵀ` is invertible when `A` is. -/
+@[reducible] def invertibleOfInvertibleTranspose [Invertible Aᵀ] : Invertible A where
+  invOf := (⅟(Aᵀ))ᵀ
+  invOf_mul_self := calc
+    _ = (⅟Aᵀ)ᵀ * Aᵀᵀ := by rw [transpose_transpose]
+    _ = _ := by rw [←transpose_mul, mul_invOf_self, transpose_one]
+  mul_invOf_self := calc
+    _ = Aᵀᵀ * (⅟Aᵀ)ᵀ := by rw [transpose_transpose]
+    _ = _ := by rw [←transpose_mul, invOf_mul_self, transpose_one]
+
+/-- Together `Matrix.invertibleTranspose` and `Matrix.invertibleOfInvertibleTranspose` form an
+equivalence, although both sides of the equiv are subsingleton anyway. -/
+@[simps]
+def transposeInvertibleEquivInvertible : Invertible Aᵀ ≃ Invertible A where
+  toFun := @invertibleOfInvertibleTranspose _ _ _ _ _ _
+  invFun := @invertibleTranspose _ _ _ _ _ _
+  left_inv _ := Subsingleton.elim _ _
+  right_inv _ := Subsingleton.elim _ _
+
+@[simp] lemma isUnit_transpose : IsUnit Aᵀ ↔ IsUnit A := by
+  simp only [← nonempty_invertible_iff_isUnit,
+    (transposeInvertibleEquivInvertible A).nonempty_congr]
+
+end CommSemiring
 
 end Matrix
 
