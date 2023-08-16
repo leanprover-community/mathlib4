@@ -116,7 +116,11 @@ theorem card_ring : card Language.ring = 5 := by
 open Language ring Structure
 
 /-- A Type, `R` is a `CompatibleRing` if it is structure for the language of rings and this structure
-is the same as the structure already given on `R` by the classes `Add`, `Mul` etc. -/
+is the same as the structure already given on `R` by the classes `Add`, `Mul` etc.
+
+It is recommended to use this type class as a hypothesis to any theorem whose statement
+requires a type to have be both a `Ring` (or `Field` etc.) and a
+`Language.ring.Structure`  -/
 class CompatibleRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R]
     extends Language.ring.Structure R where
   ( funMap_add : ∀ x, funMap addFunc x = x 0 + x 1 )
@@ -128,7 +132,21 @@ class CompatibleRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R]
 attribute [simp] CompatibleRing.funMap_add CompatibleRing.funMap_mul CompatibleRing.funMap_neg
   CompatibleRing.funMap_zero CompatibleRing.funMap_one
 
-@[reducible]
+/-- Given a Type `R` with instances for each of the `Ring` operations, make a
+`Language.ring.Structure R` instance, along with a proof that the operations given
+by the `Language.ring.Structure` are the same as those given by the `Add` or `Mul` etc.
+instances.
+
+This definition can be used when applying a theorem about the model theory of rings
+to a literal ring `R`, by writing `letI := compatibleRingOfRing R`. After this, if,
+for example, `R` is a field, then Lean will be able to find the instance for
+`Theory.field.Model R`, and it will be possible to apply theorems about the model theory
+of fields.
+
+This is a `def` and not an `instance`, because the path
+`Ring` => `Language.ring.Structure` => `Ring` cannot be made to
+commute by definition
+-/
 def compatibleRingOfRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R] :
     CompatibleRing R :=
   { funMap := fun {n} f =>
@@ -145,6 +163,7 @@ def compatibleRingOfRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R] :
     funMap_zero := fun _ => rfl,
     funMap_one := fun _ => rfl }
 
+/-- An isomorphism in the language of rings is a ring isomorphism -/
 def languageEquivEquivRingEquiv {R S : Type*}
     [NonAssocRing R] [NonAssocRing S]
     [CompatibleRing R] [CompatibleRing S] :
@@ -167,18 +186,23 @@ def languageEquivEquivRingEquiv {R S : Type*}
 
 variable (R : Type*) [Language.ring.Structure R]
 
+/-- A def to put an `Add` instance on a type with a `Language.ring.Structure` instance. -/
 @[reducible] def addOfRingStructure : Add R :=
   { add := fun x y => funMap addFunc ![x, y] }
 
+/-- A def to put an `Mul` instance on a type with a `Language.ring.Structure` instance. -/
 @[reducible] def mulOfRingStructure : Mul R :=
   { mul := fun x y => funMap mulFunc ![x, y] }
 
+/-- A def to put an `Neg` instance on a type with a `Language.ring.Structure` instance. -/
 @[reducible] def negOfRingStructure : Neg R :=
   { neg := fun x => funMap negFunc ![x] }
 
+/-- A def to put an `Zero` instance on a type with a `Language.ring.Structure` instance. -/
 @[reducible] def zeroOfRingStructure : Zero R :=
   { zero := funMap zeroFunc ![] }
 
+/-- A def to put an `One` instance on a type with a `Language.ring.Structure` instance. -/
 @[reducible] def oneOfRingStructure : One R :=
   { one := funMap oneFunc ![] }
 
