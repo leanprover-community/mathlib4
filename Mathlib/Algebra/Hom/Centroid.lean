@@ -547,7 +547,7 @@ def starRingOfCommCentroidHom (mul_comm : ∀ f g : CentroidHom α, f * g = g * 
     StarRing (CentroidHom α) :=
 {
   starAddMonoidOfCentroidHom with
-  star_mul := fun f g => by
+  star_mul f g := by
     rw [mul_comm]
     ext
     rw [star_apply, mul_apply, mul_apply, star_apply]
