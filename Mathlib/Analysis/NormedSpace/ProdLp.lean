@@ -359,8 +359,7 @@ def prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
       rcases p.dichotomy with (rfl | h)
       · exact prod_sup_edist_ne_top_aux f g
       · rw [prod_edist_eq_add (zero_lt_one.trans_le h)]
-        refine
-          ENNReal.rpow_ne_top_of_nonneg (by positivity) (ne_of_lt ?_)
+        refine ENNReal.rpow_ne_top_of_nonneg (by positivity) (ne_of_lt ?_)
         simp [ENNReal.add_lt_top, ENNReal.rpow_lt_top_of_nonneg, edist_ne_top] )
     fun f g => by
     rcases p.dichotomy with (rfl | h)
@@ -391,8 +390,7 @@ theorem prod_lipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace
   · simp [edist]
   · have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (zero_lt_one.trans_le h).ne'
     rw [prod_edist_eq_add (zero_lt_one.trans_le h)]
-    simp only [edist, forall_prop_of_true, one_mul, ENNReal.coe_one, ge_iff_le,
-      sup_le_iff]
+    simp only [edist, forall_prop_of_true, one_mul, ENNReal.coe_one, ge_iff_le, sup_le_iff]
     constructor
     · calc
         edist x.fst y.fst ≤ (edist x.fst y.fst ^ p.toReal) ^ (1 / p.toReal) := by
@@ -427,9 +425,8 @@ theorem prod_antilipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricS
         · refine ENNReal.rpow_le_rpow ?_ (le_of_lt pos)
           simp [edist]
       _ = (2 : ℝ≥0) ^ (1 / p.toReal) * edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) := by
-        simp only [← two_mul, ENNReal.mul_rpow_of_nonneg _ _ nonneg,
-          ← ENNReal.rpow_mul, cancel, ENNReal.rpow_one, ← ENNReal.coe_rpow_of_nonneg _ nonneg,
-          coe_ofNat]
+        simp only [← two_mul, ENNReal.mul_rpow_of_nonneg _ _ nonneg, ← ENNReal.rpow_mul, cancel,
+          ENNReal.rpow_one, ← ENNReal.coe_rpow_of_nonneg _ nonneg, coe_ofNat]
 
 theorem prod_aux_uniformity_eq [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     𝓤 (WithLp p (α × β)) = 𝓤[instUniformSpaceProd] := by
@@ -542,19 +539,18 @@ theorem infty_equiv_isometry [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
 /-- Seminormed group instance on the product of two normed groups, using the `L^p`
 norm. -/
 instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] :
-    SeminormedAddCommGroup (WithLp p (α × β)) :=
-  { WithLp.instAddCommGroup _ _ with
-    dist_eq := fun x y => by
-      rcases p.dichotomy with (rfl | h)
-      · simp only [prod_dist_eq_sup, prod_norm_eq_sup, dist_eq_norm]
-        rfl
-      · have : p ≠ ∞ := by
-          intro hp
-          rw [hp, ENNReal.top_toReal] at h
-          linarith
-        simp only [prod_dist_eq_add (zero_lt_one.trans_le h),
-          prod_norm_eq_add (zero_lt_one.trans_le h), dist_eq_norm]
-        rfl }
+    SeminormedAddCommGroup (WithLp p (α × β)) where
+  dist_eq := fun x y => by
+    rcases p.dichotomy with (rfl | h)
+    · simp only [prod_dist_eq_sup, prod_norm_eq_sup, dist_eq_norm]
+      rfl
+    · have : p ≠ ∞ := by
+        intro hp
+        rw [hp, ENNReal.top_toReal] at h
+        linarith
+      simp only [prod_dist_eq_add (zero_lt_one.trans_le h),
+        prod_norm_eq_add (zero_lt_one.trans_le h), dist_eq_norm]
+      rfl
 
 /-- normed group instance on the product of two normed groups, using the `L^p` norm. -/
 instance instProdNormedAddCommGroup [NormedAddCommGroup α] [NormedAddCommGroup β] :
@@ -583,13 +579,12 @@ theorem prod_norm_eq_of_nat (n : ℕ) (h : p = n) (f : WithLp p (α × β)) :
     prod_norm_eq_add this]
 
 theorem prod_norm_eq_of_L2 (x : WithLp 2 (α × β)) : ‖x‖ = sqrt (‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2) := by
-  rw [prod_norm_eq_of_nat 2 (by norm_cast) _] -- Porting note: was `convert`
+  rw [prod_norm_eq_of_nat 2 (by norm_cast) _]
   rw [Real.sqrt_eq_rpow]
   norm_cast
 
 theorem prod_nnnorm_eq_of_L2 (x : WithLp 2 (α × β)) :
     ‖x‖₊ = NNReal.sqrt (‖x.fst‖₊ ^ 2 + ‖x.snd‖₊ ^ 2) :=
-  -- Porting note: was `Subtype.ext`
   NNReal.eq <| by
     push_cast
     exact prod_norm_eq_of_L2 x
@@ -610,7 +605,6 @@ theorem prod_dist_eq_of_L2 (x y : WithLp 2 (α × β)) :
 
 theorem prod_nndist_eq_of_L2 (x y : WithLp 2 (α × β)) :
     nndist x y = NNReal.sqrt (nndist x.fst y.fst ^ 2 + nndist x.snd y.snd ^ 2) :=
-  -- Porting note: was `Subtype.ext`
   NNReal.eq <| by
     push_cast
     exact prod_dist_eq_of_L2 _ _
@@ -630,22 +624,21 @@ variable [SeminormedAddCommGroup α] [NormedSpace 𝕜 α]
 
 /-- The product of two normed spaces is a normed space, with the `L^p` norm. -/
 instance instProdNormedSpace :
-    NormedSpace 𝕜 (WithLp p (α × β)) :=
-  { WithLp.instModule p 𝕜 (α × β) with
-    norm_smul_le := fun c f => by
-      rcases p.dichotomy with (rfl | hp)
-      · letI : Module 𝕜 (WithLp ∞ (α × β)) := Prod.instModule
-        suffices ‖c • f‖₊ = ‖c‖₊ * ‖f‖₊ by exact_mod_cast NNReal.coe_mono this.le
-        simp only [prod_nnnorm_eq_sup, NNReal.mul_sup, ← nnnorm_smul]
-        rfl
-      · have : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (zero_lt_one.trans_le hp).ne'
-        have smul_fst : (c • f).fst = c • f.fst := rfl
-        have smul_snd : (c • f).snd = c • f.snd := rfl
-        simp only [prod_norm_eq_add (zero_lt_one.trans_le hp), norm_smul, Real.mul_rpow,
-          norm_nonneg, smul_fst, smul_snd]
-        rw [← mul_add, mul_rpow (rpow_nonneg_of_nonneg (norm_nonneg _) _),
-          ← rpow_mul (norm_nonneg _), this, Real.rpow_one]
-        positivity }
+    NormedSpace 𝕜 (WithLp p (α × β)) where
+  norm_smul_le := fun c f => by
+    rcases p.dichotomy with (rfl | hp)
+    · letI : Module 𝕜 (WithLp ∞ (α × β)) := Prod.instModule
+      suffices ‖c • f‖₊ = ‖c‖₊ * ‖f‖₊ by exact_mod_cast NNReal.coe_mono this.le
+      simp only [prod_nnnorm_eq_sup, NNReal.mul_sup, ← nnnorm_smul]
+      rfl
+    · have : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (zero_lt_one.trans_le hp).ne'
+      have smul_fst : (c • f).fst = c • f.fst := rfl
+      have smul_snd : (c • f).snd = c • f.snd := rfl
+      simp only [prod_norm_eq_add (zero_lt_one.trans_le hp), norm_smul, Real.mul_rpow,
+        norm_nonneg, smul_fst, smul_snd]
+      rw [← mul_add, mul_rpow (rpow_nonneg_of_nonneg (norm_nonneg _) _),
+        ← rpow_mul (norm_nonneg _), this, Real.rpow_one]
+      positivity
 
 end InstNormedSpace
 
