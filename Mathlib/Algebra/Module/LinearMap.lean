@@ -1246,9 +1246,3 @@ theorem End.intCast_def (z : ℤ) [AddCommGroup N₁] [Module R N₁] :
 #align module.End.int_cast_def Module.End.intCast_def
 
 end Module
-
-/-- `Function.eval` as a linear map. -/
-@[simps!] def Pi.evalₗ (I : Type u)  (f : I → Type v) (R) [Semiring R]
-    [(i : I) → AddCommMonoid (f i)] [(i : I) → Module R (f i)] (i : I) : (∀ i, f i) →ₗ[R] f i where
-  toAddHom:= Pi.evalAddHom _ i
-  map_smul' _ _ := rfl

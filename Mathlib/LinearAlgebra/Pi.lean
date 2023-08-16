@@ -84,6 +84,8 @@ def proj (i : ι) : ((i : ι) → φ i) →ₗ[R] φ i where
   map_smul' _ _ := rfl
 #align linear_map.proj LinearMap.proj
 
+alias LinearMap.proj ← _root_.Pi.evalₗ
+
 @[simp]
 theorem coe_proj (i : ι) : ⇑(proj i : ((i : ι) → φ i) →ₗ[R] φ i) = Function.eval i :=
   rfl
