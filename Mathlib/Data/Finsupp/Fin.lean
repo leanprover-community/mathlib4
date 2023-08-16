@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ivan Sadofschi Costa
 -/
 import Mathlib.Data.Finsupp.Defs
+import Mathlib.Algebra.BigOperators.Finsupp
+import Mathlib.Algebra.BigOperators.Fin
 
 #align_import data.finsupp.fin from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -91,5 +93,14 @@ theorem cons_ne_zero_iff : cons y s ≠ 0 ↔ y ≠ 0 ∨ s ≠ 0 := by
   refine' imp_iff_not_or.1 fun h' c => h _
   rw [h', c, Finsupp.cons_zero_zero]
 #align finsupp.cons_ne_zero_iff Finsupp.cons_ne_zero_iff
+
+lemma Finsupp.sum_cons (n : ℕ) (σ: Fin n →₀ ℕ) {i : ℕ} :
+    (Finsupp.sum (Finsupp.cons i σ) fun _ e ↦ e) = i + (Finsupp.sum σ (fun _ e ↦ e)) := by
+  convert Fin.sum_cons i σ
+  · rw [Finsupp.sum_fintype]
+    congr
+    simp
+  · rw [Finsupp.sum_fintype]
+    simp
 
 end Finsupp
