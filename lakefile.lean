@@ -58,11 +58,26 @@ lean_lib Cache where
 lean_exe cache where
   root := `Cache.Main
 
+partial def pipeLines (i o : IO.FS.Stream) : BaseIO Unit := do
+  if let .ok ln ← i.getLine.toBaseIO then
+    unless ln.isEmpty do
+      discard <| o.putStr ln |>.toBaseIO
+      pipeLines i o
+
 /-- A target which performs `lake exe cache get`. -/
 target cacheGet : Unit := do
   let cache ← cache.fetch
   cache.bindSync fun fname _ => do
-  proc {cmd := fname.toString, args := #["get"], env := ← getAugmentedEnv}
+  -- Pipe output directly to `stderr` so progress is visible and no `stdout:` prefix is produced.
+  let child ← IO.Process.spawn {
+    cmd := fname.toString, args := #["get"], env := ← getAugmentedEnv,
+    stdout := .piped, stderr := .inherit
+  }
+  let outTask ← pipeLines (.ofHandle child.stdout) (← IO.getStderr) |>.asTask .dedicated
+  let exitCode ← child.wait
+  IO.wait outTask
+  if exitCode ≠ 0 then
+    error s!"cache command '{fname.toString}' exited with code {exitCode}"
   return ((), .nil)
 
 lean_lib MathlibExtras where
