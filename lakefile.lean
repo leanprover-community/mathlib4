@@ -28,11 +28,13 @@ package mathlib where
 lean_lib Mathlib where
   moreLeanArgs := moreLeanArgs
   weakLeanArgs := weakLeanArgs
+  extraDepTargets := #[`cacheGet]
 
 @[default_target]
 lean_exe runLinter where
   root := `scripts.runLinter
   supportInterpreter := true
+  extraDepTargets := #[`cacheGet]
 
 @[default_target]
 lean_exe checkYaml where
@@ -55,6 +57,13 @@ lean_lib Cache where
 
 lean_exe cache where
   root := `Cache.Main
+
+/-- A target which performs `lake exe cache get`. -/
+target cacheGet : Unit := do
+  let cache ← cache.fetch
+  cache.bindSync fun fname _ => do
+  proc {cmd := fname.toString, args := #["get"], env := ← getAugmentedEnv}
+  return ((), .nil)
 
 lean_lib MathlibExtras where
   roots := #[`MathlibExtras]
