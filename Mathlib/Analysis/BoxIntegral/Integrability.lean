@@ -112,6 +112,8 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   change μ.restrict I {x | f x ≠ 0} = 0 at hf
   set N : (ι → ℝ) → ℕ := fun x => ⌈‖f x‖⌉₊
   have N0 : ∀ {x}, N x = 0 ↔ f x = 0 := by simp
+  have : IsLocallyFiniteMeasure (Measure.restrict μ I) :=
+    IsFiniteMeasure.toIsLocallyFiniteMeasure (Measure.restrict μ I)
   have : ∀ n, ∃ U, N ⁻¹' {n} ⊆ U ∧ IsOpen U ∧ μ.restrict I U < δ n / n := by
     refine' fun n => (N ⁻¹' {n}).exists_isOpen_lt_of_lt _ _
     cases' n with n
