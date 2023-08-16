@@ -442,8 +442,7 @@ instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α where
 definitions are given in terms of semirings, but many applications use rings or fields. We increase
 a little bit its priority above 100 to try it quickly, but remaining below the default 1000 so that
 more specific instances are tried first. -/
-instance (priority := 200) : Semiring α :=
-  { ‹Ring α› with }
+instance (priority := 200) : Semiring α := Ring.toSemiring
 #align ring.to_semiring Ring.toSemiring
 
 end Ring
