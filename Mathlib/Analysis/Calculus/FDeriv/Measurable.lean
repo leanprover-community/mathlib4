@@ -841,6 +841,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 namespace FDerivMeasurableAux
 
+
 lemma isOpen_A_uncurry {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[𝕜] F) :
     IsOpen {p : α × E | p.2 ∈ A (f p.1) L r s} := by
   simp only [A, half_lt_self_iff, not_lt, mem_Ioc, mem_ball, map_sub, mem_setOf_eq]
