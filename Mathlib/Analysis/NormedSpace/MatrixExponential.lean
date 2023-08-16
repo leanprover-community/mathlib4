@@ -158,7 +158,7 @@ variable [IsROrC 𝕂] [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [
   [∀ i, DecidableEq (n' i)] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 nonrec theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
-    exp 𝕂 (A + B) = exp 𝕂 A ⬝ exp 𝕂 B := by
+    exp 𝕂 (A + B) = exp 𝕂 A * exp 𝕂 B := by
   letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
@@ -189,16 +189,18 @@ nonrec theorem isUnit_exp (A : Matrix m m 𝔸) : IsUnit (exp 𝕂 A) := by
   exact isUnit_exp _ A
 #align matrix.is_unit_exp Matrix.isUnit_exp
 
+-- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
 nonrec theorem exp_units_conj (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
-    exp 𝕂 (↑U ⬝ A ⬝ ↑U⁻¹ : Matrix m m 𝔸) = ↑U ⬝ exp 𝕂 A ⬝ ↑U⁻¹ := by
+    exp 𝕂 (U.val * A * (U⁻¹).val) = U.val * exp 𝕂 A * (U⁻¹).val := by
   letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
   exact exp_units_conj _ U A
 #align matrix.exp_units_conj Matrix.exp_units_conj
 
+-- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
 theorem exp_units_conj' (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
-    exp 𝕂 (↑U⁻¹ ⬝ A ⬝ U : Matrix m m 𝔸) = ↑U⁻¹ ⬝ exp 𝕂 A ⬝ U :=
+    exp 𝕂 ((U⁻¹).val * A * U.val) = (U⁻¹).val * exp 𝕂 A * U.val :=
   exp_units_conj 𝕂 U⁻¹ A
 #align matrix.exp_units_conj' Matrix.exp_units_conj'
 
@@ -225,13 +227,13 @@ theorem exp_zsmul (z : ℤ) (A : Matrix m m 𝔸) : exp 𝕂 (z • A) = exp �
 #align matrix.exp_zsmul Matrix.exp_zsmul
 
 theorem exp_conj (U : Matrix m m 𝔸) (A : Matrix m m 𝔸) (hy : IsUnit U) :
-    exp 𝕂 (U ⬝ A ⬝ U⁻¹) = U ⬝ exp 𝕂 A ⬝ U⁻¹ :=
+    exp 𝕂 (U * A * U⁻¹) = U * exp 𝕂 A * U⁻¹ :=
   let ⟨u, hu⟩ := hy
   hu ▸ by simpa only [Matrix.coe_units_inv] using exp_units_conj 𝕂 u A
 #align matrix.exp_conj Matrix.exp_conj
 
 theorem exp_conj' (U : Matrix m m 𝔸) (A : Matrix m m 𝔸) (hy : IsUnit U) :
-    exp 𝕂 (U⁻¹ ⬝ A ⬝ U) = U⁻¹ ⬝ exp 𝕂 A ⬝ U :=
+    exp 𝕂 (U⁻¹ * A * U) = U⁻¹ * exp 𝕂 A * U :=
   let ⟨u, hu⟩ := hy
   hu ▸ by simpa only [Matrix.coe_units_inv] using exp_units_conj' 𝕂 u A
 #align matrix.exp_conj' Matrix.exp_conj'
