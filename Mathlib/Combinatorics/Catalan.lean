@@ -147,7 +147,7 @@ norm_num [catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
 #align catalan_two catalan_two
 
 theorem catalan_three : catalan 3 = 5 := by
-norm_num [catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
+  norm_num [catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
 #align catalan_three catalan_three
 
 namespace Tree
