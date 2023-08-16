@@ -1052,7 +1052,9 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
             (∫⁻ t, Option.elim j (∫⋯∫_s, f ∂μ) (fun k ↦ ∫⋯∫_insert k s, f ∂μ) (update x i t) ∂(μ i))
               ^ Option.elim j (m * p) (fun _ ↦ p)) := by
               gcongr
-              refine lintegral_prod_norm_pow_le _ ?_ ?_ -- Hölder's inequality
+              refine ENNReal.lintegral_prod_norm_pow_le _ ?_ ?_ ?_ ?_ -- Hölder's inequality
+              · sorry
+              · sorry
               · clear_value p
                 simp_rw [sum_insertNone, compl_insert, Option.elim, sum_const, nsmul_eq_mul]
                 exact hp
