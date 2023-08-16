@@ -587,6 +587,8 @@ open MonoidalCategory
 instance : MonoidalCategory (GradedObject ℕ V) where
   tensorObj := tensorObj
   tensorHom := tensorHom
+  whiskerLeft := fun X _ _ f ↦ tensorHom (𝟙 X) f
+  whiskerRight := fun f Y ↦ tensorHom f (𝟙 Y)
   tensorUnit' := tensorUnit
   associator := associator
   leftUnitor := leftUnitor
