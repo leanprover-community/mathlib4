@@ -137,6 +137,9 @@ theorem modelField_of_modelACF (p : ℕ) (K : Type*) [Language.ring.Structure K]
     [h : (Theory.ACF p).Model K] : Theory.field.Model K :=
   Theory.Model.mono h (Set.subset_union_of_subset_left (Set.subset_union_left _ _) _)
 
+/-- A model for the Theory of algebraically closed fields is a Field. After introducing
+this as a local instance on a particular Type, you should usually also introduce
+`compatibleRingOfModelField` and `isAlgClosed_of_model_ACF` -/
 @[reducible]
 noncomputable def fieldOfModelACF (p : ℕ) (K : Type*)
     [Language.ring.Structure K]
@@ -190,17 +193,14 @@ theorem ACF_isComplete {p : ℕ} (hp : p.Prime ∨ p = 0) :
   · exact ACF_isSatisfiable hp
   · rintro ⟨M⟩
     letI := fieldOfModelACF p M
-    haveI := modelField_of_modelACF p M
     letI := compatibleRingOfModelField M
     letI := isAlgClosed_of_model_ACF p M
     infer_instance
   · rintro ⟨M⟩ ⟨N⟩ hM hN
     letI := fieldOfModelACF p M
-    haveI := modelField_of_modelACF p M
     letI := compatibleRingOfModelField M
     letI := isAlgClosed_of_model_ACF p M
     letI := fieldOfModelACF p N
-    haveI := modelField_of_modelACF p N
     letI := compatibleRingOfModelField N
     letI := isAlgClosed_of_model_ACF p N
     constructor
