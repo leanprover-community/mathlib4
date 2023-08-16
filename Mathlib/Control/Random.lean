@@ -99,6 +99,20 @@ instance : Random Bool where
 instance {α : Type u} [Random α] : Random (ULift.{v} α) where
   random {g} := ULiftable.up (random : RandG g α)
 
+instance {α : Type u} {β : Type v} [Random α] [Random β] :
+    Random (α × β) where
+  random {g} := do
+    let ⟨a⟩ ← (ULiftable.up (random : RandG g α) : RandG g (ULift.{v} _))
+    let ⟨b⟩ ← (ULiftable.up (random : RandG g β) : RandG g (ULift.{u} _))
+    return (a, b)
+
+instance {α : Type u} {β : α → Type v} [Random α] [∀ a, Random (β a)] :
+    Random (Σ a, β a) where
+  random {g} := do
+    let ⟨a⟩ ← (ULiftable.up (random : RandG g α) : RandG g (ULift.{v} _))
+    let ⟨b⟩ ← (ULiftable.up (random : RandG g (β a)) : RandG g (ULift.{u} _))
+    return ⟨a, b⟩
+
 instance : BoundedRandom Nat where
   randomR := λ lo hi h _ => do
     let z ← rand (Fin (hi - lo).succ)
@@ -124,9 +138,16 @@ instance {n : Nat} : BoundedRandom (Fin n) where
 
 instance {α : Type u} [Preorder α] [BoundedRandom α] : BoundedRandom (ULift.{v} α) where
   randomR {g} lo hi h := do
-    let ⟨v⟩
-      ← (ULiftable.up (BoundedRandom.randomR lo.down hi.down h : RandG g _) : RandG g (ULift.{v} _))
+    let ⟨v⟩ ← (ULiftable.up (randBound _ lo.down hi.down h : RandG g _) : RandG g (ULift.{v} _))
     pure ⟨ULift.up v.val, v.prop⟩
+
+instance {α : Type u} {β : Type v}
+    [PartialOrder α] [PartialOrder β] [BoundedRandom α] [BoundedRandom β] :
+    BoundedRandom (α × β) where
+  randomR {g} lo hi h := do
+    let ⟨a⟩ ← (ULiftable.up (randBound _ lo.1 hi.1 h.1 : RandG g _) : RandG g (ULift.{v} _))
+    let ⟨b⟩ ← (ULiftable.up (randBound _ lo.2 hi.2 h.2 : RandG g _) : RandG g (ULift.{u} _))
+    return ⟨(a, b), ⟨a.prop.1, b.prop.1⟩, ⟨a.prop.2, b.prop.2⟩⟩
 
 end Random
 
