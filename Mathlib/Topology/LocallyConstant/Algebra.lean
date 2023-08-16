@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Pi
+import Mathlib.LinearAlgebra.Pi
 import Mathlib.Topology.LocallyConstant.Basic
 
 #align_import topology.locally_constant.algebra from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
@@ -69,6 +70,15 @@ theorem mul_apply [Mul Y] (f g : LocallyConstant X Y) (x : X) : (f * g) x = f x 
 @[to_additive]
 instance [MulOneClass Y] : MulOneClass (LocallyConstant X Y) :=
   Function.Injective.mulOneClass FunLike.coe FunLike.coe_injective' rfl fun _ _ => rfl
+
+/-- `FunLike.coe` as a `MonoidHom`. -/
+@[to_additive (attr := simps) "`FunLike.coe` as an `AddMonoidHom`."]
+def coeFnMonoidHom [MulOneClass Y] : LocallyConstant X Y →* X → Y where
+  toFun := FunLike.coe
+  map_one' := rfl
+  map_mul' _ _ := rfl
+#align locally_constant.coe_fn_monoid_hom LocallyConstant.coeFnMonoidHom
+#align locally_constant.coe_fn_add_monoid_hom LocallyConstant.coeFnAddMonoidHom
 
 /-- The constant-function embedding, as a multiplicative monoid hom. -/
 @[to_additive (attr := simps) "The constant-function embedding, as an additive monoid hom."]
@@ -253,6 +263,13 @@ variable {R : Type*}
 instance [Monoid R] [MulAction R Y] : MulAction R (LocallyConstant X Y) :=
   Function.Injective.mulAction _ coe_injective fun _ _ => rfl
 
+instance [Monoid R] [AddMonoid Y] [DistribMulAction R Y] :
+    DistribMulAction R (LocallyConstant X Y) :=
+  Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective fun _ _ => rfl
+
+instance [Semiring R] [AddCommMonoid Y] [Module R Y] : Module R (LocallyConstant X Y) :=
+  Function.Injective.module R coeFnAddMonoidHom coe_injective fun _ _ => rfl
+
 section Algebra
 
 variable [CommSemiring R] [Semiring Y] [Algebra R Y]
@@ -276,22 +293,6 @@ theorem coe_algebraMap (r : R) : ⇑(algebraMap R (LocallyConstant X Y) r) = alg
 end Algebra
 
 section coeFn
-
-/-- `FunLike.coe` as a `MonoidHom`. -/
-@[to_additive (attr := simps) "`FunLike.coe` as an `AddMonoidHom`."]
-def coeFnMonoidHom [MulOneClass Y] : LocallyConstant X Y →* X → Y where
-  toFun := FunLike.coe
-  map_one' := rfl
-  map_mul' _ _ := rfl
-#align locally_constant.coe_fn_monoid_hom LocallyConstant.coeFnMonoidHom
-#align locally_constant.coe_fn_add_monoid_hom LocallyConstant.coeFnAddMonoidHom
-
-instance [Monoid R] [AddMonoid Y] [DistribMulAction R Y] :
-    DistribMulAction R (LocallyConstant X Y) :=
-  Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective fun _ _ => rfl
-
-instance [Semiring R] [AddCommMonoid Y] [Module R Y] : Module R (LocallyConstant X Y) :=
-  Function.Injective.module R coeFnAddMonoidHom coe_injective fun _ _ => rfl
 
 /-- `FunLike.coe` as a `RingHom`. -/
 @[simps!] def coeFnRingHom [Semiring Y] : LocallyConstant X Y →+* X → Y where
@@ -322,7 +323,7 @@ def evalMonoidHom [MulOneClass Y] (x : X) : LocallyConstant X Y →* Y :=
 /-- Evaluation as a linear map -/
 @[simps!] def evalₗ (R : Type*) [Semiring R] [AddCommMonoid Y]
     [Module R Y] (x : X) : LocallyConstant X Y →ₗ[R] Y :=
-  (Pi.evalₗ _ _ _ x).comp (coeFnₗ R)
+  (LinearMap.proj x).comp (coeFnₗ R)
 
 /-- Evaluation as a `RingHom` -/
 @[simps!] def evalRingHom [Semiring Y] (x : X) : LocallyConstant X Y →+* Y :=
