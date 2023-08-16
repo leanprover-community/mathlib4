@@ -300,6 +300,11 @@ theorem prod_neg_index [AddGroup G] [CommMonoid M] {g : α →₀ G} {h : α →
 
 end Finsupp
 
+-- theorem Fin.sum_cons' [AddCommMonoid β] {n : ℕ} (x : β) (f : Fin n → β) :
+--     (∑ i : Fin n.succ, (cons x f : Fin n.succ → β) i) = x + ∑ i : Fin n, f i := by
+--   simp_rw [prod_univ_succ, cons_zero, cons_succ]
+
+
 namespace Finsupp
 
 theorem finset_sum_apply [AddCommMonoid N] (S : Finset ι) (f : ι → α →₀ N) (a : α) :
@@ -623,6 +628,13 @@ lemma sum_cons [AddCommMonoid M] (n : ℕ) (σ : Fin n →₀ M) (i : M) :
     (sum (cons i σ) fun _ e ↦ e) = i + sum σ (fun _ e ↦ e) := by
   rw [sum_fintype _ _ (fun _ => rfl), sum_fintype _ _ (fun _ => rfl)]
   exact Fin.sum_cons i σ
+
+lemma sum_cons' [AddCommMonoid M] [AddCommMonoid N] (n : ℕ) (σ : Fin n →₀ M) (i : M)
+    (f : Fin (n+1) -> M -> N) (h : ∀ x, f x 0 = 0) :
+    (sum (Finsupp.cons i σ) f) = f 0 i + sum σ (Fin.tail f) := by
+  rw [sum_fintype _ _ (fun _ => by apply h), sum_fintype _ _ (fun _ => by apply h)]
+  simp_rw [Fin.sum_univ_succ, cons_zero, cons_succ]
+  congr
 
 end Finsupp
 
