@@ -25,6 +25,8 @@ For now we just do the special case of objects graded by `ℕ`.
 We may need to generalize API around `antidiagonal` in order to generalize.
 -/
 
+set_option autoImplicit true
+
 universe v u
 
 noncomputable section
