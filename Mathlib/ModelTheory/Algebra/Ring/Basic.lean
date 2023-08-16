@@ -9,6 +9,7 @@ import Mathlib.ModelTheory.Semantics
 import Mathlib.Algebra.Ring.Equiv
 
 /-!
+
 # First Order Language of Rings
 
 This file defines the first order language of rings, as well as defining instance of `Add`, `Mul`,
@@ -29,7 +30,13 @@ are two different ways to say that `R` is a `Ring`. We can say `Ring R` or
 `Language.ring.Structure R` and `Theory.ring.Model R` (The theory of rings is not implemented yet).
 
 The recommended way to use this library is to use the hypotheses `CompatibleRing R` and `Ring R`
-on any theorem that mentions
+on any theorem that requires both a `Ring` instance and a `Language.ring.Structure` instance
+in order to state the theorem. To apply such a theorem to a ring `R` with a `Ring` instance,
+use the tactic `letI := compatibleRingOfRing R`. To apply the theorem to `K`
+a `Language.ring.Structure K` instance and for example an instance of `Theory.field.Model K`,
+you must add local instances with definitions like `ModelTheory.Field.fieldOfModelField K`
+(in `Mathlib/ModelTheory/Algebra/Field/Basic.lean`), depending on the Theory.
+
 -/
 
 
