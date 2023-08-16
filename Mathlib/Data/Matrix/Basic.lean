@@ -2161,7 +2161,6 @@ theorem conjTranspose_one [DecidableEq n] [Semiring α] [StarRing α] : (1 : Mat
   simp [conjTranspose]
 #align matrix.conj_transpose_one Matrix.conjTranspose_one
 
-
 @[simp]
 theorem conjTranspose_eq_one [DecidableEq n] [Semiring α] [StarRing α] {M : Matrix n n α} :
     Mᴴ = 1 ↔ M = 1 :=
