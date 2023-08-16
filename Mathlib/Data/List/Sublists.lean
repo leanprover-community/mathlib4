@@ -133,7 +133,7 @@ theorem sublistsAux_eq_bind :
   List.reverseRecOn r
     (by simp [sublistsAux])
     (fun r l ih => by
-      rw [bind_append, ← ih, bind_singleton, sublistsAux, foldl_append]
+      rw [append_bind, ← ih, bind_singleton, sublistsAux, foldl_append]
       simp [sublistsAux])
 
 theorem sublists_eq_sublistsAux (l : List α) :
