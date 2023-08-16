@@ -227,10 +227,10 @@ instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M�
 instance instFunLike {σ : R →+* S} : FunLike (M →ₛₗ[σ] M₃) M (λ _ ↦ M₃) :=
   { AddHomClass.toFunLike with }
 
-/-- The `DistribMulActionHom` underlying a `LinearMap`. -/
-def toDistribMulActionHom (f : M →ₗ[R] M₂) : DistribMulActionHom R M M₂ :=
+/-- The `DistribMulActionSemiHom` underlying a `LinearMap`. -/
+def toDistribMulActionSemiHom (f : M →ₛₗ[σ] M₃) : DistribMulActionSemiHom σ M M₃ :=
   { f with map_zero' := show f 0 = 0 from map_zero f }
-#align linear_map.to_distrib_mul_action_hom LinearMap.toDistribMulActionHom
+#align linear_map.to_distrib_mul_action_hom LinearMap.toDistribMulActionSemiHom
 
 @[simp]
 theorem coe_toAddHom (f : M →ₛₗ[σ] M₃) : ⇑f.toAddHom = f := rfl
@@ -277,7 +277,7 @@ theorem coe_addHom_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
 
 /-- Identity map as a `LinearMap` -/
 def id : M →ₗ[R] M :=
-  { DistribMulActionHom.id R with toFun := _root_.id }
+  { DistribMulActionSemiHom.id R with toFun := _root_.id }
 #align linear_map.id LinearMap.id
 
 theorem id_apply (x : M) : @id R M _ _ _ x = x :=
@@ -661,17 +661,19 @@ def compHom.toLinearMap {R S : Type*} [Semiring R] [Semiring S] (g : R →+* S) 
 
 end Module
 
-namespace DistribMulActionHom
+namespace DistribMulActionSemiHom
 
-variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R M₂]
+variable [AddCommMonoid M] [AddCommMonoid M₂]
+variable [Semiring R] [Module R M] [Semiring S] [Module S M₂]
+variable {σ : R →+* S}
 
-/-- A `DistribMulActionHom` between two modules is a linear map. -/
+/-- A `DistribMulActionSemiHom` between two modules is a linear map. -/
 @[coe]
-def toLinearMap (fₗ : M →+[R] M₂) : M →ₗ[R] M₂ :=
+def toLinearMap (fₗ : M →ₑ+[σ] M₂) : M →ₛₗ[σ] M₂ :=
   { fₗ with }
-#align distrib_mul_action_hom.to_linear_map DistribMulActionHom.toLinearMap
+#align distrib_mul_action_hom.to_linear_map DistribMulActionSemiHom.toLinearMap
 
-instance : Coe (M →+[R] M₂) (M →ₗ[R] M₂) :=
+instance : Coe (M →ₑ+[σ] M₂) (M →ₛₗ[σ] M₂) :=
   ⟨toLinearMap⟩
 
 -- Porting note: because coercions get unfolded, there is no need for this rewrite
@@ -680,17 +682,17 @@ instance : Coe (M →+[R] M₂) (M →ₗ[R] M₂) :=
 -- Porting note: removed @[norm_cast] attribute due to error:
 -- norm_cast: badly shaped lemma, rhs can't start with coe
 @[simp]
-theorem coe_toLinearMap (f : M →+[R] M₂) : ((f : M →ₗ[R] M₂) : M → M₂) = f :=
+theorem coe_toLinearMap (f : M →ₑ+[σ] M₂) : ((f : M →ₑ+[σ] M₂) : M → M₂) = f :=
   rfl
-#align distrib_mul_action_hom.coe_to_linear_map DistribMulActionHom.coe_toLinearMap
+#align distrib_mul_action_hom.coe_to_linear_map DistribMulActionSemiHom.coe_toLinearMap
 
-theorem toLinearMap_injective {f g : M →+[R] M₂} (h : (f : M →ₗ[R] M₂) = (g : M →ₗ[R] M₂)) :
+theorem toLinearMap_injective {f g : M →ₑ+[σ] M₂} (h : (f : M →ₛₗ[σ] M₂) = (g : M →ₛₗ[σ] M₂)) :
     f = g := by
   ext m
   exact LinearMap.congr_fun h m
-#align distrib_mul_action_hom.to_linear_map_injective DistribMulActionHom.toLinearMap_injective
+#align distrib_mul_action_hom.to_linear_map_injective DistribMulActionSemiHom.toLinearMap_injective
 
-end DistribMulActionHom
+end DistribMulActionSemiHom
 
 namespace IsLinearMap
 
