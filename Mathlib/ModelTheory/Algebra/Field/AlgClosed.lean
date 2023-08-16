@@ -10,6 +10,32 @@ import Mathlib.FieldTheory.IsAlgClosed.Classification
 import Mathlib.ModelTheory.Satisfiability
 import Mathlib.Data.Nat.PrimeFin
 
+/-!
+
+# The First Order Theory of Algebraically Closed Fields
+
+This file defines the theory of algebraically closed fields of characteristic `p`, as well
+as proving completeness of the theory and the Lefschetz Principle.
+
+## Main definitions
+
+* `FirstOrder.Language.Theory.ACF p` : the theory of algebraically closed fields of characteristic
+`p` as a theory over the language of rings.
+* `FirstOrder.Field.ACF_isComplete` : the theory of algebraically closed fields of characteristic
+`p` is complete whenever `p` is prime or zero.
+* `FirstOrder.Field.ACF0_realize_iff_infinite_ACF_prime_realize` : the Lefschetz principle.
+
+## Implementation details
+
+To apply a theorem about the model theory of algebraically closed fields to a specific
+algebraically closed field `K` which does not have a `Language.ring.Structure` instance,
+you must introduce the local instance `compatibleRingOfRing K`. Theorems whose statement requires
+both a `Language.ring.Structure` instance and a `Field` instance will all be stated with the
+assumption `Field K`, `CharP K p`, `IsAlgClosed K` and `CompatibleRing K` and there are instances
+defined saying that these assumption imply `Theory.field.Model K` and `(Theory.ACF p).Model K`
+
+-/
+
 variable {K : Type*}
 
 namespace FirstOrder
@@ -18,12 +44,16 @@ namespace Field
 
 open Ring FreeCommRing BigOperators Polynomial Language
 
+/-- A generic monic polynomial of degree `n` as an element of the
+free commutative ring in `n+1` variables, with a variable for each
+of the `n` non-leading coefficients of the polynomial and one variable (`Fin.last n`)
+for `X`.  -/
 def genericMonicPoly (n : ℕ) : FreeCommRing (Fin (n + 1)) :=
   of (Fin.last _) ^ n + ∑ i : Fin n, of i.castSucc * of (Fin.last _) ^ (i : ℕ)
 
-noncomputable def monicPolyEquivFin {R : Type*} [CommRing R]
-    [Nontrivial R] (n : ℕ) :
-    { p : R[X] // p.Monic ∧ p.natDegree = n } ≃ (Fin n → R) :=
+/-- Monic polynomials of degree `n` over `K` are equivalent to functions `Fin n → K`  -/
+noncomputable def monicPolyEquivFin [CommRing K] [Nontrivial K] (n : ℕ) :
+    { p : K[X] // p.Monic ∧ p.natDegree = n } ≃ (Fin n → K) :=
   { toFun := fun p i => p.1.coeff i
     invFun := fun v =>
       let p := Polynomial.ofFinsupp <|
@@ -63,8 +93,7 @@ noncomputable def monicPolyEquivFin {R : Type*} [CommRing R]
         exact coeff_eq_zero_of_natDegree_lt (p.2.2.symm ▸ h)
     right_inv := fun _ => by simp [Finsupp.ofSupportFinite] }
 
-theorem lift_genericMonicPoly {R : Type*} [CommRing R] [DecidableEq R] [Nontrivial R]
-    {n : ℕ} (v : Fin (n+1) → R) :
+theorem lift_genericMonicPoly [CommRing K] [Nontrivial K] {n : ℕ} (v : Fin (n+1) → K) :
     FreeCommRing.lift v (genericMonicPoly n) =
     ((monicPolyEquivFin n).symm (v ∘ Fin.castSucc)).1.eval (v (Fin.last _)) := by
   let p := (monicPolyEquivFin n).symm (v ∘ Fin.castSucc)
@@ -73,6 +102,7 @@ theorem lift_genericMonicPoly {R : Type*} [CommRing R] [DecidableEq R] [Nontrivi
   simp [monicPolyEquivFin, Finset.sum_range_succ, add_comm, Finsupp.ofSupportFinite,
     Finset.sum_range, Fin.castSucc, Fin.castAdd, Fin.castLE]
 
+/-- A sentence saying every monic polynomial of degree `n` has a root. -/
 noncomputable def genericMonicPolyHasRoot (n : ℕ) : Language.ring.Sentence :=
   (∃' ((termOfFreeCommRing (genericMonicPoly n)).relabel Sum.inr =' 0)).alls
 
@@ -83,14 +113,16 @@ theorem realize_genericMonicPolyHasRoot [Field K] [CompatibleRing K] (n : ℕ) :
   rw [Equiv.forall_congr_left' (monicPolyEquivFin n)]
   simp [Sentence.Realize, genericMonicPolyHasRoot, Term.realize, lift_genericMonicPoly]
 
+/-- The theory of algebraically closed fields of characteristic `p` as a theory over
+the language of rings -/
 def _root_.FirstOrder.Language.Theory.ACF (p : ℕ) : Theory Language.ring :=
   Theory.fieldOfChar p ∪ genericMonicPolyHasRoot '' {n | 0 < n}
 
-instance (K : Type*) [Language.ring.Structure K] (p : ℕ) [h : (Theory.ACF p).Model K] :
+instance [Language.ring.Structure K] (p : ℕ) [h : (Theory.ACF p).Model K] :
     (Theory.fieldOfChar p).Model K :=
   Theory.Model.mono h (Set.subset_union_left _ _)
 
-instance {K : Type*} [Field K] [CompatibleRing K] {p : ℕ} [CharP K p] [IsAlgClosed K] :
+instance [Field K] [CompatibleRing K] {p : ℕ} [CharP K p] [IsAlgClosed K] :
     (Theory.ACF p).Model K := by
   refine Theory.model_union_iff.2 ⟨inferInstance, ?_⟩
   simp only [Theory.model_iff, Set.mem_image, Set.mem_singleton_iff,
@@ -126,38 +158,36 @@ theorem isAlgClosed_of_model_ACF (p : ℕ) (K : Type*)
   rw [realize_genericMonicPolyHasRoot] at this
   exact this ⟨_, hpm, rfl⟩
 
-set_option synthInstance.maxHeartbeats 100000 in
-theorem ACF0_isSatisfiable : (Theory.ACF 0).IsSatisfiable := by
-  letI := compatibleRingOfRing (AlgebraicClosure ℚ)
-  haveI : CharP (AlgebraicClosure ℚ) 0 :=
-    charP_of_injective_algebraMap
-      (RingHom.injective (algebraMap ℚ (AlgebraicClosure ℚ))) 0
-  exact ⟨⟨AlgebraicClosure ℚ⟩⟩
-
-theorem ACF0_isSatisfiable_of_prime {p : ℕ} (hp : p.Prime) :
-    (Theory.ACF p).IsSatisfiable := by
-  haveI : Fact p.Prime := ⟨hp⟩
-  letI := compatibleRingOfRing (AlgebraicClosure (ZMod p))
-  haveI : CharP (AlgebraicClosure (ZMod p)) p :=
-    charP_of_injective_algebraMap
-      (RingHom.injective (algebraMap (ZMod p) (AlgebraicClosure (ZMod p)))) p
-  exact ⟨⟨AlgebraicClosure (ZMod p)⟩⟩
-
-theorem ACF_isSatisfiable_of_prime_or_zero {p : ℕ} (hp : p.Prime ∨ p = 0) :
+/-Note this is caused by `AlgebraicClosure ℚ`. We don't need to increase heartbeats for
+`AlgebraicClosure (ZMod p)` for some reason -/
+set_option synthInstance.maxHeartbeats 50000 in
+theorem ACF_isSatisfiable {p : ℕ} (hp : p.Prime ∨ p = 0) :
     (Theory.ACF p).IsSatisfiable := by
   cases hp with
-  | inl hp => exact ACF0_isSatisfiable_of_prime hp
-  | inr hp => exact hp ▸ ACF0_isSatisfiable
+  | inl hp =>
+    haveI : Fact p.Prime := ⟨hp⟩
+    letI := compatibleRingOfRing (AlgebraicClosure (ZMod p))
+    haveI : CharP (AlgebraicClosure (ZMod p)) p :=
+      charP_of_injective_algebraMap
+        (RingHom.injective (algebraMap (ZMod p) (AlgebraicClosure (ZMod p)))) p
+    exact ⟨⟨AlgebraicClosure (ZMod p)⟩⟩
+  | inr hp =>
+    subst hp
+    letI := compatibleRingOfRing (AlgebraicClosure ℚ)
+    haveI : CharP (AlgebraicClosure ℚ) 0 :=
+    charP_of_injective_algebraMap
+      (RingHom.injective (algebraMap ℚ (AlgebraicClosure ℚ))) 0
+    exact ⟨⟨AlgebraicClosure ℚ⟩⟩
 
 open Cardinal
 
-theorem ACF_isComplete_of_prime_or_zero {p : ℕ} (hp : p.Prime ∨ p = 0) :
+theorem ACF_isComplete {p : ℕ} (hp : p.Prime ∨ p = 0) :
     (Theory.ACF p).IsComplete := by
   apply Categorical.isComplete.{0, 0, 0} (Order.succ ℵ₀) _ _
     (Order.le_succ ℵ₀)
   · simp only [card_ring, lift_id']
     exact le_trans (le_of_lt (lt_aleph0_of_finite _)) (Order.le_succ _)
-  · exact ACF_isSatisfiable_of_prime_or_zero hp
+  · exact ACF_isSatisfiable hp
   · rintro ⟨M⟩
     letI := fieldOfModelACF p M
     haveI := modelField_of_modelACF p M
@@ -183,7 +213,7 @@ theorem ACF_isComplete_of_prime_or_zero {p : ℕ} (hp : p.Prime ∨ p = 0) :
 theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.ring.Sentence)
     (hφ : Set.Infinite { p : Nat.Primes | (Theory.ACF p) ⊨ᵇ φ }) :
     Theory.ACF 0 ⊨ᵇ φ := by
-  rw [← @not_not (_ ⊨ᵇ _), ← (ACF_isComplete_of_prime_or_zero (Or.inr rfl)).models_not_iff,
+  rw [← @not_not (_ ⊨ᵇ _), ← (ACF_isComplete (Or.inr rfl)).models_not_iff,
     Theory.models_iff_finset_models]
   push_neg
   intro T0 hT0
@@ -223,7 +253,7 @@ theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.ring.Sentence)
     fun ψ hψ => not_not.1 (mt (hs p ψ hψ) hps)
   intro h
   have : Theory.ACF p ⊨ᵇ Formula.not φ := Theory.models_of_models_theory hpT0 h
-  rw [(ACF_isComplete_of_prime_or_zero (Or.inl p.2)).models_not_iff] at this
+  rw [(ACF_isComplete (Or.inl p.2)).models_not_iff] at this
   exact this hpφ
 
 /-- The Lefschetz principle. A first order sentence is modeled by the theory
@@ -232,14 +262,14 @@ the theory of algebraically closed fields of characteristic `p` for infinitely m
 theorem ACF0_realize_iff_infinite_ACF_prime_realize {φ : Language.ring.Sentence} :
     Theory.ACF 0 ⊨ᵇ φ ↔ Set.Infinite { p : Nat.Primes | Theory.ACF p ⊨ᵇ φ } := by
   refine ⟨?_, ACF0_realize_of_infinite_ACF_prime_realize φ⟩
-  rw [← not_imp_not, ← (ACF_isComplete_of_prime_or_zero (Or.inr rfl)).models_not_iff,
+  rw [← not_imp_not, ← (ACF_isComplete (Or.inr rfl)).models_not_iff,
     Set.not_infinite]
   intro hs
   apply ACF0_realize_of_infinite_ACF_prime_realize
   apply Set.infinite_of_finite_compl
   convert hs using 1
   ext p
-  simp [(ACF_isComplete_of_prime_or_zero (Or.inl p.2)).models_not_iff]
+  simp [(ACF_isComplete (Or.inl p.2)).models_not_iff]
 
 end Field
 

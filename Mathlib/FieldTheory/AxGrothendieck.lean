@@ -185,7 +185,7 @@ theorem ACF_models_genericPolyMapSurjectiveOfInjective_of_prime
   haveI : CharP (AlgebraicClosure (ZMod p)) p :=
     charP_of_injective_algebraMap
       (RingHom.injective (algebraMap (ZMod p) (AlgebraicClosure (ZMod p)))) p
-  rw [← (ACF_isComplete_of_prime_or_zero (Or.inl hp)).realize_sentence_iff _
+  rw [← (ACF_isComplete (Or.inl hp)).realize_sentence_iff _
     (AlgebraicClosure (ZMod p)),
     realize_genericPolyMapSurjectiveOfInjective]
   rintro ⟨f, _⟩
@@ -221,7 +221,6 @@ theorem ax_grothendieck {ι K : Type*} [Finite ι] [Field K]
   letI := Ring.compatibleRingOfRing K
   have := ACF_models_genericPolyMapSurjectiveOfInjective_of_prime_or_zero
     (CharP.char_is_prime_or_zero K p) (fun i => (ps i).support)
-  rw [← (ACF_isComplete_of_prime_or_zero
-    (CharP.char_is_prime_or_zero K p)).realize_sentence_iff _ K,
+  rw [← (ACF_isComplete (CharP.char_is_prime_or_zero K p)).realize_sentence_iff _ K,
     realize_genericPolyMapSurjectiveOfInjective] at this
   exact this ⟨ps, fun i => Finset.Subset.refl _⟩
