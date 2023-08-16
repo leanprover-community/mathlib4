@@ -111,7 +111,7 @@ instance hasInv : Inv (SpecialLinearGroup n R) :=
 #align matrix.special_linear_group.has_inv Matrix.SpecialLinearGroup.hasInv
 
 instance hasMul : Mul (SpecialLinearGroup n R) :=
-  ⟨fun A B => ⟨↑ₘA ⬝ ↑ₘB, by rw [det_mul, A.prop, B.prop, one_mul]⟩⟩
+  ⟨fun A B => ⟨↑ₘA * ↑ₘB, by rw [det_mul, A.prop, B.prop, one_mul]⟩⟩
 #align matrix.special_linear_group.has_mul Matrix.SpecialLinearGroup.hasMul
 
 instance hasOne : One (SpecialLinearGroup n R) :=
@@ -139,7 +139,7 @@ theorem coe_inv : ↑ₘA⁻¹ = adjugate A :=
 #align matrix.special_linear_group.coe_inv Matrix.SpecialLinearGroup.coe_inv
 
 @[simp]
-theorem coe_mul : ↑ₘ(A * B) = ↑ₘA ⬝ ↑ₘB :=
+theorem coe_mul : ↑ₘ(A * B) = ↑ₘA * ↑ₘB :=
   rfl
 #align matrix.special_linear_group.coe_mul Matrix.SpecialLinearGroup.coe_mul
 
@@ -374,7 +374,8 @@ theorem coe_T_zpow (n : ℤ) : ↑ₘ(T ^ n) = !![1, n; 0, 1] := by
 
 @[simp]
 theorem T_pow_mul_apply_one (n : ℤ) (g : SL(2, ℤ)) : ↑ₘ(T ^ n * g) 1 = ↑ₘg 1 := by
-  simp [coe_T_zpow, Matrix.mul, Matrix.dotProduct, Fin.sum_univ_succ]
+  ext j
+  simp [coe_T_zpow, Matrix.vecMul, Matrix.dotProduct, Fin.sum_univ_succ, vecTail]
 #align modular_group.T_pow_mul_apply_one ModularGroup.T_pow_mul_apply_one
 
 @[simp]
