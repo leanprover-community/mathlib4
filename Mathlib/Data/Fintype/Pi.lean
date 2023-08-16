@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.Finset.Pi
 
 #align_import data.fintype.pi from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
@@ -109,3 +110,18 @@ theorem Finset.univ_pi_univ {α : Type*} {β : α → Type*} [DecidableEq α] [F
     (Finset.univ.pi fun a : α => (Finset.univ : Finset (β a))) = Finset.univ := by
   ext; simp
 #align finset.univ_pi_univ Finset.univ_pi_univ
+
+@[simp]
+lemma Fin.cons_mem_piFinset_iff {α} {n : ℕ} (p : (Fin n → α)) (x : α) (S : Finset α) :
+    Fin.cons x p ∈ Fintype.piFinset (fun _ => S) ↔ x ∈ S ∧ p ∈ Fintype.piFinset (fun _ => S) := by
+  simp only [Fintype.mem_piFinset]
+  constructor
+  · intros ha_1
+    constructor
+    · exact ha_1 0
+    · exact fun a_1 ↦ ha_1 (Fin.succ a_1)
+  · intro ⟨ha11, ha12⟩ a1
+    rcases Fin.eq_zero_or_eq_succ a1 with rfl | ⟨j, rfl⟩
+    · rwa [Fin.cons_zero]
+    · rw [Fin.cons_succ]
+      exact ha12 j
