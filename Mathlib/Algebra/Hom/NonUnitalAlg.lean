@@ -236,8 +236,8 @@ theorem coe_mulHom_mk (f : A →ₛₙₐ[φ] B) (h₁ h₂ h₃ h₄) :
 #align non_unital_alg_hom.coe_mul_hom_mk NonUnitalAlgHom.coe_mulHom_mk
 
 -- @[simp] -- Porting note: simp can prove this
-protected theorem map_smul (f : A →ₛₙₐ[φ] B) (c : R) (x : A) : f (c • x) = c • f x :=
-  map_smul _ _ _
+protected theorem map_smul (f : A →ₛₙₐ[φ] B) (c : R) (x : A) : f (c • x) = (φ c) • f x :=
+  map_smulₛₗ _ _ _
 #align non_unital_alg_hom.map_smul NonUnitalAlgHom.map_smul
 
 -- @[simp] -- Porting note: simp can prove this
@@ -322,8 +322,6 @@ theorem comp'_apply (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) (κ : 
     f.comp' g κ x = f (g x) :=
   rfl
 
-#where
-
 variable {B₁: Type*} [NonUnitalNonAssocSemiring B₁] [DistribMulAction R B₁]
 /-- The inverse of a bijective morphism is a morphism. -/
 def inverse (f : A →ₙₐ[R] B₁) (g : B₁ → A)
@@ -333,10 +331,24 @@ def inverse (f : A →ₙₐ[R] B₁) (g : B₁ → A)
 #align non_unital_alg_hom.inverse NonUnitalAlgHom.inverse
 
 @[simp]
-theorem coe_inverse (f : A →ₙₐ[R] B) (g : B → A) (h₁ : Function.LeftInverse g f)
-    (h₂ : Function.RightInverse g f) : (inverse f g h₁ h₂ : B → A) = g :=
+theorem coe_inverse (f : A →ₙₐ[R] B₁) (g : B₁ → A) (h₁ : Function.LeftInverse g f)
+    (h₂ : Function.RightInverse g f) : (inverse f g h₁ h₂ : B₁ → A) = g :=
   rfl
 #align non_unital_alg_hom.coe_inverse NonUnitalAlgHom.coe_inverse
+
+/-- The inverse of a bijective morphism is a morphism. -/
+def inverse' (f : A →ₛₙₐ[φ] B) (g : B → A)
+    (k : Function.RightInverse φ' φ)
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) :
+    B →ₛₙₐ[φ'] A :=
+  { (f : A →ₙ* B).inverse g h₁ h₂, (f : A →ₑ+[φ] B).inverse' g k h₁ h₂ with }
+
+@[simp]
+theorem coe_inverse' (f : A →ₛₙₐ[φ] B) (g : B → A)
+    (k : Function.RightInverse φ' φ)
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) :
+    (inverse' f g k h₁ h₂ : B → A) = g :=
+  rfl
 
 /-! ### Operations on the product type
 
@@ -346,6 +358,7 @@ Note that much of this is copied from [`LinearAlgebra/Prod`](../../LinearAlgebra
 section Prod
 
 variable (R A B)
+variable  [DistribMulAction R B]
 
 /-- The first projection of a product is a non-unital alg_hom. -/
 @[simps]
@@ -368,6 +381,7 @@ def snd : A × B →ₙₐ[R] B where
 #align non_unital_alg_hom.snd NonUnitalAlgHom.snd
 
 variable {R A B}
+variable [DistribMulAction R C]
 
 /-- The prod of two morphisms is a morphism. -/
 @[simps]
@@ -377,7 +391,7 @@ def prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : A →ₙₐ[R] B × C
   map_zero' := by simp only [Pi.prod, Prod.zero_eq_mk, map_zero]
   map_add' x y := by simp only [Pi.prod, Prod.mk_add_mk, map_add]
   map_mul' x y := by simp only [Pi.prod, Prod.mk_mul_mk, map_mul]
-  map_smul' c x := by simp only [Pi.prod, Prod.smul_mk, map_smul, RingHom.id_apply]
+  map_smul' c x := by simp only [Pi.prod, map_smulₛₗ, id_eq, Prod.smul_mk]
 #align non_unital_alg_hom.prod NonUnitalAlgHom.prod
 
 theorem coe_prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : ⇑(f.prod g) = Pi.prod f g :=
@@ -451,12 +465,12 @@ end NonUnitalAlgHom
 
 namespace AlgHom
 
-variable {R A B} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
+variable {A B} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
   [Algebra R B]
 
 -- see Note [lower instance priority]
-instance (priority := 100) [AlgHomClass F R A B] : NonUnitalAlgHomClass F R A B :=
-  { ‹AlgHomClass F R A B› with map_smul := map_smul }
+instance (priority := 100) [AlgHomClass F R A B] : NonUnitalAlgHomClass F (@id R) A B :=
+  { ‹AlgHomClass F R A B› with map_smulₛₗ := map_smul }
 
 /-- A unital morphism of algebras is a `NonUnitalAlgHom`. -/
 @[coe]
