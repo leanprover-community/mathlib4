@@ -29,7 +29,7 @@ section SMul
 variable [SMul M α] [SMul N α] [SMulCommClass M N α] [SMul N β]
 
 instance : SMul Mᵈᵐᵃ (α →[N] β) where
-  smul c f := f.comp (SMulCommClass.toSMulHom _ _ (mk.symm c))
+  smul c f := f.comp (SMulCommClass.toMulActionHom _ _ (mk.symm c))
 
 instance [SMul M' α] [SMulCommClass M' N α] [SMulCommClass M M' α] :
     SMulCommClass Mᵈᵐᵃ M'ᵈᵐᵃ (α →[N] β) :=
@@ -58,7 +58,7 @@ variable [AddMonoid A] [DistribSMul M A] [Monoid N] [AddMonoid B] [DistribMulAct
   [SMulCommClass M N A] [DistribMulAction N B]
 
 instance : SMul Mᵈᵐᵃ (A →+[N] B) where
-  smul c f := f.comp (SMulCommClass.toDistribSMulSemiHom _ _ (mk.symm c))
+  smul c f := f.comp (SMulCommClass.toDistribMulActionSemiHom _ _ (mk.symm c))
 
 instance [DistribSMul M' A] [SMulCommClass M' N A] [SMulCommClass M M' A] :
     SMulCommClass Mᵈᵐᵃ M'ᵈᵐᵃ (A →+[N] B) :=
