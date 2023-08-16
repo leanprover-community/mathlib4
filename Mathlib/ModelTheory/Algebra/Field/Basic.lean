@@ -53,6 +53,9 @@ def FieldAxiom.toProp (M : Type*) [Add M] [Mul M] [Neg M] [Zero M] [One M] :
   | .leftDistrib => ∀ x y z : M, x * (y + z) = x * y + x * z
   | .existsPairNe => ∃ x y : M, x ≠ y
 
+def _root_.FirstOrder.Language.Theory.field : Language.ring.Theory :=
+  Set.range FieldAxiom.toSentence
+
 theorem FieldAxiom.realize_toSentence_iff_toProp {K : Type*}
     [Add K] [Mul K] [Neg K] [Zero K] [One K] [CompatibleRing K]
     (ax : FieldAxiom) :
@@ -61,8 +64,12 @@ theorem FieldAxiom.realize_toSentence_iff_toProp {K : Type*}
   simp [Sentence.Realize, Formula.Realize, toProp, Fin.snoc, constantMap,
     add_def, mul_def, neg_def, zero_def, one_def]
 
-def _root_.FirstOrder.Language.Theory.field : Language.ring.Theory :=
-  Set.range FieldAxiom.toSentence
+theorem FieldAxiom.toProp_of_model {K : Type*}
+    [Add K] [Mul K] [Neg K] [Zero K] [One K] [CompatibleRing K]
+    [Theory.field.Model K] (ax : FieldAxiom) : ax.toProp K :=
+  (FieldAxiom.realize_toSentence_iff_toProp ax).1
+    (Theory.realize_sentence_of_mem Theory.field
+      (Set.mem_range_self ax))
 
 open FieldAxiom
 
@@ -77,29 +84,20 @@ noncomputable def fieldOfModelField (K : Type*) [Language.ring.Structure K]
   letI := oneOfRingStructure K
   letI := compatibleRingOfRingStructure K
   have exists_inv : ∀ x : K, x ≠ 0 → ∃ y : K, x * y = 1 :=
-    (FieldAxiom.existsInv.realize_toSentence_iff_toProp.1
-        (Theory.realize_sentence_of_mem Theory.field (Set.mem_range_self FieldAxiom.existsInv)))
+    existsInv.toProp_of_model
   letI : Inv K := ⟨fun x => if hx0 : x = 0 then 0 else Classical.choose (exists_inv x hx0)⟩
   Field.ofMinimalAxioms K
-    (FieldAxiom.addAssoc.realize_toSentence_iff_toProp.1
-      (Theory.realize_sentence_of_mem Theory.field (Set.mem_range_self FieldAxiom.addAssoc)))
-    (FieldAxiom.zeroAdd.realize_toSentence_iff_toProp.1
-      (Theory.realize_sentence_of_mem Theory.field (Set.mem_range_self FieldAxiom.zeroAdd)))
-    (FieldAxiom.addLeftNeg.realize_toSentence_iff_toProp.1
-      (Theory.realize_sentence_of_mem Theory.field (Set.mem_range_self FieldAxiom.addLeftNeg)))
-    (FieldAxiom.mulAssoc.realize_toSentence_iff_toProp.1
-      (Theory.realize_sentence_of_mem Theory.field (Set.mem_range_self FieldAxiom.mulAssoc)))
-    (FieldAxiom.mulComm.realize_toSentence_iff_toProp.1
-      (Theory.realize_sentence_of_mem Theory.field (Set.mem_range_self FieldAxiom.mulComm)))
-    (FieldAxiom.oneMul.realize_toSentence_iff_toProp.1
-      (Theory.realize_sentence_of_mem Theory.field (Set.mem_range_self FieldAxiom.oneMul)))
+    addAssoc.toProp_of_model
+    zeroAdd.toProp_of_model
+    addLeftNeg.toProp_of_model
+    mulAssoc.toProp_of_model
+    mulComm.toProp_of_model
+    oneMul.toProp_of_model
     (fun x hx0 => show x * (dite _ _ _) = _ from
-        (dif_neg hx0).symm ▸ Classical.choose_spec (exists_inv x hx0))
+        (dif_neg hx0).symm ▸ Classical.choose_spec (existsInv.toProp_of_model x hx0))
     (dif_pos rfl)
-    (FieldAxiom.leftDistrib.realize_toSentence_iff_toProp.1
-      (Theory.realize_sentence_of_mem Theory.field (Set.mem_range_self FieldAxiom.leftDistrib)))
-    (FieldAxiom.existsPairNe.realize_toSentence_iff_toProp.1
-      (Theory.realize_sentence_of_mem Theory.field (Set.mem_range_self FieldAxiom.existsPairNe)))
+    leftDistrib.toProp_of_model
+    existsPairNe.toProp_of_model
 
 section
 
