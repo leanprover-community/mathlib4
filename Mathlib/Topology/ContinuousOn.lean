@@ -28,6 +28,8 @@ equipped with the subspace topology.
 
 -/
 
+set_option autoImplicit true
+
 
 open Set Filter Function Topology Filter
 

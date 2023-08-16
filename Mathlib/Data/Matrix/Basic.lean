@@ -31,7 +31,6 @@ with `Matrix m n α`. For the typical approach of counting rows and columns,
 The locale `Matrix` gives the following notation:
 
 * `⬝ᵥ` for `Matrix.dotProduct`
-* `⬝` for `Matrix.mul`
 * `ᵀ` for `Matrix.transpose`
 * `ᴴ` for `Matrix.conjTranspose`
 
@@ -908,31 +907,28 @@ end DotProduct
 
 open Matrix
 
-/-- `M ⬝ N` is the usual product of matrices `M` and `N`, i.e. we have that
-`(M ⬝ N) i k` is the dot product of the `i`-th row of `M` by the `k`-th column of `N`.
+/-- `M * N` is the usual product of matrices `M` and `N`, i.e. we have that
+`(M * N) i k` is the dot product of the `i`-th row of `M` by the `k`-th column of `N`.
 This is currently only defined when `m` is finite. -/
-protected def mul [Fintype m] [Mul α] [AddCommMonoid α] (M : Matrix l m α) (N : Matrix m n α) :
-    Matrix l n α := fun i k => (fun j => M i j) ⬝ᵥ fun j => N j k
-#align matrix.mul Matrix.mul
-
-@[inherit_doc]
-scoped infixl:75 " ⬝ " => Matrix.mul
+-- We want to be lower priority than `instHMul`, but without this we can't have operands with
+-- implicit dimensions.
+@[default_instance 100]
+instance [Fintype m] [Mul α] [AddCommMonoid α] :
+    HMul (Matrix l m α) (Matrix m n α) (Matrix l n α) where
+  hMul M N := fun i k => (fun j => M i j) ⬝ᵥ fun j => N j k
+#align matrix.mul HMul.hMul
 
 theorem mul_apply [Fintype m] [Mul α] [AddCommMonoid α] {M : Matrix l m α} {N : Matrix m n α}
-    {i k} : (M ⬝ N) i k = ∑ j, M i j * N j k :=
+    {i k} : (M * N) i k = ∑ j, M i j * N j k :=
   rfl
 #align matrix.mul_apply Matrix.mul_apply
 
-instance [Fintype n] [Mul α] [AddCommMonoid α] : Mul (Matrix n n α) :=
-  ⟨Matrix.mul⟩
+instance [Fintype n] [Mul α] [AddCommMonoid α] : Mul (Matrix n n α) where mul M N := M * N
 
-@[simp]
-theorem mul_eq_mul [Fintype n] [Mul α] [AddCommMonoid α] (M N : Matrix n n α) : M * N = M ⬝ N :=
-  rfl
-#align matrix.mul_eq_mul Matrix.mul_eq_mul
+#noalign matrix.mul_eq_mul
 
 theorem mul_apply' [Fintype m] [Mul α] [AddCommMonoid α] {M : Matrix l m α} {N : Matrix m n α}
-    {i k} : (M ⬝ N) i k = (fun j => M i j) ⬝ᵥ fun j => N j k :=
+    {i k} : (M * N) i k = (fun j => M i j) ⬝ᵥ fun j => N j k :=
   rfl
 #align matrix.mul_apply' Matrix.mul_apply'
 
@@ -953,8 +949,7 @@ theorem two_mul_expl {R : Type*} [CommRing R] (A B : Matrix (Fin 2) (Fin 2) R) :
     (A * B) 1 0 = A 1 0 * B 0 0 + A 1 1 * B 1 0 ∧
     (A * B) 1 1 = A 1 0 * B 0 1 + A 1 1 * B 1 1 := by
   refine ⟨?_, ?_, ?_, ?_⟩ <;>
-  · simp only [Matrix.mul_eq_mul]
-    rw [Matrix.mul_apply, Finset.sum_fin_eq_sum_range, Finset.sum_range_succ, Finset.sum_range_succ]
+  · rw [Matrix.mul_apply, Finset.sum_fin_eq_sum_range, Finset.sum_range_succ, Finset.sum_range_succ]
     simp
 #align matrix.two_mul_expl Matrix.two_mul_expl
 
@@ -964,14 +959,14 @@ variable [AddCommMonoid α] [Mul α]
 
 @[simp]
 theorem smul_mul [Fintype n] [Monoid R] [DistribMulAction R α] [IsScalarTower R α α] (a : R)
-    (M : Matrix m n α) (N : Matrix n l α) : (a • M) ⬝ N = a • M ⬝ N := by
+    (M : Matrix m n α) (N : Matrix n l α) : (a • M) * N = a • (M * N) := by
   ext
-  apply smul_dotProduct
+  apply smul_dotProduct a
 #align matrix.smul_mul Matrix.smul_mul
 
 @[simp]
 theorem mul_smul [Fintype n] [Monoid R] [DistribMulAction R α] [SMulCommClass R α α]
-    (M : Matrix m n α) (a : R) (N : Matrix n l α) : M ⬝ (a • N) = a • M ⬝ N := by
+    (M : Matrix m n α) (a : R) (N : Matrix n l α) : M * (a • N) = a • (M * N) := by
   ext
   apply dotProduct_smul
 #align matrix.mul_smul Matrix.mul_smul
@@ -983,25 +978,25 @@ section NonUnitalNonAssocSemiring
 variable [NonUnitalNonAssocSemiring α]
 
 @[simp]
-protected theorem mul_zero [Fintype n] (M : Matrix m n α) : M ⬝ (0 : Matrix n o α) = 0 := by
+protected theorem mul_zero [Fintype n] (M : Matrix m n α) : M * (0 : Matrix n o α) = 0 := by
   ext
   apply dotProduct_zero
 #align matrix.mul_zero Matrix.mul_zero
 
 @[simp]
-protected theorem zero_mul [Fintype m] (M : Matrix m n α) : (0 : Matrix l m α) ⬝ M = 0 := by
+protected theorem zero_mul [Fintype m] (M : Matrix m n α) : (0 : Matrix l m α) * M = 0 := by
   ext
   apply zero_dotProduct
 #align matrix.zero_mul Matrix.zero_mul
 
 protected theorem mul_add [Fintype n] (L : Matrix m n α) (M N : Matrix n o α) :
-    L ⬝ (M + N) = L ⬝ M + L ⬝ N := by
+    L * (M + N) = L * M + L * N := by
   ext
   apply dotProduct_add
 #align matrix.mul_add Matrix.mul_add
 
 protected theorem add_mul [Fintype m] (L M : Matrix l m α) (N : Matrix m n α) :
-    (L + M) ⬝ N = L ⬝ N + M ⬝ N := by
+    (L + M) * N = L * N + M * N := by
   ext
   apply add_dotProduct
 #align matrix.add_mul Matrix.add_mul
@@ -1018,20 +1013,20 @@ instance nonUnitalNonAssocSemiring [Fintype n] : NonUnitalNonAssocSemiring (Matr
 
 @[simp]
 theorem diagonal_mul [Fintype m] [DecidableEq m] (d : m → α) (M : Matrix m n α) (i j) :
-    (diagonal d).mul M i j = d i * M i j :=
+    (diagonal d * M) i j = d i * M i j :=
   diagonal_dotProduct _ _ _
 #align matrix.diagonal_mul Matrix.diagonal_mul
 
 @[simp]
 theorem mul_diagonal [Fintype n] [DecidableEq n] (d : n → α) (M : Matrix m n α) (i j) :
-    (M ⬝ diagonal d) i j = M i j * d j := by
+    (M * diagonal d) i j = M i j * d j := by
   rw [← diagonal_transpose]
   apply dotProduct_diagonal
 #align matrix.mul_diagonal Matrix.mul_diagonal
 
 @[simp]
 theorem diagonal_mul_diagonal [Fintype n] [DecidableEq n] (d₁ d₂ : n → α) :
-    diagonal d₁ ⬝ diagonal d₂ = diagonal fun i => d₁ i * d₂ i := by
+    diagonal d₁ * diagonal d₂ = diagonal fun i => d₁ i * d₂ i := by
   ext i j
   by_cases i = j <;>
   simp [h]
@@ -1043,13 +1038,13 @@ theorem diagonal_mul_diagonal' [Fintype n] [DecidableEq n] (d₁ d₂ : n → α
 #align matrix.diagonal_mul_diagonal' Matrix.diagonal_mul_diagonal'
 
 theorem smul_eq_diagonal_mul [Fintype m] [DecidableEq m] (M : Matrix m n α) (a : α) :
-    a • M = (diagonal fun _ => a) ⬝ M := by
+    a • M = (diagonal fun _ => a) * M := by
   ext
   simp
 #align matrix.smul_eq_diagonal_mul Matrix.smul_eq_diagonal_mul
 
 @[simp]
-theorem diag_col_mul_row (a b : n → α) : diag (col a ⬝ row b) = a * b := by
+theorem diag_col_mul_row (a b : n → α) : diag (col a * row b) = a * b := by
   ext
   simp [Matrix.mul_apply, col, row]
 #align matrix.diag_col_mul_row Matrix.diag_col_mul_row
@@ -1057,7 +1052,7 @@ theorem diag_col_mul_row (a b : n → α) : diag (col a ⬝ row b) = a * b := by
 /-- Left multiplication by a matrix, as an `AddMonoidHom` from matrices to matrices. -/
 @[simps]
 def addMonoidHomMulLeft [Fintype m] (M : Matrix l m α) : Matrix m n α →+ Matrix l n α where
-  toFun x := M ⬝ x
+  toFun x := M * x
   map_zero' := Matrix.mul_zero _
   map_add' := Matrix.mul_add _
 #align matrix.add_monoid_hom_mul_left Matrix.addMonoidHomMulLeft
@@ -1065,18 +1060,18 @@ def addMonoidHomMulLeft [Fintype m] (M : Matrix l m α) : Matrix m n α →+ Mat
 /-- Right multiplication by a matrix, as an `AddMonoidHom` from matrices to matrices. -/
 @[simps]
 def addMonoidHomMulRight [Fintype m] (M : Matrix m n α) : Matrix l m α →+ Matrix l n α where
-  toFun x := x ⬝ M
+  toFun x := x * M
   map_zero' := Matrix.zero_mul _
   map_add' _ _ := Matrix.add_mul _ _ _
 #align matrix.add_monoid_hom_mul_right Matrix.addMonoidHomMulRight
 
 protected theorem sum_mul [Fintype m] (s : Finset β) (f : β → Matrix l m α) (M : Matrix m n α) :
-    (∑ a in s, f a) ⬝ M = ∑ a in s, f a ⬝ M :=
+    (∑ a in s, f a) * M = ∑ a in s, f a * M :=
   (addMonoidHomMulRight M : Matrix l m α →+ _).map_sum f s
 #align matrix.sum_mul Matrix.sum_mul
 
 protected theorem mul_sum [Fintype m] (s : Finset β) (f : β → Matrix m n α) (M : Matrix l m α) :
-    (M ⬝ ∑ a in s, f a) = ∑ a in s, M ⬝ f a :=
+    (M * ∑ a in s, f a) = ∑ a in s, M * f a :=
   (addMonoidHomMulLeft M : Matrix m n α →+ _).map_sum f s
 #align matrix.mul_sum Matrix.mul_sum
 
@@ -1100,14 +1095,14 @@ variable [NonAssocSemiring α]
 
 @[simp]
 protected theorem one_mul [Fintype m] [DecidableEq m] (M : Matrix m n α) :
-    (1 : Matrix m m α) ⬝ M = M := by
+    (1 : Matrix m m α) * M = M := by
   ext
   rw [← diagonal_one, diagonal_mul, one_mul]
 #align matrix.one_mul Matrix.one_mul
 
 @[simp]
 protected theorem mul_one [Fintype n] [DecidableEq n] (M : Matrix m n α) :
-    M ⬝ (1 : Matrix n n α) = M := by
+    M * (1 : Matrix n n α) = M := by
   ext
   rw [← diagonal_one, mul_diagonal, mul_one]
 #align matrix.mul_one Matrix.mul_one
@@ -1128,7 +1123,7 @@ instance nonAssocSemiring [Fintype n] [DecidableEq n] : NonAssocSemiring (Matrix
 
 @[simp]
 theorem map_mul [Fintype n] {L : Matrix m n α} {M : Matrix n o α} [NonAssocSemiring β]
-    {f : α →+* β} : (L ⬝ M).map f = L.map f ⬝ M.map f := by
+    {f : α →+* β} : (L * M).map f = L.map f * M.map f := by
   ext
   simp [mul_apply, map_sum]
 #align matrix.map_mul Matrix.map_mul
@@ -1151,7 +1146,7 @@ section NonUnitalSemiring
 variable [NonUnitalSemiring α] [Fintype m] [Fintype n]
 
 protected theorem mul_assoc (L : Matrix l m α) (M : Matrix m n α) (N : Matrix n o α) :
-    L ⬝ M ⬝ N = L ⬝ (M ⬝ N) := by
+    L * M * N = L * (M * N) := by
   ext
   apply dotProduct_assoc
 #align matrix.mul_assoc Matrix.mul_assoc
@@ -1175,24 +1170,24 @@ section NonUnitalNonAssocRing
 variable [NonUnitalNonAssocRing α] [Fintype n]
 
 @[simp]
-protected theorem neg_mul (M : Matrix m n α) (N : Matrix n o α) : (-M) ⬝ N = -M ⬝ N := by
+protected theorem neg_mul (M : Matrix m n α) (N : Matrix n o α) : (-M) * N = -(M * N) := by
   ext
   apply neg_dotProduct
 #align matrix.neg_mul Matrix.neg_mul
 
 @[simp]
-protected theorem mul_neg (M : Matrix m n α) (N : Matrix n o α) : M ⬝ (-N) = -M ⬝ N := by
+protected theorem mul_neg (M : Matrix m n α) (N : Matrix n o α) : M * (-N) = -(M * N) := by
   ext
   apply dotProduct_neg
 #align matrix.mul_neg Matrix.mul_neg
 
 protected theorem sub_mul (M M' : Matrix m n α) (N : Matrix n o α) :
-    (M - M') ⬝ N = M ⬝ N - M' ⬝ N := by
+    (M - M') * N = M * N - M' * N := by
   rw [sub_eq_add_neg, Matrix.add_mul, Matrix.neg_mul, sub_eq_add_neg]
 #align matrix.sub_mul Matrix.sub_mul
 
 protected theorem mul_sub (M : Matrix m n α) (N N' : Matrix n o α) :
-    M ⬝ (N - N') = M ⬝ N - M ⬝ N' := by
+    M * (N - N') = M * N - M * N' := by
   rw [sub_eq_add_neg, Matrix.mul_add, Matrix.mul_neg, sub_eq_add_neg]
 #align matrix.mul_sub Matrix.mul_sub
 
@@ -1225,7 +1220,7 @@ theorem diagonal_pow [Fintype n] [DecidableEq n] (v : n → α) (k : ℕ) :
 
 @[simp]
 theorem mul_mul_left [Fintype n] (M : Matrix m n α) (N : Matrix n o α) (a : α) :
-    (of fun i j => a * M i j) ⬝ N = a • M ⬝ N :=
+    (of fun i j => a * M i j) * N = a • (M * N) :=
   smul_mul a M N
 #align matrix.mul_mul_left Matrix.mul_mul_left
 
@@ -1280,14 +1275,14 @@ section CommSemiring
 variable [CommSemiring α] [Fintype n]
 
 theorem smul_eq_mul_diagonal [DecidableEq n] (M : Matrix m n α) (a : α) :
-    a • M = M ⬝ diagonal fun _ => a := by
+    a • M = M * diagonal fun _ => a := by
   ext
   simp [mul_comm]
 #align matrix.smul_eq_mul_diagonal Matrix.smul_eq_mul_diagonal
 
 @[simp]
 theorem mul_mul_right (M : Matrix m n α) (N : Matrix n o α) (a : α) :
-    (M ⬝ of fun i j => a * N i j) = a • M ⬝ N :=
+    (M * of fun i j => a * N i j) = a • (M * N) :=
   mul_smul M a N
 #align matrix.mul_mul_right Matrix.mul_mul_right
 
@@ -1653,7 +1648,7 @@ open Matrix
 namespace Matrix
 
 /-- For two vectors `w` and `v`, `vecMulVec w v i j` is defined to be `w i * v j`.
-    Put another way, `vecMulVec w v` is exactly `col w ⬝ row v`. -/
+    Put another way, `vecMulVec w v` is exactly `col w * row v`. -/
 def vecMulVec [Mul α] (w : m → α) (v : n → α) : Matrix m n α :=
   of fun x y => w x * v y
 #align matrix.vec_mul_vec Matrix.vecMulVec
@@ -1664,7 +1659,7 @@ theorem vecMulVec_apply [Mul α] (w : m → α) (v : n → α) (i j) : vecMulVec
 #align matrix.vec_mul_vec_apply Matrix.vecMulVec_apply
 
 theorem vecMulVec_eq [Mul α] [AddCommMonoid α] (w : m → α) (v : n → α) :
-    vecMulVec w v = col w ⬝ row v := by
+    vecMulVec w v = col w * row v := by
   ext
   simp only [vecMulVec, mul_apply, Fintype.univ_punit, Finset.sum_singleton]
   rfl
@@ -1676,14 +1671,14 @@ variable [NonUnitalNonAssocSemiring α]
 
 /-- `mulVec M v` is the matrix-vector product of `M` and `v`, where `v` is seen as a column matrix.
     Put another way, `mulVec M v` is the vector whose entries
-    are those of `M ⬝ col v` (see `col_mulVec`). -/
+    are those of `M * col v` (see `col_mulVec`). -/
 def mulVec [Fintype n] (M : Matrix m n α) (v : n → α) : m → α
   | i => (fun j => M i j) ⬝ᵥ v
 #align matrix.mul_vec Matrix.mulVec
 
 /-- `vecMul v M` is the vector-matrix product of `v` and `M`, where `v` is seen as a row matrix.
     Put another way, `vecMul v M` is the vector whose entries
-    are those of `row v ⬝ M` (see `row_vecMul`). -/
+    are those of `row v * M` (see `row_vecMul`). -/
 def vecMul [Fintype m] (v : m → α) (M : Matrix m n α) : n → α
   | j => v ⬝ᵥ fun i => M i j
 #align matrix.vec_mul Matrix.vecMul
@@ -1821,14 +1816,14 @@ variable [NonUnitalSemiring α]
 
 @[simp]
 theorem vecMul_vecMul [Fintype n] [Fintype m] (v : m → α) (M : Matrix m n α) (N : Matrix n o α) :
-    vecMul (vecMul v M) N = vecMul v (M ⬝ N) := by
+    vecMul (vecMul v M) N = vecMul v (M * N) := by
   ext
   apply dotProduct_assoc
 #align matrix.vec_mul_vec_mul Matrix.vecMul_vecMul
 
 @[simp]
 theorem mulVec_mulVec [Fintype n] [Fintype o] (v : o → α) (M : Matrix m n α) (N : Matrix n o α) :
-    mulVec M (mulVec N v) = mulVec (M ⬝ N) v := by
+    mulVec M (mulVec N v) = mulVec (M * N) v := by
   ext
   symm
   apply dotProduct_assoc
@@ -1855,7 +1850,7 @@ theorem vecMul_conjTranspose [Fintype n] [StarRing α] (A : Matrix m n α) (x : 
 #align matrix.vec_mul_conj_transpose Matrix.vecMul_conjTranspose
 
 theorem mul_mul_apply [Fintype n] (A B C : Matrix n n α) (i j : n) :
-    (A ⬝ B ⬝ C) i j = A i ⬝ᵥ B.mulVec (Cᵀ j) := by
+    (A * B * C) i j = A i ⬝ᵥ B.mulVec (Cᵀ j) := by
   rw [Matrix.mul_assoc]
   simp only [mul_apply, dotProduct, mulVec]
   rfl
@@ -1940,11 +1935,11 @@ theorem vecMul_transpose [Fintype n] (A : Matrix m n α) (x : n → α) : vecMul
 #align matrix.vec_mul_transpose Matrix.vecMul_transpose
 
 theorem mulVec_vecMul [Fintype n] [Fintype o] (A : Matrix m n α) (B : Matrix o n α) (x : o → α) :
-    mulVec A (vecMul x B) = mulVec (A ⬝ Bᵀ) x := by rw [← mulVec_mulVec, mulVec_transpose]
+    mulVec A (vecMul x B) = mulVec (A * Bᵀ) x := by rw [← mulVec_mulVec, mulVec_transpose]
 #align matrix.mul_vec_vec_mul Matrix.mulVec_vecMul
 
 theorem vecMul_mulVec [Fintype m] [Fintype n] (A : Matrix m n α) (B : Matrix m o α) (x : n → α) :
-    vecMul (mulVec A x) B = vecMul x (Aᵀ ⬝ B) := by rw [← vecMul_vecMul, vecMul_transpose]
+    vecMul (mulVec A x) B = vecMul x (Aᵀ * B) := by rw [← vecMul_vecMul, vecMul_transpose]
 #align matrix.vec_mul_mul_vec Matrix.vecMul_mulVec
 
 end NonUnitalCommSemiring
@@ -2000,7 +1995,7 @@ theorem transpose_sub [Sub α] (M : Matrix m n α) (N : Matrix m n α) : (M - N)
 
 @[simp]
 theorem transpose_mul [AddCommMonoid α] [CommSemigroup α] [Fintype n] (M : Matrix m n α)
-    (N : Matrix n l α) : (M ⬝ N)ᵀ = Nᵀ ⬝ Mᵀ := by
+    (N : Matrix n l α) : (M * N)ᵀ = Nᵀ * Mᵀ := by
   ext
   apply dotProduct_comm
 #align matrix.transpose_mul Matrix.transpose_mul
@@ -2240,7 +2235,7 @@ theorem conjTranspose_rat_smul [AddCommGroup α] [StarAddMonoid α] [Module ℚ 
 
 @[simp]
 theorem conjTranspose_mul [Fintype n] [NonUnitalSemiring α] [StarRing α] (M : Matrix m n α)
-    (N : Matrix n l α) : (M ⬝ N)ᴴ = Nᴴ ⬝ Mᴴ :=
+    (N : Matrix n l α) : (M * N)ᴴ = Nᴴ * Mᴴ :=
   Matrix.ext <| by simp [mul_apply]
 #align matrix.conj_transpose_mul Matrix.conjTranspose_mul
 
@@ -2371,9 +2366,9 @@ instance [Fintype n] [NonUnitalSemiring α] [StarRing α] : StarRing (Matrix n n
   star_add := conjTranspose_add
   star_mul := conjTranspose_mul
 
-/-- A version of `star_mul` for `⬝` instead of `*`. -/
+/-- A version of `star_mul` for `*` instead of `*`. -/
 theorem star_mul [Fintype n] [NonUnitalSemiring α] [StarRing α] (M N : Matrix n n α) :
-    star (M ⬝ N) = star N ⬝ star M :=
+    star (M * N) = star N * star M :=
   conjTranspose_mul _ _
 #align matrix.star_mul Matrix.star_mul
 
@@ -2468,7 +2463,7 @@ theorem submatrix_one [Zero α] [One α] [DecidableEq m] [DecidableEq l] (e : l 
 theorem submatrix_mul [Fintype n] [Fintype o] [Mul α] [AddCommMonoid α] {p q : Type*}
     (M : Matrix m n α) (N : Matrix n p α) (e₁ : l → m) (e₂ : o → n) (e₃ : q → p)
     (he₂ : Function.Bijective e₂) :
-    (M ⬝ N).submatrix e₁ e₃ = M.submatrix e₁ e₂ ⬝ N.submatrix e₂ e₃ :=
+    (M * N).submatrix e₁ e₃ = M.submatrix e₁ e₂ * N.submatrix e₂ e₃ :=
   ext fun _ _ => (he₂.sum_comp _).symm
 #align matrix.submatrix_mul Matrix.submatrix_mul
 
@@ -2507,7 +2502,7 @@ theorem submatrix_one_equiv [Zero α] [One α] [DecidableEq m] [DecidableEq l] (
 @[simp]
 theorem submatrix_mul_equiv [Fintype n] [Fintype o] [AddCommMonoid α] [Mul α] {p q : Type*}
     (M : Matrix m n α) (N : Matrix n p α) (e₁ : l → m) (e₂ : o ≃ n) (e₃ : q → p) :
-    M.submatrix e₁ e₂ ⬝ N.submatrix e₂ e₃ = (M ⬝ N).submatrix e₁ e₃ :=
+    M.submatrix e₁ e₂ * N.submatrix e₂ e₃ = (M * N).submatrix e₁ e₃ :=
   (submatrix_mul M N e₁ e₂ e₃ e₂.bijective).symm
 #align matrix.submatrix_mul_equiv Matrix.submatrix_mul_equiv
 
@@ -2525,7 +2520,7 @@ theorem submatrix_vecMul_equiv [Fintype l] [Fintype m] [NonUnitalNonAssocSemirin
 
 theorem mul_submatrix_one [Fintype n] [Finite o] [NonAssocSemiring α] [DecidableEq o] (e₁ : n ≃ o)
     (e₂ : l → o) (M : Matrix m n α) :
-    M ⬝ (1 : Matrix o o α).submatrix e₁ e₂ = submatrix M id (e₁.symm ∘ e₂) := by
+    M * (1 : Matrix o o α).submatrix e₁ e₂ = submatrix M id (e₁.symm ∘ e₂) := by
   cases nonempty_fintype o
   let A := M.submatrix id e₁.symm
   have : M = A.submatrix id e₁ := by
@@ -2537,7 +2532,7 @@ theorem mul_submatrix_one [Fintype n] [Finite o] [NonAssocSemiring α] [Decidabl
 
 theorem one_submatrix_mul [Fintype m] [Finite o] [NonAssocSemiring α] [DecidableEq o] (e₁ : l → o)
     (e₂ : m ≃ o) (M : Matrix m n α) :
-    ((1 : Matrix o o α).submatrix e₁ e₂).mul M = submatrix M (e₂.symm ∘ e₁) id := by
+    ((1 : Matrix o o α).submatrix e₁ e₂) * M = submatrix M (e₂.symm ∘ e₁) id := by
   cases nonempty_fintype o
   let A := M.submatrix e₂.symm id
   have : M = A.submatrix e₂ id := by
@@ -2592,7 +2587,7 @@ theorem conjTranspose_reindex [Star α] (eₘ : m ≃ l) (eₙ : n ≃ o) (M : M
 
 -- @[simp] -- Porting note: simp can prove this
 theorem submatrix_mul_transpose_submatrix [Fintype m] [Fintype n] [AddCommMonoid α] [Mul α]
-    (e : m ≃ n) (M : Matrix m n α) : M.submatrix id e ⬝ Mᵀ.submatrix e id = M ⬝ Mᵀ := by
+    (e : m ≃ n) (M : Matrix m n α) : M.submatrix id e * Mᵀ.submatrix e id = M * Mᵀ := by
   rw [submatrix_mul_equiv, submatrix_id_id]
 #align matrix.submatrix_mul_transpose_submatrix Matrix.submatrix_mul_transpose_submatrix
 
@@ -2708,32 +2703,32 @@ theorem conjTranspose_row [Star α] (v : m → α) : (row v)ᴴ = col (star v) :
 #align matrix.conj_transpose_row Matrix.conjTranspose_row
 
 theorem row_vecMul [Fintype m] [NonUnitalNonAssocSemiring α] (M : Matrix m n α) (v : m → α) :
-    Matrix.row (Matrix.vecMul v M) = Matrix.row v ⬝ M := by
+    Matrix.row (Matrix.vecMul v M) = Matrix.row v * M := by
   ext
   rfl
 #align matrix.row_vec_mul Matrix.row_vecMul
 
 theorem col_vecMul [Fintype m] [NonUnitalNonAssocSemiring α] (M : Matrix m n α) (v : m → α) :
-    Matrix.col (Matrix.vecMul v M) = (Matrix.row v ⬝ M)ᵀ := by
+    Matrix.col (Matrix.vecMul v M) = (Matrix.row v * M)ᵀ := by
   ext
   rfl
 #align matrix.col_vec_mul Matrix.col_vecMul
 
 theorem col_mulVec [Fintype n] [NonUnitalNonAssocSemiring α] (M : Matrix m n α) (v : n → α) :
-    Matrix.col (Matrix.mulVec M v) = M ⬝ Matrix.col v := by
+    Matrix.col (Matrix.mulVec M v) = M * Matrix.col v := by
   ext
   rfl
 #align matrix.col_mul_vec Matrix.col_mulVec
 
 theorem row_mulVec [Fintype n] [NonUnitalNonAssocSemiring α] (M : Matrix m n α) (v : n → α) :
-    Matrix.row (Matrix.mulVec M v) = (M ⬝ Matrix.col v)ᵀ := by
+    Matrix.row (Matrix.mulVec M v) = (M * Matrix.col v)ᵀ := by
   ext
   rfl
 #align matrix.row_mul_vec Matrix.row_mulVec
 
 @[simp]
 theorem row_mul_col_apply [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → α) (i j) :
-    (row v ⬝ col w) i j = v ⬝ᵥ w :=
+    (row v * col w) i j = v ⬝ᵥ w :=
   rfl
 #align matrix.row_mul_col_apply Matrix.row_mul_col_apply
 
@@ -2941,7 +2936,7 @@ namespace RingHom
 variable [Fintype n] [NonAssocSemiring α] [NonAssocSemiring β]
 
 theorem map_matrix_mul (M : Matrix m n α) (N : Matrix n o α) (i : m) (j : o) (f : α →+* β) :
-    f (Matrix.mul M N i j) = Matrix.mul (M.map f) (N.map f) i j := by
+    f ((M * N) i j) = (M.map f * N.map f) i j := by
   simp [Matrix.mul_apply, map_sum]
 #align ring_hom.map_matrix_mul RingHom.map_matrix_mul
 

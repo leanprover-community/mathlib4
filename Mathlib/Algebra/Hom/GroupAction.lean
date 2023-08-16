@@ -36,6 +36,8 @@ The above types have corresponding classes:
 
 -/
 
+set_option autoImplicit true
+
 assert_not_exists Submonoid
 
 variable (M' : Type*)
