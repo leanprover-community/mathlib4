@@ -98,10 +98,17 @@ theorem dotProduct_self_star_eq_zero {v : n → R} : dotProduct v (star v) = 0 �
     by simp [Function.funext_iff, mul_eq_zero]
 #align matrix.dot_product_self_star_eq_zero Matrix.dotProduct_self_star_eq_zero
 
-@[simp] lemma conjTranspose_mul_self_eq_zero_iff {A : Matrix m n R} : (Aᴴ⬝A) = 0 ↔ A = 0 :=
+@[simp]
+lemma conjTranspose_mul_self_eq_zero_iff {A : Matrix m n R} : (Aᴴ⬝A) = 0 ↔ A = 0 :=
   ⟨fun h => Matrix.ext fun i j =>
     (congr_fun <| dotProduct_star_self_eq_zero.1 <| Matrix.ext_iff.2 h j j) i,
   fun h => h ▸ Matrix.mul_zero _⟩
+
+@[simp]
+lemma self_mul_conjTranspose_eq_zero_iff {A : Matrix m n R} : (A⬝Aᴴ) = 0 ↔ A = 0 :=
+  ⟨fun h => Matrix.ext fun i j =>
+    (congr_fun <| dotProduct_self_star_eq_zero.1 <| Matrix.ext_iff.2 h i i) j,
+  fun h => h ▸ Matrix.zero_mul _⟩
 
 lemma ker_conj_transpose_mul_self_eq_ker (A: Matrix m n R) (B: Matrix n p R) :
     (Aᴴ⬝A)⬝B = 0 ↔ A⬝B = 0 := by
