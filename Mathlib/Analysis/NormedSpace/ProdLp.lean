@@ -42,7 +42,7 @@ open Real Set Filter IsROrC Bornology BigOperators Uniformity Topology NNReal EN
 
 noncomputable section
 
-variable (p : ℝ≥0∞) (𝕜 𝕜' α β : Type*)
+variable (p : ℝ≥0∞) (𝕜 α β : Type*)
 
 namespace WithLp
 
@@ -302,7 +302,7 @@ coincide with the product one. Therefore, we do not register it as an instance. 
 temporary pseudoemetric space instance, we will show that the uniform structure is equal (but not
 defeq) to the product one, and then register an instance in which we replace the uniform structure
 by the product one using this pseudoemetric space and `PseudoEMetricSpace.replaceUniformity`. -/
-def prodPseudoEmetricAux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+def prodPseudoEMetricAux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     PseudoEMetricSpace (WithLp p (α × β)) where
   edist_self := prod_edist_self p
   edist_comm := prod_edist_comm p
@@ -329,7 +329,7 @@ def prodPseudoEmetricAux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
             Finset.sum_singleton] at this
           exact this
 
-attribute [local instance] WithLp.prodPseudoEmetricAux
+attribute [local instance] WithLp.prodPseudoEMetricAux
 
 variable {α β}
 
@@ -450,29 +450,55 @@ end Aux
 
 /-! ### Instances on `L^p` products -/
 
+section TopologicalSpace
 
-instance instUniformSpace [UniformSpace α] [UniformSpace β] : UniformSpace (WithLp p (α × β)) :=
+variable [TopologicalSpace α] [TopologicalSpace β]
+
+instance instTopologicalSpace : TopologicalSpace (WithLp p (α × β)) :=
+  instTopologicalSpaceProd
+
+@[continuity]
+theorem continuous_equiv : Continuous (WithLp.equiv p (α × β)) :=
+  continuous_id
+
+@[continuity]
+theorem continuous_equiv_symm : Continuous (WithLp.equiv p (α × β)).symm :=
+  continuous_id
+
+end TopologicalSpace
+
+section UniformSpace
+
+variable [UniformSpace α] [UniformSpace β]
+
+instance instUniformSpace : UniformSpace (WithLp p (α × β)) :=
   instUniformSpaceProd
 
-theorem uniformContinuous_equiv [UniformSpace α] [UniformSpace β] :
-    UniformContinuous (WithLp.equiv p (α × β)) :=
+theorem uniformContinuous_equiv : UniformContinuous (WithLp.equiv p (α × β)) :=
   uniformContinuous_id
 
-theorem uniformContinuous_equiv_symm [UniformSpace α] [UniformSpace β] :
-    UniformContinuous (WithLp.equiv p (α × β)).symm :=
+theorem uniformContinuous_equiv_symm : UniformContinuous (WithLp.equiv p (α × β)).symm :=
   uniformContinuous_id
 
-@[continuity]
-theorem continuous_equiv [UniformSpace α] [UniformSpace β] : Continuous (WithLp.equiv p (α × β)) :=
-  continuous_id
-
-@[continuity]
-theorem continuous_equiv_symm [UniformSpace α] [UniformSpace β] :
-    Continuous (WithLp.equiv p (α × β)).symm :=
-  continuous_id
+end UniformSpace
 
 instance instBornology [Bornology α] [Bornology β] : Bornology (WithLp p (α × β)) :=
   Prod.instBornology
+
+section ContinuousLinearEquiv
+
+variable [TopologicalSpace α] [TopologicalSpace β]
+variable [Semiring 𝕜] [AddCommGroup α] [AddCommGroup β]
+variable [Module 𝕜 α] [Module 𝕜 β]
+
+/-- `WithLp.equiv` as a continuous linear equivalence. -/
+@[simps! (config := { fullyApplied := false }) apply symm_apply]
+protected def prodContinuousLinearEquiv : WithLp p (α × β) ≃L[𝕜] α × β where
+  toLinearEquiv := WithLp.linearEquiv _ _ _
+  continuous_toFun := continuous_equiv _ _ _
+  continuous_invFun := continuous_equiv_symm _ _ _
+
+end ContinuousLinearEquiv
 
 -- throughout the rest of the file, we assume `1 ≤ p`
 variable [Fact (1 ≤ p)]
@@ -481,7 +507,7 @@ variable [Fact (1 ≤ p)]
 `L^p` pseudoedistance, and having as uniformity the product uniformity. -/
 instance instProdPseudoEMetricSpace [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     PseudoEMetricSpace (WithLp p (α × β)) :=
-  (prodPseudoEmetricAux p α β).replaceUniformity (prod_aux_uniformity_eq p α β).symm
+  (prodPseudoEMetricAux p α β).replaceUniformity (prod_aux_uniformity_eq p α β).symm
 
 /-- `EMetricSpace` instance on the product of two emetric spaces, using the `L^p`
 edistance, and having as uniformity the product uniformity. -/
@@ -613,7 +639,7 @@ theorem prod_edist_eq_of_L2 (x y : WithLp 2 (α × β)) :
 
 end norm_of
 
-variable [NormedField 𝕜] [NormedField 𝕜']
+variable [NormedField 𝕜]
 
 section InstNormedSpace
 
@@ -621,8 +647,7 @@ variable [SeminormedAddCommGroup α] [NormedSpace 𝕜 α]
   [SeminormedAddCommGroup β] [NormedSpace 𝕜 β]
 
 /-- The product of two normed spaces is a normed space, with the `L^p` norm. -/
-instance instProdNormedSpace :
-    NormedSpace 𝕜 (WithLp p (α × β)) where
+instance instProdNormedSpace : NormedSpace 𝕜 (WithLp p (α × β)) where
   norm_smul_le := fun c f => by
     rcases p.dichotomy with (rfl | hp)
     · letI : Module 𝕜 (WithLp ∞ (α × β)) := Prod.instModule
@@ -731,14 +756,5 @@ theorem edist_equiv_symm_single_snd (y₁ y₂ : β) :
   simp only [edist_nndist, nndist_equiv_symm_single_snd p α β y₁ y₂]
 
 end Single
-
-variable (𝕜 p α β)
-
-/-- `WithLp.equiv` as a continuous linear equivalence. -/
-@[simps! (config := { fullyApplied := false }) apply symm_apply]
-protected def prodContinuousLinearEquiv : WithLp p (α × β) ≃L[𝕜] α × β where
-  toLinearEquiv := WithLp.linearEquiv _ _ _
-  continuous_toFun := continuous_equiv _ _ _
-  continuous_invFun := continuous_equiv_symm _ _ _
 
 end WithLp
