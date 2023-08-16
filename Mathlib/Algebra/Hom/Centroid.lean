@@ -545,14 +545,12 @@ Let α be a star ring with commutative centroid. Then the centroid is a star rin
 -/
 def starRingOfCommCentroidHom (mul_comm : ∀ f g : CentroidHom α, f * g = g * f) :
     StarRing (CentroidHom α) where
-  __ := starAddMonoidOfCentroidHom
+  __ := instStarAddMonoid
   star_mul f g := by
     rw [mul_comm]
     ext
     rw [star_apply, mul_apply, mul_apply, star_apply]
     simp
- }
-
 
 end StarRing
 
