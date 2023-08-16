@@ -970,42 +970,8 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
               refine (hf.marginal μ).comp (measurable_update x) |>.pow measurable_const |>.mul ?_
               refine Finset.measurable_prod _ fun i _ ↦ ?_
               exact (hf.marginal μ).comp (measurable_update x) |>.pow measurable_const
-    _ = (∫⋯∫_insert i s, f ∂μ) x ^ p *
-          ∫⁻ (a : π i),
-            ∏ j in insertNone (insert i s)ᶜ,
-              Option.elim j (∫⋯∫_s, f ∂μ) (fun k ↦ ∫⋯∫_insert k s, f ∂μ) (update x i a) ^
-                Option.elim j (m * p) (fun _ ↦ p) ∂(μ i) := by
-              clear_value p m
-              congr! 2
-              ext t
-              rw [prod_insertNone]
-              dsimp
-              rw [prod_apply]
-              dsimp
-    _ ≤ (∫⋯∫_insert i s, f ∂μ) x ^ p *
-          (∏ j in insertNone (insert i s)ᶜ,
-            (∫⁻ t, Option.elim j (∫⋯∫_s, f ∂μ) (fun k ↦ ∫⋯∫_insert k s, f ∂μ) (update x i t) ∂(μ i))
-              ^ Option.elim j (m * p) (fun _ ↦ p)) := by
-              gcongr
-              refine lintegral_prod_norm_pow_le _ ?_ ?_ -- Hölder's inequality
-              · clear_value p
-                simp_rw [sum_insertNone, compl_insert, Option.elim, sum_const, nsmul_eq_mul]
-                exact hp
-              · rintro (_|j) - <;> dsimp <;> positivity
-    _ = ((∫⋯∫_insert i s, f ∂μ) x) ^ p *
-          ((∫⁻ t, (∫⋯∫_s, f ∂μ) (update x i t) ∂μ i) ^ (m * p) *
-            ∏ j in (insert i s)ᶜ, (∫⁻ t, (∫⋯∫_insert j s, f ∂μ) (update x i t) ∂(μ i)) ^ p) := by
-              -- this proof could be `simp [prod_insertNone]` but that's too slow
-              simp_rw [prod_insertNone]
-              dsimp
-    _ = ((∫⋯∫_insert i s, f ∂μ) x) ^ p * (((∫⋯∫_insert i s, f ∂μ) x) ^ (m * p) *
-            ∏ j in (insert i s)ᶜ, ((∫⋯∫_insert i (insert j s), f ∂μ) x) ^ p) := by
-              rw [marginal_insert _ hf hi]
-              congr! 2; refine prod_congr rfl fun j hj => ?_
-              have hi' : i ∉ insert j s
-              · simp only [Finset.mem_insert, compl_insert, Finset.mem_compl, mem_erase] at hj ⊢
-                tauto
-              rw [marginal_insert _ hf hi']
+    _ ≤ ((∫⋯∫_insert i s, f ∂μ) x) ^ p * (((∫⋯∫_insert i s, f ∂μ) x) ^ (m * p) *
+            ∏ j in (insert i s)ᶜ, ((∫⋯∫_insert i (insert j s), f ∂μ) x) ^ p) := ?_
     _ = ((∫⋯∫_insert i s, f ∂μ) x) ^ ((m + 1 : ℝ) * p) *
             ∏ j in (insert i s)ᶜ, ((∫⋯∫_insert i (insert j s), f ∂μ) x) ^ p := by
               rw [← mul_assoc]
@@ -1029,6 +995,44 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
               -- this proof could be `ring_nf` but that's too slow`
               congr! 2
               ring
+  gcongr
+  calc
+    (∫⁻ t, ((∫⋯∫_s, f ∂μ) ^ (m * p)
+          * ∏ x in (insert i s)ᶜ, (∫⋯∫_insert x s, f ∂μ) ^ p) (update x i t) ∂(μ i))
+      = ∫⁻ (a : π i),
+          ∏ j in insertNone (insert i s)ᶜ,
+            Option.elim j (∫⋯∫_s, f ∂μ) (fun k ↦ ∫⋯∫_insert k s, f ∂μ) (update x i a) ^
+              Option.elim j (m * p) (fun _ ↦ p) ∂(μ i) := by
+            clear_value p m
+            congr! 1
+            ext t
+            rw [prod_insertNone]
+            dsimp
+            rw [prod_apply]
+            dsimp
+    _ ≤ (∏ j in insertNone (insert i s)ᶜ,
+          (∫⁻ t, Option.elim j (∫⋯∫_s, f ∂μ) (fun k ↦ ∫⋯∫_insert k s, f ∂μ) (update x i t) ∂(μ i))
+            ^ Option.elim j (m * p) (fun _ ↦ p)) := by
+            refine lintegral_prod_norm_pow_le _ ?_ ?_ -- Hölder's inequality
+            · clear_value p
+              simp_rw [sum_insertNone, compl_insert, Option.elim, sum_const, nsmul_eq_mul]
+              exact hp
+            · rintro (_|j) - <;> dsimp <;> positivity
+    _ = ((∫⁻ t, (∫⋯∫_s, f ∂μ) (update x i t) ∂μ i) ^ (m * p) *
+          ∏ j in (insert i s)ᶜ, (∫⁻ t, (∫⋯∫_insert j s, f ∂μ) (update x i t) ∂(μ i)) ^ p) := by
+            -- this proof could be `simp [prod_insertNone]` but that's too slow
+            simp_rw [prod_insertNone]
+            dsimp
+    _ = (((∫⋯∫_insert i s, f ∂μ) x) ^ (m * p) *
+          ∏ j in (insert i s)ᶜ, ((∫⋯∫_insert i (insert j s), f ∂μ) x) ^ p) := by
+            rw [marginal_insert _ hf hi]
+            congr! 1; refine prod_congr rfl fun j hj => ?_
+            have hi' : i ∉ insert j s
+            · simp only [Finset.mem_insert, compl_insert, Finset.mem_compl, mem_erase] at hj ⊢
+              tauto
+            rw [marginal_insert _ hf hi']
+
+
 
 lemma Measurable.rhsAux (hf : Measurable f) : Measurable (rhsAux μ f s) := by
   simp [_root_.rhsAux]
