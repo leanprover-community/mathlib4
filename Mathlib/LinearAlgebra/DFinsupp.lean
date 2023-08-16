@@ -262,8 +262,8 @@ variable [DecidableEq ι] [∀ x : N, Decidable (x ≠ 0)]
 `(Π₀ i, M i) →ₗ[R] N` which sends `x : Π₀ i, M i` to the sum over `i` of `f i` applied to `x i`.
 This is the map coming from the universal property of `Π₀ i, M i` as the coproduct of the `M i`.
 See also `LinearMap.coprod` for the binary product version. -/
-noncomputable def coprodMap (f : ∀ i : ι, M i →ₗ[R] N) : (Π₀ i, M i) →ₗ[R] N :=
-  (Finsupp.lsum ℕ fun _ : ι => LinearMap.id) ∘ₗ
+def coprodMap (f : ∀ i : ι, M i →ₗ[R] N) : (Π₀ i, M i) →ₗ[R] N :=
+  (Finsupp.lsumHom ℕ fun _ : ι => LinearMap.id) ∘ₗ
     (@finsuppLequivDFinsupp ι R N _ _ _ _ _).symm.toLinearMap ∘ₗ DFinsupp.mapRange.linearMap f
 #align dfinsupp.coprod_map DFinsupp.coprodMap
 
