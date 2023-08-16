@@ -153,6 +153,10 @@ instance : Unique ({i} : Finset δ) :=
 @[simp]
 lemma default_singleton : ((default : ({i} : Finset δ)) : δ) = i := rfl
 
+lemma none_mem_insertNone {s : Finset α} : none ∈ insertNone s := by simp
+
+lemma insertNone_nonempty {s : Finset α} : insertNone s |>.Nonempty := ⟨none, none_mem_insertNone⟩
+
 end Finset
 
 end Finset
@@ -421,18 +425,6 @@ theorem finsetUnionEquivSum_symm_inr' {α} {s t : Finset α} (h : Disjoint s t) 
     (finsetUnionEquivSum s t h).symm (Sum.inr y) = ⟨y, Finset.mem_union.mpr <| Or.inr y.2⟩ :=
   rfl
 
--- @[simp]
--- theorem finsetUnionEquivSum_left {α} {s t : Finset α} (h : Disjoint s t) (x : (s ∪ t : Finset α))
---     (hx : ↑x ∈ s) :
---     finsetUnionEquivSum s t h x = Sum.inl ⟨x, hx⟩ :=
---   sorry
-
--- -- equiv.set.union_apply_left _ $ finset.mem_coe.mp hx
--- @[simp]
--- theorem finsetUnionEquivSum_right {α} {s t : Finset α} (h : Disjoint s t) (x : (s ∪ t : Finset α))
---     (hx : ↑x ∈ t) : finsetUnionEquivSum s t h x = Sum.inr ⟨x, hx⟩ :=
---   sorry
-
 theorem iUnion_univ_pi {ι ι₂} {α : ι → Type _} (t : ∀ i, ι₂ → Set (α i)) :
     (⋃ x : ι → ι₂, pi univ fun i => t i (x i)) = pi univ fun i => ⋃ j : ι₂, t i j := by
   ext
@@ -655,13 +647,6 @@ theorem Subsingleton.measurableSingletonClass {α} [MeasurableSpace α] [Subsing
   refine' ⟨fun i => _⟩
   convert MeasurableSet.univ
   simp [Set.eq_univ_iff_forall]
-
--- theorem integral_prod_norm_pow_le {α} [measurable_space α] {μ : measure α} (s : finset ι)
---   {f : ι → α → ℝ} (h2f : ∀ i ∈ s, 0 ≤ f i) {p : ι → ℝ} (hp : ∑ i in s, p i = 1)
---   (h2p : ∀ i ∈ s, 0 ≤ p i)
---   (hf : ∀ i ∈ s, mem_ℒp (f i) (ennreal.of_real $ p i) μ) :
---   ∫ a, ∏ i in s, f i a ^ p i ∂μ ≤ ∏ i in s, (∫ a, f i a ∂μ) ^ p i :=
--- sorry
 
 /-- A different formulation of Hölder's inequality for two functions -/
 theorem ENNReal.lintegral_mul_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α}
@@ -1052,9 +1037,10 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
             (∫⁻ t, Option.elim j (∫⋯∫_s, f ∂μ) (fun k ↦ ∫⋯∫_insert k s, f ∂μ) (update x i t) ∂(μ i))
               ^ Option.elim j (m * p) (fun _ ↦ p)) := by
               gcongr
-              refine ENNReal.lintegral_prod_norm_pow_le _ ?_ ?_ ?_ ?_ -- Hölder's inequality
-              · sorry
-              · sorry
+              -- we now apply Hölder's inequality
+              refine ENNReal.lintegral_prod_norm_pow_le _ insertNone_nonempty ?_ ?_ ?_
+              · rintro (_|i) _ <;>
+                  exact (hf.marginal μ |>.comp <| measurable_update _).aemeasurable
               · clear_value p
                 simp_rw [sum_insertNone, compl_insert, Option.elim, sum_const, nsmul_eq_mul]
                 exact hp
