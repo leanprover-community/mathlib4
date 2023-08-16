@@ -619,6 +619,11 @@ lemma prod_indicator_index [Zero M] [CommMonoid N]
 #align finsupp.prod_indicator_index Finsupp.prod_indicator_index
 #align finsupp.sum_indicator_index Finsupp.sum_indicator_index
 
+lemma sum_cons [AddCommMonoid M] (n : ℕ) (σ : Fin n →₀ M) (i : M) :
+    (sum (cons i σ) fun _ e ↦ e) = i + sum σ (fun _ e ↦ e) := by
+  rw [sum_fintype _ _ (fun _ => rfl), sum_fintype _ _ (fun _ => rfl)]
+  exact Fin.sum_cons i σ
+
 end Finsupp
 
 theorem Finset.sum_apply' : (∑ k in s, f k) i = ∑ k in s, f k i :=
@@ -664,12 +669,3 @@ theorem prod_pow_pos_of_zero_not_mem_support {f : ℕ →₀ ℕ} (hf : 0 ∉ f.
 #align nat.prod_pow_pos_of_zero_not_mem_support Nat.prod_pow_pos_of_zero_not_mem_support
 
 end Nat
-
-lemma Finsupp.sum_cons [AddCommMonoid M] (n : ℕ) (σ : Fin n →₀ M) (i : M) :
-    (Finsupp.sum (Finsupp.cons i σ) fun _ e ↦ e) = i + Finsupp.sum σ (fun _ e ↦ e) := by
-  convert Fin.sum_cons i σ
-  · rw [Finsupp.sum_fintype]
-    congr
-    simp
-  · rw [Finsupp.sum_fintype]
-    simp
