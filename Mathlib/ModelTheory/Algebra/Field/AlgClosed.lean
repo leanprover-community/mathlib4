@@ -139,7 +139,7 @@ theorem modelField_of_modelACF (p : ℕ) (K : Type*) [Language.ring.Structure K]
 
 /-- A model for the Theory of algebraically closed fields is a Field. After introducing
 this as a local instance on a particular Type, you should usually also introduce
-`compatibleRingOfModelField` and `isAlgClosed_of_model_ACF` -/
+`modelField_of_modelACF p M`, `compatibleRingOfModelField` and `isAlgClosed_of_model_ACF` -/
 @[reducible]
 noncomputable def fieldOfModelACF (p : ℕ) (K : Type*)
     [Language.ring.Structure K]
@@ -161,7 +161,7 @@ theorem isAlgClosed_of_model_ACF (p : ℕ) (K : Type*)
   rw [realize_genericMonicPolyHasRoot] at this
   exact this ⟨_, hpm, rfl⟩
 
-/-Note this is caused by `AlgebraicClosure ℚ`. We don't need to increase heartbeats for
+/- Note this is caused by `AlgebraicClosure ℚ`. We don't need to increase heartbeats for
 `AlgebraicClosure (ZMod p)` for some reason -/
 set_option synthInstance.maxHeartbeats 50000 in
 theorem ACF_isSatisfiable {p : ℕ} (hp : p.Prime ∨ p = 0) :
@@ -178,8 +178,8 @@ theorem ACF_isSatisfiable {p : ℕ} (hp : p.Prime ∨ p = 0) :
     subst hp
     letI := compatibleRingOfRing (AlgebraicClosure ℚ)
     haveI : CharP (AlgebraicClosure ℚ) 0 :=
-    charP_of_injective_algebraMap
-      (RingHom.injective (algebraMap ℚ (AlgebraicClosure ℚ))) 0
+      charP_of_injective_algebraMap
+        (RingHom.injective (algebraMap ℚ (AlgebraicClosure ℚ))) 0
     exact ⟨⟨AlgebraicClosure ℚ⟩⟩
 
 open Cardinal
@@ -193,16 +193,19 @@ theorem ACF_isComplete {p : ℕ} (hp : p.Prime ∨ p = 0) :
   · exact ACF_isSatisfiable hp
   · rintro ⟨M⟩
     letI := fieldOfModelACF p M
+    haveI := modelField_of_modelACF p M
     letI := compatibleRingOfModelField M
-    letI := isAlgClosed_of_model_ACF p M
+    haveI := isAlgClosed_of_model_ACF p M
     infer_instance
   · rintro ⟨M⟩ ⟨N⟩ hM hN
     letI := fieldOfModelACF p M
+    haveI := modelField_of_modelACF p M
     letI := compatibleRingOfModelField M
-    letI := isAlgClosed_of_model_ACF p M
+    haveI := isAlgClosed_of_model_ACF p M
     letI := fieldOfModelACF p N
+    haveI := modelField_of_modelACF p N
     letI := compatibleRingOfModelField N
-    letI := isAlgClosed_of_model_ACF p N
+    haveI := isAlgClosed_of_model_ACF p N
     constructor
     refine languageEquivEquivRingEquiv ?_
     apply Classical.choice
