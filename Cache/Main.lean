@@ -3,7 +3,7 @@ Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
-
+import Lake
 import Cache.Requests
 
 def help : String := "Mathlib4 caching CLI
@@ -61,12 +61,13 @@ def curlArgs : List String :=
 def leanTarArgs : List String :=
   ["get", "get!", "pack", "pack!", "unpack"]
 
-open Cache IO Hashing Requests in
+open Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
   let hashMemo ← getHashMemo
   let hashMap := hashMemo.hashMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
   if leanTarArgs.contains (args.headD "") then validateLeanTar
+  Lake.withLockFile (FilePath.mk "build" / "lake.lock") do
   match args with
   | ["get"] => getFiles hashMap false false goodCurl true
   | ["get!"] => getFiles hashMap true true goodCurl true
