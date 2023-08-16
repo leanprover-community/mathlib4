@@ -177,6 +177,7 @@ def toΓSpecCBasicOpens :
     apply X.presheaf.map_comp
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_c_basic_opens AlgebraicGeometry.LocallyRingedSpace.toΓSpecCBasicOpens
 
+set_option maxHeartbeats 400000 in
 /-- The canonical morphism of sheafed spaces from `X` to the spectrum of its global sections. -/
 @[simps]
 def toΓSpecSheafedSpace : X.toSheafedSpace ⟶ Spec.toSheafedSpace.obj (op (Γ.obj (op X))) where
@@ -186,6 +187,7 @@ def toΓSpecSheafedSpace : X.toSheafedSpace ⟶ Spec.toSheafedSpace.obj (op (Γ.
       X.toΓSpecCBasicOpens
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_SheafedSpace AlgebraicGeometry.LocallyRingedSpace.toΓSpecSheafedSpace
 
+set_option maxHeartbeats 400000 in
 -- Porting Note: Now need much more hand holding: all variables explicit, and need to tidy up
 -- significantly, was `TopCat.Sheaf.extend_hom_app _ _ _ _`
 theorem toΓSpecSheafedSpace_app_eq :
@@ -208,6 +210,7 @@ theorem toΓSpecSheafedSpace_app_eq :
   (X.toΓSpecSheafedSpace_app_eq r).symm ▸ X.toΓSpecCApp_spec r
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_SheafedSpace_app_spec AlgebraicGeometry.LocallyRingedSpace.toΓSpecSheafedSpace_app_spec
 
+set_option maxHeartbeats 400000 in
 /-- The map on stalks induced by the unit commutes with maps from `Γ(X)` to
     stalks (in `Spec Γ(X)` and in `X`). -/
 theorem toStalk_stalkMap_toΓSpec (x : X) :
@@ -344,6 +347,7 @@ unif_hint uh_functor_op1 where ⊢
 unif_hint uh_functor_op2 where ⊢
   Functor.op (𝟭 CommRingCat.{u}) ≟ 𝟭 CommRingCatᵒᵖ in
 
+set_option maxHeartbeats 0 in
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `LocallyRingedSpace`. -/
 --Porting Note: `simps` cause a time out, so `Unit` and `counit` will be added manually
 def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} :=
@@ -368,6 +372,7 @@ lemma locallyRingedSpaceAdjunction_unit :
   locallyRingedSpaceAdjunction.unit = identityToΓSpec := rfl
 #align algebraic_geometry.Γ_Spec.LocallyRingedSpace_adjunction_unit AlgebraicGeometry.ΓSpec.locallyRingedSpaceAdjunction_unit
 
+set_option maxHeartbeats 0 in
 lemma locallyRingedSpaceAdjunction_counit :
   locallyRingedSpaceAdjunction.counit = (NatIso.op SpecΓIdentity.{u}).inv := rfl
 #align algebraic_geometry.Γ_Spec.LocallyRingedSpace_adjunction_counit AlgebraicGeometry.ΓSpec.locallyRingedSpaceAdjunction_counit
@@ -449,7 +454,7 @@ theorem adjunction_unit_app_app_top (X : Scheme) :
     Spec.sheafedSpaceObj_carrier, Spec.sheafedSpaceObj_presheaf,
     SpecΓIdentity_inv_app, Category.id_comp] at this
   rw [← op_inv, Quiver.Hom.op_inj.eq_iff] at this
-  rw [SpecΓIdentity_hom_app]
+  simp_rw [SpecΓIdentity_hom_app]
   convert this using 1
 #align algebraic_geometry.Γ_Spec.adjunction_unit_app_app_top AlgebraicGeometry.ΓSpec.adjunction_unit_app_app_top
 
