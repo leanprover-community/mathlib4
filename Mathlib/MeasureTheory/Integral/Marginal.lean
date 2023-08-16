@@ -871,7 +871,7 @@ def marginal (μ : ∀ i, Measure (π i)) (s : Finset δ) (f : (∀ i, π i) →
 -- Note: this notation is not a binder. This is more convenient since it returns a function.
 notation "∫⋯∫_" s ", " f " ∂" μ:70 => marginal μ s f
 
-notation "∫⋯∫_" s ", " f => marginal volume s f
+notation "∫⋯∫_" s ", " f => marginal (fun _ ↦ volume) s f
 
 variable (μ)
 
