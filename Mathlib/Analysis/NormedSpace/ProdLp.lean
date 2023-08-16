@@ -506,14 +506,12 @@ variable {p α β}
 theorem prod_nndist_eq_add [PseudoMetricSpace α] [PseudoMetricSpace β]
     (hp : p ≠ ∞) (x y : WithLp p (α × β)) :
     nndist x y = (nndist x.fst y.fst ^ p.toReal + nndist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) :=
-  -- Porting note: was `Subtype.ext`
   NNReal.eq <| by
     push_cast
     exact prod_dist_eq_add (p.toReal_pos_iff_ne_top.mpr hp) _ _
 
 theorem prod_nndist_eq_sup [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp ∞ (α × β)) :
     nndist x y = nndist x.fst y.fst ⊔ nndist x.snd y.snd :=
-  -- Porting note: was `Subtype.ext`
   NNReal.eq <| by
     push_cast
     exact prod_dist_eq_sup _ _
