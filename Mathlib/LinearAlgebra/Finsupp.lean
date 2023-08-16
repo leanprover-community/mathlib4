@@ -330,7 +330,7 @@ theorem disjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
 
 /-- Interpret `Finsupp.restrictSupportEquiv` as a linear equivalence between
 `supported M R s` and `s →₀ M`. -/
-def supportedEquivFinsupp (s : Set α) : supported M R s ≃ₗ[R] s →₀ M := by
+def supportedEquivFinsupp (s : Set α) [DecidableEq α] : supported M R s ≃ₗ[R] s →₀ M := by
   let F : supported M R s ≃ (s →₀ M) := restrictSupportEquiv s M
   refine' F.toLinearEquiv _
   have :
@@ -344,7 +344,7 @@ def supportedEquivFinsupp (s : Set α) : supported M R s ≃ₗ[R] s →₀ M :=
 section LSum
 
 variable (S)
-variable [Module S N] [SMulCommClass R S N]
+variable [DecidableEq α] [Module S N] [SMulCommClass R S N]
 
 /-- Lift a family of linear maps `M →ₗ[R] N` indexed by `x : α` to a linear map from `α →₀ M` to
 `N` using `Finsupp.sum`. This is an upgraded version of `Finsupp.liftAddHom`.
@@ -394,7 +394,7 @@ end LSum
 section
 
 variable (M) (R) (X : Type*) (S)
-variable [Module S M] [SMulCommClass R S M]
+variable [DecidableEq X] [Module S M] [SMulCommClass R S M]
 
 /-- A slight rearrangement from `lsum` gives us
 the bijection underlying the free-forgetful adjunction for R-modules.
@@ -442,7 +442,7 @@ end
 
 section LMapDomain
 
-variable {α' : Type*} {α'' : Type*} (M R)
+variable {α' : Type*} {α'' : Type*} [DecidableEq α'] (M R)
 
 /-- Interpret `Finsupp.mapDomain` as a linear map. -/
 def lmapDomain (f : α → α') : (α →₀ M) →ₗ[R] α' →₀ M
@@ -459,11 +459,12 @@ theorem lmapDomain_apply (f : α → α') (l : α →₀ M) :
 #align finsupp.lmap_domain_apply Finsupp.lmapDomain_apply
 
 @[simp]
-theorem lmapDomain_id : (lmapDomain M R _root_.id : (α →₀ M) →ₗ[R] α →₀ M) = LinearMap.id :=
+theorem lmapDomain_id [DecidableEq α] :
+    (lmapDomain M R _root_.id : (α →₀ M) →ₗ[R] α →₀ M) = LinearMap.id :=
   LinearMap.ext fun _ => mapDomain_id
 #align finsupp.lmap_domain_id Finsupp.lmapDomain_id
 
-theorem lmapDomain_comp (f : α → α') (g : α' → α'') :
+theorem lmapDomain_comp [DecidableEq α''] (f : α → α') (g : α' → α'') :
     lmapDomain M R (g ∘ f) = (lmapDomain M R g).comp (lmapDomain M R f) :=
   LinearMap.ext fun _ => mapDomain_comp
 #align finsupp.lmap_domain_comp Finsupp.lmapDomain_comp
@@ -545,6 +546,7 @@ variable {α' : Type*} {M' : Type*} [AddCommMonoid M'] [Module R M'] (v : α →
 /-- Interprets (l : α →₀ R) as linear combination of the elements in the family (v : α → M) and
     evaluates this linear combination. -/
 protected def total : (α →₀ R) →ₗ[R] M :=
+  letI := Classical.decEq α
   Finsupp.lsum ℕ fun i => LinearMap.id.smulRight (v i)
 #align finsupp.total Finsupp.total
 
@@ -561,7 +563,8 @@ theorem total_apply_of_mem_supported {l : α →₀ R} {s : Finset α}
 #align finsupp.total_apply_of_mem_supported Finsupp.total_apply_of_mem_supported
 
 @[simp]
-theorem total_single (c : R) (a : α) : Finsupp.total α M R v (single a c) = c • v a := by
+theorem total_single [DecidableEq α] (c : R) (a : α) :
+    Finsupp.total α M R v (single a c) = c • v a := by
   simp [total_apply, sum_single_index]
 #align finsupp.total_single Finsupp.total_single
 
@@ -580,6 +583,7 @@ variable {α M}
 
 theorem apply_total (f : M →ₗ[R] M') (v) (l : α →₀ R) :
     f (Finsupp.total α M R v l) = Finsupp.total α M' R (f ∘ v) l := by
+  classical
   apply Finsupp.induction_linear l <;> simp (config := { contextual := true })
 #align finsupp.apply_total Finsupp.apply_total
 
@@ -593,6 +597,7 @@ theorem total_unique [Unique α] (l : α →₀ R) (v) :
 
 theorem total_surjective (h : Function.Surjective v) :
     Function.Surjective (Finsupp.total α M R v) := by
+  classical
   intro x
   obtain ⟨y, hy⟩ := h x
   exact ⟨Finsupp.single y 1, by simp [hy]⟩
@@ -610,6 +615,7 @@ theorem total_id_surjective (M) [AddCommMonoid M] [Module R M] :
 #align finsupp.total_id_surjective Finsupp.total_id_surjective
 
 theorem range_total : LinearMap.range (Finsupp.total α M R v) = span R (range v) := by
+  classical
   ext x
   constructor
   · intro hx
