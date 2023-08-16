@@ -7,6 +7,18 @@ Authors: Chris Hughes
 import Mathlib.ModelTheory.Algebra.Ring.Basic
 import Mathlib.RingTheory.FreeCommRing
 
+/-!
+
+# Making a term in the language of rings from an element of the FreeCommRing
+
+This file defines the function `FirstOrder.Ring.termOfFreeCommRing` which constructs a
+`Language.ring.Term α` from an element of `FreeCommRing α`.
+
+The theorem `FirstOrder.Ring.realize_termOfFreeCommRing` shows that the term constructed when
+realized in a ring `R` is equal to the lift of the element of `FreeCommRing α` to `R`.
+
+-/
+
 namespace FirstOrder
 
 namespace Ring
@@ -32,6 +44,7 @@ private theorem exists_term_realize_eq_freeCommRing (p : FreeCommRing α) :
 
 end
 
+/-- Make a `Language.ring.Term α` from an element of `FreeCommRing α` -/
 noncomputable def termOfFreeCommRing (p : FreeCommRing α) : Language.ring.Term α :=
   Classical.choose (exists_term_realize_eq_freeCommRing p)
 
