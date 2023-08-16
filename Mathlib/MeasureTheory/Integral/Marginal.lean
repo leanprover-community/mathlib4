@@ -933,8 +933,7 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
   have hι : 2 ≤ (#ι : ℝ) := by exact_mod_cast Fintype.one_lt_card
   have : 1 ≤ (#ι:ℝ) - 1 := by linarith
   let p : ℝ := 1 / ((#ι:ℝ) - 1)
-  have hp₁ : 0 ≤ p := by positivity
-  have hp₂ : s.card * p + (erase sᶜ i).card * p = 1
+  have hp : s.card * p + (erase sᶜ i).card * p = 1
   · have H₁ : ((erase sᶜ i).card : ℝ) = (sᶜ).card - 1 := Finset.cast_card_erase_of_mem h2i
     have H₂ : (s.card : ℝ) + (sᶜ).card = #ι := by exact_mod_cast s.card_add_card_compl
     have H₃ : p * (#ι - 1) = 1
@@ -942,10 +941,10 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
       have : (#ι:ℝ) - 1 ≠ 0 := by positivity
       field_simp [this]
     linear_combination p * H₁ + p * H₂ + H₃
-  let k : ℝ := s.card
+  let m : ℝ := s.card
   intro x
   calc (∫⋯∫_{i}, rhsAux μ f s ∂μ) x
-      = (∫⋯∫_{i}, (∫⋯∫_s, f ∂μ) ^ (k * p) * ∏ j in sᶜ, (∫⋯∫_insert j s, f ∂μ) ^ p ∂μ) x := by
+      = (∫⋯∫_{i}, (∫⋯∫_s, f ∂μ) ^ (m * p) * ∏ j in sᶜ, (∫⋯∫_insert j s, f ∂μ) ^ p ∂μ) x := by
               rw [rhsAux]
               congr
               dsimp only
@@ -954,7 +953,7 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
           ∫⁻ (a : π i),
             ∏ j in insertNone (insert i s)ᶜ,
               Option.elim j (∫⋯∫_s, f ∂μ) (fun k ↦ ∫⋯∫_insert k s, f ∂μ) (update x i a) ^
-                Option.elim j (k * p) (fun _ ↦ p) ∂(μ i) := by
+                Option.elim j (m * p) (fun _ ↦ p) ∂(μ i) := by
               clear_value p
               simp_rw [rhsAux, ← insert_compl_insert hi]
               rw [prod_insert (not_mem_compl.mpr <| mem_insert_self i s)]
@@ -970,42 +969,42 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
                 exact (hf.marginal μ).comp (measurable_update x) |>.pow measurable_const
     _ ≤ (∫⋯∫_insert i s, f ∂μ) x ^ p *
           (∏ j in insertNone (insert i s)ᶜ,
-            (∫⁻ (a : π i), Option.elim j (∫⋯∫_s, f ∂μ) (fun k ↦ ∫⋯∫_insert k s, f ∂μ) (update x i a) ∂(μ i))
-              ^ Option.elim j (k * p) (fun _ ↦ p)) := by
+            (∫⁻ t, Option.elim j (∫⋯∫_s, f ∂μ) (fun k ↦ ∫⋯∫_insert k s, f ∂μ) (update x i t) ∂(μ i))
+              ^ Option.elim j (m * p) (fun _ ↦ p)) := by
               gcongr
               refine lintegral_prod_norm_pow_le _ ?_ ?_ -- Hölder's inequality
               · clear_value p
                 simp_rw [sum_insertNone, compl_insert, Option.elim, sum_const, nsmul_eq_mul]
-                exact hp₂
+                exact hp
               · rintro (_|j) - <;> dsimp <;> positivity
-    _ = ((∫⋯∫_insert i s, f ∂μ) ^ ((k + 1 : ℝ) * p) *
-            ∏ j in (insert i s)ᶜ, (∫⋯∫_insert i (insert j s), f ∂μ) ^ p) x := by
-              clear_value p
-              simp_rw [prod_insertNone]
-              dsimp
-              rw [marginal_insert_rev _ hf hi, ← mul_assoc]
+    _ = ((∫⋯∫_insert i s, f ∂μ) x) ^ p *
+          ((∫⁻ t, (∫⋯∫_s, f ∂μ) (update x i t) ∂μ i) ^ (m * p) *
+            ∏ j in (insert i s)ᶜ, (∫⁻ t, (∫⋯∫_insert j s, f ∂μ) (update x i t) ∂(μ i)) ^ p) := by
+              simp [prod_insertNone]
+    _ = ((∫⋯∫_insert i s, f ∂μ) x) ^ p * (((∫⋯∫_insert i s, f ∂μ) x) ^ (m * p) *
+            ∏ j in (insert i s)ᶜ, ((∫⋯∫_insert i (insert j s), f ∂μ) x) ^ p) := by
+              rw [marginal_insert_rev _ hf hi]
+              congr! 2; refine prod_congr rfl fun j hj => ?_
+              have hi' : i ∉ insert j s
+              · simp only [Finset.mem_insert, compl_insert, Finset.mem_compl, mem_erase] at hj ⊢
+                tauto
+              rw [marginal_insert_rev _ hf hi']
+    _ = ((∫⋯∫_insert i s, f ∂μ) x) ^ ((m + 1 : ℝ) * p) *
+            ∏ j in (insert i s)ᶜ, ((∫⋯∫_insert i (insert j s), f ∂μ) x) ^ p := by
+              rw [← mul_assoc]
               congr
-              · rw [← ENNReal.rpow_add_of_nonneg]
-                · congr
-                  ring
-                · positivity
-                · positivity
-              simp_rw [prod_apply, Pi.pow_apply]
-              refine' prod_congr rfl fun j hj => _
-              have h2 : i ∉ insert j s
-              · have : i ≠ j
-                · simp [-ne_eq] at hj
-                  exact hj.1.symm
-                simp [this, not_or, hi]
-              rw [marginal_insert_rev _ hf h2]
+              rw [← ENNReal.rpow_add_of_nonneg]
+              · congr
+                ring
+              · positivity
+              · positivity
     _ = ((∫⋯∫_insert i s, f ∂μ) ^ ((card (insert i s) : ℝ) * p) *
             ∏ j in (insert i s)ᶜ, (∫⋯∫_insert j (insert i s), f ∂μ) ^ p) x := by
-              rw [Finset.card_insert_of_not_mem hi, Nat.cast_add, Nat.cast_one]
-              simp_rw [Insert.comm]
+              simp [Insert.comm, Finset.card_insert_of_not_mem hi]
     _ = rhsAux μ f (insert i s) x := by
-            rw [rhsAux]
-            congr! 2
-            ring
+              rw [rhsAux]
+              congr! 2
+              ring
 
 lemma Measurable.rhsAux (hf : Measurable f) : Measurable (rhsAux μ f s) := by
   simp [_root_.rhsAux]
