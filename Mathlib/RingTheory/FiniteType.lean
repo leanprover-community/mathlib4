@@ -22,6 +22,8 @@ In this file we define a notion of finiteness that is common in commutative alge
 
 -/
 
+set_option autoImplicit true
+
 
 open Function (Surjective)
 
