@@ -4,9 +4,8 @@ import Mathlib.SetTheory.Ordinal.Topology
 import Mathlib.Data.Nat.Parity
 
 
-universe u
+universe u v
 variable {α : Type u}
-
 
 class CountablyCompleteLinearOrder (α : Type*) extends LinearOrder α where
   /-- The supremum of a countable set -/
@@ -35,8 +34,24 @@ end
 end Order
 namespace Order
 section
+variable [ConditionallyCompleteLinearOrderBot α] [NoTopOrder α] [TopologicalSpace α] [OrderTopology α]
+section
+variable {s : Set α} (h_lt : Cardinal.mk (↑ s) < Order.cof (· ≤ · : α → _))
+theorem bddAbove_of_card_lt_cof : BddAbove s := by
+  contrapose! h_lt
+  rw[not_bddAbove_iff'] at h_lt
+  apply Order.cof_le
+  intro a
+  specialize h_lt a
+  obtain ⟨y, y_in_s, y_lt⟩ := h_lt
+  use y
+  exact ⟨y_in_s, le_of_not_le y_lt⟩
 
-variable [CountablyCompleteLinearOrder α] [NoTopOrder α] [TopologicalSpace α] [OrderTopology α]
+theorem isLUB_csSup_of_card_lt_cof : IsLUB s (sSup s) := isLUB_csSup' (bddAbove_of_card_lt_cof h_lt)
+end
+
+section
+variable (lt_cof : Cardinal.aleph0 < Order.cof (· ≤ · : α → _))
 
 def IsClub.inter {s t : Set α} (hs : IsClub s) (ht : IsClub t) : IsClub (s ∩ t) where
   closed := IsClosed.inter hs.closed ht.closed
@@ -120,12 +135,27 @@ def IsClub.inter {s t : Set α} (hs : IsClub s) (ht : IsClub t) : IsClub (s ∩ 
       use (f 0).snd
       exact ⟨0, rfl⟩
     clear_value f
-    obtain ⟨sup, prf_sp⟩ := CountablyCompleteLinearOrder.supω {(f n).fst | n} fst_ne (Set.countable_range _)
+    let sup := sSup {x | ∃ n, (f n).fst = x}
+    have prf_sp : IsLUB {x | ∃ n, (f n).fst = x} sup := by
+      apply isLUB_csSup_of_card_lt_cof (s := {(f n).fst | n})
+      suffices h : Cardinal.mk ↑{x | ∃ n, (f n).fst = x} ≤ Cardinal.aleph0 from
+        lt_of_le_of_lt h lt_cof
+      simp only [Set.coe_setOf, Cardinal.le_aleph0_iff_subtype_countable]
+      apply Set.countable_range
+    clear_value sup
 
     have sup_in_closure : sup ∈ closure {(f n).fst | n} := by
       apply prf_sp.mem_closure
       assumption
-    obtain ⟨sup', prf_sp'⟩ := CountablyCompleteLinearOrder.supω {(f n).snd | n} snd_ne (Set.countable_range _)
+
+    let sup' := sSup {x | ∃ n, (f n).snd = x}
+    have prf_sp' : IsLUB {x | ∃ n, (f n).snd = x} sup' := by
+      apply isLUB_csSup_of_card_lt_cof (s := {(f n).snd | n})
+      suffices h : Cardinal.mk ↑{x | ∃ n, (f n).snd = x} ≤ Cardinal.aleph0 from
+        lt_of_le_of_lt h lt_cof
+      simp only [Set.coe_setOf, Cardinal.le_aleph0_iff_subtype_countable]
+      apply Set.countable_range
+    clear_value sup'
 
     have sup_is_other_sup : sup = sup' := by
       apply le_antisymm
@@ -175,6 +205,112 @@ def IsClub.inter {s t : Set α} (hs : IsClub s) (ht : IsClub t) : IsClub (s ∩ 
     · replace prf_sp := And.left prf_sp ⟨0, rfl⟩
       exact lt_of_lt_of_le ha prf_sp
 
+theorem unbounded_choose_spec1 {s : Set α} (h : Set.Unbounded (· ≤ ·) s) (a : α) :
+  a < (h a).choose := by
+  have h2 := (h a).choose_spec.right
+  dsimp at h2
+  apply lt_of_not_ge h2
+
+theorem unbounded_choose_spec2 {s : Set α} (h : Set.Unbounded (· ≤ ·) s) (a : α) :
+  (h a).choose ∈ s := (h a).choose_spec.left
+
+
+protected def IsClub.iInter_ordinal {o : Ordinal} {f : Set.Iio o → Set α} (h_club : ∀ x, IsClub (f x))
+  (h_lt : o.card < Order.cof (· ≤ · : α → _)) : IsClub (⋂ (x : Set.Iio o), f x) := by
+  induction o using Ordinal.limitRecOn with
+  | H₁ => simp[Ordinal.not_lt_zero]
+  | H₂ S ih =>
+    let g x := if x.val = S then Set.univ else f x
+    suffices h : (⋂ (x : ↑(Set.Iio (succ S))), f x) = (⋂ (x : ↑(Set.Iio (succ S))), g x)
+      ∩ f ⟨S, (by simp)⟩ by
+      rw[h]
+      apply IsClub.inter lt_cof
+      suffices h_eq : (⋂ (x : ↑(Set.Iio (succ S))), g x) =
+        (⋂ (x : ↑(Set.Iio S)), f ⟨x.val, by {have x2 := x.2; rw[Set.mem_Iio] at x2; simp only [Iio_succ,
+                                              Set.mem_Iic, ge_iff_le]; exact le_of_lt x2;}⟩) by
+        rw[h_eq]
+        apply ih
+        · intro x
+          apply h_club
+        · simp only [ge_iff_le, Ordinal.card_succ] at h_lt
+          exact lt_of_le_of_lt (le_self_add (c := 1)) h_lt
+
+      · ext x
+        simp only [Set.iInter_coe_set, Iio_succ, Set.mem_Iic, Set.mem_iInter, Set.mem_Iio]
+        apply forall_congr'
+        intro a
+        split_ifs with h2
+        · simp only [h2, le_refl, Set.mem_univ, forall_true_left, true_iff]
+          intro i
+          simp[h2] at i
+        · constructor
+          · intro all_i i
+            specialize all_i (le_of_lt i)
+            simp[all_i]
+          · intro all_i i
+            specialize all_i (lt_of_le_of_ne i h2)
+            simp[all_i]
+      · apply h_club
+    ext x
+    simp only [Set.iInter_coe_set, Iio_succ, Set.mem_Iic, Set.mem_iInter, Set.mem_inter_iff, Set.mem_ite_univ_left]
+    constructor
+    · intro hi
+      constructor
+      · intro i i_le i_ne
+        apply hi i i_le
+      · exact hi S le_rfl
+    · intro ⟨hi, x_in⟩ i i_le
+      by_cases i = S
+      · simp[h, x_in]
+      · apply hi i i_le h
+  | H₃ S L ih =>
+    convert_to IsClub (⋂ (x : ↑(Set.Iio S)), ⋂ (y : ↑(Set.Iio x)), f y)
+    · sorry
+    · constructor
+      · have inters_club (x : ↑(Set.Iio S)) : IsClub (⋂ (y : ↑(Set.Iio x.val)),
+        f ⟨y.val,
+        by {rcases y with ⟨y,hy⟩; rcases x with ⟨x,hx⟩; simp only[Set.mem_Iio] at hy hx;
+            simp only [Set.mem_Iio]; exact lt_trans hy hx}⟩) := by
+          apply ih
+          · rcases x with ⟨x, hx⟩
+            rw[Set.mem_Iio] at hx
+            exact hx
+          · intro y
+            apply h_club
+          · apply lt_of_le_of_lt _ h_lt
+            rcases x with ⟨x, hx⟩
+            rw[Set.mem_Iio] at hx
+            exact Ordinal.card_le_card (le_of_lt hx)
+
+        intro a
+        let g' (o : ↑(Set.Iio S)) : o.val ∈ Set.Iio S → α :=
+          o.val.limitRecOn
+            (λ _ ↦ a)
+            (λ p a h ↦ let h2 : p ∈ Set.Iio S :=
+                by {simp only[Set.mem_Iio] at *; exact lt_trans (lt_succ _) h}
+              ((inters_club ⟨p, h2⟩).unbounded (a h2)).choose)
+            (λ o l h is_in ↦ iSup (λ p : Set.Iio o ↦ h p.val p.prop (lt_trans (Set.mem_Iio.mp p.prop) is_in)))
+        let g (o : ↑(Set.Iio S)) : α := g' o o.prop
+
+        have hg1 (o : _): g o ∈ (⋂ (y : ↑(Set.Iio ↑o)), f { val := ↑y, property := (_ : ↑y ∈ Set.Iio S) }) := by
+          rcases o with ⟨o, lt_prf⟩
+          induction o using Ordinal.limitRecOn with
+            | H₁ => simp[Ordinal.not_lt_zero]
+            | H₂ S' ih' =>
+              rw[Set.mem_iInter]
+              intro i
+              dsimp
+              rw[Ordinal.limitRecOn_succ]
+
+
+            | H₃ S' L' ih' => sorry
+      · apply isClosed_iInter
+        intro i
+        apply isClosed_iInter
+        intro j
+        exact (h_club _).closed
+
+
 noncomputable def isClub_FilterBasis : FilterBasis α where
   sets := IsClub
   nonempty := ⟨Set.univ, isClub_univ⟩
@@ -182,10 +318,11 @@ noncomputable def isClub_FilterBasis : FilterBasis α where
     intro x y hx hy
     use x ∩ y
     simp only [Set.subset_inter_iff, Set.inter_subset_left, Set.inter_subset_right, and_self, and_true]
-    exact IsClub.inter hx hy
+    exact IsClub.inter lt_cof hx hy
 
 
-def Filter.club : Filter α := isClub_FilterBasis.filter
+
+def Filter.club : Filter α := (isClub_FilterBasis lt_cof).filter
 end
 end Order
 
