@@ -8,7 +8,7 @@ import Mathlib.Topology.Semicontinuous
 import Mathlib.Topology.MetricSpace.Baire
 
 /-!
-# Barrelled spaces and the Banach-Steinhaus theorem / uniform boundedness principle
+# Barrelled spaces and the Banach-Steinhaus theorem / Uniform Boundedness Principle
 
 This files defines barrelled spaces over a `NontriviallyNormedField`, and proves the
 Banach-Steinhaus theorem for maps from a barrelled space to a space equipped with a family
