@@ -69,7 +69,7 @@ variable [StarRing α] (A : Matrix n n α)
 /-- The conjugate transpose of an invertible matrix is invertible. -/
 instance invertibleConjTranspose [Invertible A] : Invertible Aᴴ := Invertible.star _
 
-@[simp] lemma conjTranspose_invOf [Invertible A] [Invertible Aᴴ] : (⅟A)ᴴ = ⅟(Aᴴ) := star_invOf _
+lemma conjTranspose_invOf [Invertible A] [Invertible Aᴴ] : (⅟A)ᴴ = ⅟(Aᴴ) := star_invOf _
 
 /-- A matrix is invertible if the conjugate transpose is invertible. -/
 def invertibleOfInvertibleConjTranspose [Invertible Aᴴ] : Invertible A := by
@@ -94,19 +94,15 @@ instance invertibleTranspose [Invertible A] : Invertible Aᵀ where
   mul_invOf_self := by rw [←transpose_mul, invOf_mul_self, transpose_one]
 #align matrix.invertible_transpose Matrix.invertibleTranspose
 
-@[simp] lemma transpose_invOf [Invertible A] [Invertible Aᵀ] : (⅟A)ᵀ = ⅟(Aᵀ) := by
+lemma transpose_invOf [Invertible A] [Invertible Aᵀ] : (⅟A)ᵀ = ⅟(Aᵀ) := by
   letI := invertibleTranspose A
   convert (rfl : _ = ⅟(Aᵀ))
 
 /-- `Aᵀ` is invertible when `A` is. -/
-@[reducible] def invertibleOfInvertibleTranspose [Invertible Aᵀ] : Invertible A where
+def invertibleOfInvertibleTranspose [Invertible Aᵀ] : Invertible A where
   invOf := (⅟(Aᵀ))ᵀ
-  invOf_mul_self := calc
-    _ = (⅟Aᵀ)ᵀ * Aᵀᵀ := by rw [transpose_transpose]
-    _ = _ := by rw [←transpose_mul, mul_invOf_self, transpose_one]
-  mul_invOf_self := calc
-    _ = Aᵀᵀ * (⅟Aᵀ)ᵀ := by rw [transpose_transpose]
-    _ = _ := by rw [←transpose_mul, invOf_mul_self, transpose_one]
+  invOf_mul_self := by rw [←transpose_one, ← mul_invOf_self Aᵀ, transpose_mul, transpose_transpose]
+  mul_invOf_self := by rw [←transpose_one, ← invOf_mul_self Aᵀ, transpose_mul, transpose_transpose]
 #align matrix.invertible__of_invertible_transpose Matrix.invertibleOfInvertibleTranspose
 
 /-- Together `Matrix.invertibleTranspose` and `Matrix.invertibleOfInvertibleTranspose` form an
