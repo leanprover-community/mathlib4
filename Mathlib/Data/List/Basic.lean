@@ -499,6 +499,8 @@ theorem bind_eq_bind {α β} (f : α → List β) (l : List α) : l >>= f = l.bi
   rfl
 #align list.bind_eq_bind List.bind_eq_bind
 
+#align list.bind_append List.append_bind
+
 /-! ### concat -/
 
 theorem concat_nil (a : α) : concat [] a = [a] :=
