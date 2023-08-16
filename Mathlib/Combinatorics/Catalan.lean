@@ -143,7 +143,7 @@ theorem succ_mul_catalan_eq_centralBinom (n : ℕ) : (n + 1) * catalan n = n.cen
 #align succ_mul_catalan_eq_central_binom succ_mul_catalan_eq_centralBinom
 
 theorem catalan_two : catalan 2 = 2 := by
-norm_num [catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
+  norm_num [catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
 #align catalan_two catalan_two
 
 theorem catalan_three : catalan 3 = 5 := by
