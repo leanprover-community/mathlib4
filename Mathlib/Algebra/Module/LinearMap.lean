@@ -89,7 +89,7 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 maps is available with the predicate `IsLinearMap`, but it should be avoided most of the time. -/
 structure LinearMap {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S) (M : Type*)
     (M₂ : Type*) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends
-    AddHom M M₂, SMulHom σ M M₂
+    AddHom M M₂, MulActionHom σ M M₂
 -- -/ where
 --   /-- A linear map preserves scalar multiplication.
 --   We prefer the spelling `_root_.map_smul` instead. -/
@@ -121,7 +121,7 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
 class SemilinearMapClass (F : Type*) {R S : outParam (Type*)} [Semiring R] [Semiring S]
   (σ : outParam (R →+* S)) (M M₂ : outParam (Type*)) [AddCommMonoid M] [AddCommMonoid M₂]
-  [Module R M] [Module S M₂] extends AddHomClass F M M₂, SMulSemiHomClass F σ M M₂
+  [Module R M] [Module S M₂] extends AddHomClass F M M₂, MulActionSemiHomClass F σ M M₂
   -- where
   -- /-- A semilinear map preserves scalar multiplication up to some ring homomorphism `σ`.
   -- See also `_root_.map_smul` for the case where `σ` is the identity. -/
@@ -178,8 +178,8 @@ instance (priority := 100) addMonoidHomClass [SemilinearMapClass F σ M M₃] :
         rw [← zero_smul R (0 : M), map_smulₛₗ]
         simp }
 
-instance (priority := 100) distribSMulSemiHomClass [SemilinearMapClass F σ M M₃] :
-    DistribSMulSemiHomClass F σ M M₃ :=
+instance (priority := 100) distribMulActionSemiHomClass [SemilinearMapClass F σ M M₃] :
+    DistribMulActionSemiHomClass F σ M M₃ :=
   { SemilinearMapClass.addMonoidHomClass F with
     coe := fun f ↦ (f : M → M₃)
     map_smulₛₗ := fun f c x ↦ by rw [map_smulₛₗ] }
@@ -227,10 +227,10 @@ instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M�
 instance instFunLike {σ : R →+* S} : FunLike (M →ₛₗ[σ] M₃) M (λ _ ↦ M₃) :=
   { AddHomClass.toFunLike with }
 
-/-- The `DistribSMulSemiHom` underlying a `LinearMap`. -/
-def toDistribSMulSemiHom (f : M →ₛₗ[σ] M₃) : DistribSMulSemiHom σ M M₃ :=
+/-- The `DistribMulActionSemiHom` underlying a `LinearMap`. -/
+def toDistribMulActionSemiHom (f : M →ₛₗ[σ] M₃) : DistribMulActionSemiHom σ M M₃ :=
   { f with map_zero' := show f 0 = 0 from map_zero f }
-#align linear_map.to_distrib_mul_action_hom LinearMap.toDistribSMulSemiHom
+#align linear_map.to_distrib_mul_action_hom LinearMap.toDistribMulActionSemiHom
 
 @[simp]
 theorem coe_toAddHom (f : M →ₛₗ[σ] M₃) : ⇑f.toAddHom = f := rfl
@@ -277,7 +277,7 @@ theorem coe_addHom_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
 
 /-- Identity map as a `LinearMap` -/
 def id : M →ₗ[R] M :=
-  { DistribSMulSemiHom.id R with toFun := _root_.id }
+  { DistribMulActionSemiHom.id R with toFun := _root_.id }
 #align linear_map.id LinearMap.id
 
 theorem id_apply (x : M) : @id R M _ _ _ x = x :=
@@ -661,17 +661,17 @@ def compHom.toLinearMap {R S : Type*} [Semiring R] [Semiring S] (g : R →+* S) 
 
 end Module
 
-namespace DistribSMulSemiHom
+namespace DistribMulActionSemiHom
 
 variable [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Semiring R] [Module R M] [Semiring S] [Module S M₂]
 variable {σ : R →+* S}
 
-/-- A `DistribSMulSemiHom` between two modules is a linear map. -/
+/-- A `DistribMulActionSemiHom` between two modules is a linear map. -/
 @[coe]
 def toLinearMap (fₗ : M →ₑ+[σ] M₂) : M →ₛₗ[σ] M₂ :=
   { fₗ with }
-#align distrib_mul_action_hom.to_linear_map DistribSMulSemiHom.toLinearMap
+#align distrib_mul_action_hom.to_linear_map DistribMulActionSemiHom.toLinearMap
 
 instance : Coe (M →ₑ+[σ] M₂) (M →ₛₗ[σ] M₂) :=
   ⟨toLinearMap⟩
@@ -684,15 +684,15 @@ instance : Coe (M →ₑ+[σ] M₂) (M →ₛₗ[σ] M₂) :=
 @[simp]
 theorem coe_toLinearMap (f : M →ₑ+[σ] M₂) : ((f : M →ₑ+[σ] M₂) : M → M₂) = f :=
   rfl
-#align distrib_mul_action_hom.coe_to_linear_map DistribSMulSemiHom.coe_toLinearMap
+#align distrib_mul_action_hom.coe_to_linear_map DistribMulActionSemiHom.coe_toLinearMap
 
 theorem toLinearMap_injective {f g : M →ₑ+[σ] M₂} (h : (f : M →ₛₗ[σ] M₂) = (g : M →ₛₗ[σ] M₂)) :
     f = g := by
   ext m
   exact LinearMap.congr_fun h m
-#align distrib_mul_action_hom.to_linear_map_injective DistribSMulSemiHom.toLinearMap_injective
+#align distrib_mul_action_hom.to_linear_map_injective DistribMulActionSemiHom.toLinearMap_injective
 
-end DistribSMulSemiHom
+end DistribMulActionSemiHom
 
 namespace IsLinearMap
 
