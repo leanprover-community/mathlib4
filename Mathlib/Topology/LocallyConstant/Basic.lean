@@ -590,6 +590,7 @@ section Equiv
 
 /-- The equivalence between `LocallyConstant X Z` and `LocallyConstant Y Z` given a
     homeomorphism `X ≃ₜ Y` -/
+@[simps]
 noncomputable
 def congrLeft [TopologicalSpace Y] (e : X ≃ₜ Y) : LocallyConstant X Z ≃ LocallyConstant Y Z where
   toFun := comap e.symm
