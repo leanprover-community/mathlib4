@@ -1123,6 +1123,14 @@ theorem Continuous.codRestrict {f : α → β} {s : Set β} (hf : Continuous f) 
   hf.subtype_mk hs
 #align continuous.cod_restrict Continuous.codRestrict
 
+theorem Continuous.restrict {f : α → β} {s : Set α} {t : Set β} (h1 : MapsTo f s t)
+    (h2 : Continuous f) : Continuous (h1.restrict f s t) :=
+  (h2.comp continuous_subtype_val).codRestrict _
+
+theorem Continuous.restrictPreimage {f : α → β} {s : Set β} (h : Continuous f) :
+    Continuous (s.restrictPreimage f) :=
+  h.restrict _
+
 theorem Inducing.codRestrict {e : α → β} (he : Inducing e) {s : Set β} (hs : ∀ x, e x ∈ s) :
     Inducing (codRestrict e s hs) :=
   inducing_of_inducing_compose (he.continuous.codRestrict hs) continuous_subtype_val he
