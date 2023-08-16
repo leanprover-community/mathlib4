@@ -224,8 +224,9 @@ theorem ker_mulVecLin_conjTranspose_mul_self (A : Matrix m n R) :
     replace h := congr_arg (dotProduct (star x)) h
     haveI : NoZeroDivisors R := inferInstance
     rwa [dotProduct_mulVec, dotProduct_zero, vecMul_conjTranspose, star_star,
-      -- Porting note: couldn't find `NoZeroDivisors R` instance.
-      @dotProduct_star_self_eq_zero R _ _ _ _ _ ‹_›] at h
+      dotProduct_star_self_eq_zero] at h
+      -- -- Porting note: couldn't find `NoZeroDivisors R` instance.
+      -- @dotProduct_star_self_eq_zero R _ _ _ _ _ ‹_›] at h
   · intro h
     rw [h, mulVec_zero]
 #align matrix.ker_mul_vec_lin_conj_transpose_mul_self Matrix.ker_mulVecLin_conjTranspose_mul_self
