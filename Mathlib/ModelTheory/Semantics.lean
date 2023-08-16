@@ -907,12 +907,12 @@ theorem realize_exs {φ : L.BoundedFormula α n} {v : α → M} :
 #align first_order.language.bounded_formula.realize_exs FirstOrder.Language.BoundedFormula.realize_exs
 
 @[simp]
-theorem _root_.FirstOrder.Language.Formula.realize_allsᵢ
+theorem _root_.FirstOrder.Language.Formula.realize_iAlls
     {α β γ : Type _} [Finite γ] (f : α → β ⊕ γ)
-    (φ : L.Formula α) (v : β → M) : (φ.allsᵢ f).Realize v ↔
+    (φ : L.Formula α) (v : β → M) : (φ.iAlls f).Realize v ↔
       ∀ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
   let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
-  rw [Formula.allsᵢ]
+  rw [Formula.iAlls]
   simp only [Nat.add_zero, realize_alls, realize_relabel, Function.comp,
     castAdd_zero, castIso_refl, OrderIso.refl_apply, Sum.elim_map, id_eq]
   refine Equiv.forall_congr ?_ ?_
@@ -926,19 +926,19 @@ theorem _root_.FirstOrder.Language.Formula.realize_allsᵢ
       exact i.elim0
 
 @[simp]
-theorem realize_allsᵢ {α β γ : Type _} [Finite γ] (f : α → β ⊕ γ)
+theorem realize_iAlls {α β γ : Type _} [Finite γ] (f : α → β ⊕ γ)
     (φ : L.Formula α) (v : β → M) (v' : Fin 0 → M) :
-    BoundedFormula.Realize (φ.allsᵢ f) v v' ↔
+    BoundedFormula.Realize (φ.iAlls f) v v' ↔
       ∀ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
-  rw [← Formula.realize_allsᵢ f φ v, iff_iff_eq]; congr; simp
+  rw [← Formula.realize_iAlls f φ v, iff_iff_eq]; congr; simp
 
 @[simp]
 theorem _root_.FirstOrder.Language.Formula.realize_exsᵢ
     {α β γ : Type _} [Finite γ] (f : α → β ⊕ γ)
-    (φ : L.Formula α) (v : β → M) : (φ.exsᵢ f).Realize v ↔
+    (φ : L.Formula α) (v : β → M) : (φ.iExs f).Realize v ↔
       ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
   let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
-  rw [Formula.exsᵢ]
+  rw [Formula.iExs]
   simp only [Nat.add_zero, realize_exs, realize_relabel, Function.comp,
     castAdd_zero, castIso_refl, OrderIso.refl_apply, Sum.elim_map, id_eq]
   rw [← not_iff_not, not_exists, not_exists]
@@ -955,7 +955,7 @@ theorem _root_.FirstOrder.Language.Formula.realize_exsᵢ
 @[simp]
 theorem realize_exsᵢ {α β γ : Type _} [Finite γ] (f : α → β ⊕ γ)
     (φ : L.Formula α) (v : β → M) (v' : Fin 0 → M) :
-    BoundedFormula.Realize (φ.exsᵢ f) v v' ↔
+    BoundedFormula.Realize (φ.iExs f) v v' ↔
       ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
   rw [← Formula.realize_exsᵢ f φ v, iff_iff_eq]; congr; simp
 
