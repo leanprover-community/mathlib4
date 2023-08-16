@@ -532,21 +532,28 @@ instance : Star (CentroidHom α) where
 
 @[simp] lemma star_apply (f : CentroidHom α) (a : α) : (star f) a = star (f (star a)) := rfl
 
+instance starAddMonoidOfCentroidHom : StarAddMonoid (CentroidHom α) where
+  star_involutive := fun f => by
+    ext
+    rw [star_apply, star_apply, star_star, star_star]
+  star_add := fun f g => by
+    ext
+    rw [star_apply, add_apply, star_add, add_apply, star_apply, star_apply]
+
 /--
 Let α be a star ring with commutative centroid. Then the centroid is a star ring.
 -/
-def star_ring (mul_comm : ∀ f g : CentroidHom α, f * g = g * f) : StarRing (CentroidHom α) :=
-{ star_involutive := fun f => by
-    ext
-    rw [star_apply, star_apply, star_star, star_star]
+def starRingOfCommCentroidHom (mul_comm : ∀ f g : CentroidHom α, f * g = g * f) :
+    StarRing (CentroidHom α) :=
+{
+  starAddMonoidOfCentroidHom with
   star_mul := fun f g => by
     rw [mul_comm]
     ext
     rw [star_apply, mul_apply, mul_apply, star_apply]
     simp
-  star_add := fun f g => by
-    ext
-    rw [star_apply, add_apply, star_add, add_apply, star_apply, star_apply] }
+ }
+
 
 end StarRing
 
