@@ -1969,7 +1969,7 @@ theorem transpose_transpose (M : Matrix m n α) : Mᵀᵀ = M := by
 theorem transpose_injective : Function.Injective (transpose : Matrix m n α → Matrix n m α) :=
   fun _ _ h => ext fun i j => ext_iff.2 h j i
 
-theorem transpose_inj {A B : Matrix m n α} : Aᵀ = Bᵀ ↔ A = B := transpose_injective.eq_iff
+@[simp] theorem transpose_inj {A B : Matrix m n α} : Aᵀ = Bᵀ ↔ A = B := transpose_injective.eq_iff
 
 @[simp]
 theorem transpose_zero [Zero α] : (0 : Matrix m n α)ᵀ = 0 := by
@@ -2148,7 +2148,7 @@ theorem conjTranspose_injective [InvolutiveStar α] :
     Function.Injective (conjTranspose : Matrix m n α → Matrix n m α) :=
   (map_injective star_injective).comp transpose_injective
 
-theorem conjTranspose_inj [InvolutiveStar α] {A B : Matrix m n α} : Aᴴ = Bᴴ ↔ A = B :=
+@[simp] theorem conjTranspose_inj [InvolutiveStar α] {A B : Matrix m n α} : Aᴴ = Bᴴ ↔ A = B :=
   conjTranspose_injective.eq_iff
 
 @[simp]
