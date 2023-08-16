@@ -2021,7 +2021,7 @@ theorem transpose_inj (A B : Matrix m n α) : Aᵀ = Bᵀ ↔ A = B :=
   ⟨(fun h => ext fun i j => by simpa [transpose_apply] using ext_iff.2 h j i),
     fun h => congr_arg transpose h ⟩
 
-theorem tranpose_injecitve : Function.Injective (transpose : Matrix m n α → Matrix n m α) :=
+theorem transpose_injective : Function.Injective (transpose : Matrix m n α → Matrix n m α) :=
   fun _ _ h => (transpose_inj _ _).1 h
 
 variable (m n α)
@@ -2266,7 +2266,7 @@ theorem conjTranspose_inj [InvolutiveStar α] (A B : Matrix m n α) : Aᴴ = B�
   ⟨(fun h => ext fun i j => by simpa [star_inj, conjTranspose_apply] using ext_iff.2 h j i),
     fun h => congr_arg conjTranspose h ⟩
 
-theorem conjTranpose_injecitve [InvolutiveStar α] :
+theorem conjTranspose_injecitve [InvolutiveStar α] :
     Function.Injective (conjTranspose : Matrix m n α → Matrix n m α) :=
   fun _ _ h => (conjTranspose_inj _ _).1 h
 
