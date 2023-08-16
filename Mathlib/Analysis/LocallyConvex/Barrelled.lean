@@ -48,7 +48,7 @@ locally convex space is barrelled iff any lower semicontinuous seminorm is conti
 The problem with this definition is the local convexity, which is essential to prove that the
 barrel definition is equivalent to the seminorm definition, because we can essentially only
 use `LocallyConvexSpace` over `ℝ` or `ℂ` (which is indeed the setup in which Bourbaki does most
-of the theory). Since we wan easily prove the normed space version over any
+of the theory). Since we can easily prove the normed space version over any
 `NontriviallyNormedField`, this wouldn't make for a very satisfying "generalization".
 
 Fortunately, it turns out that using the seminorm definition directly solves all problems,
@@ -124,7 +124,7 @@ instance BaireSpace.instBarrelledSpace [TopologicalSpace E] [TopologicalAddGroup
     rcases nonempty_interior_of_iUnion_of_closed h₁ h₂ with ⟨n, ⟨x, hxn⟩⟩
     -- To show that `p` is continuous, we will show that the `p`-closed-ball of
     -- radius `2*n` is a neighborhood of zero.
-    refine Seminorm.continuous' (r := 2*n) ?_
+    refine Seminorm.continuous' (r := n + n) ?_
     rw [p.closedBall_zero_eq] at hxn ⊢
     have hxn' : p x ≤ n := by convert interior_subset hxn
     -- By definition, we have `p x' ≤ n` for `x'` sufficiently close to `x`.
@@ -136,7 +136,6 @@ instance BaireSpace.instBarrelledSpace [TopologicalSpace E] [TopologicalAddGroup
     calc p y = p (x + y - x) := by rw [add_sub_cancel']
       _ ≤ p (x + y) + p x := map_sub_le_add _ _ _
       _ ≤ n + n := add_le_add hy hxn'
-      _ = 2*n := by ring
 
 namespace WithSeminorms
 
@@ -171,9 +170,7 @@ but the proof ultimately goes back to sequences. -/
 protected def continuousLinearMapOfTendsto [T2Space F] {l : Filter α} [l.IsCountablyGenerated]
     [l.NeBot] (g : α → E →SL[σ₁₂] F) {f : E → F} (h : Tendsto (fun n x ↦ g n x) l (𝓝 f)) :
     E →SL[σ₁₂] F where
-  toFun := f
-  map_add' := (linearMapOfTendsto _ _ h).map_add'
-  map_smul' := (linearMapOfTendsto _ _ h).map_smul'
+  toLinearMap := linearMapOfTendsto _ _ h
   cont := by
     -- Since the filter `l` is countably generated and nontrivial, we can find a sequence
     -- `u : ℕ → α` that tends to `l`. By considering `g ∘ u` instead of `g`, we can thus assume
