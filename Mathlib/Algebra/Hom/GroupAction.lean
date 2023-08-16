@@ -38,9 +38,9 @@ The above types have corresponding classes:
 
 ## Notations
 
-* `X →ₛₑ[φ] Y` is `MulActionHom φ X Y`.
-* `A →ₛₑ+[φ] B` is `DistribMulActionHom φ A B`.
-* `R →ₛₑ+*[φ] S` is `MulSemiringActionHom φ R S`.
+* `X →ₑ[φ] Y` is `MulActionHom φ X Y`.
+* `A →ₑ+[φ] B` is `DistribMulActionHom φ A B`.
+* `R →ₑ+*[φ] S` is `MulSemiringActionHom φ R S`.
 
 * When `M = N` and `φ = @id M`, we provide the notation `X →[M] Y`
 -/
@@ -149,7 +149,7 @@ structure MulActionHom where
 /- Porting note: local notation given a name, conflict with Algebra.Hom.GroupAction
  see https://github.com/leanprover/lean4/issues/2000 -/
 @[inherit_doc]
-notation:25 (name := «MulActionHomLocal≺») X " →ₛₑ[" φ:25 "] " Y:0 => MulActionHom φ X Y
+notation:25 (name := «MulActionHomLocal≺») X " →ₑ[" φ:25 "] " Y:0 => MulActionHom φ X Y
 
 /-
 /-- Equivariant functions -/
@@ -158,7 +158,7 @@ abbrev MulActionHom (M : Type _) (X Y : Type _) [SMul M X] [SMul M Y] := MulActi
 
 
 @[inherit_doc]
-notation:25 (name := «MulActionHomIdLocal≺») X " →ₑ[" M:25 "] " Y:0 => MulActionHom (@id M) X Y
+notation:25 (name := «MulActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => MulActionHom (@id M) X Y
 
 /-- `MulActionSemiHomClass F φ X Y` states that `F` is a type of morphisms which are `φ`-equivariant
 
@@ -188,7 +188,7 @@ attribute [simp] map_smulₛₗ
 -- porting note: removed has_coe_to_fun instance, coercions handled differently now
 #noalign mul_action_hom.has_coe_to_fun
 
-instance : MulActionSemiHomClass (X →ₛₑ[φ] Y) φ X Y
+instance : MulActionSemiHomClass (X →ₑ[φ] Y) φ X Y
     where
   coe := MulActionHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
@@ -208,13 +208,13 @@ see also Algebra.Hom.Group -/
   This is declared as the default coercion from `F` to `MulActionSemiHom φ X Y`. -/
 @[coe]
 def _root_.MulActionSemiHomClass.toMulActionHom [MulActionSemiHomClass F φ X Y] (f : F) :
-  X →ₛₑ[φ] Y where
+  X →ₑ[φ] Y where
   toFun := FunLike.coe f
   map_smul' := map_smulₛₗ f
 
 /-- Any type satisfying `MulActionSemiHomClass` can be cast into `MulActionHom` via
   `MulActionHomSemiClass.toMulActionHom`. -/
-instance [MulActionSemiHomClass F φ X Y] : CoeTC F (X →ₛₑ[φ] Y) :=
+instance [MulActionSemiHomClass F φ X Y] : CoeTC F (X →ₑ[φ] Y) :=
   ⟨MulActionSemiHomClass.toMulActionHom⟩
 
 protected theorem map_smulₑ [MulActionSemiHomClass F φ X Y] (f : F) (m : M) (x : X) :
@@ -238,19 +238,19 @@ protected theorem congr_fun [MulActionSemiHomClass F φ X Y] {f g : F} (h : f = 
 #align mul_action_hom.congr_fun MulActionHom.congr_fun
 
 /-- Two equal maps on scalars give rise to an equivariant map for identity -/
-def ofEq {φ' : M → N} (h : φ = φ') (f : X →ₛₑ[φ] Y) : X →ₛₑ[φ'] Y
+def ofEq {φ' : M → N} (h : φ = φ') (f : X →ₑ[φ] Y) : X →ₑ[φ'] Y
     where
   toFun := f.toFun
   map_smul' m a := h ▸ f.map_smul' m a
 #align equivariant_map.of_eq MulActionHom.ofEq
 
 @[simp]
-theorem ofEq_coe {φ' : M → N} (h : φ = φ') (f : X →ₛₑ[φ] Y) :
+theorem ofEq_coe {φ' : M → N} (h : φ = φ') (f : X →ₑ[φ] Y) :
   (f.ofEq h).toFun = f.toFun := rfl
 #align equivariant_map.of_eq_coe MulActionHom.ofEq_coe
 
 @[simp]
-theorem ofEq_apply {φ' : M → N} (h : φ = φ') (f : X →ₛₑ[φ] Y) (a : X) :
+theorem ofEq_apply {φ' : M → N} (h : φ = φ') (f : X →ₑ[φ] Y) (a : X) :
   (f.ofEq h) a = f a :=
   rfl
 #align equivariant_map.of_eq_apply MulActionHom.ofEq_apply
@@ -259,7 +259,7 @@ theorem ofEq_apply {φ' : M → N} (h : φ = φ') (f : X →ₛₑ[φ] Y) (a : X
 variable {ψ χ} (M N)
 
 /-- The identity map as an equivariant map. -/
-protected def id : X →ₑ[M] X :=
+protected def id : X →[M] X :=
   ⟨id, fun _ _ => rfl⟩
 #align mul_action_hom.id MulActionHom.id
 
@@ -279,8 +279,8 @@ open MulActionHom
 variable {φ ψ χ X Y Z}
 
 /-- Composition of two equivariant maps. -/
-def comp' (g : Y →ₛₑ[ψ] Z) (f : X →ₛₑ[φ] Y) (κ : CompTriple φ ψ χ) :
-  X →ₛₑ[χ] Z :=
+def comp' (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) (κ : CompTriple φ ψ χ) :
+  X →ₑ[χ] Z :=
   ⟨g ∘ f, fun m x =>
     calc
       g (f (m • x)) = g (φ m • f x) := by rw [map_smulₛₗ]
@@ -289,48 +289,48 @@ def comp' (g : Y →ₛₑ[ψ] Z) (f : X →ₛₑ[φ] Y) (κ : CompTriple φ ψ
       _ = χ m • g (f x) := by rw [κ.comp_eq] ⟩
 
 /-- Composition of two equivariant maps. -/
-def comp (g : Y →ₛₑ[ψ] Z) (f : X →ₛₑ[φ] Y) : X →ₛₑ[ψ ∘ φ] Z :=
+def comp (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) : X →ₑ[ψ ∘ φ] Z :=
   g.comp' f (CompTriple.comp)
 #align mul_action_hom.comp MulActionHom.comp
 
 @[simp]
-  lemma comp_eq_comp' (g : Y →ₛₑ[ψ] Z) (f : X →ₛₑ[φ] Y) :
+  lemma comp_eq_comp' (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) :
   g.comp f = g.comp' f (CompTriple.comp) := rfl
 
 @[simp]
 theorem comp'_apply
-  (g : Y →ₛₑ[ψ] Z) (f : X →ₛₑ[φ] Y) (κ : CompTriple φ ψ χ) (x : X) :
+  (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) (κ : CompTriple φ ψ χ) (x : X) :
   (g.comp' f κ) x = g (f x) := rfl
 
 @[simp]
 theorem comp_apply
-  (g : Y →ₛₑ[ψ] Z) (f : X →ₛₑ[φ] Y) (x : X) : (g.comp f) x = g (f x) := rfl
+  (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) (x : X) : (g.comp f) x = g (f x) := rfl
 #align mul_action_hom.comp_apply MulActionHom.comp_apply
 
 @[simp]
-theorem id_comp' (f : X →ₛₑ[φ] Y) :
+theorem id_comp' (f : X →ₑ[φ] Y) :
   (MulActionHom.id N).comp' f (CompTriple.id_comp) = f :=
   ext fun x => by rw [comp'_apply, id_apply]
 
 @[simp]
-theorem id_comp (f : X →ₛₑ[φ] Y) :
+theorem id_comp (f : X →ₑ[φ] Y) :
   (MulActionHom.id N).comp f = f := by simp
 
 #align mul_action_hom.id_comp MulActionHom.id_comp
 
 @[simp]
-theorem comp'_id (f : X →ₛₑ[φ] Y) :
+theorem comp'_id (f : X →ₑ[φ] Y) :
   f.comp' (MulActionHom.id M) (CompTriple.comp_id)= f :=
   ext fun x => by rw [comp'_apply, id_apply]
 
 @[simp]
-theorem comp_id (f : X →ₛₑ[φ] Y) : f.comp (MulActionHom.id M) = f := by simp
+theorem comp_id (f : X →ₑ[φ] Y) : f.comp (MulActionHom.id M) = f := by simp
 #align mul_action_hom.comp_id MulActionHom.comp_id
 
 @[simp]
 theorem comp'_assoc {Q T : Type _} [SMul Q T]
   {η : P → Q} {θ : M → Q} {ζ : N → Q}
-  (h : Z →ₛₑ[η] T) (g : Y →ₛₑ[ψ] Z) (f : X →ₛₑ[φ] Y)
+  (h : Z →ₑ[η] T) (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y)
   {κ : CompTriple φ ψ χ} {κ' : CompTriple χ η θ}
   {ξ : CompTriple ψ η ζ} {ξ' : CompTriple φ ζ θ} :
     h.comp' (g.comp' f κ) κ' = (h.comp' g ξ).comp' f ξ':=
@@ -339,7 +339,7 @@ theorem comp'_assoc {Q T : Type _} [SMul Q T]
 @[simp]
 theorem comp_assoc {Q T : Type _} [SMul Q T]
     {η : P → Q}
-    (h : Z →ₛₑ[η] T) (g : Y →ₛₑ[ψ] Z) (f : X →ₛₑ[φ] Y) :
+    (h : Z →ₑ[η] T) (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) :
     h.comp (g.comp f) = (h.comp g).comp f :=
   ext fun _ => rfl
 #align equivariant_map.comp_assoc MulActionHom.comp_assoc
@@ -348,8 +348,8 @@ variable {φ' : N → M}
 
 /-- The inverse of a bijective equivariant map is equivariant. -/
 @[simps]
-def inverse (f : X →ₛₑ[φ] Y) (g : Y → X) (k : Function.RightInverse φ' φ)
-  (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : Y →ₛₑ[φ'] X
+def inverse (f : X →ₑ[φ] Y) (g : Y → X) (k : Function.RightInverse φ' φ)
+  (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : Y →ₑ[φ'] X
     where
   toFun := g
   map_smul' m x :=
@@ -362,13 +362,13 @@ def inverse (f : X →ₛₑ[φ] Y) (g : Y → X) (k : Function.RightInverse φ'
 
 -- Useful/necessary ?
 theorem inverse_inverse
-  {f : X →ₛₑ[φ] Y} {g : Y → X}
+  {f : X →ₑ[φ] Y} {g : Y → X}
   {k₁ : Function.LeftInverse φ' φ} {k₂ : Function.RightInverse φ' φ}
   {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
     inverse (inverse f g k₂ h₁ h₂) f k₁ h₂ h₁ = f :=
   ext fun _ => rfl
 
-theorem comp_inv {f : X →ₛₑ[φ] Y } {g : Y → X}
+theorem comp_inv {f : X →ₑ[φ] Y } {g : Y → X}
   {k₁ : Function.LeftInverse φ' φ} {k₂ : Function.RightInverse φ' φ}
   {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
   (inverse f g k₂ h₁ h₂).comp' f (CompTriple.comp_inv k₁) = MulActionHom.id M := by
@@ -377,7 +377,7 @@ theorem comp_inv {f : X →ₛₑ[φ] Y } {g : Y → X}
   simp only [comp'_apply, inverse_apply, id_apply]
   exact h₁ x
 
-theorem inv_comp {f : X →ₛₑ[φ] Y } {g : Y → X}
+theorem inv_comp {f : X →ₑ[φ] Y } {g : Y → X}
   {k₂ : Function.RightInverse φ' φ}
   {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
   f.comp' (inverse f g k₂ h₁ h₂) (CompTriple.comp_inv k₂) = MulActionHom.id N := by
@@ -391,7 +391,7 @@ theorem inv_comp {f : X →ₛₑ[φ] Y } {g : Y → X}
 @[simps]
 def _root_.SMulCommClass.toMulActionHom {M} (N α : Type _)
     [SMul M α] [SMul N α] [SMulCommClass M N α] (c : M) :
-  α →ₑ[N] α where
+  α →[N] α where
   toFun := (c • ·)
   map_smul' := smul_comm _
 
@@ -413,7 +413,7 @@ variable (A' : Type _) [AddGroup A'] [DistribMulAction M A']
 variable (B' : Type _) [AddGroup B'] [DistribMulAction N B']
 
 /-- Equivariant additive monoid homomorphisms. -/
-structure DistribMulActionSemiHom extends A →ₛₑ[φ] B, A →+ B
+structure DistribMulActionSemiHom extends A →ₑ[φ] B, A →+ B
 #align distrib_mul_action_hom DistribMulActionSemiHom
 
 /-- Equivariant additive monoid homomorphisms. -/
@@ -435,11 +435,11 @@ add_decl_doc DistribMulActionSemiHom.toMulActionHom
  see https://github.com/leanprover/lean4/issues/2000 -/
 @[inherit_doc]
 notation:25 (name := «DistribMulActionSemiHomLocal≺»)
-  A " →ₛₑ+[" φ:25 "] " B:0 => DistribMulActionSemiHom φ A B
+  A " →ₑ+[" φ:25 "] " B:0 => DistribMulActionSemiHom φ A B
 
 @[inherit_doc]
 notation:25 (name := «DistribMulActionHomLocal≺»)
-  A " →ₑ+[" M:25 "] " B:0 => DistribMulActionHom M A B
+  A " →+[" M:25 "] " B:0 => DistribMulActionHom M A B
 
 -- QUESTION/TODO : Impose that `φ` is a morphism of monoids?
 
@@ -486,7 +486,7 @@ Coercion is already handled by all the HomClass constructions I believe -/
 #noalign distrib_mul_action_hom.has_coe'
 #noalign distrib_mul_action_hom.has_coe_to_fun
 
-instance : DistribMulActionSemiHomClass (A →ₛₑ+[φ] B) φ A B
+instance : DistribMulActionSemiHomClass (A →ₑ+[φ] B) φ A B
     where
   coe m := m.toFun
   coe_injective' f g h := by
@@ -505,79 +505,79 @@ see also Algebra.Hom.Group -/
 `MulActionHom`. This is declared as the default coercion from `F` to `MulActionHom M X Y`. -/
 @[coe]
 def _root_.DistribMulActionSemiHomClass.toDistribMulActionSemiHom
-    [DistribMulActionSemiHomClass F φ A B] (f : F) : A →ₛₑ+[φ] B :=
-  { (f : A →+ B),  (f : A →ₛₑ[φ] B) with }
+    [DistribMulActionSemiHomClass F φ A B] (f : F) : A →ₑ+[φ] B :=
+  { (f : A →+ B),  (f : A →ₑ[φ] B) with }
 
 /-- Any type satisfying `MulActionHomClass` can be cast into `MulActionHom` via
   `MulActionHomClass.toMulActionHom`. -/
 instance [DistribMulActionSemiHomClass F φ A B] :
-  CoeTC F (A →ₛₑ+[φ] B) :=
+  CoeTC F (A →ₑ+[φ] B) :=
   ⟨DistribMulActionSemiHomClass.toDistribMulActionSemiHom⟩
 
 /-- If `DistribMulAction` of `M` and `N` on `A` commute,
   then for each `c : M`, `(c • ·)` is an `N`-action additive homomorphism. -/
 @[simps]
-def _root_.SMulCommClass.toDistribMulActionSemiHom {M} (N A : Type _) [Monoid N] [AddMonoid A]
-    [DistribSMul M A] [DistribMulAction N A] [SMulCommClass M N A] (c : M) : A →ₑ+[N] A :=
+def _root_.SMulCommClass.toDistribMulActionHom {M} (N A : Type _) [Monoid N] [AddMonoid A]
+    [DistribSMul M A] [DistribMulAction N A] [SMulCommClass M N A] (c : M) : A →+[N] A :=
   { SMulCommClass.toMulActionHom N A c,
     DistribSMul.toAddMonoidHom _ c with
     toFun := (c • ·) }
 
 @[simp]
-theorem toFun_eq_coe (f : A →ₛₑ+[φ] B) : f.toFun = f := rfl
+theorem toFun_eq_coe (f : A →ₑ+[φ] B) : f.toFun = f := rfl
 #align distrib_mul_action_hom.to_fun_eq_coe DistribMulActionSemiHom.toFun_eq_coe
 
 @[norm_cast]
-theorem coe_fn_coe (f : A →ₛₑ+[φ] B) : ⇑(f : A →+ B) = f :=
+theorem coe_fn_coe (f : A →ₑ+[φ] B) : ⇑(f : A →+ B) = f :=
   rfl
 #align distrib_mul_action_hom.coe_fn_coe DistribMulActionSemiHom.coe_fn_coe
 
 @[norm_cast]
-theorem coe_fn_coe' (f : A →ₛₑ+[φ] B) : ⇑(f : A →ₛₑ[φ] B) = f :=
+theorem coe_fn_coe' (f : A →ₑ+[φ] B) : ⇑(f : A →ₑ[φ] B) = f :=
   rfl
 #align distrib_mul_action_hom.coe_fn_coe' DistribMulActionSemiHom.coe_fn_coe'
 
 @[ext]
-theorem ext {f g : A →ₛₑ+[φ] B} : (∀ x, f x = g x) → f = g :=
+theorem ext {f g : A →ₑ+[φ] B} : (∀ x, f x = g x) → f = g :=
   FunLike.ext f g
 #align distrib_mul_action_hom.ext DistribMulActionSemiHom.ext
 
-theorem ext_iff {f g : A →ₛₑ+[φ] B} : f = g ↔ ∀ x, f x = g x :=
+theorem ext_iff {f g : A →ₑ+[φ] B} : f = g ↔ ∀ x, f x = g x :=
   FunLike.ext_iff
 #align distrib_mul_action_hom.ext_iff DistribMulActionSemiHom.ext_iff
 
-protected theorem congr_fun {f g : A →ₛₑ+[φ] B} (h : f = g) (x : A) : f x = g x :=
+protected theorem congr_fun {f g : A →ₑ+[φ] B} (h : f = g) (x : A) : f x = g x :=
   FunLike.congr_fun h _
 #align distrib_mul_action_hom.congr_fun DistribMulActionSemiHom.congr_fun
 
-theorem toMulActionHom_injective {f g : A →ₛₑ+[φ] B} (h : (f : A →ₛₑ[φ] B) = (g : A →ₛₑ[φ] B)) :
+theorem toMulActionHom_injective {f g : A →ₑ+[φ] B} (h : (f : A →ₑ[φ] B) = (g : A →ₑ[φ] B)) :
     f = g := by
   ext a
   exact MulActionHom.congr_fun h a
 #align distrib_mul_action_hom.to_mul_action_hom_injective DistribMulActionSemiHom.toMulActionHom_injective
 
-theorem toAddMonoidHom_injective {f g : A →ₛₑ+[φ] B} (h : (f : A →+ B) = (g : A →+ B)) : f = g := by
+theorem toAddMonoidHom_injective {f g : A →ₑ+[φ] B} (h : (f : A →+ B) = (g : A →+ B)) : f = g := by
   ext a
   exact FunLike.congr_fun h a
 #align distrib_mul_action_hom.to_add_monoid_hom_injective DistribMulActionSemiHom.toAddMonoidHom_injective
 
-protected theorem map_zero (f : A →ₛₑ+[φ] B) : f 0 = 0 :=
+protected theorem map_zero (f : A →ₑ+[φ] B) : f 0 = 0 :=
   map_zero f
 #align distrib_mul_action_hom.map_zero DistribMulActionSemiHom.map_zero
 
-protected theorem map_add (f : A →ₛₑ+[φ] B) (x y : A) : f (x + y) = f x + f y :=
+protected theorem map_add (f : A →ₑ+[φ] B) (x y : A) : f (x + y) = f x + f y :=
   map_add f x y
 #align distrib_mul_action_hom.map_add DistribMulActionSemiHom.map_add
 
-protected theorem map_neg (f : A' →ₛₑ+[φ] B') (x : A') : f (-x) = -f x :=
+protected theorem map_neg (f : A' →ₑ+[φ] B') (x : A') : f (-x) = -f x :=
   map_neg f x
 #align distrib_mul_action_hom.map_neg DistribMulActionSemiHom.map_neg
 
-protected theorem map_sub (f : A' →ₛₑ+[φ] B') (x y : A') : f (x - y) = f x - f y :=
+protected theorem map_sub (f : A' →ₑ+[φ] B') (x y : A') : f (x - y) = f x - f y :=
   map_sub f x y
 #align distrib_mul_action_hom.map_sub DistribMulActionSemiHom.map_sub
 
-protected theorem map_smulₑ (f : A →ₛₑ+[φ] B) (m : M) (x : A) : f (m • x) = (φ m) • f x :=
+protected theorem map_smulₑ (f : A →ₑ+[φ] B) (m : M) (x : A) : f (m • x) = (φ m) • f x :=
   map_smulₛₗ f m x
 #align distrib_mul_action_hom.map_smul DistribMulActionSemiHom.map_smulₑ
 
@@ -590,7 +590,7 @@ open DistribMulActionSemiHom
 variable (M) {A}
 
 /-- The identity map as an equivariant additive monoid homomorphism. -/
-protected def id : A →ₑ+[M] A :=
+protected def id : A →+[M] A :=
   ⟨MulActionHom.id _, rfl, fun _ _ => rfl⟩
 #align distrib_mul_action_hom.id DistribMulActionHom.id
 
@@ -602,32 +602,32 @@ theorem id_apply (x : A) : DistribMulActionHom.id M x = x := by
 variable {M C ψ χ}
 
 -- porting note:  `simp` used to prove this, but now `change` is needed to push past the coercions
-instance : Zero (A →ₛₑ+[φ] B) :=
+instance : Zero (A →ₑ+[φ] B) :=
   ⟨{ (0 : A →+ B) with
     map_smul' := fun m _ => by change (0 : B) = (φ m) • (0 : B); rw [smul_zero]}⟩
 
-instance : One (A →ₑ+[M] A) :=
+instance : One (A →+[M] A) :=
   ⟨DistribMulActionHom.id M⟩
 
 @[simp]
-theorem coe_zero : ⇑(0 : A →ₛₑ+[φ] B) = 0 :=
+theorem coe_zero : ⇑(0 : A →ₑ+[φ] B) = 0 :=
   rfl
 #align distrib_mul_action_hom.coe_zero DistribMulActionHom.coe_zero
 
 @[simp]
-theorem coe_one : ⇑(1 : A →ₑ+[M] A) = id :=
+theorem coe_one : ⇑(1 : A →+[M] A) = id :=
   rfl
 #align distrib_mul_action_hom.coe_one DistribMulActionHom.coe_one
 
-theorem zero_apply (a : A) : (0 : A →ₛₑ+[φ] B) a = 0 :=
+theorem zero_apply (a : A) : (0 : A →ₑ+[φ] B) a = 0 :=
   rfl
 #align distrib_mul_action_hom.zero_apply DistribMulActionHom.zero_apply
 
-theorem one_apply (a : A) : (1 : A →ₑ+[M] A) a = a :=
+theorem one_apply (a : A) : (1 : A →+[M] A) a = a :=
   rfl
 #align distrib_mul_action_hom.one_apply DistribMulActionHom.one_apply
 
-instance : Inhabited (A →ₛₑ+[φ] B) :=
+instance : Inhabited (A →ₑ+[φ] B) :=
   ⟨0⟩
 
 end DistribMulActionHom
@@ -639,58 +639,58 @@ open DistribMulActionSemiHom DistribMulActionHom
 variable {φ ψ χ A B C}
 
 /-- Composition of two equivariant additive monoid homomorphisms. -/
-def comp (g : B →ₛₑ+[ψ] C) (f : A →ₛₑ+[φ] B) : A →ₛₑ+[ψ ∘ φ] C :=
-  { MulActionHom.comp (g : B →ₛₑ[ψ] C) (f : A →ₛₑ[φ] B) ,
+def comp (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) : A →ₑ+[ψ ∘ φ] C :=
+  { MulActionHom.comp (g : B →ₑ[ψ] C) (f : A →ₑ[φ] B) ,
     AddMonoidHom.comp (g : B →+ C) (f : A →+ B) with }
 #align distrib_mul_action_hom.comp DistribMulActionSemiHom.comp
 
 /-- Composition of two equivariant additive monoid homomorphisms. -/
-def comp' (g : B →ₛₑ+[ψ] C) (f : A →ₛₑ+[φ] B) (κ : CompTriple φ ψ χ) :
-   A →ₛₑ+[χ] C :=
-  { MulActionHom.comp' (g : B →ₛₑ[ψ] C) (f : A →ₛₑ[φ] B) κ,
+def comp' (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) (κ : CompTriple φ ψ χ) :
+   A →ₑ+[χ] C :=
+  { MulActionHom.comp' (g : B →ₑ[ψ] C) (f : A →ₑ[φ] B) κ,
     AddMonoidHom.comp (g : B →+ C) (f : A →+ B) with }
 
-lemma comp_eq_comp' (g : B →ₛₑ+[ψ] C) (f : A →ₛₑ+[φ] B) :
+lemma comp_eq_comp' (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) :
   g.comp f = comp' g f (CompTriple.comp) := rfl
 
 @[simp]
-theorem comp_apply (g : B →ₛₑ+[ψ] C) (f : A →ₛₑ+[φ] B) (x : A) :
+theorem comp_apply (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) (x : A) :
   g.comp f x = g (f x) :=
   rfl
 #align distrib_mul_action_hom.comp_apply DistribMulActionSemiHom.comp_apply
 
 @[simp]
-theorem comp'_apply (g : B →ₛₑ+[ψ] C) (f : A →ₛₑ+[φ] B) {κ : CompTriple φ ψ χ} (x : A) :
+theorem comp'_apply (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) {κ : CompTriple φ ψ χ} (x : A) :
   g.comp' f κ x = g (f x) :=
   rfl
 
 @[simp]
-theorem id_comp (f : A →ₛₑ+[φ] B) :
+theorem id_comp (f : A →ₑ+[φ] B) :
   (DistribMulActionHom.id N).comp f = f :=
   ext fun x => by rw [comp_apply, id_apply]
 #align distrib_mul_action_hom.id_comp DistribMulActionSemiHom.id_comp
 
 @[simp]
-theorem id_comp' (f : A →ₛₑ+[φ] B) :
+theorem id_comp' (f : A →ₑ+[φ] B) :
   (DistribMulActionHom.id N).comp' f (CompTriple.id_comp) = f :=
   ext fun x => by rw [comp'_apply, id_apply]
 
 @[simp]
-theorem comp_id (f : A →ₛₑ+[φ] B) :
+theorem comp_id (f : A →ₑ+[φ] B) :
   f.comp (DistribMulActionHom.id M) = f :=
   ext fun x => by rw [comp_apply, id_apply]
 #align distrib_mul_action_hom.comp_id DistribMulActionSemiHom.comp_id
 
 @[simp]
-theorem comp'_id (f : A →ₛₑ+[φ] B) :
+theorem comp'_id (f : A →ₑ+[φ] B) :
   f.comp' (DistribMulActionHom.id M) (CompTriple.comp_id)= f :=
   ext fun x => by rw [comp'_apply, id_apply]
 
 /-- The inverse of a bijective `DistribMulActionSemiHom` is a `DistribMulActionSemiHom`. -/
 @[simps]
-def inverse (f : A →ₛₑ+[φ] B) (g : B → A) (k : Function.RightInverse φ' φ)
-    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B →ₛₑ+[φ'] A :=
-  { (f : A →+ B).inverse g h₁ h₂, (f : A →ₛₑ[φ] B).inverse g k h₁ h₂ with toFun := g }
+def inverse (f : A →ₑ+[φ] B) (g : B → A) (k : Function.RightInverse φ' φ)
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B →ₑ+[φ'] A :=
+  { (f : A →+ B).inverse g h₁ h₂, (f : A →ₑ[φ] B).inverse g k h₁ h₂ with toFun := g }
 #align distrib_mul_action_hom.inverse DistribMulActionSemiHom.inverse
 
 section Semiring
@@ -707,12 +707,12 @@ variable [AddMonoid N'] [DistribMulAction S N']
 
 variable {σ : R → S}
 @[ext]
-theorem ext_ring {f g : R →ₛₑ+[σ] N'} (h : f 1 = g 1) : f = g := by
+theorem ext_ring {f g : R →ₑ+[σ] N'} (h : f 1 = g 1) : f = g := by
   ext x
   rw [← mul_one x, ← smul_eq_mul R, f.map_smulₑ, g.map_smulₑ, h]
 #align distrib_mul_action_hom.ext_ring DistribMulActionSemiHom.ext_ring
 
-theorem ext_ring_iff {f g : R →ₛₑ+[σ] N'} : f = g ↔ f 1 = g 1 :=
+theorem ext_ring_iff {f g : R →ₑ+[σ] N'} : f = g ↔ f 1 = g 1 :=
   ⟨fun h => h ▸ rfl, ext_ring⟩
 #align distrib_mul_action_hom.ext_ring_iff DistribMulActionSemiHom.ext_ring_iff
 
@@ -733,7 +733,7 @@ variable (T : Type _) [Semiring T] [MulSemiringAction P T]
 /-- Equivariant ring homomorphisms. -/
 -- Porting note: This linter does not exist yet
 -- @[nolint has_nonempty_instance]
-structure MulSemiringActionHom extends R →ₛₑ+[φ] S, R →+* S
+structure MulSemiringActionHom extends R →ₑ+[φ] S, R →+* S
 #align mul_semiring_action_hom MulSemiringActionHom
 
 /-
@@ -756,11 +756,11 @@ add_decl_doc MulSemiringActionHom.toDistribMulActionSemiHom
  see https://github.com/leanprover/lean4/issues/2000 -/
 @[inherit_doc]
 notation:25 (name := «MulSemiringActionHomLocal≺»)
-  R " →ₛₑ+*[" φ:25 "] " S:0 => MulSemiringActionHom φ R S
+  R " →ₑ+*[" φ:25 "] " S:0 => MulSemiringActionHom φ R S
 
 @[inherit_doc]
 notation:25 (name := «MulSemiringActionHomIdLocal≺»)
-  R " →ₑ+*[" M:25 "] " S:0 => MulSemiringActionHom (@id M) R S
+  R " →+*[" M:25 "] " S:0 => MulSemiringActionHom (@id M) R S
 
 /-- `MulSemiringActionHomClass F φ R S` states that `F` is a type of morphisms preserving
 the ring structure and equivariant with respect to `φ`.
@@ -807,7 +807,7 @@ Coercion is already handled by all the HomClass constructions I believe -/
 #noalign mul_semiring_action_hom.has_coe'
 #noalign mul_semiring_action_hom.has_coe_to_fun
 
-instance : MulSemiringActionSemiHomClass (R →ₛₑ+*[φ] S) φ R S
+instance : MulSemiringActionSemiHomClass (R →ₑ+*[φ] S) φ R S
     where
   coe m := m.toFun
   coe_injective' f g h := by
@@ -829,62 +829,62 @@ see also Algebra.Hom.Group -/
 `MulSemiringActionHom M X Y`. -/
 @[coe]
 def _root_.MulSemiringActionHomClass.toMulSemiringActionHom
-  [MulSemiringActionSemiHomClass F φ R S] (f : F) : R →ₛₑ+*[φ] S :=
- { (f : R →+* S),  (f : R →ₛₑ+[φ] S) with }
+  [MulSemiringActionSemiHomClass F φ R S] (f : F) : R →ₑ+*[φ] S :=
+ { (f : R →+* S),  (f : R →ₑ+[φ] S) with }
 
 /-- Any type satisfying `MulSemiringActionHomClass` can be cast into `MulSemiringActionHom` via
   `MulSemiringActionHomClass.toMulSemiringActionHom`. -/
-instance [MulSemiringActionSemiHomClass F φ R S] : CoeTC F (R →ₛₑ+*[φ] S) :=
+instance [MulSemiringActionSemiHomClass F φ R S] : CoeTC F (R →ₑ+*[φ] S) :=
   ⟨MulSemiringActionHomClass.toMulSemiringActionHom⟩
 
 @[norm_cast]
-theorem coe_fn_coe (f : R →ₛₑ+*[φ] S) : ⇑(f : R →+* S) = f :=
+theorem coe_fn_coe (f : R →ₑ+*[φ] S) : ⇑(f : R →+* S) = f :=
   rfl
 #align mul_semiring_action_hom.coe_fn_coe MulSemiringActionHom.coe_fn_coe
 
 @[norm_cast]
-theorem coe_fn_coe' (f : R →ₛₑ+*[φ] S) : ⇑(f : R →ₛₑ+[φ] S) = f :=
+theorem coe_fn_coe' (f : R →ₑ+*[φ] S) : ⇑(f : R →ₑ+[φ] S) = f :=
   rfl
 #align mul_semiring_action_hom.coe_fn_coe' MulSemiringActionHom.coe_fn_coe'
 
 @[ext]
-theorem ext {f g : R →ₛₑ+*[φ] S} : (∀ x, f x = g x) → f = g :=
+theorem ext {f g : R →ₑ+*[φ] S} : (∀ x, f x = g x) → f = g :=
   FunLike.ext f g
 #align mul_semiring_action_hom.ext MulSemiringActionHom.ext
 
-theorem ext_iff {f g : R →ₛₑ+*[φ] S} : f = g ↔ ∀ x, f x = g x :=
+theorem ext_iff {f g : R →ₑ+*[φ] S} : f = g ↔ ∀ x, f x = g x :=
   FunLike.ext_iff
 #align mul_semiring_action_hom.ext_iff MulSemiringActionHom.ext_iff
 
-protected theorem map_zero (f : R →ₛₑ+*[φ] S) : f 0 = 0 :=
+protected theorem map_zero (f : R →ₑ+*[φ] S) : f 0 = 0 :=
   map_zero f
 #align mul_semiring_action_hom.map_zero MulSemiringActionHom.map_zero
 
-protected theorem map_add (f : R →ₛₑ+*[φ] S) (x y : R) : f (x + y) = f x + f y :=
+protected theorem map_add (f : R →ₑ+*[φ] S) (x y : R) : f (x + y) = f x + f y :=
   map_add f x y
 #align mul_semiring_action_hom.map_add MulSemiringActionHom.map_add
 
-protected theorem map_neg (f : R' →ₛₑ+*[φ] S') (x : R') : f (-x) = -f x :=
+protected theorem map_neg (f : R' →ₑ+*[φ] S') (x : R') : f (-x) = -f x :=
   map_neg f x
 #align mul_semiring_action_hom.map_neg MulSemiringActionHom.map_neg
 
-protected theorem map_sub (f : R' →ₛₑ+*[φ] S') (x y : R') : f (x - y) = f x - f y :=
+protected theorem map_sub (f : R' →ₑ+*[φ] S') (x y : R') : f (x - y) = f x - f y :=
   map_sub f x y
 #align mul_semiring_action_hom.map_sub MulSemiringActionHom.map_sub
 
-protected theorem map_one (f : R →ₛₑ+*[φ] S) : f 1 = 1 :=
+protected theorem map_one (f : R →ₑ+*[φ] S) : f 1 = 1 :=
   map_one f
 #align mul_semiring_action_hom.map_one MulSemiringActionHom.map_one
 
-protected theorem map_mul (f : R →ₛₑ+*[φ] S) (x y : R) : f (x * y) = f x * f y :=
+protected theorem map_mul (f : R →ₑ+*[φ] S) (x y : R) : f (x * y) = f x * f y :=
   map_mul f x y
 #align mul_semiring_action_hom.map_mul MulSemiringActionHom.map_mul
 
-protected theorem map_smulₛₗ (f : R →ₛₑ+*[φ] S) (m : M) (x : R) : f (m • x) = φ m • f x :=
+protected theorem map_smulₛₗ (f : R →ₑ+*[φ] S) (m : M) (x : R) : f (m • x) = φ m • f x :=
   map_smulₛₗ f m x
 #align mul_semiring_action_hom.map_smulₛₗ MulSemiringActionHom.map_smulₛₗ
 
-protected theorem map_smul [MulSemiringAction M S] (f : R →ₑ+*[M] S) (m : M) (x : R) :
+protected theorem map_smul [MulSemiringAction M S] (f : R →+*[M] S) (m : M) (x : R) :
     f (m • x) = m • f x :=
   map_smulₛₗ f m x
 #align mul_semiring_action_hom.map_smul MulSemiringActionHom.map_smul
@@ -896,7 +896,7 @@ namespace MulSemiringActionHom
 variable (M) {R}
 
 /-- The identity map as an equivariant ring homomorphism. -/
-protected def id : R →ₑ+*[M] R :=
+protected def id : R →+*[M] R :=
   ⟨DistribMulActionHom.id _, rfl, (fun _ _ => rfl)⟩
 #align mul_semiring_action_hom.id MulSemiringActionHom.id
 
@@ -916,51 +916,51 @@ variable {R S T}
 variable {φ φ' ψ χ}
 
 /-- Composition of two equivariant additive ring homomorphisms. -/
-def comp' (g : S →ₛₑ+*[ψ] T) (f : R →ₛₑ+*[φ] S)  (κ : CompTriple φ ψ χ) : R →ₛₑ+*[χ] T :=
-  { DistribMulActionSemiHom.comp' (g : S →ₛₑ+[ψ] T) (f : R →ₛₑ+[φ] S) κ,
+def comp' (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S)  (κ : CompTriple φ ψ χ) : R →ₑ+*[χ] T :=
+  { DistribMulActionSemiHom.comp' (g : S →ₑ+[ψ] T) (f : R →ₑ+[φ] S) κ,
     RingHom.comp (g : S →+* T) (f : R →+* S) with }
 
 /-- Composition of two equivariant additive ring homomorphisms. -/
-def comp (g : S →ₛₑ+*[ψ] T) (f : R →ₛₑ+*[φ] S) : R →ₛₑ+*[ψ ∘ φ] T :=
+def comp (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) : R →ₑ+*[ψ ∘ φ] T :=
   g.comp' f (CompTriple.comp)
 #align mul_semiring_action_hom.comp MulSemiringActionHom.comp
 
-theorem comp_eq_comp' (g : S →ₛₑ+*[ψ] T) (f : R →ₛₑ+*[φ] S) :
+theorem comp_eq_comp' (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) :
   g.comp f = g.comp' f (CompTriple.comp) := rfl
 
 @[simp]
-theorem comp'_apply (g : S →ₛₑ+*[ψ] T) (f : R →ₛₑ+*[φ] S) {κ : CompTriple φ ψ χ} (x : R) :
+theorem comp'_apply (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) {κ : CompTriple φ ψ χ} (x : R) :
   g.comp' f κ x = g (f x) :=
   rfl
 
 @[simp]
-theorem id_comp' (f : R →ₛₑ+*[φ] S) :
+theorem id_comp' (f : R →ₑ+*[φ] S) :
   (MulSemiringActionHom.id N).comp' f (CompTriple.id_comp)= f :=
   ext fun x => by rw [comp'_apply, id_apply]
 
 @[simp]
-theorem id_comp (f : R →ₛₑ+*[φ] S) :
+theorem id_comp (f : R →ₑ+*[φ] S) :
   (MulSemiringActionHom.id N).comp f = f := by
   rw [comp_eq_comp', id_comp']
 
 @[simp]
-theorem comp'_id (f : R →ₛₑ+*[φ] S) :
+theorem comp'_id (f : R →ₑ+*[φ] S) :
   f.comp' (MulSemiringActionHom.id M) (CompTriple.comp_id) = f :=
   ext fun x => by rw [comp'_apply, id_apply]
 
 @[simp]
-theorem comp_id (f : R →ₛₑ+*[φ] S) :
+theorem comp_id (f : R →ₑ+*[φ] S) :
   f.comp (MulSemiringActionHom.id M) = f := by
   rw [comp_eq_comp', comp'_id]
 #align mul_semiring_action_hom.comp_id MulSemiringActionHom.comp_id
 
 /-- The inverse of a bijective `MulSemiringActionHom` is a `MulSemiringActionHom`. -/
 @[simps]
-def inverse (f : R →ₛₑ+*[φ] S) (g : S → R) (k : Function.RightInverse φ' φ)
-    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : S →ₛₑ+*[φ'] R :=
+def inverse (f : R →ₑ+*[φ] S) (g : S → R) (k : Function.RightInverse φ' φ)
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : S →ₑ+*[φ'] R :=
   { (f : R →+ S).inverse g h₁ h₂,
     (f : R →* S).inverse g h₁ h₂,
-    (f : R →ₛₑ[φ] S).inverse g k h₁ h₂ with toFun := g, }
+    (f : R →ₑ[φ] S).inverse g k h₁ h₂ with toFun := g, }
 #align mul_semiring_action_hom.inverse MulSemiringActionHom.inverse
 
 end MulSemiringActionHom

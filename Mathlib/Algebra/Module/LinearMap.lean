@@ -667,11 +667,11 @@ variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Modul
 
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
 @[coe]
-def toLinearMap (fₗ : M →ₑ+[R] M₂) : M →ₗ[R] M₂ :=
+def toLinearMap (fₗ : M →+[R] M₂) : M →ₗ[R] M₂ :=
   { fₗ with }
 #align distrib_mul_action_hom.to_linear_map DistribMulActionHom.toLinearMap
 
-instance : Coe (M →ₑ+[R] M₂) (M →ₗ[R] M₂) :=
+instance : Coe (M →+[R] M₂) (M →ₗ[R] M₂) :=
   ⟨toLinearMap⟩
 
 -- Porting note: because coercions get unfolded, there is no need for this rewrite
@@ -680,11 +680,11 @@ instance : Coe (M →ₑ+[R] M₂) (M →ₗ[R] M₂) :=
 -- Porting note: removed @[norm_cast] attribute due to error:
 -- norm_cast: badly shaped lemma, rhs can't start with coe
 @[simp]
-theorem coe_toLinearMap (f : M →ₑ+[R] M₂) : ((f : M →ₗ[R] M₂) : M → M₂) = f :=
+theorem coe_toLinearMap (f : M →+[R] M₂) : ((f : M →ₗ[R] M₂) : M → M₂) = f :=
   rfl
 #align distrib_mul_action_hom.coe_to_linear_map DistribMulActionHom.coe_toLinearMap
 
-theorem toLinearMap_injective {f g : M →ₑ+[R] M₂} (h : (f : M →ₗ[R] M₂) = (g : M →ₗ[R] M₂)) :
+theorem toLinearMap_injective {f g : M →+[R] M₂} (h : (f : M →ₗ[R] M₂) = (g : M →ₗ[R] M₂)) :
     f = g := by
   ext m
   exact LinearMap.congr_fun h m
