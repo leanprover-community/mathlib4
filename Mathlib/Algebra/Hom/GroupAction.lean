@@ -185,11 +185,6 @@ abbrev MulActionHomClass (F : Type _) (M : outParam (Type _))
 
 attribute [simp] map_smulₛₗ
 
-@[simp]
-lemma map_smul {F M X Y : Type*} [SMul M X] [SMul M Y] [MulActionHomClass F M X Y]
-  (f : F) (m : M) (x : X) :
-  f (m • x) = m • (f x) := map_smulₛₗ f m x
-
 -- porting note: removed has_coe_to_fun instance, coercions handled differently now
 #noalign mul_action_hom.has_coe_to_fun
 
@@ -226,6 +221,10 @@ protected theorem map_smulₑ [MulActionSemiHomClass F φ X Y] (f : F) (m : M) (
   f (m • x) = (φ m) • f x :=
   map_smulₛₗ f m x
 #align mul_action_hom.map_smul MulActionHom.map_smulₑ
+
+protected lemma map_smul {F M X Y : Type*} [SMul M X] [SMul M Y] [MulActionHomClass F M X Y]
+  (f : F) (m : M) (x : X) :
+  f (m • x) = m • (f x) := map_smulₛₗ f m x
 
 @[ext]
 theorem ext [MulActionSemiHomClass F φ X Y] {f g : F} :
@@ -516,7 +515,7 @@ instance : DistribMulActionSemiHomClass (A →ₑ+[φ] B) φ A B
   map_zero := DistribMulActionSemiHom.map_zero'
   map_add := DistribMulActionSemiHom.map_add'
 
-variable {φ φ' A B}
+variable {φ φ' A B B₁}
 variable {F : Type*}
 
 /- porting note: inserted following def & instance for consistent coercion behaviour,
