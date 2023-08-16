@@ -1,4 +1,4 @@
-import Mathbin.FieldTheory.PolynomialGaloisGroup
+import Mathlib.FieldTheory.PolynomialGaloisGroup
 
 open Polynomial
 
@@ -24,8 +24,8 @@ theorem eq_of_algHom_eq {K S T : Type _} [Field K] [Ring S] [Ring T] [Algebra K 
     (f : S →ₐ[K] T) (hf : Function.Injective f) {x : S} {y : T} (hx : IsIntegral K x)
     (h : y = f x) : minpoly K x = minpoly K y :=
   minpoly.unique _ _ (minpoly.monic hx)
-    (by rw [h, aeval_alg_hom_apply, minpoly.aeval, AlgHom.map_zero]) fun q q_monic root_q =>
-    minpoly.min _ _ q_monic (by rwa [h, aeval_alg_hom_apply, map_eq_zero_iff _ hf] at root_q )
+    (by rw [h, aeval_algHom_apply, minpoly.aeval, AlgHom.map_zero]) fun q q_monic root_q =>
+    minpoly.min _ _ q_monic (by rwa [h, aeval_algHom_apply, map_eq_zero_iff _ hf] at root_q )
 #align minpoly.eq_of_alg_hom_eq minpoly.eq_of_algHom_eq
 
 end minpoly
@@ -39,17 +39,17 @@ namespace FunLike
 variable {F F' : Sort u₁} {α α' : Sort u₂} {β : α → Sort u₃} {β' : α' → Sort u₃} [i : FunLike F α β]
   [i' : FunLike F' α' β']
 
-theorem ext_hEq {f : F} {f' : F'} (h₁ : F = F') (h₂ : α = α') (h₃ : HEq β β') (h₄ : HEq i i')
+theorem ext_heq {f : F} {f' : F'} (h₁ : F = F') (h₂ : α = α') (h₃ : HEq β β') (h₄ : HEq i i')
     (h : ∀ x x', HEq x x' → HEq (f x) (f' x')) : HEq f f' :=
   by
   cases h₁; cases h₂; cases h₃; cases h₄
-  exact hEq_of_eq (FunLike.ext f f' fun x => eq_of_hEq (h x x HEq.rfl))
-#align fun_like.ext_heq FunLike.ext_hEq
+  exact heq_of_eq (FunLike.ext f f' fun x => eq_of_heq (h x x HEq.rfl))
+#align fun_like.ext_heq FunLike.ext_heq
 
-theorem congr_hEq {f : F} {f' : F'} {x : α} {x' : α'} (h₁ : HEq f f') (h₂ : HEq x x')
-    (h₃ : HEq β β') (h₄ : HEq i i') : HEq (f x) (f' x') := by cases h₁; cases h₂; cases h₃;
-  cases h₄; rfl
-#align fun_like.congr_heq FunLike.congr_hEq
+theorem congr_heq {f : F} {f' : F'} {x : α} {x' : α'} (h₁ : HEq f f') (h₂ : HEq x x')
+    (h₃ : HEq β β') (h₄ : HEq i i') : HEq (f x) (f' x') := by
+  cases h₁; cases h₂; cases h₃; cases h₄; rfl
+#align fun_like.congr_heq FunLike.congr_heq
 
 end FunLike
 
@@ -83,7 +83,7 @@ variable (F : Type _) [Field F] {E : Type _} [Field E] [Algebra F E] {α : E}
 
 theorem adjoinRootEquivAdjoin_symm_apply_gen (h : IsIntegral F α) :
     (adjoinRootEquivAdjoin F h).symm (AdjoinSimple.gen F α) = AdjoinRoot.root (minpoly F α) := by
-  rw [AlgEquiv.symm_apply_eq, adjoin_root_equiv_adjoin_apply_root]
+  rw [AlgEquiv.symm_apply_eq, adjoinRootEquivAdjoin_apply_root]
 #align intermediate_field.adjoin_root_equiv_adjoin_symm_apply_gen IntermediateField.adjoinRootEquivAdjoin_symm_apply_gen
 
 end IntermediateField
@@ -126,13 +126,14 @@ attribute [local instance] IsGalConj.setoid
 variable {E}
 
 def IsGalConj (x y : E) : Prop :=
-  (IsGalConj.setoid F E).R x y
+  (IsGalConj.setoid F E).r x y
 #align is_gal_conj IsGalConj
 
 notation:50 -- need to fix the precedence
 x " ≈g[" F "] " y => IsGalConj F x y
 
-instance [DecidableEq E] [Fintype (E ≃ₐ[F] E)] (x y : E) : Decidable (x ≈g[F] y) :=
+instance IsGalConj.decidable [DecidableEq E] [Fintype (E ≃ₐ[F] E)] (x y : E) :
+    Decidable (x ≈g[F] y) :=
   Fintype.decidableExistsFintype
 
 instance [DecidableEq E] [Fintype (E ≃ₐ[F] E)] : DecidableEq (GalConjClasses F E) :=
@@ -141,21 +142,22 @@ instance [DecidableEq E] [Fintype (E ≃ₐ[F] E)] : DecidableEq (GalConjClasses
 namespace IsGalConj
 
 instance : IsEquiv E (IsGalConj F) :=
-  Quotient.HasEquiv.Equiv.isEquiv
+  --Quotient.HasEquiv.Equiv.isEquiv
+  sorry
 
 @[refl]
-theorem refl (x : E) : x ≈g[F] x :=
+nonrec theorem refl (x : E) : x ≈g[F] x :=
   refl x
 #align is_gal_conj.refl IsGalConj.refl
 
 @[symm]
-theorem symm {x y : E} : (x ≈g[F] y) → y ≈g[F] x :=
+nonrec theorem symm {x y : E} : (x ≈g[F] y) → y ≈g[F] x :=
   symm
 #align is_gal_conj.symm IsGalConj.symm
 
 @[trans]
-theorem trans {x y z : E} : (x ≈g[F] y) → (y ≈g[F] z) → x ≈g[F] z :=
-  trans
+nonrec theorem trans {x y z : E} : (x ≈g[F] y) → (y ≈g[F] z) → x ≈g[F] z :=
+  _root_.trans
 #align is_gal_conj.trans IsGalConj.trans
 
 end IsGalConj
@@ -175,7 +177,7 @@ theorem zero_def : (0 : GalConjClasses F E) = mk F 0 :=
 
 variable {F}
 
-noncomputable def out (c : GalConjClasses F E) : E :=
+noncomputable nonrec def out (c : GalConjClasses F E) : E :=
   c.out
 #align gal_conj_classes.out GalConjClasses.out
 
@@ -229,7 +231,7 @@ theorem mk_zero : mk F (0 : E) = 0 :=
   (mk_eq_zero_iff 0).mpr rfl
 #align gal_conj_classes.mk_zero GalConjClasses.mk_zero
 
-def orbit (c : GalConjClasses F E) : Set E :=
+nonrec def orbit (c : GalConjClasses F E) : Set E :=
   c.orbit
 #align gal_conj_classes.orbit GalConjClasses.orbit
 
@@ -240,14 +242,14 @@ theorem mem_orbit {x : E} {c : GalConjClasses F E} : x ∈ c.orbit ↔ mk F x = 
   MulAction.orbitRel.Quotient.mem_orbit
 #align gal_conj_classes.mem_orbit GalConjClasses.mem_orbit
 
-theorem orbit_zero : (0 : GalConjClasses F E).orbit = {0} := by ext; rw [mem_orbit, mk_eq_zero_iff];
-  rfl
+theorem orbit_zero : (0 : GalConjClasses F E).orbit = {0} := by
+  ext; rw [mem_orbit, mk_eq_zero_iff, Set.mem_singleton_iff]
 #align gal_conj_classes.orbit_zero GalConjClasses.orbit_zero
 
 instance : Neg (GalConjClasses F E) :=
   ⟨Quotient.lift (fun x : E => mk F (-x))
       (by
-        rintro _ y ⟨f, rfl⟩; rw [Eq]
+        rintro _ y ⟨f, rfl⟩; rw [eq]
         use f; change f (-y) = -f y; rw [AlgEquiv.map_neg])⟩
 
 theorem mk_neg (x : E) : mk F (-x) = -mk F x :=
@@ -264,17 +266,17 @@ theorem exist_mem_orbit_add_eq_zero (x y : GalConjClasses F E) :
   simp_rw [mem_orbit]
   constructor
   · rintro ⟨a, b, ⟨rfl, rfl⟩, h⟩
-    rw [← mk_neg, Eq, add_eq_zero_iff_eq_neg.mp h]
+    rw [← mk_neg, eq, add_eq_zero_iff_eq_neg.mp h]
   · rintro rfl
     refine' ⟨-y.out, y.out, _⟩
-    simp_rw [mk_neg, out_eq, neg_add_self, eq_self_iff_true, true_and_iff]
+    simp_rw [mk_neg, out_eq, neg_add_self]
 #align gal_conj_classes.exist_mem_orbit_add_eq_zero GalConjClasses.exist_mem_orbit_add_eq_zero
 
 variable [IsSeparable F E]
 
-noncomputable def minpoly : GalConjClasses F E → F[X] :=
+noncomputable nonrec def minpoly : GalConjClasses F E → F[X] :=
   Quotient.lift (minpoly F) fun (a b : E) ⟨f, h⟩ =>
-    minpoly.eq_of_algHom_eq f.symm.toAlgHom f.symm.Injective (IsSeparable.isIntegral F a)
+    minpoly.eq_of_algHom_eq f.symm.toAlgHom f.symm.injective (IsSeparable.isIntegral F a)
       (h ▸ (f.symm_apply_apply b).symm)
 #align gal_conj_classes.minpoly GalConjClasses.minpoly
 
@@ -290,7 +292,8 @@ theorem minpoly.monic (c : GalConjClasses F E) : (minpoly c).Monic := by
   rw [← c.out_eq, minpoly_mk]; exact minpoly.monic (IsSeparable.isIntegral F _)
 #align gal_conj_classes.minpoly.monic GalConjClasses.minpoly.monic
 
-theorem minpoly.ne_zero (c : GalConjClasses F E) : minpoly c ≠ 0 := by rw [← c.out_eq, minpoly_mk];
+theorem minpoly.ne_zero (c : GalConjClasses F E) : minpoly c ≠ 0 := by
+  rw [← c.out_eq, minpoly_mk];
   exact minpoly.ne_zero (IsSeparable.isIntegral F _)
 #align gal_conj_classes.minpoly.ne_zero GalConjClasses.minpoly.ne_zero
 
@@ -315,24 +318,24 @@ theorem minpoly.inj [Normal F E] {c d : GalConjClasses F E} (h : minpoly c = min
   have congr_f_apply : ∀ x, HEq (congr_f x) x :=
     by
     intro x; change HEq (congr_f x) ((AlgEquiv.refl : _ ≃ₐ[F] _) x)
-    dsimp only [congr_f]
-    refine' FunLike.congr_hEq _ HEq.rfl _ _
+    dsimp only
+    refine' FunLike.congr_heq _ HEq.rfl _ _
     · simp_rw [eq_mpr_eq_cast, cast_cast]
-      refine' cast_heq' _ (FunLike.ext_hEq _ _ _ _ _)
+      refine' cast_heq' _ (FunLike.ext_heq _ _ _ _ _)
       any_goals rw [minpoly_out, h]
       rintro x₁ x₂ rfl; rfl
     all_goals rw [minpoly_out, minpoly_out, h]
   let f' := fc.symm.trans (congr_f.trans fd)
-  let f := f'.lift_normal E
+  let f := f'.liftNormal E
   rw [← out_equiv_out]
   refine' ⟨f.symm, _⟩
-  dsimp only [f, AlgEquiv.smul_def]
+  dsimp only [AlgEquiv.smul_def]
   simp_rw [AlgEquiv.symm_apply_eq, ← IntermediateField.AdjoinSimple.algebraMap_gen F c.out, ←
     IntermediateField.AdjoinSimple.algebraMap_gen F d.out, AlgEquiv.liftNormal_commutes]
   apply congr_arg
   simp_rw [f', AlgEquiv.trans_apply, ← fd.symm_apply_eq, fc, fd,
     IntermediateField.adjoinRootEquivAdjoin_symm_apply_gen]
-  refine' eq_of_hEq (HEq.trans _ (congr_f_apply _).symm)
+  refine' eq_of_heq (HEq.trans _ (congr_f_apply _).symm)
   rw [minpoly_out, minpoly_out, h]
 #align gal_conj_classes.minpoly.inj GalConjClasses.minpoly.inj
 
@@ -356,14 +359,14 @@ theorem aeval_minpoly_iff [Normal F E] (x : E) (c : GalConjClasses F E) :
 theorem rootSet_minpoly_eq_orbit [Normal F E] (c : GalConjClasses F E) :
     (minpoly c).rootSet E = c.orbit := by
   ext x; rw [mem_orbit]
-  simp_rw [mem_root_set, aeval_minpoly_iff x c]
+  simp_rw [mem_rootSet, aeval_minpoly_iff x c]
   simp [minpoly.ne_zero c]
 #align gal_conj_classes.root_set_minpoly_eq_orbit GalConjClasses.rootSet_minpoly_eq_orbit
 
 theorem aroots_minpoly_eq_orbit_val [DecidableEq E] [Fintype (E ≃ₐ[F] E)] [Normal F E]
     (c : GalConjClasses F E) : (minpoly c).aroots E = c.orbit.toFinset.1 :=
   by
-  simp_rw [← root_set_minpoly_eq_orbit, root_set_def, Finset.toFinset_coe, Multiset.toFinset_val]
+  simp_rw [← rootSet_minpoly_eq_orbit, rootSet_def, Finset.toFinset_coe, Multiset.toFinset_val]
   symm; rw [Multiset.dedup_eq_self]
   exact nodup_roots ((separable_map _).mpr (minpoly.separable c))
 #align gal_conj_classes.aroots_minpoly_eq_orbit_val GalConjClasses.aroots_minpoly_eq_orbit_val
@@ -377,9 +380,9 @@ theorem minpoly.map_eq_prod [DecidableEq E] [Fintype (E ≃ₐ[F] E)] [Normal F 
     (c : GalConjClasses F E) :
     (minpoly c).map (algebraMap F E) = ∏ x in c.orbit.toFinset, (X - C x) :=
   by
-  simp_rw [← root_set_minpoly_eq_orbit, Finset.prod_eq_multiset_prod, root_set_def,
+  simp_rw [← rootSet_minpoly_eq_orbit, Finset.prod_eq_multiset_prod, rootSet_def,
     Finset.toFinset_coe, Multiset.toFinset_val]
-  rw [multiset.dedup_eq_self.mpr (nodup_roots _),
+  rw [Multiset.dedup_eq_self.mpr (nodup_roots _),
     prod_multiset_X_sub_C_of_monic_of_roots_card_eq (monic.map _ _)]
   · rw [splits_iff_card_roots.mp]; rw [splits_id_iff_splits]; exact minpoly.splits c
   · exact minpoly.monic c
