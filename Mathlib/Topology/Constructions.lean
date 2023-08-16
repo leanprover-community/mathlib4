@@ -1100,8 +1100,8 @@ theorem closure_subtype {x : { a // p a }} {s : Set { a // p a }} :
 #align closure_subtype closure_subtype
 
 theorem continuousAt_codRestrict_iff {f : α → β} {t : Set β} (h1 : ∀ x, f x ∈ t) {x : α} :
-    ContinuousAt (codRestrict f t h1) x ↔ ContinuousAt f x := by
-  simp_rw [inducing_subtype_val.continuousAt_iff, Function.comp, val_codRestrict_apply]
+    ContinuousAt (codRestrict f t h1) x ↔ ContinuousAt f x :=
+  inducing_subtype_val.continuousAt_iff
 #align continuous_at_cod_restrict_iff continuousAt_codRestrict_iff
 
 alias continuousAt_codRestrict_iff ↔ _ ContinuousAt.codRestrict
