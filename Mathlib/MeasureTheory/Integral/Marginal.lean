@@ -932,15 +932,16 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
   have h2i : i ∈ sᶜ := Finset.mem_compl.mpr hi
   have hι : 1 ≤ (#ι : ℝ) := by exact_mod_cast Fintype.card_pos
   have h2ι : 0 ≤ (#ι : ℝ) - 1 := by linarith
+  let k : ℝ := s.card
   intro x
   calc (∫⋯∫_{i}, rhsAux μ f s ∂μ) x
-      = (∫⋯∫_{i}, (∫⋯∫_s, f ∂μ) ^ ((s.card : ℝ) / (#ι - 1 : ℝ))
+      = (∫⋯∫_{i}, (∫⋯∫_s, f ∂μ) ^ (k / (#ι - 1 : ℝ))
           * ∏ j in sᶜ, (∫⋯∫_insert j s, f ∂μ) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) ∂μ) x := by rw [rhsAux]
     _ = (∫⋯∫_insert i s, f ∂μ) x ^ (1 / (#ι - 1 : ℝ)) *
           ∫⁻ (a : π i),
             ∏ j in insertNone (insert i s)ᶜ,
               Option.elim j (∫⋯∫_s, f ∂μ) (fun k ↦ ∫⋯∫_insert k s, f ∂μ) (update x i a) ^
-                Option.elim j ((card s : ℝ) / (#ι - 1)) (fun _ ↦ 1 / (#ι - 1)) ∂(μ i) := by
+                Option.elim j (k / (#ι - 1)) (fun _ ↦ 1 / (#ι - 1)) ∂(μ i) := by
               simp_rw [rhsAux, ← insert_compl_insert hi]
               rw [prod_insert (not_mem_compl.mpr <| mem_insert_self i s)]
               rw [mul_left_comm, mul_prod_eq_prod_insertNone]
@@ -956,7 +957,7 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
     _ ≤ (∫⋯∫_insert i s, f ∂μ) x ^ (1 / (#ι - 1 : ℝ)) *
           (∏ j in insertNone (insert i s)ᶜ,
             (∫⁻ (a : π i), Option.elim j (∫⋯∫_s, f ∂μ) (fun k ↦ ∫⋯∫_insert k s, f ∂μ) (update x i a) ∂(μ i))
-              ^ Option.elim j ((card s : ℝ) / (#ι - 1 : ℝ)) (fun _ ↦ 1 / (#ι - 1 : ℝ))) := by
+              ^ Option.elim j (k / (#ι - 1 : ℝ)) (fun _ ↦ 1 / (#ι - 1 : ℝ))) := by
               gcongr
               refine lintegral_prod_norm_pow_le _ ?_ ?_ -- Hölder's inequality
               · simp_rw [sum_insertNone, compl_insert, not_not, Option.elim, sum_const, nsmul_eq_mul]
@@ -965,7 +966,7 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
                 · rw [sub_ne_zero, Nat.cast_ne_one]
                   exact Fintype.one_lt_card.ne'
               · rintro (_|j) - <;> dsimp <;> positivity
-    _ = ((∫⋯∫_insert i s, f ∂μ) ^ ((s.card + 1 : ℝ) / (#ι - 1 : ℝ)) *
+    _ = ((∫⋯∫_insert i s, f ∂μ) ^ ((k + 1 : ℝ) / (#ι - 1 : ℝ)) *
             ∏ j in (insert i s)ᶜ, (∫⋯∫_insert i (insert j s), f ∂μ) ^ ((1:ℝ) / (#ι - 1 : ℝ))) x := by
               simp_rw [prod_insertNone]
               dsimp
