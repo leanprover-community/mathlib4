@@ -104,7 +104,7 @@ Now we just need to prove the equivalence, for the precise problem statement.
 -/
 theorem left_direction (n : ℕ) (spn : SolutionPredicate n) : ProblemPredicate n := by
   -- Porting note: This is very slow
-  rcases spn with (rfl | rfl) <;> norm_num [ProblemPredicate, sum_of_squares]
+  rcases spn with (rfl | rfl) <;> norm_num [ProblemPredicate, sumOfSquares]
 #align imo1960_q1.left_direction Imo1960Q1.left_direction
 
 end Imo1960Q1
