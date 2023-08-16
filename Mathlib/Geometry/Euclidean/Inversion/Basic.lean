@@ -22,6 +22,8 @@ Currently, we prove only a few basic lemmas needed to prove Ptolemy's inequality
 `EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist`.
 -/
 
+set_option autoImplicit true
+
 noncomputable section
 
 open Metric Function AffineMap Set AffineSubspace
