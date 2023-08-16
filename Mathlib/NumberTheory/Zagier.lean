@@ -142,6 +142,76 @@ theorem sq_add_sq_of_nonempty_fixedPoints
   obtain ⟨⟨⟨x, y, z⟩, he⟩, hf⟩ := hn
   rw [MulAction.mem_fixedPoints, Subtype.forall] at hf
   have := hf (obvInvo k) (mem_powers _)
-  sorry
+  apply_fun Subtype.val at this
+  rw [Submonoid.smul_def, End.smul_def] at this
+  unfold obvInvo at this; simp at this
+  unfold zagierSet at he; simp at he
+  use x, (2 * y)
+  rw [this.1, show 4 * y * y = 2 * y * (2 * y) by linarith] at he
+  assumption
+
+lemma zagierSet_ne1 {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) :
+    x + z ≠ y := by
+  simp_rw [zagierSet, Set.mem_setOf_eq] at h
+  by_contra e
+  subst e
+  replace h : (2 * z + x) * (2 * z + x) = 4 * k + 1 := by linarith [h]
+  cases' (Nat.dvd_prime hk.out).1 (dvd_of_mul_left_eq _ h) with e e <;>
+  (rw [e] at h; simp at h; subst h; simp at hk; exact hk.out)
+
+lemma zagierSet_ne2 {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) :
+    2 * y ≠ x := by
+  simp_rw [zagierSet, Set.mem_setOf_eq] at h
+  by_contra e
+  subst e
+  rw [show 2 * y * (2 * y) + 4 * y * z = 4 * y * (y + z) by linarith] at h
+  apply_fun (· % 4) at h
+  simp [mul_assoc, Nat.add_mod] at h
+
+def complexInvo : Function.End (zagierSubtype k) := fun ⟨⟨x, y, z⟩, h⟩ =>
+  ⟨if x + z < y then ⟨x + 2 * z, z, y - x - z⟩ else
+   if 2 * y < x then ⟨x - 2 * y, x + z - y, y⟩ else
+                     ⟨2 * y - x, y, x + z - y⟩, by
+  unfold zagierSet at *
+  simp at h
+  split_ifs with less more <;> simp
+  · rw [Nat.sub_sub]
+    zify [less.le] at h ⊢
+    ring_nf
+    linarith [h]
+  · push_neg at less
+    zify [less, more.le] at h ⊢
+    ring_nf
+    linarith [h]
+  · push_neg at less more
+    zify [less, more] at h ⊢
+    ring_nf
+    linarith [h]⟩
+
+theorem involutive_complexInvo : Involutive (complexInvo k) := by
+  unfold Involutive
+  intro ⟨⟨x, y, z⟩, h⟩
+  obtain ⟨xb, _, _⟩ := zagierSet_lower_bound k h
+  conv_lhs =>
+    arg 2
+    tactic => unfold complexInvo
+    dsimp
+  split_ifs with less more <;> (unfold complexInvo; simp; congr)
+  · simp [show ¬(x + 2 * z + (y - x - z) < z) by linarith [less], xb]
+    rw [Nat.sub_sub, two_mul, ← tsub_add_eq_add_tsub (by linarith), ← add_assoc,
+      Nat.add_sub_cancel, add_comm (x + z), Nat.sub_add_cancel (less.le)]
+  · push_neg at less
+    simp [(show x - 2 * y + y < x + z - y by zify [more.le, less]; linarith)]
+    constructor
+    · rw [Nat.sub_add_cancel more.le]
+    · rw [Nat.sub_right_comm, Nat.sub_sub _ _ y, ← two_mul, add_comm, Nat.add_sub_assoc more.le,
+        Nat.add_sub_cancel]
+  · push_neg at less more
+    simp [(show ¬(2 * y - x + (x + z - y) < y) by push_neg; zify [less, more]; linarith),
+      (show ¬(2 * y < 2 * y - x) by push_neg; zify [more]; linarith)]
+    constructor
+    · rw [tsub_tsub_assoc (by rfl) more, tsub_self, zero_add]
+    · rw [← Nat.add_sub_assoc less (2 * y - x), ← add_assoc, Nat.sub_add_cancel more,
+        Nat.sub_sub _ _ y, ← two_mul, add_comm, Nat.add_sub_cancel]
 
 end Involution
