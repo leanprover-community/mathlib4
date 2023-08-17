@@ -1634,7 +1634,7 @@ theorem MeasurePreserving.integral_comp {β} {_ : MeasurableSpace β} {f : α �
 #align measure_theory.measure_preserving.integral_comp MeasureTheory.MeasurePreserving.integral_comp
 
 theorem set_integral_eq_subtype' {α} [MeasurableSpace α] {μ : Measure α} {s : Set α}
-    (hs : MeasurableSet s) (f : α → G) : 
+    (hs : MeasurableSet s) (f : α → G) :
     ∫ x in s, f x ∂μ =
       ∫ x : s, f (x : α) ∂(Measure.comap Subtype.val μ):= by
   rw [← map_comap_subtype_coe hs]
@@ -1823,7 +1823,7 @@ theorem integral_finset [MeasurableSingletonClass α] (s : Finset α) (f : α �
   rw [integral_countable _ s.countable_toSet hf, ← Finset.tsum_subtype']
 
 theorem integral_fintype [MeasurableSingletonClass α] [Fintype α] (f : α → ℝ)
-    (hf : Integrable f μ) : 
+    (hf : Integrable f μ) :
     ∫ x, f x ∂μ = ∑ x, f x * (μ {x}).toReal := by
   -- NB: Integrable f does not follow from Fintype, because the measure itself could be non-finite
   rw [← integral_finset .univ , Finset.coe_univ, Measure.restrict_univ]
