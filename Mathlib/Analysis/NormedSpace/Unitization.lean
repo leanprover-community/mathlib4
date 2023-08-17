@@ -10,7 +10,7 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm
 /-!
 # Unitization norms
 
-Given a not necessarily unital normed `𝕜`-algebra `A`, it is frequently of interest to equip its
+Given a not-necessarily-unital normed `𝕜`-algebra `A`, it is frequently of interest to equip its
 `Unitization` with a norm which simultaneously makes it into a normed algebra and also satisfies
 two properties:
 
@@ -19,7 +19,7 @@ two properties:
 
 One way to do this is to pull back the norm from `WithLp 1 (𝕜 × A)`, that is,
 `‖(k, a)‖ = ‖k‖ + ‖a‖` using `Unitization.addEquiv` (i.e., the identity map). However, when the norm
-on `A` is *regular* (i.e., `ContinuousLinearMap.mul`) is an isometry, there is another natural
+on `A` is *regular* (i.e., `ContinuousLinearMap.mul` is an isometry), there is another natural
 choice: the pullback of the norm on `𝕜 × (A →L[𝕜] A)` under the map
 `(k, a) ↦ (k, k • 1 + ContinuousLinearMap.mul 𝕜 A a)`. It turns out that among all norms on the
 unitization satisfying the properties specified above, the norm inherited from
