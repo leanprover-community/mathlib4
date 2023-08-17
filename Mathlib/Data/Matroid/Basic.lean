@@ -20,7 +20,7 @@ where the bases are required to obey certain axioms.
 
 This file gives a definition of a matroid `M` in terms of its bases,
 and some API relating independent sets (subsets of bases) and the notion of a
-basis of a set `X` (a maximal independent subset of a basis of `X`).
+basis of a set `X` (a maximal independent subset of `X`).
 
 ## Main definitions
 
@@ -62,14 +62,14 @@ There are a few design decisions worth discussing.
   gives a number of different notions of 'infinite matroid' that disagree with eachother,
   and that all lack nice properties.
   Many different competing notions of infinite matroid were studied through the years;
-  in fact, the problem of which definition is the best was only really solved in 2010,
+  in fact, the problem of which definition is the best was only really solved in 2013,
   when Bruhn et al. [2] showed that there is a unique 'reasonable' notion of an infinite matroid;
   these objects had been previously called 'B-matroids'.
   These are defined by adding one carefully chosen axiom to the standard set,
   and adapting existing axioms to not mention set cardinalities;
   they enjoy nearly all the nice properties of standard finite matroids.
 
-  Even though 90%+ of the literature is on finite matroids,
+  Even though at least 90% of the literature is on finite matroids,
   B-matroids are the definition we use, because they allow for additional generality,
   nearly all theorems are still true and just as easy to state,
   and (hopefully) the more general definition will prevent the need for a costly future refactor.
@@ -84,8 +84,7 @@ There are a few design decisions worth discussing.
   all bases of a finite matroid `M` are finite and have the same cardinality;
   this cardinality is an important invariant known as the 'rank' of `M`.
   For infinite matroids, bases are not in general equicardinal;
-  in fact the equicardinality of bases of infinite matroids has been shown
-  to be independent of ZFC [3].
+  in fact the equicardinality of bases of infinite matroids is independent of ZFC [3].
   What is still true is that either all bases are finite and equicardinal,
   or all bases are infinite. This means that the natural notion of 'size'
   for a set in matroid theory is given by the function `Set.encard`, which
@@ -120,7 +119,7 @@ There are a few design decisions worth discussing.
   It still seems that this is worth it.
   The tactic `aesop_mat` exists specifically to discharge such goals
   with minimal fuss (using default values).
-  This works fairly well, but there is room for improvement.
+  The tactic works fairly well, but has room for improvement.
 
   A related decision is to not have matroids themselves be a typeclass.
   This would make things be notationally simpler
@@ -129,7 +128,6 @@ There are a few design decisions worth discussing.
   In fact, in regular written mathematics,
   it is normal to explicitly indicate which matroid something is happening in,
   so our notation mirrors common practice.
-
 
 ## References
 
@@ -144,8 +142,6 @@ There are a few design decisions worth discussing.
 [N. Bowler, S. Geschke, Self-dual uniform matroids on infinite sets,
   Proc. Amer. Math. Soc. 144 (2016), 459-471]
 -/
-
-
 
 open Set
 
@@ -234,10 +230,12 @@ theorem rkPos_iff_empty_not_base : M.RkPos ↔ ¬M.Base ∅ :=
 
 section exchange
 
+namespace ExchangeProperty
+
 variable {Base : Set α → Prop} (exch : ExchangeProperty Base)
 
 /-- A family of sets with the exchange property is an antichain. -/
-theorem antichain_of_exch (hB : Base B) (hB' : Base B') (h : B ⊆ B') : B = B' :=
+theorem antichain (hB : Base B) (hB' : Base B') (h : B ⊆ B') : B = B' :=
   h.antisymm (fun x hx ↦ by_contra
     (fun hxB ↦ let ⟨_, hy, _⟩ := exch B' B hB' hB x ⟨hx, hxB⟩; hy.2 <| h hy.1))
 
@@ -245,7 +243,7 @@ theorem encard_diff_le_aux (exch : ExchangeProperty Base) (hB₁ : Base B₁) (h
     (B₁ \ B₂).encard ≤ (B₂ \ B₁).encard := by
   obtain (he | hinf | ⟨e, he, hcard⟩) :=
     (B₂ \ B₁).eq_empty_or_encard_eq_top_or_encard_diff_singleton_lt
-  · rw [antichain_of_exch exch hB₂ hB₁ (diff_eq_empty.mp he)]
+  · rw [exch.antichain hB₂ hB₁ (diff_eq_empty.mp he)]
   · exact le_top.trans_eq hinf.symm
 
   obtain ⟨f, hf, hB'⟩ := exch B₂ B₁ hB₂ hB₁ e he
@@ -263,14 +261,15 @@ termination_by _ => (B₂ \ B₁).encard
 
 /-- For any two sets `B₁,B₂` in a family with the exchange property, the differences `B₁ \ B₂` and
   `B₂ \ B₁` have the same `ℕ∞`-cardinality. -/
-theorem encard_diff_eq_of_exch (hB₁ : Base B₁) (hB₂ : Base B₂) :
-    (B₁ \ B₂).encard = (B₂ \ B₁).encard :=
+theorem encard_diff_eq (hB₁ : Base B₁) (hB₂ : Base B₂) : (B₁ \ B₂).encard = (B₂ \ B₁).encard :=
 (encard_diff_le_aux exch hB₁ hB₂).antisymm (encard_diff_le_aux exch hB₂ hB₁)
 
 /-- Any two sets `B₁,B₂` in a family with the exchange property have the same `ℕ∞`-cardinality. -/
-theorem encard_base_eq_of_exch (hB₁ : Base B₁) (hB₂ : Base B₂) : B₁.encard = B₂.encard := by
-rw [←encard_diff_add_encard_inter B₁ B₂, encard_diff_eq_of_exch exch hB₁ hB₂, inter_comm,
+theorem encard_base_eq (hB₁ : Base B₁) (hB₂ : Base B₂) : B₁.encard = B₂.encard := by
+rw [←encard_diff_add_encard_inter B₁ B₂, exch.encard_diff_eq hB₁ hB₂, inter_comm,
      encard_diff_add_encard_inter]
+
+end ExchangeProperty
 
 end exchange
 
@@ -344,11 +343,11 @@ theorem Base.exchange_mem (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) (hxB₁ : 
 
 theorem Base.eq_of_subset_base (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) (hB₁B₂ : B₁ ⊆ B₂) :
     B₁ = B₂ :=
-  antichain_of_exch M.base_exchange' hB₁ hB₂ hB₁B₂
+  M.base_exchange'.antichain hB₁ hB₂ hB₁B₂
 
 theorem Base.card_diff_comm (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) :
     (B₁ \ B₂).encard = (B₂ \ B₁).encard :=
-  encard_diff_eq_of_exch (M.base_exchange') hB₁ hB₂
+  M.base_exchange'.encard_diff_eq hB₁ hB₂
 
 theorem Base.ncard_diff_comm (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) :
     (B₁ \ B₂).ncard = (B₂ \ B₁).ncard := by
@@ -356,7 +355,7 @@ theorem Base.ncard_diff_comm (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) :
 
 theorem Base.card_eq_card_of_base (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) :
     B₁.encard = B₂.encard := by
-  rw [encard_base_eq_of_exch M.base_exchange' hB₁ hB₂]
+  rw [M.base_exchange'.encard_base_eq hB₁ hB₂]
 
 theorem Base.ncard_eq_ncard_of_base (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) : B₁.ncard = B₂.ncard := by
   rw [ncard_def B₁, hB₁.card_eq_card_of_base hB₂, ←ncard_def]
@@ -437,7 +436,7 @@ theorem base_compl_iff_mem_maximals_disjoint_base (hB : B ⊆ M.E := by aesop_ma
 end Base
 section dep_indep
 
-/-- A set is independent if it is contained in a `Base`.  -/
+/-- A set is `Indep`endent if it is contained in a `Base`.  -/
 @[pp_dot] def Indep (M : Matroid α) (I : Set α) : Prop := ∃ B, M.Base B ∧ I ⊆ B
 
 /-- A subset of `M.E` is `Dep`endent if it is not `Indep`endent . -/
