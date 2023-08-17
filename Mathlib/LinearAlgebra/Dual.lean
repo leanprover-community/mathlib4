@@ -124,13 +124,6 @@ namespace Dual
 
 instance : Inhabited (Dual R M) := ⟨0⟩
 
--- Note: TC synthesis creates goals of the form `Semiring ?=` which cannot
--- unify with `R` for some reason. As such, it is currently problematics
--- [Zulip](https://leanprover.zulipchat.com/#narrow/stream/113488-general/
--- topic/Module.2EDual.20and.20linear.20maps)
-instance (priority := low) : FunLike (Dual R M) M fun _ => R :=
-  inferInstanceAs (FunLike (M →ₗ[R] R) M fun _ => R)
-
 /-- Maps a module M to the dual of the dual of M. See `Module.erange_coe` and
 `Module.evalEquiv`. -/
 def eval : M →ₗ[R] Dual R (Dual R M) :=
