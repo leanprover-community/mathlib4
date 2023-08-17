@@ -64,8 +64,12 @@ partial def pipeLines (i o : IO.FS.Stream) : BaseIO Unit := do
       discard <| o.putStr ln |>.toBaseIO
       pipeLines i o
 
+def noCacheGet := get_config? noCacheGet |>.isSome
+
 /-- A target which performs `lake exe cache get`. -/
 target cacheGet : Unit := do
+  if noCacheGet then
+    return .nil
   let cache ← cache.fetch
   cache.bindSync fun fname _ => do
   -- Pipe output directly to `stderr` so progress is visible and no `stdout:` prefix is produced.
