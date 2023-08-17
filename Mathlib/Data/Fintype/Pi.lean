@@ -111,8 +111,21 @@ theorem Finset.univ_pi_univ {α : Type*} {β : α → Type*} [DecidableEq α] [F
   ext; simp
 #align finset.univ_pi_univ Finset.univ_pi_univ
 
+theorem Fin.eq_castSucc_or_eq_last {n : Nat} : ∀ i : Fin (n + 1),
+    (∃ j : Fin n, i = j.castSucc) ∨ i = (Fin.last n) := by
+  intro ⟨i, hi⟩
+  by_cases h : i < n
+  · left
+    use ⟨i, by assumption⟩
+    simp only [castSucc_mk]
+  · right
+    apply Fin.eq_of_val_eq
+    simp only [coe_ofNat_eq_mod]
+    simp only [val_last]
+    exact Nat.eq_of_lt_succ_of_not_lt hi h
+
 lemma Fin.succ_mem_piFinset_iff {α} {n : ℕ} (p : (Fin (n + 1) → α)) (S : Fin (n+1) → Finset α) :
-    p ∈ Fintype.piFinset (fun i => S i)
+    p ∈ Fintype.piFinset S
       ↔
     p 0 ∈ S 0 ∧ (Fin.tail p) ∈ Fintype.piFinset (Fin.tail S) := by
   simp only [Fintype.mem_piFinset]
@@ -133,3 +146,26 @@ lemma Fin.cons_mem_piFinset_cons_iff {α} {n : ℕ} (p : (Fin n → α)) (x : α
       ↔
     x ∈ S₀ ∧ p ∈ Fintype.piFinset Sᵢ := by
   simp_rw [Fin.succ_mem_piFinset_iff, cons_zero, tail_cons]
+
+lemma Fin.succ_mem_piFinset_iff' {α} {n : ℕ} (p : (Fin (n + 1) → α)) (S : Fin (n+1) → Finset α) :
+    p ∈ Fintype.piFinset S
+      ↔
+    (Fin.init p) ∈ Fintype.piFinset (Fin.init S) ∧ p (Fin.last n) ∈ S (Fin.last n) := by
+  simp only [Fintype.mem_piFinset]
+  constructor
+  · intros ha_1
+    constructor
+    · exact fun a_1 ↦ ha_1 (Fin.castSucc a_1)
+    · exact ha_1 (Fin.last n)
+  · intro ⟨ha11, ha12⟩ a1
+    rcases Fin.eq_castSucc_or_eq_last a1 with ⟨j, rfl⟩ | rfl
+    · apply ha11
+    · assumption
+
+@[simp]
+lemma Fin.snoc_mem_piFinset_cons_iff {α} {n : ℕ} (p : (Fin n → α)) (x : α)
+  (Sᵢ : Fin n → Finset α) (Sₙ : Finset α) :
+    Fin.snoc p x ∈ Fintype.piFinset (Fin.snoc (α := fun _ => Finset α) Sᵢ Sₙ)
+      ↔
+    p ∈ Fintype.piFinset Sᵢ ∧ x ∈ Sₙ := by
+  simp_rw [Fin.succ_mem_piFinset_iff', init_snoc, snoc_last]
