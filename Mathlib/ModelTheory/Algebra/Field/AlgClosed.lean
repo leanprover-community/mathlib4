@@ -111,7 +111,7 @@ theorem realize_genericMonicPolyHasRoot [Field K] [CompatibleRing K] (n : ℕ) :
       ∀ p : { p : K[X] // p.Monic ∧ p.natDegree = n }, ∃ x, p.1.eval x = 0 := by
   letI := Classical.decEq K
   rw [Equiv.forall_congr_left' (monicPolyEquivFin n)]
-  simp [Sentence.Realize, genericMonicPolyHasRoot, Term.realize, lift_genericMonicPoly]
+  simp [Sentence.Realize, genericMonicPolyHasRoot, lift_genericMonicPoly]
 
 /-- The theory of algebraically closed fields of characteristic `p` as a theory over
 the language of rings -/
@@ -242,7 +242,7 @@ theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.ring.Sentence)
       letI := compatibleRingOfModelField K
       letI := isAlgClosed_of_model_ACF q K
       simp only [Sentence.Realize, eqZero, Formula.realize_not, Formula.realize_equal,
-        realize_termOfFreeCommRing, map_natCast, Term.realize, ne_eq, CompatibleRing.funMap_zero,
+        realize_termOfFreeCommRing, map_natCast, ne_eq, realize_zero,
         not_not, ← CharP.charP_iff_prime_eq_zero hp] at hK
       haveI := @charP_of_model_fieldOfChar
       rw [Finset.mem_singleton]

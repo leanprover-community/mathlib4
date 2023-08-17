@@ -57,10 +57,10 @@ theorem realize_termOfFreeCommRing (p : FreeCommRing α) (v : α → R) :
   rw [termOfFreeCommRing]
   conv_rhs => rw [← Classical.choose_spec (exists_term_realize_eq_freeCommRing p)]
   induction Classical.choose (exists_term_realize_eq_freeCommRing p) with
-  | var _ => simp [Term.realize]
+  | var _ => simp
   | func f a ih =>
     cases f <;>
-    simp [Term.realize, ih]
+    simp [ih]
 
 end Ring
 
