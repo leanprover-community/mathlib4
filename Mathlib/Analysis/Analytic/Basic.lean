@@ -1082,7 +1082,6 @@ section
 
 variable (p : FormalMultilinearSeries 𝕜 E F) {x y : E} {r R : ℝ≥0}
 
-set_option synthInstance.maxHeartbeats 100000 in
 /-- A term of `FormalMultilinearSeries.changeOriginSeries`.
 
 Given a formal multilinear series `p` and a point `x` in its ball of convergence,
