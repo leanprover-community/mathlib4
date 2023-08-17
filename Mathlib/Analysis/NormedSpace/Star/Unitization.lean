@@ -2,15 +2,11 @@
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module analysis.normed_space.star.mul
-! leanprover-community/mathlib commit b2ff9a3d7a15fd5b0f060b135421d6a89a999c2f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.Unitization
 
+#align_import analysis.normed_space.star.mul from "leanprover-community/mathlib"@"b2ff9a3d7a15fd5b0f060b135421d6a89a999c2f"
 /-! # The minimal unitization of a C⋆-algebra
 
 This file shows that when `E` is a C⋆-algebra (over a densely normed field `𝕜`), that the minimal
@@ -83,15 +79,14 @@ variable [StarRing 𝕜] [CstarRing 𝕜] [StarModule 𝕜 E]
 
 variable {E}
 
-/-- this is the key lemma on the road to establishing the instance `CstarRing (Unitization 𝕜 E)`
+/-- This is the key lemma used to establish the instance `Unitization.instCstarRing`
 (i.e., proving that the norm on `Unitization 𝕜 E` satisfies the C⋆-property). We split this one
 out so that declaring the `CstarRing` instance doesn't time out. -/
-theorem norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
+theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
     ‖(Unitization.splitMul 𝕜 E x).snd‖ ^ 2 ≤ ‖(Unitization.splitMul 𝕜 E (star x * x)).snd‖ := by
   /- The key idea is that we can use `sSup_closed_unit_ball_eq_norm` to make this about
-  applying this linear map to elements of norm at most one. So, if `b : E` with `‖b‖ ≤ 1`.
-  There is a bit of `sqrt` and `sq` shuffling that needs to occur, which is primarily just an
-  annoyance. -/
+  applying this linear map to elements of norm at most one. There is a bit of `sqrt` and `sq`
+  shuffling that needs to occur, which is primarily just an annoyance. -/
   refine (Real.le_sqrt (norm_nonneg _) (norm_nonneg _)).mp ?_
   simp only [Unitization.splitMul_apply]
   rw [← sSup_closed_unit_ball_eq_norm]
@@ -131,9 +126,9 @@ variable {𝕜}
 /-- The norm on `Unitization 𝕜 E` satisfies the C⋆-property -/
 instance Unitization.instCstarRing : CstarRing (Unitization 𝕜 E) where
   norm_star_mul_self {x} := by
-    -- rewrite both sides as a `max`
+    -- rewrite both sides as a `⊔`
     simp only [Unitization.norm_def, Prod.norm_def, ← sup_eq_max]
-    -- Show that `(Unitization.splitMul 𝕜 E x).snd` satisifes the C⋆-property, in two stages
+    -- Show that `(Unitization.splitMul 𝕜 E x).snd` satisifes the C⋆-property, in two stages:
     have h₁ : ∀ x : Unitization 𝕜 E,
         ‖(Unitization.splitMul 𝕜 E x).snd‖ ≤ ‖(Unitization.splitMul 𝕜 E (star x)).snd‖ := by
       simp only [add_zero, Unitization.splitMul_apply, Unitization.snd_star, Unitization.fst_star]
@@ -153,6 +148,7 @@ instance Unitization.instCstarRing : CstarRing (Unitization 𝕜 E) where
         simp only [add_zero, Unitization.splitMul_apply, Unitization.snd_star,
           Unitization.fst_star, star_star] at this
         exact (mul_le_mul_right h).mp this
+    -- in this step we make use of the key lemma `norm_splitMul_snd_sq`
     have h₂ : ‖(Unitization.splitMul 𝕜 E (star x * x)).snd‖
         = ‖(Unitization.splitMul 𝕜 E x).snd‖ ^ 2 := by
       refine le_antisymm ?_ (norm_splitMul_snd_sq 𝕜 x)
@@ -161,7 +157,7 @@ instance Unitization.instCstarRing : CstarRing (Unitization 𝕜 E) where
         rw [sq]
         gcongr
         simpa only [star_star] using h₁ (star x)
-    -- Show that `(Unitization.splitMul 𝕜 E x).fst` satisifes the C⋆-property, in two stages
+    -- Show that `(Unitization.splitMul 𝕜 E x).fst` satisifes the C⋆-property
     have h₃ : ‖(Unitization.splitMul 𝕜 E (star x * x)).fst‖
         = ‖(Unitization.splitMul 𝕜 E x).fst‖ ^ 2 := by
       simp only [Unitization.splitMul_apply, Unitization.fst_mul, Unitization.fst_star, add_zero,
