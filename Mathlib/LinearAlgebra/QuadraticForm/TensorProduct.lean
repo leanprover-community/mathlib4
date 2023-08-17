@@ -42,8 +42,8 @@ def tensorDistrib : QuadraticForm A M₁ ⊗[R] QuadraticForm R M₂ →ₗ[A] Q
   let toQ := BilinForm.toQuadraticFormLinearMap A A (M₁ ⊗[R] M₂)
   let tmulB := BilinForm.tensorDistrib R A (M₁ := M₁) (M₂ := M₂)
   let toB := AlgebraTensorModule.map
-      (QuadraticForm.associatedHom A : QuadraticForm A M₁ →ₗ[A] BilinForm A M₁)
-      (QuadraticForm.associatedHom R : QuadraticForm R M₂ →ₗ[R] BilinForm R M₂)
+      (QuadraticForm.associated : QuadraticForm A M₁ →ₗ[A] BilinForm A M₁)
+      (QuadraticForm.associated : QuadraticForm R M₂ →ₗ[R] BilinForm R M₂)
   toQ ∘ₗ tmulB ∘ₗ toB
 
 -- TODO: make the RHS `MulOpposite.op (Q₂ m₂) • Q₁ m₁` so that this has a nicer defeq for
@@ -77,8 +77,8 @@ theorem baseChange_tmul (Q : QuadraticForm R M₂) (a : A) (m₂ : M₂) :
   tensorDistrib_tmul _ _ _ _
 
 @[simp]
-theorem associated_baseChange (Q : QuadraticForm R M₂)  :
-    associated (R₁ := A) Q.baseChange = (associated (R := R) Q).baseChange :=
+theorem associated_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂)  :
+    associated (R₁ := A) Q.baseChange = (associated (R₁ := R) Q).baseChange :=
   associated_tmul _ Q
 
 end CommRing
