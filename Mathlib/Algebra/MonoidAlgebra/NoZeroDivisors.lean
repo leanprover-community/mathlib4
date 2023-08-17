@@ -58,8 +58,7 @@ import Mathlib.Algebra.MonoidAlgebra.Basic
 open Finsupp AddMonoidAlgebra
 
 example {R} [Ring R] [Nontrivial R] :
-  ∃ x y : AddMonoidAlgebra R (ZMod 2), x * y = 0 ∧ x ≠ 0 ∧ y ≠ 0 :=
-by
+  ∃ x y : AddMonoidAlgebra R (ZMod 2), x * y = 0 ∧ x ≠ 0 ∧ y ≠ 0 := by
   --  use `[1 (mod 2)] - 1` and `[1 (mod 2)] + 1`, the rest is easy
   refine ⟨of' _ _ 1 - AddMonoidAlgebra.single 0 1, of' _ _ 1 +  AddMonoidAlgebra.single 0 1, ?_, ?_⟩
   · simp [sub_mul, mul_add, single_mul_single, sub_eq_zero]; rfl
@@ -236,8 +235,7 @@ variable [CovariantClass A A (Function.swap (· + ·)) (· < ·)]
 Here, "top" is simply an upper bound for the elements of the support of the corresponding
 polynomial (e.g. the product is `0` if "top" is not a maximum). -/
 theorem mul_apply_of_le (fa : ∀ i ∈ f.support, i ≤ a) (gt : ∀ i ∈ g.support, i ≤ t) :
-  (f * g) (a + t) = f a * g t :=
-by
+  (f * g) (a + t) = f a * g t := by
   classical
   nth_rw 1 [← f.erase_add_single a]
   rw [add_mul, Finsupp.add_apply, single_mul_apply_of_le _ gt]
@@ -257,8 +255,7 @@ theorem mul_apply_of_le' (fa : ∀ i ∈ f.support, a ≤ i) (gb : ∀ i ∈ g.s
 @mul_apply_of_le _ Aᵒᵈ _ _ _ _ _ _ _ _ _ fa gb
 
 theorem mul_apply_eq_zero_of_lt (fa : ∀ i ∈ f.support, a ≤ i) (gb : ∀ i ∈ g.support, b < i) :
-  (f * g) (a + b) = 0 :=
-by
+  (f * g) (a + b) = 0 := by
   rw [mul_apply_of_le' fa (fun x hx ↦ ((gb _ hx).le))]
   convert mul_zero _
   exact Finsupp.not_mem_support_iff.mp (fun bg ↦ (lt_irrefl b (gb b bg)).elim)
