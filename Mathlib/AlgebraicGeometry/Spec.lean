@@ -328,7 +328,9 @@ def SpecΓIdentity : Spec.toLocallyRingedSpace.rightOp ⋙ Γ ≅ 𝟭 _ :=
   Iso.symm <| NatIso.ofComponents (fun R =>
     -- Porting note : In Lean3, this `IsIso` is synthesized automatically
     letI : IsIso (toSpecΓ R) := StructureSheaf.isIso_to_global _
-    asIso (toSpecΓ R)) fun {X Y} f => by exact Spec_Γ_naturality (R := X) (S := Y) f
+    asIso (toSpecΓ R)) fun {X Y} f => by
+      erw [Spec_Γ_naturality (R := X) (S := Y) f]
+      rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec_Γ_identity AlgebraicGeometry.SpecΓIdentity
 

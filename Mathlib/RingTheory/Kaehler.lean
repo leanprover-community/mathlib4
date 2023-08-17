@@ -388,7 +388,7 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
     exact e₁.symm.trans (e.trans e₂)
 #align kaehler_differential.End_equiv_aux KaehlerDifferential.End_equiv_aux
 
-set_option maxHeartbeats 700000 in
+set_option maxHeartbeats 1000000 in
 -- Porting note: extra heartbeats are needed to infer the instance
 -- Module S { x // x ∈ Ideal.cotangentIdeal (ideal R S) }
 set_option synthInstance.maxHeartbeats 200000 in
@@ -397,7 +397,8 @@ set_option synthInstance.maxHeartbeats 200000 in
 -- But lean times-out if this is given explicitly.
 /-- Derivations into `Ω[S⁄R]` is equivalent to derivations
 into `(KaehlerDifferential.ideal R S).cotangentIdeal`. -/
-noncomputable def KaehlerDifferential.endEquivDerivation' :=
+noncomputable def KaehlerDifferential.endEquivDerivation' := --: Derivation R S (Ω[S⁄R]) ≃ₗ[R]
+    -- Derivation R S (KaehlerDifferential.ideal R S).cotangentIdeal :=
   @LinearEquiv.compDer R _ S _ _ (Ω[S⁄R]) _ _ _ (KaehlerDifferential.ideal R S).cotangentIdeal
     _ _ _ _ _ ((KaehlerDifferential.ideal R S).cotangentEquivIdeal.restrictScalars S)
 #align kaehler_differential.End_equiv_derivation' KaehlerDifferential.endEquivDerivation'
@@ -413,8 +414,8 @@ def KaehlerDifferential.endEquivAuxEquiv :
 #align kaehler_differential.End_equiv_aux_equiv KaehlerDifferential.endEquivAuxEquiv
 
 
-set_option maxHeartbeats 1200000 in
-set_option synthInstance.maxHeartbeats 1000000 in
+set_option maxHeartbeats 2000000 in
+set_option synthInstance.maxHeartbeats 1200000 in
 /--
 The endomorphisms of `Ω[S⁄R]` corresponds to sections of the surjection `S ⊗[R] S ⧸ J ^ 2 →ₐ[R] S`,
 with `J` being the kernel of the multiplication map `S ⊗[R] S →ₐ[R] S`.

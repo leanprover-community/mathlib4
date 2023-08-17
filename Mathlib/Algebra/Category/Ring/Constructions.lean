@@ -135,7 +135,6 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
       PushoutCocone.ι_app_right, ← eq2, Algebra.TensorProduct.productMap_apply_tmul]
     change _ = h (a ⊗ₜ 1) * h (1 ⊗ₜ b)
     rw [←h.map_mul, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
-    rfl
 set_option linter.uppercaseLean3 false in
 #align CommRing.pushout_cocone_is_colimit CommRingCat.pushoutCoconeIsColimit
 

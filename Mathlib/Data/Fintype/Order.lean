@@ -93,7 +93,7 @@ open Classical
 noncomputable def toCompleteLattice [Lattice α] [BoundedOrder α] : CompleteLattice α :=
   { ‹Lattice α›,
     ‹BoundedOrder α› with
-    sSup := fun s => s.toFinset.sup id
+    -- sSup := fun s => s.toFinset.sup id
     sInf := fun s => s.toFinset.inf id
     le_sSup := fun _ _ ha => Finset.le_sup (f := id) (Set.mem_toFinset.mpr ha)
     sSup_le := fun s _ ha => Finset.sup_le fun b hb => ha _ <| Set.mem_toFinset.mp hb
