@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Data.Complex.Module
+import Mathlib.Data.Complex.Order
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Data.IsROrC.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Module
@@ -72,12 +73,12 @@ instance : DenselyNormedField ℂ where
     let ⟨x, h⟩ := exists_between hr
     ⟨x, by rwa [norm_eq_abs, abs_ofReal, abs_of_pos (h₀.trans_lt h.1)]⟩
 
-instance {R : Type _} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ where
+instance {R : Type*} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ where
   norm_smul_le r x := by
     rw [← algebraMap_smul ℝ r x, real_smul, norm_mul, norm_eq_abs, abs_ofReal, ← Real.norm_eq_abs,
       norm_algebraMap']
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 -- see Note [lower instance priority]
 /-- The module structure from `Module.complexToReal` is a normed space. -/
@@ -422,6 +423,8 @@ noncomputable instance : IsROrC ℂ where
   conj_I_ax := conj_I
   norm_sq_eq_def_ax z := (normSq_eq_abs z).symm
   mul_im_I_ax _ := mul_one _
+  toPartialOrder := Complex.partialOrder
+  le_iff_re_im := Iff.rfl
 
 theorem _root_.IsROrC.re_eq_complex_re : ⇑(IsROrC.re : ℂ →+ ℝ) = Complex.re :=
   rfl
@@ -476,7 +479,7 @@ theorem normSq_to_complex {x : ℂ} : norm_sqC x = Complex.normSq x :=
 
 section tsum
 
-variable {α : Type _} (𝕜 : Type _) [IsROrC 𝕜]
+variable {α : Type*} (𝕜 : Type*) [IsROrC 𝕜]
 
 @[simp]
 theorem hasSum_conj {f : α → 𝕜} {x : 𝕜} : HasSum (fun x => conj (f x)) x ↔ HasSum f (conj x) :=
@@ -563,7 +566,7 @@ discoverability and to avoid the need to unify `𝕜`.
 
 section tsum
 
-variable {α : Type _}
+variable {α : Type*}
 
 open ComplexConjugate
 
