@@ -619,9 +619,9 @@ theorem padicValNat_choose {n k b : ℕ} [hp : Fact p.Prime] (hkn : k ≤ n) (hn
 
 /-- **Kummer's Theorem**
 
-The `p`-adic valuation of `n.choose k` is the number of carries when `k` and `n - k` are added
+The `p`-adic valuation of `(n + k).choose k` is the number of carries when `k` and `n` are added
 in base `p`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound greater than
-`log p n`. -/
+`log p (n + k)`. -/
 theorem padicValNat_choose' {n k b : ℕ} [hp : Fact p.Prime] (hnb : log p (n + k) < b) :
     padicValNat p (choose (n + k) k) =
     ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + n % p ^ i).card :=
