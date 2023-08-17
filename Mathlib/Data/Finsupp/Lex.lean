@@ -154,7 +154,7 @@ instance Lex.orderBot [CanonicallyOrderedAddMonoid N] : OrderBot (Lex (α →₀
 noncomputable instance Lex.orderedAddCancelCommMonoid [OrderedCancelAddCommMonoid N] :
     OrderedCancelAddCommMonoid (Lex (α →₀ N)) where
   add_le_add_left := fun _ _ h _ => add_le_add_left (α := Lex (α → N)) h _
-  le_of_add_le_add_left := fun _ _ _ h => le_of_add_le_add_left (α := Lex (α → N)) h
+  le_of_add_le_add_left := fun _ _ _ => le_of_add_le_add_left (α := Lex (α → N))
 
 noncomputable instance Lex.orderedAddCommGroup [OrderedAddCommGroup N] :
     OrderedAddCommGroup (Lex (α →₀ N)) where
