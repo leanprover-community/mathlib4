@@ -45,3 +45,5 @@ theorem binomial_apply_self : binomial p h n n = p^n := by
 theorem binomial_one_eq_bernoulli :
     binomial p h 1 = (bernoulli p h).map (cond · 1 0) := by
   ext i; fin_cases i <;> simp [tsum_bool, binomial_apply]
+
+end Pmf
