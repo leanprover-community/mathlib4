@@ -151,10 +151,20 @@ combination with a `Ring`, or `Field` instance without having multiple different
 `Add` structures on the Type. -/
 class CompatibleRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R]
     extends Language.ring.Structure R where
+  /-- Addition in the `Language.ring.Structure` is the same as the addition given by the
+    `Add` instance -/
   ( funMap_add : ∀ x, funMap addFunc x = x 0 + x 1 )
+  /-- Multiplication in the `Language.ring.Structure` is the same as the multiplication given by the
+    `Mul` instance -/
   ( funMap_mul : ∀ x, funMap mulFunc x = x 0 * x 1 )
+  /-- Negation in the `Language.ring.Structure` is the same as the negation given by the
+    `Neg` instance -/
   ( funMap_neg : ∀ x, funMap negFunc x = -x 0 )
+  /-- The constant `0` in the `Language.ring.Structure` is the same as the constant given by the
+    `Zero` instance -/
   ( funMap_zero : ∀ x, funMap (zeroFunc : Language.ring.Constants) x = 0 )
+  /-- The constant `1` in the `Language.ring.Structure` is the same as the constant given by the
+    `One` instance -/
   ( funMap_one : ∀ x, funMap (oneFunc : Language.ring.Constants) x = 1 )
 
 attribute [simp] CompatibleRing.funMap_add CompatibleRing.funMap_mul CompatibleRing.funMap_neg
