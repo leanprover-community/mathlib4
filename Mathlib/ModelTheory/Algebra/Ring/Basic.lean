@@ -41,6 +41,7 @@ you must add local instances with definitions like `ModelTheory.Field.fieldOfMod
 
 -/
 
+variable {α : Type*}
 
 namespace FirstOrder
 
@@ -167,8 +168,38 @@ class CompatibleRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R]
     `One` instance -/
   ( funMap_one : ∀ x, funMap (oneFunc : Language.ring.Constants) x = 1 )
 
-attribute [simp] CompatibleRing.funMap_add CompatibleRing.funMap_mul CompatibleRing.funMap_neg
-  CompatibleRing.funMap_zero CompatibleRing.funMap_one
+open CompatibleRing
+
+attribute [simp] funMap_add funMap_mul funMap_neg funMap_zero funMap_one
+
+section
+
+variable {R : Type*} [Add R] [Mul R] [Neg R] [One R] [Zero R] [CompatibleRing R]
+
+@[simp]
+theorem realize_add (x y : ring.Term α) (v : α → R) :
+    Term.realize v (x + y) = Term.realize v x + Term.realize v y := by
+  simp [add_def, funMap_add]
+
+@[simp]
+theorem realize_mul (x y : ring.Term α) (v : α → R) :
+    Term.realize v (x * y) = Term.realize v x * Term.realize v y := by
+  simp [mul_def, funMap_mul]
+
+@[simp]
+theorem realize_neg (x : ring.Term α) (v : α → R) :
+    Term.realize v (-x) = -Term.realize v x := by
+  simp [neg_def, funMap_neg]
+
+@[simp]
+theorem realize_zero (v : α → R) : Term.realize v (0 : ring.Term α) = 0 := by
+  simp [zero_def, funMap_zero, constantMap]
+
+@[simp]
+theorem realize_one (v : α → R) : Term.realize v (1 : ring.Term α) = 1 := by
+  simp [one_def, funMap_one, constantMap]
+
+end
 
 /-- Given a Type `R` with instances for each of the `Ring` operations, make a
 `Language.ring.Structure R` instance, along with a proof that the operations given
