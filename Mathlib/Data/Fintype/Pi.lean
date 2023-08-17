@@ -153,14 +153,14 @@ lemma Fin.succ_mem_piFinset_iff' {α} {n : ℕ} (p : (Fin (n + 1) → α)) (S : 
     (Fin.init p) ∈ Fintype.piFinset (Fin.init S) ∧ p (Fin.last n) ∈ S (Fin.last n) := by
   simp only [Fintype.mem_piFinset]
   constructor
-  · intros ha_1
+  · intros h1
     constructor
-    · exact fun a_1 ↦ ha_1 (Fin.castSucc a_1)
-    · exact ha_1 (Fin.last n)
-  · intro ⟨ha11, ha12⟩ a1
+    · exact fun a_1 ↦ h1 (Fin.castSucc a_1)
+    · exact h1 (Fin.last n)
+  · intro ⟨h1, h2⟩ a1
     rcases Fin.eq_castSucc_or_eq_last a1 with ⟨j, rfl⟩ | rfl
-    · apply ha11
-    · assumption
+    · apply h1
+    · exact h2
 
 @[simp]
 lemma Fin.snoc_mem_piFinset_cons_iff {α} {n : ℕ} (p : (Fin n → α)) (x : α)
