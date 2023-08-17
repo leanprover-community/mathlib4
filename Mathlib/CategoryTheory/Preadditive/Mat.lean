@@ -561,7 +561,7 @@ open Matrix
 instance (R : Type u) [Semiring R] : Category (Mat R) where
   Hom X Y := Matrix X Y R
   id X := (1 : Matrix X X R)
-  comp f g := f ⬝ g
+  comp {X Y Z} f g := (show Matrix X Y R from f) * (show Matrix Y Z R from g)
   assoc := by intros; simp [Matrix.mul_assoc]
 
 namespace Mat
