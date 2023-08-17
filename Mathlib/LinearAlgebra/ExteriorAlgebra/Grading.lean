@@ -61,6 +61,7 @@ def GradedAlgebra.liftι :
   lift R ⟨by apply GradedAlgebra.ι R M, GradedAlgebra.ι_sq_zero R M⟩
 #align exterior_algebra.graded_algebra.lift_ι ExteriorAlgebra.GradedAlgebra.liftι
 
+set_option maxHeartbeats 400000 in
 set_option synthInstance.maxHeartbeats 30000 in
 theorem GradedAlgebra.liftι_eq (i : ℕ)
     (x : (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i :
