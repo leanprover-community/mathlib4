@@ -77,7 +77,7 @@ theorem zero_mk (d) (h : d ≠ 0) (w) : mk' 0 d h w = 0 := by congr
 #align rat.zero_mk Rat.zero_divInt
 
 @[simp]
-lemma Rat.num_eq_zero_iff (q : ℚ) : q.num = 0 ↔ q = 0 := by
+lemma num_eq_zero_iff (q : ℚ) : q.num = 0 ↔ q = 0 := by
   induction q
   constructor
   · rintro rfl
