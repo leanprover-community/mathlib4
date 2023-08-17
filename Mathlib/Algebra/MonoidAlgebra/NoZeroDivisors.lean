@@ -227,7 +227,7 @@ The corresponding statement for a general product `f * g` is `AddMonoidAlgebra.m
 It is proved with a further `CovariantClass` assumption. -/
 theorem single_mul_apply_of_le' (r : R) (fb : ∀ a ∈ f.support, b ≤ a) :
   ((AddMonoidAlgebra.single a r) * f) (a + b) = r * f b :=
-@single_mul_apply_of_le _ Aᵒᵈ _ _ _ _ _ _ _ _ fb
+single_mul_apply_of_le (A := Aᵒᵈ) _ fb
 
 variable [CovariantClass A A (Function.swap (· + ·)) (· < ·)]
 
@@ -252,7 +252,7 @@ Here, "bottom" is simply a lower bound for the elements of the support of the co
 polynomial (e.g. the product is `0` if "bottom" is not a minimum). -/
 theorem mul_apply_of_le' (fa : ∀ i ∈ f.support, a ≤ i) (gb : ∀ i ∈ g.support, b ≤ i) :
   (f * g) (a + b) = f a * g b :=
-@mul_apply_of_le _ Aᵒᵈ _ _ _ _ _ _ _ _ _ fa gb
+mul_apply_of_le (A := Aᵒᵈ) fa gb
 
 theorem mul_apply_eq_zero_of_lt (fa : ∀ i ∈ f.support, a ≤ i) (gb : ∀ i ∈ g.support, b < i) :
   (f * g) (a + b) = 0 := by
