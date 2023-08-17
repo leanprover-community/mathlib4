@@ -14,6 +14,13 @@ set_option autoImplicit true
 
 open Lean Core
 
+/-- Count the number of heartbeats used during a monadic function. -/
+def withHeartbeats [Monad m] [MonadLiftT BaseIO m] (x : m α) : m (α × Nat) := do
+  let start ← IO.getNumHeartbeats
+  let r ← x
+  let finish ← IO.getNumHeartbeats
+  return (r, (finish - start) / 1000)
+
 /-- Return the current `maxHeartbeats`. -/
 def getMaxHeartbeats : CoreM Nat := do pure <| (← read).maxHeartbeats
 

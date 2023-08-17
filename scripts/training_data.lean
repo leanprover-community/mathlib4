@@ -2,6 +2,7 @@ import Mathlib.Util.Frontend
 import Mathlib.Util.InfoTree.ToJson
 import Mathlib.Data.String.Defs
 import Mathlib.Util.InfoTree.TacticInvocation.Basic
+import Mathlib.Util.Cli
 import Mathlib.Lean.CoreM
 import Cli
 
@@ -26,22 +27,6 @@ def trainingData (module : Name) (i : TacticInvocation) : IO String := do
   return result
 
 end Lean.Elab.TacticInvocation
-
--- Borrowed from ImportGraph.lean
-/-- A custom command-line argument parser that allows either relative paths to Lean files,
-(e.g. `Mathlib/Topology/Basic.lean`) or the module name (e.g. `Mathlib.Topology.Basic`). -/
-instance rename_this_3 : ParseableType Name where
-  name     := "Name"
-  parse? s :=
-    if s.endsWith ".lean" then
-      some <| (s : FilePath).withExtension "" |>.components.foldl Name.mkStr Name.anonymous
-    else
-      String.toName s
-
--- Next two declarations borrowed from `runLinter.lean`.
-instance : ToExpr FilePath where
-  toTypeExpr := mkConst ``FilePath
-  toExpr path := mkApp (mkConst ``FilePath.mk) (toExpr path.1)
 
 def trainingData (args : Cli.Parsed) : IO UInt32 := do
     searchPathRef.set compileTimeSearchPath%

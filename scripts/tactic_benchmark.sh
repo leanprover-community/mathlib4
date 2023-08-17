@@ -12,9 +12,9 @@ else
   DIR=tactic_benchmark/${1#--}
   mkdir -p $DIR
   mod=$2
-  echo $mod
   if [ ! -f $DIR/$mod.bench ]
   then
-    lake exe tactic_benchmark $1 $mod > $DIR/$mod._bench && mv $DIR/$mod._bench $DIR/$mod.bench
+    echo $mod
+    timeout 5m lake exe tactic_benchmark $1 $mod > $DIR/$mod._bench && mv $DIR/$mod._bench $DIR/$mod.bench
   fi
 fi

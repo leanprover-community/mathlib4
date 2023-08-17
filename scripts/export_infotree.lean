@@ -1,27 +1,11 @@
 import Mathlib.Util.Frontend
 import Mathlib.Util.InfoTree.ToJson
-import Cli
+import Mathlib.Tactic.ToExpr
+import Mathlib.Util.Cli
+import Mathlib.Lean.CoreM
 
 open Lean Elab IO Meta
 open Cli System
-
-/-- A custom command-line argument parser that allows either relative paths to Lean files,
-(e.g. `Mathlib/Topology/Basic.lean`) or the module name (e.g. `Mathlib.Topology.Basic`). -/
-instance rename_this_2 : ParseableType Name where
-  name     := "Name"
-  parse? s :=
-    if s.endsWith ".lean" then
-      some <| (s : FilePath).withExtension "" |>.components.foldl Name.mkStr Name.anonymous
-    else
-      String.toName s
-
--- Next two declarations borrowed from `runLinter.lean`.
-instance rename_2 : ToExpr FilePath where
-  toTypeExpr := mkConst ``FilePath
-  toExpr path := mkApp (mkConst ``FilePath.mk) (toExpr path.1)
-
-elab "compileTimeSearchPath" : term =>
-  return toExpr (← searchPathRef.get)
 
 structure InfoTreeExport where
   name : Name
@@ -29,7 +13,7 @@ structure InfoTreeExport where
 deriving ToJson
 
 def exportInfoTree (args : Cli.Parsed) : IO UInt32 := do
-    searchPathRef.set compileTimeSearchPath
+    searchPathRef.set compileTimeSearchPath%
     let target := args.positionalArg! "module" |>.as! Name
     let mut trees ← moduleInfoTrees target
     if args.hasFlag "tactics" then
@@ -41,7 +25,6 @@ def exportInfoTree (args : Cli.Parsed) : IO UInt32 := do
     let json ← trees.mapM fun t => t.toJson none
     IO.println <| toJson <| InfoTreeExport.mk target json
     return 0
-
 
 /-- Setting up command line options and help text for `lake exe export_infotree`. -/
 def export_infotree : Cmd := `[Cli|

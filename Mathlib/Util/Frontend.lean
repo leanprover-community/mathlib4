@@ -180,7 +180,7 @@ def moduleSource (mod : Name) : IO String := do
 
 /-- Implementation of `compileModule`, which is the cached version of this function. -/
 def compileModule' (mod : Name) : IO (List ProcessedCommand) := do
-  Lean.Elab.IO.processInput' (← moduleSource mod) none {}
+  Lean.Elab.IO.processInput' (← moduleSource mod) none {} (← findLean mod).toString
 
 initialize compilationCache : IO.Ref <| HashMap Name (List ProcessedCommand) ←
   IO.mkRef .empty

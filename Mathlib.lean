@@ -1878,7 +1878,6 @@ import Mathlib.Dynamics.Flow
 import Mathlib.Dynamics.Minimal
 import Mathlib.Dynamics.OmegaLimit
 import Mathlib.Dynamics.PeriodicPts
-import Mathlib.Examples
 import Mathlib.FieldTheory.AbelRuffini
 import Mathlib.FieldTheory.Adjoin
 import Mathlib.FieldTheory.AxGrothendieck
@@ -3417,12 +3416,10 @@ import Mathlib.Util.Frontend
 import Mathlib.Util.Imports
 import Mathlib.Util.IncludeStr
 import Mathlib.Util.InfoTree.Basic
-import Mathlib.Util.InfoTree.ExportJSON
 import Mathlib.Util.InfoTree.More
 import Mathlib.Util.InfoTree.TacticInvocation.Basic
 import Mathlib.Util.InfoTree.TacticInvocation.Kind
 import Mathlib.Util.InfoTree.ToJson
-import Mathlib.Util.InfoTree.TrainingData
 import Mathlib.Util.LongNames
 import Mathlib.Util.MemoFix
 import Mathlib.Util.PiNotation
@@ -3433,7 +3430,6 @@ import Mathlib.Util.Superscript
 import Mathlib.Util.Syntax
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Tactic
-import Mathlib.Util.TacticBenchmark
 import Mathlib.Util.Time
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace
