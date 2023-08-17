@@ -210,6 +210,8 @@ open Function FirstOrder Language Field Ring MvPolynomial
 variable {K : Type*} [Field K] [IsAlgClosed K] {ι κ : Type*} [Finite ι] [Finite κ]
 
 theorem ax_grothendieck_definable [CompatibleRing K] (c : Set K)
+    /- This below hypothesis should be necessary, but nobody has yet proven
+    that definability over a finite set is equivalent to definability. -/
     (hc : Set.Finite c)
     (S : Set (ι → K)) (hS : c.Definable Language.ring S)
     (ps : ι → MvPolynomial ι K) :
