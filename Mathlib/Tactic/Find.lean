@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Ullrich, Joachim Breitner
 -/
 import Lean
+import Std.Lean.Delaborator
 import Mathlib.Tactic.Cache
 
 /-!
@@ -133,8 +134,8 @@ def NameRel := NameMap NameSet
 instance : EmptyCollection NameRel :=
   inferInstanceAs $ EmptyCollection (NameMap NameSet)
 
-instance : Nonempty NameRel :=
-  inferInstanceAs $ Nonempty (NameMap NameSet)
+instance : Inhabited NameRel :=
+  inferInstanceAs $ Inhabited (NameMap NameSet)
 
 /-- For all names `n` mentioned in the type of the constant `c`, add `c.name` to the set associated
 with `n`. -/
