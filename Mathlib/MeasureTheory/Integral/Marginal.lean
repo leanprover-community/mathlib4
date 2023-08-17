@@ -1042,7 +1042,6 @@ lemma rhsAux_not_mem (f : (∀ i, π i) → ℝ≥0∞) {s : Finset ι} {i : ι}
     _ = (∫⋯∫_insert i s, f ∂μ) x ^ p * ((∫⋯∫_s, f ∂μ) x ^ (m * p)
           * ∏ j in (insert i s)ᶜ, (∫⋯∫_insert j s, f ∂μ) x ^ p) := by ring
 
-set_option maxHeartbeats 400000 in
 /--
 The main inductive step
 
