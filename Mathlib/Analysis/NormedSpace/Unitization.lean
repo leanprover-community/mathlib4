@@ -131,10 +131,20 @@ attribute [local instance] Unitization.normedAlgebraAux
 theorem norm_def (x : Unitization 𝕜 A) : ‖x‖ = ‖splitMul 𝕜 A x‖ :=
   rfl
 
+theorem nnnorm_def (x : Unitization 𝕜 A) : ‖x‖₊ = ‖splitMul 𝕜 A x‖₊ :=
+  rfl
+
 /-- This is often the more useful lemma to rewrite the norm as opposed to `Unitization.norm_def`. -/
 theorem norm_eq_sup (x : Unitization 𝕜 A) :
     ‖x‖ = ‖x.fst‖ ⊔ ‖algebraMap 𝕜 (A →L[𝕜] A) x.fst + mul 𝕜 A x.snd‖ := by
   rw [norm_def, splitMul_apply, Prod.norm_def, sup_eq_max]
+
+/-- This is often the more useful lemma to rewrite the norm as opposed to
+`Unitization.nnnorm_def`. -/
+theorem nnnorm_eq_sup (x : Unitization 𝕜 A) :
+    ‖x‖₊ = ‖x.fst‖₊ ⊔ ‖algebraMap 𝕜 (A →L[𝕜] A) x.fst + mul 𝕜 A x.snd‖₊ :=
+  NNReal.eq <| norm_eq_sup x
+
 
 theorem lipschitzWith_addEquiv :
     LipschitzWith 2 (Unitization.addEquiv 𝕜 A) := by
@@ -231,8 +241,17 @@ instance instNormOneClass : NormOneClass (Unitization 𝕜 A) where
 lemma norm_inr (a : A) : ‖(a : Unitization 𝕜 A)‖ = ‖a‖ := by
   simp [norm_eq_sup]
 
+lemma nnnorm_inr (a : A) : ‖(a : Unitization 𝕜 A)‖₊ = ‖a‖₊ :=
+  NNReal.eq <| norm_inr a
+
 lemma isometry_inr : Isometry ((↑) : A → Unitization 𝕜 A) :=
   AddMonoidHomClass.isometry_of_norm (inrNonUnitalAlgHom 𝕜 A) norm_inr
+
+lemma dist_inr (a b : A) : dist (a : Unitization 𝕜 A) (b : Unitization 𝕜 A) = dist a b :=
+  isometry_inr.dist_eq a b
+
+lemma nndist_inr (a b : A) : nndist (a : Unitization 𝕜 A) (b : Unitization 𝕜 A) = nndist a b :=
+  isometry_inr.nndist_eq a b
 
 /- These examples verify that the bornology and uniformity (hence also the topology) are the
 correct ones. -/
