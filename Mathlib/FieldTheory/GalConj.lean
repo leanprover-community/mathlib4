@@ -323,32 +323,45 @@ theorem minpoly.separable (c : GalConjClasses F E) : Separable (minpoly c) := by
   rw [← c.out_eq, minpoly_mk]; exact IsSeparable.separable F c.out
 #align gal_conj_classes.minpoly.separable GalConjClasses.minpoly.separable
 
+-- Porting note: added
+lemma aux {a b : F[X]} (h : a = b) :
+    HEq
+      ((h ▸ AlgEquiv.refl) : AdjoinRoot a ≃ₐ[F] AdjoinRoot b)
+      (AlgEquiv.refl : AdjoinRoot a ≃ₐ[F] AdjoinRoot a) := by
+  cases h
+  rfl
+
 theorem minpoly.inj [Normal F E] {c d : GalConjClasses F E} (h : minpoly c = minpoly d) :
     c = d := by
   let fc := IntermediateField.adjoinRootEquivAdjoin F (IsSeparable.isIntegral F c.out)
   let fd := IntermediateField.adjoinRootEquivAdjoin F (IsSeparable.isIntegral F d.out)
-  let congr_f : AdjoinRoot (_root_.minpoly F c.out) ≃ₐ[F] AdjoinRoot (_root_.minpoly F d.out) := by
+  have : _root_.minpoly F c.out = _root_.minpoly F d.out := by
     rw [minpoly_out, minpoly_out, h]
-  stop
+  let congr_f : AdjoinRoot (_root_.minpoly F c.out) ≃ₐ[F] AdjoinRoot (_root_.minpoly F d.out) :=
+    this ▸ AlgEquiv.refl
   have congr_f_apply : ∀ x, HEq (congr_f x) x := by
     intro x; change HEq (congr_f x) ((AlgEquiv.refl : _ ≃ₐ[F] _) x)
     dsimp only
     refine' FunLike.congr_heq _ HEq.rfl _ _
-    · simp_rw [eq_mpr_eq_cast, cast_cast]
-      refine' cast_heq' _ (FunLike.ext_heq _ _ _ _ _)
-      any_goals rw [minpoly_out, h]
-      simp only [heq_eq_eq]
-      rintro x₁ x₂ rfl; rfl
+    · apply aux this
     all_goals rw [minpoly_out, minpoly_out, h]
   let f' := fc.symm.trans (congr_f.trans fd)
   let f := f'.liftNormal E
   rw [← out_equiv_out]
   refine' ⟨f.symm, _⟩
   dsimp only [AlgEquiv.smul_def]
-  simp_rw [AlgEquiv.symm_apply_eq, ← IntermediateField.AdjoinSimple.algebraMap_gen F c.out, ←
-    IntermediateField.AdjoinSimple.algebraMap_gen F d.out, AlgEquiv.liftNormal_commutes]
+  -- Porting note: was
+  -- simp_rw [AlgEquiv.symm_apply_eq, ← IntermediateField.AdjoinSimple.algebraMap_gen F c.out, ←
+  --   IntermediateField.AdjoinSimple.algebraMap_gen F d.out, AlgEquiv.liftNormal_commutes]
+  suffices (algebraMap F⟮d.out⟯ E) (IntermediateField.AdjoinSimple.gen F d.out) =
+      (algebraMap F⟮d.out⟯ E) (f' (IntermediateField.AdjoinSimple.gen F c.out)) by
+    rw [AlgEquiv.symm_apply_eq]
+    rw [IntermediateField.AdjoinSimple.algebraMap_gen] at this
+    simp_rw [this]
+    simp_rw [← AlgEquiv.liftNormal_commutes]
+    rw [IntermediateField.AdjoinSimple.algebraMap_gen]
   apply congr_arg
-  simp_rw [f', AlgEquiv.trans_apply, ← fd.symm_apply_eq, fc, fd,
+  simp_rw [AlgEquiv.trans_apply, ← fd.symm_apply_eq,
     IntermediateField.adjoinRootEquivAdjoin_symm_apply_gen]
   refine' eq_of_heq (HEq.trans _ (congr_f_apply _).symm)
   rw [minpoly_out, minpoly_out, h]
