@@ -670,6 +670,10 @@ theorem empty_pi (s : ∀ i, Set (α i)) : pi ∅ s = univ := by
   simp [pi]
 #align set.empty_pi Set.empty_pi
 
+theorem subsingleton_univ_pi (ht : ∀ i, (t i).Subsingleton) :
+    (univ.pi t).Subsingleton := fun _f hf _g hg ↦ funext fun i ↦
+  (ht i) (hf _ <| mem_univ _) (hg _ <| mem_univ _)
+
 @[simp]
 theorem pi_univ (s : Set ι) : (pi s fun i => (univ : Set (α i))) = univ :=
   eq_univ_of_forall fun _ _ _ => mem_univ _

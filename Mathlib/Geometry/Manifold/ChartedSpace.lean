@@ -109,6 +109,8 @@ In the locale `Manifold`, we denote the composition of local homeomorphisms with
 composition of local equivs with `≫`.
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 
