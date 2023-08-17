@@ -1062,6 +1062,8 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
       have : (#ι:ℝ) - 1 ≠ 0 := by positivity
       field_simp [this]
     linear_combination -p * H₁ + p * H₂ + H₃
+  have hf' : ∀ {s' : Finset ι}, Measurable fun t ↦ (∫⋯∫_s', f ∂μ) (update x i t) :=
+    fun {_} ↦ hf.marginal μ |>.comp <| measurable_update _
   let m : ℝ := s.card
   calc ∫⁻ t, rhsAux μ f s (update x i t) ∂(μ i)
       = ∫⁻ t, ((∫⋯∫_insert i s, f ∂μ) (update x i t) ^ p * ((∫⋯∫_s, f ∂μ) (update x i t) ^ (m * p)
@@ -1071,18 +1073,16 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
           * ∏ j in (insert i s)ᶜ, ((∫⋯∫_insert j s, f ∂μ) (update x i t)) ^ p) ∂(μ i)) := by
               simp_rw [marginal_update μ (s.mem_insert_self i)]
               rw [lintegral_const_mul]
-              refine (hf.marginal μ).comp (measurable_update x) |>.pow measurable_const |>.mul ?_
-              refine Finset.measurable_prod _ fun i _ ↦ ?_
-              exact (hf.marginal μ).comp (measurable_update x) |>.pow measurable_const
+              exact (hf'.pow_const _).mul <| Finset.measurable_prod _ fun _ _ ↦ hf'.pow_const _
     _ ≤ ((∫⋯∫_insert i s, f ∂μ) x) ^ p *
           ((∫⁻ t, (∫⋯∫_s, f ∂μ) (update x i t) ∂μ i) ^ (m * p) *
             ∏ j in (insert i s)ᶜ, (∫⁻ t, (∫⋯∫_insert j s, f ∂μ) (update x i t) ∂(μ i)) ^ p) := by
               gcongr
               -- we now apply Hölder's inequality
               apply ENNReal.lintegral_mul_prod_norm_pow_le
-              · exact (hf.marginal μ |>.comp <| measurable_update _).aemeasurable
+              · exact hf'.aemeasurable
               · intros
-                exact (hf.marginal μ |>.comp <| measurable_update _).aemeasurable
+                exact hf'.aemeasurable
               · simp_rw [sum_const, nsmul_eq_mul]
                 exact hp
               · positivity
@@ -1121,14 +1121,14 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
               ring
 
 lemma Measurable.rhsAux (hf : Measurable f) : Measurable (rhsAux μ f s) := by
-  simp [_root_.rhsAux]
+  rw [_root_.rhsAux]
   refine Measurable.mul ?_ ?_
   · dsimp
-    exact (hf.marginal μ).pow measurable_const
+    exact (hf.marginal μ).pow_const _
   simp_rw [prod_apply]
   refine Finset.measurable_prod _ fun i _ ↦ ?_
   dsimp
-  exact hf.marginal μ |>.pow measurable_const
+  exact (hf.marginal μ).pow_const _
 
 theorem marginal_rhsAux_empty_le [Nontrivial ι] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f)
     (s : Finset ι) : ∫⋯∫_s, rhsAux μ f ∅ ∂μ ≤ rhsAux μ f s := by
