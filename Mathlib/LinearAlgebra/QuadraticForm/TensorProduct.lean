@@ -16,10 +16,9 @@ import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 -/
 
+universe uι uR uA uM₁ uM₂
 
-universe u v w uι uR uA uM₁ uM₂
-
-variable {ι : Type _} {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂}
+variable {ι : Type uι} {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂}
 
 open TensorProduct
 
@@ -57,20 +56,31 @@ theorem tensorDistrib_tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R
     (associated_eq_self_apply _ _ _) (associated_eq_self_apply _ _ _)
 
 /-- The tensor product of two quadratic forms, a shorthand for dot notation. -/
-@[reducible]
-protected def tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
+protected abbrev tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
     QuadraticForm A (M₁ ⊗[R] M₂) :=
-  tensorDistrib (A := A) (Q₁ ⊗ₜ[R] Q₂)
+  tensorDistrib R A (Q₁ ⊗ₜ[R] Q₂)
+
+theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
+    associated (R₁ := A) (Q₁.tmul Q₂)
+      = (associated (R₁ := A) Q₁).tmul (associated (R₁ := R) Q₂) := by
+  rw [QuadraticForm.tmul, tensorDistrib, BilinForm.tmul]
+  dsimp
+  convert associated_left_inverse A ((associated_isSymm A Q₁).tmul (associated_isSymm R Q₂))
 
 /-- The base change of a quadratic form. -/
 protected def baseChange (Q : QuadraticForm R M₂) : QuadraticForm A (A ⊗[R] M₂) :=
-  QuadraticForm.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (QuadraticForm.sq) Q
+  QuadraticForm.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (QuadraticForm.sq (R := A)) Q
 
 @[simp]
 theorem baseChange_tmul (Q : QuadraticForm R M₂) (a : A) (m₂ : M₂) :
-    Q.baseChange (a ⊗ₜ m₂) = Q m₂ • a :=
-  tensorDistrib_tmul _ _
+    Q.baseChange (a ⊗ₜ m₂) = Q m₂ • (a * a) :=
+  tensorDistrib_tmul _ _ _ _
 
-end CommSemiring
+@[simp]
+theorem associated_baseChange (Q : QuadraticForm R M₂)  :
+    associated (R₁ := A) Q.baseChange = (associated (R := R) Q).baseChange :=
+  associated_tmul _ Q
+
+end CommRing
 
 end QuadraticForm
