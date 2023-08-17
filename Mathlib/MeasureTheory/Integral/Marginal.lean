@@ -1055,8 +1055,10 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
   have : 1 ≤ (#ι:ℝ) - 1 := by linarith
   let p : ℝ := 1 / ((#ι:ℝ) - 1)
   have hp : s.card * p + (insert i s)ᶜ.card * p = 1
-  · have H₁ : ((insert i s).card : ℝ) = s.card + 1 := by exact_mod_cast Finset.card_insert_of_not_mem hi
-    have H₂ : ((insert i s).card : ℝ) + (insert i s)ᶜ.card = #ι := by exact_mod_cast (insert i s).card_add_card_compl
+  · have H₁ : ((insert i s).card : ℝ) = s.card + 1
+    · exact_mod_cast Finset.card_insert_of_not_mem hi
+    have H₂ : ((insert i s).card : ℝ) + (insert i s)ᶜ.card = #ι
+    · exact_mod_cast (insert i s).card_add_card_compl
     have H₃ : p * (#ι - 1) = 1
     · dsimp only
       have : (#ι:ℝ) - 1 ≠ 0 := by positivity
@@ -1066,58 +1068,50 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
     fun {_} ↦ hf.marginal μ |>.comp <| measurable_update _
   let m : ℝ := s.card
   calc ∫⁻ t, rhsAux μ f s (update x i t) ∂(μ i)
-      = ∫⁻ t, ((∫⋯∫_insert i s, f ∂μ) (update x i t) ^ p * ((∫⋯∫_s, f ∂μ) (update x i t) ^ (m * p)
-          * ∏ j in (insert i s)ᶜ, (∫⋯∫_insert j s, f ∂μ) (update x i t) ^ p)) ∂(μ i) := by
+      = ∫⁻ t, (∫⋯∫_insert i s, f ∂μ) (update x i t) ^ p * ((∫⋯∫_s, f ∂μ) (update x i t) ^ (m * p)
+          * ∏ j in (insert i s)ᶜ, (∫⋯∫_insert j s, f ∂μ) (update x i t) ^ p) ∂(μ i) := by
+              -- rewrite integrand so that `(∫⋯∫_insert i s, f ∂μ) ^ p` comes first
               simp_rw [rhsAux_not_mem μ f hi]
-    _ = (∫⋯∫_insert i s, f ∂μ) x ^ p * (∫⁻ t, ((∫⋯∫_s, f ∂μ) (update x i t) ^ (m * p)
-          * ∏ j in (insert i s)ᶜ, ((∫⋯∫_insert j s, f ∂μ) (update x i t)) ^ p) ∂(μ i)) := by
+    _ = (∫⋯∫_insert i s, f ∂μ) x ^ p *
+          ∫⁻ t, (∫⋯∫_s, f ∂μ) (update x i t) ^ (m * p)
+          * ∏ j in (insert i s)ᶜ, ((∫⋯∫_insert j s, f ∂μ) (update x i t)) ^ p ∂(μ i) := by
+              -- pull out this constant factor
               simp_rw [marginal_update μ (s.mem_insert_self i)]
               rw [lintegral_const_mul]
               exact (hf'.pow_const _).mul <| Finset.measurable_prod _ fun _ _ ↦ hf'.pow_const _
-    _ ≤ ((∫⋯∫_insert i s, f ∂μ) x) ^ p *
+    _ ≤ (∫⋯∫_insert i s, f ∂μ) x ^ p *
           ((∫⁻ t, (∫⋯∫_s, f ∂μ) (update x i t) ∂μ i) ^ (m * p) *
             ∏ j in (insert i s)ᶜ, (∫⁻ t, (∫⋯∫_insert j s, f ∂μ) (update x i t) ∂(μ i)) ^ p) := by
+              -- apply Hölder's inequality
               gcongr
-              -- we now apply Hölder's inequality
               apply ENNReal.lintegral_mul_prod_norm_pow_le
               · exact hf'.aemeasurable
               · intros
                 exact hf'.aemeasurable
-              · simp_rw [sum_const, nsmul_eq_mul]
-                exact hp
+              · simpa only [sum_const, nsmul_eq_mul] using hp
               · positivity
               · intros
                 positivity
-    _ = ((∫⋯∫_insert i s, f ∂μ) x) ^ p * (((∫⋯∫_insert i s, f ∂μ) x) ^ (m * p) *
-            ∏ j in (insert i s)ᶜ, ((∫⋯∫_insert i (insert j s), f ∂μ) x) ^ p) := by
+    _ = (∫⋯∫_insert i s, f ∂μ) x ^ p *
+          ((∫⋯∫_insert i s, f ∂μ) x ^ (m * p) *
+            ∏ j in (insert i s)ᶜ, (∫⋯∫_insert i (insert j s), f ∂μ) x ^ p) := by
+              -- absorb the newly-created integrals into `∫⋯∫`
               rw [marginal_insert _ hf hi]
               congr! 2; refine prod_congr rfl fun j hj => ?_
               have hi' : i ∉ insert j s
               · simp only [Finset.mem_insert, Finset.mem_compl] at hj ⊢
                 tauto
               rw [marginal_insert _ hf hi']
-    _ = ((∫⋯∫_insert i s, f ∂μ) x) ^ ((m + 1 : ℝ) * p) *
-            ∏ j in (insert i s)ᶜ, ((∫⋯∫_insert i (insert j s), f ∂μ) x) ^ p := by
-              rw [← mul_assoc]
-              congr
-              rw [← ENNReal.rpow_add_of_nonneg]
-              · -- this proof could be `ring_nf` but that's too slow`
-                congr
-                ring
-              · positivity
-              · positivity
-    _ = ((∫⋯∫_insert i s, f ∂μ) ^ (((insert i s).card : ℝ) * p) *
-            ∏ j in (insert i s)ᶜ, (∫⋯∫_insert j (insert i s), f ∂μ) ^ p) x := by
-              -- this proof could be `simp [Insert.comm, Finset.card_insert_of_not_mem hi]` but
-              -- that's too slow
-              dsimp
-              simp_rw [Insert.comm, prod_apply, Finset.card_insert_of_not_mem hi]
-              push_cast
-              rfl
+    _ = (∫⋯∫_insert i s, f ∂μ) x ^ (p + m * p) *
+            ∏ j in (insert i s)ᶜ, (∫⋯∫_insert i (insert j s), f ∂μ) x ^ p := by
+              -- combine two `(∫⋯∫_insert i s, f ∂μ) x` terms
+              rw [← mul_assoc, ENNReal.rpow_add_of_nonneg] <;> positivity
     _ = rhsAux μ f (insert i s) x := by
-              rw [rhsAux]
-              -- this proof could be `ring_nf` but that's too slow`
+              -- identify the result with the RHS integrand
+              simp only [rhsAux, Pi.mul_apply, prod_apply, Pi.pow_apply, Insert.comm,
+                Finset.card_insert_of_not_mem hi]
               congr! 2
+              push_cast
               ring
 
 lemma Measurable.rhsAux (hf : Measurable f) : Measurable (rhsAux μ f s) := by
