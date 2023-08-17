@@ -136,6 +136,9 @@ def associator_underlying (X Y Z : GradedObject ℕ V) (i : ℕ) :
       X p.2.1.1 ⊗ (Y p.2.1.2 ⊗ Z p.1.1.2)) :=
   biproduct.mapIso fun _ => α_ _ _ _
 
+/--
+The associativity equivalence for iterated antidiagonals.
+-/
 -- Move this to `Finset.NatAntidiagonal`?
 @[simps apply symm_apply]
 def associator_equiv :

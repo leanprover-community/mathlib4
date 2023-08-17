@@ -240,7 +240,10 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
 variable {X Y Z₁ Z₂ : C}
 theorem eq_tensor {f g : X ⟶ Y} (w : f = g) (h : Z₁ ⟶ Z₂) : f ⊗ h = g ⊗ h := by rw [w]
 theorem tensor_eq {f g : X ⟶ Y} (h : Z₁ ⟶ Z₂) (w : f = g) : h ⊗ f = h ⊗ g := by rw [w]
+
+/-- Notation for `eq_tensor`. If `w : f = g`, then `w =⊗ h : f ⊗ h = g ⊗ h`. -/
 scoped infixr:80 " =⊗ " => eq_tensor
+/-- Notation for `tensor_eq`. If `w : f = g`, then `h ⊗= w : h ⊗ f = h ⊗ g`.  -/
 scoped infixr:80 " ⊗= " => tensor_eq
 
 instance tensor_isIso {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] : IsIso (f ⊗ g) :=

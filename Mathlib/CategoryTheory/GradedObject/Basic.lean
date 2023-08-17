@@ -71,6 +71,7 @@ lemma hom_ext {X Y : GradedObject β C} (f g : X ⟶ Y) (h : ∀ x, f x = g x) :
   funext
   apply h
 
+/-- Construct an isomorphism of graded objects componentwise. -/
 @[simps]
 def mkIso {X Y : GradedObject β C} (f : ∀ i : β, X i ≅ Y i) : X ≅ Y where
   hom := fun i => (f i).hom
