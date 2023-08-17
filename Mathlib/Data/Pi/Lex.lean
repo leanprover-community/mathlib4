@@ -226,18 +226,18 @@ variable [LinearOrder ι]
 
 @[to_additive]
 instance Lex.orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid (β i)] :
-    OrderedCancelCommMonoid (Lex (∀ i, β i)) :=
-  { mul_le_mul_left := fun _ _ hxy z =>
-      hxy.elim (fun hxyz => hxyz ▸ le_rfl) fun ⟨i, hi⟩ =>
-        Or.inr ⟨i, fun j hji => congr_arg (z j * ·) (hi.1 j hji), mul_lt_mul_left' hi.2 _⟩
-    le_of_mul_le_mul_left := fun _ _ _ hxyz =>
-      hxyz.elim (fun h => (mul_left_cancel h).le) fun ⟨i, hi⟩ =>
-        Or.inr ⟨i, fun j hj => (mul_left_cancel <| hi.1 j hj), lt_of_mul_lt_mul_left' hi.2⟩ }
+    OrderedCancelCommMonoid (Lex (∀ i, β i)) where
+  mul_le_mul_left := fun _ _ hxy z =>
+    hxy.elim (fun hxyz => hxyz ▸ le_rfl) fun ⟨i, hi⟩ =>
+      Or.inr ⟨i, fun j hji => congr_arg (z j * ·) (hi.1 j hji), mul_lt_mul_left' hi.2 _⟩
+  le_of_mul_le_mul_left := fun _ _ _ hxyz =>
+    hxyz.elim (fun h => (mul_left_cancel h).le) fun ⟨i, hi⟩ =>
+      Or.inr ⟨i, fun j hj => (mul_left_cancel <| hi.1 j hj), lt_of_mul_lt_mul_left' hi.2⟩
 
 @[to_additive]
 instance Lex.orderedCommGroup [∀ i, OrderedCommGroup (β i)] :
-    OrderedCommGroup (Lex (∀ i, β i)) :=
-  { mul_le_mul_left := @mul_le_mul_left' _ _ _ _ }
+    OrderedCommGroup (Lex (∀ i, β i)) where
+  mul_le_mul_left := @mul_le_mul_left' _ _ _ _
 #align pi.lex.ordered_comm_group Pi.Lex.orderedCommGroup
 #align pi.lex.ordered_add_comm_group Pi.Lex.orderedAddCommGroup
 
@@ -263,6 +263,6 @@ theorem lex_desc {α} [Preorder ι] [DecidableEq ι] [Preorder α] {f : ι → �
     (h₂ : f j < f i) : toLex (f ∘ Equiv.swap i j) < toLex f :=
   ⟨i, fun k hik => congr_arg f (Equiv.swap_apply_of_ne_of_ne hik.ne (hik.trans_le h₁).ne), by
     simpa only [Pi.toLex_apply, Function.comp_apply, Equiv.swap_apply_left] using h₂⟩
-#align pi.lex_desc Pi.lex_desc
+#noalign pi.lex_desc
 
 end Pi
