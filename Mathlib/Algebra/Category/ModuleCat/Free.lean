@@ -41,17 +41,10 @@ open CategoryTheory Submodule Set
 
 section LinearIndependent
 
-<<<<<<< HEAD
 variable (hv : LinearIndependent R v)  {M : ModuleCat R}
   {u : ι ⊕ ι' → M}  {f : N ⟶ M} {g : M ⟶ P}
-  (hw : LinearIndependent R (g ∘ u ∘ Sum.inr)) (hu : Function.Injective u)
-  (hm : Mono f) (he : Exact' f g) (huv : u ∘ Sum.inl = f ∘ v)
-=======
-variable (hv : LinearIndependent R v) {M : ModuleCat R}
-  {u : ι ⊕ ι' → M} {f : N ⟶ M} {g : M ⟶ P}
   (hw : LinearIndependent R (g ∘ u ∘ Sum.inr))
-  (hm : Mono f) (he : Exact f g) (huv : u ∘ Sum.inl = f ∘ v)
->>>>>>> origin
+  (hm : Mono f) (he : Exact' f g) (huv : u ∘ Sum.inl = f ∘ v)
 
 theorem disjoint_span_sum : Disjoint (span R (range (u ∘ Sum.inl)))
     (span R (range (u ∘ Sum.inr))) := by
@@ -76,35 +69,7 @@ theorem linearIndependent_leftExact : LinearIndependent R u :=
   ⟨(congr_arg (fun f ↦ LinearIndependent R f) huv).mpr
     ((LinearMap.linearIndependent_iff (f : N →ₗ[R] M)
     (LinearMap.ker_eq_bot.mpr ((mono_iff_injective _).mp hm))).mpr hv),
-<<<<<<< HEAD
-    LinearIndependent.of_comp g hw, disjoint_span_sum hw hu he huv⟩
-
-/-- Given a short exact sequence of modules and injective families `v : ι → N` and `w : ι' → P`
-             f     g
-    0 --→ N --→ M --→ P --→ 0
-          ↑     ↑     ↑
-         v|     |    w|
-          ι   ι ⊕ ι'  ι'
-
-such that `w` does not hit `0`, the family `Sum.elim (f ∘ v) (g.toFun.invFun ∘ w) : ι ⊕ ι' → M`
-is injective. -/
-theorem family_injective_shortExact {w : ι' → P} (hse : ShortExact' f g)
-    (hv : v.Injective) (hw : w.Injective) (hw' : ∀ x, w x ≠ 0) :
-    Function.Injective (Sum.elim (f ∘ v) (g.toFun.invFun ∘ w)) :=
-  Function.Injective.sum_elim
-    (Function.Injective.comp ((mono_iff_injective _).mp hse.mono) hv)
-    (Function.Injective.comp (Function.rightInverse_invFun
-      ((epi_iff_surjective _).mp hse.epi)).injective hw) (fun a b h ↦ by
-    apply_fun g at h
-    dsimp at h
-    rw [Function.rightInverse_invFun ((epi_iff_surjective _).mp hse.epi)] at h
-    change (f ≫ g) (v a) = _ at h
-    rw [hse.exact.w] at h
-    change 0 = _ at h
-    exact hw' _ h.symm )
-=======
     LinearIndependent.of_comp g hw, disjoint_span_sum hw he huv⟩
->>>>>>> origin
 
 /-- Given a short exact sequence `0 ⟶ N ⟶ M ⟶ P ⟶ 0` of `R`-modules and linearly independent
     families `v : ι → N` and `w : ι' → P`, we get a linearly independent family `ι ⊕ ι' → M` -/
@@ -135,9 +100,9 @@ v|    u|     w|
 where the top row is an exact sequence of modules and the maps on the bottom are `Sum.inl` and
 `Sum.inr`. If `v` spans `N` and `w` spans `P`, then `u` spans `M`. -/
 theorem span_exact (he : Exact' f g) (huv : u ∘ Sum.inl = f ∘ v)
-    (hv : ⊤ ≤ Submodule.span R (Set.range v))
-    (hw : ⊤ ≤ Submodule.span R (Set.range (g ∘ u ∘ Sum.inr))) :
-    ⊤ ≤ Submodule.span R (Set.range u) := by
+    (hv : ⊤ ≤ span R (range v))
+    (hw : ⊤ ≤ span R (range (g ∘ u ∘ Sum.inr))) :
+    ⊤ ≤ span R (range u) := by
   intro m _
   have hgm : g m ∈ span R (range (g ∘ u ∘ Sum.inr)) := hw mem_top
   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hgm
@@ -169,9 +134,9 @@ theorem span_exact (he : Exact' f g) (huv : u ∘ Sum.inl = f ∘ v)
 
 /-- Given an exact sequence `N ⟶ M ⟶ P ⟶ 0` of `R`-modules and spanning
     families `v : ι → N` and `w : ι' → P`, we get a spanning family `ι ⊕ ι' → M` -/
-theorem span_rightExact {w : ι' → P} (hv : ⊤ ≤ Submodule.span R (Set.range v))
-    (hw : ⊤ ≤ Submodule.span R (Set.range w)) (hE : Epi g) (he : Exact' f g) :
-    ⊤ ≤ Submodule.span R (Set.range (Sum.elim (f ∘ v) (g.toFun.invFun ∘ w))) := by
+theorem span_rightExact {w : ι' → P} (hv : ⊤ ≤ span R (range v))
+    (hw : ⊤ ≤ span R (range w)) (hE : Epi g) (he : Exact' f g) :
+    ⊤ ≤ span R (range (Sum.elim (f ∘ v) (g.toFun.invFun ∘ w))) := by
   refine' span_exact he _ hv _
   · simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inl]
   · convert hw
@@ -185,7 +150,7 @@ end Span
 /-- In a short exact sequence `0 ⟶ N ⟶ M ⟶ P ⟶ 0`, given bases for `N` and `P` indexed by `ι` and
     `ι'` respectively, we get a basis for `M` indexed by `ι ⊕ ι'`. -/
 noncomputable
-def Basis.ofShortExact {M : ModuleCat R} {f : N ⟶ M} {g : M ⟶ P} (h : ShortExact f g)
+def Basis.ofShortExact {M : ModuleCat R} {f : N ⟶ M} {g : M ⟶ P} (h : ShortExact' f g)
     (bN : Basis ι R N) (bP : Basis ι' R P) : Basis (ι ⊕ ι') R M :=
   Basis.mk (linearIndependent_shortExact bN.linearIndependent bP.linearIndependent h)
     (span_rightExact (le_of_eq (bN.span_eq.symm)) (le_of_eq (bP.span_eq.symm)) h.epi h.exact)
