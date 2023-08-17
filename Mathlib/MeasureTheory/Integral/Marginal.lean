@@ -734,6 +734,38 @@ theorem ENNReal.lintegral_prod_norm_pow_le {α} [MeasurableSpace α] {μ : Measu
               div_mul_cancel (h := h2pi₀)]
         _ = ∏ i in insert i₀ s, (∫⁻ a, f i a ∂μ) ^ p i := by simp [hi₀]
 
+/-- A version of Hölder with multiple arguments, one of which plays a distinguished role -/
+theorem ENNReal.lintegral_mul_prod_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α} (s : Finset ι)
+    {g : α →  ℝ≥0∞} {f : ι → α → ℝ≥0∞} (hg : AEMeasurable g μ) (hf : ∀ i ∈ s, AEMeasurable (f i) μ)
+    (q : ℝ) {p : ι → ℝ} (hpq : q + ∑ i in s, p i = 1) (hq :  0 ≤ q)
+    (hp : ∀ i ∈ s, 0 ≤ p i) :
+    ∫⁻ a, g a ^ q * ∏ i in s, f i a ^ p i ∂μ ≤
+      (∫⁻ a, g a ∂μ) ^ q * ∏ i in s, (∫⁻ a, f i a ∂μ) ^ p i := by
+  calc
+    ∫⁻ t, g t ^ q * ∏ j in s, (f j t) ^ p j ∂μ
+      = ∫⁻ t, ∏ j in insertNone s,
+            Option.elim j (g t) (fun j ↦ f j t) ^ Option.elim j q p ∂μ := by
+          congr! 1
+          ext t
+          rw [prod_insertNone]
+          dsimp
+    _ ≤ ∏ j in insertNone s,
+          (∫⁻ t, Option.elim j (g t) (fun j ↦ f j t) ∂μ) ^ Option.elim j q p := by
+          refine ENNReal.lintegral_prod_norm_pow_le _ insertNone_nonempty ?_ ?_ ?_
+          · rintro (_|i) hi
+            · exact hg
+            · refine hf i ?_
+              simpa using hi
+          · simp_rw [sum_insertNone, compl_insert, Option.elim, sum_const, nsmul_eq_mul]
+            exact hpq
+          · rintro (_|i) hi
+            · exact hq
+            · refine hp i ?_
+              simpa using hi
+    _ = (∫⁻ t, g t ∂μ) ^ q * ∏ j in s, (∫⁻ t, f j t ∂μ) ^ p j := by
+          -- this proof could be `simp [prod_insertNone]` but that's too slow
+          simp_rw [prod_insertNone]
+          dsimp
 
 section Measure
 
@@ -1046,7 +1078,18 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
               exact (hf.marginal μ).comp (measurable_update x) |>.pow measurable_const
     _ ≤ ((∫⋯∫_insert i s, f ∂μ) x) ^ p *
           ((∫⁻ t, (∫⋯∫_s, f ∂μ) (update x i t) ∂μ i) ^ (m * p) *
-            ∏ j in (insert i s)ᶜ, (∫⁻ t, (∫⋯∫_insert j s, f ∂μ) (update x i t) ∂(μ i)) ^ p) := ?_
+            ∏ j in (insert i s)ᶜ, (∫⁻ t, (∫⋯∫_insert j s, f ∂μ) (update x i t) ∂(μ i)) ^ p) := by
+              gcongr
+              -- we now apply Hölder's inequality
+              apply ENNReal.lintegral_mul_prod_norm_pow_le
+              · exact (hf.marginal μ |>.comp <| measurable_update _).aemeasurable
+              · intros
+                exact (hf.marginal μ |>.comp <| measurable_update _).aemeasurable
+              · simp_rw [sum_const, nsmul_eq_mul]
+                exact hp
+              · positivity
+              · intros
+                positivity
     _ = ((∫⋯∫_insert i s, f ∂μ) x) ^ p * (((∫⋯∫_insert i s, f ∂μ) x) ^ (m * p) *
             ∏ j in (insert i s)ᶜ, ((∫⋯∫_insert i (insert j s), f ∂μ) x) ^ p) := by
               rw [marginal_insert _ hf hi]
@@ -1078,40 +1121,6 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
               -- this proof could be `ring_nf` but that's too slow`
               congr! 2
               ring
-  gcongr
-  -- make this part a separate lemma, a version of Hölder with a distinguished element
-  set S : Finset ι := (insert i s)ᶜ
-  set F : π i → ℝ≥0∞ := (∫⋯∫_s, f ∂μ) ∘ update x i
-  have hF : AEMeasurable F (μ i) := (hf.marginal μ |>.comp <| measurable_update _).aemeasurable
-  set G : ι → π i → ℝ≥0∞ := fun j ↦ (∫⋯∫_insert j s, f ∂μ) ∘ update x i
-  have hG : ∀ j, AEMeasurable (G j) (μ i) := fun j ↦ (hf.marginal μ |>.comp <| measurable_update _).aemeasurable
-  set ν := μ i
-  show ∫⁻ t, F t ^ (m * p) * ∏ j in S, (G j t) ^ p ∂ν ≤ (∫⁻ t, F t ∂ν) ^ (m * p) * ∏ j in S, (∫⁻ t, G j t ∂ν) ^ p
-  clear_value S F G ν
-  calc
-    ∫⁻ t, F t ^ (m * p) * ∏ j in S, (G j t) ^ p ∂ν
-      = ∫⁻ (t : π i), ∏ j in insertNone S,
-            Option.elim j (F t) (fun j ↦ G j t) ^ Option.elim j (m * p) (fun _ ↦ p) ∂ν := by
-          clear_value p m
-          congr! 1
-          ext t
-          rw [prod_insertNone]
-          dsimp
-    _ ≤ ∏ j in insertNone S,
-          (∫⁻ t, Option.elim j (F t) (fun j ↦ G j t) ∂ν) ^ Option.elim j (m * p) (fun _ ↦ p) := by
-          -- we now apply Hölder's inequality
-          refine ENNReal.lintegral_prod_norm_pow_le _ insertNone_nonempty ?_ ?_ ?_
-          · rintro (_|i) -
-            · exact hF
-            · exact hG i
-          · clear_value p
-            simp_rw [sum_insertNone, compl_insert, Option.elim, sum_const, nsmul_eq_mul]
-            exact hp
-          · rintro (_|j) - <;> dsimp <;> positivity
-    _ = (∫⁻ t, F t ∂ν) ^ (m * p) * ∏ j in S, (∫⁻ t, G j t ∂ν) ^ p := by
-          -- this proof could be `simp [prod_insertNone]` but that's too slow
-          simp_rw [prod_insertNone]
-          dsimp
 
 lemma Measurable.rhsAux (hf : Measurable f) : Measurable (rhsAux μ f s) := by
   simp [_root_.rhsAux]
