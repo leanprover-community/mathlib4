@@ -2231,7 +2231,6 @@ import Mathlib.LinearAlgebra.Matrix.Orthogonal
 import Mathlib.LinearAlgebra.Matrix.Polynomial
 import Mathlib.LinearAlgebra.Matrix.PosDef
 import Mathlib.LinearAlgebra.Matrix.Reindex
-import Mathlib.LinearAlgebra.Matrix.SVD.KernelConjTransposeMul
 import Mathlib.LinearAlgebra.Matrix.SVD.svdDefs
 import Mathlib.LinearAlgebra.Matrix.SVD.svdReindex
 import Mathlib.LinearAlgebra.Matrix.SchurComplement
