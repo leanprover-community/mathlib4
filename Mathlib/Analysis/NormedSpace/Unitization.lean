@@ -202,11 +202,14 @@ instance instUniformSpace : UniformSpace (Unitization 𝕜 A) :=
 instance instBornology : Bornology (Unitization 𝕜 A) :=
   Bornology.induced <| addEquiv 𝕜 A
 
+theorem uniformEmbedding_addEquiv : UniformEmbedding (addEquiv 𝕜 A) where
+  comap_uniformity := rfl
+  inj := (addEquiv 𝕜 A).injective
+
 /-- `Unitization 𝕜 A` is complete whenever `𝕜` and `A` are also.  -/
 instance instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :
     CompleteSpace (Unitization 𝕜 A) :=
-  have : UniformEmbedding (addEquiv 𝕜 A) := ⟨⟨rfl⟩, (addEquiv 𝕜 A).injective⟩
-  (completeSpace_congr this).mpr CompleteSpace.prod
+  (completeSpace_congr uniformEmbedding_addEquiv).mpr CompleteSpace.prod
 
 /-- Pull back the metric structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`, but replace the bornology and the uniformity so
