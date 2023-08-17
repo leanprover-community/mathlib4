@@ -31,7 +31,7 @@
     "rev": "147e0c7320733aa9a05d6c3ac1ba0cc889f176b8",
     "opts": {},
     "name": "aesop",
-    "inputRev?": "master",
+    "inputRev?": "nightly-2023-08-16",
     "inherited": false}},
   {"git":
    {"url": "https://github.com/semorrison/std4",
