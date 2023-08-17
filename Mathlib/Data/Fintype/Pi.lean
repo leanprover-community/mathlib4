@@ -111,19 +111,6 @@ theorem Finset.univ_pi_univ {α : Type*} {β : α → Type*} [DecidableEq α] [F
   ext; simp
 #align finset.univ_pi_univ Finset.univ_pi_univ
 
-theorem Fin.eq_castSucc_or_eq_last {n : Nat} : ∀ i : Fin (n + 1),
-    (∃ j : Fin n, i = j.castSucc) ∨ i = (Fin.last n) := by
-  intro ⟨i, hi⟩
-  by_cases h : i < n
-  · left
-    use ⟨i, by assumption⟩
-    simp only [castSucc_mk]
-  · right
-    apply Fin.eq_of_val_eq
-    simp only [coe_ofNat_eq_mod]
-    simp only [val_last]
-    exact Nat.eq_of_lt_succ_of_not_lt hi h
-
 lemma Fin.succ_mem_piFinset_iff {α} {n : ℕ} (p : (Fin (n + 1) → α)) (S : Fin (n+1) → Finset α) :
     p ∈ Fintype.piFinset S
       ↔
