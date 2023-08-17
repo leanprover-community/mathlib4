@@ -237,7 +237,7 @@ instance Lex.orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid (β i)] :
 @[to_additive]
 instance Lex.orderedCommGroup [∀ i, OrderedCommGroup (β i)] :
     OrderedCommGroup (Lex (∀ i, β i)) where
-  mul_le_mul_left := @mul_le_mul_left' _ _ _ _
+  mul_le_mul_left _ _ := mul_le_mul_left'
 #align pi.lex.ordered_comm_group Pi.Lex.orderedCommGroup
 #align pi.lex.ordered_add_comm_group Pi.Lex.orderedAddCommGroup
 

@@ -203,7 +203,7 @@ instance Lex.orderedAddCancelCommMonoid [∀ i, OrderedCancelAddCommMonoid (α i
 
 instance Lex.orderedAddCommGroup [∀ i, OrderedAddCommGroup (α i)] :
     OrderedAddCommGroup (Lex (Π₀ i, α i)) where
-  add_le_add_left := @add_le_add_left _ _ _ _
+  add_le_add_left _ _ := add_le_add_left
 
 instance Lex.linearOrderedCancelAddCommMonoid
     [∀ i, LinearOrderedCancelAddCommMonoid (α i)] :

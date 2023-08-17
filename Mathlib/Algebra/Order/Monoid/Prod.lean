@@ -55,7 +55,7 @@ instance orderedCommMonoid [OrderedCommMonoid α]
 @[to_additive]
 instance orderedCancelCommMonoid [OrderedCancelCommMonoid α] [OrderedCancelCommMonoid β] :
     OrderedCancelCommMonoid (α ×ₗ β) where
-  mul_le_mul_left := @mul_le_mul_left' _ _ _ _
+  mul_le_mul_left _ _ := mul_le_mul_left'
   le_of_mul_le_mul_left _ _ _ hxyz := ((le_iff _ _).1 hxyz).elim
     (fun hxy => left _ _ <| lt_of_mul_lt_mul_left' hxy)
     (fun hxy => (le_iff _ _).2 <| Or.inr ⟨mul_left_cancel hxy.1, le_of_mul_le_mul_left' hxy.2⟩)
