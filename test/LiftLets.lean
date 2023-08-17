@@ -1,6 +1,8 @@
 import Mathlib.Tactic.LiftLets
 import Std.Tactic.GuardExpr
 
+set_option autoImplicit true
+
 example : (let x := 1; x) = 1 := by
   lift_lets
   guard_target =ₛ let x := 1; x = 1

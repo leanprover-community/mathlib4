@@ -25,7 +25,9 @@ cannot have:
   by `expNegInvGlue x / (expNegInvGlue x + expNegInvGlue (1 - x))`;
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+set_option autoImplicit true
+
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 noncomputable section
 
 open scoped Classical Topology
@@ -231,4 +233,3 @@ protected theorem continuousAt : ContinuousAt smoothTransition x :=
 end smoothTransition
 
 end Real
-

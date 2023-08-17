@@ -23,7 +23,7 @@ namespace CategoryTheory
 
 open Category
 
-variable {C₁ C₂ C₃ C₄ C₅ C₆ : Type _} [Category C₁] [Category C₂] [Category C₃] [Category C₄]
+variable {C₁ C₂ C₃ C₄ C₅ C₆ : Type*} [Category C₁] [Category C₂] [Category C₃] [Category C₄]
   [Category C₅] [Category C₆]
   (T : C₁ ⥤ C₂) (L : C₁ ⥤ C₃) (R : C₂ ⥤ C₄) (B : C₃ ⥤ C₄)
 

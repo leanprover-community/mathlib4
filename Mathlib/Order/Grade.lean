@@ -58,11 +58,11 @@ Instead, we define graded orders by their grade function, without talking about 
 
 open Finset Nat OrderDual
 
-variable {𝕆 ℙ α β : Type _}
+variable {𝕆 ℙ α β : Type*}
 
 /-- An `𝕆`-graded order is an order `α` equipped with a strictly monotone function
 `grade 𝕆 : α → 𝕆` which preserves order covering (`Covby`). -/
-class GradeOrder (𝕆 α : Type _) [Preorder 𝕆] [Preorder α] where
+class GradeOrder (𝕆 α : Type*) [Preorder 𝕆] [Preorder α] where
   /-- The grading function. -/
   grade : α → 𝕆
   /-- `grade` is strictly monotonic. -/
@@ -72,20 +72,20 @@ class GradeOrder (𝕆 α : Type _) [Preorder 𝕆] [Preorder α] where
 #align grade_order GradeOrder
 
 /-- An `𝕆`-graded order where minimal elements have minimal grades. -/
-class GradeMinOrder (𝕆 α : Type _) [Preorder 𝕆] [Preorder α] extends GradeOrder 𝕆 α where
+class GradeMinOrder (𝕆 α : Type*) [Preorder 𝕆] [Preorder α] extends GradeOrder 𝕆 α where
   /-- Minimal elements have minimal grades. -/
   isMin_grade ⦃a : α⦄ : IsMin a → IsMin (grade a)
 #align grade_min_order GradeMinOrder
 
 /-- An `𝕆`-graded order where maximal elements have maximal grades. -/
-class GradeMaxOrder (𝕆 α : Type _) [Preorder 𝕆] [Preorder α] extends GradeOrder 𝕆 α where
+class GradeMaxOrder (𝕆 α : Type*) [Preorder 𝕆] [Preorder α] extends GradeOrder 𝕆 α where
   /-- Maximal elements have maximal grades. -/
   isMax_grade ⦃a : α⦄ : IsMax a → IsMax (grade a)
 #align grade_max_order GradeMaxOrder
 
 /-- An `𝕆`-graded order where minimal elements have minimal grades and maximal elements have maximal
 grades. -/
-class GradeBoundedOrder (𝕆 α : Type _) [Preorder 𝕆] [Preorder α] extends GradeMinOrder 𝕆 α,
+class GradeBoundedOrder (𝕆 α : Type*) [Preorder 𝕆] [Preorder α] extends GradeMinOrder 𝕆 α,
   GradeMaxOrder 𝕆 α
 #align grade_bounded_order GradeBoundedOrder
 

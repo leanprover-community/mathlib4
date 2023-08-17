@@ -51,6 +51,54 @@ theorem tendsto_rpow_neg_atTop {y : ℝ} (hy : 0 < y) : Tendsto (fun x : ℝ => 
     (tendsto_rpow_atTop hy).inv_tendsto_atTop
 #align tendsto_rpow_neg_at_top tendsto_rpow_neg_atTop
 
+open Asymptotics in
+lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 1) :
+    Tendsto (rpow b) atTop (𝓝 (0:ℝ)) := by
+  show Tendsto (fun z => b^z) atTop (𝓝 0)
+  rcases lt_trichotomy b 0 with hb|rfl|hb
+  case inl =>   -- b < 0
+    simp_rw [Real.rpow_def_of_nonpos hb.le, hb.ne, ite_false]
+    rw [←isLittleO_const_iff (c := (1:ℝ)) one_ne_zero, (one_mul (1 : ℝ)).symm]
+    refine IsLittleO.mul_isBigO ?exp ?cos
+    case exp =>
+      rw [isLittleO_const_iff one_ne_zero]
+      refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_of_neg ?_).mpr tendsto_id
+      rw [←log_neg_eq_log, log_neg_iff (by linarith)]
+      linarith
+    case cos =>
+      rw [isBigO_iff]
+      exact ⟨1, eventually_of_forall fun x => by simp [Real.abs_cos_le_one]⟩
+  case inr.inl =>  -- b = 0
+    refine Tendsto.mono_right ?_ (Iff.mpr pure_le_nhds_iff rfl)
+    rw [tendsto_pure]
+    filter_upwards [eventually_ne_atTop 0] with _ hx
+    simp [hx]
+  case inr.inr =>   -- b > 0
+    simp_rw [Real.rpow_def_of_pos hb]
+    refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_of_neg ?_).mpr tendsto_id
+    exact (log_neg_iff hb).mpr hb₁
+
+lemma tendsto_rpow_atTop_of_base_gt_one (b : ℝ) (hb : 1 < b) :
+    Tendsto (rpow b) atBot (𝓝 (0:ℝ)) := by
+  show Tendsto (fun z => b^z) atBot (nhds 0)
+  simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
+  refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_of_pos ?_).mpr tendsto_id
+  exact (log_pos_iff (by positivity)).mpr <| by aesop
+
+lemma tendsto_rpow_atBot_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1) :
+    Tendsto (rpow b) atBot atTop := by
+  show Tendsto (fun z => b^z) atBot atTop
+  simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
+  refine tendsto_exp_atTop.comp <| (tendsto_const_mul_atTop_iff_neg <| tendsto_id (α := ℝ)).mpr ?_
+  exact (log_neg_iff hb₀).mpr hb₁
+
+lemma tendsto_rpow_atBot_of_base_gt_one (b : ℝ) (hb : 1 < b) : Tendsto (rpow b) atBot (𝓝 0) := by
+  show Tendsto (fun z => b^z) atBot (𝓝 0)
+  simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
+  refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_iff_pos <| tendsto_id (α := ℝ)).mpr ?_
+  exact (log_pos_iff (by positivity)).mpr <| by aesop
+
+
 /-- The function `x ^ (a / (b * x + c))` tends to `1` at `+∞`, for any real numbers `a`, `b`, and
 `c` such that `b` is nonzero. -/
 theorem tendsto_rpow_div_mul_add (a b c : ℝ) (hb : 0 ≠ b) :
@@ -150,7 +198,7 @@ namespace Complex
 
 section
 
-variable {α : Type _} {l : Filter α} {f g : α → ℂ}
+variable {α : Type*} {l : Filter α} {f g : α → ℂ}
 
 open Asymptotics
 
@@ -211,7 +259,7 @@ open Real
 
 namespace Asymptotics
 
-variable {α : Type _} {r c : ℝ} {l : Filter α} {f g : α → ℝ}
+variable {α : Type*} {r c : ℝ} {l : Filter α} {f g : α → ℝ}
 
 theorem IsBigOWith.rpow (h : IsBigOWith c l f g) (hc : 0 ≤ c) (hr : 0 ≤ r) (hg : 0 ≤ᶠ[l] g) :
     IsBigOWith (c ^ r) l (fun x => f x ^ r) fun x => g x ^ r := by
