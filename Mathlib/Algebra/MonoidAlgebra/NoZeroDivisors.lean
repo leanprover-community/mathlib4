@@ -206,8 +206,7 @@ of the support of `f` (e.g. the product is `0` if "top" is not a maximum).
 The corresponding statement for a general product `f * g` is `AddMonoidAlgebra.mul_apply_of_le`.
 It is proved with a further `CovariantClass` assumption. -/
 theorem single_mul_apply_of_le (r : R) (ft : ∀ a ∈ f.support, a ≤ t) :
-  -- the `HMul` is really ugly, how can I avoid it?
-  (@HMul.hMul (AddMonoidAlgebra R A) _ _ _ (Finsupp.single a r) f) (a + t) = r * f t := by
+  ((AddMonoidAlgebra.single a r) * f) (a + t) = r * f t := by
   classical
   simp only [id_eq]
   nth_rw 1 [← f.erase_add_single t]
@@ -228,8 +227,7 @@ of the support of `f` (e.g. the product is `0` if "bottom" is not a minimum).
 The corresponding statement for a general product `f * g` is `AddMonoidAlgebra.mul_apply_of_le'`.
 It is proved with a further `CovariantClass` assumption. -/
 theorem single_mul_apply_of_le' (r : R) (fb : ∀ a ∈ f.support, b ≤ a) :
-  -- the `HMul` is really ugly, how can I avoid it?
-  (@HMul.hMul (AddMonoidAlgebra R A) _ _ _ (Finsupp.single a r) f) (a + b) = r * f b :=
+  ((AddMonoidAlgebra.single a r) * f) (a + b) = r * f b :=
 @single_mul_apply_of_le _ Aᵒᵈ _ _ _ _ _ _ _ _ fb
 
 variable [CovariantClass A A (Function.swap (· + ·)) (· < ·)]
@@ -271,17 +269,16 @@ section LinearOrder
 variable [NoZeroDivisors R] [Add A] [LinearOrder A] [CovariantClass A A (· + ·) (· < ·)]
   [CovariantClass A A (Function.swap (· + ·)) (· < ·)]
 
-protected theorem NoZeroDivisors.biOrdered : NoZeroDivisors (AddMonoidAlgebra R A) :=
-by
-  constructor
+protected theorem NoZeroDivisors.biOrdered : NoZeroDivisors (AddMonoidAlgebra R A) := ⟨by
   intros f g fg
   contrapose! fg
-  apply_fun (fun x : AddMonoidAlgebra R A ↦ x (f.support.max' (Finsupp.support_nonempty_iff.mpr fg.1)
+  apply_fun (fun x ↦ x (f.support.max' (Finsupp.support_nonempty_iff.mpr fg.1)
     + g.support.max' (Finsupp.support_nonempty_iff.mpr fg.2)))
   simp only [Finsupp.coe_zero, Pi.zero_apply]
-  rw [mul_apply_of_le] <;> try exact Finset.le_max' _
+  rw [mul_apply_of_le] <;>
+    try exact Finset.le_max' _
   refine mul_ne_zero_iff.mpr ⟨?_, ?_⟩ <;>
-  exact Finsupp.mem_support_iff.mp (Finset.max'_mem _ _)
+    exact Finsupp.mem_support_iff.mp (Finset.max'_mem _ _)⟩
 
 end LinearOrder
 
