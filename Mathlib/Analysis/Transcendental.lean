@@ -23,6 +23,13 @@ import Mathlib.FieldTheory.GalConj
 
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
+-- TODO move
+instance LinearMap.instCoeFun
+  {R : Type*} {S : Type*} {M : Type*} {M₃ : Type*} [Semiring R] [Semiring S] [AddCommMonoid M]
+  [AddCommMonoid M₃] [Module R M] [Module S M₃] {σ : R →+* S} :
+CoeFun (M →ₛₗ[σ] M₃) fun _ => M → M₃ := inferInstance
+
+
 noncomputable section
 
 open scoped BigOperators Classical Polynomial
@@ -147,6 +154,7 @@ theorem integral_f_eq (p : ℂ[X]) (s : ℂ) :
       (deriv_eq_f p s) _ _
   any_goals simp_rw [real_smul, abs_mul_exp_arg_mul_I]
   · simp_rw [zero_smul, neg_zero, Complex.exp_zero, one_mul]
+    simp only [ofReal_zero, zero_mul, neg_zero, exp_zero, one_mul]
   · intro x hx; apply ((Differentiable.mul _ _).neg.div_const _).differentiableAt
     apply @Differentiable.real_of_complex fun c : ℂ => exp (-(c * exp (s.arg • I)))
     refine' (differentiable_id.mul_const _).neg.cexp
@@ -230,16 +238,16 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
       eval₂_eq_eval_map, ← aeval_def]
     have :
       Metric.Bounded
-        ((fun x => max |x| 1 * (aeval (↑x * exp (↑s.arg * I)) p).abs) '' Set.Ioc 0 (abs s)) :=
+        ((fun (x : ℝ) => max |x| 1 * (Complex.abs (aeval (↑x * exp (↑s.arg * I)) p))) '' Set.Ioc 0 (abs s)) :=
       by
       have h :
-        (fun x => max |x| 1 * (aeval (↑x * exp (↑s.arg * I)) p).abs) '' Set.Ioc 0 (abs s) ⊆
-          (fun x => max |x| 1 * (aeval (↑x * exp (↑s.arg * I)) p).abs) '' Set.Icc 0 (abs s) :=
+        (fun (x : ℝ) => max |x| 1 * (Complex.abs (aeval (↑x * exp (↑s.arg * I)) p))) '' Set.Ioc 0 (abs s) ⊆
+          (fun (x : ℝ) => max |x| 1 * (Complex.abs (aeval (↑x * exp (↑s.arg * I)) p))) '' Set.Icc 0 (abs s) :=
         Set.image_subset _ Set.Ioc_subset_Icc_self
       refine' (IsCompact.image isCompact_Icc _).bounded.mono h
       · refine' (continuous_id.abs.max continuous_const).mul _
-        refine' complex.continuous_abs.comp (p.continuous_aeval.comp _)
-        exact continuous_of_real.mul continuous_const
+        refine' Complex.continuous_abs.comp (p.continuous_aeval.comp _)
+        exact continuous_ofReal.mul continuous_const
     cases' this.exists_norm_le with c h
     use c; intro q x hx
     specialize h (max |x| 1 * Complex.abs (aeval (↑x * exp (↑s.arg * I)) p)) (Set.mem_image_of_mem _ hx)
@@ -252,9 +260,9 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
     · push_neg at hx1
       rw [_root_.abs_abs]; exact pow_le_pow hx1.le (Nat.sub_le _ _)
   let c' r := (p_le p' r (this r)).choose
-  have c'0 : ∀ r, 0 ≤ c' r := fun r => (p_le p' r (this r)).choose_spec.choose
-  have Pp'_le : ∀ (r : ℂ), ∀ q ≥ 1, abs (p (p' q) r) ≤ c' r ^ q := fun r =>
-    (p_le p' r (this r)).choose_spec.choose_spec
+  have c'0 : ∀ r, 0 ≤ c' r := fun r => (p_le p' r (this r)).choose_spec.1
+  have Pp'_le : ∀ (r : ℂ), ∀ q ≥ 1, abs (P (p' q) r) ≤ c' r ^ q := fun r =>
+    (p_le p' r (this r)).choose_spec.2
   let c :=
     if h : ((p.aroots ℂ).map c').toFinset.Nonempty then ((p.aroots ℂ).map c').toFinset.max' h else 0
   have hc : ∀ x ∈ p.aroots ℂ, c' x ≤ c := by
@@ -273,7 +281,8 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
   simp_rw [RingHom.algebraMap_toAlgebra, map_id] at h'
   specialize h' (RingHom.injective_int _) 0 (by rw [C_0, sub_zero])
   rw [eval_pow] at h'
-  use p.eval 0 ^ q + q • aeval 0 gp'
+  use p.eval 0 ^ q + q • aeval (0 : ℤ) gp'
+  rw [exists_prop]
   constructor
   · rw [Int.add_emod, nsmul_eq_mul, Int.mul_emod_right, add_zero, Int.emod_emod, Ne.def, ←
       Int.dvd_iff_emod_eq_zero]
@@ -283,8 +292,8 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
     revert h; rwa [imp_false, not_le]
   obtain ⟨gp, gp'_le, h⟩ := sumIderiv_sl ℂ (X ^ (q - 1) * p ^ q) q
   refine' ⟨gp, _, _⟩
-  · refine' gp'_le.trans ((tsub_le_tsub_right nat_degree_mul_le q).trans _)
-    rw [nat_degree_X_pow, nat_degree_pow, tsub_add_eq_add_tsub (Nat.one_le_of_lt q0),
+  · refine' gp'_le.trans ((tsub_le_tsub_right natDegree_mul_le q).trans _)
+    rw [natDegree_X_pow, natDegree_pow, tsub_add_eq_add_tsub (Nat.one_le_of_lt q0),
       tsub_right_comm]
     apply tsub_le_tsub_right; rw [add_tsub_cancel_left]
   intro r hr
@@ -293,7 +302,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
       (X - C r) ^ q *
         (X ^ (q - 1) *
           (C (map (algebraMap ℤ ℂ) p).leadingCoeff *
-              (((p.aroots ℂ).eraseₓ r).map fun a : ℂ => X - C a).Prod) ^
+              (((p.aroots ℂ).erase r).map fun a : ℂ => X - C a).prod) ^
             q) :=
     by
     rw [mul_left_comm, ← mul_pow, mul_left_comm (_ - _), Multiset.prod_map_erase hr]
@@ -302,7 +311,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
     rw [C_leading_coeff_mul_prod_multiset_X_sub_C this, Polynomial.map_mul, Polynomial.map_pow,
       Polynomial.map_pow, map_X]
   specialize h r this; clear this
-  rw [le_div_iff (nat.cast_pos.mpr (Nat.factorial_pos _) : (0 : ℝ) < _), ← abs_of_nat, ← map_mul,
+  rw [le_div_iff (Nat.cast_pos.mpr (Nat.factorial_pos _) : (0 : ℝ) < _), ← abs_of_nat, ← map_mul,
     mul_comm, mul_sub, ← nsmul_eq_mul, ← nsmul_eq_mul, smul_smul, mul_comm,
     Nat.mul_factorial_pred q0, ← h]
   rw [nsmul_eq_mul, ← Int.cast_ofNat, ← zsmul_eq_mul, smul_smul, mul_add, ← nsmul_eq_mul, ←
