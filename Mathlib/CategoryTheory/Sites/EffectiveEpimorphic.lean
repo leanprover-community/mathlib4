@@ -32,6 +32,8 @@ See [nlab: *Effective Epimorphism*](https://ncatlab.org/nlab/show/effective+epim
 
 -/
 
+set_option autoImplicit true
+
 namespace CategoryTheory
 
 open Limits

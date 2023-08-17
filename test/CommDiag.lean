@@ -3,6 +3,7 @@ import ProofWidgets.Component.GoalTypePanel
 
 /-! ## Example use of commutative diagram widgets -/
 
+universe u
 namespace CategoryTheory
 open ProofWidgets
 
