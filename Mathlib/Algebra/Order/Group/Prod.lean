@@ -28,8 +28,8 @@ namespace Lex
 
 @[to_additive]
 instance orderedCommGroup [OrderedCommGroup G] [OrderedCommGroup H] :
-    OrderedCommGroup (G ×ₗ H) :=
-  { mul_le_mul_left := @mul_le_mul_left' _ _ _ _ }
+    OrderedCommGroup (G ×ₗ H) where
+  mul_le_mul_left := @mul_le_mul_left' _ _ _ _
 
 @[to_additive]
 instance linearOrderedCommGroup [LinearOrderedCommGroup G] [LinearOrderedCommGroup H] :

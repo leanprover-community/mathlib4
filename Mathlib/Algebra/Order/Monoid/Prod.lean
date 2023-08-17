@@ -47,18 +47,18 @@ namespace Lex
 @[to_additive]
 instance orderedCommMonoid [OrderedCommMonoid α]
     [CovariantClass α α (· * ·) (· < ·)] [OrderedCommMonoid β] :
-    OrderedCommMonoid (α ×ₗ β) :=
-  { mul_le_mul_left := fun x y hxy z => ((le_iff _ _).1 hxy).elim
-      (fun hxy => left _ _ <| mul_lt_mul_left' hxy _)
-      (fun hxy => (le_iff _ _).2 <| Or.inr ⟨by rw [hxy.1], mul_le_mul_left' hxy.2 _⟩) }
+    OrderedCommMonoid (α ×ₗ β) where
+  mul_le_mul_left := fun x y hxy z => ((le_iff _ _).1 hxy).elim
+    (fun hxy => left _ _ <| mul_lt_mul_left' hxy _)
+    (fun hxy => (le_iff _ _).2 <| Or.inr ⟨by rw [hxy.1], mul_le_mul_left' hxy.2 _⟩)
 
 @[to_additive]
 instance orderedCancelCommMonoid [OrderedCancelCommMonoid α] [OrderedCancelCommMonoid β] :
-    OrderedCancelCommMonoid (α ×ₗ β) :=
-  { mul_le_mul_left := @mul_le_mul_left' _ _ _ _
-    le_of_mul_le_mul_left := fun _ _ _ hxyz => ((le_iff _ _).1 hxyz).elim
-      (fun hxy => left _ _ <| lt_of_mul_lt_mul_left' hxy)
-      (fun hxy => (le_iff _ _).2 <| Or.inr ⟨mul_left_cancel hxy.1, le_of_mul_le_mul_left' hxy.2⟩) }
+    OrderedCancelCommMonoid (α ×ₗ β) where
+  mul_le_mul_left := @mul_le_mul_left' _ _ _ _
+  le_of_mul_le_mul_left := fun _ _ _ hxyz => ((le_iff _ _).1 hxyz).elim
+    (fun hxy => left _ _ <| lt_of_mul_lt_mul_left' hxy)
+    (fun hxy => (le_iff _ _).2 <| Or.inr ⟨mul_left_cancel hxy.1, le_of_mul_le_mul_left' hxy.2⟩)
 
 @[to_additive]
 instance linearOrderedCancelCommMonoid [LinearOrderedCancelCommMonoid α]
