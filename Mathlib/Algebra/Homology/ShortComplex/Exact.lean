@@ -590,6 +590,8 @@ noncomputable def ofIsIsoOfIsZero (hf : IsIso S.f) (hg : IsZero S.X₃) : Splitt
   s := 0
   s_g := hg.eq_of_src _ _
 
+variable {S}
+
 @[simps]
 def op (h : Splitting S) : Splitting S.op where
   r := h.s.op
@@ -611,6 +613,13 @@ def unop {S : ShortComplex Cᵒᵖ} (h : Splitting S) : Splitting S.unop where
     simp only [unop_X₂, Opposite.op_unop, unop_X₁, unop_f, unop_X₃, unop_g, op_add,
       op_comp, Quiver.Hom.op_unop, op_id, ← h.id]
     abel)
+
+@[simps]
+noncomputable def isoBinaryBiproduct (h : Splitting S) [HasBinaryBiproduct S.X₁ S.X₃] :
+    S.X₂ ≅ S.X₁ ⊞ S.X₃ where
+  hom := biprod.lift h.r S.g
+  inv := biprod.desc S.f h.s
+  hom_inv_id := by simp [h.id]
 
 end Splitting
 
@@ -797,5 +806,34 @@ instance [Faithful F] [CategoryWithHomology C] : F.ReflectsEpimorphisms where
       (((S.map F).exact_iff_epi (by simp)).2 hf))
 
 end Functor
+
+namespace ShortComplex
+
+namespace Splitting
+
+variable [Preadditive C] [Balanced C]
+
+noncomputable def ofExactOfSection (S : ShortComplex C) (hS : S.Exact) (s : S.X₃ ⟶ S.X₂)
+    (s_g : s ≫ S.g = 𝟙 S.X₃) (hf : Mono S.f) :
+    S.Splitting where
+  r := hS.lift (𝟙 S.X₂ - S.g ≫ s) (by simp [s_g])
+  s := s
+  f_r := by rw [← cancel_mono S.f, assoc, Exact.lift_f, comp_sub, comp_id,
+    zero_assoc, zero_comp, sub_zero, id_comp]
+  s_g := s_g
+
+noncomputable def ofExactOfRetraction (S : ShortComplex C) (hS : S.Exact) (r : S.X₂ ⟶ S.X₁)
+    (f_r : S.f ≫ r = 𝟙 S.X₁) (hg : Epi S.g) :
+    S.Splitting where
+  r := r
+  s := hS.desc (𝟙 S.X₂ - r ≫ S.f) (by simp [reassoc_of% f_r])
+  f_r := f_r
+  s_g := by
+    rw [← cancel_epi S.g, Exact.g_desc_assoc, sub_comp, id_comp, assoc, zero,
+      comp_zero, sub_zero, comp_id]
+
+end Splitting
+
+end ShortComplex
 
 end CategoryTheory
