@@ -152,9 +152,10 @@ instance instProdEDist : EDist (WithLp p (α × β)) where
   edist f g :=
     if _hp : p = 0 then
       (if f.fst = g.fst then 0 else 1) + (if f.snd = g.snd then 0 else 1)
+    else if p = ∞ then
+      edist f.fst g.fst ⊔ edist f.snd g.snd
     else
-      if p = ∞ then edist f.fst g.fst ⊔ edist f.snd g.snd
-      else (edist f.fst g.fst ^ p.toReal + edist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal)
+      (edist f.fst g.fst ^ p.toReal + edist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal)
 
 variable {p α β}
 variable (x y : WithLp p (α × β)) (x' : α × β)
@@ -218,9 +219,10 @@ instance instProdDist : Dist (WithLp p (α × β)) where
   dist f g :=
     if _hp : p = 0 then
       (if f.fst = g.fst then 0 else 1) + (if f.snd = g.snd then 0 else 1)
+    else if p = ∞ then
+      dist f.fst g.fst ⊔ dist f.snd g.snd
     else
-      if p = ∞ then dist f.fst g.fst ⊔ dist f.snd g.snd
-      else (dist f.fst g.fst ^ p.toReal + dist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal)
+      (dist f.fst g.fst ^ p.toReal + dist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal)
 
 variable {p α β}
 
@@ -256,8 +258,10 @@ instance instProdNorm : Norm (WithLp p (α × β)) where
   norm f :=
     if _hp : p = 0 then
       (if f.fst = 0 then 0 else 1) + (if f.snd = 0 then 0 else 1)
-    else if p = ∞ then ‖f.fst‖ ⊔ ‖f.snd‖
-    else (‖f.fst‖ ^ p.toReal + ‖f.snd‖ ^ p.toReal) ^ (1 / p.toReal)
+    else if p = ∞ then
+      ‖f.fst‖ ⊔ ‖f.snd‖
+    else
+      (‖f.fst‖ ^ p.toReal + ‖f.snd‖ ^ p.toReal) ^ (1 / p.toReal)
 
 variable {p α β}
 
@@ -457,20 +461,20 @@ section TopologicalSpace
 
 variable [TopologicalSpace α] [TopologicalSpace β]
 
-instance instTopologicalSpace : TopologicalSpace (WithLp p (α × β)) :=
+instance instProdTopologicalSpace : TopologicalSpace (WithLp p (α × β)) :=
   instTopologicalSpaceProd
 
 @[continuity]
-theorem continuous_equiv : Continuous (WithLp.equiv p (α × β)) :=
+theorem prod_continuous_equiv : Continuous (WithLp.equiv p (α × β)) :=
   continuous_id
 
 @[continuity]
-theorem continuous_equiv_symm : Continuous (WithLp.equiv p (α × β)).symm :=
+theorem prod_continuous_equiv_symm : Continuous (WithLp.equiv p (α × β)).symm :=
   continuous_id
 
 variable [T0Space α] [T0Space β]
 
-instance instT0Space : T0Space (WithLp p (α × β)) :=
+instance instProdT0Space : T0Space (WithLp p (α × β)) :=
   instT0SpaceProdInstTopologicalSpaceProd
 
 end TopologicalSpace
@@ -479,23 +483,23 @@ section UniformSpace
 
 variable [UniformSpace α] [UniformSpace β]
 
-instance instUniformSpace : UniformSpace (WithLp p (α × β)) :=
+instance instProdUniformSpace : UniformSpace (WithLp p (α × β)) :=
   instUniformSpaceProd
 
-theorem uniformContinuous_equiv : UniformContinuous (WithLp.equiv p (α × β)) :=
+theorem prod_uniformContinuous_equiv : UniformContinuous (WithLp.equiv p (α × β)) :=
   uniformContinuous_id
 
-theorem uniformContinuous_equiv_symm : UniformContinuous (WithLp.equiv p (α × β)).symm :=
+theorem prod_uniformContinuous_equiv_symm : UniformContinuous (WithLp.equiv p (α × β)).symm :=
   uniformContinuous_id
 
 variable [CompleteSpace α] [CompleteSpace β]
 
-instance instCompleteSpace : CompleteSpace (WithLp p (α × β)) :=
+instance instProdCompleteSpace : CompleteSpace (WithLp p (α × β)) :=
   CompleteSpace.prod
 
 end UniformSpace
 
-instance instBornology [Bornology α] [Bornology β] : Bornology (WithLp p (α × β)) :=
+instance instProdBornology [Bornology α] [Bornology β] : Bornology (WithLp p (α × β)) :=
   Prod.instBornology
 
 section ContinuousLinearEquiv
@@ -508,8 +512,8 @@ variable [Module 𝕜 α] [Module 𝕜 β]
 @[simps! (config := { fullyApplied := false }) apply symm_apply]
 protected def prodContinuousLinearEquiv : WithLp p (α × β) ≃L[𝕜] α × β where
   toLinearEquiv := WithLp.linearEquiv _ _ _
-  continuous_toFun := continuous_equiv _ _ _
-  continuous_invFun := continuous_equiv_symm _ _ _
+  continuous_toFun := prod_continuous_equiv _ _ _
+  continuous_invFun := prod_continuous_equiv_symm _ _ _
 
 end ContinuousLinearEquiv
 
