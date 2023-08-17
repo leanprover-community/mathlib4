@@ -20,6 +20,14 @@ with the polynomials in n variables, `MvPolynomial.equiv_symmetricSubalgebra`.
 We follow the alternative proof on the Wikipedia page
 https://en.wikipedia.org/wiki/Elementary_symmetric_polynomial#Alternative_proof
 
+Endow the (monic) monomials in the multivariate polynomial ring `MvPolynomial (Fin n) R` with
+the lexicographic order on `Fin n →₀ ℕ`, which is a (linear) well order.
+
+
+
+later we transfer the result from `Fin n` to `σ`.
+
+
 TODO:
 details
 declaration docstrings
