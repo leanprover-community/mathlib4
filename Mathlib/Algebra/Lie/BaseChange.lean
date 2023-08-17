@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Lie.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 #align_import algebra.lie.base_change from "leanprover-community/mathlib"@"9264b15ee696b7ca83f13c8ad67c83d6eb70b730"
 
@@ -36,15 +37,13 @@ namespace ExtendScalars
 
 variable [CommRing R] [CommRing A] [Algebra R A] [LieRing L] [LieAlgebra R L]
 
-/-- The Lie bracket on the extension of a Lie algebra `L` over `R` by an algebra `A` over `R`.
-
-In fact this bracket is fully `A`-bilinear but without a significant upgrade to our mixed-scalar
-support in the tensor product library, it is far easier to bootstrap like this, starting with the
-definition below. -/
-private def bracket' : A ⊗[R] L →ₗ[R] A ⊗[R] L →ₗ[R] A ⊗[R] L :=
-  TensorProduct.curry <|
-    TensorProduct.map (LinearMap.mul' R _) (LieModule.toModuleHom R L L : L ⊗[R] L →ₗ[R] L) ∘ₗ
-      ↑(TensorProduct.tensorTensorTensorComm R A L A L)
+/-- The Lie bracket on the extension of a Lie algebra `L` over `R` by an algebra `A` over `R`. -/
+private def bracket' : A ⊗[R] L →ₗ[A] A ⊗[R] L →ₗ[A] A ⊗[R] L :=
+  TensorProduct.AlgebraTensorModule.curry <|
+    TensorProduct.AlgebraTensorModule.map
+        (LinearMap.mul' A _)
+        (LieModule.toModuleHom R L L : L ⊗[R] L →ₗ[R] L) ∘ₗ
+      (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R A A L A L).toLinearMap
 
 @[simp]
 private theorem bracket'_tmul (s t : A) (x y : L) :
