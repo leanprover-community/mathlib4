@@ -7,6 +7,7 @@ Authors: Fangming Li, Jujian Zhang
 import Mathlib.Order.KrullDimension
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Artinian
 import Mathlib.Algebra.Module.LocalizedModule
 import Mathlib.Topology.KrullDimension
 
@@ -94,6 +95,38 @@ instance (F : Type _) [Field F] : OrderTop (LTSeries (PrimeSpectrum F)) where
   top := default
   le_top := λ ⟨_, _, h⟩ ↦ Decidable.by_contradiction $ λ rid ↦
     ne_of_gt (@h ⟨0, Iff.mp Nat.not_le rid⟩) (Subsingleton.elim _ _)
+
+lemma eq_zero_of_Field (F : Type _) [Field F] : ringKrullDim F = 0 :=
+  krullDim.eq_len_of_orderTop
+
+lemma eq_zero_of_IsArtinianRing (R : Type _) [CommRing R] [Nontrivial R] [IsArtinianRing R] :
+  ringKrullDim R = 0 := by
+{ haveI : Inhabited (PrimeSpectrum R) := Classical.inhabited_of_nonempty
+    PrimeSpectrum.instNonemptyPrimeSpectrum
+  rw [ringKrullDim, krullDim.eq_iSup_height]
+  suffices : ∀ (a : PrimeSpectrum R), height (PrimeSpectrum R) a = 0
+  { simp_rw [this]; rw [iSup_const] }
+  · intro p
+    refine le_antisymm ?_ krullDim.nonneg_of_Nonempty
+    · refine iSup_le (λ q ↦ ?_)
+      · erw [WithBot.coe_le_coe, WithTop.coe_le_coe]
+        by_contra' r
+        haveI : Fact (2 ≤ q.length + 1) := by
+          constructor
+          linarith
+        have : q 0 < q 1 := by
+          change RelSeries.toFun q 0 < RelSeries.toFun q 1
+          let hq := q.step ⟨0, r⟩
+          rw [show (Fin.castSucc { val := 0, isLt := r }) = 0 by exact rfl,
+            show (Fin.succ { val := 0, isLt := r }) = 1 by
+              rw [show (Fin.succ { val := 0, isLt := r }) = 0 + 1 by
+                exact Fin.ext $ Eq.symm (Fin.val_add_one_of_lt r)];
+                exact Fin.zero_add 1] at hq
+          exact hq
+        haveI H0 : (q 0).1.asIdeal.IsMaximal := inferInstance
+        exact (ne_of_lt this (show q 0 = q 1 by
+          rw [Subtype.ext_iff_val, PrimeSpectrum.ext_iff];
+          exact H0.eq_of_le (q 1).1.IsPrime.1 (le_of_lt this))) }
 
 /--
 https://stacks.math.columbia.edu/tag/00KG

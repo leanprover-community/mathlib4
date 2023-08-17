@@ -32,7 +32,13 @@ section definitions
 variable {β : Type _} (r : Rel β β)
 variable (α : Type _) [Preorder α]
 
--- Not sure if this definition is useful
+/--
+Krull dimension of a set `α` with a binary relation `r` is the supremum of the rightmost index of
+all relation series of `r`. If there is no relation series `a₀, a₁, ..., aₙ` in `α`, then its Krull
+dimension is defined to be negative infinity; if the length of all relation series `a₀, a₁, ..., aₙ`
+is unbounded, its Krull dimension is defined to be positive infinity. (Not sure if this definition
+is useful.)
+-/
 noncomputable def krullDimOfRel : WithBot (WithTop ℕ) :=
   ⨆ (p : RelSeries r), p.length
 
@@ -62,6 +68,10 @@ end definitions
 namespace krullDimOfRel
 
 variable {α β : Type _} (r : Rel α α) (s : Rel β β)
+
+lemma nonneg_of_Nonempty [Nonempty α] : 0 ≤ krullDimOfRel r :=
+  le_sSup ⟨⟨0, λ _ ↦ @Nonempty.some α inferInstance, λ f ↦ False.elim $
+    Nat.le_lt_antisymm (Nat.zero_le ↑f) f.2⟩, rfl⟩
 
 lemma eq_bot_of_isEmpty [IsEmpty α] : krullDimOfRel r = ⊥ := WithBot.ciSup_empty _
 
@@ -100,7 +110,6 @@ lemma eq_len_of_orderTop' [OrderTop (RelSeries r)]
   (q : RelSeries r) (h : IsTop q) : krullDimOfRel r = q.length :=
 (eq_len_of_orderTop r).trans $ RelSeries.top_len_unique r _ h ▸ rfl
 
-
 end krullDimOfRel
 
 namespace krullDim
@@ -108,6 +117,9 @@ namespace krullDim
 variable {α β : Type _}
 
 variable [Preorder α] [Preorder β]
+
+lemma nonneg_of_Nonempty [Nonempty α] : 0 ≤ krullDim α :=
+  krullDimOfRel.nonneg_of_Nonempty _
 
 lemma eq_bot_of_isEmpty [IsEmpty α] : krullDim α = ⊥ := krullDimOfRel.eq_bot_of_isEmpty _
 
