@@ -144,7 +144,7 @@ variable [Field K] [Invertible (2 : K)] [AddCommGroup V] [Module K V]
 squares. -/
 noncomputable def isometryEquivWeightedSumSquares (Q : QuadraticForm K V)
     (v : Basis (Fin (FiniteDimensional.finrank K V)) K V)
-    (hv₁ : (associated (R₁ := K) Q).iIsOrtho v) :
+    (hv₁ : (associated Q).iIsOrtho v) :
     Q.IsometryEquiv (weightedSumSquares K fun i => Q (v i)) := by
   let iso := Q.isometryEquivBasisRepr v
   refine' ⟨iso, fun m => _⟩
@@ -163,7 +163,7 @@ theorem equivalent_weightedSumSquares (Q : QuadraticForm K V) :
 #align quadratic_form.equivalent_weighted_sum_squares QuadraticForm.equivalent_weightedSumSquares
 
 theorem equivalent_weightedSumSquares_units_of_nondegenerate' (Q : QuadraticForm K V)
-    (hQ : (associated (R₁ := K) Q).Nondegenerate) :
+    (hQ : (associated Q).Nondegenerate) :
     ∃ w : Fin (FiniteDimensional.finrank K V) → Kˣ, Equivalent Q (weightedSumSquares K w) := by
   obtain ⟨v, hv₁⟩ := exists_orthogonal_basis (associated_isSymm K Q)
   have hv₂ := hv₁.not_isOrtho_basis_self_of_nondegenerate hQ
