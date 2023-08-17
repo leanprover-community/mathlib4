@@ -115,7 +115,7 @@ it as a local instance to build the real one. -/
 noncomputable def normedRingAux : NormedRing (Unitization 𝕜 A) :=
   @NormedRing.induced _ (Unitization 𝕜 A) (𝕜 × (A →L[𝕜] A)) Unitization.instRing
     Prod.normedRing _ (splitMul 𝕜 A) (splitMul_injective 𝕜 A)
--- ummmm... what? why does Lean need me to fill in these instances?
+-- todo: why does Lean need these instances explictly?
 
 attribute [local instance] Unitization.normedRingAux
 
