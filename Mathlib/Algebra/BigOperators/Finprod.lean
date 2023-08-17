@@ -355,7 +355,7 @@ theorem finprod_inv_distrib [DivisionCommMonoid G] (f : α → G) : (∏ᶠ x, (
 theorem finprod_prop (P : Prop) [Decidable P] (b : M) : ∏ᶠ _x : P, b = if P then b else 1 := by
   rw [finprod, dif_pos (toFinite _), Finset.prod_const, mulSupport]
   simp only [comp_apply, ne_eq]
-  by_cases hb : b = 1
+  rcases eq_or_ne with rfl | hb; simp
   · simp [hb]
   · simp only [hb, not_false_eq_true, setOf_true, toFinite_toFinset, toFinset_univ]
     split_ifs with h
