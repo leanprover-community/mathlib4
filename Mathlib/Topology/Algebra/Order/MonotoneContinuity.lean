@@ -29,7 +29,7 @@ open Topology
 
 section LinearOrder
 
-variable {α β : Type _} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
+variable {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
 
 variable [LinearOrder β] [TopologicalSpace β] [OrderTopology β]
 
@@ -299,7 +299,7 @@ this for an `OrderIso` between to partial orders with order topology.
 
 namespace OrderIso
 
-variable {α β : Type _} [PartialOrder α] [PartialOrder β] [TopologicalSpace α] [TopologicalSpace β]
+variable {α β : Type*} [PartialOrder α] [PartialOrder β] [TopologicalSpace α] [TopologicalSpace β]
   [OrderTopology α] [OrderTopology β]
 
 protected theorem continuous (e : α ≃o β) : Continuous e := by

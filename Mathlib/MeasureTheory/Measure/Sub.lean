@@ -30,11 +30,11 @@ Compare with `ENNReal.instSub`.
 Specifically, note that if you have `α = {1,2}`, and `μ {1} = 2`, `μ {2} = 0`, and
 `ν {2} = 2`, `ν {1} = 0`, then `(μ - ν) {1, 2} = 2`. However, if `μ ≤ ν`, and
 `ν univ ≠ ∞`, then `(μ - ν) + ν = μ`. -/
-noncomputable instance instSub {α : Type _} [MeasurableSpace α] : Sub (Measure α) :=
+noncomputable instance instSub {α : Type*} [MeasurableSpace α] : Sub (Measure α) :=
   ⟨fun μ ν => sInf { τ | μ ≤ τ + ν }⟩
 #align measure_theory.measure.has_sub MeasureTheory.Measure.instSub
 
-variable {α : Type _} {m : MeasurableSpace α} {μ ν : Measure α} {s : Set α}
+variable {α : Type*} {m : MeasurableSpace α} {μ ν : Measure α} {s : Set α}
 
 theorem sub_def : μ - ν = sInf { d | μ ≤ d + ν } := rfl
 #align measure_theory.measure.sub_def MeasureTheory.Measure.sub_def

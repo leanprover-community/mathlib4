@@ -19,6 +19,8 @@ import Mathlib.Tactic.PermuteGoals
 Possibly only of archaeological significance.
 -/
 
+set_option autoImplicit true
+
 universe u
 
 -- Once we're in the `Nat` namespace, `xor` will inconveniently resolve to `Nat.xor`.
@@ -168,7 +170,7 @@ theorem bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=
   (bit_val _ _).trans <| (Nat.add_comm _ _).trans <| bodd_add_div2 _
 #align nat.bit_decomp Nat.bit_decomp
 
-/-- For a predicate `C : Nat → Sort _`, if instances can be
+/-- For a predicate `C : Nat → Sort*`, if instances can be
   constructed for natural numbers of the form `bit b n`,
   they can be constructed for any given natural number. -/
 def bitCasesOn {C : Nat → Sort u} (n) (h : ∀ b n, C (bit b n)) : C n := bit_decomp n ▸ h _ _
@@ -232,7 +234,7 @@ lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by
   rwa [Nat.mul_one] at this
 
 /-- A recursion principle for `bit` representations of natural numbers.
-  For a predicate `C : Nat → Sort _`, if instances can be
+  For a predicate `C : Nat → Sort*`, if instances can be
   constructed for natural numbers of the form `bit b n`,
   they can be constructed for all natural numbers. -/
 def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) : ∀ n, C n :=
