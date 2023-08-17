@@ -8,7 +8,7 @@ import Mathlib.GroupTheory.PGroup
 /-!
 # Zagier's "one-sentence proof" of Fermat's theorem on sums of two squares
 
-"The involution on a finite set `S = {(x, y, z) : ℕ × ℕ × ℕ | x ^ 2 + 4 * y * z = p}` defined by
+"The involution on the finite set `S = {(x, y, z) : ℕ × ℕ × ℕ | x ^ 2 + 4 * y * z = p}` defined by
 ```
 (x, y, z) ↦ (x + 2 * z, z, y - x - z) if x < y - z
             (2 * y - x, y, x - y + z) if y - z < x < 2 * y
@@ -27,7 +27,7 @@ variable (k : ℕ) [hk : Fact (4 * k + 1).Prime]
 
 /-- The set of all triples of natural numbers `(x, y, z)` satisfying
 `x * x + 4 * y * z = 4 * k + 1`, as a `Set`. -/
-def zagierSet := {t : ℕ × ℕ × ℕ | t.1 * t.1 + 4 * t.2.1 * t.2.2 = 4 * k + 1}
+def zagierSet : Set (ℕ × ℕ × ℕ) := {t | t.1 * t.1 + 4 * t.2.1 * t.2.2 = 4 * k + 1}
 
 lemma zagierSet_lower_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) : 0 < x ∧ 0 < y ∧ 0 < z := by
   simp_rw [zagierSet, Set.mem_setOf_eq] at h
@@ -45,13 +45,15 @@ lemma zagierSet_upper_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) :
 
 /-- The set of all triples of natural numbers `(x, y, z) ∈ (0, k + 1] × (0, k] × (0, k]` satisfying
 `x * x + 4 * y * z = 4 * k + 1`, as a `Finset`. This is shown to be equivalent to `zagierSet`. -/
-def zagierFinset :=
+def zagierFinset : Finset (ℕ × ℕ × ℕ) :=
   ((Ioc 0 (k + 1)).product ((Ioc 0 k).product (Ioc 0 k))).filter
     (fun ⟨x, y, z⟩ => x * x + 4 * y * z = 4 * k + 1)
 
-theorem zagierSet_eq : zagierSet k = zagierFinset k := by
+theorem coe_zagierFinset : ↑(zagierFinset k) = zagierSet k := by
   ext ⟨x, y, z⟩
   refine' ⟨fun h => _, fun h => _⟩
+  · unfold zagierFinset at h
+    unfold zagierSet; simp_all
   · unfold zagierSet at h
     unfold zagierFinset; simp_all
     have lb := zagierSet_lower_bound k h
@@ -60,16 +62,9 @@ theorem zagierSet_eq : zagierSet k = zagierFinset k := by
     constructor; · exact ⟨lb.1, ub.1⟩
     apply mem_product.2; simp
     exact ⟨⟨lb.2.1, ub.2.1⟩, ⟨lb.2.2, ub.2.2⟩⟩
-  · unfold zagierFinset at h
-    unfold zagierSet; simp_all
 
-/-- The set of all triples of natural numbers `(x, y, z)` satisfying
-`x * x + 4 * y * z = 4 * k + 1`, as a `Subtype`. -/
-def zagierSubtype := {t // t ∈ zagierSet k}
-
-instance : Fintype (zagierSubtype k) := by
-  unfold zagierSubtype
-  rw [zagierSet_eq]
+instance : Fintype (zagierSet k) := by
+  rw [← coe_zagierFinset]
   infer_instance
 
 end Defs
@@ -106,10 +101,6 @@ def groupPowers : Group (powers f) where
     rw [← hk, ← pow_mul, mul_comm, pow_mul, pow_eq_iterate f, hf, pow_eq_iterate, iterate_id]
     rfl
 
-instance : MulAction (powers f) α where
-  one_smul _ := rfl
-  mul_smul _ _ _ := rfl
-
 theorem isPGroup_of_powers : @IsPGroup p (powers f) (groupPowers f hf) := by
   unfold IsPGroup
   intro ⟨g, hg⟩
@@ -138,16 +129,20 @@ variable (k : ℕ) [hk : Fact (4 * k + 1).Prime]
 
 /-- The obvious involution `(x, y, z) ↦ (x, z, y)`. Its fixed points correspond to representations
 of `4 * k + 1` as a sum of two squares. -/
-def obvInvo : Function.End (zagierSubtype k) := fun ⟨⟨x, y, z⟩, h⟩ => ⟨⟨x, z, y⟩, by
+def obvInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ => ⟨⟨x, z, y⟩, by
   unfold zagierSet at *
   simp_all
   linarith [h]⟩
 
+lemma obvInvo_apply {p : ℕ × ℕ × ℕ} {hp : p ∈ zagierSet k} :
+    (obvInvo k) ⟨p, hp⟩ = (p.1, p.2.2, p.2.1) := by
+  rfl
+
 theorem involutive_obvInvo : Involutive (obvInvo k) := by
-  unfold Involutive obvInvo zagierSubtype; simp
+  unfold Involutive obvInvo zagierSet; simp
 
 theorem sq_add_sq_of_nonempty_fixedPoints
-    (hn : (MulAction.fixedPoints (powers (obvInvo k)) (zagierSubtype k)).Nonempty) :
+    (hn : (MulAction.fixedPoints (powers (obvInvo k)) (zagierSet k)).Nonempty) :
     ∃ a b : ℕ, a ^ 2 + b ^ 2 = 4 * k + 1 := by
   simp_rw [sq]
   obtain ⟨⟨⟨x, y, z⟩, he⟩, hf⟩ := hn
@@ -162,7 +157,7 @@ theorem sq_add_sq_of_nonempty_fixedPoints
   assumption
 
 /-- The complicated involution, which is shown to have exactly one fixed point `(1, 1, k)`. -/
-def complexInvo : Function.End (zagierSubtype k) := fun ⟨⟨x, y, z⟩, h⟩ =>
+def complexInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ =>
   ⟨if x + z < y then ⟨x + 2 * z, z, y - x - z⟩ else
    if 2 * y < x then ⟨x - 2 * y, x + z - y, y⟩ else
                      ⟨2 * y - x, y, x + z - y⟩, by
@@ -183,7 +178,6 @@ def complexInvo : Function.End (zagierSubtype k) := fun ⟨⟨x, y, z⟩, h⟩ =
     linarith [h]⟩
 
 theorem involutive_complexInvo : Involutive (complexInvo k) := by
-  unfold Involutive
   intro ⟨⟨x, y, z⟩, h⟩
   obtain ⟨xb, _, _⟩ := zagierSet_lower_bound k h
   conv_lhs =>
@@ -208,8 +202,8 @@ theorem involutive_complexInvo : Involutive (complexInvo k) := by
     · rw [← Nat.add_sub_assoc less (2 * y - x), ← add_assoc, Nat.sub_add_cancel more,
         Nat.sub_sub _ _ y, ← two_mul, add_comm, Nat.add_sub_cancel]
 
-theorem unique {t : zagierSubtype k}
-    (mem : t ∈ (MulAction.fixedPoints (powers (complexInvo k)) (zagierSubtype k))) :
+theorem unique {t : zagierSet k}
+    (mem : t ∈ (MulAction.fixedPoints (powers (complexInvo k)) (zagierSet k))) :
     t.val = (1, 1, k):= by
   simp only [MulAction.mem_fixedPoints, Subtype.forall] at mem
   replace mem := mem (complexInvo k) (mem_powers _)
@@ -236,7 +230,7 @@ theorem unique {t : zagierSubtype k}
       linarith [e]
 
 theorem aux :
-    MulAction.fixedPoints (powers (complexInvo k)) (zagierSubtype k) =
+    MulAction.fixedPoints (powers (complexInvo k)) (zagierSet k) =
     {⟨(1, 1, k), (by unfold zagierSet; simp; linarith)⟩} := by
   rw [Set.eq_singleton_iff_unique_mem]
   constructor
@@ -255,7 +249,7 @@ theorem aux :
       simp
   · intro t mem
     replace mem := unique k mem
-    unfold zagierSubtype at t
+    unfold zagierSet at t
     congr!
 
 theorem positive_of_odd {n : ℕ} (h : n % 2 = 1) : 0 < n := by
@@ -282,7 +276,3 @@ theorem Nat.Prime.sq_add_sq' {p : ℕ} [Fact p.Prime] (hp : p % 4 = 1) :
   have := @result (p / 4) (by rw [md]; infer_instance)
   rw [md] at this
   assumption
-
--- Verify that the above proof does not rely on quadratic reciprocity,
--- unlike `Nat.Prime.sq_add_sq` in `NumberTheory/SumTwoSquares.lean`
-assert_not_exists Nat.Prime.sq_add_sq
