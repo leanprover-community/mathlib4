@@ -280,9 +280,9 @@ def parseFindPatterns (args : TSyntaxArray ``find_pattern) : TermElabM Arguments
 open Command
 
 /--
-The `#find` command finds definitions and lemmas in various ways. One can search by: the constants 
-involved in the type; a substring of the name; a subexpression of the type; or a subexpression 
-located in the return type or a hypothesis specifically. All of these search methods can be 
+The `#find` command finds definitions and lemmas in various ways. One can search by: the constants
+involved in the type; a substring of the name; a subexpression of the type; or a subexpression
+located in the return type or a hypothesis specifically. All of these search methods can be
 combined in a single query.
 
 1. By constant:
@@ -301,7 +301,7 @@ combined in a single query.
    ```lean
    #find (_ * (_ ^ _))
    ```
-   finds all lemmas whose statements somewhere include a product where the second argument is 
+   finds all lemmas whose statements somewhere include a product where the second argument is
    raised to some power. The pattern can also be non-linear, as in
    ```lean
    #find (Real.sqrt ?a * Real.sqrt ?a)
@@ -322,14 +322,14 @@ combined in a single query.
    ```lean
    #find Real.sin "two" tsum  (_ * _) (_ ^ _) ⊢ (_ < _ → _)
    ```
-   will find all lemmas which mention the constants `Real.sin` and `tsum`, have `"two"` as a 
-   substring of the lemma name, include a product and a power somewhere in the type, *and* have a 
-   hypothesis of the form `_ < _`. 
+   will find all lemmas which mention the constants `Real.sin` and `tsum`, have `"two"` as a
+   substring of the lemma name, include a product and a power somewhere in the type, *and* have a
+   hypothesis of the form `_ < _`.
 
-If you pass more than one such search filter, `#find` will only return lemmas which match _all_ of 
-them simultaneously. At least some filter must mention a concrete name, because `#find` maintains 
-an index of which lemmas mention which other constants. This is also why the _first_ use of `#find` 
-will be somewhat slow (typically less than half a minute with all of `Mathlib` imported), but 
+If you pass more than one such search filter, `#find` will only return lemmas which match _all_ of
+them simultaneously. At least some filter must mention a concrete name, because `#find` maintains
+an index of which lemmas mention which other constants. This is also why the _first_ use of `#find`
+will be somewhat slow (typically less than half a minute with all of `Mathlib` imported), but
 subsequent uses are faster.
 
 It may be useful to open a scratch file, `import Mathlib`, and use `#find` there, this way you will
