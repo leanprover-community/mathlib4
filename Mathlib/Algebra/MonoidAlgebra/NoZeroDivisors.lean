@@ -37,8 +37,38 @@ The conditions on `A` imposed in `NoZeroDivisors.of_left_ordered` are sometimes 
 The conditions on `A` imposed in `NoZeroDivisors.of_right_ordered` are sometimes referred to as
 `right-ordered`.
 
+* `NoZeroDivisors.biOrdered` shows that if `R` is a semiring with no non-zero zero-divisors,
+  `A` has an addition, a linear order and both addition on the left and addition on the right are
+  strictly monotone functions, then `AddMonoidAlgebra R A` has no non-zero zero-divisors.
+
 These conditions are sufficient, but not necessary.  As mentioned above, *Kaplansky's Conjecture*
 asserts that `A` being torsion-free may be enough.
+
+
+###  Remarks
+To prove `NoZeroDivisors.biOrdered`,
+we use `CovariantClass` assumptions on `A`.  In combination with `LinearOrder A`, these
+assumptions actually imply that `A` is cancellative.  However, cancellativity alone in not enough.
+Indeed, using `ZMod 2`, that is `ℤ / 2 ℤ`, as the grading type `A`, there are examples of
+`AddMonoidAlgebra`s containing non-zero zero divisors:
+```lean
+import Mathlib.Data.ZMod.Defs
+import Mathlib.Algebra.MonoidAlgebra.Basic
+
+open Finsupp AddMonoidAlgebra
+
+example {R} [Ring R] [Nontrivial R] :
+  ∃ x y : AddMonoidAlgebra R (ZMod 2), x * y = 0 ∧ x ≠ 0 ∧ y ≠ 0 :=
+by
+  --  use `[1 (mod 2)] - 1` and `[1 (mod 2)] + 1`, the rest is easy
+  refine ⟨of' _ _ 1 - AddMonoidAlgebra.single 0 1, of' _ _ 1 +  AddMonoidAlgebra.single 0 1, ?_, ?_⟩
+  · simp [sub_mul, mul_add, single_mul_single, sub_eq_zero]; rfl
+  · simp only [of'_apply, sub_eq_add_neg, ne_eq, ← eq_neg_iff_add_eq_zero.not, neg_neg]
+    rw [← Finsupp.single_neg, single_eq_single_iff, single_eq_single_iff]
+    simp
+```
+In this case, the grading type is the additive monoid `ZMod 2` which is an abelian group
+(and, in particular, it is cancellative).
 -/
 
 
