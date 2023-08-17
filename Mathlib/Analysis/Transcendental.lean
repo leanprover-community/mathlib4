@@ -5,61 +5,23 @@ Authors: Yuyang Zhao
 
 ! This file was ported from Lean 3 source module main
 -/
--- import Mathlib.Algebra.BigOperators.Finsupp
--- import Mathlib.Analysis.Complex.Basic
--- import Mathlib.Analysis.SpecialFunctions.Polynomials
--- import Mathlib.Data.Complex.Exponential
--- import Mathlib.FieldTheory.GalConj
--- import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
--- import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
--- import Mathlib.MeasureTheory.Measure.Haar.Basic
--- import Mathlib.Analysis.Convex.Basic
--- import Mathlib.Analysis.InnerProductSpace.Orthogonal
--- import Mathlib.Algebra.DirectSum.Module
--- import Mathlib.Analysis.Complex.Basic
--- import Mathlib.Analysis.Convex.Uniform
--- import Mathlib.Analysis.NormedSpace.Completion
--- import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
--- -- import Mathlib.LinearAlgebra.Dual
--- import Mathlib.Analysis.NormedSpace.Banach
--- import Mathlib.LinearAlgebra.SesquilinearForm
--- import Mathlib.Analysis.NormedSpace.IsROrC
--- import Mathlib.Data.IsROrC.Lemmas
--- import Mathlib.Algebra.DirectSum.Decomposition
--- import Mathlib.Analysis.NormedSpace.PiLp
--- import Mathlib.LinearAlgebra.FiniteDimensional
--- import Mathlib.LinearAlgebra.UnitaryGroup
--- import Mathlib.MeasureTheory.Integral.DivergenceTheorem
--- import Mathlib.MeasureTheory.Integral.CircleIntegral
--- import Mathlib.Analysis.Calculus.Dslope
--- import Mathlib.Analysis.Analytic.Basic
--- import Mathlib.Analysis.Complex.ReImTopology
--- import Mathlib.Analysis.Calculus.DiffContOnCl
--- import Mathlib.Analysis.Calculus.FDeriv.Analytic
--- import Mathlib.Data.Real.Cardinality
--- import Mathlib.Analysis.Calculus.FDeriv.Analytic
--- import Mathlib.Analysis.NormedSpace.Completion
-
--- import Mathlib.FieldTheory.IsAlgClosed.Basic
--- import Mathlib.Analysis.Calculus.Deriv.Polynomial
--- import Mathlib.Topology.Algebra.Polynomial
--- import Mathlib.FieldTheory.Galois
--- import Mathlib.GroupTheory.Perm.Cycle.Type
--- import Mathlib.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.Algebra.BigOperators.Finsupp
+import Mathlib.Analysis.Complex.Basic
+import Mathlib.Analysis.SpecialFunctions.Polynomials
+import Mathlib.Data.Complex.Exponential
+import Mathlib.FieldTheory.PolynomialGaloisGroup
+import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.RingTheory.Algebraic
 import Mathlib.Algebra.CharP.Algebra
 
 import Mathlib.Data.Polynomial.Derivative2
+import Mathlib.FieldTheory.GalConj
 
-import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.Calculus.Deriv.Add
-import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-import Mathlib.MeasureTheory.Integral.IntervalIntegral
-assert_not_exists Module.Dual
-
+-- assert_not_exists Module.Dual
 -- attribute [-reducible] Module.Dual
+
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 
@@ -136,7 +98,7 @@ theorem Differentiable.real_of_complex {e : ℂ → ℂ} (h : Differentiable ℂ
 
 theorem deriv_eq_f (p : ℂ[X]) (s : ℂ) :
     (deriv fun x : ℝ =>
-        -(exp (-(x • exp (s.arg • I))) * (sumIderiv p).eval (x • exp (s.arg • I))) /
+        -(exp (-(x • exp (s.arg • I))) * p.sumIderiv.eval (x • exp (s.arg • I))) /
           exp (s.arg • I)) =
       fun x : ℝ => exp (-(x • exp (s.arg • I))) * p.eval (x • exp (s.arg • I)) :=
   by
@@ -151,7 +113,7 @@ theorem deriv_eq_f (p : ℂ[X]) (s : ℂ) :
   simp_rw [derivative_map, one_smul, mul_assoc, ← mul_add]
   have h :
     exp (s.arg • I) * p.sumIderiv.eval (x • exp (s.arg • I)) -
-        p.sumIderiv.derivative.eval (x • exp (s.arg • I)) * exp (s.arg • I) =
+        (derivative (R := ℂ) (sumIderiv p)).eval (x • exp (s.arg • I)) * exp (s.arg • I) =
       p.eval (x • exp (s.arg • I)) * exp (s.arg • I) :=
     by
     conv_lhs =>
@@ -179,33 +141,33 @@ theorem integral_f_eq (p : ℂ[X]) (s : ℂ) :
       -(exp (-s) * p.sumIderiv.eval s) / exp (s.arg • I) - -p.sumIderiv.eval 0 / exp (s.arg • I) :=
   by
   convert
-    IntervalIntegral.integral_deriv_eq_sub'
+    intervalIntegral.integral_deriv_eq_sub'
       (fun x : ℝ =>
         -(exp (-(x • exp (s.arg • I))) * p.sumIderiv.eval (x • exp (s.arg • I))) / exp (s.arg • I))
       (deriv_eq_f p s) _ _
   any_goals simp_rw [real_smul, abs_mul_exp_arg_mul_I]
   · simp_rw [zero_smul, neg_zero, Complex.exp_zero, one_mul]
-  · intro x hx; apply ((Differentiable.mul _ _).neg.div_const _).DifferentiableAt
+  · intro x hx; apply ((Differentiable.mul _ _).neg.div_const _).differentiableAt
     apply @Differentiable.real_of_complex fun c : ℂ => exp (-(c * exp (s.arg • I)))
     refine' (differentiable_id.mul_const _).neg.cexp
     change Differentiable ℝ ((fun y : ℂ => p.sumIderiv.eval y) ∘ fun x : ℝ => x • exp (s.arg • I))
     apply Differentiable.comp
     apply @Differentiable.restrictScalars ℝ _ ℂ; exact Polynomial.differentiable _
     exact differentiable_id'.smul_const _
-  · refine' ((continuous_id'.smul continuous_const).neg.cexp.mul _).ContinuousOn
+  · refine' ((continuous_id'.smul continuous_const).neg.cexp.mul _).continuousOn
     change Continuous ((fun y : ℂ => p.eval y) ∘ fun x : ℝ => x • exp (s.arg • I))
     exact p.continuous_aeval.comp (continuous_id'.smul continuous_const)
 #align integral_f_eq integral_f_eq
 
-def p (p : ℂ[X]) (s : ℂ) :=
+def P (p : ℂ[X]) (s : ℂ) :=
   exp s * p.sumIderiv.eval 0 - p.sumIderiv.eval s
-#align P p
+#align P P
 
 theorem p_le' (p : ℕ → ℂ[X]) (s : ℂ)
-    (h : ∃ c, ∀ (q : ℕ), ∀ x ∈ Set.Ioc 0 s.abs, ((p q).eval (x • exp (s.arg • I))).abs ≤ c ^ q) :
-    ∃ c ≥ 0, ∀ q : ℕ, (p (p q) s).abs ≤ Real.exp s.re * (Real.exp s.abs * c ^ q * s.abs) :=
+    (h : ∃ c, ∀ (q : ℕ), ∀ x ∈ Set.Ioc 0 (Complex.abs s), Complex.abs ((p q).eval (x • exp (s.arg • I))) ≤ c ^ q) :
+    ∃ c ≥ 0, ∀ q : ℕ, Complex.abs (P (p q) s) ≤ Real.exp s.re * (Real.exp (Complex.abs s) * c ^ q * (Complex.abs s)) :=
   by
-  simp_rw [p]; cases' h with c hc; replace hc := fun q x hx => (hc q x hx).trans (le_abs_self _)
+  simp_rw []; cases' h with c hc; replace hc := fun q x hx => (hc q x hx).trans (le_abs_self _)
   simp_rw [_root_.abs_pow] at hc ; use |c|, abs_nonneg _; intro q
   have h := integral_f_eq (p q) s
   rw [← sub_div, eq_div_iff (exp_ne_zero _), ← @mul_right_inj' _ _ (exp s) _ _ (exp_ne_zero _),
@@ -227,21 +189,21 @@ theorem p_le' (p : ℕ → ℂ[X]) (s : ℂ)
 #align P_le' p_le'
 
 theorem p_le (p : ℕ → ℂ[X]) (s : ℂ)
-    (h : ∃ c, ∀ (q : ℕ), ∀ x ∈ Set.Ioc 0 s.abs, ((p q).eval (x • exp (s.arg • I))).abs ≤ c ^ q) :
-    ∃ c ≥ 0, ∀ q ≥ 1, (p (p q) s).abs ≤ c ^ q :=
+    (h : ∃ c, ∀ (q : ℕ), ∀ x ∈ Set.Ioc 0 (Complex.abs s), Complex.abs ((p q).eval (x • exp (s.arg • I))) ≤ c ^ q) :
+    ∃ c ≥ 0, ∀ q ≥ 1, Complex.abs (P (p q) s) ≤ c ^ q :=
   by
-  simp_rw [p]; obtain ⟨c', hc', h'⟩ := p_le' p s h; clear h
+  simp_rw []; obtain ⟨c', hc', h'⟩ := p_le' p s h; clear h
   let c₁ := max (Real.exp s.re) 1
-  let c₂ := max (Real.exp s.abs) 1; have h₂ : 0 ≤ Real.exp s.abs := (Real.exp_pos _).le
-  let c₃ := max s.abs 1; have h₃ : 0 ≤ s.abs := complex.abs.nonneg _
-  have hc : ∀ {x : ℝ}, 0 ≤ max x 1 := fun x => zero_le_one.trans (le_max_right _ _)
+  let c₂ := max (Real.exp (Complex.abs s)) 1; have h₂ : 0 ≤ Real.exp (Complex.abs s) := (Real.exp_pos _).le
+  let c₃ := max (Complex.abs s) 1; have h₃ : 0 ≤ (Complex.abs s) := Complex.abs.nonneg _
+  have hc : ∀ {x : ℝ}, 0 ≤ max x 1 := fun {x} => zero_le_one.trans (le_max_right _ _)
   use c₁ * (c₂ * c' * c₃), mul_nonneg hc (mul_nonneg (mul_nonneg hc hc') hc)
   intro q hq; refine' (h' q).trans _; simp_rw [mul_pow]
-  have hcq : ∀ {x : ℝ}, 0 ≤ max x 1 ^ q := fun x => pow_nonneg hc q
+  have hcq : ∀ {x : ℝ}, 0 ≤ max x 1 ^ q := fun {x} => pow_nonneg hc q
   have hcq' := pow_nonneg hc' q
-  have le_max_one_pow : ∀ {x : ℝ}, x ≤ max x 1 ^ q := fun x =>
+  have le_max_one_pow : ∀ {x : ℝ}, x ≤ max x 1 ^ q := fun {x} =>
     (max_cases x 1).elim (fun h => h.1.symm ▸ le_self_pow h.2 (zero_lt_one.trans_le hq).ne')
-      fun h => by rw [h.1, one_pow] <;> exact h.2.le
+      fun h => by rw [h.1, one_pow]; exact h.2.le
   refine' mul_le_mul le_max_one_pow _ (mul_nonneg (mul_nonneg h₂ hcq') h₃) hcq
   refine' mul_le_mul _ le_max_one_pow h₃ (mul_nonneg hcq hcq')
   refine' mul_le_mul le_max_one_pow le_rfl hcq' hcq
@@ -255,16 +217,16 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
         ∀ (prime_q : Nat.Prime q),
           ∃ (n : ℤ) (hn : n % q ≠ 0) (gp : ℤ[X]) (gp_le : gp.natDegree ≤ q * p.natDegree - 1),
             ∀ {r : ℂ} (hr : r ∈ p.aroots ℂ),
-              (n • exp r - q • aeval r gp : ℂ).abs ≤ c ^ q / (q - 1)! :=
+              Complex.abs (n • exp r - q • aeval r gp : ℂ) ≤ c ^ q / (q - 1)! :=
   by
   let p' q := (X ^ (q - 1) * p ^ q).map (algebraMap ℤ ℂ)
   have :
     ∀ s : ℂ,
-      ∃ c, ∀ (q : ℕ), ∀ x ∈ Set.Ioc 0 s.abs, ((p' q).eval (x • exp (s.arg • I))).abs ≤ c ^ q :=
+      ∃ c, ∀ (q : ℕ), ∀ x ∈ Set.Ioc 0 (Complex.abs s), Complex.abs ((p' q).eval (x • exp (s.arg • I))) ≤ c ^ q :=
     by
-    intro s; dsimp only [p']
+    intro s; dsimp only []
     simp_rw [Polynomial.map_mul, Polynomial.map_pow, map_X, eval_mul, eval_pow, eval_X, map_mul,
-      Complex.abs_pow, real_smul, map_mul, abs_exp_of_real_mul_I, abs_of_real, mul_one, ←
+      Complex.abs_pow, real_smul, map_mul, abs_exp_ofReal_mul_I, abs_ofReal, mul_one, ←
       eval₂_eq_eval_map, ← aeval_def]
     have :
       Metric.Bounded
@@ -274,29 +236,29 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
         (fun x => max |x| 1 * (aeval (↑x * exp (↑s.arg * I)) p).abs) '' Set.Ioc 0 (abs s) ⊆
           (fun x => max |x| 1 * (aeval (↑x * exp (↑s.arg * I)) p).abs) '' Set.Icc 0 (abs s) :=
         Set.image_subset _ Set.Ioc_subset_Icc_self
-      refine' (IsCompact.image is_compact_Icc _).Bounded.mono h
+      refine' (IsCompact.image isCompact_Icc _).bounded.mono h
       · refine' (continuous_id.abs.max continuous_const).mul _
         refine' complex.continuous_abs.comp (p.continuous_aeval.comp _)
         exact continuous_of_real.mul continuous_const
     cases' this.exists_norm_le with c h
     use c; intro q x hx
-    specialize h (max |x| 1 * (aeval (↑x * exp (↑s.arg * I)) p).abs) (Set.mem_image_of_mem _ hx)
+    specialize h (max |x| 1 * Complex.abs (aeval (↑x * exp (↑s.arg * I)) p)) (Set.mem_image_of_mem _ hx)
     refine' le_trans _ (pow_le_pow_of_le_left (norm_nonneg _) h _)
     simp_rw [norm_mul, Real.norm_eq_abs, Complex.abs_abs, mul_pow]
-    refine' mul_le_mul_of_nonneg_right _ (pow_nonneg (complex.abs.nonneg _) _)
+    refine' mul_le_mul_of_nonneg_right _ (pow_nonneg (Complex.abs.nonneg _) _)
     rw [max_def]; split_ifs with hx1
     · rw [_root_.abs_one, one_pow]
       exact pow_le_one _ (abs_nonneg _) hx1
     · push_neg at hx1
       rw [_root_.abs_abs]; exact pow_le_pow hx1.le (Nat.sub_le _ _)
-  let c' r := (p_le p' r (this r)).some
-  have c'0 : ∀ r, 0 ≤ c' r := fun r => (p_le p' r (this r)).choose_spec.some
+  let c' r := (p_le p' r (this r)).choose
+  have c'0 : ∀ r, 0 ≤ c' r := fun r => (p_le p' r (this r)).choose_spec.choose
   have Pp'_le : ∀ (r : ℂ), ∀ q ≥ 1, abs (p (p' q) r) ≤ c' r ^ q := fun r =>
     (p_le p' r (this r)).choose_spec.choose_spec
   let c :=
     if h : ((p.aroots ℂ).map c').toFinset.Nonempty then ((p.aroots ℂ).map c').toFinset.max' h else 0
   have hc : ∀ x ∈ p.aroots ℂ, c' x ≤ c := by
-    intro x hx; dsimp only [c]
+    intro x hx; dsimp only []
     split_ifs
     · apply Finset.le_max'; rw [Multiset.mem_toFinset]
       refine' Multiset.mem_map_of_mem _ hx
@@ -458,7 +420,7 @@ abbrev K : Type _ :=
 #align aux.K Aux.K
 
 instance : CharZero (K p) :=
-  charZero_of_injective_algebraMap (algebraMap ℚ (K p)).Injective
+  charZero_of_injective_algebraMap (algebraMap ℚ (K p)).injective
 
 instance : IsGalois ℚ (K p) where
 
@@ -484,7 +446,7 @@ instance : Algebra ℚ (K p) :=
   inferInstance
 
 instance : SMul ℚ (K p) :=
-  Algebra.toHasSmul
+  Algebra.toSMul
 
 instance cache_ℚ_k_ℂ : IsScalarTower ℚ (K p) ℂ :=
   inferInstance

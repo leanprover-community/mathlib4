@@ -24,7 +24,8 @@ variable {R : Type _}
 
 section Semiring
 
-variable [Semiring R]
+-- FIXME using `Semiring` breaks coercion to function in the presence of `Module.Dual`
+variable [Ring R]
 
 theorem sum_ideriv_apply_of_lt' {p : R[X]} {n : ℕ} (hn : p.natDegree < n) :
     ∑ i in range (p.natDegree + 1), derivative^[i] p = ∑ i in range n, derivative^[i] p :=
@@ -79,8 +80,9 @@ theorem sumIderiv_C (a : R) : sumIderiv (C a) = C a := by
 set_option linter.uppercaseLean3 false in
 #align polynomial.sum_ideriv_C Polynomial.sumIderiv_C
 
+-- FIXME: [CommSemiring S]
 @[simp]
-theorem sumIderiv_map {S : Type _} [CommSemiring S] (p : R[X]) (f : R →+* S) :
+theorem sumIderiv_map {S : Type _} [CommRing S] (p : R[X]) (f : R →+* S) :
     sumIderiv (p.map f) = (sumIderiv p).map f :=
   by
   let n := max (p.map f).natDegree p.natDegree
