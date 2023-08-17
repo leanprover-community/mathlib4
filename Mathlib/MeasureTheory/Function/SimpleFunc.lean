@@ -59,19 +59,17 @@ section Measurable
 
 variable [MeasurableSpace α]
 
-attribute [coe] toFun
+instance instFunLike : FunLike (α →ₛ β) α fun _ => β where
+  coe := toFun
+  coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
-instance instCoeFun : CoeFun (α →ₛ β) fun _ => α → β :=
-  ⟨toFun⟩
-#align measure_theory.simple_func.has_coe_to_fun MeasureTheory.SimpleFunc.instCoeFun
+#noalign measure_theory.simple_func.has_coe_to_fun
 
-theorem coe_injective ⦃f g : α →ₛ β⦄ (H : (f : α → β) = g) : f = g := by
-  cases f; cases g; congr
+theorem coe_injective ⦃f g : α →ₛ β⦄ (H : (f : α → β) = g) : f = g := FunLike.ext' H
 #align measure_theory.simple_func.coe_injective MeasureTheory.SimpleFunc.coe_injective
 
 @[ext]
-theorem ext {f g : α →ₛ β} (H : ∀ a, f a = g a) : f = g :=
-  coe_injective <| funext H
+theorem ext {f g : α →ₛ β} (H : ∀ a, f a = g a) : f = g := FunLike.ext _ _ H
 #align measure_theory.simple_func.ext MeasureTheory.SimpleFunc.ext
 
 theorem finite_range (f : α →ₛ β) : (Set.range f).Finite :=
@@ -81,6 +79,8 @@ theorem finite_range (f : α →ₛ β) : (Set.range f).Finite :=
 theorem measurableSet_fiber (f : α →ₛ β) (x : β) : MeasurableSet (f ⁻¹' {x}) :=
   f.measurableSet_fiber' x
 #align measure_theory.simple_func.measurable_set_fiber MeasureTheory.SimpleFunc.measurableSet_fiber
+
+@[simp] theorem coe_mk (f : α → β) (h h') : ⇑(mk f h h') = f := rfl
 
 -- @[simp] -- Porting note: simp can prove this
 theorem apply_mk (f : α → β) (h h') (x : α) : SimpleFunc.mk f h h' x = f x :=
