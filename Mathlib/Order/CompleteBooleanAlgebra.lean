@@ -604,6 +604,9 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit := by
 
 instance completeBooleanAlgebra : CompleteBooleanAlgebra PUnit := inferInstance
 
+instance completeLinearOrder : CompleteLinearOrder PUnit :=
+  { PUnit.completeBooleanAlgebra, PUnit.linearOrder with }
+
 @[simp]
 theorem sSup_eq : sSup s = unit :=
   rfl

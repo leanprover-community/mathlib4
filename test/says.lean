@@ -1,6 +1,7 @@
 import Mathlib.Tactic.Says
 import Mathlib.Tactic.RunCmd
 
+set_option autoImplicit true
 /--
 info: Try this: (show_term exact 37) says exact 37
 -/

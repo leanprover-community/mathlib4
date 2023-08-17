@@ -914,7 +914,7 @@ open Matrix
 
 nonrec theorem basis_toMatrix_basisFun_mul (b : Basis ι 𝕜 (PiLp p fun _ : ι => 𝕜))
     (A : Matrix ι ι 𝕜) :
-    b.toMatrix (PiLp.basisFun _ _ _) ⬝ A =
+    b.toMatrix (PiLp.basisFun _ _ _) * A =
       Matrix.of fun i j => b.repr ((PiLp.equiv _ _).symm (Aᵀ j)) i := by
   have := basis_toMatrix_basisFun_mul (b.map (PiLp.linearEquiv _ 𝕜 _)) A
   simp_rw [← PiLp.basisFun_map p, Basis.map_repr, LinearEquiv.trans_apply,
