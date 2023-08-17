@@ -10,7 +10,7 @@ namespace CochainComplex
 
 open HomologicalComplex
 
-attribute [local simp] XIsoOfEq_hom_naturality ε_def' zsmul_comp comp_zsmul smul_smul
+attribute [local simp] XIsoOfEq_hom_naturality zsmul_comp comp_zsmul smul_smul
 
 @[simps!]
 def shiftEval (n i i' : ℤ) (hi : n + i = i') :

@@ -47,11 +47,11 @@ def shiftFunctorObjXIso (K : CochainComplex C ℤ) (n i m : ℤ) (hm : m = i + n
 
 variable (C)
 
-@[simp]
+/-@[simp]
 def shiftFunctorCongr {n n' : ℤ} (h : n = n') :
     shiftFunctor C n ≅ shiftFunctor C n' :=
   NatIso.ofComponents (fun K => Hom.isoOfComponents (fun i => K.XIsoOfEq (by subst h ; rfl))
-    (fun _ _ _ => by simp [h])) (by aesop_cat)
+    (fun _ _ _ => by simp [h])) (by aesop_cat)-/
 
 @[simps!]
 def shiftFunctorZero' (n : ℤ) (h : n = 0) :

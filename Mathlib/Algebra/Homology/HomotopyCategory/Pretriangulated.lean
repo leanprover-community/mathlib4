@@ -285,8 +285,7 @@ noncomputable def shiftTriangleIso (n : ℤ) :
       rw [lift_f _ _ _ _ p (p+1) rfl]
       simp only [Cocycle.coe_zsmul, Cocycle.shift_coe, Cochain.zsmul_v,
         Cochain.shift_v, zsmul_comp, comp_add, comp_zsmul, inr_f_fst_v_assoc, zero_comp,
-        inr_f_snd_v_assoc, id_comp, smul_smul, mul_ε_self, one_smul, zero_add]
-      rfl)
+        inr_f_snd_v_assoc, id_comp, smul_smul, mul_ε_self, one_smul, zero_add])
     (by
       ext p
       dsimp [shiftIso]
