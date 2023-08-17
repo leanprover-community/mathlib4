@@ -517,7 +517,7 @@ protected def prodContinuousLinearEquiv : WithLp p (α × β) ≃L[𝕜] α × �
 
 end ContinuousLinearEquiv
 
--- throughout the rest of the file, we assume `1 ≤ p`
+/-! Throughout the rest of the file, we assume `1 ≤ p` -/
 variable [hp : Fact (1 ≤ p)]
 
 /-- `PseudoEMetricSpace` instance on the product of two pseudoemetric spaces, using the
@@ -599,6 +599,19 @@ instance instProdNormedAddCommGroup [NormedAddCommGroup α] [NormedAddCommGroup 
   { instProdSeminormedAddCommGroup p α β with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
+example [NormedAddCommGroup α] [NormedAddCommGroup β] :
+    (instProdNormedAddCommGroup p α β).toMetricSpace.toUniformSpace.toTopologicalSpace =
+    instProdTopologicalSpace p α β :=
+  rfl
+
+example [NormedAddCommGroup α] [NormedAddCommGroup β] :
+    (instProdNormedAddCommGroup p α β).toMetricSpace.toUniformSpace = instProdUniformSpace p α β :=
+  rfl
+
+example [NormedAddCommGroup α] [NormedAddCommGroup β] :
+    (instProdNormedAddCommGroup p α β).toMetricSpace.toBornology = instProdBornology p α β :=
+  rfl
+
 section norm_of
 
 variable {p α β}
@@ -620,8 +633,7 @@ theorem prod_norm_eq_of_nat (n : ℕ) (h : p = n) (f : WithLp p (α × β)) :
     prod_norm_eq_add this]
 
 theorem prod_norm_eq_of_L2 (x : WithLp 2 (α × β)) : ‖x‖ = sqrt (‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2) := by
-  rw [prod_norm_eq_of_nat 2 (by norm_cast) _]
-  rw [Real.sqrt_eq_rpow]
+  rw [prod_norm_eq_of_nat 2 (by norm_cast) _, Real.sqrt_eq_rpow]
   norm_cast
 
 theorem prod_nnnorm_eq_of_L2 (x : WithLp 2 (α × β)) :
