@@ -21,22 +21,17 @@ namespace Ring
 
 open MvPolynomial Language
 
-theorem mvPolynomial_zero_set_definable {ι κ R : Type*} [CommRing R]
-    [CompatibleRing R] [Finite ι] (p : ι → MvPolynomial κ R) :
-    Set.Definable (⋃ i : ι, (p i).coeff '' (p i).support : Set R) Language.ring
-     { x : κ → R | ∀ i, eval x (p i) = 0 } := by
+theorem mvPolynomial_zero_set_definable {ι R : Type*} [CommRing R]
+    [CompatibleRing R] (p : MvPolynomial ι R) :
+    Set.Definable (p.coeff '' p.support : Set R) Language.ring
+     { x : ι → R | eval x p = 0 } := by
   rw [Set.definable_iff_exists_formula_sum]
-  let p' := genericPolyMap (fun i => (p i).support)
-  letI := Fintype.ofFinite ι
-  letI := Classical.decEq κ
+  let p' := genericPolyMap (fun _ : Unit => p.support)
   letI := Classical.decEq R
-  refine ⟨((Finset.univ : Finset ι).toList.map
-      (fun i => Term.equal
-        ((termOfFreeCommRing (p' i)).relabel
-          (Sum.map (fun i => ⟨(p i.1).coeff i.2.1,
-            Set.mem_iUnion.2 ⟨i.1, i.2.1, i.2.2, rfl⟩⟩) id)) 0)).foldr
-      (. ⊓ .)
-      ⊤, ?_⟩
+  letI := Classical.decEq ι
+  refine ⟨Term.equal
+    ((termOfFreeCommRing (p' ())).relabel
+      (Sum.map (fun i => ⟨p.coeff i.2.1, ⟨i.2.1, i.2.2, rfl⟩⟩) id)) 0, ?_⟩
   simp [Formula.Realize, Term.equal, lift_genericPolyMap, Function.comp]
 
 end Ring
