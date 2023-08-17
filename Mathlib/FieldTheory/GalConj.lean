@@ -50,8 +50,7 @@ variable {F F' : Sort u₁} {α α' : Sort u₂} {β : α → Sort u₃} {β' : 
   [i' : FunLike F' α' β']
 
 theorem ext_heq {f : F} {f' : F'} (h₁ : F = F') (h₂ : α = α') (h₃ : HEq β β') (h₄ : HEq i i')
-    (h : ∀ x x', HEq x x' → HEq (f x) (f' x')) : HEq f f' :=
-  by
+    (h : ∀ x x', HEq x x' → HEq (f x) (f' x')) : HEq f f' := by
   cases h₁; cases h₂; cases h₃; cases h₄
   exact heq_of_eq (FunLike.ext f f' fun x => eq_of_heq (h x x HEq.rfl))
 #align fun_like.ext_heq FunLike.ext_heq
@@ -407,8 +406,7 @@ theorem orbit_eq_mk_aroots_minpoly [DecidableEq E] [Fintype (E ≃ₐ[F] E)] [No
 
 theorem minpoly.map_eq_prod [DecidableEq E] [Fintype (E ≃ₐ[F] E)] [Normal F E]
     (c : GalConjClasses F E) :
-    (minpoly c).map (algebraMap F E) = ∏ x in c.orbit.toFinset, (X - C x) :=
-  by
+    (minpoly c).map (algebraMap F E) = ∏ x in c.orbit.toFinset, (X - C x) := by
   simp_rw [← rootSet_minpoly_eq_orbit, Finset.prod_eq_multiset_prod, rootSet_def,
     Finset.toFinset_coe, Multiset.toFinset_val]
   rw [Multiset.dedup_eq_self.mpr (nodup_roots _),
