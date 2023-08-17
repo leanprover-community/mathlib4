@@ -6,6 +6,8 @@ Authors: Scott Morrison
 import Lean.Elab.Frontend
 import Std.Util.TermUnsafe
 
+set_option autoImplicit true
+
 open Lean Elab Frontend
 
 namespace Lean.PersistentArray

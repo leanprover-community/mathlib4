@@ -1,5 +1,7 @@
 import Mathlib.Util.InfoTree.Basic
 
+set_option autoImplicit true
+
 open Lean Elab
 
 /--
