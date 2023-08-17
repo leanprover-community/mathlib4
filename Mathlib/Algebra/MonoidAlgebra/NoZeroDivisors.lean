@@ -83,7 +83,7 @@ theorem Right.exists_add_of_mem_support_single_mul [AddRightCancelSemigroup A]
 
 /-- If `R` is a semiring with no non-trivial zero-divisors and `A` is a left-ordered add right
 cancel semigroup, then `AddMonoidAlgebra R A` also contains no non-zero zero-divisors. -/
-theorem NoZeroDivisors.of_left_ordered [NoZeroDivisors R] [AddRightCancelSemigroup A]
+instance NoZeroDivisors.of_left_ordered [NoZeroDivisors R] [AddRightCancelSemigroup A]
     [LinearOrder A] [CovariantClass A A (· + ·) (· < ·)] : NoZeroDivisors (AddMonoidAlgebra R A) :=
   ⟨@fun f g fg => by
     contrapose! fg
@@ -160,5 +160,101 @@ theorem NoZeroDivisors.of_right_ordered [NoZeroDivisors R] [AddLeftCancelSemigro
 #align add_monoid_algebra.no_zero_divisors.of_right_ordered AddMonoidAlgebra.NoZeroDivisors.of_right_ordered
 
 end LeftOrRightOrderability
+
+set_option autoImplicit false
+
+section Covariant_lt
+variable [Add A]
+
+section PartialOrder
+variable [PartialOrder A] [CovariantClass A A (· + ·) (· < ·)] {a t b : A}
+  {f g : AddMonoidAlgebra R A}
+
+/--  The "top" element of `Finsupp.single a r * f`  is the product of `r` and
+the "top" element of `f`.  Here, "top" is simply an upper bound for the elements
+of the support of `f` (e.g. the product is `0` if "top" is not a maximum).
+The corresponding statement for a general product `f * g` is `AddMonoidAlgebra.mul_apply_of_le`.
+It is proved with a further `CovariantClass` assumption. -/
+theorem single_mul_apply_of_le (r : R) (ft : ∀ a ∈ f.support, a ≤ t) :
+  -- the `HMul` is really ugly, how can I avoid it?
+  (@HMul.hMul (AddMonoidAlgebra R A) _ _ _ (Finsupp.single a r) f) (a + t) = r * f t := by
+  classical
+  simp only [id_eq]
+  nth_rw 1 [← f.erase_add_single t]
+  rw [mul_add, single_mul_single, Finsupp.add_apply, Finsupp.single_eq_same]
+  convert zero_add _
+  refine Finsupp.not_mem_support_iff.mp (fun h ↦ ?_)
+  refine not_not.mpr ((support_mul (Finsupp.single a r) (f.erase t)) h) ?_
+  simp only [Finsupp.mem_support_single, Finset.mem_biUnion, Ne.def, Finset.mem_singleton,
+    exists_prop, not_exists, not_and, and_imp, forall_eq, Finsupp.support_erase]
+  intros _ x xs
+  refine (add_lt_add_left (WithBot.coe_lt_coe.mp ?_) _).ne'
+  refine WithBot.coe_lt_coe.mpr ((ft _ (Finset.mem_of_mem_erase xs)).lt_of_ne ?_)
+  exact Finset.ne_of_mem_erase xs
+
+/--  The "bottom" element of `Finsupp.single a r * f`  is the product of `r` and
+the "bottom" element of `f`.  Here, "bottom" is simply a lower bound for the elements
+of the support of `f` (e.g. the product is `0` if "bottom" is not a minimum).
+The corresponding statement for a general product `f * g` is `AddMonoidAlgebra.mul_apply_of_le'`.
+It is proved with a further `CovariantClass` assumption. -/
+theorem single_mul_apply_of_le' (r : R) (fb : ∀ a ∈ f.support, b ≤ a) :
+  -- the `HMul` is really ugly, how can I avoid it?
+  (@HMul.hMul (AddMonoidAlgebra R A) _ _ _ (Finsupp.single a r) f) (a + b) = r * f b :=
+@single_mul_apply_of_le _ Aᵒᵈ _ _ _ _ _ _ _ _ fb
+
+variable [CovariantClass A A (Function.swap (· + ·)) (· < ·)]
+
+/--  The "top" element of `f * g`  is the product of the "top" elements of `f` and of `g`.
+Here, "top" is simply an upper bound for the elements of the support of the corresponding
+polynomial (e.g. the product is `0` if "top" is not a maximum). -/
+theorem mul_apply_of_le (fa : ∀ i ∈ f.support, i ≤ a) (gt : ∀ i ∈ g.support, i ≤ t) :
+  (f * g) (a + t) = f a * g t :=
+by
+  classical
+  nth_rw 1 [← f.erase_add_single a]
+  rw [add_mul, Finsupp.add_apply, single_mul_apply_of_le _ gt]
+  convert zero_add _
+  refine Finsupp.not_mem_support_iff.mp (fun h ↦ ?_)
+  refine not_not.mpr ((support_mul _ g) h) ?_
+  simp only [Finsupp.support_erase, Finset.mem_biUnion, Finset.mem_erase, Ne.def,
+    Finset.mem_singleton, exists_prop, not_exists, not_and, and_imp]
+  haveI : CovariantClass A A (· + ·) (· ≤ ·) := Add.to_covariantClass_left A
+  exact fun x xa xf y yg ↦ (add_lt_add_of_lt_of_le ((fa _ xf).lt_of_ne xa) (gt _ yg)).ne'
+
+/--  The "bottom" element of `f * g`  is the product of the "bottom" elements of `f` and of `g`.
+Here, "bottom" is simply a lower bound for the elements of the support of the corresponding
+polynomial (e.g. the product is `0` if "bottom" is not a minimum). -/
+theorem mul_apply_of_le' (fa : ∀ i ∈ f.support, a ≤ i) (gb : ∀ i ∈ g.support, b ≤ i) :
+  (f * g) (a + b) = f a * g b :=
+@mul_apply_of_le _ Aᵒᵈ _ _ _ _ _ _ _ _ _ fa gb
+
+theorem mul_apply_eq_zero_of_lt (fa : ∀ i ∈ f.support, a ≤ i) (gb : ∀ i ∈ g.support, b < i) :
+  (f * g) (a + b) = 0 :=
+by
+  rw [mul_apply_of_le' fa (fun x hx ↦ ((gb _ hx).le))]
+  convert mul_zero _
+  exact Finsupp.not_mem_support_iff.mp (fun bg ↦ (lt_irrefl b (gb b bg)).elim)
+
+end PartialOrder
+
+section LinearOrder
+variable [NoZeroDivisors R] [Add A] [LinearOrder A] [CovariantClass A A (· + ·) (· < ·)]
+  [CovariantClass A A (Function.swap (· + ·)) (· < ·)]
+
+protected theorem NoZeroDivisors.biOrdered : NoZeroDivisors (AddMonoidAlgebra R A) :=
+by
+  constructor
+  intros f g fg
+  contrapose! fg
+  apply_fun (fun x : AddMonoidAlgebra R A ↦ x (f.support.max' (Finsupp.support_nonempty_iff.mpr fg.1)
+    + g.support.max' (Finsupp.support_nonempty_iff.mpr fg.2)))
+  simp only [Finsupp.coe_zero, Pi.zero_apply]
+  rw [mul_apply_of_le] <;> try exact Finset.le_max' _
+  refine mul_ne_zero_iff.mpr ⟨?_, ?_⟩ <;>
+  exact Finsupp.mem_support_iff.mp (Finset.max'_mem _ _)
+
+end LinearOrder
+
+end Covariant_lt
 
 end AddMonoidAlgebra
