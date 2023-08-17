@@ -2,14 +2,11 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
-
-! This file was ported from Lean 3 source module ring_theory.graded_algebra.homogeneous_localization
-! leanprover-community/mathlib commit 831c494092374cfe9f50591ed0ac81a25efc5b86
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.GradedAlgebra.Basic
+
+#align_import ring_theory.graded_algebra.homogeneous_localization from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
 /-!
 # Homogeneous Localization
@@ -72,7 +69,7 @@ open DirectSum BigOperators Pointwise
 
 open DirectSum SetLike
 
-variable {ι R A : Type _}
+variable {ι R A : Type*}
 
 variable [AddCommMonoid ι] [DecidableEq ι]
 
@@ -256,7 +253,7 @@ theorem den_pow (c : NumDenSameDeg 𝒜 x) (n : ℕ) : ((c ^ n).den : A) = (c.de
 
 section SMul
 
-variable {α : Type _} [SMul α R] [SMul α A] [IsScalarTower α R A]
+variable {α : Type*} [SMul α R] [SMul α A] [IsScalarTower α R A]
 
 instance : SMul α (NumDenSameDeg 𝒜 x) where
   smul m c := ⟨c.deg, m • c.num, c.den, c.den_mem⟩
@@ -337,7 +334,7 @@ instance hasPow : Pow (HomogeneousLocalization 𝒜 x) ℕ where
 
 section SMul
 
-variable {α : Type _} [SMul α R] [SMul α A] [IsScalarTower α R A]
+variable {α : Type*} [SMul α R] [SMul α A] [IsScalarTower α R A]
 
 variable [IsScalarTower α A A]
 

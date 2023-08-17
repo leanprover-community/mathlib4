@@ -2,13 +2,10 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module order.category.LinOrd
-! leanprover-community/mathlib commit e8ac6315bcfcbaf2d19a046719c3b553206dac75
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Category.LatCat
+
+#align_import order.category.LinOrd from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
 /-!
 # Category of linear orders
@@ -38,17 +35,17 @@ deriving instance LargeCategory for LinOrdCat
 instance : ConcreteCategory LinOrdCat :=
   BundledHom.concreteCategory _
 
-instance : CoeSort LinOrdCat (Type _) :=
+instance : CoeSort LinOrdCat (Type*) :=
   Bundled.coeSort
 
 /-- Construct a bundled `LinOrdCat` from the underlying type and typeclass. -/
-def of (α : Type _) [LinearOrder α] : LinOrdCat :=
+def of (α : Type*) [LinearOrder α] : LinOrdCat :=
   Bundled.of α
 set_option linter.uppercaseLean3 false in
 #align LinOrd.of LinOrdCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [LinearOrder α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [LinearOrder α] : ↥(of α) = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align LinOrd.coe_of LinOrdCat.coe_of

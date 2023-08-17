@@ -2,11 +2,6 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.nilpotent
-! leanprover-community/mathlib commit 6b0169218d01f2837d79ea2784882009a0da1aa1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Solvable
 import Mathlib.Algebra.Lie.Quotient
@@ -14,6 +9,8 @@ import Mathlib.Algebra.Lie.Normalizer
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.RingTheory.Nilpotent
 import Mathlib.Tactic.Monotonicity
+
+#align_import algebra.lie.nilpotent from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
 
 /-!
 # Nilpotent Lie algebras
@@ -140,7 +137,7 @@ theorem antitone_lowerCentralSeries : Antitone <| lowerCentralSeries R L M := by
 theorem trivial_iff_lower_central_eq_bot : IsTrivial L M ↔ lowerCentralSeries R L M 1 = ⊥ := by
   constructor <;> intro h
   · erw [eq_bot_iff, LieSubmodule.lieSpan_le]; rintro m ⟨x, n, hn⟩; rw [← hn, h.trivial]; simp
-  · rw [LieSubmodule.eq_bot_iff] at h ; apply IsTrivial.mk; intro x m; apply h
+  · rw [LieSubmodule.eq_bot_iff] at h; apply IsTrivial.mk; intro x m; apply h
     apply LieSubmodule.subset_lieSpan
     -- Porting note: was `use x, m; rfl`
     simp only [LieSubmodule.top_coe, Subtype.exists, LieSubmodule.mem_top, exists_prop, true_and,
@@ -156,6 +153,16 @@ theorem iterate_toEndomorphism_mem_lowerCentralSeries (x : L) (m : M) (k : ℕ) 
       toEndomorphism_apply_apply]
     exact LieSubmodule.lie_mem_lie _ _ (LieSubmodule.mem_top x) ih
 #align lie_module.iterate_to_endomorphism_mem_lower_central_series LieModule.iterate_toEndomorphism_mem_lowerCentralSeries
+
+theorem iterate_toEndomorphism_mem_lowerCentralSeries₂ (x y : L) (m : M) (k : ℕ) :
+    (toEndomorphism R L M x ∘ₗ toEndomorphism R L M y)^[k] m ∈
+      lowerCentralSeries R L M (2 * k) := by
+  induction' k with k ih; simp
+  have hk : 2 * k.succ = (2 * k + 1) + 1 := rfl
+  simp only [lowerCentralSeries_succ, Function.comp_apply, Function.iterate_succ', hk,
+      toEndomorphism_apply_apply, LinearMap.coe_comp, toEndomorphism_apply_apply]
+  refine' LieSubmodule.lie_mem_lie _ _ (LieSubmodule.mem_top x) _
+  exact LieSubmodule.lie_mem_lie _ _ (LieSubmodule.mem_top y) ih
 
 variable {R L M}
 
@@ -187,6 +194,10 @@ class IsNilpotent : Prop where
   nilpotent : ∃ k, lowerCentralSeries R L M k = ⊥
 #align lie_module.is_nilpotent LieModule.IsNilpotent
 
+theorem exists_lowerCentralSeries_eq_bot_of_isNilpotent [IsNilpotent R L M] :
+    ∃ k, lowerCentralSeries R L M k = ⊥ :=
+  IsNilpotent.nilpotent
+
 /-- See also `LieModule.isNilpotent_iff_exists_ucs_eq_top`. -/
 theorem isNilpotent_iff : IsNilpotent R L M ↔ ∃ k, lowerCentralSeries R L M k = ⊥ :=
   ⟨fun h => h.nilpotent, fun h => ⟨h⟩⟩
@@ -208,14 +219,30 @@ instance (priority := 100) trivialIsNilpotent [IsTrivial L M] : IsNilpotent R L 
   ⟨by use 1; change ⁅⊤, ⊤⁆ = ⊥; simp⟩
 #align lie_module.trivial_is_nilpotent LieModule.trivialIsNilpotent
 
-theorem nilpotent_endo_of_nilpotent_module [hM : IsNilpotent R L M] :
+theorem exists_forall_pow_toEndomorphism_eq_zero [hM : IsNilpotent R L M] :
     ∃ k : ℕ, ∀ x : L, toEndomorphism R L M x ^ k = 0 := by
   obtain ⟨k, hM⟩ := hM
   use k
   intro x; ext m
   rw [LinearMap.pow_apply, LinearMap.zero_apply, ← @LieSubmodule.mem_bot R L M, ← hM]
   exact iterate_toEndomorphism_mem_lowerCentralSeries R L M x m k
-#align lie_module.nilpotent_endo_of_nilpotent_module LieModule.nilpotent_endo_of_nilpotent_module
+#align lie_module.nilpotent_endo_of_nilpotent_module LieModule.exists_forall_pow_toEndomorphism_eq_zero
+
+theorem isNilpotent_toEndomorphism_of_isNilpotent [IsNilpotent R L M] (x : L) :
+    _root_.IsNilpotent (toEndomorphism R L M x) := by
+  change ∃ k, toEndomorphism R L M x ^ k = 0
+  have := exists_forall_pow_toEndomorphism_eq_zero R L M
+  tauto
+
+theorem isNilpotent_toEndomorphism_of_isNilpotent₂ [IsNilpotent R L M] (x y : L) :
+    _root_.IsNilpotent (toEndomorphism R L M x ∘ₗ toEndomorphism R L M y) := by
+  obtain ⟨k, hM⟩ := exists_lowerCentralSeries_eq_bot_of_isNilpotent R L M
+  replace hM : lowerCentralSeries R L M (2 * k) = ⊥ := by
+    rw [eq_bot_iff, ← hM]; exact antitone_lowerCentralSeries R L M (by linarith)
+  use k
+  ext m
+  rw [LinearMap.pow_apply, LinearMap.zero_apply, ← LieSubmodule.mem_bot (R := R) (L := L), ← hM]
+  exact iterate_toEndomorphism_mem_lowerCentralSeries₂ R L M x y m k
 
 /-- For a nilpotent Lie module, the weight space of the 0 weight is the whole module.
 
@@ -227,7 +254,7 @@ theorem iInf_max_gen_zero_eigenspace_eq_top_of_nilpotent [IsNilpotent R L M] :
   simp only [Module.End.mem_maximalGeneralizedEigenspace, Submodule.mem_top, sub_zero, iff_true_iff,
     zero_smul, Submodule.mem_iInf]
   intro x
-  obtain ⟨k, hk⟩ := nilpotent_endo_of_nilpotent_module R L M
+  obtain ⟨k, hk⟩ := exists_forall_pow_toEndomorphism_eq_zero R L M
   use k; rw [hk]
   exact LinearMap.zero_apply m
 #align lie_module.infi_max_gen_zero_eigenspace_eq_top_of_nilpotent LieModule.iInf_max_gen_zero_eigenspace_eq_top_of_nilpotent
@@ -445,7 +472,7 @@ section Morphisms
 
 open LieModule Function
 
-variable {L₂ M₂ : Type _} [LieRing L₂] [LieAlgebra R L₂]
+variable {L₂ M₂ : Type*} [LieRing L₂] [LieAlgebra R L₂]
 
 variable [AddCommGroup M₂] [Module R M₂] [LieRingModule L₂ M₂] [LieModule R L₂ M₂]
 
@@ -530,7 +557,7 @@ open LieAlgebra
 
 theorem LieAlgebra.nilpotent_ad_of_nilpotent_algebra [IsNilpotent R L] :
     ∃ k : ℕ, ∀ x : L, ad R L x ^ k = 0 :=
-  LieModule.nilpotent_endo_of_nilpotent_module R L L
+  LieModule.exists_forall_pow_toEndomorphism_eq_zero R L L
 #align lie_algebra.nilpotent_ad_of_nilpotent_algebra LieAlgebra.nilpotent_ad_of_nilpotent_algebra
 
 /-- See also `LieAlgebra.zero_rootSpace_eq_top_of_nilpotent`. -/
@@ -668,9 +695,9 @@ namespace LieIdeal
 
 open LieModule
 
-variable {R L : Type _} [CommRing R] [LieRing L] [LieAlgebra R L] (I : LieIdeal R L)
+variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] (I : LieIdeal R L)
 
-variable (M : Type _) [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+variable (M : Type*) [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 variable (k : ℕ)
 

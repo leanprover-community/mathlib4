@@ -2,13 +2,10 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module analysis.normed_space.enorm
-! leanprover-community/mathlib commit 57ac39bd365c2f80589a700f9fbb664d3a1a30c2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Basic
+
+#align_import analysis.normed_space.enorm from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
 
 /-!
 # Extended norm
@@ -44,7 +41,7 @@ open ENNReal
 
 /-- Extended norm on a vector space. As in the case of normed spaces, we require only
 `‖c • x‖ ≤ ‖c‖ * ‖x‖` in the definition, then prove an equality in `map_smul`. -/
-structure ENorm (𝕜 : Type _) (V : Type _) [NormedField 𝕜] [AddCommGroup V] [Module 𝕜 V] where
+structure ENorm (𝕜 : Type*) (V : Type*) [NormedField 𝕜] [AddCommGroup V] [Module 𝕜 V] where
   toFun : V → ℝ≥0∞
   eq_zero' : ∀ x, toFun x = 0 → x = 0
   map_add_le' : ∀ x y : V, toFun (x + y) ≤ toFun x + toFun y
@@ -53,7 +50,7 @@ structure ENorm (𝕜 : Type _) (V : Type _) [NormedField 𝕜] [AddCommGroup V]
 
 namespace ENorm
 
-variable {𝕜 : Type _} {V : Type _} [NormedField 𝕜] [AddCommGroup V] [Module 𝕜 V] (e : ENorm 𝕜 V)
+variable {𝕜 : Type*} {V : Type*} [NormedField 𝕜] [AddCommGroup V] [Module 𝕜 V] (e : ENorm 𝕜 V)
 
 -- Porting note: added to appease norm_cast complaints
 attribute [coe] ENorm.toFun

@@ -2,14 +2,11 @@
 Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
-
-! This file was ported from Lean 3 source module analysis.special_functions.gamma.bohr_mollerup
-! leanprover-community/mathlib commit a3209ddf94136d36e5e5c624b10b2a347cc9d090
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 import Mathlib.Analysis.SpecialFunctions.Gaussian
+
+#align_import analysis.special_functions.gamma.bohr_mollerup from "leanprover-community/mathlib"@"a3209ddf94136d36e5e5c624b10b2a347cc9d090"
 
 /-! # Convexity properties of the Gamma function
 
@@ -52,7 +49,7 @@ open scoped Nat ENNReal Topology BigOperators Real
 section Convexity
 
 -- Porting note: move the following lemmas to `Analysis.Convex.Function`
-variable {𝕜 E β : Type _} {s : Set E} {f g : E → β} [OrderedSemiring 𝕜] [SMul 𝕜 E] [AddCommMonoid E]
+variable {𝕜 E β : Type*} {s : Set E} {f g : E → β} [OrderedSemiring 𝕜] [SMul 𝕜 E] [AddCommMonoid E]
   [OrderedAddCommMonoid β]
 
 theorem ConvexOn.congr [SMul 𝕜 β] (hf : ConvexOn 𝕜 s f) (hfg : EqOn f g s) : ConvexOn 𝕜 s g :=
@@ -89,12 +86,12 @@ theorem ConcaveOn.add_const [Module 𝕜 β] (hf : ConcaveOn 𝕜 s f) (b : β) 
   hf.add (concaveOn_const _ hf.1)
 #align concave_on.add_const ConcaveOn.add_const
 
-theorem StrictConvexOn.add_const {γ : Type _} {f : E → γ} [OrderedCancelAddCommMonoid γ]
+theorem StrictConvexOn.add_const {γ : Type*} {f : E → γ} [OrderedCancelAddCommMonoid γ]
     [Module 𝕜 γ] (hf : StrictConvexOn 𝕜 s f) (b : γ) : StrictConvexOn 𝕜 s (f + fun _ => b) :=
   hf.add_convexOn (convexOn_const _ hf.1)
 #align strict_convex_on.add_const StrictConvexOn.add_const
 
-theorem StrictConcaveOn.add_const {γ : Type _} {f : E → γ} [OrderedCancelAddCommMonoid γ]
+theorem StrictConcaveOn.add_const {γ : Type*} {f : E → γ} [OrderedCancelAddCommMonoid γ]
     [Module 𝕜 γ] (hf : StrictConcaveOn 𝕜 s f) (b : γ) : StrictConcaveOn 𝕜 s (f + fun _ => b) :=
   hf.add_concaveOn (concaveOn_const _ hf.1)
 #align strict_concave_on.add_const StrictConcaveOn.add_const
@@ -219,7 +216,7 @@ theorem f_add_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y)
     f (x + n) = f x + ∑ m : ℕ in Finset.range n, log (x + m) := by
   induction' n with n hn
   · simp
-  · have : x + n.succ = x + n + 1 := by push_cast ; ring
+  · have : x + n.succ = x + n + 1 := by push_cast; ring
     rw [this, hf_feq, hn]
     rw [Finset.range_succ, Finset.sum_insert Finset.not_mem_range_self]
     abel

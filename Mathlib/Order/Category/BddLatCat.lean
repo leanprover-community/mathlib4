@@ -2,16 +2,13 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.category.BddLat
-! leanprover-community/mathlib commit 7581030920af3dcb241d1df0e36f6ec8289dd6be
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.Order.Category.BddOrdCat
 import Mathlib.Order.Category.LatCat
 import Mathlib.Order.Category.SemilatCat
+
+#align_import order.category.BddLat from "leanprover-community/mathlib"@"7581030920af3dcb241d1df0e36f6ec8289dd6be"
 
 /-!
 # The category of bounded lattices
@@ -36,7 +33,7 @@ structure BddLatCat where
 
 namespace BddLatCat
 
-instance : CoeSort BddLatCat (Type _) :=
+instance : CoeSort BddLatCat (Type*) :=
   ⟨fun X => X.toLat⟩
 
 instance (X : BddLatCat) : Lattice X :=
@@ -45,13 +42,13 @@ instance (X : BddLatCat) : Lattice X :=
 attribute [instance] BddLatCat.isBoundedOrder
 
 /-- Construct a bundled `BddLatCat` from `Lattice` + `BoundedOrder`. -/
-def of (α : Type _) [Lattice α] [BoundedOrder α] : BddLatCat :=
+def of (α : Type*) [Lattice α] [BoundedOrder α] : BddLatCat :=
   -- porting note: was `⟨⟨α⟩⟩`, see https://github.com/leanprover-community/mathlib4/issues/4998
   ⟨{α := α}⟩
 #align BddLat.of BddLatCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [Lattice α] [BoundedOrder α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [Lattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 #align BddLat.coe_of BddLatCat.coe_of
 

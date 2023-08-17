@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module linear_algebra.std_basis
-! leanprover-community/mathlib commit 13bce9a6b6c44f6b4c91ac1c1d2a816e2533d395
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Matrix.Basis
 import Mathlib.LinearAlgebra.Basis
 import Mathlib.LinearAlgebra.Pi
+
+#align_import linear_algebra.std_basis from "leanprover-community/mathlib"@"13bce9a6b6c44f6b4c91ac1c1d2a816e2533d395"
 
 /-!
 # The standard basis
@@ -44,7 +41,7 @@ open BigOperators
 
 namespace LinearMap
 
-variable (R : Type _) {ι : Type _} [Semiring R] (φ : ι → Type _) [∀ i, AddCommMonoid (φ i)]
+variable (R : Type*) {ι : Type*} [Semiring R] (φ : ι → Type*) [∀ i, AddCommMonoid (φ i)]
   [∀ i, Module R (φ i)] [DecidableEq ι]
 
 /-- The standard basis of the product of `φ`. -/
@@ -171,11 +168,11 @@ open LinearMap
 
 open Set
 
-variable {R : Type _}
+variable {R : Type*}
 
 section Module
 
-variable {η : Type _} {ιs : η → Type _} {Ms : η → Type _}
+variable {η : Type*} {ιs : η → Type*} {Ms : η → Type*}
 
 theorem linearIndependent_stdBasis [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i, Module R (Ms i)]
     [DecidableEq η] (v : ∀ j, ιs j → Ms j) (hs : ∀ i, LinearIndependent R (v i)) :
@@ -302,7 +299,7 @@ end Pi
 
 namespace Matrix
 
-variable (R : Type _) (m n : Type _) [Fintype m] [Fintype n] [Semiring R]
+variable (R : Type*) (m n : Type*) [Fintype m] [Fintype n] [Semiring R]
 
 /-- The standard basis of `Matrix m n R`. -/
 noncomputable def stdBasis : Basis (m × n) R (Matrix m n R) :=

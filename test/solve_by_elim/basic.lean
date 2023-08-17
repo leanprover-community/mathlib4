@@ -11,6 +11,8 @@ import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Util.DummyLabelAttr
 
+set_option autoImplicit true
+
 example (h : Nat) : Nat := by solve_by_elim
 example {α β : Type} (f : α → β) (a : α) : β := by solve_by_elim
 example {α β : Type} (f : α → α → β) (a : α) : β := by solve_by_elim
@@ -78,7 +80,7 @@ example {α : Type} {a b : α → Prop} (h₀ : b = a) (y : α) : a y = b y := b
   fail_if_success solve_by_elim (config := {symm := false})
   solve_by_elim
 
-example (P : True → False) : 3 = 7 :=  by
+example (P : True → False) : 3 = 7 := by
   fail_if_success solve_by_elim (config := {exfalso := false})
   solve_by_elim
 

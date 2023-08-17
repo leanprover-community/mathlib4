@@ -2,14 +2,11 @@
 Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module analysis.normed.group.add_circle
-! leanprover-community/mathlib commit 084f76e20c88eae536222583331abd9468b08e1c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Quotient
 import Mathlib.Topology.Instances.AddCircle
+
+#align_import analysis.normed.group.add_circle from "leanprover-community/mathlib"@"084f76e20c88eae536222583331abd9468b08e1c"
 
 /-!
 # The additive circle as a normed group
@@ -59,7 +56,7 @@ theorem norm_coe_mul (x : ℝ) (t : ℝ) :
   ext z
   rw [mem_smul_set_iff_inv_smul_mem₀ ht']
   show
-    (∃ y, y - t * x ∈ zmultiples (t * p) ∧ |y| = z) ↔ ∃ w, w - x ∈ zmultiples p ∧ |w| = (|t|)⁻¹ * z
+    (∃ y, y - t * x ∈ zmultiples (t * p) ∧ |y| = z) ↔ ∃ w, w - x ∈ zmultiples p ∧ |w| = |t|⁻¹ * z
   constructor
   · rintro ⟨y, hy, rfl⟩
     refine' ⟨t⁻¹ * y, _, by rw [abs_mul, abs_inv]⟩

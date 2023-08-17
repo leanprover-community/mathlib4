@@ -2,15 +2,12 @@
 Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Frédéric Dupuis, Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.symmetric
-! leanprover-community/mathlib commit 3f655f5297b030a87d641ad4e825af8d9679eb0b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.NormedSpace.Banach
 import Mathlib.LinearAlgebra.SesquilinearForm
+
+#align_import analysis.inner_product_space.symmetric from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 
 /-!
 # Symmetric linear maps in an inner product space
@@ -41,7 +38,7 @@ open IsROrC
 
 open ComplexConjugate
 
-variable {𝕜 E E' F G : Type _} [IsROrC 𝕜]
+variable {𝕜 E E' F G : Type*} [IsROrC 𝕜]
 
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
@@ -142,7 +139,7 @@ theorem IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) 
 
 section Complex
 
-variable {V : Type _} [NormedAddCommGroup V] [InnerProductSpace ℂ V]
+variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℂ V]
 
 /-- A linear operator on a complex inner product space is symmetric precisely when
 `⟪T v, v⟫_ℂ` is real for all v.-/

@@ -2,13 +2,10 @@
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
-
-! This file was ported from Lean 3 source module topology.uniform_space.completion
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.UniformSpace.AbstractCompletion
+
+#align_import topology.uniform_space.completion from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Hausdorff completions of uniform spaces
@@ -188,14 +185,14 @@ theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α)
         ⟨t, ht, { y : α | (x, y) ∈ t' }, h <| mk_mem_prod hx hx,
           fun ⟨a, b⟩ ⟨(h₁ : a ∈ t), (h₂ : (x, b) ∈ t')⟩ =>
           ht'₂ <| prod_mk_mem_compRel (@h (a, x) ⟨h₁, hx⟩) h₂⟩
-    ⟨x, ht''₂ <| by dsimp [gen] ; exact this⟩
+    ⟨x, ht''₂ <| by dsimp [gen]; exact this⟩
   simp only [closure_eq_cluster_pts, ClusterPt, nhds_eq_uniformity, lift'_inf_principal_eq,
     Set.inter_comm _ (range pureCauchy), mem_setOf_eq]
   refine (lift'_neBot_iff ?_).mpr (fun s hs => ?_)
-  . refine monotone_const.inter ?_
+  · refine monotone_const.inter ?_
     simp_rw [UniformSpace.ball]
     exact monotone_preimage
-  . let ⟨y, hy⟩ := h_ex s hs
+  · let ⟨y, hy⟩ := h_ex s hs
     have : pureCauchy y ∈ range pureCauchy ∩ { y : CauchyFilter α | (f, y) ∈ s } :=
       ⟨mem_range_self y, hy⟩
     exact ⟨_, this⟩
@@ -236,7 +233,7 @@ instance : CompleteSpace (CauchyFilter α) :=
         have : t' ⊆ { y : α | (f', pureCauchy y) ∈ gen t } := fun x hx =>
           (f ×ˢ pure x).sets_of_superset (prod_mem_prod ht' hx) h
         f.sets_of_superset ht' <| Subset.trans this (preimage_mono ht₂)
-    ⟨f', by simp [nhds_eq_uniformity] ; assumption⟩
+    ⟨f', by simp [nhds_eq_uniformity]; assumption⟩
 
 end
 
@@ -284,7 +281,7 @@ end Extend
 
 end
 
-theorem cauchyFilter_eq {α : Type _} [Inhabited α] [UniformSpace α] [CompleteSpace α]
+theorem cauchyFilter_eq {α : Type*} [Inhabited α] [UniformSpace α] [CompleteSpace α]
     [SeparatedSpace α] {f g : CauchyFilter α} :
     lim f.1 = lim g.1 ↔ (f, g) ∈ separationRel (CauchyFilter α) := by
   constructor
@@ -321,7 +318,7 @@ section
 attribute [local instance] UniformSpace.separationSetoid
 
 -- porting note: added types in Function.Injective
-theorem separated_pureCauchy_injective {α : Type _} [UniformSpace α] [s : SeparatedSpace α] :
+theorem separated_pureCauchy_injective {α : Type*} [UniformSpace α] [s : SeparatedSpace α] :
     @Function.Injective α (Quotient (UniformSpace.separationSetoid (CauchyFilter α)))
       fun a : α => ⟦pureCauchy a⟧
   | a, b, h => by
@@ -342,11 +339,11 @@ open CauchyFilter Set
 
 namespace UniformSpace
 
-variable (α : Type _) [UniformSpace α]
+variable (α : Type*) [UniformSpace α]
 
-variable {β : Type _} [UniformSpace β]
+variable {β : Type*} [UniformSpace β]
 
-variable {γ : Type _} [UniformSpace γ]
+variable {γ : Type*} [UniformSpace γ]
 
 instance completeSpace_separation [h : CompleteSpace α] :
     CompleteSpace (Quotient (separationSetoid α)) := by
@@ -368,7 +365,7 @@ def Completion :=
 namespace Completion
 
 instance inhabited [Inhabited α] : Inhabited (Completion α) :=
-  Quotient.instInhabitedQuotient (separationSetoid (CauchyFilter α))
+  inferInstanceAs <| Inhabited (Quotient _)
 
 instance (priority := 50) uniformSpace : UniformSpace (Completion α) :=
   separationSetoid.uniformSpace
@@ -421,7 +418,7 @@ theorem denseRange_coe : DenseRange ((↑) : α → Completion α) :=
 variable (α)
 
 /-- The Haudorff completion as an abstract completion. -/
-def cPkg {α : Type _} [UniformSpace α] : AbstractCompletion α where
+def cPkg {α : Type*} [UniformSpace α] : AbstractCompletion α where
   space := Completion α
   coe := (↑)
   uniformStruct := by infer_instance
@@ -516,12 +513,12 @@ theorem induction_on₃ {p : Completion α → Completion β → Completion γ �
   this (a, b, c)
 #align uniform_space.completion.induction_on₃ UniformSpace.Completion.induction_on₃
 
-theorem ext {Y : Type _} [TopologicalSpace Y] [T2Space Y] {f g : Completion α → Y}
+theorem ext {Y : Type*} [TopologicalSpace Y] [T2Space Y] {f g : Completion α → Y}
     (hf : Continuous f) (hg : Continuous g) (h : ∀ a : α, f a = g a) : f = g :=
   cPkg.funext hf hg h
 #align uniform_space.completion.ext UniformSpace.Completion.ext
 
-theorem ext' {Y : Type _} [TopologicalSpace Y] [T2Space Y] {f g : Completion α → Y}
+theorem ext' {Y : Type*} [TopologicalSpace Y] [T2Space Y] {f g : Completion α → Y}
     (hf : Continuous f) (hg : Continuous g) (h : ∀ a : α, f a = g a) (a : Completion α) :
     f a = g a :=
   congr_fun (ext hf hg h) a
@@ -644,16 +641,16 @@ def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
     -- porting note: had to insert rewrites to switch between Quot.mk, Quotient.mk, Quotient.mk'
     rw [← Quotient.mk,extension_coe (SeparationQuotient.uniformContinuous_lift _),
       SeparationQuotient.lift_mk (uniformContinuous_coe α), map_coe]
-    . rfl
-    . exact uniformContinuous_quotient_mk
+    · rfl
+    · exact uniformContinuous_quotient_mk
   · intro a
     refine' Completion.induction_on a
         (isClosed_eq (continuous_extension.comp continuous_map) continuous_id) fun a => _
     rw [map_coe]
     -- porting note: add SeparationQuotient.lift_mk' for Quotient.mk' ?
-    . rw [extension_coe (SeparationQuotient.uniformContinuous_lift _), Quotient.mk',
+    · rw [extension_coe (SeparationQuotient.uniformContinuous_lift _), Quotient.mk',
         SeparationQuotient.lift_mk (uniformContinuous_coe α) _]
-    . exact uniformContinuous_quotient_mk
+    · exact uniformContinuous_quotient_mk
 #align uniform_space.completion.completion_separation_quotient_equiv UniformSpace.Completion.completionSeparationQuotientEquiv
 
 theorem uniformContinuous_completionSeparationQuotientEquiv :

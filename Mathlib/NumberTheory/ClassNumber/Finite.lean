@@ -2,11 +2,6 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module number_theory.class_number.finite
-! leanprover-community/mathlib commit ea0bcd84221246c801a6f8fbe8a4372f6d04b176
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.LinearAlgebra.FreeModule.PID
@@ -15,6 +10,8 @@ import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 import Mathlib.RingTheory.ClassGroup
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.RingTheory.Norm
+
+#align_import number_theory.class_number.finite from "leanprover-community/mathlib"@"ea0bcd84221246c801a6f8fbe8a4372f6d04b176"
 
 /-!
 # Class numbers of global fields
@@ -38,7 +35,7 @@ open scoped BigOperators
 
 section EuclideanDomain
 
-variable {R S : Type _} (K L : Type _) [EuclideanDomain R] [CommRing S] [IsDomain S]
+variable {R S : Type*} (K L : Type*) [EuclideanDomain R] [CommRing S] [IsDomain S]
 
 variable [Field K] [Field L]
 
@@ -54,7 +51,7 @@ variable [ist : IsScalarTower R S L] [iic : IsIntegralClosure S R L]
 
 variable (abv : AbsoluteValue R ℤ)
 
-variable {ι : Type _} [DecidableEq ι] [Fintype ι] (bS : Basis ι R S)
+variable {ι : Type*} [DecidableEq ι] [Fintype ι] (bS : Basis ι R S)
 
 /-- If `b` is an `R`-basis of `S` of cardinality `n`, then `normBound abv b` is an integer
 such that for every `R`-integral element `a : S` with coordinates `≤ y`,
@@ -102,7 +99,7 @@ theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
   --   exact finset.mem_image.mpr ⟨⟨i, j, k⟩, Finset.mem_univ _, rfl⟩
   rw [← LinearMap.det_toMatrix bS]
   convert Matrix.det_sum_smul_le (n := ι) Finset.univ _ hy using 3
-  . simp; rfl
+  · simp; rfl
   · rw [Finset.card_univ, smul_mul_assoc, mul_comm]
   · intro i j k
     apply Finset.le_max'
@@ -111,7 +108,7 @@ theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
 
 /-- If the `R`-integral element `a : S` has coordinates `< y` with respect to some basis `b`,
 its norm is strictly less than `normBound abv b * y ^ dim S`. -/
-theorem norm_lt {T : Type _} [LinearOrderedRing T] (a : S) {y : T}
+theorem norm_lt {T : Type*} [LinearOrderedRing T] (a : S) {y : T}
     (hy : ∀ k, (abv (bS.repr a k) : T) < y) :
     (abv (Algebra.norm R a) : T) < normBound abv bS * y ^ Fintype.card ι := by
   obtain ⟨i⟩ := bS.index_nonempty
@@ -249,7 +246,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     rw [← bS.sum_repr a]
     simp only [Finset.smul_sum, ← Finset.sum_add_distrib]
     refine'
-      Finset.sum_congr rfl fun i _ =>  _
+      Finset.sum_congr rfl fun i _ => _
 -- Porting note `← hμ, ← r_eq` and the final `← μ_eq` were not needed.
     rw [← hμ, ← r_eq, ← s_eq, ← mul_smul, μ_eq, add_smul, mul_smul, ← μ_eq]
   obtain ⟨j, k, j_ne_k, hjk⟩ := adm.exists_approx hε hb fun j i => μ j * s i

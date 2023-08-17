@@ -2,13 +2,10 @@
 Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
-
-! This file was ported from Lean 3 source module measure_theory.integral.set_to_l1
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+
+#align_import measure_theory.integral.set_to_l1 from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Extension of a linear function from indicators to L1
@@ -81,7 +78,7 @@ open Set Filter TopologicalSpace ENNReal EMetric
 
 namespace MeasureTheory
 
-variable {α E F F' G 𝕜 : Type _} {p : ℝ≥0∞} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {α E F F' G 𝕜 : Type*} {p : ℝ≥0∞} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedAddCommGroup F'] [NormedSpace ℝ F']
   [NormedAddCommGroup G] {m : MeasurableSpace α} {μ : Measure α}
 
@@ -101,7 +98,7 @@ def FinMeasAdditive {β} [AddMonoid β] {_ : MeasurableSpace α} (μ : Measure �
 
 namespace FinMeasAdditive
 
-variable {β : Type _} [AddCommMonoid β] {T T' : Set α → β}
+variable {β : Type*} [AddCommMonoid β] {T T' : Set α → β}
 
 theorem zero : FinMeasAdditive μ (0 : Set α → β) := fun s t _ _ _ _ _ => by simp
 #align measure_theory.fin_meas_additive.zero MeasureTheory.FinMeasAdditive.zero
@@ -194,7 +191,7 @@ def DominatedFinMeasAdditive {β} [SeminormedAddCommGroup β] {_ : MeasurableSpa
 
 namespace DominatedFinMeasAdditive
 
-variable {β : Type _} [SeminormedAddCommGroup β] {T T' : Set α → β} {C C' : ℝ}
+variable {β : Type*} [SeminormedAddCommGroup β] {T T' : Set α → β} {C C' : ℝ}
 
 theorem zero {m : MeasurableSpace α} (μ : Measure α) (hC : 0 ≤ C) :
     DominatedFinMeasAdditive μ (0 : Set α → β) C := by
@@ -203,7 +200,7 @@ theorem zero {m : MeasurableSpace α} (μ : Measure α) (hC : 0 ≤ C) :
   exact mul_nonneg hC toReal_nonneg
 #align measure_theory.dominated_fin_meas_additive.zero MeasureTheory.DominatedFinMeasAdditive.zero
 
-theorem eq_zero_of_measure_zero {β : Type _} [NormedAddCommGroup β] {T : Set α → β} {C : ℝ}
+theorem eq_zero_of_measure_zero {β : Type*} [NormedAddCommGroup β] {T : Set α → β} {C : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) {s : Set α} (hs : MeasurableSet s) (hs_zero : μ s = 0) :
     T s = 0 := by
   refine' norm_eq_zero.mp _
@@ -211,7 +208,7 @@ theorem eq_zero_of_measure_zero {β : Type _} [NormedAddCommGroup β] {T : Set �
   rw [hs_zero, ENNReal.zero_toReal, MulZeroClass.mul_zero]
 #align measure_theory.dominated_fin_meas_additive.eq_zero_of_measure_zero MeasureTheory.DominatedFinMeasAdditive.eq_zero_of_measure_zero
 
-theorem eq_zero {β : Type _} [NormedAddCommGroup β] {T : Set α → β} {C : ℝ} {m : MeasurableSpace α}
+theorem eq_zero {β : Type*} [NormedAddCommGroup β] {T : Set α → β} {C : ℝ} {m : MeasurableSpace α}
     (hT : DominatedFinMeasAdditive (0 : Measure α) T C) {s : Set α} (hs : MeasurableSet s) :
     T s = 0 :=
   eq_zero_of_measure_zero hT hs (by simp only [Measure.coe_zero, Pi.zero_apply])
@@ -512,7 +509,7 @@ theorem setToSimpleFunc_smul {E} [NormedAddCommGroup E] [NormedField 𝕜] [Norm
 
 section Order
 
-variable {G' G'' : Type _} [NormedLatticeAddCommGroup G''] [NormedSpace ℝ G'']
+variable {G' G'' : Type*} [NormedLatticeAddCommGroup G''] [NormedSpace ℝ G'']
   [NormedLatticeAddCommGroup G'] [NormedSpace ℝ G']
 
 theorem setToSimpleFunc_mono_left {m : MeasurableSpace α} (T T' : Set α → F →L[ℝ] G'')
@@ -828,7 +825,7 @@ theorem setToL1S_const [IsFiniteMeasure μ] {T : Set α → E →L[ℝ] F}
 
 section Order
 
-variable {G'' G' : Type _} [NormedLatticeAddCommGroup G'] [NormedSpace ℝ G']
+variable {G'' G' : Type*} [NormedLatticeAddCommGroup G'] [NormedSpace ℝ G']
   [NormedLatticeAddCommGroup G''] [NormedSpace ℝ G''] {T : Set α → G'' →L[ℝ] G'}
 
 theorem setToL1S_mono_left {T T' : Set α → E →L[ℝ] G''} (hTT' : ∀ s x, T s x ≤ T' s x)
@@ -966,7 +963,7 @@ theorem setToL1SCLM_const [IsFiniteMeasure μ] {T : Set α → E →L[ℝ] F} {C
 
 section Order
 
-variable {G' G'' : Type _} [NormedLatticeAddCommGroup G''] [NormedSpace ℝ G'']
+variable {G' G'' : Type*} [NormedLatticeAddCommGroup G''] [NormedSpace ℝ G'']
   [NormedLatticeAddCommGroup G'] [NormedSpace ℝ G']
 
 theorem setToL1SCLM_mono_left {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
@@ -1160,7 +1157,7 @@ theorem setToL1_const [IsFiniteMeasure μ] (hT : DominatedFinMeasAdditive μ T C
 
 section Order
 
-variable {G' G'' : Type _} [NormedLatticeAddCommGroup G''] [NormedSpace ℝ G''] [CompleteSpace G'']
+variable {G' G'' : Type*} [NormedLatticeAddCommGroup G''] [NormedSpace ℝ G''] [CompleteSpace G'']
   [NormedLatticeAddCommGroup G'] [NormedSpace ℝ G']
 
 theorem setToL1_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
@@ -1426,7 +1423,7 @@ theorem setToFun_congr_ae (hT : DominatedFinMeasAdditive μ T C) (h : f =ᵐ[μ]
   by_cases hfi : Integrable f μ
   · have hgi : Integrable g μ := hfi.congr h
     rw [setToFun_eq hT hfi, setToFun_eq hT hgi, (Integrable.toL1_eq_toL1_iff f g hfi hgi).2 h]
-  · have hgi : ¬Integrable g μ := by rw [integrable_congr h] at hfi ; exact hfi
+  · have hgi : ¬Integrable g μ := by rw [integrable_congr h] at hfi; exact hfi
     rw [setToFun_undef hT hfi, setToFun_undef hT hgi]
 #align measure_theory.set_to_fun_congr_ae MeasureTheory.setToFun_congr_ae
 
@@ -1463,7 +1460,7 @@ theorem setToFun_const [IsFiniteMeasure μ] (hT : DominatedFinMeasAdditive μ T 
 
 section Order
 
-variable {G' G'' : Type _} [NormedLatticeAddCommGroup G''] [NormedSpace ℝ G''] [CompleteSpace G'']
+variable {G' G'' : Type*} [NormedLatticeAddCommGroup G''] [NormedSpace ℝ G''] [CompleteSpace G'']
   [NormedLatticeAddCommGroup G'] [NormedSpace ℝ G']
 
 theorem setToFun_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
@@ -1784,7 +1781,7 @@ theorem tendsto_setToFun_filter_of_dominated_convergence (hT : DominatedFinMeasA
     assumption
 #align measure_theory.tendsto_set_to_fun_filter_of_dominated_convergence MeasureTheory.tendsto_setToFun_filter_of_dominated_convergence
 
-variable {X : Type _} [TopologicalSpace X] [FirstCountableTopology X]
+variable {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
 
 theorem continuousWithinAt_setToFun_of_dominated (hT : DominatedFinMeasAdditive μ T C)
     {fs : X → α → E} {x₀ : X} {bound : α → ℝ} {s : Set X}

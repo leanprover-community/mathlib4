@@ -2,13 +2,10 @@
 Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module probability.kernel.measurable_integral
-! leanprover-community/mathlib commit 28b2a92f2996d28e580450863c130955de0ed398
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.Kernel.Basic
+
+#align_import probability.kernel.measurable_integral from "leanprover-community/mathlib"@"28b2a92f2996d28e580450863c130955de0ed398"
 
 /-!
 # Measurability of the integral against a kernel
@@ -32,7 +29,7 @@ open MeasureTheory ProbabilityTheory Function Set Filter
 
 open scoped MeasureTheory ENNReal Topology
 
-variable {α β γ : Type _} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
+variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
   {κ : kernel α β} {η : kernel (α × β) γ} {a : α}
 
 namespace ProbabilityTheory
@@ -239,7 +236,7 @@ theorem _root_.Measurable.set_lintegral_kernel {f : β → ℝ≥0∞} (hf : Mea
 
 end Lintegral
 
-variable {E : Type _} [NormedAddCommGroup E] [IsSFiniteKernel κ] [IsSFiniteKernel η]
+variable {E : Type*} [NormedAddCommGroup E] [IsSFiniteKernel κ] [IsSFiniteKernel η]
 
 theorem measurableSet_kernel_integrable ⦃f : α → β → E⦄ (hf : StronglyMeasurable (uncurry f)) :
     MeasurableSet {x | Integrable (f x) (κ x)} := by
@@ -253,7 +250,7 @@ open ProbabilityTheory ProbabilityTheory.kernel
 
 namespace MeasureTheory
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] [IsSFiniteKernel κ]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] [IsSFiniteKernel κ]
   [IsSFiniteKernel η]
 
 theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄

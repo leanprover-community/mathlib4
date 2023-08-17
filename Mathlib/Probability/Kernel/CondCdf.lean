@@ -2,15 +2,12 @@
 Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module probability.kernel.cond_cdf
-! leanprover-community/mathlib commit 3b88f4005dc2e28d42f974cc1ce838f0dafb39b8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.Probability.Kernel.Composition
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
+
+#align_import probability.kernel.cond_cdf from "leanprover-community/mathlib"@"3b88f4005dc2e28d42f974cc1ce838f0dafb39b8"
 
 /-!
 # Conditional cumulative distribution function
@@ -52,7 +49,7 @@ open scoped NNReal ENNReal MeasureTheory Topology ProbabilityTheory
 
 section AuxLemmasToBeMoved
 
-variable {α β ι : Type _}
+variable {α β ι : Type*}
 
 namespace Directed
 
@@ -91,11 +88,10 @@ theorem Real.iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
 #align real.Inter_Iic_rat Real.iInter_Iic_rat
 
 -- todo after the port: move to order/filter/at_top_bot
-theorem atBot_le_nhds_bot {α : Type _} [TopologicalSpace α] [LinearOrder α] [OrderBot α]
+theorem atBot_le_nhds_bot {α : Type*} [TopologicalSpace α] [LinearOrder α] [OrderBot α]
     [OrderTopology α] : (atBot : Filter α) ≤ 𝓝 ⊥ := by
   cases subsingleton_or_nontrivial α
-  ·
-    simp only [nhds_discrete, le_pure_iff, mem_atBot_sets, mem_singleton_iff,
+  · simp only [nhds_discrete, le_pure_iff, mem_atBot_sets, mem_singleton_iff,
       eq_iff_true_of_subsingleton, imp_true_iff, exists_const]
   have h : atBot.HasBasis (fun _ : α => True) Iic := @atBot_basis α _ _
   have h_nhds : (𝓝 ⊥).HasBasis (fun a : α => ⊥ < a) fun a => Iio a := @nhds_bot_basis α _ _ _ _ _
@@ -107,13 +103,13 @@ theorem atBot_le_nhds_bot {α : Type _} [TopologicalSpace α] [LinearOrder α] [
 #align at_bot_le_nhds_bot atBot_le_nhds_bot
 
 -- todo after the port: move to order/filter/at_top_bot
-theorem atTop_le_nhds_top {α : Type _} [TopologicalSpace α] [LinearOrder α] [OrderTop α]
+theorem atTop_le_nhds_top {α : Type*} [TopologicalSpace α] [LinearOrder α] [OrderTop α]
     [OrderTopology α] : (atTop : Filter α) ≤ 𝓝 ⊤ :=
   @atBot_le_nhds_bot αᵒᵈ _ _ _ _
 #align at_top_le_nhds_top atTop_le_nhds_top
 
 -- todo: move to topology/algebra/order/monotone_convergence
-theorem tendsto_of_antitone {ι α : Type _} [Preorder ι] [TopologicalSpace α]
+theorem tendsto_of_antitone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Antitone f) :
     Tendsto f atTop atBot ∨ ∃ l, Tendsto f atTop (𝓝 l) :=
   @tendsto_of_monotone ι αᵒᵈ _ _ _ _ _ h_mono
@@ -166,28 +162,18 @@ theorem lintegral_iInf_directed_of_measurable {mα : MeasurableSpace α} [Counta
     _ = ⨅ n, ∫⁻ a, (f ∘ h_directed.sequence f) n a ∂μ := by
       rw [lintegral_iInf ?_ h_directed.sequence_anti]
       · exact hf_int _
-      · exact  (fun n => hf _)
+      · exact (fun n => hf _)
     _ = ⨅ b, ∫⁻ a, f b a ∂μ := by
       refine' le_antisymm (le_iInf fun b => _) (le_iInf fun n => _)
       · exact iInf_le_of_le (Encodable.encode b + 1) (lintegral_mono <| h_directed.sequence_le b)
       · exact iInf_le (fun b => ∫⁻ a, f b a ∂μ) _
 #align lintegral_infi_directed_of_measurable lintegral_iInf_directed_of_measurable
 
--- todo: move to measure_theory/pi_system
-theorem isPiSystem_Iic [SemilatticeInf α] : @IsPiSystem α (range Iic) := by
-  rintro s ⟨us, rfl⟩ t ⟨ut, rfl⟩ _; rw [Iic_inter_Iic]; exact ⟨us ⊓ ut, rfl⟩
-#align is_pi_system_Iic isPiSystem_Iic
-
--- todo: move to measure_theory/pi_system
-theorem isPiSystem_Ici [SemilatticeSup α] : @IsPiSystem α (range Ici) := by
-  rintro s ⟨us, rfl⟩ t ⟨ut, rfl⟩ _; rw [Ici_inter_Ici]; exact ⟨us ⊔ ut, rfl⟩
-#align is_pi_system_Ici isPiSystem_Ici
-
 end AuxLemmasToBeMoved
 
 namespace MeasureTheory.Measure
 
-variable {α β : Type _} {mα : MeasurableSpace α} (ρ : Measure (α × ℝ))
+variable {α β : Type*} {mα : MeasurableSpace α} (ρ : Measure (α × ℝ))
 
 /-- Measure on `α` such that for a measurable set `s`, `ρ.Iic_snd r s = ρ (s ×ˢ Iic r)`. -/
 noncomputable def IicSnd (r : ℝ) : Measure α :=
@@ -266,7 +252,7 @@ theorem tendsto_IicSnd_atBot [IsFiniteMeasure ρ] {s : Set α} (hs : MeasurableS
       ext1 x
       simp only [Rat.cast_eq_id, id.def, mem_iInter, mem_prod, mem_Iic]
       refine' ⟨fun h i => ⟨(h i).1, _⟩, fun h i => ⟨(h i).1, _⟩⟩ <;> have h' := h (-i)
-      · rw [neg_neg] at h' ; exact h'.2
+      · rw [neg_neg] at h'; exact h'.2
       · exact h'.2
     rw [h_inter_eq] at h_neg
     have h_fun_eq : (fun r : ℚ => ρ (s ×ˢ Iic (r : ℝ))) = fun r : ℚ => ρ (s ×ˢ Iic ↑(- -r)) := by
@@ -286,7 +272,7 @@ open MeasureTheory
 
 namespace ProbabilityTheory
 
-variable {α β ι : Type _} {mα : MeasurableSpace α}
+variable {α β ι : Type*} {mα : MeasurableSpace α}
 
 attribute [local instance] MeasureTheory.Measure.IsFiniteMeasure.IicSnd
 
@@ -458,7 +444,7 @@ theorem tendsto_preCdf_atBot_zero (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ
     ∀ᵐ a ∂ρ.fst, Tendsto (fun r => preCdf ρ r a) atBot (𝓝 0) := by
   -- We show first that `preCdf` has a limit in ℝ≥0∞ almost everywhere.
   -- We then show that the integral of `pre_cdf` tends to 0, and that it also tends
-  -- to the integral of the limit. Since the limit is has integral 0, it is equal to 0 a.e.
+  -- to the integral of the limit. Since the limit has integral 0, it is equal to 0 a.e.
   suffices ∀ᵐ a ∂ρ.fst, Tendsto (fun r => preCdf ρ (-r) a) atTop (𝓝 0) by
     filter_upwards [this] with a ha
     have h_eq_neg : (fun r : ℚ => preCdf ρ r a) = fun r : ℚ => preCdf ρ (- -r) a := by
@@ -730,8 +716,7 @@ theorem condCdf'_eq_condCdfRat (ρ : Measure (α × ℝ)) (a : α) (r : ℚ) :
     condCdf' ρ a r = condCdfRat ρ a r := by
   rw [← inf_gt_condCdfRat ρ a r, condCdf']
   refine' Equiv.iInf_congr _ _
-  ·
-    exact
+  · exact
       { toFun := fun t => ⟨t.1, by exact_mod_cast t.2⟩
         invFun := fun t => ⟨t.1, by exact_mod_cast t.2⟩
         left_inv := fun t => by simp only [Subtype.coe_eta]
@@ -771,7 +756,7 @@ theorem continuousWithinAt_condCdf'_Ici (ρ : Measure (α × ℝ)) (a : α) (x :
   convert Monotone.tendsto_nhdsWithin_Ioi (monotone_condCdf' ρ a) x
   rw [sInf_image']
   have h' : ⨅ r : Ioi x, condCdf' ρ a r = ⨅ r : { r' : ℚ // x < r' }, condCdf' ρ a r := by
-    refine' iInf_Ioi_eq_iInf_rat_gt x _ (monotone_condCdf' ρ a)
+    refine' Real.iInf_Ioi_eq_iInf_rat_gt x _ (monotone_condCdf' ρ a)
     refine' ⟨0, fun z => _⟩
     rintro ⟨u, -, rfl⟩
     exact condCdf'_nonneg ρ a u

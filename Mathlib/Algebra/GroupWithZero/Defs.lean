@@ -2,15 +2,12 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module algebra.group_with_zero.defs
-! leanprover-community/mathlib commit 2f3994e1b117b1e1da49bcfb67334f33460c3ce4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Nontrivial
 import Mathlib.Algebra.NeZero
+
+#align_import algebra.group_with_zero.defs from "leanprover-community/mathlib"@"2f3994e1b117b1e1da49bcfb67334f33460c3ce4"
 
 /-!
 # Typeclasses for groups with an adjoined zero element
@@ -27,9 +24,11 @@ members.
 
 universe u
 
+set_option autoImplicit true
+
 -- We have to fix the universe of `G₀` here, since the default argument to
 -- `GroupWithZero.div'` cannot contain a universe metavariable.
-variable {G₀ : Type u} {M₀ M₀' G₀' : Type _}
+variable {G₀ : Type u} {M₀ M₀' G₀' : Type*}
 
 -- Porting note:
 -- This theorem was introduced during ad-hoc porting
@@ -104,7 +103,7 @@ attribute [simp] zero_mul mul_zero
 
 /-- Predicate typeclass for expressing that `a * b = 0` implies `a = 0` or `b = 0`
 for all `a` and `b` of type `G₀`. -/
-class NoZeroDivisors (M₀ : Type _) [Mul M₀] [Zero M₀] : Prop where
+class NoZeroDivisors (M₀ : Type*) [Mul M₀] [Zero M₀] : Prop where
   /-- For all `a` and `b` of `G₀`, `a * b = 0` implies `a = 0` or `b = 0`. -/
   eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : M₀}, a * b = 0 → a = 0 ∨ b = 0
 #align no_zero_divisors NoZeroDivisors
@@ -126,12 +125,12 @@ class MonoidWithZero (M₀ : Type u) extends Monoid M₀, MulZeroOneClass M₀, 
 
 /-- A type `M` is a `CancelMonoidWithZero` if it is a monoid with zero element, `0` is left
 and right absorbing, and left/right multiplication by a non-zero element is injective. -/
-class CancelMonoidWithZero (M₀ : Type _) extends MonoidWithZero M₀, IsCancelMulZero M₀
+class CancelMonoidWithZero (M₀ : Type*) extends MonoidWithZero M₀, IsCancelMulZero M₀
 #align cancel_monoid_with_zero CancelMonoidWithZero
 
 /-- A type `M` is a commutative “monoid with zero” if it is a commutative monoid with zero
 element, and `0` is left and right absorbing. -/
-class CommMonoidWithZero (M₀ : Type _) extends CommMonoid M₀, MonoidWithZero M₀
+class CommMonoidWithZero (M₀ : Type*) extends CommMonoid M₀, MonoidWithZero M₀
 #align comm_monoid_with_zero CommMonoidWithZero
 
 section CommSemigroup
@@ -165,8 +164,11 @@ end CommSemigroup
 /-- A type `M` is a `CancelCommMonoidWithZero` if it is a commutative monoid with zero element,
  `0` is left and right absorbing,
   and left/right multiplication by a non-zero element is injective. -/
-class CancelCommMonoidWithZero (M₀ : Type _) extends CommMonoidWithZero M₀, IsLeftCancelMulZero M₀
+class CancelCommMonoidWithZero (M₀ : Type*) extends CommMonoidWithZero M₀, IsLeftCancelMulZero M₀
 #align cancel_comm_monoid_with_zero CancelCommMonoidWithZero
+
+-- See note [lower cancel priority]
+attribute [instance 75] CancelCommMonoidWithZero.toCommMonoidWithZero
 
 instance (priority := 100) CancelCommMonoidWithZero.toCancelMonoidWithZero
     [CancelCommMonoidWithZero M₀] : CancelMonoidWithZero M₀ :=
@@ -196,12 +198,10 @@ attribute [simp] inv_zero
 if it is a commutative monoid with zero element (distinct from `1`)
 such that every nonzero element is invertible.
 The type is required to come with an “inverse” function, and the inverse of `0` must be `0`. -/
-class CommGroupWithZero (G₀ : Type _) extends CommMonoidWithZero G₀, GroupWithZero G₀
+class CommGroupWithZero (G₀ : Type*) extends CommMonoidWithZero G₀, GroupWithZero G₀
 #align comm_group_with_zero CommGroupWithZero
 
 section NeZero
-
-attribute [field_simps] two_ne_zero three_ne_zero four_ne_zero
 
 variable [MulZeroOneClass M₀] [Nontrivial M₀] {a b : M₀}
 

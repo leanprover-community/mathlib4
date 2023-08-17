@@ -7,6 +7,7 @@ import Lean.Elab.Command
 import Lean.Elab.Quotation
 import Std.Tactic.Ext
 import Std.Tactic.RCases
+import Std.Tactic.Where
 import Mathlib.Data.Matrix.Notation
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Order.Filter.Basic
@@ -164,7 +165,6 @@ open Lean Parser.Tactic
 /- S -/ syntax (name := hint) "hint" : tactic
 
 /- M -/ syntax (name := congrM) "congrm " term : tactic
-/- E -/ syntax (name := acChange) "ac_change " term (" using " num)? : tactic
 
 /- S -/ syntax (name := rcases?) "rcases?" casesTarget,* (" : " num)? : tactic
 /- S -/ syntax (name := rintro?) "rintro?" (" : " num)? : tactic
@@ -305,8 +305,6 @@ macro (name := moveAdd) "move_add " pats:rwRule,+ loc:(location)? : tactic =>
 /- S -/ syntax (name := listUnusedDecls) "#list_unused_decls" : command
 
 /- N -/ syntax (name := defReplacer) "def_replacer " ident Parser.Term.optType : command
-
-/- S -/ syntax (name := «where») "#where" : command
 
 /- M -/ syntax (name := reassocAxiom) "reassoc_axiom " ident : command
 

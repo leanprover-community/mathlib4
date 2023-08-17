@@ -2,17 +2,14 @@
 Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
-
-! This file was ported from Lean 3 source module algebra.category.Semigroup.basic
-! leanprover-community/mathlib commit 47b51515e69f59bca5cf34ef456e6000fe205a69
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Elementwise
+
+#align_import algebra.category.Semigroup.basic from "leanprover-community/mathlib"@"47b51515e69f59bca5cf34ef456e6000fe205a69"
 
 /-!
 # Category instances for has_mul, has_add, semigroup and add_semigroup
@@ -67,7 +64,7 @@ instance instConcreteCategory : ConcreteCategory MagmaCat := BundledHom.concrete
 attribute [to_additive] instMagmaCatLargeCategory instConcreteCategory
 
 @[to_additive]
-instance : CoeSort MagmaCat (Type _) where
+instance : CoeSort MagmaCat (Type*) where
   coe X := X.α
 
 -- Porting note : Hinting to Lean that `forget R` and `R` are the same
@@ -111,7 +108,7 @@ def ofHom {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) : of X ⟶ of Y := f
 #align Magma.of_hom MagmaCat.ofHom
 #align AddMagma.of_hom AddMagmaCat.ofHom
 
-/-- Typecheck a `AddHom` as a morphism in `AddMagmaCat`. -/
+/-- Typecheck an `AddHom` as a morphism in `AddMagmaCat`. -/
 add_decl_doc AddMagmaCat.ofHom
 
 @[to_additive] -- Porting note: simp removed, simpNF says LHS simplifies to itself
@@ -152,7 +149,7 @@ instance instConcreteCategory : ConcreteCategory SemigroupCat :=
 attribute [to_additive] instSemigroupCatLargeCategory SemigroupCat.instConcreteCategory
 
 @[to_additive]
-instance : CoeSort SemigroupCat (Type _) where
+instance : CoeSort SemigroupCat (Type*) where
   coe X := X.α
 
 -- Porting note : Hinting to Lean that `forget R` and `R` are the same
@@ -197,7 +194,7 @@ def ofHom {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) : of X �
 #align Semigroup.of_hom SemigroupCat.ofHom
 #align AddSemigroup.of_hom AddSemigroupCat.ofHom
 
-/-- Typecheck a `AddHom` as a morphism in `AddSemigroupCat`. -/
+/-- Typecheck an `AddHom` as a morphism in `AddSemigroupCat`. -/
 add_decl_doc AddSemigroupCat.ofHom
 
 @[to_additive] -- Porting note: simp removed, simpNF says LHS simplifies to itself

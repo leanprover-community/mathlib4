@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module measure_theory.measurable_space_def
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Countable
 import Mathlib.Logic.Encodable.Lattice
 import Mathlib.Order.Disjointed
 import Mathlib.Tactic.Measurability
+
+#align_import measure_theory.measurable_space_def from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Measurable spaces and measurable functions
@@ -45,10 +42,10 @@ open Set Encodable Function Equiv
 
 open Classical
 
-variable {α β γ δ δ' : Type _} {ι : Sort _} {s t u : Set α}
+variable {α β γ δ δ' : Type*} {ι : Sort*} {s t u : Set α}
 
 /-- A measurable space is a space equipped with a σ-algebra. -/
-@[class] structure MeasurableSpace (α : Type _) where
+@[class] structure MeasurableSpace (α : Type*) where
   /-- Predicate saying that a given set is measurable. Use `MeasurableSet` in the root namespace
   instead. -/
   MeasurableSet' : Set α → Prop
@@ -268,7 +265,7 @@ theorem MeasurableSpace.ext_iff {m₁ m₂ : MeasurableSpace α} :
 #align measurable_space.ext_iff MeasurableSpace.ext_iff
 
 /-- A typeclass mixin for `MeasurableSpace`s such that each singleton is measurable. -/
-class MeasurableSingletonClass (α : Type _) [MeasurableSpace α] : Prop where
+class MeasurableSingletonClass (α : Type*) [MeasurableSpace α] : Prop where
   /-- A singleton is a measurable set. -/
   measurableSet_singleton : ∀ x, MeasurableSet ({x} : Set α)
 #align measurable_singleton_class MeasurableSingletonClass
@@ -401,6 +398,16 @@ theorem generateFrom_measurableSet [MeasurableSpace α] :
     generateFrom { s : Set α | MeasurableSet s } = ‹_› :=
   le_antisymm (generateFrom_le fun _ => id) fun _ => measurableSet_generateFrom
 #align measurable_space.generate_from_measurable_set MeasurableSpace.generateFrom_measurableSet
+
+theorem forall_generateFrom_mem_iff_mem_iff {S : Set (Set α)} {x y : α} :
+    (∀ s, MeasurableSet[generateFrom S] s → (x ∈ s ↔ y ∈ s)) ↔ (∀ s ∈ S, x ∈ s ↔ y ∈ s) := by
+  refine ⟨fun H s hs ↦ H s (.basic s hs), fun H s ↦ ?_⟩
+  apply generateFrom_induction
+  · exact H
+  · rfl
+  · exact fun _ ↦ Iff.not
+  · intro f hf
+    simp only [mem_iUnion, hf]
 
 /-- If `g` is a collection of subsets of `α` such that the `σ`-algebra generated from `g` contains
 the same sets as `g`, then `g` was already a `σ`-algebra. -/
@@ -571,7 +578,7 @@ theorem Measurable.le {α} {m m0 : MeasurableSpace α} {_ : MeasurableSpace β} 
     {f : α → β} (hf : Measurable[m] f) : Measurable[m0] f := fun _ hs => hm _ (hf hs)
 #align measurable.le Measurable.le
 
-theorem MeasurableSpace.Top.measurable {α β : Type _} [MeasurableSpace β] (f : α → β) :
+theorem MeasurableSpace.Top.measurable {α β : Type*} [MeasurableSpace β] (f : α → β) :
     Measurable[⊤] f := fun _ _ => MeasurableSpace.measurableSet_top
 #align measurable_space.top.measurable MeasurableSpace.Top.measurable
 

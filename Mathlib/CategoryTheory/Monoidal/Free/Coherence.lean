@@ -2,15 +2,12 @@
 Copyright (c) 2021 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.monoidal.free.coherence
-! leanprover-community/mathlib commit f187f1074fa1857c94589cc653c786cadc4c35ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Free.Basic
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.DiscreteCategory
+
+#align_import category_theory.monoidal.free.coherence from "leanprover-community/mathlib"@"f187f1074fa1857c94589cc653c786cadc4c35ff"
 
 /-!
 # The monoidal coherence theorem
@@ -117,7 +114,7 @@ open Hom
 @[simp]
 def normalizeMapAux :
     ∀ {X Y : F C}, (X ⟶ᵐ Y) →
-      ((Discrete.functor (normalizeObj X) : _ ⥤  N C) ⟶ Discrete.functor (normalizeObj Y))
+      ((Discrete.functor (normalizeObj X) : _ ⥤ N C) ⟶ Discrete.functor (normalizeObj Y))
   | _, _, Hom.id _ => 𝟙 _
   | _, _, α_hom X Y Z => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
   | _, _, α_inv _ _ _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
@@ -128,7 +125,7 @@ def normalizeMapAux :
   | _, _, (@comp _ _ _ _ f g) => normalizeMapAux f ≫ normalizeMapAux g
   | _, _, (@Hom.tensor _ T _ _ W f g) => by
     dsimp
-    exact Discrete.natTrans (fun ⟨X⟩  => (normalizeMapAux g).app (normalizeObj T X) ≫
+    exact Discrete.natTrans (fun ⟨X⟩ => (normalizeMapAux g).app (normalizeObj T X) ≫
       (Discrete.functor (normalizeObj W) : _ ⥤ N C).map ((normalizeMapAux f).app ⟨X⟩))
 #align category_theory.free_monoidal_category.normalize_map_aux CategoryTheory.FreeMonoidalCategory.normalizeMapAux
 
@@ -243,10 +240,10 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
   NatIso.ofComponents (normalizeIsoAux C)
     (by -- porting note: the proof has been mostly rewritten
       rintro X Y f
-      induction' f using Quotient.recOn with f ; swap ; rfl
+      induction' f using Quotient.recOn with f; swap; rfl
       induction' f with _ X₁ X₂ X₃ _ _ _ _ _ _ _ _ _ _ _ _ h₁ h₂ X₁ X₂ Y₁ Y₂ f g h₁ h₂
-      . simp only [mk_id, Functor.map_id, Category.comp_id, Category.id_comp]
-      . ext n
+      · simp only [mk_id, Functor.map_id, Category.comp_id, Category.id_comp]
+      · ext n
         dsimp
         rw [mk_α_hom, NatTrans.comp_app, NatTrans.comp_app]
         dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
@@ -258,41 +255,41 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
           pentagon_inv_assoc (inclusionObj n.as) X₁ X₂ X₃,
           tensor_inv_hom_id_assoc, tensor_id, Category.id_comp, Iso.inv_hom_id,
           Category.comp_id]
-      . ext n
+      · ext n
         dsimp
         rw [mk_α_inv, NatTrans.comp_app, NatTrans.comp_app]
         dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
         simp only [Category.assoc, comp_tensor_id, tensor_id, Category.comp_id,
           pentagon_inv_assoc, ← associator_inv_naturality_assoc]
         rfl
-      . ext n
+      · ext n
         dsimp [Functor.comp]
         rw [mk_l_hom, NatTrans.comp_app, NatTrans.comp_app]
         dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
         simp only [triangle_assoc_comp_right_assoc, Category.assoc, Category.comp_id]
         rfl
-      . ext n
+      · ext n
         dsimp [Functor.comp]
         rw [mk_l_inv, NatTrans.comp_app, NatTrans.comp_app]
         dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
         simp only [triangle_assoc_comp_left_inv_assoc, inv_hom_id_tensor_assoc, tensor_id,
           Category.id_comp, Category.comp_id]
         rfl
-      . ext n
+      · ext n
         dsimp
         rw [mk_ρ_hom, NatTrans.comp_app, NatTrans.comp_app]
         dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
         simp only [← (Iso.inv_comp_eq _).2 (rightUnitor_tensor _ _), Category.assoc,
           ← rightUnitor_naturality, Category.comp_id]; rfl
-      . ext n
+      · ext n
         dsimp
         rw [mk_ρ_inv, NatTrans.comp_app, NatTrans.comp_app]
         dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
         simp only [← (Iso.eq_comp_inv _).1 (rightUnitor_tensor_inv _ _), rightUnitor_conjugation,
           Category.assoc, Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc, Iso.inv_hom_id,
           Discrete.functor, Category.comp_id, Function.comp]
-      . rw [mk_comp, Functor.map_comp, Functor.map_comp, Category.assoc, h₂, reassoc_of% h₁]
-      . ext ⟨n⟩
+      · rw [mk_comp, Functor.map_comp, Functor.map_comp, Category.assoc, h₂, reassoc_of% h₁]
+      · ext ⟨n⟩
         replace h₁ := NatTrans.congr_app h₁ ⟨n⟩
         replace h₂ := NatTrans.congr_app h₂ ((Discrete.functor (normalizeObj X₁)).obj ⟨n⟩)
         have h₃ := (normalizeIsoAux _ Y₂).hom.naturality ((normalizeMapAux f).app ⟨n⟩)

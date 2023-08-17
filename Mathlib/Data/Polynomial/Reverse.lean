@@ -2,15 +2,12 @@
 Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module data.polynomial.reverse
-! leanprover-community/mathlib commit 44de64f183393284a16016dfb2a48ac97382f2bd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Degree.TrailingDegree
 import Mathlib.Data.Polynomial.EraseLead
 import Mathlib.Data.Polynomial.Eval
+
+#align_import data.polynomial.reverse from "leanprover-community/mathlib"@"44de64f183393284a16016dfb2a48ac97382f2bd"
 
 /-!
 # Reverse of a univariate polynomial
@@ -31,7 +28,7 @@ open Classical Polynomial
 
 section Semiring
 
-variable {R : Type _} [Semiring R] {f : R[X]}
+variable {R : Type*} [Semiring R] {f : R[X]}
 
 /-- If `i ≤ N`, then `revAtFun N i` returns `N - i`, otherwise it returns `i`.
 This is the map used by the embedding `revAt`.
@@ -80,6 +77,8 @@ theorem revAt_invol {N i : ℕ} : (revAt N) (revAt N i) = i :=
 theorem revAt_le {N i : ℕ} (H : i ≤ N) : revAt N i = N - i :=
   if_pos H
 #align polynomial.rev_at_le Polynomial.revAt_le
+
+lemma revAt_eq_self_of_lt {N i : ℕ} (h : N < i) : revAt N i = i := by simp [revAt, Nat.not_le.mpr h]
 
 theorem revAt_add {N O n o : ℕ} (hn : n ≤ N) (ho : o ≤ O) :
     revAt (N + O) (n + o) = revAt N n + revAt O o := by
@@ -215,7 +214,7 @@ theorem reflect_mul (f g : R[X]) {F G : ℕ} (Ff : f.natDegree ≤ F) (Gg : g.na
 
 section Eval₂
 
-variable {S : Type _} [CommSemiring S]
+variable {S : Type*} [CommSemiring S]
 
 theorem eval₂_reflect_mul_pow (i : R →+* S) (x : S) [Invertible x] (N : ℕ) (f : R[X])
     (hf : f.natDegree ≤ N) : eval₂ i (⅟ x) (reflect N f) * x ^ N = eval₂ i x f := by
@@ -320,7 +319,7 @@ theorem reverse_mul {f g : R[X]} (fg : f.leadingCoeff * g.leadingCoeff ≠ 0) :
 #align polynomial.reverse_mul Polynomial.reverse_mul
 
 @[simp]
-theorem reverse_mul_of_domain {R : Type _} [Ring R] [NoZeroDivisors R] (f g : R[X]) :
+theorem reverse_mul_of_domain {R : Type*} [Ring R] [NoZeroDivisors R] (f g : R[X]) :
     reverse (f * g) = reverse f * reverse g := by
   by_cases f0 : f = 0
   · simp only [f0, zero_mul, reverse_zero]
@@ -329,7 +328,7 @@ theorem reverse_mul_of_domain {R : Type _} [Ring R] [NoZeroDivisors R] (f g : R[
   simp [reverse_mul, *]
 #align polynomial.reverse_mul_of_domain Polynomial.reverse_mul_of_domain
 
-theorem trailingCoeff_mul {R : Type _} [Ring R] [NoZeroDivisors R] (p q : R[X]) :
+theorem trailingCoeff_mul {R : Type*} [Ring R] [NoZeroDivisors R] (p q : R[X]) :
     (p * q).trailingCoeff = p.trailingCoeff * q.trailingCoeff := by
   rw [← reverse_leadingCoeff, reverse_mul_of_domain, leadingCoeff_mul, reverse_leadingCoeff,
     reverse_leadingCoeff]
@@ -347,7 +346,7 @@ theorem coeff_one_reverse (f : R[X]) : coeff (reverse f) 1 = nextCoeff f := by
 
 section Eval₂
 
-variable {S : Type _} [CommSemiring S]
+variable {S : Type*} [CommSemiring S]
 
 theorem eval₂_reverse_mul_pow (i : R →+* S) (x : S) [Invertible x] (f : R[X]) :
     eval₂ i (⅟ x) (reverse f) * x ^ f.natDegree = eval₂ i x f :=
@@ -366,7 +365,7 @@ end Semiring
 
 section Ring
 
-variable {R : Type _} [Ring R]
+variable {R : Type*} [Ring R]
 
 @[simp]
 theorem reflect_neg (f : R[X]) (N : ℕ) : reflect N (-f) = -reflect N f := by

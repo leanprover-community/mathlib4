@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module data.polynomial.expand
-! leanprover-community/mathlib commit bbeb185db4ccee8ed07dc48449414ebfa39cb821
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.Ideal.LocalRing
+
+#align_import data.polynomial.expand from "leanprover-community/mathlib"@"bbeb185db4ccee8ed07dc48449414ebfa39cb821"
 
 /-!
 # Expand a polynomial by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
@@ -194,7 +191,7 @@ theorem expand_eval (p : ℕ) (P : R[X]) (r : R) : eval r (expand R p P) = eval 
 #align polynomial.expand_eval Polynomial.expand_eval
 
 @[simp]
-theorem expand_aeval {A : Type _} [Semiring A] [Algebra R A] (p : ℕ) (P : R[X]) (r : A) :
+theorem expand_aeval {A : Type*} [Semiring A] [Algebra R A] (p : ℕ) (P : R[X]) (r : A) :
     aeval r (expand R p P) = aeval (r ^ p) P := by
   refine' Polynomial.induction_on P (fun a => by simp) (fun f g hf hg => _) fun n a _ => by simp
   rw [AlgHom.map_add, aeval_add, aeval_add, hf, hg]

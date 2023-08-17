@@ -2,11 +2,6 @@
 Copyright (c) 2021 Alex Kontorovich and Heather Macbeth and Marc Masdeu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
-
-! This file was ported from Lean 3 source module analysis.complex.upper_half_plane.basic
-! leanprover-community/mathlib commit 34d3797325d202bd7250431275bb871133cdb611
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Parity
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
@@ -15,12 +10,14 @@ import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup
 import Mathlib.Tactic.LinearCombination
 
+#align_import analysis.complex.upper_half_plane.basic from "leanprover-community/mathlib"@"34d3797325d202bd7250431275bb871133cdb611"
+
 /-!
 # The upper half plane and its automorphisms
 
 This file defines `UpperHalfPlane` to be the upper half plane in `ℂ`.
 
-We furthermore equip it with the structure of an `GLPos 2 ℝ` action by
+We furthermore equip it with the structure of a `GLPos 2 ℝ` action by
 fractional linear transformations.
 
 We define the notation `ℍ` for the upper half plane available in the locale
@@ -43,7 +40,6 @@ attribute [-instance] Matrix.SpecialLinearGroup.instCoeFun
 attribute [-instance] Matrix.GeneralLinearGroup.instCoeFun
 
 local notation "GL(" n ", " R ")" "⁺" => Matrix.GLPos (Fin n) R
--- TODO: these don't seem to work yet
 local notation:1024 "↑ₘ" A:1024 =>
   (((A : GL(2, ℝ)⁺) : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) _)
 local notation:1024 "↑ₘ[" R "]" A:1024 =>
@@ -58,16 +54,20 @@ scoped[UpperHalfPlane] notation "ℍ" => UpperHalfPlane
 
 open UpperHalfPlane
 
--- Porting note: added to replace `deriving`
-instance : CoeOut ℍ ℂ := inferInstanceAs (CoeOut { point : ℂ // 0 < point.im } ℂ)
-
 namespace UpperHalfPlane
 
-@[ext]
-theorem ext {a b : ℍ} (h : (a : ℂ) = b) : a = b := Subtype.ext h
+/-- Canonical embedding of the upper half-plane into `ℂ`. -/
+@[coe] protected def coe (z : ℍ) : ℂ := z.1
+
+-- Porting note: added to replace `deriving`
+instance : CoeOut ℍ ℂ := ⟨UpperHalfPlane.coe⟩
 
 instance : Inhabited ℍ :=
   ⟨⟨Complex.I, by simp⟩⟩
+
+@[ext] theorem ext {a b : ℍ} (h : (a : ℂ) = b) : a = b := Subtype.eq h
+
+@[simp, norm_cast] theorem ext_iff {a b : ℍ} : (a : ℂ) = b ↔ a = b := Subtype.coe_inj
 
 instance canLift : CanLift ℂ ℍ ((↑) : ℍ → ℂ) fun z => 0 < z.im :=
   Subtype.canLift fun (z : ℂ) => 0 < z.im
@@ -83,7 +83,11 @@ def re (z : ℍ) :=
   (z : ℂ).re
 #align upper_half_plane.re UpperHalfPlane.re
 
-/-- Constructor for `upper_half_plane`. It is useful if `⟨z, h⟩` makes Lean use a wrong
+/-- Extensionality lemma in terms of `UpperHalfPlane.re` and `UpperHalfPlane.im`. -/
+theorem ext' {a b : ℍ} (hre : a.re = b.re) (him : a.im = b.im) : a = b :=
+  ext <| Complex.ext hre him
+
+/-- Constructor for `UpperHalfPlane`. It is useful if `⟨z, h⟩` makes Lean use a wrong
 typeclass instance. -/
 def mk (z : ℂ) (h : 0 < z.im) : ℍ :=
   ⟨z, h⟩
@@ -116,7 +120,7 @@ theorem coe_mk (z : ℂ) (h : 0 < z.im) : (mk z h : ℂ) = z :=
 
 @[simp]
 theorem mk_coe (z : ℍ) (h : 0 < (z : ℂ).im := z.2) : mk z h = z :=
-  Subtype.eta z h
+  rfl
 #align upper_half_plane.mk_coe UpperHalfPlane.mk_coe
 
 theorem re_add_im (z : ℍ) : (z.re + z.im * Complex.I : ℂ) = z :=
@@ -211,19 +215,19 @@ theorem smulAux'_im (g : GL(2, ℝ)⁺) (z : ℍ) :
 
 /-- Fractional linear transformation, also known as the Moebius transformation -/
 def smulAux (g : GL(2, ℝ)⁺) (z : ℍ) : ℍ :=
-  ⟨smulAux' g z, by
+  mk (smulAux' g z) <| by
     rw [smulAux'_im]
     convert mul_pos ((mem_glpos _).1 g.prop)
         (div_pos z.im_pos (Complex.normSq_pos.mpr (denom_ne_zero g z))) using 1
     simp only [GeneralLinearGroup.det_apply_val]
-    ring⟩
+    ring
 #align upper_half_plane.smul_aux UpperHalfPlane.smulAux
 
 theorem denom_cocycle (x y : GL(2, ℝ)⁺) (z : ℍ) :
     denom (x * y) z = denom x (smulAux y z) * denom y z := by
   change _ = (_ * (_ / _) + _) * _
   field_simp [denom_ne_zero]
-  simp only [Matrix.mul, dotProduct, Fin.sum_univ_succ, denom, num, Subgroup.coe_mul,
+  simp only [Matrix.mul_apply, dotProduct, Fin.sum_univ_succ, denom, num, Subgroup.coe_mul,
     GeneralLinearGroup.coe_mul, Fintype.univ_ofSubsingleton, Fin.mk_zero, Finset.sum_singleton,
     Fin.succ_zero_eq_one, Complex.ofReal_add, Complex.ofReal_mul]
   ring
@@ -235,7 +239,7 @@ theorem mul_smul' (x y : GL(2, ℝ)⁺) (z : ℍ) : smulAux (x * y) z = smulAux 
   change _ / _ = (_ * (_ / _) + _) / _
   rw [denom_cocycle]
   field_simp [denom_ne_zero]
-  simp only [Matrix.mul, dotProduct, Fin.sum_univ_succ, num, denom, Subgroup.coe_mul,
+  simp only [Matrix.mul_apply, dotProduct, Fin.sum_univ_succ, num, denom, Subgroup.coe_mul,
     GeneralLinearGroup.coe_mul, Fintype.univ_ofSubsingleton, Fin.mk_zero, Finset.sum_singleton,
     Fin.succ_zero_eq_one, Complex.ofReal_add, Complex.ofReal_mul]
   ring
@@ -254,20 +258,32 @@ section ModularScalarTowers
 
 variable (Γ : Subgroup (SpecialLinearGroup (Fin 2) ℤ))
 
-instance SLAction {R : Type _} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
+instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
   MulAction.compHom ℍ <| SpecialLinearGroup.toGLPos.comp <| map (algebraMap R ℝ)
 #align upper_half_plane.SL_action UpperHalfPlane.SLAction
 
+@[coe]
+def coe' : SL(2, ℤ) → GL(2, ℝ)⁺ := fun g => ((g : SL(2, ℝ)) : GL(2, ℝ)⁺)
+
 instance : Coe SL(2, ℤ) GL(2, ℝ)⁺ :=
-  ⟨fun g => ((g : SL(2, ℝ)) : GL(2, ℝ)⁺)⟩
+  ⟨coe'⟩
+
+set_option autoImplicit true in
+@[simp]
+theorem coe'_apply_complex : (Units.val <| Subtype.val <| coe' g) i j = (Subtype.val g i j : ℂ) :=
+  rfl
+
+set_option autoImplicit true in
+@[simp]
+theorem det_coe' : det (Units.val <| Subtype.val <| coe' g) = 1 := by
+  simp only [SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix, SpecialLinearGroup.det_coe, coe']
 
 instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩
 #align upper_half_plane.SL_on_GL_pos UpperHalfPlane.SLOnGLPos
 
--- Porting note: writing the `SMul.smul` explicitly is terrible. Needs a fix
 theorem SLOnGLPos_smul_apply (s : SL(2, ℤ)) (g : GL(2, ℝ)⁺) (z : ℍ) :
-    (s • g) • z = SMul.smul ((s : GL(2, ℝ)⁺) * g) z :=
+    (s • g) • z = ((s : GL(2, ℝ)⁺) * g) • z :=
   rfl
 #align upper_half_plane.SL_on_GL_pos_smul_apply UpperHalfPlane.SLOnGLPos_smul_apply
 
@@ -282,18 +298,17 @@ instance subgroupGLPos : SMul Γ GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩
 #align upper_half_plane.subgroup_GL_pos UpperHalfPlane.subgroupGLPos
 
--- Porting note: writing the `SMul.smul` explicitly is terrible. Needs a fix
 theorem subgroup_on_glpos_smul_apply (s : Γ) (g : GL(2, ℝ)⁺) (z : ℍ) :
-    (s • g) • z = SMul.smul ((s : GL(2, ℝ)⁺) * g) z :=
+    (s • g) • z = ((s : GL(2, ℝ)⁺) * g) • z :=
   rfl
 #align upper_half_plane.subgroup_on_GL_pos_smul_apply UpperHalfPlane.subgroup_on_glpos_smul_apply
 
-instance subgroup_on_gLPos : IsScalarTower Γ GL(2, ℝ)⁺ ℍ where
+instance subgroup_on_glpos : IsScalarTower Γ GL(2, ℝ)⁺ ℍ where
   smul_assoc := by
     intro s g z
     simp only [subgroup_on_glpos_smul_apply]
     apply mul_smul'
-#align upper_half_plane.subgroup_on_GL_pos UpperHalfPlane.subgroup_on_gLPos
+#align upper_half_plane.subgroup_on_GL_pos UpperHalfPlane.subgroup_on_glpos
 
 instance subgroupSL : SMul Γ SL(2, ℤ) :=
   ⟨fun s g => s * g⟩
@@ -314,7 +329,7 @@ end ModularScalarTowers
 
 -- Porting note: in the statement, we used to have coercions `↑· : ℝ`
 -- rather than `algebraMap R ℝ ·`.
-theorem specialLinearGroup_apply {R : Type _} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
+theorem specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
     g • z =
       mk
         (((algebraMap R ℝ (↑ₘ[R] g 0 0) : ℂ) * z + (algebraMap R ℝ (↑ₘ[R] g 0 1) : ℂ)) /
@@ -358,14 +373,12 @@ section SLModularAction
 
 variable (g : SL(2, ℤ)) (z : ℍ) (Γ : Subgroup SL(2, ℤ))
 
--- Porting note: writing the `SMul.smul` explicitly is terrible. Needs a fix
 @[simp]
-theorem sl_moeb (A : SL(2, ℤ)) (z : ℍ) : A • z = SMul.smul (A : GL(2, ℝ)⁺) z :=
+theorem sl_moeb (A : SL(2, ℤ)) (z : ℍ) : A • z = (A : GL(2, ℝ)⁺) • z :=
   rfl
 #align upper_half_plane.sl_moeb UpperHalfPlane.sl_moeb
 
--- Porting note: writing the `SMul.smul` explicitly is terrible. Needs a fix
-theorem subgroup_moeb (A : Γ) (z : ℍ) : A • z = SMul.smul (A : GL(2, ℝ)⁺) z :=
+theorem subgroup_moeb (A : Γ) (z : ℍ) : A • z = (A : GL(2, ℝ)⁺) • z :=
   rfl
 #align upper_half_plane.subgroup_moeb UpperHalfPlane.subgroup_moeb
 
@@ -374,10 +387,9 @@ theorem subgroup_to_sl_moeb (A : Γ) (z : ℍ) : A • z = (A : SL(2, ℤ)) • 
   rfl
 #align upper_half_plane.subgroup_to_sl_moeb UpperHalfPlane.subgroup_to_sl_moeb
 
--- @[simp] Failed simpNF linter, probably due to the `SMul.smul` hack
+@[simp high]
 theorem SL_neg_smul (g : SL(2, ℤ)) (z : ℍ) : -g • z = g • z := by
-  simp only [coe_GLPos_neg, sl_moeb, coe_int_neg, neg_smul]
-  apply neg_smul -- Porting note: should be unneeded once `SMul.smul` hack is fixed
+  simp only [coe_GLPos_neg, sl_moeb, coe_int_neg, neg_smul, coe']
 #align upper_half_plane.SL_neg_smul UpperHalfPlane.SL_neg_smul
 
 theorem c_mul_im_sq_le_normSq_denom (z : ℍ) (g : SL(2, ℝ)) :
@@ -389,17 +401,16 @@ theorem c_mul_im_sq_le_normSq_denom (z : ℍ) (g : SL(2, ℝ)) :
     _ = Complex.normSq (denom g z) := by dsimp [denom, Complex.normSq]; ring
 #align upper_half_plane.c_mul_im_sq_le_norm_sq_denom UpperHalfPlane.c_mul_im_sq_le_normSq_denom
 
-nonrec
-theorem SpecialLinearGroup.im_smul_eq_div_normSq :
+nonrec theorem SpecialLinearGroup.im_smul_eq_div_normSq :
     (g • z).im = z.im / Complex.normSq (denom g z) := by
   convert im_smul_eq_div_normSq g z
   simp only [GeneralLinearGroup.det_apply_val, coe_GLPos_coe_GL_coe_matrix,
-    Int.coe_castRingHom, (g : SL(2, ℝ)).prop, one_mul]
+    Int.coe_castRingHom, (g : SL(2, ℝ)).prop, one_mul, coe']
 #align upper_half_plane.special_linear_group.im_smul_eq_div_norm_sq UpperHalfPlane.SpecialLinearGroup.im_smul_eq_div_normSq
 
 theorem denom_apply (g : SL(2, ℤ)) (z : ℍ) :
     denom g z = (↑g : Matrix (Fin 2) (Fin 2) ℤ) 1 0 * z + (↑g : Matrix (Fin 2) (Fin 2) ℤ) 1 1 := by
-  simp [denom]
+  simp [denom, coe']
 #align upper_half_plane.denom_apply UpperHalfPlane.denom_apply
 
 end SLModularAction
@@ -464,7 +475,7 @@ theorem modular_S_smul (z : ℍ) : ModularGroup.S • z = mk (-z : ℂ)⁻¹ z.i
 #align upper_half_plane.modular_S_smul UpperHalfPlane.modular_S_smul
 
 theorem modular_T_zpow_smul (z : ℍ) (n : ℤ) : ModularGroup.T ^ n • z = (n : ℝ) +ᵥ z := by
-  rw [← Subtype.coe_inj, coe_vadd, add_comm, specialLinearGroup_apply, coe_mk]
+  rw [← ext_iff, coe_vadd, add_comm, specialLinearGroup_apply, coe_mk]
   -- Porting note: added `coeToGL` and merged `rw` and `simp`
   simp [coeToGL, ModularGroup.coe_T_zpow,
     of_apply, cons_val_zero, algebraMap.coe_one, Complex.ofReal_one, one_mul, cons_val_one,

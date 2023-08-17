@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van Doorn
-
-! This file was ported from Lean 3 source module order.cover
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.OrdConnected
 import Mathlib.Order.Antisymmetrization
+
+#align_import order.cover from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # The covering relation
@@ -28,7 +25,7 @@ is equivalent to `a ⋖ b ∨ (a ≤ b ∧ b ≤ a)`
 
 open Set OrderDual
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 section WeaklyCovers
 
@@ -130,7 +127,7 @@ theorem Set.OrdConnected.apply_wcovby_apply_iff (f : α ↪o β) (h : (range f).
 #align set.ord_connected.apply_wcovby_apply_iff Set.OrdConnected.apply_wcovby_apply_iff
 
 @[simp]
-theorem apply_wcovby_apply_iff {E : Type _} [OrderIsoClass E α β] (e : E) : e a ⩿ e b ↔ a ⩿ b :=
+theorem apply_wcovby_apply_iff {E : Type*} [OrderIsoClass E α β] (e : E) : e a ⩿ e b ↔ a ⩿ b :=
   (ordConnected_range (e : α ≃o β)).apply_wcovby_apply_iff ((e : α ≃o β) : α ↪o β)
 #align apply_wcovby_apply_iff apply_wcovby_apply_iff
 
@@ -356,7 +353,7 @@ theorem Set.OrdConnected.apply_covby_apply_iff (f : α ↪o β) (h : (range f).O
 #align set.ord_connected.apply_covby_apply_iff Set.OrdConnected.apply_covby_apply_iff
 
 @[simp]
-theorem apply_covby_apply_iff {E : Type _} [OrderIsoClass E α β] (e : E) : e a ⋖ e b ↔ a ⋖ b :=
+theorem apply_covby_apply_iff {E : Type*} [OrderIsoClass E α β] (e : E) : e a ⋖ e b ↔ a ⋖ b :=
   (ordConnected_range (e : α ≃o β)).apply_covby_apply_iff ((e : α ≃o β) : α ↪o β)
 #align apply_covby_apply_iff apply_covby_apply_iff
 

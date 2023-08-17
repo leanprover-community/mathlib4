@@ -2,13 +2,10 @@
 Copyright (c) 2021 Hunter Monroe. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hunter Monroe, Kyle Miller, Alena Gusakov
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.subgraph
-! leanprover-community/mathlib commit c6ef6387ede9983aee397d442974e61f89dfd87b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
+
+#align_import combinatorics.simple_graph.subgraph from "leanprover-community/mathlib"@"c6ef6387ede9983aee397d442974e61f89dfd87b"
 
 /-!
 # Subgraphs of a simple graph
@@ -68,7 +65,7 @@ structure Subgraph {V : Type u} (G : SimpleGraph V) where
   symm : Symmetric Adj := by aesop_graph -- Porting note: Originally `by obviously`
 #align simple_graph.subgraph SimpleGraph.Subgraph
 
-variable {ι : Sort _} {V : Type u} {W : Type v}
+variable {ι : Sort*} {V : Type u} {W : Type v}
 
 /-- The one-vertex subgraph. -/
 @[simps]
@@ -437,14 +434,17 @@ theorem verts_iSup {f : ι → G.Subgraph} : (⨆ i, f i).verts = ⋃ i, (f i).v
 theorem verts_iInf {f : ι → G.Subgraph} : (⨅ i, f i).verts = ⋂ i, (f i).verts := by simp [iInf]
 #align simple_graph.subgraph.verts_infi SimpleGraph.Subgraph.verts_iInf
 
+theorem verts_spanningCoe_injective :
+    (fun G' : Subgraph G => (G'.verts, G'.spanningCoe)).Injective := by
+  intro G₁ G₂ h
+  rw [Prod.ext_iff] at h
+  exact Subgraph.ext _ _ h.1 (spanningCoe_inj.1 h.2)
+
 /-- For subgraphs `G₁`, `G₂`, `G₁ ≤ G₂` iff `G₁.verts ⊆ G₂.verts` and
 `∀ a b, G₁.adj a b → G₂.adj a b`. -/
 instance distribLattice : DistribLattice G.Subgraph :=
   { show DistribLattice G.Subgraph from
-      Function.Injective.distribLattice (fun G' => (G'.verts, G'.spanningCoe))
-        (fun G₁ G₂ h => by
-          rw [Prod.ext_iff] at h
-          exact Subgraph.ext _ _ h.1 (spanningCoe_inj.1 h.2))
+      verts_spanningCoe_injective.distribLattice _
         (fun _ _ => rfl) fun _ _ => rfl with
     le := fun x y => x.verts ⊆ y.verts ∧ ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w }
 
@@ -455,7 +455,7 @@ instance : BoundedOrder (Subgraph G) where
   bot_le _ := ⟨Set.empty_subset _, fun _ _ => False.elim⟩
 
 -- Note that subgraphs do not form a Boolean algebra, because of `verts`.
-instance : CompleteDistribLattice G.Subgraph :=
+instance : CompletelyDistribLattice G.Subgraph :=
   { Subgraph.distribLattice with
     le := (· ≤ ·)
     sup := (· ⊔ ·)
@@ -476,18 +476,8 @@ instance : CompleteDistribLattice G.Subgraph :=
     le_sInf := fun s G' hG' =>
       ⟨Set.subset_iInter₂ fun H hH => (hG' _ hH).1, fun a b hab =>
         ⟨fun H hH => (hG' _ hH).2 hab, G'.adj_sub hab⟩⟩
-    inf_sSup_le_iSup_inf := fun G' s => by
-      constructor
-      · intro v
-        simp
-      · intros a b
-        simp
-    iInf_sup_le_sup_sInf := fun G' s => by
-      constructor
-      · intro
-        simp [← forall_or_left]
-      · intros a b hab
-        simpa [forall_and, forall_or_left, or_and_right, and_iff_left_of_imp G'.adj_sub] using hab }
+    iInf_iSup_eq := fun f => Subgraph.ext _ _ (by simpa using iInf_iSup_eq)
+      (by ext; simp [Classical.skolem]) }
 
 @[simps]
 instance subgraphInhabited : Inhabited (Subgraph G) := ⟨⊥⟩
@@ -739,6 +729,9 @@ protected def hom (x : Subgraph G) : x.coe →g G where
   map_rel' := x.adj_sub
 #align simple_graph.subgraph.hom SimpleGraph.Subgraph.hom
 
+@[simp] lemma coe_hom (x : Subgraph G) :
+    (x.hom : x.verts → V) = (fun (v : x.verts) => (v : V)) := rfl
+
 theorem hom.injective {x : Subgraph G} : Function.Injective x.hom :=
   fun _ _ ↦ Subtype.ext
 #align simple_graph.subgraph.hom.injective SimpleGraph.Subgraph.hom.injective
@@ -905,6 +898,15 @@ theorem edgeSet_subgraphOfAdj {v w : V} (hvw : G.Adj v w) :
     forall₂_true_iff]
 #align simple_graph.edge_set_subgraph_of_adj SimpleGraph.edgeSet_subgraphOfAdj
 
+set_option autoImplicit true in
+lemma subgraphOfAdj_le_of_adj (H : G.Subgraph) (h : H.Adj v w) :
+    G.subgraphOfAdj (H.adj_sub h) ≤ H := by
+  constructor
+  · intro x
+    rintro (rfl | rfl) <;> simp [H.edge_vert h, H.edge_vert h.symm]
+  · simp only [subgraphOfAdj_Adj, Quotient.eq, Sym2.rel_iff]
+    rintro _ _ (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> simp [h, h.symm]
+
 theorem subgraphOfAdj_symm {v w : V} (hvw : G.Adj v w) :
     G.subgraphOfAdj hvw.symm = G.subgraphOfAdj hvw := by
   ext <;> simp [or_comm, and_comm]
@@ -999,20 +1001,42 @@ protected def restrict {G' : G.Subgraph} : G.Subgraph → G'.coe.Subgraph :=
   Subgraph.comap G'.hom
 #align simple_graph.subgraph.restrict SimpleGraph.Subgraph.restrict
 
+lemma coeSubgraph_Adj {G' : G.Subgraph} (G'' : G'.coe.Subgraph) (v w : V) :
+    (G'.coeSubgraph G'').Adj v w ↔
+      ∃ (hv : v ∈ G'.verts) (hw : w ∈ G'.verts), G''.Adj ⟨v, hv⟩ ⟨w, hw⟩ := by
+  simp [Relation.Map]
+
+lemma restrict_Adj {G' G'' : G.Subgraph} (v w : G'.verts) :
+    (G'.restrict G'').Adj v w ↔ G'.Adj v w ∧ G''.Adj v w := Iff.rfl
+
 theorem restrict_coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph) :
     Subgraph.restrict (Subgraph.coeSubgraph G'') = G'' := by
   ext
   · simp
-  · simp only [Relation.Map, comap_Adj, coe_Adj, Subtype.coe_prop, hom_apply, map_Adj,
-      SetCoe.exists, Subtype.coe_mk, exists_and_right, exists_eq_right_right, Subtype.coe_eta,
-      exists_true_left, exists_eq_right, and_iff_right_iff_imp]
-    apply G''.adj_sub
+  · rw [restrict_Adj, coeSubgraph_Adj]
+    simpa using G''.adj_sub
 #align simple_graph.subgraph.restrict_coe_subgraph SimpleGraph.Subgraph.restrict_coeSubgraph
 
 theorem coeSubgraph_injective (G' : G.Subgraph) :
     Function.Injective (Subgraph.coeSubgraph : G'.coe.Subgraph → G.Subgraph) :=
   Function.LeftInverse.injective restrict_coeSubgraph
 #align simple_graph.subgraph.coe_subgraph_injective SimpleGraph.Subgraph.coeSubgraph_injective
+
+lemma coeSubgraph_le {H : G.Subgraph} (H' : H.coe.Subgraph) :
+    Subgraph.coeSubgraph H' ≤ H := by
+  constructor
+  · simp
+  · rintro v w ⟨_, _, h, rfl, rfl⟩
+    exact H'.adj_sub h
+
+lemma coeSubgraph_restrict_eq {H : G.Subgraph} (H' : G.Subgraph) :
+    Subgraph.coeSubgraph (H.restrict H') = H ⊓ H' := by
+  ext
+  · simp [and_comm]
+  · simp_rw [coeSubgraph_Adj, restrict_Adj]
+    simp only [exists_and_left, exists_prop, ge_iff_le, inf_adj, and_congr_right_iff]
+    intro h
+    simp [H.edge_vert h, H.edge_vert h.symm]
 
 /-! ### Edge deletion -/
 
@@ -1178,6 +1202,22 @@ theorem induce_self_verts : G'.induce G'.verts = G' := by
       simp (config := { contextual := true }) only [induce_Adj, imp_true_iff, and_true_iff]
     exact fun ha ↦ ⟨G'.edge_vert ha, G'.edge_vert ha.symm⟩
 #align simple_graph.subgraph.induce_self_verts SimpleGraph.Subgraph.induce_self_verts
+
+lemma le_induce_top_verts : G' ≤ (⊤ : G.Subgraph).induce G'.verts :=
+  calc G' = G'.induce G'.verts               := Subgraph.induce_self_verts.symm
+       _  ≤ (⊤ : G.Subgraph).induce G'.verts := Subgraph.induce_mono_left le_top
+
+lemma le_induce_union : G'.induce s ⊔ G'.induce s' ≤ G'.induce (s ∪ s') := by
+  constructor
+  · simp only [verts_sup, induce_verts, Set.Subset.rfl]
+  · simp only [sup_adj, induce_Adj, Set.mem_union]
+    rintro v w (h | h) <;> simp [h]
+
+lemma le_induce_union_left : G'.induce s ≤ G'.induce (s ∪ s') := by
+  exact (sup_le_iff.mp le_induce_union).1
+
+lemma le_induce_union_right : G'.induce s' ≤ G'.induce (s ∪ s') := by
+  exact (sup_le_iff.mp le_induce_union).2
 
 theorem singletonSubgraph_eq_induce {v : V} : G.singletonSubgraph v = (⊤ : G.Subgraph).induce {v} :=
   by ext <;> simp (config := { contextual := true }) [-Set.bot_eq_empty, Prop.bot_eq_false]

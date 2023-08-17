@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.category.Cat.limit
-! leanprover-community/mathlib commit 1995c7bbdbb0adb1b6d5acdc654f6cf46ed96cfa
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+
+#align_import category_theory.category.Cat.limit from "leanprover-community/mathlib"@"1995c7bbdbb0adb1b6d5acdc654f6cf46ed96cfa"
 
 /-!
 # The category of small categories has all small limits.
@@ -145,11 +142,11 @@ def limitConeIsLimit (F : J ⥤ Cat.{v, v}) : IsLimit (limitCone F) where
   uniq s m w := by
     symm
     refine' CategoryTheory.Functor.ext _ _
-    . intro X
+    · intro X
       apply Types.limit_ext.{v, v}
       intro j
       simp [Types.Limit.lift_π_apply', ← w j]
-    . intro X Y f
+    · intro X Y f
       dsimp
       simp [fun j => Functor.congr_hom (w j).symm f]
 set_option linter.uppercaseLean3 false in

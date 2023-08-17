@@ -2,13 +2,10 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module field_theory.splitting_field.construction
-! leanprover-community/mathlib commit e3f4be1fcb5376c4948d7f095bec45350bfb9d1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.Normal
+
+#align_import field_theory.splitting_field.construction from "leanprover-community/mathlib"@"e3f4be1fcb5376c4948d7f095bec45350bfb9d1a"
 
 /-!
 # Splitting fields
@@ -186,7 +183,7 @@ protected theorem splits (n : ℕ) :
         (le_trans degree_le_natDegree <| hf.symm ▸ WithBot.coe_le_coe.2 zero_le_one))
     fun n ih {K} _ f hf => by
     rw [← splits_id_iff_splits, algebraMap_succ, ← map_map, splits_id_iff_splits,
-      ← X_sub_C_mul_removeFactor f fun h => by rw [h] at hf ; cases hf]
+      ← X_sub_C_mul_removeFactor f fun h => by rw [h] at hf; cases hf]
     exact splits_mul _ (splits_X_sub_C _) (ih _ (natDegree_removeFactor' hf))
 #align polynomial.splitting_field_aux.splits Polynomial.SplittingFieldAux.splits
 
@@ -202,8 +199,8 @@ theorem adjoin_rootSet (n : ℕ) :
               Set (SplittingFieldAux n f)) = ⊤)
     n (fun {K} _ f _hf => Algebra.eq_top_iff.2 fun x => Subalgebra.range_le _ ⟨x, rfl⟩)
     fun n ih {K} _ f hfn => by
-    have hndf : f.natDegree ≠ 0 := by intro h; rw [h] at hfn ; cases hfn
-    have hfn0 : f ≠ 0 := by intro h; rw [h] at hndf ; exact hndf rfl
+    have hndf : f.natDegree ≠ 0 := by intro h; rw [h] at hfn; cases hfn
+    have hfn0 : f ≠ 0 := by intro h; rw [h] at hndf; exact hndf rfl
     have hmf0 : map (algebraMap K (SplittingFieldAux n.succ f)) f ≠ 0 := map_ne_zero hfn0
     rw [algebraMap_succ, ←map_map, ←X_sub_C_mul_removeFactor _ hndf, Polynomial.map_mul] at hmf0 ⊢
     rw [roots_mul hmf0, Polynomial.map_sub, map_X, map_C, roots_X_sub_C, Multiset.toFinset_add,
@@ -274,18 +271,18 @@ instance inhabited : Inhabited (SplittingField f) :=
   ⟨37⟩
 #align polynomial.splitting_field.inhabited Polynomial.SplittingField.inhabited
 
-instance {S : Type _} [DistribSMul S K] [IsScalarTower S K K] : SMul S (SplittingField f) :=
-  Submodule.Quotient.hasSmul' _
+instance {S : Type*} [DistribSMul S K] [IsScalarTower S K K] : SMul S (SplittingField f) :=
+  Submodule.Quotient.instSMul' _
 
 instance algebra : Algebra K (SplittingField f) :=
   Ideal.Quotient.algebra _
 #align polynomial.splitting_field.algebra Polynomial.SplittingField.algebra
 
-instance algebra' {R : Type _} [CommSemiring R] [Algebra R K] : Algebra R (SplittingField f) :=
+instance algebra' {R : Type*} [CommSemiring R] [Algebra R K] : Algebra R (SplittingField f) :=
   Ideal.Quotient.algebra _
 #align polynomial.splitting_field.algebra' Polynomial.SplittingField.algebra'
 
-instance isScalarTower {R : Type _} [CommSemiring R] [Algebra R K] :
+instance isScalarTower {R : Type*} [CommSemiring R] [Algebra R K] :
     IsScalarTower R K (SplittingField f) :=
   Ideal.Quotient.isScalarTower _ _ _
 #align polynomial.splitting_field.is_scalar_tower Polynomial.SplittingField.isScalarTower
@@ -324,8 +321,11 @@ instance : Field (SplittingField f) :=
       assumption
     inv_zero := by simp }
 
-instance [CharZero K] : CharZero (SplittingField f) :=
+instance instCharZero [CharZero K] : CharZero (SplittingField f) :=
   charZero_of_injective_algebraMap (algebraMap K _).injective
+
+instance instCharP (p : ℕ) [CharP K p] : CharP (SplittingField f) p :=
+  charP_of_injective_algebraMap (algebraMap K _).injective p
 
 -- The algebra instance deriving from `K` should be definitionally equal to that
 -- deriving from the field structure on `SplittingField f`.

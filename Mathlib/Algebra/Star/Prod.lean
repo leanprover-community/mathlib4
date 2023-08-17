@@ -2,15 +2,12 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.star.prod
-! leanprover-community/mathlib commit 9abfa6f0727d5adc99067e325e15d1a9de17fd8e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Module.Prod
+
+#align_import algebra.star.prod from "leanprover-community/mathlib"@"9abfa6f0727d5adc99067e325e15d1a9de17fd8e"
 
 /-!
 # `Star` on product types

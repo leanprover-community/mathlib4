@@ -2,16 +2,13 @@
 Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
-
-! This file was ported from Lean 3 source module imo.imo2008_q4
-! leanprover-community/mathlib commit 308826471968962c6b59c7ff82a22757386603e3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Data.Real.NNReal
 import Mathlib.Tactic.LinearCombination
+
+#align_import imo.imo2008_q4 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
 /-!
 # IMO 2008 Q4
@@ -93,7 +90,7 @@ theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
     field_simp [ne_of_gt hb] at H₂
     have hb₁ : b ^ 4 = 1 := by linear_combination -H₂
     obtain hb₂ := abs_eq_one_of_pow_eq_one b 4 (show 4 ≠ 0 by norm_num) hb₁
-    rw [abs_of_pos hb] at hb₂ ; rw [hb₂] at hfb₁ ; exact hfb₁ h₁
+    rw [abs_of_pos hb] at hb₂; rw [hb₂] at hfb₁; exact hfb₁ h₁
   -- f(ab) = 1/ab → a^4 = 1 → a = 1 → f(a) = 1/a → false
   · have hb_ne_0 : b ≠ 0 := ne_of_gt hb
     field_simp [hab₂] at H₂

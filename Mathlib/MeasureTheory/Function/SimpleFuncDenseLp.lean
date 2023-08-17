@@ -2,14 +2,11 @@
 Copyright (c) 2022 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Heather Macbeth
-
-! This file was ported from Lean 3 source module measure_theory.function.simple_func_dense_lp
-! leanprover-community/mathlib commit 5a2df4cd59cb31e97a516d4603a14bed5c2f9425
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Function.L1Space
 import Mathlib.MeasureTheory.Function.SimpleFuncDense
+
+#align_import measure_theory.function.simple_func_dense_lp from "leanprover-community/mathlib"@"5a2df4cd59cb31e97a516d4603a14bed5c2f9425"
 
 /-!
 # Density of simple functions
@@ -53,7 +50,7 @@ open Set Function Filter TopologicalSpace ENNReal EMetric Finset
 
 open scoped Classical Topology ENNReal MeasureTheory BigOperators
 
-variable {α β ι E F 𝕜 : Type _}
+variable {α β ι E F 𝕜 : Type*}
 
 namespace MeasureTheory
 
@@ -202,7 +199,7 @@ theorem tendsto_approxOn_range_Lp [BorelSpace E] {f : β → E} [hp : Fact (1 �
 #align measure_theory.simple_func.tendsto_approx_on_range_Lp MeasureTheory.SimpleFunc.tendsto_approxOn_range_Lp
 
 /-- Any function in `ℒp` can be approximated by a simple function if `p < ∞`. -/
-theorem _root_.MeasureTheory.Memℒp.exists_simpleFunc_snorm_sub_lt {E : Type _}
+theorem _root_.MeasureTheory.Memℒp.exists_simpleFunc_snorm_sub_lt {E : Type*}
     [NormedAddCommGroup E] {f : β → E} {μ : Measure β} (hf : Memℒp f p μ) (hp_ne_top : p ≠ ∞)
     {ε : ℝ≥0∞} (hε : ε ≠ 0) : ∃ g : β →ₛ E, snorm (f - ⇑g) p μ < ε ∧ Memℒp g p μ := by
   borelize E
@@ -575,7 +572,6 @@ theorem toLp_sub (f g : α →ₛ E) (hf : Memℒp f p μ) (hg : Memℒp g p μ)
 
 variable [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
 
-set_option synthInstance.maxHeartbeats 30000 in
 theorem toLp_smul (f : α →ₛ E) (hf : Memℒp f p μ) (c : 𝕜) :
     toLp (c • f) (hf.const_smul c) = c • toLp f hf :=
   rfl
@@ -813,7 +809,7 @@ end CoeToLp
 
 section Order
 
-variable {G : Type _} [NormedLatticeAddCommGroup G]
+variable {G : Type*} [NormedLatticeAddCommGroup G]
 
 theorem coeFn_le (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ f ≤ g := by
   rw [← Subtype.coe_le_coe, ← Lp.coeFn_le]

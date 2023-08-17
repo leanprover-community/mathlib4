@@ -2,15 +2,12 @@
 Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module analysis.normed_space.quaternion_exponential
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Quaternion
 import Mathlib.Analysis.NormedSpace.Exponential
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
+
+#align_import analysis.normed_space.quaternion_exponential from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Lemmas about `exp` on `Quaternion`s
@@ -37,8 +34,7 @@ theorem exp_coe (r : ℝ) : exp ℝ (r : ℍ[ℝ]) = ↑(exp ℝ r) :=
   (map_exp ℝ (algebraMap ℝ ℍ[ℝ]) (continuous_algebraMap _ _) _).symm
 #align quaternion.exp_coe Quaternion.exp_coe
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
--- porting note: lean4#2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 /-- Auxiliary result; if the power series corresponding to `Real.cos` and `Real.sin` evaluated
 at `‖q‖` tend to `c` and `s`, then the exponential series tends to `c + (s / ‖q‖)`. -/

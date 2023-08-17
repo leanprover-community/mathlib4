@@ -2,14 +2,11 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module data.fin.tuple.reflection
-! leanprover-community/mathlib commit d95bef0d215ea58c0fd7bbc4b151bf3fe952c095
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Algebra.BigOperators.Fin
+
+#align_import data.fin.tuple.reflection from "leanprover-community/mathlib"@"d95bef0d215ea58c0fd7bbc4b151bf3fe952c095"
 
 /-!
 # Lemmas for tuples `Fin m → α`
@@ -35,7 +32,7 @@ corresponding `*_eq` lemmas to be used in a place where they are definitionally 
 
 namespace FinVec
 
-variable {m n : ℕ} {α β γ : Type _}
+variable {m n : ℕ} {α β γ : Type*}
 
 /-- Evaluate `FinVec.seq f v = ![(f 0) (v 0), (f 1) (v 1), ...]` -/
 def seq : ∀ {m}, (Fin m → α → β) → (Fin m → α) → Fin m → β
@@ -152,7 +149,7 @@ open BigOperators
 
 /-- This can be used to prove
 ```lean
-example [AddCommMonoid α] (a : Fin 3 → α) : (∑ i, a i) = a 0 + a 1 + a 2 :=
+example [AddCommMonoid α] (a : Fin 3 → α) : ∑ i, a i = a 0 + a 1 + a 2 :=
   (sum_eq _).symm
 ```
 -/
@@ -163,7 +160,7 @@ theorem sum_eq [AddCommMonoid α] : ∀ {m} (a : Fin m → α), sum a = ∑ i, a
   | n + 2, a => by rw [Fin.sum_univ_castSucc, sum, sum_eq]
 #align fin_vec.sum_eq FinVec.sum_eq
 
-example [AddCommMonoid α] (a : Fin 3 → α) : (∑ i, a i) = a 0 + a 1 + a 2 :=
+example [AddCommMonoid α] (a : Fin 3 → α) : ∑ i, a i = a 0 + a 1 + a 2 :=
   (sum_eq _).symm
 
 end FinVec

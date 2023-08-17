@@ -2,14 +2,11 @@
 Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
-
-! This file was ported from Lean 3 source module order.succ_pred.limit
-! leanprover-community/mathlib commit 1e05171a5e8cf18d98d9cf7b207540acb044acae
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.BoundedOrder
+
+#align_import order.succ_pred.limit from "leanprover-community/mathlib"@"1e05171a5e8cf18d98d9cf7b207540acb044acae"
 
 /-!
 # Successor and predecessor limits
@@ -25,7 +22,7 @@ predicate `Order.IsSuccLimit`.
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Order
 
@@ -120,7 +117,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] [SuccOrder α] {a b : α} {C : α → Sort _}
+variable [PartialOrder α] [SuccOrder α] {a b : α} {C : α → Sort*}
 
 theorem isSuccLimit_of_succ_ne (h : ∀ b, succ b ≠ a) : IsSuccLimit a := fun b hba =>
   h b (Covby.succ_eq hba)
@@ -334,7 +331,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] [PredOrder α] {a b : α} {C : α → Sort _}
+variable [PartialOrder α] [PredOrder α] {a b : α} {C : α → Sort*}
 
 theorem isPredLimit_of_pred_ne (h : ∀ b, pred b ≠ a) : IsPredLimit a := fun b hba =>
   h b (Covby.pred_eq hba)

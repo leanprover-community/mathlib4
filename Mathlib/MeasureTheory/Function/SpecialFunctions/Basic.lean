@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.function.special_functions.basic
-! leanprover-community/mathlib commit 83a66c8775fa14ee5180c85cab98e970956401ad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
+
+#align_import measure_theory.function.special_functions.basic from "leanprover-community/mathlib"@"83a66c8775fa14ee5180c85cab98e970956401ad"
 
 /-!
 # Measurability of real and complex functions
@@ -136,7 +133,7 @@ section RealComposition
 
 open Real
 
-variable {α : Type _} {m : MeasurableSpace α} {f : α → ℝ} (hf : Measurable f)
+variable {α : Type*} {m : MeasurableSpace α} {f : α → ℝ} (hf : Measurable f)
 
 @[measurability]
 theorem Measurable.exp : Measurable fun x => Real.exp (f x) :=
@@ -179,7 +176,7 @@ section ComplexComposition
 
 open Complex
 
-variable {α : Type _} {m : MeasurableSpace α} {f : α → ℂ} (hf : Measurable f)
+variable {α : Type*} {m : MeasurableSpace α} {f : α → ℂ} (hf : Measurable f)
 
 @[measurability]
 theorem Measurable.cexp : Measurable fun x => Complex.exp (f x) :=

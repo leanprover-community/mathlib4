@@ -2,16 +2,13 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.structured_arrow
-! leanprover-community/mathlib commit 8a318021995877a44630c898d0b2bc376fceef3b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Comma
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.EssentiallySmall
+
+#align_import category_theory.structured_arrow from "leanprover-community/mathlib"@"8a318021995877a44630c898d0b2bc376fceef3b"
 
 /-!
 # The category of "structured arrows"
@@ -52,7 +49,7 @@ def proj (S : D) (T : C ⥤ D) : StructuredArrow S T ⥤ C :=
   Comma.snd _ _
 #align category_theory.structured_arrow.proj CategoryTheory.StructuredArrow.proj
 
-variable {S S' S'' : D} {Y Y' : C} {T : C ⥤ D}
+variable {S S' S'' : D} {Y Y' : C} {T T' : C ⥤ D}
 
 -- porting note: this lemma was added because `Comma.hom_ext`
 -- was not triggered automatically
@@ -83,7 +80,7 @@ theorem mk_hom_eq_self (f : S ⟶ T.obj Y) : (mk f).hom = f :=
 
 @[reassoc (attr := simp)]
 theorem w {A B : StructuredArrow S T} (f : A ⟶ B) : A.hom ≫ T.map f.right = B.hom := by
-  have := f.w ; aesop_cat
+  have := f.w; aesop_cat
 #align category_theory.structured_arrow.w CategoryTheory.StructuredArrow.w
 
 @[simp]
@@ -116,13 +113,12 @@ def homMk {f f' : StructuredArrow S T} (g : f.right ⟶ f'.right)
 picks up on it (seems like a bug). Either way simp solves it.  -/
 attribute [-simp, nolint simpNF] homMk_left
 
-/-- Given a structured arrow `X ⟶ F(U)`, and an arrow `U ⟶ Y`, we can construct a morphism of
-structured arrow given by `(X ⟶ F(U)) ⟶ (X ⟶ F(U) ⟶ F(Y))`.
--/
-def homMk' {F : C ⥤ D} {X : D} {Y : C} (U : StructuredArrow X F) (f : U.right ⟶ Y) :
-    U ⟶ mk (U.hom ≫ F.map f) where
+/-- Given a structured arrow `X ⟶ T(Y)`, and an arrow `Y ⟶ Y'`, we can construct a morphism of
+    structured arrows given by `(X ⟶ T(Y)) ⟶ (X ⟶ T(Y) ⟶ T(Y'))`.  -/
+@[simps]
+def homMk' (f : StructuredArrow S T) (g : f.right ⟶ Y') : f ⟶ mk (f.hom ≫ T.map g) where
   left := eqToHom (by ext)
-  right := f
+  right := g
 #align category_theory.structured_arrow.hom_mk' CategoryTheory.StructuredArrow.homMk'
 
 /-- To construct an isomorphism of structured arrows,
@@ -152,6 +148,9 @@ instance proj_faithful : Faithful (proj S T) where
   map_injective {_ _} := ext
 #align category_theory.structured_arrow.proj_faithful CategoryTheory.StructuredArrow.proj_faithful
 
+instance : LocallySmall.{v₁} (StructuredArrow S T) where
+  hom_small _ _ := small_of_injective ext
+
 /-- The converse of this is true with additional assumptions, see `mono_iff_mono_right`. -/
 theorem mono_of_mono_right {A B : StructuredArrow S T} (f : A ⟶ B) [h : Mono f.right] : Mono f :=
   (proj S T).mono_of_mono_map h
@@ -171,11 +170,10 @@ instance epi_homMk {A B : StructuredArrow S T} (f : A.right ⟶ B.right) (w) [h 
   (proj S T).epi_of_epi_map h
 #align category_theory.structured_arrow.epi_hom_mk CategoryTheory.StructuredArrow.epi_homMk
 
-/-- Eta rule for structured arrows. Prefer `StructuredArrow.eta`, since equality of objects tends
-    to cause problems. -/
-theorem eq_mk (f : StructuredArrow S T) : f = mk f.hom := by
-  cases f
-  congr
+/-- Eta rule for structured arrows. Prefer `StructuredArrow.eta` for rewriting, since equality of
+    objects tends to cause problems. -/
+theorem eq_mk (f : StructuredArrow S T) : f = mk f.hom :=
+  rfl
 #align category_theory.structured_arrow.eq_mk CategoryTheory.StructuredArrow.eq_mk
 
 /-- Eta rule for structured arrows. -/
@@ -219,6 +217,17 @@ theorem map_comp {f : S ⟶ S'} {f' : S' ⟶ S''} {h : StructuredArrow S'' T} :
   simp
 #align category_theory.structured_arrow.map_comp CategoryTheory.StructuredArrow.map_comp
 
+/-- An isomorphism `S ≅ S'` induces an equivalence `StructuredArrow S T ≌ StructuredArrow S' T`. -/
+@[simp]
+def mapIso (i : S ≅ S') : StructuredArrow S T ≌ StructuredArrow S' T :=
+  Comma.mapLeftIso _ ((Functor.const _).mapIso i)
+
+/-- A natural isomorphism `T ≅ T'` induces an equivalence
+    `StructuredArrow S T ≌ StructuredArrow S T'`.-/
+@[simp]
+def mapNatIso (i : T ≅ T') : StructuredArrow S T ≌ StructuredArrow S T' :=
+  Comma.mapRightIso _ i
+
 instance proj_reflectsIsomorphisms : ReflectsIsomorphisms (proj S T) where
   reflects {Y Z} f t :=
     ⟨⟨StructuredArrow.homMk
@@ -247,6 +256,20 @@ def pre (S : D) (F : B ⥤ C) (G : C ⥤ D) : StructuredArrow S (F ⋙ G) ⥤ St
   Comma.preRight _ F G
 #align category_theory.structured_arrow.pre CategoryTheory.StructuredArrow.pre
 
+instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [Faithful F] : Faithful (pre S F G) :=
+  show Faithful (Comma.preRight _ _ _) from inferInstance
+
+instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [Full F] : Full (pre S F G) :=
+  show Full (Comma.preRight _ _ _) from inferInstance
+
+instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [EssSurj F] : EssSurj (pre S F G) :=
+  show EssSurj (Comma.preRight _ _ _) from inferInstance
+
+/-- If `F` is an equivalence, then so is the functor `(S, F ⋙ G) ⥤ (S, G)`. -/
+noncomputable def isEquivalencePre (S : D) (F : B ⥤ C) (G : C ⥤ D) [IsEquivalence F] :
+    IsEquivalence (pre S F G) :=
+  Comma.isEquivalencePreRight _ _ _
+
 /-- The functor `(S, F) ⥤ (G(S), F ⋙ G)`. -/
 @[simps]
 def post (S : C) (F : B ⥤ C) (G : C ⥤ D) : StructuredArrow S F ⥤ StructuredArrow (G.obj S) (F ⋙ G)
@@ -254,6 +277,20 @@ def post (S : C) (F : B ⥤ C) (G : C ⥤ D) : StructuredArrow S F ⥤ Structure
   obj X := StructuredArrow.mk (G.map X.hom)
   map f := StructuredArrow.homMk f.right (by simp [Functor.comp_map, ←G.map_comp, ← f.w])
 #align category_theory.structured_arrow.post CategoryTheory.StructuredArrow.post
+
+instance (S : C) (F : B ⥤ C) (G : C ⥤ D) : Faithful (post S F G) where
+  map_injective {_ _} _ _ h := by simpa [ext_iff] using h
+
+instance (S : C) (F : B ⥤ C) (G : C ⥤ D) [Faithful G] : Full (post S F G) where
+  preimage {_ _} f := homMk f.right (G.map_injective (by simpa using f.w.symm))
+
+instance (S : C) (F : B ⥤ C) (G : C ⥤ D) [Full G] : EssSurj (post S F G) where
+  mem_essImage h := ⟨mk (G.preimage h.hom), ⟨isoMk (Iso.refl _) (by simp)⟩⟩
+
+/-- If `G` is fully faithful, then `post S F G : (S, F) ⥤ (G(S), F ⋙ G)` is an equivalence. -/
+noncomputable def isEquivalencePost (S : C) (F : B ⥤ C) (G : C ⥤ D) [Full G] [Faithful G] :
+    IsEquivalence (post S F G) :=
+  Equivalence.ofFullyFaithfullyEssSurj _
 
 instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
     Small.{v₁} ((proj S T).obj ⁻¹' 𝒢) := by
@@ -284,7 +321,7 @@ def proj (S : C ⥤ D) (T : D) : CostructuredArrow S T ⥤ C :=
   Comma.fst _ _
 #align category_theory.costructured_arrow.proj CategoryTheory.CostructuredArrow.proj
 
-variable {T T' T'' : D} {Y Y' : C} {S : C ⥤ D}
+variable {T T' T'' : D} {Y Y' : C} {S S' : C ⥤ D}
 
 -- porting note: this lemma was added because `Comma.hom_ext`
 -- was not triggered automatically
@@ -351,6 +388,13 @@ def homMk {f f' : CostructuredArrow S T} (g : f.left ⟶ f'.left)
 picks up on it. Either way simp can prove this -/
 attribute [-simp, nolint simpNF] homMk_right_down_down
 
+/-- Given a costructured arrow `S(Y) ⟶ X`, and an arrow `Y' ⟶ Y'`, we can construct a morphism of
+    costructured arrows given by `(S(Y) ⟶ X) ⟶ (S(Y') ⟶ S(Y) ⟶ X)`. -/
+@[simps]
+def homMk' (f : CostructuredArrow S T) (g : Y' ⟶ f.left) : mk (S.map g ≫ f.hom) ⟶ f where
+  left := g
+  right := eqToHom (by ext)
+
 /-- To construct an isomorphism of costructured arrows,
 we need an isomorphism of the objects underlying the source,
 and to check that the triangle commutes.
@@ -376,6 +420,9 @@ theorem ext_iff {A B : CostructuredArrow S T} (f g : A ⟶ B) : f = g ↔ f.left
 instance proj_faithful : Faithful (proj S T) where map_injective {_ _} := ext
 #align category_theory.costructured_arrow.proj_faithful CategoryTheory.CostructuredArrow.proj_faithful
 
+instance : LocallySmall.{v₁} (CostructuredArrow S T) where
+  hom_small _ _ := small_of_injective ext
+
 theorem mono_of_mono_left {A B : CostructuredArrow S T} (f : A ⟶ B) [h : Mono f.left] : Mono f :=
   (proj S T).mono_of_mono_map h
 #align category_theory.costructured_arrow.mono_of_mono_left CategoryTheory.CostructuredArrow.mono_of_mono_left
@@ -395,11 +442,10 @@ instance epi_homMk {A B : CostructuredArrow S T} (f : A.left ⟶ B.left) (w) [h 
   (proj S T).epi_of_epi_map h
 #align category_theory.costructured_arrow.epi_hom_mk CategoryTheory.CostructuredArrow.epi_homMk
 
-/-- Eta rule for costructured arrows. Prefer `CostructuredArrow.eta`, as equality of objects tends
-    to cause problems. -/
-theorem eq_mk (f : CostructuredArrow S T) : f = mk f.hom := by
-  cases f
-  congr
+/-- Eta rule for costructured arrows. Prefer `CostructuredArrow.eta` for rewriting, as equality of
+    objects tends to cause problems. -/
+theorem eq_mk (f : CostructuredArrow S T) : f = mk f.hom :=
+  rfl
 #align category_theory.costructured_arrow.eq_mk CategoryTheory.CostructuredArrow.eq_mk
 
 /-- Eta rule for costructured arrows. -/
@@ -443,6 +489,18 @@ theorem map_comp {f : T ⟶ T'} {f' : T' ⟶ T''} {h : CostructuredArrow S T} :
   simp
 #align category_theory.costructured_arrow.map_comp CategoryTheory.CostructuredArrow.map_comp
 
+/-- An isomorphism `T ≅ T'` induces an equivalence
+    `CostructuredArrow S T ≌ CostructuredArrow S T'`. -/
+@[simp]
+def mapIso (i : T ≅ T') : CostructuredArrow S T ≌ CostructuredArrow S T' :=
+  Comma.mapRightIso _ ((Functor.const _).mapIso i)
+
+/-- A natural isomorphism `S ≅ S'` induces an equivalence
+    `CostrucutredArrow S T ≌ CostructuredArrow S' T`. -/
+@[simp]
+def mapNatIso (i : S ≅ S') : CostructuredArrow S T ≌ CostructuredArrow S' T :=
+  Comma.mapLeftIso _ i
+
 instance proj_reflectsIsomorphisms : ReflectsIsomorphisms (proj S T) where
   reflects {Y Z} f t :=
     ⟨⟨CostructuredArrow.homMk
@@ -471,6 +529,20 @@ def pre (F : B ⥤ C) (G : C ⥤ D) (S : D) : CostructuredArrow (F ⋙ G) S ⥤ 
   Comma.preLeft F G _
 #align category_theory.costructured_arrow.pre CategoryTheory.CostructuredArrow.pre
 
+instance (F : B ⥤ C) (G : C ⥤ D) (S : D) [Faithful F] : Faithful (pre F G S) :=
+  show Faithful (Comma.preLeft _ _ _) from inferInstance
+
+instance (F : B ⥤ C) (G : C ⥤ D) (S : D) [Full F] : Full (pre F G S) :=
+  show Full (Comma.preLeft _ _ _) from inferInstance
+
+instance (F : B ⥤ C) (G : C ⥤ D) (S : D) [EssSurj F] : EssSurj (pre F G S) :=
+  show EssSurj (Comma.preLeft _ _ _) from inferInstance
+
+/-- If `F` is an equivalence, then so is the functor `(F ⋙ G, S) ⥤ (G, S)`. -/
+noncomputable def isEquivalencePre (F : B ⥤ C) (G : C ⥤ D) (S : D) [IsEquivalence F] :
+    IsEquivalence (pre F G S) :=
+  Comma.isEquivalencePreLeft _ _ _
+
 /-- The functor `(F, S) ⥤ (F ⋙ G, G(S))`. -/
 @[simps]
 def post (F : B ⥤ C) (G : C ⥤ D) (S : C) :
@@ -478,6 +550,20 @@ def post (F : B ⥤ C) (G : C ⥤ D) (S : C) :
   obj X := CostructuredArrow.mk (G.map X.hom)
   map f := CostructuredArrow.homMk f.left (by simp [Functor.comp_map, ←G.map_comp, ← f.w])
 #align category_theory.costructured_arrow.post CategoryTheory.CostructuredArrow.post
+
+instance (F : B ⥤ C) (G : C ⥤ D) (S : C) : Faithful (post F G S) where
+  map_injective {_ _} _ _ h := by simpa [ext_iff] using h
+
+instance (F : B ⥤ C) (G : C ⥤ D) (S : C) [Faithful G] : Full (post F G S) where
+  preimage {_ _} f := homMk f.left (G.map_injective (by simpa using f.w))
+
+instance (F : B ⥤ C) (G : C ⥤ D) (S : C) [Full G] : EssSurj (post F G S) where
+  mem_essImage h := ⟨mk (G.preimage h.hom), ⟨isoMk (Iso.refl _) (by simp)⟩⟩
+
+/-- If `G` is fully faithful, then `post F G S : (F, S) ⥤ (F ⋙ G, G(S))` is an equivalence. -/
+noncomputable def isEquivalencePost (S : C) (F : B ⥤ C) (G : C ⥤ D) [Full G] [Faithful G] :
+    IsEquivalence (post F G S) :=
+  Equivalence.ofFullyFaithfullyEssSurj _
 
 instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
     Small.{v₁} ((proj S T).obj ⁻¹' 𝒢) := by
@@ -577,12 +663,12 @@ def structuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
       (fun X => (StructuredArrow.isoMk (Iso.refl _)).op)
       fun {X Y} f => Quiver.Hom.unop_inj <| by
         apply CommaMorphism.ext <;>
-          dsimp [StructuredArrow.isoMk, Comma.isoMk,StructuredArrow.homMk] ; simp )
+          dsimp [StructuredArrow.isoMk, Comma.isoMk,StructuredArrow.homMk]; simp )
     (NatIso.ofComponents
       (fun X => CostructuredArrow.isoMk (Iso.refl _))
       fun {X Y} f => by
         apply CommaMorphism.ext <;>
-          dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk] ; simp )
+          dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk]; simp )
 #align category_theory.structured_arrow_op_equivalence CategoryTheory.structuredArrowOpEquivalence
 
 /-- For a functor `F : C ⥤ D` and an object `d : D`, the category of costructured arrows
@@ -597,12 +683,12 @@ def costructuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
       (fun X => (CostructuredArrow.isoMk (Iso.refl _)).op)
       fun {X Y} f => Quiver.Hom.unop_inj <| by
         apply CommaMorphism.ext <;>
-          dsimp [CostructuredArrow.isoMk, CostructuredArrow.homMk, Comma.isoMk] ; simp )
+          dsimp [CostructuredArrow.isoMk, CostructuredArrow.homMk, Comma.isoMk]; simp )
     (NatIso.ofComponents
       (fun X => StructuredArrow.isoMk (Iso.refl _))
       fun {X Y} f => by
         apply CommaMorphism.ext <;>
-          dsimp [StructuredArrow.isoMk, StructuredArrow.homMk, Comma.isoMk] ; simp )
+          dsimp [StructuredArrow.isoMk, StructuredArrow.homMk, Comma.isoMk]; simp )
 #align category_theory.costructured_arrow_op_equivalence CategoryTheory.costructuredArrowOpEquivalence
 
 end CategoryTheory

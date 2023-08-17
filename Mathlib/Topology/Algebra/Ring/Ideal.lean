@@ -2,14 +2,11 @@
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module topology.algebra.ring.ideal
-! leanprover-community/mathlib commit 9a59dcb7a2d06bf55da57b9030169219980660cd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.RingTheory.Ideal.Quotient
+
+#align_import topology.algebra.ring.ideal from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
 
 /-!
 # Ideals and quotients of topological rings
@@ -22,7 +19,7 @@ ideal and prove that the quotient is a topological ring.
 
 section Ring
 
-variable {R : Type _} [TopologicalSpace R] [Ring R] [TopologicalRing R]
+variable {R : Type*} [TopologicalSpace R] [Ring R] [TopologicalRing R]
 
 /-- The closure of an ideal in a topological ring as an ideal. -/
 protected def Ideal.closure (I : Ideal R) : Ideal R :=
@@ -50,7 +47,7 @@ end Ring
 
 section CommRing
 
-variable {R : Type _} [TopologicalSpace R] [CommRing R] (N : Ideal R)
+variable {R : Type*} [TopologicalSpace R] [CommRing R] (N : Ideal R)
 
 open Ideal.Quotient
 

@@ -2,15 +2,12 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module measure_theory.function.simple_func
-! leanprover-community/mathlib commit bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Support
+
+#align_import measure_theory.function.simple_func from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
 /-!
 # Simple functions
@@ -39,7 +36,7 @@ open Classical Topology BigOperators NNReal ENNReal MeasureTheory
 
 namespace MeasureTheory
 
-variable {α β γ δ : Type _}
+variable {α β γ δ : Type*}
 
 /-- A function `f` from a measurable space to any type is called *simple*,
 if every preimage `f ⁻¹' {x}` is measurable, and the range is finite. This structure bundles
@@ -583,7 +580,7 @@ theorem map_mul [Mul β] [Mul γ] {g : β → γ} (hg : ∀ x y, g (x * y) = g x
 #align measure_theory.simple_func.map_mul MeasureTheory.SimpleFunc.map_mul
 #align measure_theory.simple_func.map_add MeasureTheory.SimpleFunc.map_add
 
-variable {K : Type _}
+variable {K : Type*}
 
 instance instSMul [SMul K β] : SMul K (α →ₛ β) :=
   ⟨fun k f => f.map ((· • ·) k)⟩

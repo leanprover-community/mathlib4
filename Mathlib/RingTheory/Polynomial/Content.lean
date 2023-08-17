@@ -2,16 +2,13 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module ring_theory.polynomial.content
-! leanprover-community/mathlib commit 7a030ab8eb5d99f05a891dccc49c5b5b90c947d3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Data.Polynomial.FieldDivision
 import Mathlib.Data.Polynomial.EraseLead
 import Mathlib.Data.Polynomial.CancelLeads
+
+#align_import ring_theory.polynomial.content from "leanprover-community/mathlib"@"7a030ab8eb5d99f05a891dccc49c5b5b90c947d3"
 
 /-!
 # GCD structures on polynomials
@@ -39,7 +36,7 @@ open Polynomial
 
 section Primitive
 
-variable {R : Type _} [CommSemiring R]
+variable {R : Type*} [CommSemiring R]
 
 /-- A polynomial is primitive when the only constant polynomials dividing it are units -/
 def IsPrimitive (p : R[X]) : Prop :=
@@ -72,7 +69,7 @@ theorem isPrimitive_of_dvd {p q : R[X]} (hp : IsPrimitive p) (hq : q ∣ p) : Is
 
 end Primitive
 
-variable {R : Type _} [CommRing R] [IsDomain R]
+variable {R : Type*} [CommRing R] [IsDomain R]
 
 section NormalizedGCDMonoid
 
@@ -121,7 +118,6 @@ theorem content_X_mul {p : R[X]} : content (X * p) = content p := by
     constructor
     · intro h
       use a
-      simp [h]
     · rintro ⟨b, ⟨h1, h2⟩⟩
       rw [← Nat.succ_injective h2]
       apply h1
@@ -180,8 +176,8 @@ theorem normalize_content {p : R[X]} : normalize p.content = p.content :=
 @[simp]
 theorem normUnit_content {p : R[X]} : normUnit (content p) = 1 := by
   by_cases hp0 : p.content = 0
-  . simp [hp0]
-  . ext
+  · simp [hp0]
+  · ext
     apply mul_left_cancel₀ hp0
     erw [← normalize_apply, normalize_content, mul_one]
 
@@ -313,7 +309,7 @@ theorem primPart_dvd (p : R[X]) : p.primPart ∣ p :=
   Dvd.intro_left (C p.content) p.eq_C_content_mul_primPart.symm
 #align polynomial.prim_part_dvd Polynomial.primPart_dvd
 
-theorem aeval_primPart_eq_zero {S : Type _} [Ring S] [IsDomain S] [Algebra R S]
+theorem aeval_primPart_eq_zero {S : Type*} [Ring S] [IsDomain S] [Algebra R S]
     [NoZeroSMulDivisors R S] {p : R[X]} {s : S} (hpzero : p ≠ 0) (hp : aeval s p = 0) :
     aeval s p.primPart = 0 := by
   rw [eq_C_content_mul_primPart p, map_mul, aeval_C] at hp
@@ -323,7 +319,7 @@ theorem aeval_primPart_eq_zero {S : Type _} [Ring S] [IsDomain S] [Algebra R S]
   exact eq_zero_of_ne_zero_of_mul_left_eq_zero hcont hp
 #align polynomial.aeval_prim_part_eq_zero Polynomial.aeval_primPart_eq_zero
 
-theorem eval₂_primPart_eq_zero {S : Type _} [CommRing S] [IsDomain S] {f : R →+* S}
+theorem eval₂_primPart_eq_zero {S : Type*} [CommRing S] [IsDomain S] {f : R →+* S}
     (hinj : Function.Injective f) {p : R[X]} {s : S} (hpzero : p ≠ 0) (hp : eval₂ f s p = 0) :
     eval₂ f s p.primPart = 0 := by
   rw [eq_C_content_mul_primPart p, eval₂_mul, eval₂_C] at hp
@@ -388,8 +384,7 @@ theorem content_mul {p q : R[X]} : (p * q).content = p.content * q.content := by
       ← Nat.cast_withBot, ← degree_eq_natDegree q.primPart_ne_zero] at heq
     rw [p.eq_C_content_mul_primPart, q.eq_C_content_mul_primPart]
     suffices h : (q.primPart * p.primPart).content = 1
-    ·
-      rw [mul_assoc, content_C_mul, content_C_mul, mul_comm p.primPart, mul_assoc, content_C_mul,
+    · rw [mul_assoc, content_C_mul, content_C_mul, mul_comm p.primPart, mul_assoc, content_C_mul,
         content_C_mul, h, mul_one, content_primPart, content_primPart, mul_one, mul_one]
     rw [← normalize_content, normalize_eq_one, isUnit_iff_dvd_one,
       content_eq_gcd_leadingCoeff_content_eraseLead, leadingCoeff_mul, gcd_comm]

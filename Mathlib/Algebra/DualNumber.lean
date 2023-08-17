@@ -2,13 +2,10 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.dual_number
-! leanprover-community/mathlib commit b8d2eaa69d69ce8f03179a5cda774fc0cde984e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.TrivSqZeroExt
+
+#align_import algebra.dual_number from "leanprover-community/mathlib"@"b8d2eaa69d69ce8f03179a5cda774fc0cde984e4"
 
 /-!
 # Dual numbers
@@ -40,10 +37,10 @@ Rather than duplicating the API of `TrivSqZeroExt`, this file reuses the functio
 -/
 
 
-variable {R : Type _}
+variable {R : Type*}
 
 /-- The type of dual numbers, numbers of the form $a + bε$ where $ε^2 = 0$.-/
-abbrev DualNumber (R : Type _) : Type _ :=
+abbrev DualNumber (R : Type*) : Type _ :=
   TrivSqZeroExt R R
 #align dual_number DualNumber
 
@@ -97,7 +94,7 @@ theorem algHom_ext {A} [CommSemiring R] [Semiring A] [Algebra R A] ⦃f g : R[ε
   algHom_ext' <| LinearMap.ext_ring <| h
 #align dual_number.alg_hom_ext DualNumber.algHom_ext
 
-variable {A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
 /-- A universal property of the dual numbers, providing a unique `R[ε] →ₐ[R] A` for every element
 of `A` which squares to `0`.

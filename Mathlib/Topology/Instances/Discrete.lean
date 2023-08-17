@@ -2,15 +2,12 @@
 Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module topology.instances.discrete
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Topology.Order.Basic
 import Mathlib.Topology.MetricSpace.MetrizableUniformity
+
+#align_import topology.instances.discrete from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
 /-!
 # Instances related to the discrete topology
@@ -29,7 +26,7 @@ and `OrderTopology ℕ` become available.
 
 open Order Set TopologicalSpace Filter
 
-variable {α : Type _} [TopologicalSpace α]
+variable {α : Type*} [TopologicalSpace α]
 
 instance (priority := 100) DiscreteTopology.firstCountableTopology [DiscreteTopology α] :
     FirstCountableTopology α where

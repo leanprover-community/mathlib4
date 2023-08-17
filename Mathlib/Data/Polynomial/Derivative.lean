@@ -2,14 +2,11 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
-
-! This file was ported from Lean 3 source module data.polynomial.derivative
-! leanprover-community/mathlib commit bbeb185db4ccee8ed07dc48449414ebfa39cb821
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Data.Polynomial.Eval
+
+#align_import data.polynomial.derivative from "leanprover-community/mathlib"@"bbeb185db4ccee8ed07dc48449414ebfa39cb821"
 
 /-!
 # The derivative map on polynomials
@@ -163,12 +160,6 @@ theorem derivative_X_add_C (c : R) : derivative (X + C c) = 1 := by
 set_option linter.uppercaseLean3 false in
 #align polynomial.derivative_X_add_C Polynomial.derivative_X_add_C
 
-@[simp]
-theorem iterate_derivative_add {f g : R[X]} {k : ℕ} :
-    derivative^[k] (f + g) = derivative^[k] f + derivative^[k] g :=
-  derivative.toAddMonoidHom.iterate_map_add _ _ _
-#align polynomial.iterate_derivative_add Polynomial.iterate_derivative_add
-
 --Porting note: removed `simp`: `simp` can prove it.
 theorem derivative_sum {s : Finset ι} {f : ι → R[X]} :
     derivative (∑ b in s, f b) = ∑ b in s, derivative (f b) :=
@@ -176,13 +167,13 @@ theorem derivative_sum {s : Finset ι} {f : ι → R[X]} :
 #align polynomial.derivative_sum Polynomial.derivative_sum
 
 --Porting note: removed `simp`: `simp` can prove it.
-theorem derivative_smul {S : Type _} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S)
+theorem derivative_smul {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S)
     (p : R[X]) : derivative (s • p) = s • derivative p :=
   derivative.map_smul_of_tower s p
 #align polynomial.derivative_smul Polynomial.derivative_smul
 
 @[simp]
-theorem iterate_derivative_smul {S : Type _} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R]
+theorem iterate_derivative_smul {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R]
     (s : S) (p : R[X]) (k : ℕ) : derivative^[k] (s • p) = s • derivative^[k] p := by
   induction' k with k ih generalizing p
   · simp
@@ -235,7 +226,8 @@ theorem derivative_nat_cast {n : ℕ} : derivative (n : R[X]) = 0 := by
 
 --Porting note: new theorem
 @[simp]
-theorem derivative_ofNat (n : ℕ) [n.AtLeastTwo] : derivative (OfNat.ofNat n : R[X]) = 0 :=
+theorem derivative_ofNat (n : ℕ) [n.AtLeastTwo] :
+    derivative (no_index (OfNat.ofNat n) : R[X]) = 0 :=
   derivative_nat_cast
 
 theorem iterate_derivative_eq_zero {p : R[X]} {x : ℕ} (hx : p.natDegree < x) :
@@ -394,7 +386,7 @@ theorem degree_derivative_eq [NoZeroSMulDivisors ℕ R] (p : R[X]) (hp : 0 < nat
 theorem coeff_iterate_derivative_as_prod_Ico {k} (p : R[X]) : ∀ m : ℕ,
     (derivative^[k] p).coeff m = (∏ i in Ico m.succ (m + k.succ), i) • p.coeff (m + k) := by
   induction' k with k ih
-  · simp  [add_zero, forall_const, one_smul, Ico_self, eq_self_iff_true,
+  · simp [add_zero, forall_const, one_smul, Ico_self, eq_self_iff_true,
       Function.iterate_zero_apply, prod_empty]
   · intro m
     rw [Function.iterate_succ_apply', coeff_derivative, ih (m + 1), ← Nat.cast_add_one, ←

@@ -2,17 +2,14 @@
 Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
-
-! This file was ported from Lean 3 source module measure_theory.decomposition.lebesgue
-! leanprover-community/mathlib commit b2ff9a3d7a15fd5b0f060b135421d6a89a999c2f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.Complex
 import Mathlib.MeasureTheory.Measure.Sub
 import Mathlib.MeasureTheory.Decomposition.Jordan
 import Mathlib.MeasureTheory.Measure.WithDensityVectorMeasure
 import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+
+#align_import measure_theory.decomposition.lebesgue from "leanprover-community/mathlib"@"b2ff9a3d7a15fd5b0f060b135421d6a89a999c2f"
 
 /-!
 # Lebesgue decomposition
@@ -70,7 +67,7 @@ open scoped Classical MeasureTheory NNReal ENNReal
 
 open Set
 
-variable {α β : Type _} {m : MeasurableSpace α} {μ ν : MeasureTheory.Measure α}
+variable {α β : Type*} {m : MeasurableSpace α} {μ ν : MeasureTheory.Measure α}
 
 namespace MeasureTheory
 
@@ -522,16 +519,16 @@ section SuprLemmas
 
 --TODO: these statements should be moved elsewhere
 
-theorem iSup_monotone {α : Type _} (f : ℕ → α → ℝ≥0∞) :
+theorem iSup_monotone {α : Type*} (f : ℕ → α → ℝ≥0∞) :
     Monotone fun n x => ⨆ (k) (_ : k ≤ n), f k x := fun _ _ hnm _ =>
   biSup_mono fun _ => ge_trans hnm
 #align measure_theory.measure.lebesgue_decomposition.supr_monotone MeasureTheory.Measure.LebesgueDecomposition.iSup_monotone
 
-theorem iSup_monotone' {α : Type _} (f : ℕ → α → ℝ≥0∞) (x : α) :
+theorem iSup_monotone' {α : Type*} (f : ℕ → α → ℝ≥0∞) (x : α) :
     Monotone fun n => ⨆ (k) (_ : k ≤ n), f k x := fun _ _ hnm => iSup_monotone f hnm x
 #align measure_theory.measure.lebesgue_decomposition.supr_monotone' MeasureTheory.Measure.LebesgueDecomposition.iSup_monotone'
 
-theorem iSup_le_le {α : Type _} (f : ℕ → α → ℝ≥0∞) (n k : ℕ) (hk : k ≤ n) :
+theorem iSup_le_le {α : Type*} (f : ℕ → α → ℝ≥0∞) (n k : ℕ) (hk : k ≤ n) :
     f k ≤ fun x => ⨆ (k) (_ : k ≤ n), f k x :=
   fun x => le_iSup₂ (f := fun k (_ : k ≤ n) => f k x) k hk
 #align measure_theory.measure.lebesgue_decomposition.supr_le_le MeasureTheory.Measure.LebesgueDecomposition.iSup_le_le

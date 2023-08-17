@@ -2,13 +2,11 @@
 Copyright (c) 2022 Apurva Nakade All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
-
-! This file was ported from Lean 3 source module analysis.convex.cone.proper
-! leanprover-community/mathlib commit 74f1d61944a5a793e8c939d47608178c0a0cb0c2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Cone.Dual
+import Mathlib.Analysis.InnerProductSpace.Adjoint
+
+#align_import analysis.convex.cone.proper from "leanprover-community/mathlib"@"147b294346843885f952c5171e9606616a8fd869"
 
 /-!
 # Proper cones
@@ -22,10 +20,7 @@ linear programs, the results from this file can be used to prove duality theorem
 ## TODO
 
 The next steps are:
-- Prove the cone version of Farkas' lemma (2.3.4 in the reference).
-- Add comap, adjoint
 - Add convex_cone_class that extends set_like and replace the below instance
-- Define the positive cone as a proper cone.
 - Define primal and dual cone programs and prove weak duality.
 - Prove regular and strong duality for cone programs using Farkas' lemma (see reference).
 - Define linear programs and prove LP duality as a special case of cone duality.
@@ -38,12 +33,13 @@ The next steps are:
 
 -/
 
+open ContinuousLinearMap Filter Set
 
 namespace ConvexCone
 
-variable {𝕜 : Type _} [OrderedSemiring 𝕜]
+variable {𝕜 : Type*} [OrderedSemiring 𝕜]
 
-variable {E : Type _} [AddCommMonoid E] [TopologicalSpace E] [ContinuousAdd E] [SMul 𝕜 E]
+variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [ContinuousAdd E] [SMul 𝕜 E]
   [ContinuousConstSMul 𝕜 E]
 
 /-- The closure of a convex cone inside a topological space as a convex cone. This
@@ -76,7 +72,7 @@ end ConvexCone
 /-- A proper cone is a convex cone `K` that is nonempty and closed. Proper cones have the nice
 property that the dual of the dual of a proper cone is itself. This makes them useful for defining
 cone programs and proving duality theorems. -/
-structure ProperCone (𝕜 : Type _) (E : Type _) [OrderedSemiring 𝕜] [AddCommMonoid E]
+structure ProperCone (𝕜 : Type*) (E : Type*) [OrderedSemiring 𝕜] [AddCommMonoid E]
     [TopologicalSpace E] [SMul 𝕜 E] extends ConvexCone 𝕜 E where
   nonempty' : (carrier : Set E).Nonempty
   is_closed' : IsClosed (carrier : Set E)
@@ -86,9 +82,9 @@ namespace ProperCone
 
 section SMul
 
-variable {𝕜 : Type _} [OrderedSemiring 𝕜]
+variable {𝕜 : Type*} [OrderedSemiring 𝕜]
 
-variable {E : Type _} [AddCommMonoid E] [TopologicalSpace E] [SMul 𝕜 E]
+variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [SMul 𝕜 E]
 
 instance : Coe (ProperCone 𝕜 E) (ConvexCone 𝕜 E) :=
   ⟨fun K => K.1⟩
@@ -128,11 +124,34 @@ protected theorem isClosed (K : ProperCone 𝕜 E) : IsClosed (K : Set E) :=
 
 end SMul
 
+section PositiveCone
+
+variable (𝕜 E)
+variable [OrderedSemiring 𝕜] [OrderedAddCommGroup E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
+  [TopologicalSpace E] [OrderClosedTopology E]
+
+/-- The positive cone is the proper cone formed by the set of nonnegative elements in an ordered
+module. -/
+def positive : ProperCone 𝕜 E where
+  toConvexCone := ConvexCone.positive 𝕜 E
+  nonempty' := ⟨0, ConvexCone.pointed_positive _ _⟩
+  is_closed' := isClosed_Ici
+
+@[simp]
+theorem mem_positive {x : E} : x ∈ positive 𝕜 E ↔ 0 ≤ x :=
+  Iff.rfl
+
+@[simp]
+theorem coe_positive : ↑(positive 𝕜 E) = ConvexCone.positive 𝕜 E :=
+  rfl
+
+end PositiveCone
+
 section Module
 
-variable {𝕜 : Type _} [OrderedSemiring 𝕜]
+variable {𝕜 : Type*} [OrderedSemiring 𝕜]
 
-variable {E : Type _} [AddCommMonoid E] [TopologicalSpace E] [T1Space E] [Module 𝕜 E]
+variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [T1Space E] [Module 𝕜 E]
 
 instance : Zero (ProperCone 𝕜 E) :=
   ⟨{  toConvexCone := 0
@@ -159,16 +178,18 @@ end Module
 
 section InnerProductSpace
 
-variable {E : Type _} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
-variable {F : Type _} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+
+variable {G : Type*} [NormedAddCommGroup G] [InnerProductSpace ℝ G]
 
 protected theorem pointed (K : ProperCone ℝ E) : (K : ConvexCone ℝ E).Pointed :=
   (K : ConvexCone ℝ E).pointed_of_nonempty_of_isClosed K.nonempty' K.isClosed
 #align proper_cone.pointed ProperCone.pointed
 
 /-- The closure of image of a proper cone under a continuous `ℝ`-linear map is a proper cone. We
-use continuous maps here so that the adjoint of f is also a map between proper cones. -/
+use continuous maps here so that the comap of f is also a map between proper cones. -/
 noncomputable def map (f : E →L[ℝ] F) (K : ProperCone ℝ E) : ProperCone ℝ F where
   toConvexCone := ConvexCone.closure (ConvexCone.map (f : E →ₗ[ℝ] F) ↑K)
   nonempty' :=
@@ -210,12 +231,46 @@ theorem mem_dual {K : ProperCone ℝ E} {y : E} : y ∈ dual K ↔ ∀ ⦃x⦄, 
   rw [← mem_coe, coe_dual, mem_innerDualCone _ _]; rfl
 #align proper_cone.mem_dual ProperCone.mem_dual
 
--- TODO: add comap, adjoint
+/-- The preimage of a proper cone under a continuous `ℝ`-linear map is a proper cone. -/
+noncomputable def comap (f : E →L[ℝ] F) (S : ProperCone ℝ F) : ProperCone ℝ E
+    where
+  toConvexCone := ConvexCone.comap (f : E →ₗ[ℝ] F) S
+  nonempty' :=
+    ⟨0, by
+      simp only [ConvexCone.comap, mem_preimage, map_zero, SetLike.mem_coe, mem_coe]
+      apply ProperCone.pointed⟩
+  is_closed' := by
+    simp only [ConvexCone.comap, ContinuousLinearMap.coe_coe]
+    apply IsClosed.preimage f.2 S.isClosed
+#align proper_cone.comap ProperCone.comap
+
+@[simp]
+theorem coe_comap (f : E →L[ℝ] F) (S : ProperCone ℝ F) : (S.comap f : Set E) = f ⁻¹' S :=
+  rfl
+#align proper_cone.coe_comap ProperCone.coe_comap
+
+@[simp]
+theorem comap_id (S : ConvexCone ℝ E) : S.comap LinearMap.id = S :=
+  SetLike.coe_injective preimage_id
+#align proper_cone.comap_id ProperCone.comap_id
+
+theorem comap_comap (g : F →L[ℝ] G) (f : E →L[ℝ] F) (S : ProperCone ℝ G) :
+    (S.comap g).comap f = S.comap (g.comp f) :=
+  SetLike.coe_injective <| by congr
+#align proper_cone.comap_comap ProperCone.comap_comap
+
+@[simp]
+theorem mem_comap {f : E →L[ℝ] F} {S : ProperCone ℝ F} {x : E} : x ∈ S.comap f ↔ f x ∈ S :=
+  Iff.rfl
+#align proper_cone.mem_comap ProperCone.mem_comap
+
 end InnerProductSpace
 
 section CompleteSpace
 
-variable {E : Type _} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
+
+variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F] [CompleteSpace F]
 
 /-- The dual of the dual of a proper cone is itself. -/
 @[simp]
@@ -223,6 +278,53 @@ theorem dual_dual (K : ProperCone ℝ E) : K.dual.dual = K :=
   ProperCone.ext' <|
     (K : ConvexCone ℝ E).innerDualCone_of_innerDualCone_eq_self K.nonempty' K.isClosed
 #align proper_cone.dual_dual ProperCone.dual_dual
+
+/-- This is a relative version of
+`ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem`, which we recover by setting
+`f` to be the identity map. This is a geometric interpretation of the Farkas' lemma
+stated using proper cones. -/
+theorem hyperplane_separation (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F} :
+    b ∈ K.map f ↔ ∀ y : F, adjoint f y ∈ K.dual → 0 ≤ ⟪y, b⟫_ℝ :=
+  Iff.intro
+    (by
+      -- suppose `b ∈ K.map f`
+      simp only [ProperCone.mem_map, ProperCone.mem_dual, adjoint_inner_right,
+        ConvexCone.mem_closure, mem_closure_iff_seq_limit]
+      -- there is a sequence `seq : ℕ → F` in the image of `f` that converges to `b`
+      rintro ⟨seq, hmem, htends⟩ y hinner
+      suffices h : ∀ n, 0 ≤ ⟪y, seq n⟫_ℝ;
+      exact
+        ge_of_tendsto'
+          (Continuous.seqContinuous (Continuous.inner (@continuous_const _ _ _ _ y) continuous_id)
+            htends)
+          h
+      intro n
+      obtain ⟨_, h, hseq⟩ := hmem n
+      simpa only [← hseq, real_inner_comm] using hinner h)
+    (by
+      -- proof by contradiction
+      -- suppose `b ∉ K.map f`
+      intro h
+      contrapose! h
+      -- as `b ∉ K.map f`, there is a hyperplane `y` separating `b` from `K.map f`
+      obtain ⟨y, hxy, hyb⟩ :=
+        ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem _ (K.map f).nonempty
+          (K.map f).isClosed h
+      -- the rest of the proof is a straightforward algebraic manipulation
+      refine' ⟨y, _, hyb⟩
+      simp_rw [ProperCone.mem_dual, adjoint_inner_right]
+      intro x hxK
+      apply hxy (f x)
+      rw [ProperCone.coe_map]
+      apply subset_closure
+      rw [SetLike.mem_coe, ConvexCone.mem_map]
+      refine' ⟨x, hxK, by rw [coe_coe]⟩)
+#align proper_cone.hyperplane_separation ProperCone.hyperplane_separation
+
+theorem hyperplane_separation_of_nmem (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F}
+    (disj : b ∉ K.map f) : ∃ y : F, adjoint f y ∈ K.dual ∧ ⟪y, b⟫_ℝ < 0 := by
+  contrapose! disj; rwa [K.hyperplane_separation]
+#align proper_cone.hyperplane_separation_of_nmem ProperCone.hyperplane_separation_of_nmem
 
 end CompleteSpace
 

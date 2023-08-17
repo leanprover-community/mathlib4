@@ -2,13 +2,10 @@
 Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
-
-! This file was ported from Lean 3 source module geometry.manifold.vector_bundle.tangent
-! leanprover-community/mathlib commit e354e865255654389cc46e6032160238df2e0f40
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.VectorBundle.Basic
+
+#align_import geometry.manifold.vector_bundle.tangent from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 
 /-! # Tangent bundles
 
@@ -42,12 +39,12 @@ noncomputable section
 
 section General
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {E' : Type _} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type _}
-  [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type _} [TopologicalSpace H']
-  {I' : ModelWithCorners 𝕜 E' H'} {M : Type _} [TopologicalSpace M] [ChartedSpace H M]
-  [SmoothManifoldWithCorners I M] {M' : Type _} [TopologicalSpace M'] [ChartedSpace H' M']
-  [SmoothManifoldWithCorners I' M'] {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
+  [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type*} [TopologicalSpace H']
+  {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  [SmoothManifoldWithCorners I M] {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  [SmoothManifoldWithCorners I' M'] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 variable (I)
 
@@ -133,7 +130,7 @@ kernel.
 @[nolint unusedArguments]
 def TangentSpace {𝕜} [NontriviallyNormedField 𝕜] {E} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M} [TopologicalSpace M]
-    [ChartedSpace H M] [SmoothManifoldWithCorners I M] (_x : M) : Type _ := E
+    [ChartedSpace H M] [SmoothManifoldWithCorners I M] (_x : M) : Type* := E
 -- porting note: was deriving TopologicalSpace, AddCommGroup, TopologicalAddGroup
 #align tangent_space TangentSpace
 
@@ -148,7 +145,7 @@ variable (M)
 `Bundle.TotalSpace` to be able to put a suitable topology on it. -/
 @[reducible] -- porting note: was nolint has_nonempty_instance
 def TangentBundle :=
-  Bundle.TotalSpace (TangentSpace I : M → Type _)
+  Bundle.TotalSpace E (TangentSpace I : M → Type _)
 #align tangent_bundle TangentBundle
 
 local notation "TM" => TangentBundle I M
@@ -203,7 +200,8 @@ theorem trivializationAt_eq_localTriv (x : M) :
 
 @[simp, mfld_simps]
 theorem trivializationAt_source (x : M) :
-    (trivializationAt E (TangentSpace I) x).source = π _ ⁻¹' (chartAt H x).source :=
+    (trivializationAt E (TangentSpace I) x).source =
+      π E (TangentSpace I) ⁻¹' (chartAt H x).source :=
   rfl
 #align tangent_bundle.trivialization_at_source TangentBundle.trivializationAt_source
 
@@ -309,7 +307,7 @@ instance tangentBundleCore.isSmooth : (tangentBundleCore I M).IsSmooth I := by
   rw [SmoothOn, contMDiffOn_iff_source_of_mem_maximalAtlas (subset_maximalAtlas I i.2),
     contMDiffOn_iff_contDiffOn]
   refine' ((contDiffOn_fderiv_coord_change I i j).congr fun x hx => _).mono _
-  · rw [LocalEquiv.trans_source'] at hx 
+  · rw [LocalEquiv.trans_source'] at hx
     simp_rw [Function.comp_apply, tangentBundleCore_coordChange, (i.1.extend I).right_inv hx.1]
   · exact (i.1.extend_image_source_inter j.1 I).subset
   · apply inter_subset_left
@@ -325,15 +323,15 @@ end TangentBundleInstances
 
 
 /-- In the tangent bundle to the model space, the charts are just the canonical identification
-between a product type and a sigma type, a.k.a. `Equiv.sigmaEquivProd`. -/
+between a product type and a sigma type, a.k.a. `TotalSpace.toProd`. -/
 @[simp, mfld_simps]
 theorem tangentBundle_model_space_chartAt (p : TangentBundle I H) :
-    (chartAt (ModelProd H E) p).toLocalEquiv = (Equiv.sigmaEquivProd H E).toLocalEquiv := by
+    (chartAt (ModelProd H E) p).toLocalEquiv = (TotalSpace.toProd H E).toLocalEquiv := by
   ext x : 1
   · ext; · rfl
     exact (tangentBundleCore I H).coordChange_self (achart _ x.1) x.1 (mem_achart_source H x.1) x.2
   · -- porting note: was ext; · rfl; apply hEq_of_eq
-    refine congr_arg (Sigma.mk _) ?_
+    refine congr_arg (TotalSpace.mk _) ?_
     exact (tangentBundleCore I H).coordChange_self (achart _ x.1) x.1 (mem_achart_source H x.1) x.2
   simp_rw [TangentBundle.chartAt, FiberBundleCore.localTriv, FiberBundleCore.localTrivAsLocalEquiv,
     VectorBundleCore.toFiberBundleCore_baseSet, tangentBundleCore_baseSet]
@@ -342,14 +340,14 @@ theorem tangentBundle_model_space_chartAt (p : TangentBundle I H) :
 
 @[simp, mfld_simps]
 theorem tangentBundle_model_space_coe_chartAt (p : TangentBundle I H) :
-    ⇑(chartAt (ModelProd H E) p) = Equiv.sigmaEquivProd H E := by
+    ⇑(chartAt (ModelProd H E) p) = TotalSpace.toProd H E := by
   rw [← LocalHomeomorph.coe_coe, tangentBundle_model_space_chartAt]; rfl
 #align tangent_bundle_model_space_coe_chart_at tangentBundle_model_space_coe_chartAt
 
 @[simp, mfld_simps]
 theorem tangentBundle_model_space_coe_chartAt_symm (p : TangentBundle I H) :
     ((chartAt (ModelProd H E) p).symm : ModelProd H E → TangentBundle I H) =
-      (Equiv.sigmaEquivProd H E).symm := by
+      (TotalSpace.toProd H E).symm := by
   rw [← LocalHomeomorph.coe_coe, LocalHomeomorph.symm_toLocalEquiv,
     tangentBundle_model_space_chartAt]; rfl
 #align tangent_bundle_model_space_coe_chart_at_symm tangentBundle_model_space_coe_chartAt_symm
@@ -364,7 +362,7 @@ variable (H)
 /-- The canonical identification between the tangent bundle to the model space and the product,
 as a homeomorphism -/
 def tangentBundleModelSpaceHomeomorph : TangentBundle I H ≃ₜ ModelProd H E :=
-  { Equiv.sigmaEquivProd H E with
+  { TotalSpace.toProd H E with
     continuous_toFun := by
       let p : TangentBundle I H := ⟨I.symm (0 : E), (0 : E)⟩
       have : Continuous (chartAt (ModelProd H E) p) := by
@@ -384,20 +382,20 @@ def tangentBundleModelSpaceHomeomorph : TangentBundle I H ≃ₜ ModelProd H E :
 @[simp, mfld_simps]
 theorem tangentBundleModelSpaceHomeomorph_coe :
     (tangentBundleModelSpaceHomeomorph H I : TangentBundle I H → ModelProd H E) =
-      Equiv.sigmaEquivProd H E :=
+      TotalSpace.toProd H E :=
   rfl
 #align tangent_bundle_model_space_homeomorph_coe tangentBundleModelSpaceHomeomorph_coe
 
 @[simp, mfld_simps]
 theorem tangentBundleModelSpaceHomeomorph_coe_symm :
     ((tangentBundleModelSpaceHomeomorph H I).symm : ModelProd H E → TangentBundle I H) =
-      (Equiv.sigmaEquivProd H E).symm :=
+      (TotalSpace.toProd H E).symm :=
   rfl
 #align tangent_bundle_model_space_homeomorph_coe_symm tangentBundleModelSpaceHomeomorph_coe_symm
 
 section inTangentCoordinates
 
-variable (I') {M H} {N : Type _}
+variable (I') {M H} {N : Type*}
 
 /-- The map `in_coordinates` for the tangent bundle is trivial on the model spaces -/
 theorem inCoordinates_tangent_bundle_core_model_space (x₀ x : H) (y₀ y : H') (ϕ : E →L[𝕜] E') :
@@ -441,8 +439,8 @@ end General
 
 section Real
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type _} [TopologicalSpace H]
-  {I : ModelWithCorners ℝ E H} {M : Type _} [TopologicalSpace M] [ChartedSpace H M]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
+  {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [SmoothManifoldWithCorners I M]
 
 instance {x : M} : PathConnectedSpace (TangentSpace I x) := by unfold TangentSpace; infer_instance

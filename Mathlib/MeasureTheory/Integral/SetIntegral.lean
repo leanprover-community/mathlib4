@@ -2,11 +2,6 @@
 Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.integral.set_integral
-! leanprover-community/mathlib commit 24e0c85412ff6adbeca08022c25ba4876eedf37a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.IntegrableOn
 import Mathlib.MeasureTheory.Integral.Bochner
@@ -14,6 +9,8 @@ import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.Order.Filter.IndicatorFunction
 import Mathlib.Topology.MetricSpace.ThickenedIndicator
 import Mathlib.Topology.ContinuousFunction.Compact
+
+#align_import measure_theory.integral.set_integral from "leanprover-community/mathlib"@"24e0c85412ff6adbeca08022c25ba4876eedf37a"
 
 /-!
 # Set integral
@@ -62,7 +59,7 @@ open Set Filter TopologicalSpace MeasureTheory Function
 
 open scoped Classical Topology Interval BigOperators Filter ENNReal NNReal MeasureTheory
 
-variable {α β E F : Type _} [MeasurableSpace α]
+variable {α β E F : Type*} [MeasurableSpace α]
 
 namespace MeasureTheory
 
@@ -70,7 +67,7 @@ section NormedAddCommGroup
 
 variable [NormedAddCommGroup E] {f g : α → E} {s t : Set α} {μ ν : Measure α} {l l' : Filter α}
 
-variable [CompleteSpace E] [NormedSpace ℝ E]
+variable [NormedSpace ℝ E]
 
 theorem set_integral_congr_ae₀ (hs : NullMeasurableSet s μ) (h : ∀ᵐ x ∂μ, x ∈ s → f x = g x) :
     ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ :=
@@ -125,7 +122,7 @@ theorem integral_inter_add_diff (ht : MeasurableSet t) (hfs : IntegrableOn f s �
   integral_inter_add_diff₀ ht.nullMeasurableSet hfs
 #align measure_theory.integral_inter_add_diff MeasureTheory.integral_inter_add_diff
 
-theorem integral_finset_biUnion {ι : Type _} (t : Finset ι) {s : ι → Set α}
+theorem integral_finset_biUnion {ι : Type*} (t : Finset ι) {s : ι → Set α}
     (hs : ∀ i ∈ t, MeasurableSet (s i)) (h's : Set.Pairwise (↑t) (Disjoint on s))
     (hf : ∀ i ∈ t, IntegrableOn f (s i) μ) :
     ∫ x in ⋃ i ∈ t, s i, f x ∂μ = ∑ i in t, ∫ x in s i, f x ∂μ := by
@@ -140,7 +137,7 @@ theorem integral_finset_biUnion {ι : Type _} (t : Finset ι) {s : ι → Set α
     · exact Finset.measurableSet_biUnion _ hs.2
 #align measure_theory.integral_finset_bUnion MeasureTheory.integral_finset_biUnion
 
-theorem integral_fintype_iUnion {ι : Type _} [Fintype ι] {s : ι → Set α}
+theorem integral_fintype_iUnion {ι : Type*} [Fintype ι] {s : ι → Set α}
     (hs : ∀ i, MeasurableSet (s i)) (h's : Pairwise (Disjoint on s))
     (hf : ∀ i, IntegrableOn f (s i) μ) : ∫ x in ⋃ i, s i, f x ∂μ = ∑ i, ∫ x in s i, f x ∂μ := by
   convert integral_finset_biUnion Finset.univ (fun i _ => hs i) _ fun i _ => hf i
@@ -188,7 +185,7 @@ theorem set_integral_indicator (ht : MeasurableSet t) :
   rw [integral_indicator ht, Measure.restrict_restrict ht, Set.inter_comm]
 #align measure_theory.set_integral_indicator MeasureTheory.set_integral_indicator
 
-theorem ofReal_set_integral_one_of_measure_ne_top {α : Type _} {m : MeasurableSpace α}
+theorem ofReal_set_integral_one_of_measure_ne_top {α : Type*} {m : MeasurableSpace α}
     {μ : Measure α} {s : Set α} (hs : μ s ≠ ∞) : ENNReal.ofReal (∫ _ in s, (1 : ℝ) ∂μ) = μ s :=
   calc
     ENNReal.ofReal (∫ _ in s, (1 : ℝ) ∂μ) = ENNReal.ofReal (∫ _ in s, ‖(1 : ℝ)‖ ∂μ) := by
@@ -199,7 +196,7 @@ theorem ofReal_set_integral_one_of_measure_ne_top {α : Type _} {m : MeasurableS
     _ = μ s := set_lintegral_one _
 #align measure_theory.of_real_set_integral_one_of_measure_ne_top MeasureTheory.ofReal_set_integral_one_of_measure_ne_top
 
-theorem ofReal_set_integral_one {α : Type _} {_ : MeasurableSpace α} (μ : Measure α)
+theorem ofReal_set_integral_one {α : Type*} {_ : MeasurableSpace α} (μ : Measure α)
     [IsFiniteMeasure μ] (s : Set α) : ENNReal.ofReal (∫ _ in s, (1 : ℝ) ∂μ) = μ s :=
   ofReal_set_integral_one_of_measure_ne_top (measure_ne_top μ s)
 #align measure_theory.of_real_set_integral_one MeasureTheory.ofReal_set_integral_one
@@ -212,7 +209,7 @@ theorem integral_piecewise [DecidablePred (· ∈ s)] (hs : MeasurableSet s) (hf
     integral_indicator hs, integral_indicator hs.compl]
 #align measure_theory.integral_piecewise MeasureTheory.integral_piecewise
 
-theorem tendsto_set_integral_of_monotone {ι : Type _} [Countable ι] [SemilatticeSup ι]
+theorem tendsto_set_integral_of_monotone {ι : Type*} [Countable ι] [SemilatticeSup ι]
     {s : ι → Set α} (hsm : ∀ i, MeasurableSet (s i)) (h_mono : Monotone s)
     (hfi : IntegrableOn f (⋃ n, s n) μ) :
     Tendsto (fun i => ∫ a in s i, f a ∂μ) atTop (𝓝 (∫ a in ⋃ n, s n, f a ∂μ)) := by
@@ -235,7 +232,7 @@ theorem tendsto_set_integral_of_monotone {ι : Type _} [Countable ι] [Semilatti
     (hi.2.trans_lt <| ENNReal.add_lt_top.2 ⟨hfi', ENNReal.coe_lt_top⟩).ne]
 #align measure_theory.tendsto_set_integral_of_monotone MeasureTheory.tendsto_set_integral_of_monotone
 
-theorem hasSum_integral_iUnion_ae {ι : Type _} [Countable ι] {s : ι → Set α}
+theorem hasSum_integral_iUnion_ae {ι : Type*} [Countable ι] {s : ι → Set α}
     (hm : ∀ i, NullMeasurableSet (s i) μ) (hd : Pairwise (AEDisjoint μ on s))
     (hfi : IntegrableOn f (⋃ i, s i) μ) :
     HasSum (fun n => ∫ a in s n, f a ∂μ) (∫ a in ⋃ n, s n, f a ∂μ) := by
@@ -243,7 +240,7 @@ theorem hasSum_integral_iUnion_ae {ι : Type _} [Countable ι] {s : ι → Set �
   exact hasSum_integral_measure hfi
 #align measure_theory.has_sum_integral_Union_ae MeasureTheory.hasSum_integral_iUnion_ae
 
-theorem hasSum_integral_iUnion {ι : Type _} [Countable ι] {s : ι → Set α}
+theorem hasSum_integral_iUnion {ι : Type*} [Countable ι] {s : ι → Set α}
     (hm : ∀ i, MeasurableSet (s i)) (hd : Pairwise (Disjoint on s))
     (hfi : IntegrableOn f (⋃ i, s i) μ) :
     HasSum (fun n => ∫ a in s n, f a ∂μ) (∫ a in ⋃ n, s n, f a ∂μ) :=
@@ -251,13 +248,13 @@ theorem hasSum_integral_iUnion {ι : Type _} [Countable ι] {s : ι → Set α}
     hfi
 #align measure_theory.has_sum_integral_Union MeasureTheory.hasSum_integral_iUnion
 
-theorem integral_iUnion {ι : Type _} [Countable ι] {s : ι → Set α} (hm : ∀ i, MeasurableSet (s i))
+theorem integral_iUnion {ι : Type*} [Countable ι] {s : ι → Set α} (hm : ∀ i, MeasurableSet (s i))
     (hd : Pairwise (Disjoint on s)) (hfi : IntegrableOn f (⋃ i, s i) μ) :
     ∫ a in ⋃ n, s n, f a ∂μ = ∑' n, ∫ a in s n, f a ∂μ :=
   (HasSum.tsum_eq (hasSum_integral_iUnion hm hd hfi)).symm
 #align measure_theory.integral_Union MeasureTheory.integral_iUnion
 
-theorem integral_iUnion_ae {ι : Type _} [Countable ι] {s : ι → Set α}
+theorem integral_iUnion_ae {ι : Type*} [Countable ι] {s : ι → Set α}
     (hm : ∀ i, NullMeasurableSet (s i) μ) (hd : Pairwise (AEDisjoint μ on s))
     (hfi : IntegrableOn f (⋃ i, s i) μ) : ∫ a in ⋃ n, s n, f a ∂μ = ∑' n, ∫ a in s n, f a ∂μ :=
   (HasSum.tsum_eq (hasSum_integral_iUnion_ae hm hd hfi)).symm
@@ -444,12 +441,12 @@ theorem integral_norm_eq_pos_sub_neg {f : α → ℝ} (hfi : Integrable f μ) :
       rw [← set_integral_neg_eq_set_integral_nonpos hfi.1]; congr; ext1 x; simp
 #align measure_theory.integral_norm_eq_pos_sub_neg MeasureTheory.integral_norm_eq_pos_sub_neg
 
-theorem set_integral_const (c : E) : ∫ _ in s, c ∂μ = (μ s).toReal • c := by
+theorem set_integral_const [CompleteSpace E] (c : E) : ∫ _ in s, c ∂μ = (μ s).toReal • c := by
   rw [integral_const, Measure.restrict_apply_univ]
 #align measure_theory.set_integral_const MeasureTheory.set_integral_const
 
 @[simp]
-theorem integral_indicator_const (e : E) ⦃s : Set α⦄ (s_meas : MeasurableSet s) :
+theorem integral_indicator_const [CompleteSpace E] (e : E) ⦃s : Set α⦄ (s_meas : MeasurableSet s) :
     (∫ a : α, s.indicator (fun _ : α => e) a ∂μ) = (μ s).toReal • e := by
   rw [integral_indicator s_meas, ← set_integral_const]
 #align measure_theory.integral_indicator_const MeasureTheory.integral_indicator_const
@@ -460,8 +457,8 @@ theorem integral_indicator_one ⦃s : Set α⦄ (hs : MeasurableSet s) :
   (integral_indicator_const 1 hs).trans ((smul_eq_mul _).trans (mul_one _))
 #align measure_theory.integral_indicator_one MeasureTheory.integral_indicator_one
 
-theorem set_integral_indicatorConstLp {p : ℝ≥0∞} (hs : MeasurableSet s) (ht : MeasurableSet t)
-    (hμt : μ t ≠ ∞) (x : E) :
+theorem set_integral_indicatorConstLp [CompleteSpace E]
+    {p : ℝ≥0∞} (hs : MeasurableSet s) (ht : MeasurableSet t) (hμt : μ t ≠ ∞) (x : E) :
     ∫ a in s, indicatorConstLp p ht hμt x a ∂μ = (μ (t ∩ s)).toReal • x :=
   calc
     ∫ a in s, indicatorConstLp p ht hμt x a ∂μ = ∫ a in s, t.indicator (fun _ => x) a ∂μ := by
@@ -470,7 +467,8 @@ theorem set_integral_indicatorConstLp {p : ℝ≥0∞} (hs : MeasurableSet s) (h
 set_option linter.uppercaseLean3 false in
 #align measure_theory.set_integral_indicator_const_Lp MeasureTheory.set_integral_indicatorConstLp
 
-theorem integral_indicatorConstLp {p : ℝ≥0∞} (ht : MeasurableSet t) (hμt : μ t ≠ ∞) (x : E) :
+theorem integral_indicatorConstLp [CompleteSpace E]
+    {p : ℝ≥0∞} (ht : MeasurableSet t) (hμt : μ t ≠ ∞) (x : E) :
     ∫ a, indicatorConstLp p ht hμt x a ∂μ = (μ t).toReal • x :=
   calc
     ∫ a, indicatorConstLp p ht hμt x a ∂μ = ∫ a in univ, indicatorConstLp p ht hμt x a ∂μ := by
@@ -710,6 +708,10 @@ theorem set_integral_mono_set (hfi : IntegrableOn f t μ) (hf : 0 ≤ᵐ[μ.rest
   integral_mono_measure (Measure.restrict_mono_ae hst) hf hfi
 #align measure_theory.set_integral_mono_set MeasureTheory.set_integral_mono_set
 
+theorem set_integral_le_integral (hfi : Integrable f μ) (hf : 0 ≤ᵐ[μ] f) :
+    (∫ x in s, f x ∂μ) ≤ ∫ x, f x ∂μ :=
+  integral_mono_measure (Measure.restrict_le_self) hf hfi
+
 theorem set_integral_ge_of_const_le {c : ℝ} (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (hf : ∀ x ∈ s, c ≤ f x) (hfint : IntegrableOn (fun x : α => f x) s μ) :
     c * (μ s).toReal ≤ ∫ x in s, f x ∂μ := by
@@ -863,7 +865,7 @@ We prove that for any set `s`, the function
 
 section ContinuousSetIntegral
 
-variable [NormedAddCommGroup E] {𝕜 : Type _} [NormedField 𝕜] [NormedAddCommGroup F]
+variable [NormedAddCommGroup E] {𝕜 : Type*} [NormedField 𝕜] [NormedAddCommGroup F]
   [NormedSpace 𝕜 F] {p : ℝ≥0∞} {μ : Measure α}
 
 /-- For `f : Lp E p μ`, we can define an element of `Lp E p (μ.restrict s)` by
@@ -933,7 +935,7 @@ set_option linter.uppercaseLean3 false in
 variable {𝕜}
 
 @[continuity]
-theorem continuous_set_integral [NormedSpace ℝ E] [CompleteSpace E] (s : Set α) :
+theorem continuous_set_integral [NormedSpace ℝ E] (s : Set α) :
     Continuous fun f : α →₁[μ] E => ∫ x in s, f x ∂μ := by
   haveI : Fact ((1 : ℝ≥0∞) ≤ 1) := ⟨le_rfl⟩
   have h_comp :
@@ -951,7 +953,7 @@ end MeasureTheory
 
 open MeasureTheory Asymptotics Metric
 
-variable {ι : Type _} [NormedAddCommGroup E]
+variable {ι : Type*} [NormedAddCommGroup E]
 
 /-- Fundamental theorem of calculus for set integrals: if `μ` is a measure that is finite at a
 filter `l` and `f` is a measurable function that has a finite limit `b` at `l ⊓ μ.ae`, then `∫ x in
@@ -1055,7 +1057,7 @@ as `ContinuousLinearMap.compLp`. We take advantage of this construction here.
 
 open scoped ComplexConjugate
 
-variable {μ : Measure α} {𝕜 : Type _} [IsROrC 𝕜] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
+variable {μ : Measure α} {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
   [NormedSpace 𝕜 F] {p : ENNReal}
 
 namespace ContinuousLinearMap
@@ -1103,7 +1105,7 @@ theorem integral_comp_comm (L : E →L[𝕜] F) {φ : α → E} (φ_int : Integr
   all_goals assumption
 #align continuous_linear_map.integral_comp_comm ContinuousLinearMap.integral_comp_comm
 
-theorem integral_apply {H : Type _} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {φ : α → H →L[𝕜] E}
+theorem integral_apply {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {φ : α → H →L[𝕜] E}
     (φ_int : Integrable φ μ) (v : H) : (∫ a, φ a ∂μ) v = ∫ a, φ a v ∂μ :=
   ((ContinuousLinearMap.apply 𝕜 E v).integral_comp_comm φ_int).symm
 #align continuous_linear_map.integral_apply ContinuousLinearMap.integral_apply
@@ -1203,7 +1205,7 @@ theorem integral_pair {f : α → E} {g : α → F} (hf : Integrable f μ) (hg :
   Prod.ext (fst_integral this) (snd_integral this)
 #align integral_pair integral_pair
 
-theorem integral_smul_const {𝕜 : Type _} [IsROrC 𝕜] [NormedSpace 𝕜 E] (f : α → 𝕜) (c : E) :
+theorem integral_smul_const {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] (f : α → 𝕜) (c : E) :
     ∫ x, f x • c ∂μ = (∫ x, f x ∂μ) • c := by
   by_cases hf : Integrable f μ
   · exact ((1 : 𝕜 →L[𝕜] 𝕜).smulRight c).integral_comp_comm hf

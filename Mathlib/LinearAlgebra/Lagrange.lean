@@ -2,15 +2,12 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Wrenna Robson
-
-! This file was ported from Lean 3 source module linear_algebra.lagrange
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.LinearAlgebra.Vandermonde
 import Mathlib.RingTheory.Polynomial.Basic
+
+#align_import linear_algebra.lagrange from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Lagrange interpolation
@@ -36,7 +33,7 @@ section PolynomialDetermination
 
 namespace Polynomial
 
-variable {R : Type _} [CommRing R] [IsDomain R] {f g : R[X]}
+variable {R : Type*} [CommRing R] [IsDomain R] {f g : R[X]}
 
 section Finset
 
@@ -76,7 +73,7 @@ section Indexed
 
 open Finset
 
-variable {ι : Type _} {v : ι → R} (s : Finset ι)
+variable {ι : Type*} {v : ι → R} (s : Finset ι)
 
 theorem eq_zero_of_degree_lt_of_eval_index_eq_zero (hvs : Set.InjOn v s)
     (degree_f_lt : f.degree < s.card) (eval_f : ∀ i ∈ s, f.eval (v i) = 0) : f = 0 := by
@@ -116,7 +113,7 @@ namespace Lagrange
 
 open Polynomial
 
-variable {F : Type _} [Field F]
+variable {F : Type*} [Field F]
 
 section BasisDivisor
 
@@ -182,7 +179,7 @@ section Basis
 
 open Finset
 
-variable {ι : Type _} [DecidableEq ι] {s : Finset ι} {v : ι → F} {i j : ι}
+variable {ι : Type*} [DecidableEq ι] {s : Finset ι} {v : ι → F} {i j : ι}
 
 /-- Lagrange basis polynomials indexed by `s : Finset ι`, defined at nodes `v i` for a
 map `v : ι → F`. For `i, j ∈ s`, `basis s v i` evaluates to 0 at `v j` for `i ≠ j`. When
@@ -256,7 +253,7 @@ theorem degree_basis (hvs : Set.InjOn v s) (hi : i ∈ s) :
 
 -- Porting note: Added `Nat.cast_withBot` rewrites
 theorem sum_basis (hvs : Set.InjOn v s) (hs : s.Nonempty) :
-    (∑ j in s, Lagrange.basis s v j) = 1 := by
+    ∑ j in s, Lagrange.basis s v j = 1 := by
   refine' eq_of_degrees_lt_of_eval_index_eq s hvs (lt_of_le_of_lt (degree_sum_le _ _) _) _ _
   · rw [Nat.cast_withBot, Finset.sup_lt_iff (WithBot.bot_lt_coe s.card)]
     intro i hi
@@ -286,10 +283,10 @@ section Interpolate
 
 open Finset
 
-variable {ι : Type _} [DecidableEq ι] {s t : Finset ι} {i j : ι} {v : ι → F} (r r' : ι → F)
+variable {ι : Type*} [DecidableEq ι] {s t : Finset ι} {i j : ι} {v : ι → F} (r r' : ι → F)
 
-/-- Lagrange interpolation: given a finset `s : Finset ι`, a nodal map  `v : ι → F` injective on
-`s` and a value function `r : ι → F`,  `interpolate s v r` is the unique
+/-- Lagrange interpolation: given a finset `s : Finset ι`, a nodal map `v : ι → F` injective on
+`s` and a value function `r : ι → F`, `interpolate s v r` is the unique
 polynomial of degree `< s.card` that takes value `r i` on `v i` for all `i` in `s`. -/
 @[simps]
 def interpolate (s : Finset ι) (v : ι → F) : (ι → F) →ₗ[F] F[X] where
@@ -474,7 +471,7 @@ section Nodal
 
 open Finset Polynomial
 
-variable {ι : Type _} {s : Finset ι} {v : ι → F} {i : ι} (r : ι → F) {x : F}
+variable {ι : Type*} {s : Finset ι} {v : ι → F} {i : ι} (r : ι → F) {x : F}
 
 /-- `nodal s v` is the unique monic polynomial whose roots are the nodes defined by `v` and `s`.
 

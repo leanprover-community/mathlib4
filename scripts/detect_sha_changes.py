@@ -6,7 +6,7 @@ Note that only the first 10 annotations created with this action are guaranteed 
 produce the errors first.
 """
 
-from dataclasses import dataclass
+import dataclasses
 import re
 import sys
 from typing import Optional
@@ -16,17 +16,15 @@ import git
 # upstream bug
 git.Git.CatFileContentStream.__next__ = git.Git.CatFileContentStream.next
 
-# from https://github.com/leanprover-community/mathlib4/blob/master/scripts/make_port_status.py#L83-L95
-source_module_re = re.compile(r"^! .*source module (.*)$")
-commit_re = re.compile(r"^! (leanprover-community/[a-z]*) commit ([0-9a-f]*)")
-import_re = re.compile(r"^import ([^ ]*)")
+align_import_re = re.compile(
+    r'^#align_import ([^ ]*) from "(leanprover-community/[a-z]*)" ?@ ?"([0-9a-f]*)"')
 
-@dataclass
+@dataclasses.dataclass(eq=True, frozen=True)
 class VersionInfo:
     module: str
     repo: Optional[str]
     commit: Optional[str]
-    commit_line_no: Optional[int]
+    commit_line_no: Optional[int] = dataclasses.field(compare=False)
 
     def to_commit(self):
         try:
@@ -39,32 +37,20 @@ class VersionInfo:
             pass
         return repo.commit(self.commit)
 
-def get_mathlib4_module_commit_info(contents):
-    module = repo = commit = None
-    commit_line_no = 0
+def get_mathlib4_module_commit_infos(contents):
     for i, line in enumerate(contents, 1):
-        m = source_module_re.match(line)
+        m = align_import_re.match(line)
         if m:
             module = m.group(1)
-        m = commit_re.match(line)
-        if m:
-            repo = m.group(1)
-            commit = m.group(2)
-            commit_line_no = i
-        if import_re.match(line):
-            break
-    if module is None:
-        raise ValueError("No module info")
-    return VersionInfo(module, repo, commit, commit_line_no)
+            repo = m.group(2)
+            commit = m.group(3)
+            yield VersionInfo(module, repo, commit, i)
 
 def get_mathlib4_module_commit_info_from_blob(blob: Optional[git.Blob]):
     if blob is None:
-        return None
-    try:
-        return get_mathlib4_module_commit_info(
+        return
+    yield from get_mathlib4_module_commit_infos(
             l.decode('utf8') for l in blob.data_stream.stream)
-    except ValueError:
-        return None
 
 def encode_msg_text_for_github(msg):
     # even though this is probably url quoting, we match the implementation at
@@ -79,17 +65,17 @@ if __name__ == '__main__':
 
     diff_infos = []
     for diff in base.diff(head, paths=['Mathlib']):
-        a_info = get_mathlib4_module_commit_info_from_blob(diff.a_blob)
-        b_info = get_mathlib4_module_commit_info_from_blob(diff.b_blob)
-        if a_info == b_info or b_info is None:
+        a_info = set(get_mathlib4_module_commit_info_from_blob(diff.a_blob))
+        b_info = set(get_mathlib4_module_commit_info_from_blob(diff.b_blob))
+        if b_info <= a_info:
             continue
         diff_infos.append((diff, a_info, b_info))
 
     all_refs = {}
 
     # produce errors first
-    for diff, a_info, b_info in diff_infos:
-        if b_info:
+    for diff, a_infos, b_infos in diff_infos:
+        for b_info in b_infos:
             try:
                 b_info.to_commit()
             except Exception as e:
@@ -98,13 +84,21 @@ if __name__ == '__main__':
                 continue
 
     for diff, a_info, b_info in diff_infos:
-        if a_info is not None and b_info is not None:
-            if a_info.module == b_info.module:
-                mod_path = a_info.module.replace('.', '/')
-                msg = f"See https://leanprover-community.github.io/mathlib-port-status/file/{mod_path}?range={a_info.commit}..{b_info.commit}"
-                print(f"::notice file={diff.b_blob.path},line={b_info.commit_line_no},title=Synchronization::{msg}")
-            else:
-                print(f"::warning file={diff.b_blob.path},line={b_info.commit_line_no},title=Filename changed!::{a_info} -> {b_info}")
+        same = a_info.intersection(b_info)
+        a_info -= same
+        b_info -= same
+        if a_info != {} and b_info != {}:
+            a_info_by_mod = {a.module: a for a in a_info}
+            b_info_by_mod = {b.module: b for b in b_info}
+            for k in set(a_info_by_mod.keys()) | set(b_info_by_mod.keys()):
+                a_info = a_info_by_mod.get(k, None)
+                b_info = b_info_by_mod.get(k, None)
+                if a_info is None or b_info is None:
+                    pass
+                elif a_info.module == b_info.module:
+                    mod_path = a_info.module.replace('.', '/')
+                    msg = f"See review instructions and diff at\nhttps://leanprover-community.github.io/mathlib-port-status/file/{mod_path}?range={a_info.commit}..{b_info.commit}"
+                    print(f"::notice file={diff.b_blob.path},line={b_info.commit_line_no},title=Synchronization::{encode_msg_text_for_github(msg)}")
 
     if any_errors:
         raise SystemExit("Setting a failure due to errors above")

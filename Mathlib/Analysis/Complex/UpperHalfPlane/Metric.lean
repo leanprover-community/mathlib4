@@ -2,15 +2,12 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.complex.upper_half_plane.metric
-! leanprover-community/mathlib commit caa58cbf5bfb7f81ccbaca4e8b8ac4bc2b39cc1c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 import Mathlib.Analysis.SpecialFunctions.Arsinh
-import Mathlib.Geometry.Euclidean.Inversion
+import Mathlib.Geometry.Euclidean.Inversion.Basic
+
+#align_import analysis.complex.upper_half_plane.metric from "leanprover-community/mathlib"@"caa58cbf5bfb7f81ccbaca4e8b8ac4bc2b39cc1c"
 
 /-!
 # Metric on the upper half-plane
@@ -136,7 +133,7 @@ def metricSpaceAux : MetricSpace ℍ where
   dist_comm := UpperHalfPlane.dist_comm
   dist_triangle := UpperHalfPlane.dist_triangle
   eq_of_dist_eq_zero {z w} h := by
-    simpa [dist_eq, Real.sqrt_eq_zero', (mul_pos z.im_pos w.im_pos).not_le, Subtype.coe_inj] using h
+    simpa [dist_eq, Real.sqrt_eq_zero', (mul_pos z.im_pos w.im_pos).not_le, ext_iff] using h
   edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
 #align upper_half_plane.metric_space_aux UpperHalfPlane.metricSpaceAux
 
@@ -166,7 +163,7 @@ theorem center_im (z r) : (center z r).im = z.im * Real.cosh r :=
 
 @[simp]
 theorem center_zero (z : ℍ) : center z 0 = z :=
-  Subtype.ext <| Complex.ext rfl <| by rw [coe_im, coe_im, center_im, Real.cosh_zero, mul_one]
+  ext' rfl <| by rw [center_im, Real.cosh_zero, mul_one]
 #align upper_half_plane.center_zero UpperHalfPlane.center_zero
 
 theorem dist_coe_center_sq (z w : ℍ) (r : ℝ) : dist (z : ℂ) (w.center r) ^ 2 =
@@ -253,8 +250,8 @@ nonrec theorem dist_of_re_eq (h : z.re = w.re) : dist z w = dist (log z.im) (log
 logarithms of their imaginary parts. -/
 theorem dist_log_im_le (z w : ℍ) : dist (log z.im) (log w.im) ≤ dist z w :=
   calc
-    dist (log z.im) (log w.im) = @dist ℍ _ ⟨⟨0, z.im⟩, z.im_pos⟩ ⟨⟨0, w.im⟩, w.im_pos⟩ :=
-      Eq.symm <| @dist_of_re_eq ⟨⟨0, z.im⟩, z.im_pos⟩ ⟨⟨0, w.im⟩, w.im_pos⟩ rfl
+    dist (log z.im) (log w.im) = dist (mk ⟨0, z.im⟩ z.im_pos) (mk ⟨0, w.im⟩ w.im_pos) :=
+      Eq.symm <| dist_of_re_eq rfl
     _ ≤ dist z w := mul_le_mul_of_nonneg_left (arsinh_le_arsinh.2 <|
       div_le_div_of_le (mul_nonneg zero_le_two (sqrt_nonneg _)) <| by
         simpa [sqrt_sq_eq_abs] using Complex.abs_im_le_abs (z - w)) zero_le_two

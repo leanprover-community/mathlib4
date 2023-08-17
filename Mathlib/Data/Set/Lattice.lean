@@ -2,15 +2,12 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.set.lattice
-! leanprover-community/mathlib commit b86832321b586c6ac23ef8cdef6a7a27e42b13bd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Order.Directed
 import Mathlib.Order.GaloisConnection
+
+#align_import data.set.lattice from "leanprover-community/mathlib"@"b86832321b586c6ac23ef8cdef6a7a27e42b13bd"
 
 /-!
 # The set lattice
@@ -26,9 +23,10 @@ for `Set α`, and some more set constructions.
 * `Set.sUnion`: **s**et **union**. Union of sets belonging to a set of sets.
 * `Set.sInter_eq_biInter`, `Set.sUnion_eq_biInter`: Shows that `⋂₀ s = ⋂ x ∈ s, x` and
   `⋃₀ s = ⋃ x ∈ s, x`.
-* `Set.completeBooleanAlgebra`: `Set α` is a `CompleteBooleanAlgebra` with `≤ = ⊆`, `< = ⊂`,
-  `⊓ = ∩`, `⊔ = ∪`, `⨅ = ⋂`, `⨆ = ⋃` and `\` as the set difference. See `Set.BooleanAlgebra`.
-* `Set.kern_image`: For a function `f : α → β`, `s.kern_image f` is the set of `y` such that
+* `Set.completeAtomicBooleanAlgebra`: `Set α` is a `CompleteAtomicBooleanAlgebra` with `≤ = ⊆`,
+  `< = ⊂`, `⊓ = ∩`, `⊔ = ∪`, `⨅ = ⋂`, `⨆ = ⋃` and `\` as the set difference.
+  See `Set.BooleanAlgebra`.
+* `Set.kernImage`: For a function `f : α → β`, `s.kernImage f` is the set of `y` such that
   `f ⁻¹ y ⊆ s`.
 * `Set.seq`: Union of the image of a set under a **seq**uence of functions. `seq s t` is the union
   of `f '' t` over all `f ∈ s`, where `t : Set α` and `s : Set (α → β)`.
@@ -40,7 +38,7 @@ for `Set α`, and some more set constructions.
 In lemma names,
 * `⋃ i, s i` is called `iUnion`
 * `⋂ i, s i` is called `iInter`
-* `⋃ i j, s i j` is called `iUnion₂`. This is a `iUnion` inside a `iUnion`.
+* `⋃ i j, s i j` is called `iUnion₂`. This is an `iUnion` inside an `iUnion`.
 * `⋂ i j, s i j` is called `iInter₂`. This is an `iInter` inside an `iInter`.
 * `⋃ i ∈ s, t i` is called `biUnion` for "bounded `iUnion`". This is the special case of `iUnion₂`
   where `j : i ∈ s`.
@@ -55,12 +53,14 @@ In lemma names,
 * `⋂₀`: `Set.sInter`
 -/
 
+set_option autoImplicit true
+
 
 open Function Tactic Set
 
 universe u
 
-variable {α β γ : Type _} {ι ι' ι₂ : Sort _} {κ κ₁ κ₂ : ι → Sort _} {κ' : ι' → Sort _}
+variable {α β γ : Type*} {ι ι' ι₂ : Sort*} {κ κ₁ κ₂ : ι → Sort*} {κ' : ι' → Sort*}
 
 namespace Set
 
@@ -176,15 +176,22 @@ theorem mem_iInter₂_of_mem {s : ∀ i, κ i → Set α} {a : α} (h : ∀ i j,
   mem_iInter₂.2 h
 #align set.mem_Inter₂_of_mem Set.mem_iInter₂_of_mem
 
-instance : CompleteBooleanAlgebra (Set α) :=
+instance Set.completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Set α) :=
   { instBooleanAlgebraSet with
     le_sSup := fun s t t_in a a_in => ⟨t, t_in, a_in⟩
     sSup_le := fun s t h a ⟨t', ⟨t'_in, a_in⟩⟩ => h t' t'_in a_in
     le_sInf := fun s t h a a_in t' t'_in => h t' t'_in a_in
     sInf_le := fun s t t_in a h => h _ t_in
-    iInf_sup_le_sup_sInf := fun s S x => Iff.mp <| by simp [forall_or_left]
-    inf_sSup_le_iSup_inf := fun s S x => Iff.mp <| by simp [exists_and_left] }
+    iInf_iSup_eq := by intros; ext; simp [Classical.skolem] }
 
+/-- `kernImage f s` is the set of `y` such that `f ⁻¹ y ⊆ s`. -/
+def kernImage (f : α → β) (s : Set α) : Set β :=
+  { y | ∀ ⦃x⦄, f x = y → x ∈ s }
+#align set.kern_image Set.kernImage
+
+lemma subset_kernImage_iff {f : α → β} : s ⊆ kernImage f t ↔ f ⁻¹' s ⊆ t :=
+  ⟨fun h _ hx ↦ h hx rfl,
+    fun h _ hx y hy ↦ h (show f y ∈ s from hy.symm ▸ hx)⟩
 section GaloisConnection
 
 variable {f : α → β}
@@ -193,19 +200,47 @@ protected theorem image_preimage : GaloisConnection (image f) (preimage f) := fu
   image_subset_iff
 #align set.image_preimage Set.image_preimage
 
-/-- `kernImage f s` is the set of `y` such that `f ⁻¹ y ⊆ s`. -/
-def kernImage (f : α → β) (s : Set α) : Set β :=
-  { y | ∀ ⦃x⦄, f x = y → x ∈ s }
-#align set.kern_image Set.kernImage
-
-protected theorem preimage_kernImage : GaloisConnection (preimage f) (kernImage f) := fun a _ =>
-  ⟨fun h _ hx y hy =>
-    have : f y ∈ a := hy.symm ▸ hx
-    h this,
-    fun h x (hx : f x ∈ a) => h hx rfl⟩
+protected theorem preimage_kernImage : GaloisConnection (preimage f) (kernImage f) := fun _ _ =>
+  subset_kernImage_iff.symm
 #align set.preimage_kern_image Set.preimage_kernImage
 
 end GaloisConnection
+
+section kernImage
+
+variable {f : α → β}
+
+lemma kernImage_mono : Monotone (kernImage f) :=
+  Set.preimage_kernImage.monotone_u
+
+lemma kernImage_eq_compl {s : Set α} : kernImage f s = (f '' sᶜ)ᶜ :=
+  Set.preimage_kernImage.u_unique (Set.image_preimage.compl)
+    (fun t ↦ compl_compl (f ⁻¹' t) ▸ Set.preimage_compl)
+
+lemma kernImage_compl {s : Set α} : kernImage f (sᶜ) = (f '' s)ᶜ := by
+  rw [kernImage_eq_compl, compl_compl]
+
+lemma kernImage_empty : kernImage f ∅ = (range f)ᶜ := by
+  rw [kernImage_eq_compl, compl_empty, image_univ]
+
+lemma kernImage_preimage_eq_iff {s : Set β} : kernImage f (f ⁻¹' s) = s ↔ (range f)ᶜ ⊆ s := by
+  rw [kernImage_eq_compl, ← preimage_compl, compl_eq_comm, eq_comm, image_preimage_eq_iff,
+      compl_subset_comm]
+
+lemma compl_range_subset_kernImage {s : Set α} : (range f)ᶜ ⊆ kernImage f s := by
+  rw [← kernImage_empty]
+  exact kernImage_mono (empty_subset _)
+
+lemma kernImage_union_preimage {s : Set α} {t : Set β} :
+    kernImage f (s ∪ f ⁻¹' t) = kernImage f s ∪ t := by
+  rw [kernImage_eq_compl, kernImage_eq_compl, compl_union, ← preimage_compl, image_inter_preimage,
+      compl_inter, compl_compl]
+
+lemma kernImage_preimage_union {s : Set α} {t : Set β} :
+    kernImage f (f ⁻¹' t ∪ s) = t ∪ kernImage f s := by
+  rw [union_comm, kernImage_union_preimage, union_comm]
+
+end kernImage
 
 /-! ### Union and intersection over an indexed family of sets -/
 
@@ -260,18 +295,27 @@ theorem iInf_eq_dif {p : Prop} [Decidable p] (s : p → Set α) :
   _root_.iInf_eq_dif _
 #align set.Infi_eq_dif Set.iInf_eq_dif
 
-theorem exists_set_mem_of_union_eq_top {ι : Type _} (t : Set ι) (s : ι → Set β)
+theorem exists_set_mem_of_union_eq_top {ι : Type*} (t : Set ι) (s : ι → Set β)
     (w : ⋃ i ∈ t, s i = ⊤) (x : β) : ∃ i ∈ t, x ∈ s i := by
   have p : x ∈ ⊤ := Set.mem_univ x
   rw [← w, Set.mem_iUnion] at p
   simpa using p
 #align set.exists_set_mem_of_union_eq_top Set.exists_set_mem_of_union_eq_top
 
-theorem nonempty_of_union_eq_top_of_nonempty {ι : Type _} (t : Set ι) (s : ι → Set α)
+theorem nonempty_of_union_eq_top_of_nonempty {ι : Type*} (t : Set ι) (s : ι → Set α)
     (H : Nonempty α) (w : ⋃ i ∈ t, s i = ⊤) : t.Nonempty := by
   obtain ⟨x, m, -⟩ := exists_set_mem_of_union_eq_top t s w H.some
   exact ⟨x, m⟩
 #align set.nonempty_of_union_eq_top_of_nonempty Set.nonempty_of_union_eq_top_of_nonempty
+
+theorem nonempty_of_nonempty_iUnion
+    {s : ι → Set α} (h_Union : (⋃ i, s i).Nonempty) : Nonempty ι := by
+  obtain ⟨x, hx⟩ := h_Union
+  exact ⟨Classical.choose $ mem_iUnion.mp hx⟩
+
+theorem nonempty_of_nonempty_iUnion_eq_univ
+    {s : ι → Set α} [Nonempty α] (h_Union : ⋃ i, s i = univ) : Nonempty ι :=
+  nonempty_of_nonempty_iUnion (s := s) (by simpa only [h_Union] using univ_nonempty)
 
 theorem setOf_exists (p : ι → β → Prop) : { x | ∃ i, p i x } = ⋃ i, { x | p i x } :=
   ext fun _ => mem_iUnion.symm
@@ -373,6 +417,10 @@ theorem iUnion_mono {s t : ι → Set α} (h : ∀ i, s i ⊆ t i) : ⋃ i, s i 
   iSup_mono h
 #align set.Union_mono Set.iUnion_mono
 
+@[gcongr]
+theorem iUnion_mono'' {s t : ι → Set α} (h : ∀ i, s i ⊆ t i) : iUnion s ⊆ iUnion t :=
+  iSup_mono h
+
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem iUnion₂_mono {s t : ∀ i, κ i → Set α} (h : ∀ i j, s i j ⊆ t i j) :
@@ -383,6 +431,10 @@ theorem iUnion₂_mono {s t : ∀ i, κ i → Set α} (h : ∀ i j, s i j ⊆ t 
 theorem iInter_mono {s t : ι → Set α} (h : ∀ i, s i ⊆ t i) : ⋂ i, s i ⊆ ⋂ i, t i :=
   iInf_mono h
 #align set.Inter_mono Set.iInter_mono
+
+@[gcongr]
+theorem iInter_mono'' {s t : ι → Set α} (h : ∀ i, s i ⊆ t i) : iInter s ⊆ iInter t :=
+  iInf_mono h
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -419,12 +471,12 @@ theorem iInter₂_mono' {s : ∀ i, κ i → Set α} {t : ∀ i', κ' i' → Set
     (iInter₂_subset _ _).trans hst
 #align set.Inter₂_mono' Set.iInter₂_mono'
 
-theorem iUnion₂_subset_iUnion (κ : ι → Sort _) (s : ι → Set α) :
+theorem iUnion₂_subset_iUnion (κ : ι → Sort*) (s : ι → Set α) :
     ⋃ (i) (_ : κ i), s i ⊆ ⋃ i, s i :=
   iUnion_mono fun _ => iUnion_subset fun _ => Subset.rfl
 #align set.Union₂_subset_Union Set.iUnion₂_subset_iUnion
 
-theorem iInter_subset_iInter₂ (κ : ι → Sort _) (s : ι → Set α) :
+theorem iInter_subset_iInter₂ (κ : ι → Sort*) (s : ι → Set α) :
     ⋂ i, s i ⊆ ⋂ (i) (_ : κ i), s i :=
   iInter_mono fun _ => subset_iInter fun _ => Subset.rfl
 #align set.Inter_subset_Inter₂ Set.iInter_subset_iInter₂
@@ -645,7 +697,7 @@ theorem iInter_ite (f g : ι → Set α) :
 
 end
 
-theorem image_projection_prod {ι : Type _} {α : ι → Type _} {v : ∀ i : ι, Set (α i)}
+theorem image_projection_prod {ι : Type*} {α : ι → Type*} {v : ∀ i : ι, Set (α i)}
     (hv : (pi univ v).Nonempty) (i : ι) :
     ((fun x : ∀ i : ι, α i => x i) '' ⋂ k, (fun x : ∀ j : ι, α j => x k) ⁻¹' v k) = v i := by
   classical
@@ -864,7 +916,7 @@ theorem mem_biInter {s : Set α} {t : α → Set β} {y : β} (h : ∀ x ∈ s, 
 theorem subset_biUnion_of_mem {s : Set α} {u : α → Set β} {x : α} (xs : x ∈ s) :
     u x ⊆ ⋃ x ∈ s, u x :=
 --Porting note: Why is this not just `subset_iUnion₂ x xs`?
-  @subset_iUnion₂ β α (. ∈ s) (fun i _ => u i) x xs
+  @subset_iUnion₂ β α (· ∈ s) (fun i _ => u i) x xs
 #align set.subset_bUnion_of_mem Set.subset_biUnion_of_mem
 
 /-- A specialization of `iInter₂_subset`. -/
@@ -948,13 +1000,13 @@ theorem biInter_pair (a b : α) (s : α → Set β) : ⋂ x ∈ ({a, b} : Set α
   rw [biInter_insert, biInter_singleton]
 #align set.bInter_pair Set.biInter_pair
 
-theorem biInter_inter {ι α : Type _} {s : Set ι} (hs : s.Nonempty) (f : ι → Set α) (t : Set α) :
+theorem biInter_inter {ι α : Type*} {s : Set ι} (hs : s.Nonempty) (f : ι → Set α) (t : Set α) :
     ⋂ i ∈ s, f i ∩ t = (⋂ i ∈ s, f i) ∩ t := by
   haveI : Nonempty s := hs.to_subtype
   simp [biInter_eq_iInter, ← iInter_inter]
 #align set.bInter_inter Set.biInter_inter
 
-theorem inter_biInter {ι α : Type _} {s : Set ι} (hs : s.Nonempty) (f : ι → Set α) (t : Set α) :
+theorem inter_biInter {ι α : Type*} {s : Set ι} (hs : s.Nonempty) (f : ι → Set α) (t : Set α) :
     ⋂ i ∈ s, t ∩ f i = t ∩ ⋂ i ∈ s, f i := by
   rw [inter_comm, ← biInter_inter hs]
   simp [inter_comm]
@@ -983,13 +1035,13 @@ theorem biUnion_union (s t : Set α) (u : α → Set β) :
 #align set.bUnion_union Set.biUnion_union
 
 @[simp]
-theorem iUnion_coe_set {α β : Type _} (s : Set α) (f : s → Set β) :
+theorem iUnion_coe_set {α β : Type*} (s : Set α) (f : s → Set β) :
     ⋃ i, f i = ⋃ i ∈ s, f ⟨i, ‹i ∈ s›⟩ :=
   iUnion_subtype _ _
 #align set.Union_coe_set Set.iUnion_coe_set
 
 @[simp]
-theorem iInter_coe_set {α β : Type _} (s : Set α) (f : s → Set β) :
+theorem iInter_coe_set {α β : Type*} (s : Set α) (f : s → Set β) :
     ⋂ i, f i = ⋂ i ∈ s, f ⟨i, ‹i ∈ s›⟩ :=
   iInter_subtype _ _
 #align set.Inter_coe_set Set.iInter_coe_set
@@ -1067,10 +1119,12 @@ theorem subset_sInter_iff {S : Set (Set α)} {t : Set α} : t ⊆ ⋂₀ S ↔ �
   le_sInf_iff
 #align set.subset_sInter_iff Set.subset_sInter_iff
 
+@[gcongr]
 theorem sUnion_subset_sUnion {S T : Set (Set α)} (h : S ⊆ T) : ⋃₀S ⊆ ⋃₀T :=
   sUnion_subset fun _ hs => subset_sUnion_of_mem (h hs)
 #align set.sUnion_subset_sUnion Set.sUnion_subset_sUnion
 
+@[gcongr]
 theorem sInter_subset_sInter {S T : Set (Set α)} (h : S ⊆ T) : ⋂₀ T ⊆ ⋂₀ S :=
   subset_sInter fun _ hs => sInter_subset_of_mem (h hs)
 #align set.sInter_subset_sInter Set.sInter_subset_sInter
@@ -1107,7 +1161,7 @@ theorem sInter_eq_univ {S : Set (Set α)} : ⋂₀ S = univ ↔ ∀ s ∈ S, s =
 
 /-- If all sets in a collection are either `∅` or `Set.univ`, then so is their union. -/
 theorem sUnion_mem_empty_univ {S : Set (Set α)} (h : S ⊆ {∅, univ}) :
-    ⋃₀ S ∈ ({∅, univ} :Set (Set α)) := by
+    ⋃₀ S ∈ ({∅, univ} : Set (Set α)) := by
   simp only [mem_insert_iff, mem_singleton_iff, or_iff_not_imp_left, sUnion_eq_empty, not_forall]
   rintro ⟨s, hs, hne⟩
   obtain rfl : s = univ := (h hs).resolve_left hne
@@ -1260,7 +1314,7 @@ theorem inter_empty_of_inter_sUnion_empty {s t : Set α} {S : Set (Set α)} (hs 
     rw [← h]; exact inter_subset_inter_right _ (subset_sUnion_of_mem hs)
 #align set.inter_empty_of_inter_sUnion_empty Set.inter_empty_of_inter_sUnion_empty
 
-theorem range_sigma_eq_iUnion_range {γ : α → Type _} (f : Sigma γ → β) :
+theorem range_sigma_eq_iUnion_range {γ : α → Type*} (f : Sigma γ → β) :
     range f = ⋃ a, range fun b => f ⟨a, b⟩ :=
   Set.ext <| by simp
 #align set.range_sigma_eq_Union_range Set.range_sigma_eq_iUnion_range
@@ -1273,7 +1327,7 @@ theorem iUnion_eq_range_psigma (s : ι → Set β) : ⋃ i, s i = range fun a : 
   simp [Set.ext_iff]
 #align set.Union_eq_range_psigma Set.iUnion_eq_range_psigma
 
-theorem iUnion_image_preimage_sigma_mk_eq_self {ι : Type _} {σ : ι → Type _} (s : Set (Sigma σ)) :
+theorem iUnion_image_preimage_sigma_mk_eq_self {ι : Type*} {σ : ι → Type*} (s : Set (Sigma σ)) :
     ⋃ i, Sigma.mk i '' (Sigma.mk i ⁻¹' s) = s := by
   ext x
   simp only [mem_iUnion, mem_image, mem_preimage]
@@ -1285,13 +1339,12 @@ theorem iUnion_image_preimage_sigma_mk_eq_self {ι : Type _} {σ : ι → Type _
     exact ⟨i, a, h, rfl⟩
 #align set.Union_image_preimage_sigma_mk_eq_self Set.iUnion_image_preimage_sigma_mk_eq_self
 
-theorem Sigma.univ (X : α → Type _) : (Set.univ : Set (Σa, X a)) = ⋃ a, range (Sigma.mk a) :=
+theorem Sigma.univ (X : α → Type*) : (Set.univ : Set (Σa, X a)) = ⋃ a, range (Sigma.mk a) :=
   Set.ext fun x =>
     iff_of_true trivial ⟨range (Sigma.mk x.1), Set.mem_range_self _, x.2, Sigma.eta x⟩
 #align set.sigma.univ Set.Sigma.univ
 
-theorem sUnion_mono {s t : Set (Set α)} (h : s ⊆ t) : ⋃₀s ⊆ ⋃₀t :=
-  sUnion_subset fun _' ht' => subset_sUnion_of_mem <| h ht'
+alias sUnion_subset_sUnion ← sUnion_mono
 #align set.sUnion_mono Set.sUnion_mono
 
 theorem iUnion_subset_iUnion_const {s : Set α} (h : ι → ι₂) : ⋃ _ : ι, s ⊆ ⋃ _ : ι₂, s :=
@@ -1299,12 +1352,12 @@ theorem iUnion_subset_iUnion_const {s : Set α} (h : ι → ι₂) : ⋃ _ : ι,
 #align set.Union_subset_Union_const Set.iUnion_subset_iUnion_const
 
 @[simp]
-theorem iUnion_singleton_eq_range {α β : Type _} (f : α → β) : ⋃ x : α, {f x} = range f := by
+theorem iUnion_singleton_eq_range {α β : Type*} (f : α → β) : ⋃ x : α, {f x} = range f := by
   ext x
   simp [@eq_comm _ x]
 #align set.Union_singleton_eq_range Set.iUnion_singleton_eq_range
 
-theorem iUnion_of_singleton (α : Type _) : (⋃ x, {x} : Set α) = univ := by simp [Set.ext_iff]
+theorem iUnion_of_singleton (α : Type*) : (⋃ x, {x} : Set α) = univ := by simp [Set.ext_iff]
 #align set.Union_of_singleton Set.iUnion_of_singleton
 
 theorem iUnion_of_singleton_coe (s : Set α) : ⋃ i : s, ({(i : α)} : Set α) = s := by simp
@@ -1372,7 +1425,7 @@ theorem sInter_iUnion (s : ι → Set (Set α)) : ⋂₀ ⋃ i, s i = ⋂ i, ⋂
   simp only [sInter_eq_biInter, biInter_iUnion]
 #align set.sInter_Union Set.sInter_iUnion
 
-theorem iUnion_range_eq_sUnion {α β : Type _} (C : Set (Set α)) {f : ∀ s : C, β → (s : Type _)}
+theorem iUnion_range_eq_sUnion {α β : Type*} (C : Set (Set α)) {f : ∀ s : C, β → (s : Type _)}
     (hf : ∀ s : C, Surjective (f s)) : ⋃ y : β, range (fun s : C => (f s y).val) = ⋃₀C := by
   ext x; constructor
   · rintro ⟨s, ⟨y, rfl⟩, ⟨s, hs⟩, rfl⟩
@@ -1963,8 +2016,9 @@ theorem seq_subset {s : Set (α → β)} {t : Set α} {u : Set β} :
     eq ▸ h f hf a ha
 #align set.seq_subset Set.seq_subset
 
+@[gcongr]
 theorem seq_mono {s₀ s₁ : Set (α → β)} {t₀ t₁ : Set α} (hs : s₀ ⊆ s₁) (ht : t₀ ⊆ t₁) :
-    seq s₀ t₀ ⊆ seq s₁ t₁ := fun _  ⟨f, hf, a, ha, eq⟩ => ⟨f, hs hf, a, ht ha, eq⟩
+    seq s₀ t₀ ⊆ seq s₁ t₁ := fun _ ⟨f, hf, a, ha, eq⟩ => ⟨f, hs hf, a, ht ha, eq⟩
 #align set.seq_mono Set.seq_mono
 
 theorem singleton_seq {f : α → β} {t : Set α} : Set.seq ({f} : Set (α → β)) t = f '' t :=
@@ -2014,7 +2068,7 @@ end Seq
 
 section Pi
 
-variable {π : α → Type _}
+variable {π : α → Type*}
 
 theorem pi_def (i : Set α) (s : ∀ a, Set (π a)) : pi i s = ⋂ a ∈ i, eval a ⁻¹' s a := by
   ext
@@ -2071,13 +2125,13 @@ variable {s t u : Set α} {f : α → β}
 namespace Set
 
 @[simp]
-theorem disjoint_iUnion_left {ι : Sort _} {s : ι → Set α} :
+theorem disjoint_iUnion_left {ι : Sort*} {s : ι → Set α} :
     Disjoint (⋃ i, s i) t ↔ ∀ i, Disjoint (s i) t :=
   iSup_disjoint_iff
 #align set.disjoint_Union_left Set.disjoint_iUnion_left
 
 @[simp]
-theorem disjoint_iUnion_right {ι : Sort _} {s : ι → Set α} :
+theorem disjoint_iUnion_right {ι : Sort*} {s : ι → Set α} :
     Disjoint t (⋃ i, s i) ↔ ∀ i, Disjoint t (s i) :=
   disjoint_iSup_iff
 #align set.disjoint_Union_right Set.disjoint_iUnion_right

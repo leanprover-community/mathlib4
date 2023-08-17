@@ -2,14 +2,11 @@
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson
-
-! This file was ported from Lean 3 source module set_theory.game.impartial
-! leanprover-community/mathlib commit 2e0975f6a25dd3fbfb9e41556a77f075f6269748
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Game.Basic
 import Mathlib.Tactic.NthRewrite
+
+#align_import set_theory.game.impartial from "leanprover-community/mathlib"@"2e0975f6a25dd3fbfb9e41556a77f075f6269748"
 
 /-!
 # Basic definitions about impartial (pre-)games
@@ -27,7 +24,7 @@ open scoped PGame
 
 namespace PGame
 
-/-- The definition for a impartial game, defined using Conway induction. -/
+/-- The definition for an impartial game, defined using Conway induction. -/
 def ImpartialAux : PGame → Prop
   | G => (G ≈ -G) ∧ (∀ i, ImpartialAux (G.moveLeft i)) ∧ ∀ j, ImpartialAux (G.moveRight j)
 termination_by _ G => G -- Porting note: Added `termination_by`
