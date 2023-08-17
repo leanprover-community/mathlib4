@@ -39,6 +39,8 @@ the continuum hypothesis*][flypitch_itp]
 
 -/
 
+set_option autoImplicit true
+
 
 universe u v u' v' w w'
 

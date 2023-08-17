@@ -558,6 +558,8 @@ end Indicator
 
 section LiminfLimsupAddSub
 
+set_option autoImplicit true
+
 variable {R : Type*} [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
 
 /-- `liminf (c + xᵢ) = c + liminf xᵢ`. -/

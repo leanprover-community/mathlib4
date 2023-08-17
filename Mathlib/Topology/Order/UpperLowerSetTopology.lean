@@ -56,6 +56,8 @@ Furthermore, the `UpperSetTopology` is used in the construction of the Scott Top
 upper set topology, lower set topology, preorder, Alexandrov
 -/
 
+set_option autoImplicit true
+
 
 variable (α β : Type*)
 
