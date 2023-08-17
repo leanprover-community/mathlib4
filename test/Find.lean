@@ -66,7 +66,7 @@ Of these, 1 match your patterns.
 • non_linear_pattern_test1
 -/
 #guard_msgs in
-#find uniquenameforthistest (List.replicate ?n _ ++ List.replicate ?n _
+#find uniquenameforthistest (List.replicate ?n _ ++ List.replicate ?n _)
 
 /--
 info: Found 2 definitions mentioning List.replicate, uniquenameforthistest and HAppend.hAppend.
@@ -75,7 +75,7 @@ Of these, 2 match your patterns.
 • non_linear_pattern_test2
 -/
 #guard_msgs in
-#find uniquenameforthistest (List.replicate ?n _ ++ List.replicate ?m _
+#find uniquenameforthistest (List.replicate ?n _ ++ List.replicate ?m _)
 
 /--
 info: Found 2 definitions mentioning List.replicate, uniquenameforthistest, Eq and HAppend.hAppend.
