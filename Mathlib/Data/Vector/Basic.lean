@@ -17,6 +17,8 @@ import Mathlib.Control.Traversable.Basic
 This file introduces the infix notation `::ᵥ` for `Vector.cons`.
 -/
 
+set_option autoImplicit true
+
 
 universe u
 

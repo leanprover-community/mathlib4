@@ -679,6 +679,7 @@ theorem classification :
         (x = k * (m ^ 2 - n ^ 2) ∧ y = k * (2 * m * n) ∨
             x = k * (2 * m * n) ∧ y = k * (m ^ 2 - n ^ 2)) ∧
           (z = k * (m ^ 2 + n ^ 2) ∨ z = -k * (m ^ 2 + n ^ 2)) := by
+  clear h
   constructor
   · intro h
     obtain ⟨k, m, n, H⟩ := h.classified

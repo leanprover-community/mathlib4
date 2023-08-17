@@ -62,13 +62,13 @@ theorem map_empty (f : α ↪ β) : (∅ : Finset α).map f = ∅ :=
 
 variable {f : α ↪ β} {s : Finset α}
 
---Porting note: Lower priority because `mem_map_equiv` is better when it applies
-@[simp 900]
+@[simp]
 theorem mem_map {b : β} : b ∈ s.map f ↔ ∃ a ∈ s, f a = b :=
   mem_map.trans <| by simp only [exists_prop]; rfl
 #align finset.mem_map Finset.mem_map
 
-@[simp]
+--Porting note: Higher priority to apply before `mem_map`.
+@[simp 1100]
 theorem mem_map_equiv {f : α ≃ β} {b : β} : b ∈ s.map f.toEmbedding ↔ f.symm b ∈ s := by
   rw [mem_map]
   exact
@@ -77,6 +77,10 @@ theorem mem_map_equiv {f : α ≃ β} {b : β} : b ∈ s.map f.toEmbedding ↔ f
       simpa, fun h => ⟨_, h, by simp⟩⟩
 #align finset.mem_map_equiv Finset.mem_map_equiv
 
+-- The simpNF linter says that the LHS can be simplified via `Finset.mem_map`.
+-- However this is a higher priority lemma.
+-- https://github.com/leanprover/std4/issues/207
+@[simp 1100, nolint simpNF]
 theorem mem_map' (f : α ↪ β) {a} {s : Finset α} : f a ∈ s.map f ↔ a ∈ s :=
   mem_map_of_injective f.2
 #align finset.mem_map' Finset.mem_map'

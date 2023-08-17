@@ -169,16 +169,6 @@ theorem lintegral_iInf_directed_of_measurable {mα : MeasurableSpace α} [Counta
       · exact iInf_le (fun b => ∫⁻ a, f b a ∂μ) _
 #align lintegral_infi_directed_of_measurable lintegral_iInf_directed_of_measurable
 
--- todo: move to measure_theory/pi_system
-theorem isPiSystem_Iic [SemilatticeInf α] : @IsPiSystem α (range Iic) := by
-  rintro s ⟨us, rfl⟩ t ⟨ut, rfl⟩ _; rw [Iic_inter_Iic]; exact ⟨us ⊓ ut, rfl⟩
-#align is_pi_system_Iic isPiSystem_Iic
-
--- todo: move to measure_theory/pi_system
-theorem isPiSystem_Ici [SemilatticeSup α] : @IsPiSystem α (range Ici) := by
-  rintro s ⟨us, rfl⟩ t ⟨ut, rfl⟩ _; rw [Ici_inter_Ici]; exact ⟨us ⊔ ut, rfl⟩
-#align is_pi_system_Ici isPiSystem_Ici
-
 end AuxLemmasToBeMoved
 
 namespace MeasureTheory.Measure
@@ -766,7 +756,7 @@ theorem continuousWithinAt_condCdf'_Ici (ρ : Measure (α × ℝ)) (a : α) (x :
   convert Monotone.tendsto_nhdsWithin_Ioi (monotone_condCdf' ρ a) x
   rw [sInf_image']
   have h' : ⨅ r : Ioi x, condCdf' ρ a r = ⨅ r : { r' : ℚ // x < r' }, condCdf' ρ a r := by
-    refine' iInf_Ioi_eq_iInf_rat_gt x _ (monotone_condCdf' ρ a)
+    refine' Real.iInf_Ioi_eq_iInf_rat_gt x _ (monotone_condCdf' ρ a)
     refine' ⟨0, fun z => _⟩
     rintro ⟨u, -, rfl⟩
     exact condCdf'_nonneg ρ a u

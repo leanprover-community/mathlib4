@@ -63,12 +63,12 @@ theorem vandermonde_succ {n : ℕ} (v : Fin n.succ → R) :
 #align matrix.vandermonde_succ Matrix.vandermonde_succ
 
 theorem vandermonde_mul_vandermonde_transpose {n : ℕ} (v w : Fin n → R) (i j) :
-    (vandermonde v ⬝ (vandermonde w)ᵀ) i j = ∑ k : Fin n, (v i * w j) ^ (k : ℕ) := by
+    (vandermonde v * (vandermonde w)ᵀ) i j = ∑ k : Fin n, (v i * w j) ^ (k : ℕ) := by
   simp only [vandermonde_apply, Matrix.mul_apply, Matrix.transpose_apply, mul_pow]
 #align matrix.vandermonde_mul_vandermonde_transpose Matrix.vandermonde_mul_vandermonde_transpose
 
 theorem vandermonde_transpose_mul_vandermonde {n : ℕ} (v : Fin n → R) (i j) :
-    ((vandermonde v)ᵀ ⬝ vandermonde v) i j = ∑ k : Fin n, v k ^ (i + j : ℕ) := by
+    ((vandermonde v)ᵀ * vandermonde v) i j = ∑ k : Fin n, v k ^ (i + j : ℕ) := by
   simp only [vandermonde_apply, Matrix.mul_apply, Matrix.transpose_apply, pow_add]
 #align matrix.vandermonde_transpose_mul_vandermonde Matrix.vandermonde_transpose_mul_vandermonde
 

@@ -1,6 +1,7 @@
 import Mathlib.Tactic.Basic
 import Std.Tactic.GuardExpr
 
+set_option autoImplicit true
 example : n + 2 = m := by
   change n + 1 + 1 = _
   guard_target =ₛ n + 1 + 1 = m
