@@ -125,8 +125,6 @@ theorem norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
       Unitization.fst_mul, Unitization.fst_star, Algebra.algebraMap_eq_smul_one, smul_apply,
       one_apply, smul_add, mul_add, add_mul]
     simp only [smul_smul, smul_mul_assoc, ← add_assoc, ← mul_assoc, mul_smul_comm]
-set_option linter.uppercaseLean3 false in
-#align norm_splitMul_snd_sq norm_splitMul_snd_sq
 
 variable {𝕜}
 
