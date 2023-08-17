@@ -26,12 +26,12 @@
     "inputRev?": "master",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/semorrison/aesop",
+   {"url": "https://github.com/JLimperg/aesop",
     "subDir?": null,
-    "rev": "0b388bc25ae6e05012b4a60143e6bdb07a5f3f33",
+    "rev": "147e0c7320733aa9a05d6c3ac1ba0cc889f176b8",
     "opts": {},
     "name": "aesop",
-    "inputRev?": "nightly-2023-08-16",
+    "inputRev?": "master",
     "inherited": false}},
   {"git":
    {"url": "https://github.com/semorrison/std4",
