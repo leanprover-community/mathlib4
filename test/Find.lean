@@ -47,6 +47,13 @@ Of these, 0 match your patterns.
 #guard_msgs in
 #find (_ = uniquenameforthistest)
 
+/-- error: unknown identifier 'uniquenameforthistestthatdoesn'texist' -/
+#guard_msgs in
+#find uniquenameforthistestthatdoesn'texist
+
+/-- error: unknown identifier 'uniquenameforthistestthatdoesn'texist' -/
+#guard_msgs in
+#find (uniquenameforthistestthatdoesn'texist = _)
 
 /-- warning: declaration uses 'sorry' -/
 #guard_msgs in
