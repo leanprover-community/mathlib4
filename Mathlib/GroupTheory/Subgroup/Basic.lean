@@ -2888,14 +2888,12 @@ instance (priority := 100) normal_ker (f : G →* M) : f.ker.Normal :=
 #align add_monoid_hom.normal_ker AddMonoidHom.normal_ker
 
 @[to_additive (attr := simp)]
-lemma ker_fst (G H : Type _) [Group G] [Group H] :
-    ker (fst G H) = (.prod ⊥ ⊤) := by
+lemma ker_fst : ker (fst G G') = (.prod ⊥ ⊤) := by
   ext
   simp [mem_ker, Subgroup.mem_prod]
 
 @[to_additive (attr := simp)]
-lemma ker_snd (G H : Type _) [Group G] [Group H] :
-    ker (snd G H) = (.prod ⊤ ⊥) := by
+lemma ker_snd : ker (snd G G') = (.prod ⊤ ⊥) := by
   ext
   simp [mem_ker, Subgroup.mem_prod]
 
