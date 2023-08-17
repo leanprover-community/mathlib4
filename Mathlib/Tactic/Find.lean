@@ -10,8 +10,6 @@ import Mathlib.Tactic.Cache
 # The `#find` command and tactic.
 -/
 
-set_option autoImplicit false
-
 open Lean Meta Elab
 
 /-!
