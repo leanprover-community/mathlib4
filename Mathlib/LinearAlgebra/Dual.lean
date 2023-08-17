@@ -124,7 +124,7 @@ namespace Dual
 
 instance : Inhabited (Dual R M) := ⟨0⟩
 
-instance : FunLike (Dual R M) M fun _ => R :=
+instance (priority := low) : FunLike (Dual R M) M fun _ => R :=
   inferInstanceAs (FunLike (M →ₗ[R] R) M fun _ => R)
 
 /-- Maps a module M to the dual of the dual of M. See `Module.erange_coe` and
