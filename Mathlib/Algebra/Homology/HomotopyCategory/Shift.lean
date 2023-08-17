@@ -113,11 +113,11 @@ lemma shiftFunctor_obj_d' (K : CochainComplex C ℤ) (n i j : ℤ) :
 
 lemma shiftFunctorAdd_inv_app_f (K : CochainComplex C ℤ) (a b n : ℤ) :
   ((shiftFunctorAdd (CochainComplex C ℤ) a b).inv.app K).f n =
-    (K.XIsoOfEq (by dsimp ; rw [add_comm a, add_assoc])).hom := rfl
+    (K.XIsoOfEq (by dsimp; rw [add_comm a, add_assoc])).hom := rfl
 
 lemma shiftFunctorAdd_hom_app_f (K : CochainComplex C ℤ) (a b n : ℤ) :
   ((shiftFunctorAdd (CochainComplex C ℤ) a b).hom.app K).f n =
-    (K.XIsoOfEq (by dsimp ; rw [add_comm a, add_assoc])).hom := by
+    (K.XIsoOfEq (by dsimp; rw [add_comm a, add_assoc])).hom := by
   have : IsIso (((shiftFunctorAdd (CochainComplex C ℤ) a b).inv.app K).f n) := by
     rw [shiftFunctorAdd_inv_app_f]
     infer_instance
@@ -127,23 +127,23 @@ lemma shiftFunctorAdd_hom_app_f (K : CochainComplex C ℤ) (a b n : ℤ) :
 
 lemma shiftFunctorAdd'_inv_app_f' (K : CochainComplex C ℤ) (a b ab : ℤ) (h : a + b = ab) (n : ℤ) :
   ((CategoryTheory.shiftFunctorAdd' (CochainComplex C ℤ) a b ab h).inv.app K).f n =
-    (K.XIsoOfEq (by dsimp ; rw [← h, add_assoc, add_comm a])).hom := by
+    (K.XIsoOfEq (by dsimp; rw [← h, add_assoc, add_comm a])).hom := by
   subst h
   rw [shiftFunctorAdd'_eq_shiftFunctorAdd, shiftFunctorAdd_inv_app_f]
 
 lemma shiftFunctorAdd'_hom_app_f' (K : CochainComplex C ℤ) (a b ab : ℤ) (h : a + b = ab) (n : ℤ) :
   ((CategoryTheory.shiftFunctorAdd' (CochainComplex C ℤ) a b ab h).hom.app K).f n =
-    (K.XIsoOfEq (by dsimp ; rw [← h, add_assoc, add_comm a])).hom := by
+    (K.XIsoOfEq (by dsimp; rw [← h, add_assoc, add_comm a])).hom := by
   subst h
   rw [shiftFunctorAdd'_eq_shiftFunctorAdd, shiftFunctorAdd_hom_app_f]
 
 lemma shiftFunctorZero_inv_app_f (K : CochainComplex C ℤ) (n : ℤ) :
   ((CategoryTheory.shiftFunctorZero (CochainComplex C ℤ) ℤ).inv.app K).f n =
-    (K.XIsoOfEq (by dsimp ; rw [add_zero])).hom := rfl
+    (K.XIsoOfEq (by dsimp; rw [add_zero])).hom := rfl
 
 lemma shiftFunctorZero_hom_app_f (K : CochainComplex C ℤ) (n : ℤ) :
   ((CategoryTheory.shiftFunctorZero (CochainComplex C ℤ) ℤ).hom.app K).f n =
-    (K.XIsoOfEq (by dsimp ; rw [add_zero])).hom := by
+    (K.XIsoOfEq (by dsimp; rw [add_zero])).hom := by
   have : IsIso (((shiftFunctorZero (CochainComplex C ℤ) ℤ).inv.app K).f n) := by
     rw [shiftFunctorZero_inv_app_f]
     infer_instance
@@ -176,7 +176,7 @@ variable {C}
 lemma shiftFunctorComm_hom_app_f (K : CochainComplex C ℤ) (a b p : ℤ) :
     ((shiftFunctorComm (CochainComplex C ℤ) a b).hom.app K).f p =
       (K.XIsoOfEq (show p + b + a = p + a + b
-        by dsimp ; rw [add_assoc, add_comm b, add_assoc])).hom := by
+        by dsimp; rw [add_assoc, add_comm b, add_assoc])).hom := by
   rw [shiftFunctorComm_eq _ _ _ _ rfl]
   dsimp
   rw [shiftFunctorAdd'_inv_app_f', shiftFunctorAdd'_hom_app_f']
