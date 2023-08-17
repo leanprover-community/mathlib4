@@ -56,6 +56,10 @@ lean_lib Cache where
 lean_exe cache where
   root := `Cache.Main
 
+lean_exe loogle where
+  root := `Loogle.Main
+  supportInterpreter := true
+
 lean_lib MathlibExtras where
   roots := #[`MathlibExtras]
 
