@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
+import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 
@@ -73,6 +74,20 @@ lemma moduleCat_exact_iff_range_eq_ker :
       exact h hx
   · intro h
     rw [h]
+
+variable {S}
+
+lemma Exact.moduleCat_range_eq_ker (hS : S.Exact) :
+    LinearMap.range S.f = LinearMap.ker S.g := by
+  simpa only [moduleCat_exact_iff_range_eq_ker] using hS
+
+lemma ShortExact.moduleCat_injective_f (hS : S.ShortExact) :
+    Function.Injective S.f :=
+  hS.injective_f
+
+lemma ShortExact.moduleCat_surjective_g (hS : S.ShortExact) :
+    Function.Surjective S.g :=
+  hS.surjective_g
 
 end ShortComplex
 

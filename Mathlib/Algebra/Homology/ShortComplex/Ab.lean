@@ -1,5 +1,5 @@
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
-import Mathlib.Algebra.Homology.ShortComplex.Exact
+import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Algebra.Category.GroupCat.Abelian
 import Mathlib.Algebra.Category.GroupCat.EpiMono
 
@@ -82,6 +82,14 @@ lemma ab_exact_iff :
     . rw [← hx₁, ← comp_apply, toCycles_i]
     . rw [← AddCommGroupCat.mono_iff_injective]
       infer_instance
+
+lemma ShortExact.ab_injective_f (hS : S.ShortExact) :
+    Function.Injective S.f :=
+  (AddCommGroupCat.mono_iff_injective _).1 hS.mono_f
+
+lemma ShortExact.ab_surjective_g (hS : S.ShortExact) :
+    Function.Surjective S.g :=
+  (AddCommGroupCat.epi_iff_surjective _).1 hS.epi_g
 
 end ShortComplex
 
