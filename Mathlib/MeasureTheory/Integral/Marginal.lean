@@ -917,7 +917,7 @@ theorem marginal_congr {x y : ∀ i, π i} (f : (∀ i, π i) → ℝ≥0∞)
     (∫⋯∫_s, f ∂μ) x = (∫⋯∫_s, f ∂μ) y := by
   dsimp [marginal, updateSet]; rcongr; exact h _ ‹_›
 
-theorem marginal_update (x : ∀ i, π i) (f : (∀ i, π i) → ℝ≥0∞) {i : δ} (y : π i) (hi : i ∈ s) :
+theorem marginal_update {i : δ} (hi : i ∈ s) (x : ∀ i, π i) (f : (∀ i, π i) → ℝ≥0∞) (y : π i) :
     (∫⋯∫_s, f ∂μ) (Function.update x i y) = (∫⋯∫_s, f ∂μ) x := by
   gcongr with j hj
   have : j ≠ i := by rintro rfl; exact hj hi
@@ -1070,8 +1070,7 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
               simp_rw [rhsAux_not_mem μ f hi]
     _ = (∫⋯∫_insert i s, f ∂μ) x ^ p * (∫⁻ t, ((∫⋯∫_s, f ∂μ) (update x i t) ^ (m * p)
           * ∏ j in (insert i s)ᶜ, ((∫⋯∫_insert j s, f ∂μ) (update x i t)) ^ p) ∂(μ i)) := by
-              clear_value p m
-              simp_rw [fun x xᵢ => marginal_update μ x f xᵢ (s.mem_insert_self i)]
+              simp_rw [marginal_update μ (s.mem_insert_self i)]
               rw [lintegral_const_mul]
               refine (hf.marginal μ).comp (measurable_update x) |>.pow measurable_const |>.mul ?_
               refine Finset.measurable_prod _ fun i _ ↦ ?_
