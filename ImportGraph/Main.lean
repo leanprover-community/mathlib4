@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Util.Imports
+import Mathlib.Lean.CoreM
 import Mathlib.Lean.Data.NameMap
 import Mathlib.Lean.IO.Process
 import Mathlib.Lean.Name
-import Cli
+import Mathlib.Util.Cli
 
 /-!
 # `lake exe graph`
@@ -30,25 +31,6 @@ def asDotGraph (graph : NameMap (Array Name)) (header := "import_graph") : Strin
 
 open Lean Core System
 
--- Next two declarations borrowed from `runLinter.lean`.
-
-instance : ToExpr FilePath where
-  toTypeExpr := mkConst ``FilePath
-  toExpr path := mkApp (mkConst ``FilePath.mk) (toExpr path.1)
-
-elab "compileTimeSearchPath" : term =>
-  return toExpr (← searchPathRef.get)
-
-/-- A custom command-line argument parser that allows either relative paths to Lean files,
-(e.g. `Mathlib/Topology/Basic.lean`) or the module name (e.g. `Mathlib.Topology.Basic`). -/
-instance : ParseableType Name where
-  name     := "Name"
-  parse? s :=
-    if s.endsWith ".lean" then
-      some <| (s : FilePath).withExtension "" |>.components.foldl Name.mkStr Name.anonymous
-    else
-      String.toName s
-
 open IO.FS IO.Process Name in
 /-- Implementation of the import graph command line program. -/
 def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
@@ -58,7 +40,7 @@ def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
   let from? := match args.flag? "from" with
   | some fr => some <| fr.as! Name
   | none => none
-  searchPathRef.set compileTimeSearchPath
+  searchPathRef.set compileTimeSearchPath%
   let dotFile ← unsafe withImportModules [{module := to}] {} (trustLevel := 1024) fun env => do
     let mut graph := env.importGraph
     if let .some f := from? then
