@@ -11,6 +11,8 @@ import Std.Data.List.Basic
 
 /-! ## Additional utilities in `Lean.MVarId` -/
 
+set_option autoImplicit true
+
 open Lean Meta
 
 namespace Lean.MVarId

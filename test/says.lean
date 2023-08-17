@@ -1,6 +1,7 @@
 import Mathlib.Tactic.Says
 import Mathlib.Tactic.RunCmd
 
+set_option autoImplicit true
 /--
 info: Try this: (show_term exact 37) says exact 37
 -/
@@ -62,6 +63,12 @@ error: Tactic `simp` did not produce any messages.
 example : True := by
   simp says
   trivial
+
+set_option says.verify true in
+example : Nat := by
+  simp? says simp only
+  -- This is a comment to test that `says` ignores following comments.
+  exact 0
 
 set_option says.no_verify_in_CI true in
 example : True := by

@@ -51,7 +51,7 @@ class IsArtinian (R M) [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
 
 section
 
-variable {R M P N : Type _}
+variable {R M P N : Type*}
 
 variable [Ring R] [AddCommGroup M] [AddCommGroup P] [AddCommGroup N]
 
@@ -119,8 +119,8 @@ instance (priority := 100) isArtinian_of_finite [Finite M] : IsArtinian R M :=
 -- Porting note: elab_as_elim can only be global and cannot be changed on an imported decl
 -- attribute [local elab_as_elim] Finite.induction_empty_option
 
-instance isArtinian_pi {R ι : Type _} [Finite ι] :
-    ∀ {M : ι → Type _} [Ring R] [∀ i, AddCommGroup (M i)],
+instance isArtinian_pi {R ι : Type*} [Finite ι] :
+    ∀ {M : ι → Type*} [Ring R] [∀ i, AddCommGroup (M i)],
       ∀ [∀ i, Module R (M i)], ∀ [∀ i, IsArtinian R (M i)], IsArtinian R (∀ i, M i) := by
   apply Finite.induction_empty_option _ _ _ ι
   · intro α β e hα M _ _ _ _
@@ -136,13 +136,13 @@ instance isArtinian_pi {R ι : Type _} [Finite ι] :
 /-- A version of `isArtinian_pi` for non-dependent functions. We need this instance because
 sometimes Lean fails to apply the dependent version in non-dependent settings (e.g., it fails to
 prove that `ι → ℝ` is finite dimensional over `ℝ`). -/
-instance isArtinian_pi' {R ι M : Type _} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
+instance isArtinian_pi' {R ι M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
     [IsArtinian R M] : IsArtinian R (ι → M) :=
   isArtinian_pi
 #align is_artinian_pi' isArtinian_pi'
 
 --porting note: new instance
-instance isArtinian_finsupp {R ι M : Type _} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
+instance isArtinian_finsupp {R ι M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
     [IsArtinian R M] : IsArtinian R (ι →₀ M) :=
   isArtinian_of_linearEquiv (Finsupp.linearEquivFunOnFinite _ _ _).symm
 
@@ -152,7 +152,7 @@ open IsArtinian Submodule Function
 
 section Ring
 
-variable {R M : Type _} [Ring R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
 
 theorem isArtinian_iff_wellFounded :
     IsArtinian R M ↔ WellFounded ((· < ·) : Submodule R M → Submodule R M → Prop) :=
@@ -273,7 +273,7 @@ end Ring
 
 section CommRing
 
-variable {R : Type _} (M : Type _) [CommRing R] [AddCommGroup M] [Module R M] [IsArtinian R M]
+variable {R : Type*} (M : Type*) [CommRing R] [AddCommGroup M] [Module R M] [IsArtinian R M]
 
 namespace IsArtinian
 
@@ -380,7 +380,7 @@ namespace IsArtinianRing
 
 open IsArtinian
 
-variable {R : Type _} [CommRing R] [IsArtinianRing R]
+variable {R : Type*} [CommRing R] [IsArtinianRing R]
 
 theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) := by
   let Jac := Ideal.jacobson (⊥ : Ideal R)
@@ -418,9 +418,31 @@ theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) 
   rwa [← hn (n + 1) (Nat.le_succ _)]
 #align is_artinian_ring.is_nilpotent_jacobson_bot IsArtinianRing.isNilpotent_jacobson_bot
 
+instance isMaximal_of_isPrime (p : Ideal R) [p.IsPrime] : p.IsMaximal :=
+  Ideal.Quotient.maximal_of_isField _
+  { exists_pair_ne := ⟨0, 1, zero_ne_one⟩
+    mul_comm := mul_comm
+    mul_inv_cancel := fun {x} hx => by
+      have : IsArtinianRing (R ⧸ p) := (@Ideal.Quotient.mk_surjective R _ p).isArtinianRing
+      obtain ⟨n, hn⟩ : ∃ (n : ℕ), Ideal.span {x^n} = Ideal.span {x^(n+1)}
+      · obtain ⟨n, h⟩ := IsArtinian.monotone_stabilizes (R := R ⧸ p) (M := R ⧸ p)
+          ⟨fun m => OrderDual.toDual (Ideal.span {x^m}), fun m n h y hy => by
+            dsimp [OrderDual.toDual] at *
+            rw [Ideal.mem_span_singleton] at hy ⊢
+            obtain ⟨z, rfl⟩ := hy
+            exact dvd_mul_of_dvd_left (pow_dvd_pow _ h) _⟩
+        exact ⟨n, h (n + 1) <| by norm_num⟩
+      have H : x^n ∈ Ideal.span {x^(n+1)}
+      { rw [← hn]; refine Submodule.subset_span (Set.mem_singleton _) }
+      rw [Ideal.mem_span_singleton] at H
+      obtain ⟨y, hy⟩ := H
+      rw [pow_add, mul_assoc, pow_one] at hy
+      conv_lhs at hy => rw [←mul_one (x^n)]
+      exact ⟨y, mul_left_cancel₀ (pow_ne_zero _ hx) hy.symm⟩ }
+
 section Localization
 
-variable (S : Submonoid R) (L : Type _) [CommRing L] [Algebra R L] [IsLocalization S L]
+variable (S : Submonoid R) (L : Type*) [CommRing L] [Algebra R L] [IsLocalization S L]
 
 /-- Localizing an artinian ring can only reduce the amount of elements. -/
 theorem localization_surjective : Function.Surjective (algebraMap R L) := by
