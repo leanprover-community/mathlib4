@@ -198,8 +198,8 @@ instance Lex.orderBot [∀ i, CanonicallyOrderedAddMonoid (α i)] : OrderBot (Le
 
 instance Lex.orderedAddCancelCommMonoid [∀ i, OrderedCancelAddCommMonoid (α i)] :
     OrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) where
-  add_le_add_left := fun _ _ h _ => add_le_add_left (α := Lex (∀ i, α i)) h _
-  le_of_add_le_add_left := fun _ _ _ => le_of_add_le_add_left (α := Lex (∀ i, α i))
+  add_le_add_left _ _ h _ := add_le_add_left (α := Lex (∀ i, α i)) h _
+  le_of_add_le_add_left _ _ _ := le_of_add_le_add_left (α := Lex (∀ i, α i))
 
 instance Lex.orderedAddCommGroup [∀ i, OrderedAddCommGroup (α i)] :
     OrderedAddCommGroup (Lex (Π₀ i, α i)) where
