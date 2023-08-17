@@ -199,7 +199,7 @@ section PartialOrder
 variable [PartialOrder A] [CovariantClass A A (· + ·) (· < ·)] {a t b : A}
   {f g : AddMonoidAlgebra R A}
 
-/--  The "top" element of `Finsupp.single a r * f`  is the product of `r` and
+/--  The "top" element of `AddMonoidAlgebra.single a r * f` is the product of `r` and
 the "top" element of `f`.  Here, "top" is simply an upper bound for the elements
 of the support of `f` (e.g. the product is `0` if "top" is not a maximum).
 The corresponding statement for a general product `f * g` is `AddMonoidAlgebra.mul_apply_of_le`.
@@ -220,7 +220,7 @@ theorem single_mul_apply_of_le (r : R) (ft : ∀ a ∈ f.support, a ≤ t) :
   refine WithBot.coe_lt_coe.mpr ((ft _ (Finset.mem_of_mem_erase xs)).lt_of_ne ?_)
   exact Finset.ne_of_mem_erase xs
 
-/--  The "bottom" element of `Finsupp.single a r * f`  is the product of `r` and
+/--  The "bottom" element of `Finsupp.single a r * f` is the product of `r` and
 the "bottom" element of `f`.  Here, "bottom" is simply a lower bound for the elements
 of the support of `f` (e.g. the product is `0` if "bottom" is not a minimum).
 The corresponding statement for a general product `f * g` is `AddMonoidAlgebra.mul_apply_of_le'`.
@@ -231,7 +231,7 @@ theorem single_mul_apply_of_le' (r : R) (fb : ∀ a ∈ f.support, b ≤ a) :
 
 variable [CovariantClass A A (Function.swap (· + ·)) (· < ·)]
 
-/--  The "top" element of `f * g`  is the product of the "top" elements of `f` and of `g`.
+/--  The "top" element of `f * g` is the product of the "top" elements of `f` and of `g`.
 Here, "top" is simply an upper bound for the elements of the support of the corresponding
 polynomial (e.g. the product is `0` if "top" is not a maximum). -/
 theorem mul_apply_of_le (fa : ∀ i ∈ f.support, i ≤ a) (gt : ∀ i ∈ g.support, i ≤ t) :
@@ -247,7 +247,7 @@ theorem mul_apply_of_le (fa : ∀ i ∈ f.support, i ≤ a) (gt : ∀ i ∈ g.su
   haveI : CovariantClass A A (· + ·) (· ≤ ·) := Add.to_covariantClass_left A
   exact fun x xa xf y yg ↦ (add_lt_add_of_lt_of_le ((fa _ xf).lt_of_ne xa) (gt _ yg)).ne'
 
-/--  The "bottom" element of `f * g`  is the product of the "bottom" elements of `f` and of `g`.
+/--  The "bottom" element of `f * g` is the product of the "bottom" elements of `f` and of `g`.
 Here, "bottom" is simply a lower bound for the elements of the support of the corresponding
 polynomial (e.g. the product is `0` if "bottom" is not a minimum). -/
 theorem mul_apply_of_le' (fa : ∀ i ∈ f.support, a ≤ i) (gb : ∀ i ∈ g.support, b ≤ i) :
