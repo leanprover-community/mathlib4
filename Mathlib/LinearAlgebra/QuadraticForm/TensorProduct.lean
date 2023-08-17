@@ -67,19 +67,21 @@ theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂
   dsimp
   convert associated_left_inverse A ((associated_isSymm A Q₁).tmul (associated_isSymm R Q₂))
 
+variable (A) in
 /-- The base change of a quadratic form. -/
 protected def baseChange (Q : QuadraticForm R M₂) : QuadraticForm A (A ⊗[R] M₂) :=
   QuadraticForm.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (QuadraticForm.sq (R := A)) Q
 
 @[simp]
 theorem baseChange_tmul (Q : QuadraticForm R M₂) (a : A) (m₂ : M₂) :
-    Q.baseChange (a ⊗ₜ m₂) = Q m₂ • (a * a) :=
+    Q.baseChange A (a ⊗ₜ m₂) = Q m₂ • (a * a) :=
   tensorDistrib_tmul _ _ _ _
 
-@[simp]
+
 theorem associated_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂)  :
-    associated (R₁ := A) Q.baseChange = (associated (R₁ := R) Q).baseChange :=
-  associated_tmul _ Q
+    associated (R₁ := A) (Q.baseChange A) = (associated (R₁ := R) Q).baseChange A := by
+  dsimp only [QuadraticForm.baseChange, BilinForm.baseChange]
+  rw [associated_tmul (QuadraticForm.sq (R := A)) Q, associated_sq]
 
 end CommRing
 
