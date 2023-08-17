@@ -8,7 +8,7 @@ import Mathlib.RingTheory.Algebraic
 import Mathlib.Data.Fintype.Card
 import Mathlib.ModelTheory.Algebra.Field.AlgClosed
 import Mathlib.ModelTheory.Algebra.Ring.MvPolynomial
-import Mathlib.ModelTheory.Definability
+import Mathlib.ModelTheory.Algebra.Ring.Definable
 
 #align_import field_theory.ax_grothendieck from "leanprover-community/mathlib"@"4e529b03dd62b7b7d13806c3fb974d9d4848910e"
 
@@ -205,9 +205,9 @@ theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime_or_zero
 
 end FirstOrder
 
-open Function FirstOrder Language Field Ring
+open Function FirstOrder Language Field Ring MvPolynomial
 
-variable {K : Type*} [Field K] [IsAlgClosed K] {ι : Type*} [Finite ι]
+variable {K : Type*} [Field K] [IsAlgClosed K] {ι κ : Type*} [Finite ι] [Finite κ]
 
 theorem ax_grothendieck_definable [CompatibleRing K] (c : Set K)
     (hc : Set.Finite c)
@@ -229,7 +229,19 @@ theorem ax_grothendieck_definable [CompatibleRing K] (c : Set K)
     realize_genericPolyMapSurjOnOfInjOn] at this
   exact this Subtype.val ⟨ps, fun i => Set.Subset.refl _⟩
 
-theorem ax_grothendieck
+theorem ax_grothendieck_zero_set
+    (z : κ → MvPolynomial ι K)
+    (ps : ι → MvPolynomial ι K) :
+    let S := { x : ι → K | ∀ i, MvPolynomial.eval x (z i) = 0 }
+    S.MapsTo (fun v i => MvPolynomial.eval v (ps i)) S →
+    S.InjOn (fun v i => MvPolynomial.eval v (ps i)) →
+    S.SurjOn (fun v i => MvPolynomial.eval v (ps i)) S := by
+  letI := compatibleRingOfRing K
+  intro S
+  exact ax_grothendieck_definable _
+    (Set.finite_iUnion (fun _ => Set.Finite.image _
+      (by exact Finset.finite_toSet _)))
+    S (mvPolynomial_zero_set_definable _) ps
 
 /-- The **Ax-Grothendieck** theorem
 
@@ -239,12 +251,6 @@ theorem ax_grothendieck {ι K : Type*} [Finite ι] [Field K]
     [IsAlgClosed K] (ps : ι → MvPolynomial ι K) :
     Injective (fun v i => MvPolynomial.eval v (ps i)) →
     Surjective fun v i => MvPolynomial.eval v (ps i) := by
-  letI := Fintype.ofFinite ι
-  let p : ℕ := ringChar K
-  haveI : CharP K p := ⟨ringChar.spec K⟩
-  letI := Ring.compatibleRingOfRing K
-  have := ACF_models_genericPolyMapSurjOnOfInjOn_of_prime_or_zero
-    (CharP.char_is_prime_or_zero K p) (fun i => (ps i).support)
-  rw [← (ACF_isComplete (CharP.char_is_prime_or_zero K p)).realize_sentence_iff _ K,
-    realize_genericPolyMapSurjOnOfInjOn] at this
-  exact this ⟨ps, fun i => Finset.Subset.refl _⟩
+  simpa [← Set.injective_iff_injOn_univ,
+         ← Set.surjective_iff_surjOn_univ] using
+      ax_grothendieck_zero_set Empty.elim ps

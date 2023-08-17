@@ -63,9 +63,17 @@ noncomputable def mvPolynomialSupportLEEquiv
     right_inv := fun p => by ext; simp [coeff] }
 
 @[simp]
+theorem MvPolynomialSupportLEEquiv_symm_apply_coeff [DecidableEq κ] [CommRing R] [DecidableEq R]
+    (p : ι → MvPolynomial κ R) : (mvPolynomialSupportLEEquiv (fun i => (p i).support)).symm
+      (fun i => (p i.1).coeff i.2.1) = ⟨p, fun _ => Finset.Subset.refl _⟩ :=
+  (mvPolynomialSupportLEEquiv (R := R) (fun i : ι => (p i).support)).symm_apply_apply
+    ⟨p, fun _ => Finset.Subset.refl _⟩
+
+
+@[simp]
 theorem lift_genericPolyMap [DecidableEq κ] [CommRing R]
     [DecidableEq R] (mons : ι → Finset (κ →₀ ℕ))
-    (f :  (i : ι) × { x // x ∈ mons i } ⊕ κ → R) (i : ι) :
+    (f : (i : ι) × { x // x ∈ mons i } ⊕ κ → R) (i : ι) :
     FreeCommRing.lift f (genericPolyMap mons i) =
       MvPolynomial.eval (f ∘ Sum.inr)
         (((mvPolynomialSupportLEEquiv mons).symm
