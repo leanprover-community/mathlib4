@@ -248,32 +248,39 @@ syntax turnstyle := "⊢ " <|> "|- "
 syntax conclusion_pattern := turnstyle term:max
 /-- `#find` subexpression pattern: `(_ * (_ + _))` -/
 syntax term_pattern := term:max
-/-- `#find` patterns -/
+/-- a single `#find` pattern -/
 syntax find_pattern := name_pattern <|> ident_pattern <|> conclusion_pattern <|> term_pattern
 
+-- This is useful for other tools (e.g. CLI tools) wrapping the find functionality
+declare_syntax_cat find_patterns
+/-- `#find` patterns -/
+syntax find_pattern* : find_patterns
 
 /-- Parses a list of `find_pattern` syntax into `Arguments` -/
-def parseFindPatterns (args : TSyntaxArray ``find_pattern) : TermElabM Arguments := do
+def parseFindPatterns (args : TSyntax `find_patterns) : TermElabM Arguments := do
   let mut idents := #[]
   let mut namePats := #[]
   let mut terms := #[]
-  for arg in args do
-    match arg with
-    | `(find_pattern| $ss:str) => do
-      let str := Lean.TSyntax.getString ss
-      namePats := namePats.push str
-    | `(find_pattern| $i:ident) => do
-      let n := Lean.TSyntax.getId i
-      unless (← getEnv).contains n do
-        throwErrorAt i "unknown identifier '{n}'"
-      idents := idents.push n
-    | `(find_pattern| $_:turnstyle $s:term) => do
-      let t ← Lean.Elab.Term.elabTerm s none
-      terms := terms.push (true, t)
-    | `(find_pattern| $s:term) => do
-      let t ← Lean.Elab.Term.elabTerm s none
-      terms := terms.push (false, t)
-    | _ => throwErrorAt arg "unexpected argument to #find"
+  match args with
+  | `(find_patterns| $args':find_pattern*) =>
+    for arg in args' do
+      match arg with
+      | `(find_pattern| $ss:str) => do
+        let str := Lean.TSyntax.getString ss
+        namePats := namePats.push str
+      | `(find_pattern| $i:ident) => do
+        let n := Lean.TSyntax.getId i
+        unless (← getEnv).contains n do
+          throwErrorAt i "unknown identifier '{n}'"
+        idents := idents.push n
+      | `(find_pattern| $_:turnstyle $s:term) => do
+        let t ← Lean.Elab.Term.elabTerm s none
+        terms := terms.push (true, t)
+      | `(find_pattern| $s:term) => do
+        let t ← Lean.Elab.Term.elabTerm s none
+        terms := terms.push (false, t)
+      | _ => throwErrorAt arg "unexpected argument to #find"
+  | _ => throwErrorAt args "unexpected argument to #find"
   pure {idents, namePats, terms}
 
 open Command
@@ -336,7 +343,7 @@ find lemmas that you have not yet imported, and the cache will stay up-to-date.
 
 Inside tactic proofs, the `#find` tactic can be used instead.
 -/
-elab s:"#find " args:find_pattern* : command => liftTermElabM do
+elab s:"#find " args:find_patterns : command => liftTermElabM do
   profileitM Exception "find" (← getOptions) do
     match ← find (← parseFindPatterns args) with
     | .error warn =>
@@ -348,7 +355,7 @@ elab s:"#find " args:find_pattern* : command => liftTermElabM do
 Tactic version of the `#find` command.
 See also the `apply?` tactic to search for theorems matching the current goal.
 -/
-elab s:"#find " args:find_pattern+ : tactic => do
+elab s:"#find " args:find_patterns : tactic => do
   profileitM Exception "find" (← getOptions) do
     match ← find (← parseFindPatterns args) with
     | .error warn =>
