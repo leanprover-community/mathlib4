@@ -2,6 +2,7 @@ import Mathlib.Util.Frontend
 import Mathlib.Util.InfoTree.ToJson
 import Mathlib.Data.String.Defs
 import Mathlib.Util.InfoTree.TacticInvocation.Basic
+import Mathlib.Lean.CoreM
 import Cli
 
 open Lean Elab IO Meta
@@ -29,7 +30,7 @@ end Lean.Elab.TacticInvocation
 -- Borrowed from ImportGraph.lean
 /-- A custom command-line argument parser that allows either relative paths to Lean files,
 (e.g. `Mathlib/Topology/Basic.lean`) or the module name (e.g. `Mathlib.Topology.Basic`). -/
-instance : ParseableType Name where
+instance rename_this_3 : ParseableType Name where
   name     := "Name"
   parse? s :=
     if s.endsWith ".lean" then
@@ -41,9 +42,6 @@ instance : ParseableType Name where
 instance : ToExpr FilePath where
   toTypeExpr := mkConst ``FilePath
   toExpr path := mkApp (mkConst ``FilePath.mk) (toExpr path.1)
-
-elab "compileTimeSearchPath%" : term =>
-  return toExpr (← searchPathRef.get)
 
 def trainingData (args : Cli.Parsed) : IO UInt32 := do
     searchPathRef.set compileTimeSearchPath%

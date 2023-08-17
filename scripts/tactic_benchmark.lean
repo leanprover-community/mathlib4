@@ -72,12 +72,9 @@ def useSimpAll : TacticM Unit := do evalTactic (← `(tactic| intros; simp_all))
 
 open System
 -- Next two declarations borrowed from `runLinter.lean`.
-instance : ToExpr FilePath where
+instance rename_1 : ToExpr FilePath where
   toTypeExpr := mkConst ``FilePath
   toExpr path := mkApp (mkConst ``FilePath.mk) (toExpr path.1)
-
-elab "compileTimeSearchPath%" : term =>
-  return toExpr (← searchPathRef.get)
 
 open Cli
 

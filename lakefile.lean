@@ -73,15 +73,15 @@ lean_exe graph where
   supportInterpreter := true
 
 lean_exe tactic_benchmark where
-  root := `Mathlib.Util.TacticBenchmark
+  root := `scripts.tactic_benchmark
   supportInterpreter := true
 
 lean_exe export_infotree where
-  root := `Mathlib.Util.Infotree.ExportJSON
+  root := `scripts.export_infotree
   supportInterpreter := true
 
 lean_exe training_data where
-  root := `Mathlib.Util.Infotree.TrainingData
+  root := `scripts.training_data
   supportInterpreter := true
 
 /-- Additional documentation in the form of modules that only contain module docstrings. -/

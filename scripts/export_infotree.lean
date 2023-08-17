@@ -7,7 +7,7 @@ open Cli System
 
 /-- A custom command-line argument parser that allows either relative paths to Lean files,
 (e.g. `Mathlib/Topology/Basic.lean`) or the module name (e.g. `Mathlib.Topology.Basic`). -/
-instance : ParseableType Name where
+instance rename_this_2 : ParseableType Name where
   name     := "Name"
   parse? s :=
     if s.endsWith ".lean" then
@@ -16,7 +16,7 @@ instance : ParseableType Name where
       String.toName s
 
 -- Next two declarations borrowed from `runLinter.lean`.
-instance : ToExpr FilePath where
+instance rename_2 : ToExpr FilePath where
   toTypeExpr := mkConst ``FilePath
   toExpr path := mkApp (mkConst ``FilePath.mk) (toExpr path.1)
 
