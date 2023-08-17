@@ -393,6 +393,11 @@ theorem mulIndicator_union_of_disjoint (h : Disjoint s t) (f : α → M) :
 #align set.indicator_union_of_disjoint Set.indicator_union_of_disjoint
 
 @[to_additive]
+theorem mulIndicator_symmDiff (s t : Set α) (f : α → M) :
+    mulIndicator (s ∆ t) f = mulIndicator (s \ t) f * mulIndicator (t \ s) f :=
+  mulIndicator_union_of_disjoint (disjoint_sdiff_self_right.mono_left sdiff_le) _
+
+@[to_additive]
 theorem mulIndicator_mul (s : Set α) (f g : α → M) :
     (mulIndicator s fun a => f a * g a) = fun a => mulIndicator s f a * mulIndicator s g a := by
   funext
@@ -588,7 +593,18 @@ theorem indicator_diff {G : Type*} [AddGroup G] {s t : Set α} (h : s ⊆ t) (f 
     indicator (t \ s) f = indicator t f - indicator s f := by rw [indicator_diff' h, sub_eq_add_neg]
 #align set.indicator_diff Set.indicator_diff
 
+@[to_additive]
+theorem apply_mulIndicator_symmDiff {g : G → β} (hg : ∀ x, g x⁻¹ = g x)
+    (s t : Set α) (f : α → G) (x : α):
+    g (mulIndicator (s ∆ t) f x) = g (mulIndicator s f x / mulIndicator t f x) := by
+  by_cases hs : x ∈ s <;> by_cases ht : x ∈ t <;> simp [mem_symmDiff, *]
+
 end Group
+
+theorem abs_indicator_symmDiff {G : Type*} [LinearOrderedAddCommGroup G]
+    (s t : Set α) (f : α → G) (x : α) :
+    |indicator (s ∆ t) f x| = |indicator s f x - indicator t f x| :=
+  apply_indicator_symmDiff abs_neg s t f x
 
 section CommMonoid
 
