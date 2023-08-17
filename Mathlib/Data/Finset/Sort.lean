@@ -19,7 +19,7 @@ namespace Finset
 
 open Multiset Nat
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-! ### sort -/
 

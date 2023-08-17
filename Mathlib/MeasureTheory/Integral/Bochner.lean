@@ -153,7 +153,7 @@ open Set Filter TopologicalSpace ENNReal EMetric
 
 namespace MeasureTheory
 
-variable {α E F 𝕜 : Type _}
+variable {α E F 𝕜 : Type*}
 
 section WeightedSmul
 
@@ -300,7 +300,7 @@ and prove basic property of this integral.
 
 open Finset
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ F] {p : ℝ≥0∞} {G F' : Type _}
+variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ F] {p : ℝ≥0∞} {G F' : Type*}
   [NormedAddCommGroup G] [NormedAddCommGroup F'] [NormedSpace ℝ F'] {m : MeasurableSpace α}
   {μ : Measure α}
 
@@ -509,7 +509,7 @@ Define the Bochner integral on `α →₁ₛ[μ] E` by extension from the simple
 and prove basic properties of this integral. -/
 
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E] {F' : Type _}
+variable [NormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E] {F' : Type*}
   [NormedAddCommGroup F'] [NormedSpace ℝ F']
 
 attribute [local instance] simpleFunc.normedSpace
@@ -554,7 +554,7 @@ theorem norm_integral_le_norm (f : α →₁ₛ[μ] E) : ‖integral f‖ ≤ �
   exact (toSimpleFunc f).norm_integral_le_integral_norm (SimpleFunc.integrable f)
 #align measure_theory.L1.simple_func.norm_integral_le_norm MeasureTheory.L1.SimpleFunc.norm_integral_le_norm
 
-variable {E' : Type _} [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedSpace 𝕜 E']
+variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedSpace 𝕜 E']
 
 variable (α E μ 𝕜)
 
@@ -781,7 +781,7 @@ functions, and 0 otherwise; prove its basic properties.
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [hE : CompleteSpace E] [NontriviallyNormedField 𝕜]
   [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E] [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
-  {G : Type _} [NormedAddCommGroup G] [NormedSpace ℝ G]
+  {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
 
 section
 
@@ -920,17 +920,17 @@ theorem integral_smul [NormedSpace 𝕜 G] [SMulCommClass ℝ 𝕜 G] (c : 𝕜)
   · simp [integral, hG]
 #align measure_theory.integral_smul MeasureTheory.integral_smul
 
-theorem integral_mul_left {L : Type _} [IsROrC L] (r : L) (f : α → L) :
+theorem integral_mul_left {L : Type*} [IsROrC L] (r : L) (f : α → L) :
     ∫ a, r * f a ∂μ = r * ∫ a, f a ∂μ :=
   integral_smul r f
 #align measure_theory.integral_mul_left MeasureTheory.integral_mul_left
 
-theorem integral_mul_right {L : Type _} [IsROrC L] (r : L) (f : α → L) :
+theorem integral_mul_right {L : Type*} [IsROrC L] (r : L) (f : α → L) :
     ∫ a, f a * r ∂μ = (∫ a, f a ∂μ) * r := by
   simp only [mul_comm]; exact integral_mul_left r f
 #align measure_theory.integral_mul_right MeasureTheory.integral_mul_right
 
-theorem integral_div {L : Type _} [IsROrC L] (r : L) (f : α → L) :
+theorem integral_div {L : Type*} [IsROrC L] (r : L) (f : α → L) :
     ∫ a, f a / r ∂μ = (∫ a, f a ∂μ) / r := by
   simpa only [← div_eq_mul_inv] using integral_mul_right r⁻¹ f
 #align measure_theory.integral_div MeasureTheory.integral_div
@@ -1073,7 +1073,7 @@ theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι →
       _ ≤ ∑' n, bound n a := sum_le_tsum _ (fun n _ => ha0 n) has
 #align measure_theory.has_sum_integral_of_dominated_convergence MeasureTheory.hasSum_integral_of_dominated_convergence
 
-variable {X : Type _} [TopologicalSpace X] [FirstCountableTopology X]
+variable {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
 
 theorem continuousWithinAt_of_dominated {F : X → α → G} {x₀ : X} {bound : α → ℝ} {s : Set X}
     (hF_meas : ∀ᶠ x in 𝓝[s] x₀, AEStronglyMeasurable (F x) μ)
@@ -1177,14 +1177,14 @@ theorem integral_eq_lintegral_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f
     rw [this, hfi]; rfl
 #align measure_theory.integral_eq_lintegral_of_nonneg_ae MeasureTheory.integral_eq_lintegral_of_nonneg_ae
 
-theorem integral_norm_eq_lintegral_nnnorm {P : Type _} [NormedAddCommGroup P] {f : α → P}
+theorem integral_norm_eq_lintegral_nnnorm {P : Type*} [NormedAddCommGroup P] {f : α → P}
     (hf : AEStronglyMeasurable f μ) : ∫ x, ‖f x‖ ∂μ = ENNReal.toReal (∫⁻ x, ‖f x‖₊ ∂μ) := by
   rw [integral_eq_lintegral_of_nonneg_ae _ hf.norm]
   · simp_rw [ofReal_norm_eq_coe_nnnorm]
   · refine' ae_of_all _ _; simp_rw [Pi.zero_apply, norm_nonneg, imp_true_iff]
 #align measure_theory.integral_norm_eq_lintegral_nnnorm MeasureTheory.integral_norm_eq_lintegral_nnnorm
 
-theorem ofReal_integral_norm_eq_lintegral_nnnorm {P : Type _} [NormedAddCommGroup P] {f : α → P}
+theorem ofReal_integral_norm_eq_lintegral_nnnorm {P : Type*} [NormedAddCommGroup P] {f : α → P}
     (hf : Integrable f μ) : ENNReal.ofReal (∫ x, ‖f x‖ ∂μ) = ∫⁻ x, ‖f x‖₊ ∂μ := by
   rw [integral_norm_eq_lintegral_nnnorm hf.aestronglyMeasurable,
     ENNReal.ofReal_toReal (lt_top_iff_ne_top.mp hf.2)]
@@ -1292,7 +1292,7 @@ theorem integral_pos_iff_support_of_nonneg {f : α → ℝ} (hf : 0 ≤ f) (hfi 
 
 section NormedAddCommGroup
 
-variable {H : Type _} [NormedAddCommGroup H]
+variable {H : Type*} [NormedAddCommGroup H]
 
 theorem L1.norm_eq_integral_norm (f : α →₁[μ] H) : ‖f‖ = ∫ a, ‖f a‖ ∂μ := by
   simp only [snorm, snorm', ENNReal.one_toReal, ENNReal.rpow_one, Lp.norm_def, if_false,
@@ -1634,8 +1634,8 @@ theorem MeasurePreserving.integral_comp {β} {_ : MeasurableSpace β} {f : α �
 #align measure_theory.measure_preserving.integral_comp MeasureTheory.MeasurePreserving.integral_comp
 
 theorem set_integral_eq_subtype' {α} [MeasurableSpace α] {μ : Measure α} {s : Set α}
-  (hs : MeasurableSet s)
-    (f : α → G) : ∫ x in s, f x ∂μ =
+    (hs : MeasurableSet s) (f : α → G) :
+    ∫ x in s, f x ∂μ =
       ∫ x : s, f (x : α) ∂(Measure.comap Subtype.val μ):= by
   rw [← map_comap_subtype_coe hs]
   exact (MeasurableEmbedding.subtype_coe hs).integral_map _
@@ -1783,26 +1783,26 @@ set_option linter.uppercaseLean3 false in
 #align measure_theory.integral_mul_le_Lp_mul_Lq_of_nonneg MeasureTheory.integral_mul_le_Lp_mul_Lq_of_nonneg
 
 theorem integral_countable' [Countable α] [MeasurableSingletonClass α] {μ : Measure α} {f : α → ℝ}
-  (hf : Integrable f μ):
-  ∫ a, f a ∂μ = ∑' a, f a * (μ {a}).toReal := by
+    (hf : Integrable f μ) :
+    ∫ a, f a ∂μ = ∑' a, f a * (μ {a}).toReal := by
   rw [← Measure.sum_smul_dirac μ] at hf
   rw [← Measure.sum_smul_dirac μ, integral_sum_measure hf]
   congr 1 with a : 1
   rw [integral_smul_measure, integral_dirac, mul_comm, smul_eq_mul, Measure.sum_smul_dirac]
 
-theorem integral_singleton' {μ : Measure α} {f : α → ℝ} (hf : StronglyMeasurable f) (a : α):
-  ∫ a in {a}, f a ∂μ = f a * (μ {a}).toReal := by
+theorem integral_singleton' {μ : Measure α} {f : α → ℝ} (hf : StronglyMeasurable f) (a : α) :
+    ∫ a in {a}, f a ∂μ = f a * (μ {a}).toReal := by
   simp only [Measure.restrict_singleton, integral_smul_measure, integral_dirac' f a hf, smul_eq_mul,
      mul_comm]
 
-theorem integral_singleton [MeasurableSingletonClass α] {μ : Measure α} (f : α → ℝ) (a : α):
-  ∫ a in {a}, f a ∂μ = f a * (μ {a}).toReal := by
+theorem integral_singleton [MeasurableSingletonClass α] {μ : Measure α} (f : α → ℝ) (a : α) :
+    ∫ a in {a}, f a ∂μ = f a * (μ {a}).toReal := by
   simp only [Measure.restrict_singleton, integral_smul_measure, integral_dirac, smul_eq_mul,
      mul_comm]
 
 theorem integral_countable [MeasurableSingletonClass α] (f : α → ℝ)
-  {s : Set α} (hs : s.Countable) (hf : Integrable f (μ.restrict s)) :
-  ∫ a in s, f a ∂μ = ∑' a : s, f a * (μ {(a : α)}).toReal := by
+    {s : Set α} (hs : s.Countable) (hf : Integrable f (μ.restrict s)) :
+    ∫ a in s, f a ∂μ = ∑' a : s, f a * (μ {(a : α)}).toReal := by
   have hi : Countable { x // x ∈ s } := Iff.mpr countable_coe_iff hs
   have hf' : Integrable (fun (x : s) => f x) (Measure.comap Subtype.val μ) := by
     rw [← map_comap_subtype_coe, integrable_map_measure] at hf
@@ -1818,11 +1818,13 @@ theorem integral_countable [MeasurableSingletonClass α] (f : α → ℝ)
   simp
 
 theorem integral_finset [MeasurableSingletonClass α] (s : Finset α) (f : α → ℝ)
-  (hf : Integrable f (μ.restrict s)) : ∫ x in s, f x ∂μ = ∑ x in s, f x * (μ {x}).toReal := by
+    (hf : Integrable f (μ.restrict s)) :
+    ∫ x in s, f x ∂μ = ∑ x in s, f x * (μ {x}).toReal := by
   rw [integral_countable _ s.countable_toSet hf, ← Finset.tsum_subtype']
 
 theorem integral_fintype [MeasurableSingletonClass α] [Fintype α] (f : α → ℝ)
-  (hf : Integrable f μ) : ∫ x, f x ∂μ = ∑ x, f x * (μ {x}).toReal := by
+    (hf : Integrable f μ) :
+    ∫ x, f x ∂μ = ∑ x, f x * (μ {x}).toReal := by
   -- NB: Integrable f does not follow from Fintype, because the measure itself could be non-finite
   rw [← integral_finset .univ , Finset.coe_univ, Measure.restrict_univ]
   simp only [Finset.coe_univ, Measure.restrict_univ, hf]
@@ -1836,7 +1838,7 @@ end Properties
 
 section IntegralTrim
 
-variable {H β γ : Type _} [NormedAddCommGroup H] {m m0 : MeasurableSpace β} {μ : Measure β}
+variable {H β γ : Type*} [NormedAddCommGroup H] {m m0 : MeasurableSpace β} {μ : Measure β}
 
 /-- Simple function seen as simple function of a larger `MeasurableSpace`. -/
 def SimpleFunc.toLargerSpace (hm : m ≤ m0) (f : @SimpleFunc β m γ) : SimpleFunc β γ :=

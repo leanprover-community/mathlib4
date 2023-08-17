@@ -20,12 +20,12 @@ open Function
 
 universe u v w
 
-variable {α β γ δ : Type _} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
+variable {α β γ δ : Type*} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
   {u : δ → δ → Prop}
 
 namespace RelHomClass
 
-variable {F : Type _}
+variable {F : Type*}
 
 theorem map_inf [SemilatticeInf α] [LinearOrder β]
     [RelHomClass F ((· < ·) : β → β → Prop) ((· < ·) : α → α → Prop)] (a : F) (m n : β) :

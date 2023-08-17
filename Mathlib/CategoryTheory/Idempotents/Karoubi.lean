@@ -19,7 +19,7 @@ In this file, we define the Karoubi envelope `Karoubi C` of a category `C`.
 - `Karoubi C` is the Karoubi envelope of a category `C`: it is an idempotent
 complete category. It is also preadditive when `C` is preadditive.
 - `toKaroubi C : C ⥤ Karoubi C` is a fully faithful functor, which is an equivalence
-(`toKaroubi_isEquivalence`) when `C` is idempotent complete.
+(`toKaroubiIsEquivalence`) when `C` is idempotent complete.
 
 -/
 
@@ -30,7 +30,7 @@ open CategoryTheory.Category CategoryTheory.Preadditive CategoryTheory.Limits Bi
 
 namespace CategoryTheory
 
-variable (C : Type _) [Category C]
+variable (C : Type*) [Category C]
 
 namespace Idempotents
 
@@ -201,7 +201,7 @@ def inclusionHom [Preadditive C] (P Q : Karoubi C) : AddMonoidHom (P ⟶ Q) (P.X
 #align category_theory.idempotents.karoubi.inclusion_hom CategoryTheory.Idempotents.Karoubi.inclusionHom
 
 @[simp]
-theorem sum_hom [Preadditive C] {P Q : Karoubi C} {α : Type _} (s : Finset α) (f : α → (P ⟶ Q)) :
+theorem sum_hom [Preadditive C] {P Q : Karoubi C} {α : Type*} (s : Finset α) (f : α → (P ⟶ Q)) :
     (∑ x in s, f x).f = ∑ x in s, (f x).f :=
   map_sum (inclusionHom P Q) f s
 #align category_theory.idempotents.karoubi.sum_hom CategoryTheory.Idempotents.Karoubi.sum_hom
@@ -237,20 +237,20 @@ instance [IsIdempotentComplete C] : EssSurj (toKaroubi C) :=
           inv := ⟨e, by erw [comp_id, ← h₂, assoc, h₁, comp_id]⟩ }⟩
 
 /-- If `C` is idempotent complete, the functor `toKaroubi : C ⥤ Karoubi C` is an equivalence. -/
-def toKaroubi_isEquivalence [IsIdempotentComplete C] : IsEquivalence (toKaroubi C) :=
+def toKaroubiIsEquivalence [IsIdempotentComplete C] : IsEquivalence (toKaroubi C) :=
   Equivalence.ofFullyFaithfullyEssSurj (toKaroubi C)
-#align category_theory.idempotents.to_karoubi_is_equivalence CategoryTheory.Idempotents.toKaroubi_isEquivalence
+#align category_theory.idempotents.to_karoubi_is_equivalence CategoryTheory.Idempotents.toKaroubiIsEquivalence
 
 /-- The equivalence `C ≅ Karoubi C` when `C` is idempotent complete. -/
-def toKaroubi_equivalence [IsIdempotentComplete C] : C ≌ Karoubi C :=
-  haveI := toKaroubi_isEquivalence C
+def toKaroubiEquivalence [IsIdempotentComplete C] : C ≌ Karoubi C :=
+  haveI := toKaroubiIsEquivalence C
   Functor.asEquivalence (toKaroubi C)
-#align category_theory.idempotents.to_karoubi_equivalence CategoryTheory.Idempotents.toKaroubi_equivalence
+#align category_theory.idempotents.to_karoubi_equivalence CategoryTheory.Idempotents.toKaroubiEquivalence
 
-instance toKaroubi_equivalence_functor_additive [Preadditive C] [IsIdempotentComplete C] :
-    (toKaroubi_equivalence C).functor.Additive :=
+instance toKaroubiEquivalence_functor_additive [Preadditive C] [IsIdempotentComplete C] :
+    (toKaroubiEquivalence C).functor.Additive :=
   (inferInstance : (toKaroubi C).Additive)
-#align category_theory.idempotents.to_karoubi_equivalence_functor_additive CategoryTheory.Idempotents.toKaroubi_equivalence_functor_additive
+#align category_theory.idempotents.to_karoubi_equivalence_functor_additive CategoryTheory.Idempotents.toKaroubiEquivalence_functor_additive
 
 namespace Karoubi
 
