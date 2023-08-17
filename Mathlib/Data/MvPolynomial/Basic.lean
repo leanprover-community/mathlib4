@@ -4,9 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
 import Mathlib.Algebra.Algebra.Tower
+import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 import Mathlib.Algebra.Regular.Pow
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Data.Finsupp.Antidiagonal
+import Mathlib.Data.Finsupp.Lex
+import Mathlib.Order.Extension.Linear
 import Mathlib.Order.SymmDiff
 import Mathlib.RingTheory.Adjoin.Basic
 
@@ -158,6 +161,18 @@ instance smulCommClass_right [CommSemiring S₁] [DistribSMul R S₁] [SMulCommC
 instance unique [CommSemiring R] [Subsingleton R] : Unique (MvPolynomial σ R) :=
   AddMonoidAlgebra.unique
 #align mv_polynomial.unique MvPolynomial.unique
+
+open AddMonoidAlgebra Finsupp.Lex in
+instance instNoZeroDivisorsMvPolynomial [CommSemiring R] [nz : NoZeroDivisors R] :
+    NoZeroDivisors (MvPolynomial σ R) := by
+  let _ : LinearOrder σ := by
+    let _ : PartialOrder σ :=
+    { le := (· = ·)
+      le_refl := fun a ↦ rfl
+      le_trans := fun a b c => Eq.trans
+      le_antisymm := fun a b ab _ => ab }
+    exact instLinearOrderLinearExtension
+  exact @NoZeroDivisors.of_left_ordered R (σ →₀ ℕ) _ nz _ linearOrder covariantClass_lt_left
 
 end Instances
 

@@ -1078,49 +1078,6 @@ instance isNoetherianRing [Finite σ] [IsNoetherianRing R] :
       (renameEquiv R (Fintype.equivFin σ).symm).toRingEquiv isNoetherianRing_fin
 #align mv_polynomial.is_noetherian_ring MvPolynomial.isNoetherianRing
 
-/-- Auxiliary lemma:
-Multivariate polynomials over an integral domain
-with variables indexed by `Fin n` form an integral domain.
-This fact is proven inductively,
-and then used to prove the general case without any finiteness hypotheses.
-See `MvPolynomial.noZeroDivisors` for the general case. -/
-theorem noZeroDivisors_fin (R : Type u) [CommSemiring R] [NoZeroDivisors R] :
-    ∀ n : ℕ, NoZeroDivisors (MvPolynomial (Fin n) R)
-  | 0 => (MvPolynomial.isEmptyAlgEquiv R _).injective.noZeroDivisors _ (map_zero _) (map_mul _)
-  | n + 1 =>
-    haveI := noZeroDivisors_fin R n
-    (MvPolynomial.finSuccEquiv R n).injective.noZeroDivisors _ (map_zero _) (map_mul _)
-#align mv_polynomial.no_zero_divisors_fin MvPolynomial.noZeroDivisors_fin
-
-/-- Auxiliary definition:
-Multivariate polynomials in finitely many variables over an integral domain form an integral domain.
-This fact is proven by transport of structure from the `MvPolynomial.noZeroDivisors_fin`,
-and then used to prove the general case without finiteness hypotheses.
-See `MvPolynomial.noZeroDivisors` for the general case. -/
-theorem noZeroDivisors_of_finite (R : Type u) (σ : Type v) [CommSemiring R] [Finite σ]
-    [NoZeroDivisors R] : NoZeroDivisors (MvPolynomial σ R) := by
-  cases nonempty_fintype σ
-  haveI := noZeroDivisors_fin R (Fintype.card σ)
-  exact (renameEquiv R (Fintype.equivFin σ)).injective.noZeroDivisors _ (map_zero _) (map_mul _)
-#align mv_polynomial.no_zero_divisors_of_finite MvPolynomial.noZeroDivisors_of_finite
-
-instance {R : Type u} [CommSemiring R] [NoZeroDivisors R] {σ : Type v} :
-    NoZeroDivisors (MvPolynomial σ R) :=
-  ⟨fun {p} {q} h => by
-    obtain ⟨s, p, rfl⟩ := exists_finset_rename p
-    obtain ⟨t, q, rfl⟩ := exists_finset_rename q
-    have :
-        rename (Subtype.map id (Finset.subset_union_left s t) :
-          { x // x ∈ s } → { x // x ∈ s ∪ t }) p *
-        rename (Subtype.map id (Finset.subset_union_right s t) :
-          { x // x ∈ t } → { x // x ∈ s ∪ t }) q =
-        0 := by
-      apply rename_injective _ Subtype.val_injective
-      simpa using h
-    letI that := MvPolynomial.noZeroDivisors_of_finite R { x // x ∈ s ∪ t }
-    rw [mul_eq_zero] at this
-    apply this.imp <;> intro that <;> simpa using congr_arg (rename Subtype.val) that⟩
-
 /-- The multivariate polynomial ring over an integral domain is an integral domain. -/
 instance {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
     IsDomain (MvPolynomial σ R) := by
