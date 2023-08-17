@@ -17,13 +17,13 @@ two properties:
 - `‖1‖ = 1` (i.e., `NormOneClass`)
 - The embedding of `A` in `Unitization 𝕜 A` is an isometry. (i.e., `Isometry Unitization.inr`)
 
-One way to do this is to equip it with the norm from `PiLp 1` (actually, it should be
-`ProdLp 1`, but that doesn't exist), that is, `‖(k, a)‖ = ‖k‖ + ‖a‖`. However, when the norm on `A`
-is *regular* (i.e., `ContinuousLinearMap.mul`) is an isometry, there is another natural choice:
-the pullback of the norm on `𝕜 × (A →L[𝕜] A)` under the map
+One way to do this is to pull back the norm from `WithLp 1 (𝕜 × A)`, that is,
+`‖(k, a)‖ = ‖k‖ + ‖a‖` using `Unitization.addEquiv` (i.e., the identity map). However, when the norm
+on `A` is *regular* (i.e., `ContinuousLinearMap.mul`) is an isometry, there is another natural
+choice: the pullback of the norm on `𝕜 × (A →L[𝕜] A)` under the map
 `(k, a) ↦ (k, k • 1 + ContinuousLinearMap.mul 𝕜 A a)`. It turns out that among all norms on the
-unitization satisfying the properties specified above, the norm inherited from `PiLp 1` is maximal,
-and the norm inherited from this pullback is minimal.
+unitization satisfying the properties specified above, the norm inherited from
+`WithLp 1 (𝕜 × A)` is maximal, and the norm inherited from this pullback is minimal.
 
 For possibly non-unital `RegularNormedAlgebra`s  `A` (over `𝕜`), we construct a `NormedAlgebra`
 structure on `Unitization 𝕜 A` using the pullback described above. The reason for choosing this norm
