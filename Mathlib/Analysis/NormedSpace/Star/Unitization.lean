@@ -26,7 +26,7 @@ open ContinuousLinearMap
 
 local postfix:max "⋆" => star
 
-variable (𝕜 : Type _) {E : Type _}
+variable (𝕜 : Type*) {E : Type*}
 
 namespace ContinuousLinearMap
 
@@ -86,14 +86,14 @@ variable {E}
 /-- this is the key lemma on the road to establishing the instance `CstarRing (Unitization 𝕜 E)`
 (i.e., proving that the norm on `Unitization 𝕜 E` satisfies the C⋆-property). We split this one
 out so that declaring the `CstarRing` instance doesn't time out. -/
-theorem norm_leftRegRep_snd_sq (x : Unitization 𝕜 E) :
-    ‖(Unitization.leftRegRep 𝕜 E x).snd‖ ^ 2 ≤ ‖(Unitization.leftRegRep 𝕜 E (star x * x)).snd‖ := by
+theorem norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
+    ‖(Unitization.splitMul 𝕜 E x).snd‖ ^ 2 ≤ ‖(Unitization.splitMul 𝕜 E (star x * x)).snd‖ := by
   /- The key idea is that we can use `sSup_closed_unit_ball_eq_norm` to make this about
   applying this linear map to elements of norm at most one. So, if `b : E` with `‖b‖ ≤ 1`.
   There is a bit of `sqrt` and `sq` shuffling that needs to occur, which is primarily just an
   annoyance. -/
   refine (Real.le_sqrt (norm_nonneg _) (norm_nonneg _)).mp ?_
-  simp only [Unitization.leftRegRep_apply]
+  simp only [Unitization.splitMul_apply]
   rw [← sSup_closed_unit_ball_eq_norm]
   refine csSup_le ((Metric.nonempty_closedBall.2 zero_le_one).image _) ?_
   rintro - ⟨b, hb, rfl⟩
@@ -126,7 +126,7 @@ theorem norm_leftRegRep_snd_sq (x : Unitization 𝕜 E) :
       one_apply, smul_add, mul_add, add_mul]
     simp only [smul_smul, smul_mul_assoc, ← add_assoc, ← mul_assoc, mul_smul_comm]
 set_option linter.uppercaseLean3 false in
-#align norm_leftRegRep_snd_sq norm_leftRegRep_snd_sq
+#align norm_splitMul_snd_sq norm_splitMul_snd_sq
 
 variable {𝕜}
 
@@ -135,43 +135,43 @@ instance Unitization.instCstarRing : CstarRing (Unitization 𝕜 E) where
   norm_star_mul_self {x} := by
     -- rewrite both sides as a `max`
     simp only [Unitization.norm_def, Prod.norm_def, ← sup_eq_max]
-    -- Show that `(Unitization.leftRegRep 𝕜 E x).snd` satisifes the C⋆-property, in two stages
+    -- Show that `(Unitization.splitMul 𝕜 E x).snd` satisifes the C⋆-property, in two stages
     have h₁ : ∀ x : Unitization 𝕜 E,
-        ‖(Unitization.leftRegRep 𝕜 E x).snd‖ ≤ ‖(Unitization.leftRegRep 𝕜 E (star x)).snd‖ := by
-      simp only [add_zero, Unitization.leftRegRep_apply, Unitization.snd_star, Unitization.fst_star]
+        ‖(Unitization.splitMul 𝕜 E x).snd‖ ≤ ‖(Unitization.splitMul 𝕜 E (star x)).snd‖ := by
+      simp only [add_zero, Unitization.splitMul_apply, Unitization.snd_star, Unitization.fst_star]
       intro x
       /- split based on whether the term inside the nprm is zero or not. If so, it's trivial.
-      If not, then apply `norm_leftRegRep_snd_sq` and cancel one copy of the norm -/
+      If not, then apply `norm_splitMul_snd_sq` and cancel one copy of the norm -/
       by_cases h : algebraMap 𝕜 (E →L[𝕜] E) x.fst + mul 𝕜 E x.snd = 0
       · simp only [h, norm_zero, norm_le_zero_iff]
         exact norm_nonneg _
-      · have : ‖(Unitization.leftRegRep 𝕜 E x).snd‖ ^ 2 ≤
-          ‖(Unitization.leftRegRep 𝕜 E (star x)).snd‖ * ‖(Unitization.leftRegRep 𝕜 E x).snd‖ :=
-          (norm_leftRegRep_snd_sq 𝕜 x).trans <| by
+      · have : ‖(Unitization.splitMul 𝕜 E x).snd‖ ^ 2 ≤
+          ‖(Unitization.splitMul 𝕜 E (star x)).snd‖ * ‖(Unitization.splitMul 𝕜 E x).snd‖ :=
+          (norm_splitMul_snd_sq 𝕜 x).trans <| by
             rw [map_mul, Prod.snd_mul]
             exact norm_mul_le _ _
         rw [sq] at this
         rw [← Ne.def, ← norm_pos_iff] at h
-        simp only [add_zero, Unitization.leftRegRep_apply, Unitization.snd_star,
+        simp only [add_zero, Unitization.splitMul_apply, Unitization.snd_star,
           Unitization.fst_star, star_star] at this
         exact (mul_le_mul_right h).mp this
-    have h₂ : ‖(Unitization.leftRegRep 𝕜 E (star x * x)).snd‖
-        = ‖(Unitization.leftRegRep 𝕜 E x).snd‖ ^ 2 := by
-      refine le_antisymm ?_ (norm_leftRegRep_snd_sq 𝕜 x)
+    have h₂ : ‖(Unitization.splitMul 𝕜 E (star x * x)).snd‖
+        = ‖(Unitization.splitMul 𝕜 E x).snd‖ ^ 2 := by
+      refine le_antisymm ?_ (norm_splitMul_snd_sq 𝕜 x)
       rw [map_mul, Prod.snd_mul]
       exact (norm_mul_le _ _).trans <| by
         rw [sq]
         gcongr
         simpa only [star_star] using h₁ (star x)
-    -- Show that `(Unitization.leftRegRep 𝕜 E x).fst` satisifes the C⋆-property, in two stages
-    have h₃ : ‖(Unitization.leftRegRep 𝕜 E (star x * x)).fst‖
-        = ‖(Unitization.leftRegRep 𝕜 E x).fst‖ ^ 2 := by
-      simp only [Unitization.leftRegRep_apply, Unitization.fst_mul, Unitization.fst_star, add_zero,
+    -- Show that `(Unitization.splitMul 𝕜 E x).fst` satisifes the C⋆-property, in two stages
+    have h₃ : ‖(Unitization.splitMul 𝕜 E (star x * x)).fst‖
+        = ‖(Unitization.splitMul 𝕜 E x).fst‖ ^ 2 := by
+      simp only [Unitization.splitMul_apply, Unitization.fst_mul, Unitization.fst_star, add_zero,
         norm_mul, norm_star, sq]
     rw [h₂, h₃]
     /- use the definition of the norm, and split into cases based on whether the norm in the first
     coordinate is bigger or smaller than the norm in the second coordinate. -/
-    by_cases h : ‖(Unitization.leftRegRep 𝕜 E x).fst‖ ≤ ‖(Unitization.leftRegRep 𝕜 E x).snd‖
+    by_cases h : ‖(Unitization.splitMul 𝕜 E x).fst‖ ≤ ‖(Unitization.splitMul 𝕜 E x).snd‖
     · rw [sq, sq, sup_eq_right.mpr h, sup_eq_right.mpr (mul_self_le_mul_self (norm_nonneg _) h)]
     · replace h := (not_le.mp h).le
       rw [sq, sq, sup_eq_left.mpr h, sup_eq_left.mpr (mul_self_le_mul_self (norm_nonneg _) h)]
