@@ -257,31 +257,33 @@ declare_syntax_cat find_patterns
 syntax find_pattern* : find_patterns
 
 /-- Parses a list of `find_pattern` syntax into `Arguments` -/
-def parseFindPatterns (args : TSyntax `find_patterns) : TermElabM Arguments := do
-  let mut idents := #[]
-  let mut namePats := #[]
-  let mut terms := #[]
-  match args with
-  | `(find_patterns| $args':find_pattern*) =>
-    for arg in args' do
-      match arg with
-      | `(find_pattern| $ss:str) => do
-        let str := Lean.TSyntax.getString ss
-        namePats := namePats.push str
-      | `(find_pattern| $i:ident) => do
-        let n := Lean.TSyntax.getId i
-        unless (← getEnv).contains n do
-          throwErrorAt i "unknown identifier '{n}'"
-        idents := idents.push n
-      | `(find_pattern| $_:turnstyle $s:term) => do
-        let t ← Lean.Elab.Term.elabTerm s none
-        terms := terms.push (true, t)
-      | `(find_pattern| $s:term) => do
-        let t ← Lean.Elab.Term.elabTerm s none
-        terms := terms.push (false, t)
-      | _ => throwErrorAt arg "unexpected argument to #find"
-  | _ => throwErrorAt args "unexpected argument to #find"
-  pure {idents, namePats, terms}
+def parseFindPatterns (args : TSyntax `find_patterns) : TermElabM Arguments :=
+  withReader (fun ctx => { ctx with errToSorry := false }) do
+    let mut idents := #[]
+    let mut namePats := #[]
+    let mut terms := #[]
+    match args with
+    | `(find_patterns| $args':find_pattern*) =>
+      for arg in args' do
+        match arg with
+        | `(find_pattern| $ss:str) => do
+          let str := Lean.TSyntax.getString ss
+          namePats := namePats.push str
+        | `(find_pattern| $i:ident) => do
+          let n := Lean.TSyntax.getId i
+          unless (← getEnv).contains n do
+            throwErrorAt i "unknown identifier '{n}'"
+          idents := idents.push n
+        | `(find_pattern| $_:turnstyle $s:term) => do
+          let t ← Lean.Elab.Term.elabTerm s none
+          terms := terms.push (true, t)
+        | `(find_pattern| $s:term) => do
+          let t ← Lean.Elab.Term.elabTerm s none
+          terms := terms.push (false, t)
+        | _ => throwErrorAt arg "unexpected argument to #find"
+    | _ => throwErrorAt args "unexpected argument to #find"
+    pure {idents, namePats, terms}
+
 
 open Command
 
