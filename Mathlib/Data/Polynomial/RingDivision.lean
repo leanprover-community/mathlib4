@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker, Johan Commelin
 -/
 import Mathlib.Algebra.CharZero.Infinite
+import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
+import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Degree.Lemmas
 import Mathlib.Data.Polynomial.Div
 import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.Algebra.Polynomial.BigOperators
 
 #align_import data.polynomial.ring_division from "leanprover-community/mathlib"@"8efcf8022aac8e01df8d302dcebdbc25d6a886c8"
 
@@ -126,16 +127,11 @@ section NoZeroDivisors
 
 variable [Semiring R] [NoZeroDivisors R] {p q : R[X]}
 
-instance : NoZeroDivisors R[X] where
-  eq_zero_or_eq_zero_of_mul_eq_zero h := by
-    rw [← leadingCoeff_eq_zero, ← leadingCoeff_eq_zero]
-    refine' eq_zero_or_eq_zero_of_mul_eq_zero _
-    rw [← leadingCoeff_zero, ← leadingCoeff_mul, h]
+instance : NoZeroDivisors R[X] := ⟨fun h => by apply_fun toFinsuppIso R at h; simpa using h⟩
 
-theorem natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p*q).natDegree = p.natDegree + q.natDegree := by
-  rw [← WithBot.coe_eq_coe, ← Nat.cast_withBot, ←degree_eq_natDegree (mul_ne_zero hp hq),
-    WithBot.coe_add, ← Nat.cast_withBot, ←degree_eq_natDegree hp, ← Nat.cast_withBot,
-    ← degree_eq_natDegree hq, degree_mul]
+theorem natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p*q).natDegree = p.natDegree + q.natDegree :=
+  natDegree_eq_of_le_of_coeff_ne_zero natDegree_mul_le $
+  ne_of_eq_of_ne (coeff_mul_of_natDegree_le le_rfl le_rfl) (by simp [hp, hq])
 #align polynomial.nat_degree_mul Polynomial.natDegree_mul
 
 theorem trailingDegree_mul : (p * q).trailingDegree = p.trailingDegree + q.trailingDegree := by
@@ -143,9 +139,7 @@ theorem trailingDegree_mul : (p * q).trailingDegree = p.trailingDegree + q.trail
   · rw [hp, MulZeroClass.zero_mul, trailingDegree_zero, top_add]
   by_cases hq : q = 0
   · rw [hq, MulZeroClass.mul_zero, trailingDegree_zero, add_top]
-  · rw [trailingDegree_eq_natTrailingDegree hp, trailingDegree_eq_natTrailingDegree hq,
-    trailingDegree_eq_natTrailingDegree (mul_ne_zero hp hq), natTrailingDegree_mul hp hq]
-    apply WithTop.coe_add
+  exact trailingDegree_mul' (by simp [hp, hq])
 #align polynomial.trailing_degree_mul Polynomial.trailingDegree_mul
 
 @[simp]
