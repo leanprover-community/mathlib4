@@ -188,4 +188,34 @@ end Right
 
 end Covariants
 
+section OrderedAddMonoid
+
+variable [LinearOrder ι]
+
+instance Lex.orderBot [∀ i, CanonicallyOrderedAddMonoid (α i)] : OrderBot (Lex (Π₀ i, α i)) where
+  bot := 0
+  bot_le _ := DFinsupp.toLex_monotone bot_le
+
+instance Lex.orderedAddCancelCommMonoid [∀ i, OrderedCancelAddCommMonoid (α i)] :
+    OrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) :=
+  { add_le_add_left := fun _ _ h _ => add_le_add_left (α := Lex (∀ i, α i)) h _
+    le_of_add_le_add_left := fun _ _ _ h => le_of_add_le_add_left (α := Lex (∀ i, α i)) h }
+
+instance Lex.orderedAddCommGroup [∀ i, OrderedAddCommGroup (α i)] :
+    OrderedAddCommGroup (Lex (Π₀ i, α i)) :=
+  { add_le_add_left := @add_le_add_left _ _ _ _ }
+
+instance Lex.linearOrderedCancelAddCommMonoid
+    [∀ i, LinearOrderedCancelAddCommMonoid (α i)] :
+    LinearOrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) :=
+  { (inferInstance : LinearOrder (Lex (Π₀ i, α i))),
+    (inferInstance: OrderedCancelAddCommMonoid (Lex (Π₀ i, α i))) with }
+
+instance Lex.linearOrderedAddCommGroup [∀ i, LinearOrderedAddCommGroup (α i)] :
+    LinearOrderedAddCommGroup (Lex (Π₀ i, α i)) :=
+  { (inferInstance : LinearOrder (Lex (Π₀ i, α i))) with
+    add_le_add_left := @add_le_add_left _ _ _ _ }
+
+end OrderedAddMonoid
+
 end DFinsupp

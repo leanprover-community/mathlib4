@@ -24,4 +24,19 @@ instance [OrderedCommGroup G] [OrderedCommGroup H] : OrderedCommGroup (G × H) :
   { Prod.instCommGroup, Prod.instPartialOrder G H, Prod.instOrderedCancelCommMonoid
     with }
 
+namespace Lex
+
+@[to_additive]
+instance orderedCommGroup [OrderedCommGroup G] [OrderedCommGroup H] :
+    OrderedCommGroup (G ×ₗ H) :=
+  { mul_le_mul_left := @mul_le_mul_left' _ _ _ _ }
+
+@[to_additive]
+instance linearOrderedCommGroup [LinearOrderedCommGroup G] [LinearOrderedCommGroup H] :
+    LinearOrderedCommGroup (G ×ₗ H) :=
+  { (inferInstance : LinearOrder (G ×ₗ H)) with
+    mul_le_mul_left := @mul_le_mul_left' _ _ _ _ }
+
+end Lex
+
 end Prod

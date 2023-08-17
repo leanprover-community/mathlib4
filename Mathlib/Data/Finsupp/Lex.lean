@@ -143,4 +143,33 @@ end Right
 
 end Covariants
 
+section OrderedAddMonoid
+
+variable [LinearOrder α]
+
+instance Lex.orderBot [CanonicallyOrderedAddMonoid N] : OrderBot (Lex (α →₀ N)) where
+  bot := 0
+  bot_le _ := Finsupp.toLex_monotone bot_le
+
+noncomputable instance Lex.orderedAddCancelCommMonoid [OrderedCancelAddCommMonoid N] :
+    OrderedCancelAddCommMonoid (Lex (α →₀ N)) :=
+  { add_le_add_left := fun _ _ h _ => add_le_add_left (α := Lex (α → N)) h _
+    le_of_add_le_add_left := fun _ _ _ h => le_of_add_le_add_left (α := Lex (α → N)) h }
+
+noncomputable instance Lex.orderedAddCommGroup [OrderedAddCommGroup N] :
+    OrderedAddCommGroup (Lex (α →₀ N)) :=
+  { add_le_add_left := @add_le_add_left _ _ _ _ }
+
+noncomputable instance Lex.linearOrderedCancelAddCommMonoid [LinearOrderedCancelAddCommMonoid N] :
+    LinearOrderedCancelAddCommMonoid (Lex (α →₀ N)) :=
+  { (inferInstance : LinearOrder (Lex (α →₀ N))),
+    (inferInstance: OrderedCancelAddCommMonoid (Lex (α →₀ N))) with }
+
+noncomputable instance Lex.linearOrderedAddCommGroup [LinearOrderedAddCommGroup N] :
+    LinearOrderedAddCommGroup (Lex (α →₀ N)) :=
+  { (inferInstance : LinearOrder (Lex (α →₀ N))) with
+    add_le_add_left := @add_le_add_left _ _ _ _ }
+
+end OrderedAddMonoid
+
 end Finsupp

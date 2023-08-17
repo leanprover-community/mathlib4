@@ -358,7 +358,7 @@ def uniformity (α : Type u) [UniformSpace α] : Filter (α × α) :=
 #align uniformity uniformity
 
 /-- Notation for the uniformity filter with respect to a non-standard `UniformSpace` instance. -/
-scoped[Topology] notation "𝓤[" u "]" => @uniformity _ u
+scoped[Uniformity] notation "𝓤[" u "]" => @uniformity _ u
 
 @[ext]
 theorem uniformSpace_eq : ∀ {u₁ u₂ : UniformSpace α}, 𝓤[u₁] = 𝓤[u₂] → u₁ = u₂
@@ -1092,7 +1092,7 @@ def UniformContinuous [UniformSpace β] (f : α → β) :=
 #align uniform_continuous UniformContinuous
 
 /-- Notation for uniform continuity with respect to non-standard `UniformSpace` instances. -/
-scoped[Topology] notation "UniformContinuous[" u₁ ", " u₂ "]" => @UniformContinuous _ _ u₁ u₂
+scoped[Uniformity] notation "UniformContinuous[" u₁ ", " u₂ "]" => @UniformContinuous _ _ u₁ u₂
 
 /-- A function `f : α → β` is *uniformly continuous* on `s : Set α` if `(f x, f y)` tends to
 the diagonal as `(x, y)` tends to the diagonal while remaining in `s ×ˢ s`.
