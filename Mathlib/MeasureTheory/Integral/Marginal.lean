@@ -956,18 +956,17 @@ Note: this also holds without assuming `Nontrivial ι`, by tracing through the j
 theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f)
     (s : Finset ι) (i : ι) (hi : i ∉ s) (x : ∀ i, π i):
     ∫⁻ t, rhsAux μ f s (update x i t) ∂(μ i) ≤ rhsAux μ f (insert i s) x := by
-  have h2i : i ∈ sᶜ := Finset.mem_compl.mpr hi
   have hι : 2 ≤ (#ι : ℝ) := by exact_mod_cast Fintype.one_lt_card
   have : 1 ≤ (#ι:ℝ) - 1 := by linarith
   let p : ℝ := 1 / ((#ι:ℝ) - 1)
-  have hp : s.card * p + (erase sᶜ i).card * p = 1
-  · have H₁ : ((erase sᶜ i).card : ℝ) = (sᶜ).card - 1 := Finset.cast_card_erase_of_mem h2i
-    have H₂ : (s.card : ℝ) + (sᶜ).card = #ι := by exact_mod_cast s.card_add_card_compl
+  have hp : s.card * p + (insert i s)ᶜ.card * p = 1
+  · have H₁ : ((insert i s).card : ℝ) = s.card + 1 := by exact_mod_cast Finset.card_insert_of_not_mem hi
+    have H₂ : ((insert i s).card : ℝ) + (insert i s)ᶜ.card = #ι := by exact_mod_cast (insert i s).card_add_card_compl
     have H₃ : p * (#ι - 1) = 1
     · dsimp only
       have : (#ι:ℝ) - 1 ≠ 0 := by positivity
       field_simp [this]
-    linear_combination p * H₁ + p * H₂ + H₃
+    linear_combination -p * H₁ + p * H₂ + H₃
   let m : ℝ := s.card
   calc ∫⁻ t, rhsAux μ f s (update x i t) ∂(μ i)
       = ∫⁻ t, ((∫⋯∫_insert i s, f ∂μ) (update x i t) ^ p * ((∫⋯∫_s, f ∂μ) (update x i t) ^ (m * p)
@@ -1024,7 +1023,7 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
             ^ Option.elim j (m * p) (fun _ ↦ p) := by
           refine lintegral_prod_norm_pow_le _ ?_ ?_ -- Hölder's inequality
           · clear_value p
-            simp_rw [sum_insertNone, compl_insert, Option.elim, sum_const, nsmul_eq_mul]
+            simp_rw [sum_insertNone, Option.elim, sum_const, nsmul_eq_mul]
             exact hp
           · rintro (_|j) - <;> dsimp <;> positivity
     _ = (∫⁻ t, (∫⋯∫_s, f ∂μ) (update x i t) ∂μ i) ^ (m * p) *
@@ -1037,7 +1036,7 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
           rw [marginal_insert _ hf hi]
           congr! 1; refine prod_congr rfl fun j hj => ?_
           have hi' : i ∉ insert j s
-          · simp only [Finset.mem_insert, compl_insert, Finset.mem_compl, mem_erase] at hj ⊢
+          · simp only [Finset.mem_insert, Finset.mem_compl] at hj ⊢
             tauto
           rw [marginal_insert _ hf hi']
 
