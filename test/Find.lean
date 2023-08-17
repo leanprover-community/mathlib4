@@ -1,7 +1,6 @@
 import Mathlib.Tactic.Find
 import Std.Tactic.GuardExpr
-
-import Mathlib.Data.Real.Sqrt
+import Std.Data.List.Lemmas
 
 /-- warning: Cannot search: No constants in search pattern. -/
 #guard_msgs in
@@ -13,77 +12,99 @@ import Mathlib.Data.Real.Sqrt
 
 /-- We use this definition in all tests below to get reproducible results,
 including the statistics about how many lemas were found in the index. -/
-def hopefullyuniquenamefortestingfind : Bool := true
+def uniqnameforthistest : Bool := true
 
 lemma hopefullyuniquenamefortestingfind_eq_true:
-  hopefullyuniquenamefortestingfind = true := rfl
+  uniqnameforthistest = true := rfl
 
 /--
-info: Found 1 definitions mentioning hopefullyuniquenamefortestingfind.
+info: Found 1 definitions mentioning uniqnameforthistest.
 • hopefullyuniquenamefortestingfind_eq_true
 -/
 #guard_msgs in
-#find hopefullyuniquenamefortestingfind
+#find uniqnameforthistest
 
 /--
-info: Found 1 definitions mentioning hopefullyuniquenamefortestingfind.
+info: Found 1 definitions mentioning uniqnameforthistest.
 Of these, 1 have a name containing "eq".
 • hopefullyuniquenamefortestingfind_eq_true
 -/
 #guard_msgs in
-#find hopefullyuniquenamefortestingfind "eq"
+#find uniqnameforthistest "eq"
 
 /--
-info: Found 1 definitions mentioning hopefullyuniquenamefortestingfind and Eq.
+info: Found 1 definitions mentioning Eq and uniqnameforthistest.
 Of these, 1 match your patterns.
 • hopefullyuniquenamefortestingfind_eq_true
 -/
 #guard_msgs in
-#find (hopefullyuniquenamefortestingfind = _)
+#find (uniqnameforthistest = _)
 
 /--
-info: Found 1 definitions mentioning hopefullyuniquenamefortestingfind and Eq.
+info: Found 1 definitions mentioning Eq and uniqnameforthistest.
 Of these, 0 match your patterns.
 -/
 #guard_msgs in
-#find (_ = hopefullyuniquenamefortestingfind)
+#find (_ = uniqnameforthistest)
 
-lemma non_linear_pattern_test1 {a : ℝ} (_ : hopefullyuniquenamefortestingfind = true)
-  (h : 0 ≤ a) : Real.sqrt a * Real.sqrt a = a := Real.mul_self_sqrt h
 
-lemma non_linear_pattern_test2 {a b : ℝ} (_ : hopefullyuniquenamefortestingfind = true)
-  (h : 0 ≤ a) : Real.sqrt (a * b) = Real.sqrt a * Real.sqrt b := Real.sqrt_mul h b
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
+lemma non_linear_pattern_test1 {n m : ℕ} (_ : uniqnameforthistest = true) :
+  List.replicate (2 * n) () = List.replicate n () ++ List.replicate n () := by
+  sorry
+
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
+lemma non_linear_pattern_test2 {n m : ℕ} (_ : uniqnameforthistest = true) :
+  List.replicate n () ++ List.replicate m () = List.replicate (n + m) () := by
+  sorry
 
 /--
-info: Found 2 definitions mentioning HMul.hMul, hopefullyuniquenamefortestingfind and Real.sqrt.
+info: Found 2 definitions mentioning List.replicate, uniqnameforthistest and HAppend.hAppend.
 Of these, 1 match your patterns.
 • non_linear_pattern_test1
 -/
 #guard_msgs in
-#find hopefullyuniquenamefortestingfind (Real.sqrt ?a * Real.sqrt ?a)
+#find uniqnameforthistest (List.replicate ?n _ ++ List.replicate ?n _
 
 /--
-info: Found 2 definitions mentioning HMul.hMul, hopefullyuniquenamefortestingfind and Real.sqrt.
+info: Found 2 definitions mentioning List.replicate, uniqnameforthistest and HAppend.hAppend.
 Of these, 2 match your patterns.
 • non_linear_pattern_test1
 • non_linear_pattern_test2
 -/
 #guard_msgs in
-#find hopefullyuniquenamefortestingfind (Real.sqrt ?a * Real.sqrt ?b)
+#find uniqnameforthistest (List.replicate ?n _ ++ List.replicate ?m _
 
 /--
-info: Found 2 definitions mentioning HMul.hMul, hopefullyuniquenamefortestingfind, Real.sqrt and Eq.
+info: Found 2 definitions mentioning List.replicate, Eq, HAppend.hAppend and uniqnameforthistest.
+Of these, 1 match your patterns.
+• non_linear_pattern_test1
+-/
+#guard_msgs in
+#find uniqnameforthistest |- (_ = List.replicate ?n _ ++ List.replicate ?m _)
+
+/--
+info: Found 2 definitions mentioning List.replicate, Eq, HAppend.hAppend and uniqnameforthistest.
 Of these, 1 match your patterns.
 • non_linear_pattern_test2
 -/
 #guard_msgs in
-#find hopefullyuniquenamefortestingfind |- (_ = Real.sqrt ?a * Real.sqrt ?b)
+#find uniqnameforthistest |- (List.replicate ?n _ ++ List.replicate ?m _ = _)
+
+lemma hyp_ordering_test1 {n : ℕ} (_ : uniqnameforthistest = true) (h : 0 < n) :
+  0 ≤ n := Nat.le_of_lt h
+
+lemma hyp_ordering_test2 {n : ℕ} (h : 0 < n) (_ : uniqnameforthistest = true) :
+  0 ≤ n := Nat.le_of_lt h
 
 /--
-info: Found 2 definitions mentioning HMul.hMul, hopefullyuniquenamefortestingfind, Real.sqrt and Eq.
-Of these, 1 match your patterns.
-• non_linear_pattern_test2
+info: Found 2 definitions mentioning LE.le, LT.lt, OfNat.ofNat, Eq and uniqnameforthistest.
+Of these, 2 match your patterns.
+• hyp_ordering_test1
+• hyp_ordering_test2
 -/
 #guard_msgs in
-#find hopefullyuniquenamefortestingfind ⊢ (_ = Real.sqrt ?a * Real.sqrt ?b)
+#find ⊢ (uniqnameforthistest = _ → 0 < ?n → _ ≤ ?n)
