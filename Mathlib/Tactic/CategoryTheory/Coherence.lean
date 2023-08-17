@@ -182,7 +182,7 @@ noncomputable def monoidalIsoComp {W X Y Z : C} [LiftObj X] [LiftObj Y]
 
 @[inherit_doc Mathlib.Tactic.Coherence.monoidalIsoComp]
 scoped[CategoryTheory.MonoidalCategory] infixr:80 " ≪⊗≫ " =>
-  Mathlib.Tactic.Coherence.monoidalIsoComp -- type as \ot \gg
+  Mathlib.Tactic.Coherence.monoidalIsoComp -- type as \ll \ot \gg
 
 example {U V W X Y : C} (f : U ⟶ V ⊗ (W ⊗ X)) (g : (V ⊗ W) ⊗ X ⟶ Y) : U ⟶ Y := f ⊗≫ g
 
