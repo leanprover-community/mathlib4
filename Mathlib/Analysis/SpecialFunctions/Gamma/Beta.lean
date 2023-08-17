@@ -40,7 +40,7 @@ refined properties of the Gamma function using these relations.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 set_option linter.uppercaseLean3 false
 
@@ -190,7 +190,6 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
     ring
   have h_int := ((betaIntegral_convergent hu hv').const_mul u).sub
     ((betaIntegral_convergent hu' hv).const_mul v)
-  dsimp only at h_int
   rw [add_sub_cancel, add_sub_cancel] at h_int
   have int_ev := intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le zero_le_one hc hder h_int
   have hF0 : F 0 = 0 := by

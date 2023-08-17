@@ -36,7 +36,7 @@ open Set MeasureTheory TopologicalSpace MeasureTheory.Measure
 
 open scoped Pointwise NNReal
 
-variable {G : Type _} [Group G] [MeasurableSpace G] [TopologicalSpace G] [TopologicalGroup G]
+variable {G : Type*} [Group G] [MeasurableSpace G] [TopologicalSpace G] [TopologicalGroup G]
   [BorelSpace G] {μ : Measure G} {Γ : Subgroup G}
 
 /-- Measurability of the action of the topological group `G` on the left-coset space `G/Γ`. -/

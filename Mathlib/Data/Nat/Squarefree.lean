@@ -246,12 +246,8 @@ theorem squarefree_iff_minSqFac {n : ℕ} : Squarefree n ↔ n.minSqFac = none :
 instance : DecidablePred (Squarefree : ℕ → Prop) := fun _ =>
   decidable_of_iff' _ squarefree_iff_minSqFac
 
---Porting note: norm_num now cannot close the first subgoal
 theorem squarefree_two : Squarefree 2 := by
-  rw [squarefree_iff_nodup_factors]
-  · rw [Nat.factors_prime prime_two]
-    exact List.nodup_singleton 2
-  · norm_num
+  rw [squarefree_iff_nodup_factors] <;> norm_num
 #align nat.squarefree_two Nat.squarefree_two
 
 theorem divisors_filter_squarefree_of_squarefree {n : ℕ} (hn : Squarefree n) :
@@ -283,7 +279,6 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
       rw [Finset.mem_powerset, ← Finset.val_le_iff, Multiset.toFinset_val] at hs
       have hs0 : s.val.prod ≠ 0 := by
         rw [Ne.def, Multiset.prod_eq_zero_iff]
-        simp only [exists_prop, id.def, exists_eq_right]
         intro con
         apply
           not_irreducible_zero
@@ -315,7 +310,7 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
 
 open BigOperators
 
-theorem sum_divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) {α : Type _} [AddCommMonoid α]
+theorem sum_divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) {α : Type*} [AddCommMonoid α]
     {f : ℕ → α} :
     ∑ i in n.divisors.filter Squarefree, f i =
       ∑ i in (UniqueFactorizationMonoid.normalizedFactors n).toFinset.powerset, f i.val.prod := by
