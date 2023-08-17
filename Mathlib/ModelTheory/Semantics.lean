@@ -432,6 +432,17 @@ theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M
       split_ifs <;> simp
 #align first_order.language.bounded_formula.realize_lift_at FirstOrder.Language.BoundedFormula.realize_liftAt
 
+@[simp]
+theorem realize_subst {n : ℕ} (φ : L.BoundedFormula α n) (f : α → L.Term β)
+    (v : β → M) : (φ.subst f).Realize v = φ.Realize (fun a => Term.realize v (f a)) := by
+  ext xs
+  rw [subst]
+  refine realize_mapTermRel_id (fun i t ys => ?_) (fun n R xs => rfl)
+  rw [Term.realize_subst]
+  congr
+  ext i
+  rcases i with _ | _ <;> simp
+
 theorem realize_liftAt_one {n m : ℕ} {φ : L.BoundedFormula α n} {v : α → M} {xs : Fin (n + 1) → M}
     (hmn : m ≤ n) :
     (φ.liftAt 1 m).Realize v xs ↔
