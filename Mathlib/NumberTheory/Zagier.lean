@@ -6,9 +6,16 @@ Authors: Jeremy Tan
 import Mathlib.GroupTheory.PGroup
 
 /-!
-# Zagier's "one-sentence proof" of Fermat's theorem of sums of two squares
+# Zagier's "one-sentence proof" of Fermat's theorem on sums of two squares
 
-Involving some extreme trickery with parities of fixed points of involutions.
+"The involution on a finite set `S = {(x, y, z) : ℕ × ℕ × ℕ | x ^ 2 + 4 * y * z = p}` defined by
+```
+(x, y, z) ↦ (x + 2 * z, z, y - x - z) if x < y - z
+             (2 * y - x, y, x - y + z) if y - z < x < 2 * y
+             (x - 2 * y, x - y + z, y) if x > 2 * y
+```
+has exactly one fixed point, so `|S|` is odd and the involution defined by
+`(x, y, z) ↦ (x, z, y)` also has a fixed point."
 -/
 
 
@@ -60,7 +67,7 @@ theorem zagierSet_eq : zagierSet k = zagierFinset k := by
 `x * x + 4 * y * z = 4 * k + 1`, as a `Subtype`. -/
 def zagierSubtype := {t // t ∈ zagierSet k}
 
-instance fintypeZagierSubtype : Fintype (zagierSubtype k) := by
+instance : Fintype (zagierSubtype k) := by
   unfold zagierSubtype
   rw [zagierSet_eq]
   infer_instance
@@ -99,7 +106,7 @@ def groupPowers : Group (powers f) where
     rw [← hk, ← pow_mul, mul_comm, pow_mul, pow_eq_iterate f, hf, pow_eq_iterate, iterate_id]
     rfl
 
-instance mulActionPowers : MulAction (powers f) α where
+instance : MulAction (powers f) α where
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
@@ -113,22 +120,15 @@ theorem isPGroup_of_powers : @IsPGroup p (powers f) (groupPowers f hf) := by
   rw [← hk, ← pow_mul, mul_comm, pow_mul, pow_eq_iterate f, hf, pow_eq_iterate, iterate_id]
   rfl
 
-noncomputable instance mafp : Fintype (MulAction.fixedPoints (powers f) α) :=
+noncomputable instance : Fintype (MulAction.fixedPoints (powers f) α) :=
   Fintype.ofFinite (MulAction.fixedPoints (powers f) α)
 
-end Key
-
-section Two
-
-open Function Submonoid Fintype
-
-variable {α : Type*} [Fintype α] [DecidableEq α] (f : Function.End α)
-
-theorem key (hf : Involutive f) : card α ≡ card (MulAction.fixedPoints (powers f) α) [MOD 2] := by
+theorem key (hf : Involutive f) :
+    Fintype.card α ≡ Fintype.card (MulAction.fixedPoints (powers f) α) [MOD 2] := by
   rw [involutive_iff_iter_2_eq_id] at hf
   exact @IsPGroup.card_modEq_card_fixedPoints _ _ (_) (isPGroup_of_powers f hf) _ _ _ _ _
 
-end Two
+end Key
 
 section Involution
 
@@ -273,8 +273,6 @@ theorem result : ∃ a b : ℕ, a ^ 2 + b ^ 2 = 4 * k + 1 := by
 
 end Involution
 
-section Main
-
 /-- **Fermat's theorem on sums of two squares**. Every prime congruent to 1 mod 4 is the sum
 of two squares, proved using Zagier's involutions. -/
 theorem Nat.Prime.sq_add_sq' {p : ℕ} [Fact p.Prime] (hp : p % 4 = 1) :
@@ -285,4 +283,6 @@ theorem Nat.Prime.sq_add_sq' {p : ℕ} [Fact p.Prime] (hp : p % 4 = 1) :
   rw [md] at this
   assumption
 
-end Main
+-- Verify that the above proof does not rely on quadratic reciprocity,
+-- unlike `Nat.Prime.sq_add_sq` in `NumberTheory/SumTwoSquares.lean`
+assert_not_exists Nat.Prime.sq_add_sq
