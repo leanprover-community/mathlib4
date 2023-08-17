@@ -2452,6 +2452,7 @@ import Mathlib.ModelTheory.Algebra.Field.AlgClosed
 import Mathlib.ModelTheory.Algebra.Field.Basic
 import Mathlib.ModelTheory.Algebra.Field.CharP
 import Mathlib.ModelTheory.Algebra.Ring.Basic
+import Mathlib.ModelTheory.Algebra.Ring.Definable
 import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 import Mathlib.ModelTheory.Algebra.Ring.MvPolynomial
 import Mathlib.ModelTheory.Basic
