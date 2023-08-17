@@ -11,8 +11,8 @@ import Mathlib.GroupTheory.PGroup
 "The involution on a finite set `S = {(x, y, z) : ℕ × ℕ × ℕ | x ^ 2 + 4 * y * z = p}` defined by
 ```
 (x, y, z) ↦ (x + 2 * z, z, y - x - z) if x < y - z
-             (2 * y - x, y, x - y + z) if y - z < x < 2 * y
-             (x - 2 * y, x - y + z, y) if x > 2 * y
+            (2 * y - x, y, x - y + z) if y - z < x < 2 * y
+            (x - 2 * y, x - y + z, y) if x > 2 * y
 ```
 has exactly one fixed point, so `|S|` is odd and the involution defined by
 `(x, y, z) ↦ (x, z, y)` also has a fixed point."
