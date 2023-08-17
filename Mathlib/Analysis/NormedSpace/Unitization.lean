@@ -68,7 +68,7 @@ the natural representation of `Unitization 𝕜 A` on `A` given by multiplicatio
 either be `A` acting on `A`, or (b) `Unitization 𝕜 A` acting on `Unitization 𝕜 A`, and (c) that's a
 `NonUnitalAlgHom` but here we need an `AlgHom`. In addition, the first coordinate of
 `Unitization.splitMul (k, a)` should just be `k`. See `Unitization.splitMul_apply` also. -/
-noncomputable def splitMul : Unitization 𝕜 A →ₐ[𝕜] 𝕜 × (A →L[𝕜] A) :=
+def splitMul : Unitization 𝕜 A →ₐ[𝕜] 𝕜 × (A →L[𝕜] A) :=
   (lift 0).prod (lift <| NonUnitalAlgHom.Lmul 𝕜 A)
 
 variable {𝕜 A}
@@ -135,14 +135,6 @@ theorem norm_def (x : Unitization 𝕜 A) : ‖x‖ = ‖splitMul 𝕜 A x‖ :=
 theorem norm_eq_sup (x : Unitization 𝕜 A) :
     ‖x‖ = ‖x.fst‖ ⊔ ‖algebraMap 𝕜 (A →L[𝕜] A) x.fst + mul 𝕜 A x.snd‖ := by
   rw [norm_def, splitMul_apply, Prod.norm_def, sup_eq_max]
-
-variable (𝕜 A)
-
-/-- The identity map between `Unitization 𝕜 A` and `𝕜 × A` as an `AddEquiv`. -/
-def addEquiv : Unitization 𝕜 A ≃+ 𝕜 × A :=
-  AddEquiv.refl _
-
-variable {𝕜 A}
 
 theorem lipschitzWith_addEquiv :
     LipschitzWith 2 (Unitization.addEquiv 𝕜 A) := by

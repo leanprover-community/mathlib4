@@ -216,6 +216,11 @@ instance instModule [Semiring S] [AddCommMonoid R] [AddCommMonoid A] [Module S R
     Module S (Unitization R A) :=
   Prod.instModule
 
+variable (R A) in
+/-- The identity map between `Unitization R A` and `R × A` as an `AddEquiv`. -/
+def addEquiv [Add R] [Add A] : Unitization R A ≃+ R × A :=
+  AddEquiv.refl _
+
 @[simp]
 theorem fst_zero [Zero R] [Zero A] : (0 : Unitization R A).fst = 0 :=
   rfl
