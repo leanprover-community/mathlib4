@@ -8,7 +8,7 @@ import Mathlib.GroupTheory.PGroup
 /-!
 # Zagier's "one-sentence proof" of Fermat's theorem on sums of two squares
 
-"The involution on a finite set `S = {(x, y, z) : ℕ × ℕ × ℕ | x ^ 2 + 4 * y * z = p}` defined by
+"The involution on the finite set `S = {(x, y, z) : ℕ × ℕ × ℕ | x ^ 2 + 4 * y * z = p}` defined by
 ```
 (x, y, z) ↦ (x + 2 * z, z, y - x - z) if x < y - z
             (2 * y - x, y, x - y + z) if y - z < x < 2 * y
