@@ -597,16 +597,19 @@ end Pdiv
 
 section ProdToFinsetFactors
 
+/-- The map $n \mapsto \prod_{p \mid n} f(p)$ as an arithmetic function -/
 def prodToFinsetFactors [CommMonoidWithZero R] (f : ℕ → R) : ArithmeticFunction R where
   toFun d := if d = 0 then 0 else ∏ p in d.factors.toFinset, f p
   map_zero' := if_pos rfl
 
 open Std.ExtendedBinder
 
+/-- `∏ᵖ p ∣ n, f p` is custom notation for `prodToFinsetFactors f n` -/
 scoped syntax (name := bigproddvd) "∏ᵖ " extBinder " ∣ " term ", " term:67 : term
 scoped macro_rules (kind := bigproddvd)
   | `(∏ᵖ $x:ident ∣ $n, $r) => `(prodToFinsetFactors (fun $x ↦ $r) $n)
 
+/-- `∏ᵖ f` is custom notation for `prodToFinsetFactors f` -/
 scoped syntax (name := bigproddvdarith) "∏ᵖ " term:67 : term
 scoped macro_rules (kind := bigproddvdarith)
   | `(∏ᵖ $f) => `(prodToFinsetFactors $f)
