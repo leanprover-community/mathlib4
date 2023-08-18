@@ -34,6 +34,12 @@ both a `Language.ring.Structure` instance and a `Field` instance will all be sta
 assumption `Field K`, `CharP K p`, `IsAlgClosed K` and `CompatibleRing K` and there are instances
 defined saying that these assumption imply `Theory.field.Model K` and `(Theory.ACF p).Model K`
 
+## References
+The first order theory of algebraically closed fields, along with the Lefschetz Principle and
+the Ax-Grothendieck Theorem were first formalized in Lean 3 by Joseph Hua
+[here](https://github.com/Jlh18/ModelTheoryInLean8) with the master's thesis
+[here](https://github.com/Jlh18/ModelTheory8Report)
+
 -/
 
 variable {K : Type*}
