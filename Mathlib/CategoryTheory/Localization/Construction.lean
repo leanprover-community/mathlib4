@@ -39,11 +39,13 @@ uniqueness is expressed by `uniq`.
 
 noncomputable section
 
+universe v₁ v₂ u₁ u₂
+
 open CategoryTheory.Category
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C] (W : MorphismProperty C) {D : Type*} [Category D]
+variable {C : Type u₁} [Category.{v₁} C] (W : MorphismProperty C) {D : Type u₂} [Category.{v₂} D]
 
 namespace Localization
 
