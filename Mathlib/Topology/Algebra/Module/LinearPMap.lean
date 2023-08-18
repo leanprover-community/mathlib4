@@ -187,11 +187,12 @@ theorem closureHasCore (f : E →ₗ.[R] F) : f.closure.HasCore f.domain := by
 
 section Inverse
 
-variable {f : E →ₗ.[R] F} (hf : LinearMap.ker f.toFun = ⊥) (hf' : f.IsClosable)
+variable {f : E →ₗ.[R] F}
 
 /-- If `f` is invertible and closable as well as its closure being invertible, then
 the graph of the inverse of the closure is given by the closure of the graph of the inverse. -/
-theorem closure_inverse_graph (hcf : LinearMap.ker f.closure.toFun = ⊥) :
+theorem closure_inverse_graph (hf : LinearMap.ker f.toFun = ⊥) (hf' : f.IsClosable)
+    (hcf : LinearMap.ker f.closure.toFun = ⊥) :
     f.closure.inverse.graph = f.inverse.graph.topologicalClosure := by
   rw [inverse_graph hf, inverse_graph hcf, ← hf'.graph_closure_eq_closure_graph]
   apply SetLike.ext'
@@ -207,7 +208,8 @@ theorem closure_inverse_graph (hcf : LinearMap.ker f.closure.toFun = ⊥) :
 
 /-- Assuming that `f` is invertible and closable, then the closure is invertible if and only
 if the inverse of `f` is closable. -/
-theorem inverse_isClosable_iff : f.inverse.IsClosable ↔ LinearMap.ker f.closure.toFun = ⊥ := by
+theorem inverse_isClosable_iff (hf : LinearMap.ker f.toFun = ⊥) (hf' : f.IsClosable) :
+    f.inverse.IsClosable ↔ LinearMap.ker f.closure.toFun = ⊥ := by
   constructor
   · intro ⟨f', h⟩
     rw [LinearMap.ker_eq_bot']
@@ -227,11 +229,12 @@ theorem inverse_isClosable_iff : f.inverse.IsClosable ↔ LinearMap.ker f.closur
     exact (closure_inverse_graph hf hf' h).symm
 
 /-- If `f` is invertible and closable, then taking the closure and the inverse commute. -/
-theorem inverse_closure (hcf : LinearMap.ker f.closure.toFun = ⊥) :
+theorem inverse_closure (hf : LinearMap.ker f.toFun = ⊥) (hf' : f.IsClosable)
+    (hcf : LinearMap.ker f.closure.toFun = ⊥) :
     f.inverse.closure = f.closure.inverse := by
   apply eq_of_eq_graph
   rw [closure_inverse_graph hf hf' hcf,
-    IsClosable.graph_closure_eq_closure_graph ((inverse_isClosable_iff hf hf').mpr hcf)]
+    ((inverse_isClosable_iff hf hf').mpr hcf).graph_closure_eq_closure_graph]
 
 end Inverse
 
