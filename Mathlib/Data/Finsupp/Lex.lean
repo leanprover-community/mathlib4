@@ -161,14 +161,14 @@ noncomputable instance Lex.orderedAddCommGroup [OrderedAddCommGroup N] :
   add_le_add_left _ _ := add_le_add_left
 
 noncomputable instance Lex.linearOrderedCancelAddCommMonoid [LinearOrderedCancelAddCommMonoid N] :
-    LinearOrderedCancelAddCommMonoid (Lex (α →₀ N)) :=
-  { (inferInstance : LinearOrder (Lex (α →₀ N))),
-    (inferInstance: OrderedCancelAddCommMonoid (Lex (α →₀ N))) with }
+    LinearOrderedCancelAddCommMonoid (Lex (α →₀ N)) where
+  __ := (inferInstance : LinearOrder (Lex (α →₀ N)))
+  __ := (inferInstance: OrderedCancelAddCommMonoid (Lex (α →₀ N)))
 
 noncomputable instance Lex.linearOrderedAddCommGroup [LinearOrderedAddCommGroup N] :
-    LinearOrderedAddCommGroup (Lex (α →₀ N)) :=
-  { (inferInstance : LinearOrder (Lex (α →₀ N))) with
-    add_le_add_left := @add_le_add_left _ _ _ _ }
+    LinearOrderedAddCommGroup (Lex (α →₀ N)) where
+  __ := (inferInstance : LinearOrder (Lex (α →₀ N)))
+  add_le_add_left _ _ := add_le_add_left
 
 end OrderedAddMonoid
 

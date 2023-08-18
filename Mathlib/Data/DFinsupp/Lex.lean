@@ -207,14 +207,14 @@ instance Lex.orderedAddCommGroup [∀ i, OrderedAddCommGroup (α i)] :
 
 instance Lex.linearOrderedCancelAddCommMonoid
     [∀ i, LinearOrderedCancelAddCommMonoid (α i)] :
-    LinearOrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) :=
-  { (inferInstance : LinearOrder (Lex (Π₀ i, α i))),
-    (inferInstance: OrderedCancelAddCommMonoid (Lex (Π₀ i, α i))) with }
+    LinearOrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) where
+  __ := (inferInstance : LinearOrder (Lex (Π₀ i, α i)))
+  __ := (inferInstance : OrderedCancelAddCommMonoid (Lex (Π₀ i, α i)))
 
 instance Lex.linearOrderedAddCommGroup [∀ i, LinearOrderedAddCommGroup (α i)] :
-    LinearOrderedAddCommGroup (Lex (Π₀ i, α i)) :=
-  { (inferInstance : LinearOrder (Lex (Π₀ i, α i))) with
-    add_le_add_left := @add_le_add_left _ _ _ _ }
+    LinearOrderedAddCommGroup (Lex (Π₀ i, α i)) where
+  __ := (inferInstance : LinearOrder (Lex (Π₀ i, α i)))
+  add_le_add_left _ _ := add_le_add_left
 
 end OrderedAddMonoid
 

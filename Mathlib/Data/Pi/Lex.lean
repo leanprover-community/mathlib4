@@ -244,16 +244,16 @@ instance Lex.orderedCommGroup [∀ i, OrderedCommGroup (β i)] :
 @[to_additive]
 noncomputable instance Lex.linearOrderedCancelCommMonoid [IsWellOrder ι (· < ·)]
     [∀ i, LinearOrderedCancelCommMonoid (β i)] :
-    LinearOrderedCancelCommMonoid (Lex (∀ i, β i)) :=
-  { (inferInstance : LinearOrder (Lex (∀ i, β i))),
-    (inferInstance: OrderedCancelCommMonoid (Lex (∀ i, β i))) with }
+    LinearOrderedCancelCommMonoid (Lex (∀ i, β i)) where
+  __ := (inferInstance : LinearOrder (Lex (∀ i, β i)))
+  __ := (inferInstance: OrderedCancelCommMonoid (Lex (∀ i, β i)))
 
 @[to_additive]
 noncomputable instance Lex.linearOrderedCommGroup [IsWellOrder ι (· < ·)]
     [∀ i, LinearOrderedCommGroup (β i)] :
-    LinearOrderedCommGroup (Lex (∀ i, β i)) :=
-  { (inferInstance : LinearOrder (Lex (∀ i, β i))) with
-    mul_le_mul_left := @mul_le_mul_left' _ _ _ _ }
+    LinearOrderedCommGroup (Lex (∀ i, β i)) where
+  __ := (inferInstance : LinearOrder (Lex (∀ i, β i)))
+  mul_le_mul_left _ _ := mul_le_mul_left'
 
 end OrderedMonoid
 
@@ -263,6 +263,6 @@ theorem lex_desc {α} [Preorder ι] [DecidableEq ι] [Preorder α] {f : ι → �
     (h₂ : f j < f i) : toLex (f ∘ Equiv.swap i j) < toLex f :=
   ⟨i, fun k hik => congr_arg f (Equiv.swap_apply_of_ne_of_ne hik.ne (hik.trans_le h₁).ne), by
     simpa only [Pi.toLex_apply, Function.comp_apply, Equiv.swap_apply_left] using h₂⟩
-#noalign pi.lex_desc
+#align pi.lex_desc Pi.lex_descₓ
 
 end Pi

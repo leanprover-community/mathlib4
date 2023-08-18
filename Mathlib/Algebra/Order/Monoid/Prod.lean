@@ -62,9 +62,9 @@ instance orderedCancelCommMonoid [OrderedCancelCommMonoid α] [OrderedCancelComm
 
 @[to_additive]
 instance linearOrderedCancelCommMonoid [LinearOrderedCancelCommMonoid α]
-    [LinearOrderedCancelCommMonoid β] : LinearOrderedCancelCommMonoid (α ×ₗ β) :=
-  { (inferInstance : LinearOrder (α ×ₗ β)),
-    (inferInstance: OrderedCancelCommMonoid (α ×ₗ β)) with }
+    [LinearOrderedCancelCommMonoid β] : LinearOrderedCancelCommMonoid (α ×ₗ β) where
+  __ := (inferInstance : LinearOrder (α ×ₗ β))
+  __ := (inferInstance : OrderedCancelCommMonoid (α ×ₗ β))
 
 end Lex
 
