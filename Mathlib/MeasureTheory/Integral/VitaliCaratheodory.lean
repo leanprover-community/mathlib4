@@ -149,7 +149,6 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
     rw [lintegral_add_left f₁.measurable.coe_nnreal_ennreal,
       lintegral_add_left g₁cont.measurable.coe_nnreal_ennreal]
     convert add_le_add g₁int g₂int using 1
-    simp only
     conv_lhs => rw [← ENNReal.add_halves ε]
     abel
 #align measure_theory.simple_func.exists_le_lower_semicontinuous_lintegral_ge MeasureTheory.SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge
@@ -378,7 +377,6 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
     rw [lintegral_add_left f₁.measurable.coe_nnreal_ennreal,
       lintegral_add_left g₁cont.measurable.coe_nnreal_ennreal]
     convert add_le_add g₁int g₂int using 1
-    simp only
     conv_lhs => rw [← ENNReal.add_halves ε]
     abel
 #align measure_theory.simple_func.exists_upper_semicontinuous_le_lintegral_le MeasureTheory.SimpleFunc.exists_upperSemicontinuous_le_lintegral_le
