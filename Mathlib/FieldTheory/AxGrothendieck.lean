@@ -183,7 +183,7 @@ theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime [Fintype ι]
     (K := AlgebraicClosure (ZMod p))) f _
 
 theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime_or_zero
-    {ι : Type*} [Fintype ι] {p : ℕ} (hp : p.Prime ∨ p = 0)
+    [Fintype ι] {p : ℕ} (hp : p.Prime ∨ p = 0)
     (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
     Theory.ACF p ⊨ᵇ genericPolyMapSurjOnOfInjOn φ mons := by
   rcases hp with hp | rfl
