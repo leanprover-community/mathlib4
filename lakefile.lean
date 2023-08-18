@@ -64,6 +64,7 @@ partial def pipeLines (i o : IO.FS.Stream) : BaseIO Unit := do
       discard <| o.putStr ln |>.toBaseIO
       pipeLines i o
 
+-- When run as `lake build -KnoCacheGet`, do not invoke `lake exe cache get` automatically.
 def noCacheGet := get_config? noCacheGet |>.isSome
 
 /-- A target which performs `lake exe cache get`. -/
