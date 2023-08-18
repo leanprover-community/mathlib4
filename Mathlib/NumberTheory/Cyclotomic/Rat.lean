@@ -108,7 +108,7 @@ theorem isIntegralClosure_adjoin_singleton_of_prime_pow [hcycl : IsCyclotomicExt
       rw [IsPrimitiveRoot.subOnePowerBasis_gen] at h₁
       rw [h₁, ← map_cyclotomic_int, show Int.castRingHom ℚ = algebraMap ℤ ℚ by rfl,
         show X + 1 = map (algebraMap ℤ ℚ) (X + 1) by simp, ← map_comp] at h₂
-      haveI : CharZero ℚ := StrictOrderedSemiring.to_charZero
+      haveI : CharZero ℚ := OrderedAddCommMonoidWithOne.to_charZero
       rw [IsPrimitiveRoot.subOnePowerBasis_gen,
         map_injective (algebraMap ℤ ℚ) (algebraMap ℤ ℚ).injective_int h₂]
       exact cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt p _
