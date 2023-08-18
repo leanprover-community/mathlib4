@@ -785,7 +785,7 @@ instance : ClosedUnderRestriction (analyticGroupoid I) :=
       apply (analyticGroupoid I).eq_on_source' _ _ _ hes
       exact ofSet_mem_analyticGroupoid I hs)
 
-/-- The analytic groupoid on a manifold without boundary consists of the local homeomorphisms which
+/-- The analytic groupoid on a boundaryless charted space consists of the local homeomorphisms which
 are analytic and have analytic inverse. -/
 theorem mem_analyticGroupoid_of_boundaryless [CompleteSpace E] [I.Boundaryless]
     (e : LocalHomeomorph H H) :
