@@ -48,8 +48,12 @@ to form the Dirichlet ring.
  * `prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero` for functions to a `CommGroupWithZero`
 
 ## Notation
-The arithmetic functions `ζ` and `σ` have Greek letter names, which are localized notation in
-the namespace `ArithmeticFunction`.
+All notation is localized in the namespace `ArithmeticFunction`.
+
+The arithmetic functions `ζ`, `σ`, `ω`, `Ω` and `μ` have Greek letter names.
+
+The arithmetic function $$n \mapsto \prod_{p \mid n} f(p)$$ is given custom notation `∏ᵖ f` or
+`∏ᵖ p ∣ n, f p` when applied to `n`.
 
 ## Tags
 arithmetic functions, dirichlet convolution, divisors
@@ -591,6 +595,33 @@ theorem pdiv_zeta [DivisionSemiring R] (f : ArithmeticFunction R) :
 
 end Pdiv
 
+section ProdToFinsetFactors
+
+def prodToFinsetFactors [CommMonoidWithZero R] (f : ℕ → R) : ArithmeticFunction R :=
+  ⟨fun d => if d = 0 then 0 else ∏ p in d.factors.toFinset, f p, if_pos rfl⟩
+
+open Std.ExtendedBinder
+
+scoped syntax (name := bigproddvd) "∏ᵖ " extBinder " ∣ " term ", " term:67 : term
+scoped macro_rules (kind := bigproddvd)
+  | `(∏ᵖ $x:ident ∣ $n, $r) => `(prodToFinsetFactors (fun $x ↦ $r) $n)
+
+scoped syntax (name := bigproddvdarith) "∏ᵖ " term:67 : term
+scoped macro_rules (kind := bigproddvdarith)
+  | `(∏ᵖ $f) => `(prodToFinsetFactors $f)
+
+@[simp]
+theorem prodToFinsetFactors_apply [CommMonoidWithZero R] {f: ℕ → R} {n : ℕ} [hn : NeZero n] :
+    ∏ᵖ p ∣ n, f p = ∏ p in n.factors.toFinset, f p :=
+  if_neg (hn.ne)
+
+theorem prodToFinsetFactors_apply_of_ne_zero [CommMonoidWithZero R] {f: ℕ → R} {n : ℕ} (hn : n ≠ 0) :
+    ∏ᵖ p ∣ n, f p = ∏ p in n.factors.toFinset, f p :=
+  haveI : NeZero n := ⟨hn⟩
+  prodToFinsetFactors_apply
+
+end ProdToFinsetFactors
+
 /-- Multiplicative functions -/
 def IsMultiplicative [MonoidWithZero R] (f : ArithmeticFunction R) : Prop :=
   f 1 = 1 ∧ ∀ {m n : ℕ}, m.coprime n → f (m * n) = f m * f n
@@ -625,6 +656,18 @@ theorem map_prod {ι : Type*} [CommMonoidWithZero R] (g : ι → ℕ) {f : Nat.A
     rw [prod_insert has, prod_insert has, hf.map_mul_of_coprime, ih hs.1]
     exact Nat.coprime_prod_right fun i hi => hs.2 _ hi (hi.ne_of_not_mem has).symm
 #align nat.arithmetic_function.is_multiplicative.map_prod Nat.ArithmeticFunction.IsMultiplicative.map_prod
+
+theorem map_prod_of_prime {R : Type _} [CommSemiring R] {f : Nat.ArithmeticFunction R}
+    (h_mult : Nat.ArithmeticFunction.IsMultiplicative f)
+    (t : Finset ℕ) (ht : ∀ p ∈ t, p.Prime) :
+    f (∏ a in t, a) = ∏ a : ℕ in t, f a :=
+  map_prod _ h_mult t fun x hx y hy hxy => (coprime_primes (ht x hx) (ht y hy)).mpr hxy
+
+theorem map_prod_of_subset_factors {R : Type _} [CommSemiring R] {f : Nat.ArithmeticFunction R}
+    (h_mult : Nat.ArithmeticFunction.IsMultiplicative f) (l : ℕ)
+    (t : Finset ℕ) (ht : t ⊆ l.factors.toFinset) :
+     f (∏ a in t, a) = ∏ a : ℕ in t, f a :=
+  map_prod_of_prime h_mult t fun _ a => prime_of_mem_factorization (ht a)
 
 theorem nat_cast {f : ArithmeticFunction ℕ} [Semiring R] (h : f.IsMultiplicative) :
     IsMultiplicative (f : ArithmeticFunction R) :=
@@ -757,6 +800,31 @@ theorem eq_iff_eq_on_prime_powers [CommMonoidWithZero R] (f : ArithmeticFunction
   intro p hp
   exact h p _ (Nat.prime_of_mem_factors hp)
 #align nat.arithmetic_function.is_multiplicative.eq_iff_eq_on_prime_powers Nat.ArithmeticFunction.IsMultiplicative.eq_iff_eq_on_prime_powers
+
+theorem prodToFinsetFactors [CommMonoidWithZero R] (f : ℕ → R) : IsMultiplicative (∏ᵖ f) :=
+  by
+  rw [iff_ne_zero]
+  constructor
+  · apply prodToFinsetFactors_apply
+  intro x y hx hy hxy
+  haveI : NeZero x := ⟨hx⟩
+  haveI : NeZero y := ⟨hy⟩
+  simp_rw [prodToFinsetFactors_apply]
+  have h_disj := List.disjoint_toFinset_iff_disjoint.mpr (coprime_factors_disjoint hxy)
+  rw[Nat.factors_mul_toFinset hx hy, ←Finset.prod_disjUnion h_disj, Finset.disjUnion_eq_union]
+
+theorem prodToFinsetFactors_add_of_squarefree {R : Type _} [CommSemiring R] {f g : ArithmeticFunction R} (hf : IsMultiplicative f) (hg : IsMultiplicative g)
+  (n : ℕ) (hn : Squarefree n) :
+    ∏ᵖ p ∣ n, (f + g) p = (f * g) n := by
+  rw [prodToFinsetFactors_apply_of_ne_zero hn.ne_zero]; simp_rw [add_apply (f:=f) (g:=g)]
+  rw [Finset.prod_add, mul_apply, Nat.sum_divisorsAntidiagonal (f:= λ x y => f x * g y),
+    ←divisors_filter_squarefree_of_squarefree hn, Nat.sum_divisors_filter_squarefree hn.ne_zero,
+    Nat.factors_eq]
+  apply Finset.sum_congr rfl
+  intro t ht
+  erw [t.prod_val, ←prod_factors_sdiff_of_squarefree hn (Finset.mem_powerset.mp ht),
+    hf.map_prod_of_subset_factors n t (Finset.mem_powerset.mp ht),
+    ←hg.map_prod_of_subset_factors n (_ \ t) (Finset.sdiff_subset _ t) ]
 
 end IsMultiplicative
 
@@ -1031,6 +1099,28 @@ theorem isMultiplicative_moebius : IsMultiplicative μ := by
   split_ifs <;>  -- porting note: added
   simp           -- porting note: added
 #align nat.arithmetic_function.is_multiplicative_moebius Nat.ArithmeticFunction.isMultiplicative_moebius
+
+theorem IsMultiplicative.prodToFinsetFactors_one_add_of_squarefree {R : Type _} [CommSemiring R]
+  { f : Nat.ArithmeticFunction R} (h_mult : f.IsMultiplicative) {l : ℕ} (hl : Squarefree l) :
+    ∏ p in l.factors.toFinset, (1 + f p) = ∑ d in l.divisors, f d := by
+  haveI : NeZero l := ⟨hl.ne_zero⟩
+  trans (∏ᵖ p ∣ l, ((ζ:ArithmeticFunction R) + f) p)
+  · simp_rw [prodToFinsetFactors_apply, add_apply, natCoe_apply]
+    apply Finset.prod_congr rfl; intro p hp;
+    rw [zeta_apply_ne (Nat.prime_of_mem_factors $ List.mem_toFinset.mp hp).ne_zero, cast_one]
+  rw [isMultiplicative_zeta.nat_cast.prodToFinsetFactors_add_of_squarefree h_mult _ hl,
+    coe_zeta_mul_apply]
+
+theorem prodToFinsetFactors_one_sub_of_squarefree {R : Type _} [CommRing R]
+    (f : Nat.ArithmeticFunction R) (hf : f.IsMultiplicative) {l : ℕ} (hl : Squarefree l) :
+    ∏ p in l.factors.toFinset, (1 - f p) = ∑ d in l.divisors, μ d * f d := by
+  trans (∏ p in l.factors.toFinset, (1 + (ArithmeticFunction.pmul (μ:ArithmeticFunction R) f) p))
+  · apply Finset.prod_congr rfl; intro p hp
+    rw [pmul_apply, intCoe_apply, Nat.ArithmeticFunction.moebius_apply_prime
+        (Nat.prime_of_mem_factors (List.mem_toFinset.mp hp))]
+    ring
+  · rw [(isMultiplicative_moebius.int_cast.pmul hf).prodToFinsetFactors_one_add_of_squarefree hl]
+    simp_rw [pmul_apply, intCoe_apply]
 
 open UniqueFactorizationMonoid
 
