@@ -198,7 +198,7 @@ end FirstOrder
 
 open Function FirstOrder Language Field Ring MvPolynomial
 
-variable {K : Type*} [Field K] [IsAlgClosed K] {ι κ : Type*} [Finite ι] [Finite κ]
+variable {K ι : Type*} [Field K] [IsAlgClosed K] [Finite ι]
 
 /-- A slight generalization of the **Ax-Grothendieck** theorem
 
