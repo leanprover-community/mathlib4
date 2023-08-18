@@ -19,17 +19,17 @@ and prove some of their properties.
 - `IsSepClosure k K` is the typeclass saying `K` is a separable closure of `k`, where `k` is a
   field. This means that `K` is separably closed and separable over `k`.
 
+- `IsSepClosed.lift` is a map from a separable extension `L` of `K`, into any separably
+  closed extension `M` of `K`.
+
+- `IsSepClosure.equiv` is a proof that any two separable closures of the
+  same field are isomorphic.
+
 ## Tags
 
 separable closure, separably closed
 
 ## TODO
-
-- `IsSepClosed.lift` is a map from a separable extension `L` of `k`, into any separably
-  closed extension of `k`.
-
-- `IsSepClosed.equiv` is a proof that any two separable closures of the
-  same field are isomorphic.
 
 - If `K` is a separably closed field (or algebraically closed field) containing `k`, then all
   elements of `K` which are separable over `k` form a separable closure of `k`.
@@ -120,11 +120,13 @@ theorem exists_eval₂_eq_zero [IsSepClosed K] (f : k →+* K)
     (Separable.map hsep)
   ⟨x, by rwa [eval₂_eq_eval_map, ← IsRoot]⟩
 
-variable (k)
+variable (K)
 
 theorem exists_aeval_eq_zero [IsSepClosed K] [Algebra k K] (p : k[X])
     (hp : p.degree ≠ 0) (hsep : p.Separable) : ∃ x : K, aeval x p = 0 :=
   exists_eval₂_eq_zero (algebraMap k K) p hp hsep
+
+variable (k) {K}
 
 theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → Separable p → ∃ x, p.eval x = 0) :
     IsSepClosed k := by
@@ -176,9 +178,98 @@ theorem isSepClosure_iff [Algebra k K] :
     IsSepClosure k K ↔ IsSepClosed K ∧ IsSeparable k K :=
   ⟨fun h => ⟨h.1, h.2⟩, fun h => ⟨h.1, h.2⟩⟩
 
-instance (priority := 100) IsSepClosure.normal [Algebra k K]
-    [IsSepClosure k K] : Normal k K :=
-  ⟨fun x => by apply IsIntegral.isAlgebraic; exact IsSepClosure.separable.isIntegral' x,
-    fun x => @IsSepClosed.splits_codomain _ _ _ _ (IsSepClosure.sep_closed k) _ _ (by
-      have : IsSeparable k K := IsSepClosure.separable
-      exact IsSeparable.separable k x)⟩
+-- TODO: move to suitable file
+instance IsSeparable.isAlgebraic [Algebra k K] [IsSeparable k K] : Algebra.IsAlgebraic k K :=
+  fun x => IsIntegral.isAlgebraic k <| IsSeparable.isIntegral' x
+
+namespace IsSepClosure
+
+instance isAlgebraic [Algebra k K] [IsSepClosure k K] : Algebra.IsAlgebraic k K :=
+  have : IsSeparable k K := IsSepClosure.separable
+  IsSeparable.isAlgebraic
+
+instance (priority := 100) normal [Algebra k K] [IsSepClosure k K] : Normal k K :=
+  ⟨isAlgebraic,
+    fun x => @IsSepClosed.splits_codomain _ _ _ _ (IsSepClosure.sep_closed k) _ _
+      (have : IsSeparable k K := IsSepClosure.separable; IsSeparable.separable k x)⟩
+
+end IsSepClosure
+
+namespace IsSepClosed
+
+open lift SubfieldWithHom
+
+variable {K : Type u} {L : Type v} {M : Type w} [Field K] [Field L] [Algebra K L] [Field M]
+  [Algebra K M] [IsSepClosed M] [IsSeparable K L]
+
+-- porting note: this was much faster in lean 3
+set_option maxHeartbeats 800000 in
+set_option synthInstance.maxHeartbeats 400000 in
+theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier = ⊤ := by
+  rw [eq_top_iff]
+  intro x _
+  have hL : Algebra.IsAlgebraic K L := IsSeparable.isAlgebraic
+  let N : Subalgebra K L := (maximalSubfieldWithHom K L M).carrier
+  letI : Field N := (Subalgebra.isField_of_algebraic N IsSeparable.isAlgebraic).toField
+  letI : Algebra N M := (maximalSubfieldWithHom K L M).emb.toRingHom.toAlgebra
+  haveI : IsSeparable N L := isSeparable_tower_top_of_isSeparable K N L
+  obtain ⟨y, hy⟩ := IsSepClosed.exists_aeval_eq_zero M (minpoly N x)
+    (minpoly.degree_pos
+      (isAlgebraic_iff_isIntegral.1 (Algebra.isAlgebraic_of_larger_base _ hL x))).ne'
+    (IsSeparable.separable N x)
+  let O : Subalgebra N L := Algebra.adjoin N {(x : L)}
+  letI : Algebra N O := Subalgebra.algebra O
+  -- Porting note: there are some tricky unfolds going on here:
+  -- (O.restrictScalars K : Type*) is identified with (O : Type*) in a few places
+  let larger_emb : O →ₐ[N] M := Algebra.adjoin.liftSingleton N x y hy
+  let larger_emb' : O →ₐ[K] M := AlgHom.restrictScalars K (S := N) (A := O) (B := M) larger_emb
+  have hNO : N ≤ O.restrictScalars K := by
+    intro z hz
+    show algebraMap N L ⟨z, hz⟩ ∈ O
+    exact O.algebraMap_mem _
+  let O' : SubfieldWithHom K L M :=
+    ⟨O.restrictScalars K, larger_emb'⟩
+  have hO' : maximalSubfieldWithHom K L M ≤ O' := by
+    refine' ⟨hNO, _⟩
+    intro z
+    -- Porting note: have to help Lean unfold even more here
+    show Algebra.adjoin.liftSingleton N x y hy (@algebraMap N O _ _ (Subalgebra.algebra O) z) =
+        algebraMap N M z
+    exact AlgHom.commutes _ _
+  refine' (maximalSubfieldWithHom_is_maximal K L M O' hO').fst _
+  show x ∈ Algebra.adjoin N {(x : L)}
+  exact Algebra.subset_adjoin (Set.mem_singleton x)
+
+/-- A (random) homomorphism from a separable extension L of K into a separably
+  closed extension M of K. -/
+noncomputable irreducible_def lift : L →ₐ[K] M := by
+  exact (maximalSubfieldWithHom K L M).emb.comp <|
+    (maximalSubfieldWithHom_eq_top (K := K) (L := L) (M := M)).symm
+      ▸ Algebra.toTop
+
+end IsSepClosed
+
+namespace IsSepClosure
+
+variable (K : Type u) [Field K] (L : Type v) (M : Type w) [Field L] [Field M]
+variable [Algebra K M] [IsSepClosure K M]
+variable [Algebra K L] [IsSepClosure K L]
+
+/-- A (random) isomorphism between two separable closures of `K`. -/
+noncomputable def equiv : L ≃ₐ[K] M :=
+  -- Porting note: added to replace local instance above
+  haveI : IsSepClosed M := IsSepClosure.sep_closed K
+  haveI : IsSeparable K L := IsSepClosure.separable
+  let f : L →ₐ[K] M := IsSepClosed.lift
+  AlgEquiv.ofBijective f
+    ⟨RingHom.injective f.toRingHom, by
+      letI : Algebra L M := RingHom.toAlgebra f
+      haveI : IsScalarTower K L M := IsScalarTower.of_algebraMap_eq <| by
+        simp only [RingHom.algebraMap_toAlgebra, RingHom.coe_coe, AlgHom.commutes, forall_const]
+      haveI : IsSepClosed L := IsSepClosure.sep_closed K
+      haveI : IsSeparable K M := IsSepClosure.separable
+      haveI : IsSeparable L M := isSeparable_tower_top_of_isSeparable K L M
+      show Function.Surjective (algebraMap L M)
+      exact IsSepClosed.algebraMap_surjective⟩
+
+end IsSepClosure
