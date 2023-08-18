@@ -49,7 +49,7 @@ set_option linter.uppercaseLean3 false in
 
 variable [Fintype l]
 
-theorem J_squared : J l R ⬝ J l R = -1 := by
+theorem J_squared : J l R * J l R = -1 := by
   rw [J, fromBlocks_multiply]
   simp only [Matrix.zero_mul, Matrix.neg_mul, zero_add, neg_zero, Matrix.one_mul, add_zero]
   rw [← neg_zero, ← Matrix.fromBlocks_neg, ← fromBlocks_one]
@@ -82,9 +82,9 @@ variable [Fintype l]
 
 /-- The group of symplectic matrices over a ring `R`. -/
 def symplecticGroup : Submonoid (Matrix (Sum l l) (Sum l l) R) where
-  carrier := { A | A ⬝ J l R ⬝ Aᵀ = J l R }
+  carrier := { A | A * J l R * Aᵀ = J l R }
   mul_mem' {a b} ha hb := by
-    simp only [mul_eq_mul, Set.mem_setOf_eq, transpose_mul] at *
+    simp only [Set.mem_setOf_eq, transpose_mul] at *
     rw [← Matrix.mul_assoc, a.mul_assoc, a.mul_assoc, hb]
     exact ha
   one_mem' := by simp
@@ -99,7 +99,7 @@ variable [DecidableEq l] [Fintype l] [CommRing R]
 open Matrix
 
 theorem mem_iff {A : Matrix (Sum l l) (Sum l l) R} :
-    A ∈ symplecticGroup l R ↔ A ⬝ J l R ⬝ Aᵀ = J l R := by simp [symplecticGroup]
+    A ∈ symplecticGroup l R ↔ A * J l R * Aᵀ = J l R := by simp [symplecticGroup]
 #align symplectic_group.mem_iff SymplecticGroup.mem_iff
 
 -- Porting note: Previous proof was `by infer_instance`
@@ -159,11 +159,11 @@ theorem transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGrou
     rw [Matrix.det_transpose]
     exact huA
   calc
-    Aᵀ ⬝ J l R ⬝ A = (-Aᵀ) ⬝ (J l R)⁻¹ ⬝ A := by
+    Aᵀ * J l R * A = (-Aᵀ) * (J l R)⁻¹ * A := by
       rw [J_inv]
       simp
-    _ = (-Aᵀ) ⬝ (A ⬝ J l R ⬝ Aᵀ)⁻¹ ⬝ A := by rw [hA]
-    _ = (-Aᵀ ⬝ (Aᵀ⁻¹ ⬝ (J l R)⁻¹)) ⬝ A⁻¹ ⬝ A := by
+    _ = (-Aᵀ) * (A * J l R * Aᵀ)⁻¹ * A := by rw [hA]
+    _ = -(Aᵀ * (Aᵀ⁻¹ * (J l R)⁻¹)) * A⁻¹ * A := by
       simp only [Matrix.mul_inv_rev, Matrix.mul_assoc, Matrix.neg_mul]
     _ = -(J l R)⁻¹ := by
       rw [mul_nonsing_inv_cancel_left _ _ huAT, nonsing_inv_mul_cancel_right _ _ huA]
@@ -175,25 +175,25 @@ theorem transpose_mem_iff : Aᵀ ∈ symplecticGroup l R ↔ A ∈ symplecticGro
   ⟨fun hA => by simpa using transpose_mem hA, transpose_mem⟩
 #align symplectic_group.transpose_mem_iff SymplecticGroup.transpose_mem_iff
 
-theorem mem_iff' : A ∈ symplecticGroup l R ↔ Aᵀ ⬝ J l R ⬝ A = J l R := by
+theorem mem_iff' : A ∈ symplecticGroup l R ↔ Aᵀ * J l R * A = J l R := by
   rw [← transpose_mem_iff, mem_iff, transpose_transpose]
 #align symplectic_group.mem_iff' SymplecticGroup.mem_iff'
 
 instance hasInv : Inv (symplecticGroup l R) where
-  inv A := ⟨(-J l R) ⬝ (A : Matrix (Sum l l) (Sum l l) R)ᵀ ⬝ J l R,
+  inv A := ⟨(-J l R) * (A : Matrix (Sum l l) (Sum l l) R)ᵀ * J l R,
       mul_mem (mul_mem (neg_mem <| J_mem _ _) <| transpose_mem A.2) <| J_mem _ _⟩
 
-theorem coe_inv (A : symplecticGroup l R) : (↑A⁻¹ : Matrix _ _ _) = (-J l R) ⬝ (↑A)ᵀ ⬝ J l R := rfl
+theorem coe_inv (A : symplecticGroup l R) : (↑A⁻¹ : Matrix _ _ _) = (-J l R) * (↑A)ᵀ * J l R := rfl
 #align symplectic_group.coe_inv SymplecticGroup.coe_inv
 
-theorem inv_left_mul_aux (hA : A ∈ symplecticGroup l R) : -J l R ⬝ Aᵀ ⬝ J l R ⬝ A = 1 :=
+theorem inv_left_mul_aux (hA : A ∈ symplecticGroup l R) : -(J l R * Aᵀ * J l R * A) = 1 :=
   calc
-    -J l R ⬝ Aᵀ ⬝ J l R ⬝ A = (-J l R) ⬝ (Aᵀ ⬝ J l R ⬝ A) := by
+    -(J l R * Aᵀ * J l R * A) = (-J l R) * (Aᵀ * J l R * A) := by
       simp only [Matrix.mul_assoc, Matrix.neg_mul]
-    _ = (-J l R) ⬝ J l R := by
+    _ = (-J l R) * J l R := by
       rw [mem_iff'] at hA
       rw [hA]
-    _ = (-1 : R) • J l R ⬝ J l R := by simp only [Matrix.neg_mul, neg_smul, one_smul]
+    _ = (-1 : R) • (J l R * J l R) := by simp only [Matrix.neg_mul, neg_smul, one_smul]
     _ = (-1 : R) • (-1 : Matrix _ _ _) := by rw [J_squared]
     _ = 1 := by simp only [neg_smul_neg, one_smul]
 #align symplectic_group.inv_left_mul_aux SymplecticGroup.inv_left_mul_aux
@@ -204,7 +204,7 @@ theorem coe_inv' (A : symplecticGroup l R) : (↑A⁻¹ : Matrix (Sum l l) (Sum 
 #align symplectic_group.coe_inv' SymplecticGroup.coe_inv'
 
 theorem inv_eq_symplectic_inv (A : Matrix (Sum l l) (Sum l l) R) (hA : A ∈ symplecticGroup l R) :
-    A⁻¹ = (-J l R) ⬝ Aᵀ ⬝ J l R :=
+    A⁻¹ = (-J l R) * Aᵀ * J l R :=
   inv_eq_left_inv (by simp only [Matrix.neg_mul, inv_left_mul_aux hA])
 #align symplectic_group.inv_eq_symplectic_inv SymplecticGroup.inv_eq_symplectic_inv
 
@@ -213,7 +213,6 @@ instance : Group (symplecticGroup l R) :=
     mul_left_inv := fun A => by
       apply Subtype.ext
       simp only [Submonoid.coe_one, Submonoid.coe_mul, Matrix.neg_mul, coe_inv]
-      rw [Matrix.mul_eq_mul, Matrix.neg_mul]
       exact inv_left_mul_aux A.2 }
 
 end SymplecticGroup

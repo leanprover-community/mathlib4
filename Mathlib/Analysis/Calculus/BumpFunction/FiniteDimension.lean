@@ -237,7 +237,6 @@ theorem u_exists :
     · have I1 : x ∉ support f := by rwa [f_support]
       have I2 : -x ∉ support f := by
         rw [f_support]
-        simp only at hx
         simpa using hx
       simp only [mem_support, Classical.not_not] at I1 I2
       simp only [I1, I2, add_zero, zero_div]
@@ -459,7 +458,6 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
         apply closedBall_subset_closedBall' _ (ball_subset_closedBall hy)
         rw [← one_smul ℝ x, dist_eq_norm, hz, ← sub_smul, one_smul, norm_smul, ID]
         simp only [B.ne', div_le_iff B, field_simps]
-        simp only [mem_ball_zero_iff] at hx
         nlinarith only [hx, D_lt_one]
     apply lt_of_lt_of_le _ (measure_mono C)
     apply measure_ball_pos
