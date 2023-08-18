@@ -1317,13 +1317,13 @@ theorem leadingCoeff_sub_of_degree_lt (h : Polynomial.degree q < Polynomial.degr
   rw [← q.degree_neg] at h
   exact leadingCoeff_add_of_degree_lt' h
 
-theorem leadingCoeff_sub_of_degree_eq [Ring R] (p q : R[X]) (h : degree p = degree q)
-    (hlc : leadingCoeff p - leadingCoeff q ≠ 0) :
+theorem leadingCoeff_sub_of_degree_eq (h : degree p = degree q)
+    (hlc : leadingCoeff p ≠ leadingCoeff q) :
     leadingCoeff (p - q) = leadingCoeff p - leadingCoeff q := by
-  rw [sub_eq_add_neg, leadingCoeff_add_of_degree_eq, leadingCoeff_neg, sub_eq_add_neg]
-  · rw [h, degree_neg]
-  · rw [leadingCoeff_neg, <-sub_eq_add_neg]
-    exact hlc
+  replace h : degree p = degree (-q) := by rwa [q.degree_neg]
+  replace hlc : leadingCoeff p + leadingCoeff (-q) ≠ 0 := by
+    rwa [← sub_ne_zero, sub_eq_add_neg, ← q.leadingCoeff_neg] at hlc
+  rw [sub_eq_add_neg, leadingCoeff_add_of_degree_eq h hlc, leadingCoeff_neg, sub_eq_add_neg] 
 
 theorem natDegree_sub_le (p q : R[X]) : natDegree (p - q) ≤ max (natDegree p) (natDegree q) := by
   simpa only [← natDegree_neg q] using natDegree_add_le p (-q)
