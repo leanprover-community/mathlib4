@@ -136,13 +136,6 @@ noncomputable def genericPolyMapSurjOnOfInjOn [Fintype ι]
             (fun i => (Equiv.sumAssoc _ _ _).symm (Sum.inr i)))))
   Formula.iAlls (γ := α ⊕ Σ i : ι, mons i) Sum.inr (mapsTo ⟹ injOn ⟹ surjOn)
 
-theorem forall_sum_pi {α β : Type*} (p : α ⊕ β → Sort*)
-    (q : (∀ a, p a) → Prop) :
-    (∀ a, q a) ↔ (∀ a b, q (Sum.rec a b)) :=
-  ⟨fun h a b => h _, fun h a => by
-    convert h (fun i => a (Sum.inl i)) (fun i => a (Sum.inr i))
-    ext b; cases b <;> rfl⟩
-
 set_option maxHeartbeats 1000000 in
 theorem realize_genericPolyMapSurjOnOfInjOn
     [Fintype ι] (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
@@ -161,7 +154,7 @@ theorem realize_genericPolyMapSurjOnOfInjOn
     realize_iAlls, realize_imp, realize_relabel, Fin.natAdd_zero, realize_subst, realize_iInf,
     Finset.mem_univ, realize_bdEqual, Term.realize_relabel, true_imp_iff,
     Equiv.forall_congr_left' (Equiv.curry (Fin 2) ι K), Equiv.curry_symm_apply, Function.uncurry,
-    Fin.forall_fin_succ_pi, Fin.forall_fin_zero_pi, realize_iExs, realize_inf, forall_sum_pi,
+    Fin.forall_fin_succ_pi, Fin.forall_fin_zero_pi, realize_iExs, realize_inf, Sum.forall_sum_pi,
     Set.MapsTo, Set.mem_def, injOnAlt, Function.funext_iff, Set.SurjOn, Set.image, setOf,
     Set.subset_def, Equiv.forall_congr_left' (mvPolynomialSupportLEEquiv mons)]
   simp (config := { singlePass := true}) only [← Sum.elim_comp_inl_inr]
