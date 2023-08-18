@@ -5,7 +5,7 @@ Authors: Chris Hughes
 -/
 
 import Mathlib.ModelTheory.Definability
-import Mathlib.ModelTheory.Ring.Basic
+import Mathlib.ModelTheory.Algebra.Ring.MvPolynomial
 import Mathlib.RingTheory.Nullstellensatz
 
 /-!
