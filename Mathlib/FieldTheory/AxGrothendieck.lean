@@ -8,7 +8,7 @@ import Mathlib.RingTheory.Algebraic
 import Mathlib.Data.Fintype.Card
 import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
 import Mathlib.ModelTheory.Algebra.Ring.Definability
-import Mathlib.RingTheory.Polynomial
+import Mathlib.RingTheory.Polynomial.Basic
 
 #align_import field_theory.ax_grothendieck from "leanprover-community/mathlib"@"4e529b03dd62b7b7d13806c3fb974d9d4848910e"
 
