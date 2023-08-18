@@ -26,6 +26,12 @@
     "name": "aesop",
     "inputRev?": "master"}},
   {"git":
+   {"url": "https://github.com/tydeu/lean4-alloy/",
+    "subDir?": null,
+    "rev": "2e996c3c6dc0c99112f72ff82393fafdc5b60e85",
+    "name": "alloy",
+    "inputRev?": "master"}},
+  {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
     "rev": "8b864260672b21d964d79ecb2376e01d0eab9f5b",

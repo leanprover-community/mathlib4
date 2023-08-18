@@ -2,6 +2,7 @@ import Lean.Meta
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.ToExpr
 import Mathlib.Tactic.RunCmd
+import Seccomp
 
 open Lean Core Meta Elab Term Command
 
@@ -10,8 +11,10 @@ elab "compileTimeSearchPath" : term =>
 
 unsafe def work (mod : String) (query : String) : IO Unit := do
   searchPathRef.set compileTimeSearchPath
-  withImportModules [{module := mod.toName}] {} 0 fun env => do
-    let ctx := {fileName := "", fileMap := default}
+  withImportModules [{module := mod.toName}, {module := `Mathlib.Tactic.Find}] {} 0 fun env => do
+    IO.println "Enabling seccomp"
+    Seccomp.enable
+    let ctx := {fileName := "/tmp/loogle.lean", fileMap := Inhabited.default}
     let state := {env}
     Prod.fst <$> (CoreM.toIO · ctx state) do
       match Parser.runParserCategory (← getEnv) `find_patterns query with
@@ -29,4 +32,6 @@ unsafe def main (args : List String) : IO Unit := do
    match args with
   | [query] => work "Mathlib" query
   | [mod, query] => work mod query
-  | _ => IO.println "Usage: loogle [module] query"
+  | _ => do
+      IO.println "Usage: loogle [module] query"
+      Seccomp.enable

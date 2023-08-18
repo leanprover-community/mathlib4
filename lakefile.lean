@@ -56,9 +56,19 @@ lean_lib Cache where
 lean_exe cache where
   root := `Cache.Main
 
+require alloy from git "https://github.com/tydeu/lean4-alloy/" @ "master"
+
+module_data alloy.c.o : BuildJob FilePath
+lean_lib Seccomp where
+  roots := #[`Seccomp]
+  precompileModules := true
+  nativeFacets := #[Module.oFacet, `alloy.c.o]
+
 lean_exe loogle where
   root := `Loogle.Main
   supportInterpreter := true
+  moreLeanArgs := #["--load-dynlib=/nix/store/xykfcm1gdz27sxmcvbwb7xmrhmw8qayc-libseccomp-2.5.4-lib/lib/libseccomp.so.2"]
+  moreLinkArgs := #["-lseccomp"]
 
 lean_lib MathlibExtras where
   roots := #[`MathlibExtras]
