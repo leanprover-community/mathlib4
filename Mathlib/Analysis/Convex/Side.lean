@@ -398,8 +398,11 @@ theorem _root_.Wbtw.wOppSide₁₃ {s : AffineSubspace R P} {x y z : P} (h : Wbt
   rcases ht0.lt_or_eq with (ht0' | rfl); swap
   · rw [lineMap_apply_zero]; simp
   refine' Or.inr (Or.inr ⟨1 - t, t, sub_pos.2 ht1', ht0', _⟩)
-  simp_rw [lineMap_apply, vadd_vsub_assoc, vsub_vadd_eq_vsub_sub, ← neg_vsub_eq_vsub_rev z x,
-    vsub_self, zero_sub, ← neg_one_smul R (z -ᵥ x), ← add_smul, smul_neg, ← neg_smul, smul_smul]
+  -- TODO: after lean4#2336 "simp made no progress feature"
+  -- had to add `_` to several lemmas here. Not sure why!
+  simp_rw [lineMap_apply _, vadd_vsub_assoc _, vsub_vadd_eq_vsub_sub _,
+    ← neg_vsub_eq_vsub_rev z x, vsub_self _, zero_sub, ← neg_one_smul R (z -ᵥ x),
+    ← add_smul, smul_neg, ← neg_smul, smul_smul]
   ring_nf
 #align wbtw.w_opp_side₁₃ Wbtw.wOppSide₁₃
 
