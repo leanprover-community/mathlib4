@@ -155,6 +155,12 @@ lemma eq_right_iff_getRight_eq {b : β} : x = inr b ↔ ∃ h, x.getRight h = b 
   cases x <;> simp only [getRight?, Option.some.injEq, inr.injEq]
 #align sum.get_right_eq_some_iff Sum.getRight?_eq_some_iff
 
+lemma getLeft_eq_getLeft? (h₁ : x.isLeft) (h₂ : x.getLeft?.isSome) :
+x.getLeft h₁ = x.getLeft?.get h₂ := by simp [← getLeft?_eq_some_iff]
+
+lemma getRight_eq_getRight? (h₁ : x.isRight) (h₂ : x.getRight?.isSome) :
+x.getRight h₁ = x.getRight?.get h₂ := by simp [← getRight?_eq_some_iff]
+
 @[simp]
 theorem not_isLeft (x : Sum α β) : not x.isLeft = x.isRight := by cases x <;> rfl
 #align sum.bnot_is_left Sum.not_isLeft
@@ -182,6 +188,12 @@ theorem isLeft_iff : x.isLeft ↔ ∃ y, x = Sum.inl y := by cases x <;> simp
 
 theorem isRight_iff : x.isRight ↔ ∃ y, x = Sum.inr y := by cases x <;> simp
 #align sum.is_right_iff Sum.isRight_iff
+
+@[simp] lemma isSome_getLeft?_iff_isLeft : x.getLeft?.isSome ↔ x.isLeft := by
+rw [isLeft_iff, Option.isSome_iff_exists]; simp
+
+@[simp] lemma isSome_getRight?_iff_isRight : x.getRight?.isSome ↔ x.isRight := by
+rw [isRight_iff, Option.isSome_iff_exists]; simp
 
 end get
 
