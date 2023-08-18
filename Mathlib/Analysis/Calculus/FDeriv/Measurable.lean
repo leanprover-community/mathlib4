@@ -834,25 +834,54 @@ end RightDeriv
 section Uncurry
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [ProperSpace E]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {α : Type*} [MetricSpace α] [MeasurableSpace (α × E)] [OpensMeasurableSpace (α × E)]
+  {α : Type*} [TopologicalSpace α] [MeasurableSpace (α × E)] [OpensMeasurableSpace (α × E)]
   {f : α → E → F} (K : Set (E →L[𝕜] F))
+
+
+lemma properSpace_of_locallyCompactSpace : ProperSpace E := by
+  rcases exists_isCompact_closedBall (0 : E) with ⟨r, rpos, hr⟩
+  rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
+  have M : ∀ n (x : E), IsCompact (closedBall x (‖c‖^n * r)) := by
+    intro n x
+    let f : E → E := fun y ↦ c^n • y + x
+    have Cf : Continuous f := (continuous_id.const_smul _).add continuous_const
+    have A : closedBall x (‖c‖^n * r) ⊆ f '' (closedBall 0 r) := by
+      rintro y hy
+      refine ⟨(c^n)⁻¹ • (y - x), ?_, ?_⟩
+      · simpa [dist_eq_norm, norm_smul, inv_mul_le_iff (pow_pos (zero_lt_one.trans hc) _)] using hy
+      · have : c^n ≠ 0 := pow_ne_zero _ (norm_pos_iff.1 (zero_lt_one.trans hc))
+        simp [smul_smul, mul_inv_cancel this]
+    exact isCompact_of_isClosed_subset (hr.image Cf) isClosed_ball A
+  refine ⟨fun x s ↦ ?_⟩
+  have L : ∀ᶠ n in (atTop : Filter ℕ), s ≤ ‖c‖^n * r := by
+    have : Tendsto (fun n ↦ ‖c‖^n * r) atTop atTop :=
+      Tendsto.atTop_mul_const rpos (tendsto_pow_atTop_atTop_of_one_lt hc)
+    exact Tendsto.eventually_ge_atTop this s
+  rcases L.exists with ⟨n, hn⟩
+  exact isCompact_of_isClosed_subset (M n x) isClosed_ball (closedBall_subset_closedBall hn)
+
+
+
+
+#exit
 
 namespace FDerivMeasurableAux
 
+open Uniformity
 
 lemma isOpen_A_uncurry {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[𝕜] F) :
     IsOpen {p : α × E | p.2 ∈ A (f p.1) L r s} := by
   simp only [A, half_lt_self_iff, not_lt, mem_Ioc, mem_ball, map_sub, mem_setOf_eq]
   apply isOpen_iff_mem_nhds.2
   rintro ⟨a, x⟩ ⟨r', ⟨Irr', Ir'r⟩, hr⟩
+  have ha : Continuous (f a) := continuous_uncurry_left a hf
   rcases exists_between Irr' with ⟨t, hrt, htr'⟩
   rcases exists_between hrt with ⟨t', hrt', ht't⟩
   obtain ⟨b, b_lt, hb⟩ : ∃ b, b < s * r ∧ ∀ y ∈ closedBall x t, ∀ z ∈ closedBall x t,
       ‖f a z - f a y - (L z - L y)‖ ≤ b := by
     have B : Continuous (fun (p : E × E) ↦ ‖f a p.2 - f a p.1 - (L p.2 - L p.1)‖) := by
-      have ha : Continuous (f a) := continuous_uncurry_left a hf
       continuity
     have C : (closedBall x t ×ˢ closedBall x t).Nonempty := by simp; linarith
     rcases ((isCompact_closedBall x t).prod (isCompact_closedBall x t)).exists_isMaxOn
@@ -863,15 +892,28 @@ lemma isOpen_A_uncurry {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[𝕜]
     have D : (y, z) ∈ closedBall x t ×ˢ closedBall x t := mem_prod.2 ⟨hy, hz⟩
     exact hp D
   obtain ⟨ε, εpos, hε⟩ : ∃ ε, 0 < ε ∧ b + 2 * ε < s * r := ⟨(s * r - b)/3, by linarith, by linarith⟩
-  obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ ∀ p q : α × E, dist p q < δ → p ∈ {a} ×ˢ closedBall x t
-      → dist (f.uncurry p) (f.uncurry q) < ε := by
-    have H : IsCompact ({a} ×ˢ closedBall x t) :=
-      isCompact_singleton.prod (isCompact_closedBall x t)
-    exact mem_uniformity_dist.1 (H.uniformContinuousAt_of_continuousAt f.uncurry
-      (fun p _ ↦ hf.continuousAt) (dist_mem_uniformity εpos))
-  refine Metric.mem_nhds_iff.2 ⟨min δ (t - t'), lt_min δpos (sub_pos.2 ht't), ?_⟩
+  obtain ⟨u, u_open, au, hu⟩ : ∃ u, IsOpen u ∧ a ∈ u ∧ ∀ (p : α × E),
+      p.1 ∈ u → p.2 ∈ closedBall x t → dist (f.uncurry p) (f.uncurry (a, p.2)) < ε := by
+    have C : Continuous (fun (p : α × E) ↦ f a p.2) := by continuity
+    have D : ∀ (p : α × E), p ∈ {a} ×ˢ closedBall x t → Function.uncurry f p = f a p.2 := by
+      rintro ⟨b, y⟩ ⟨hb, hy⟩
+      simp at hb
+      simp [hb]
+    obtain ⟨v, v_open, sub_v, hv⟩ : ∃ v, IsOpen v ∧ {a} ×ˢ closedBall x t ⊆ v ∧
+        ∀ p ∈ v, dist (Function.uncurry f p) (f a p.2) < ε :=
+      Uniform.exists_is_open_mem_uniformity_of_forall_mem_eq (s := {a} ×ˢ closedBall x t)
+        (fun p hp ↦ hf.continuousAt) (fun p hp ↦ C.continuousAt) D (dist_mem_uniformity εpos)
+    obtain ⟨w, w', w_open, w'_open, sub_w, sub_w', hww'⟩ : ∃ (w : Set α) (w' : Set E),
+        IsOpen w ∧ IsOpen w' ∧ {a} ⊆ w ∧ closedBall x t ⊆ w' ∧ w ×ˢ w' ⊆ v :=
+      generalized_tube_lemma isCompact_singleton (isCompact_closedBall x t) v_open sub_v
+    refine ⟨w, w_open, sub_w rfl, ?_⟩
+    rintro ⟨b, y⟩ h hby
+    exact hv _ (hww' ⟨h, sub_w' hby⟩)
+  have : u ×ˢ ball x (t - t') ∈ 𝓝 (a, x) :=
+    prod_mem_nhds (u_open.mem_nhds au) (ball_mem_nhds _ (sub_pos.2 ht't))
+  filter_upwards [this]
   rintro ⟨a', x'⟩ ha'x'
-  simp only [ge_iff_le, tsub_le_iff_right, mem_ball, Prod.dist_eq, lt_min_iff, max_lt_iff] at ha'x'
+  simp only [mem_prod, mem_ball] at ha'x'
   refine ⟨t', ⟨hrt', ht't.le.trans (htr'.le.trans Ir'r)⟩, fun y hy z hz ↦ ?_⟩
   have dyx : dist y x ≤ t := by linarith [dist_triangle y x' x]
   have dzx : dist z x ≤ t := by linarith [dist_triangle z x' x]
@@ -881,15 +923,15 @@ lemma isOpen_A_uncurry {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[𝕜]
   _ ≤ ‖f a' z - f a z‖ + ‖f a y - f a' y‖ + ‖f a z - f a y - (L z - L y)‖ := norm_add₃_le _ _ _
   _ ≤ ε + ε + b := by
       gcongr
-      · rw [← dist_eq_norm']
-        change dist (f.uncurry (a, z)) (f.uncurry (a', z)) ≤ ε
-        apply (hδ _ _ _ _).le
-        · simpa [dist_comm] using ha'x'.1.1
-        · simp [dzx]
       · rw [← dist_eq_norm]
-        change dist (f.uncurry (a, y)) (f.uncurry (a', y)) ≤ ε
-        apply (hδ _ _ _ _).le
-        · simpa [dist_comm] using ha'x'.1.1
+        change dist (f.uncurry (a', z)) (f.uncurry (a, z)) ≤ ε
+        apply (hu _ _ _).le
+        · exact ha'x'.1
+        · simp [dzx]
+      · rw [← dist_eq_norm']
+        change dist (f.uncurry (a', y)) (f.uncurry (a, y)) ≤ ε
+        apply (hu _ _ _).le
+        · exact ha'x'.1
         · simp [dyx]
       · simp [hb, dyx, dzx]
   _ < s * r := by linarith
