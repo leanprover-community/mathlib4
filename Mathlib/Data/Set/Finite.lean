@@ -1171,6 +1171,15 @@ theorem Finite.dinduction_on {C : ∀ s : Set α, s.Finite → Prop} (s : Set α
   this h
 #align set.finite.dinduction_on Set.Finite.dinduction_on
 
+@[elab_as_elim]
+theorem Finite.dinduction_on' {C : ∀ s : Set α, s.Finite → Prop}
+    (H0 : C ∅ finite_empty)
+    (H1 : ∀ {a s}, a ∉ s → ∀ h : Set.Finite s, C s h → C (insert a s) (h.insert a))  {s : Set α} (h : s.Finite) : C s h :=
+  have : ∀ h : s.Finite, C s h :=
+    Finite.induction_on h (fun _ => H0) fun has hs ih _ => H1 has hs (ih _)
+  this h
+
+
 section
 
 attribute [local instance] Nat.fintypeIio
