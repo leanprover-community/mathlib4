@@ -54,10 +54,8 @@ def zagierFinset : Finset (ℕ × ℕ × ℕ) :=
 theorem coe_zagierFinset : zagierFinset k = zagierSet k := by
   ext ⟨x, y, z⟩
   refine' ⟨fun h => _, fun h => _⟩
-  · unfold zagierFinset at h
-    unfold zagierSet; simp_all
-  · unfold zagierSet at h
-    unfold zagierFinset; simp_all
+  · unfold zagierFinset at h; unfold zagierSet; simp_all
+  · unfold zagierSet at h; unfold zagierFinset; simp_all
     have lb := zagierSet_lower_bound k h
     have ub := zagierSet_upper_bound k h
     apply mem_product.2; simp
@@ -76,23 +74,7 @@ variable {α : Type*} [Fintype α] [DecidableEq α] {p : ℕ} [hp : Fact p.Prime
 
 open Function Submonoid
 
-/-- The powers of a periodic endomorphism form a group with composition as the operation. -/
-def groupPowers : Group (powers f) where
-  inv := fun ⟨g, hg⟩ => ⟨g ^ (p - 1), by
-    rw [mem_powers_iff] at hg ⊢
-    obtain ⟨k, hk⟩ := hg
-    use k * (p - 1)
-    rw [← hk, pow_mul]⟩
-  mul_left_inv := fun ⟨g, hg⟩ => by
-    simp only [ge_iff_le, mk_mul_mk]
-    congr
-    rw [← pow_succ', Nat.sub_add_cancel (one_le_two.trans hp.out.two_le)]
-    rw [mem_powers_iff] at hg
-    obtain ⟨k, hk⟩ := hg
-    rw [← hk, ← pow_mul, mul_comm, pow_mul, hf, one_pow]
-
-theorem isPGroup_of_powers : @IsPGroup p (powers f) (groupPowers f hf) := by
-  unfold IsPGroup
+instance isPGroup_of_powers : @IsPGroup p (powers f) (instGroupOfPowers hp.out.pos hf) := by
   intro ⟨g, hg⟩
   use 1
   simp; congr
@@ -120,16 +102,13 @@ variable (k : ℕ) [hk : Fact (4 * k + 1).Prime]
 /-- The obvious involution `(x, y, z) ↦ (x, z, y)`. Its fixed points correspond to representations
 of `4 * k + 1` as a sum of two squares. -/
 def obvInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ => ⟨⟨x, z, y⟩, by
-  unfold zagierSet at *
-  simp_all
-  linarith [h]⟩
+  unfold zagierSet at h ⊢; simp_all; linarith [h]⟩
 
 lemma obvInvo_apply {p : ℕ × ℕ × ℕ} {hp : p ∈ zagierSet k} :
     (obvInvo k) ⟨p, hp⟩ = (p.1, p.2.2, p.2.1) := by
   rfl
 
-theorem involutive_obvInvo : Involutive (obvInvo k) := by
-  unfold Involutive obvInvo zagierSet; simp
+theorem involutive_obvInvo : Involutive (obvInvo k) := by unfold Involutive obvInvo; simp
 
 theorem sq_add_sq_of_nonempty_fixedPoints
     (hn : (MulAction.fixedPoints (powers (obvInvo k)) (zagierSet k)).Nonempty) :
@@ -151,18 +130,11 @@ def complexInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ =>
   ⟨if x + z < y then ⟨x + 2 * z, z, y - x - z⟩ else
    if 2 * y < x then ⟨x - 2 * y, x + z - y, y⟩ else
                      ⟨2 * y - x, y, x + z - y⟩, by
-  unfold zagierSet at *
-  simp at h
+  unfold zagierSet at h ⊢; simp at h
   split_ifs with less more <;> simp
-  · rw [Nat.sub_sub]
-    zify [less.le] at h ⊢
-    linarith [h]
-  · push_neg at less
-    zify [less, more.le] at h ⊢
-    linarith [h]
-  · push_neg at less more
-    zify [less, more] at h ⊢
-    linarith [h]⟩
+  · rw [Nat.sub_sub]; zify [less.le] at h ⊢; linarith [h]
+  · push_neg at less; zify [less, more.le] at h ⊢; linarith [h]
+  · push_neg at less more; zify [less, more] at h ⊢; linarith [h]⟩
 
 theorem involutive_complexInvo : Involutive (complexInvo k) := by
   intro ⟨⟨x, y, z⟩, h⟩
@@ -237,7 +209,6 @@ theorem fixedPoints_eq_singleton :
       rw [← h]; unfold complexInvo; simp
   · intro t mem
     replace mem := unique_of_mem_fixedPoints k mem
-    unfold zagierSet at t
     congr!
 
 theorem exists_sq_add_sq : ∃ a b : ℕ, a ^ 2 + b ^ 2 = 4 * k + 1 := by
