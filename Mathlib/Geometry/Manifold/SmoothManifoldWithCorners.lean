@@ -7,6 +7,7 @@ import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Linear
 import Mathlib.Analysis.Calculus.ContDiff
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Geometry.Manifold.ChartedSpace
 
 #align_import geometry.manifold.smooth_manifold_with_corners from "leanprover-community/mathlib"@"ddec54a71a0dd025c05445d467f1a2b7d586a3ba"
@@ -783,6 +784,22 @@ instance : ClosedUnderRestriction (analyticGroupoid I) :=
       rintro e ⟨s, hs, hes⟩
       apply (analyticGroupoid I).eq_on_source' _ _ _ hes
       exact ofSet_mem_analyticGroupoid I hs)
+
+theorem mem_analyticGroupoid_of_boundaryless [CompleteSpace E] [I.Boundaryless]
+    (e : LocalHomeomorph H H) :
+    e ∈ analyticGroupoid I ↔ AnalyticOn 𝕜 (I ∘ e ∘ I.symm) (I '' e.source) ∧
+    AnalyticOn 𝕜 (I ∘ e.symm ∘ I.symm) (I '' e.target) := by
+  apply Iff.intro
+  · intro he
+    have := mem_groupoid_of_pregroupoid.mp he.right
+    simp only [I.image_eq, I.range_eq_univ, interior_univ, subset_univ, and_true] at this ⊢
+    exact this
+  · intro he
+    apply And.intro
+    all_goals apply mem_groupoid_of_pregroupoid.mpr; simp only [I.image_eq, I.range_eq_univ,
+      interior_univ, subset_univ, and_true] at he ⊢
+    · exact ⟨he.left.contDiffOn, he.right.contDiffOn⟩
+    · exact he
 
 end analyticGroupoid
 
