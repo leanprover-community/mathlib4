@@ -41,15 +41,15 @@ the Ax-Grothendieck Theorem were first formalized in Lean 3 by Joseph Hua
 
 noncomputable section
 
-open MvPolynomial Finset Function
+open MvPolynomial Finset
 
 /-- Any injective polynomial map over an algebraic extension of a finite field is surjective. -/
 theorem ax_grothendieck_of_locally_finite {ι K R : Type*} [Field K] [Finite K] [CommRing R]
     [Finite ι] [Algebra K R] (alg : Algebra.IsAlgebraic K R) (ps : ι → MvPolynomial ι R)
     (S : Set (ι → R))
-    (hm : S.MapsTo (fun v i => MvPolynomial.eval v (ps i)) S)
-    (hinj : S.InjOn (fun v i => MvPolynomial.eval v (ps i))) :
-    S.SurjOn (fun v i => MvPolynomial.eval v (ps i)) S := by
+    (hm : S.MapsTo (fun v i => eval v (ps i)) S)
+    (hinj : S.InjOn (fun v i => eval v (ps i))) :
+    S.SurjOn (fun v i => eval v (ps i)) S := by
   have is_int : ∀ x : R, IsIntegral K x := fun x => isAlgebraic_iff_isIntegral.1 (alg x)
   letI := Classical.decEq R
   intro v hvS
@@ -79,7 +79,7 @@ theorem ax_grothendieck_of_locally_finite {ι K R : Type*} [Field K] [Finite K] 
     rw [← Finite.injective_iff_surjective]
     intro x y hxy
     ext i
-    simp only [Subtype.ext_iff, funext_iff] at hxy
+    simp only [Subtype.ext_iff, Function.funext_iff] at hxy
     exact congr_fun (hinj x.2 y.2 (funext hxy)) i
   rcases hres_surj ⟨fun i => ⟨v i, hv i⟩, hvS⟩ with ⟨⟨w, hwS'⟩, hw⟩
   refine ⟨fun i => w i, hwS', ?_⟩
@@ -147,7 +147,7 @@ theorem realize_genericPolyMapSurjOnOfInjOn
     [Fintype ι] (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
     (K ⊨ genericPolyMapSurjOnOfInjOn φ mons) ↔
       ∀ (v : α → K) (p : { p : ι → MvPolynomial ι K // (∀ i, (p i).support ⊆ mons i) }),
-        let f : (ι → K) → (ι → K) := fun v i => MvPolynomial.eval v (p.1 i)
+        let f : (ι → K) → (ι → K) := fun v i => eval v (p.1 i)
         let S : Set (ι → K) := fun x => φ.Realize (Sum.elim v x)
         S.MapsTo f S → S.InjOn f → S.SurjOn f S := by
   letI := Classical.decEq K
@@ -196,7 +196,7 @@ theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime_or_zero
 
 end FirstOrder
 
-open Function FirstOrder Language Field Ring MvPolynomial
+open FirstOrder Language Field Ring MvPolynomial
 
 variable {K ι : Type*} [Field K] [IsAlgClosed K] [Finite ι]
 
@@ -207,9 +207,9 @@ injective polynomial map `S → S`  is also surjective on `S`. -/
 theorem ax_grothendieck_of_definable [CompatibleRing K] {c : Set K}
     (S : Set (ι → K)) (hS : c.Definable Language.ring S)
     (ps : ι → MvPolynomial ι K) :
-    S.MapsTo (fun v i => MvPolynomial.eval v (ps i)) S →
-    S.InjOn (fun v i => MvPolynomial.eval v (ps i)) →
-    S.SurjOn (fun v i => MvPolynomial.eval v (ps i)) S := by
+    S.MapsTo (fun v i => eval v (ps i)) S →
+    S.InjOn (fun v i => eval v (ps i)) →
+    S.SurjOn (fun v i => eval v (ps i)) S := by
   letI := Fintype.ofFinite ι
   let p : ℕ := ringChar K
   haveI : CharP K p := ⟨ringChar.spec K⟩
@@ -234,9 +234,9 @@ theorem ax_grothendieck_zeroLocus
     (I : Ideal (MvPolynomial ι K))
     (p : ι → MvPolynomial ι K) :
     let S := zeroLocus I
-    S.MapsTo (fun v i => MvPolynomial.eval v (p i)) S →
-    S.InjOn (fun v i => MvPolynomial.eval v (p i)) →
-    S.SurjOn (fun v i => MvPolynomial.eval v (p i)) S := by
+    S.MapsTo (fun v i => eval v (p i)) S →
+    S.InjOn (fun v i => eval v (p i)) →
+    S.SurjOn (fun v i => eval v (p i)) S := by
   letI := compatibleRingOfRing K
   intro S
   have i_fg : I.FG := IsNoetherian.noetherian I
@@ -249,8 +249,8 @@ theorem ax_grothendieck_zeroLocus
 Any injective polynomial map `K^n → K^n` is also surjective if `K` is an
 algberaically closed field. -/
 theorem ax_grothendieck_univ (p : ι → MvPolynomial ι K) :
-    Injective (fun v i => MvPolynomial.eval v (p i)) →
-    Surjective fun v i => MvPolynomial.eval v (p i) := by
+    (fun v i => eval v (p i)).Injective →
+    (fun v i => eval v (p i)).Surjective := by
   simpa [← Set.injective_iff_injOn_univ,
          ← Set.surjective_iff_surjOn_univ] using
       ax_grothendieck_zeroLocus 0 p
