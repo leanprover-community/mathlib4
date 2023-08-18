@@ -59,17 +59,15 @@ theorem «exists» {p : Sum α β → Prop} : (∃ x, p x) ↔ (∃ a, p (inl a)
     | Or.inr ⟨b, h⟩ => ⟨inr b, h⟩⟩
 #align sum.exists Sum.exists
 
-theorem forall_sum_pi (p : α ⊕ β → Sort*)
-    (q : (∀ a, p a) → Prop) :
-    (∀ a, q a) ↔ (∀ a b, q (Sum.rec a b)) :=
-  ⟨fun h a b => h _, fun h a => by
-    have h1 : a = Sum.rec (fun i => a (Sum.inl i)) (fun i => a (Sum.inr i)) := by
-      ext b; cases b <;> rfl
+theorem forall_sum_pi {γ : α ⊕ β → Sort*} (p : (∀ ab, γ ab) → Prop) :
+    (∀ fab, p fab) ↔ (∀ fa fb, p (Sum.rec fa fb)) :=
+  ⟨fun h fa fb => h _, fun h fab => by
+    have h1 : fab = Sum.rec (fun a => fab (Sum.inl a)) (fun b => fab (Sum.inr b)) := by
+      ext ab; cases ab <;> rfl
     rw [h1]; exact h _ _⟩
 
-theorem exists_sum_pi (p : α ⊕ β → Sort*)
-    (q : (∀ a, p a) → Prop) :
-    (∃ a, q a) ↔ (∃ a b, q (Sum.rec a b)) := by
+theorem exists_sum_pi {γ : α ⊕ β → Sort*} (p : (∀ ab, γ ab) → Prop) :
+    (∃ fab, p fab) ↔ (∃ fa fb, p (Sum.rec fa fb)) := by
   rw [← not_forall_not, forall_sum_pi]
   simp
 
