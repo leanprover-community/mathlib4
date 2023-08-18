@@ -1085,6 +1085,7 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
     _ = ∫⋯∫_(insert i s)ᶜ, (fun x ↦ ∫⁻ xᵢ, rhsAux μ f s (Function.update x i xᵢ) ∂μ i) ∂μ :=
         marginal_insert' _ (hf.rhsAux μ) hi'
     _ ≤ ∫⋯∫_(insert i s)ᶜ, rhsAux μ f (insert i s) ∂μ := marginal_mono (fun x ↦ ?_)
+  -- it suffices to compare the `i`-integral of `rhsAux s` with `rhsAux (insert i s)`
   have hι : 2 ≤ (#ι : ℝ) := by exact_mod_cast Fintype.one_lt_card
   have : 1 ≤ (#ι:ℝ) - 1 := by linarith
   let p : ℝ := 1 / ((#ι:ℝ) - 1)
