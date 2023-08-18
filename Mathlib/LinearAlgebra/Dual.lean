@@ -652,9 +652,8 @@ instance _root_.Prod.instModuleIsReflexive [IsReflexive R N] :
 variable {R M N} in
 lemma equiv [IsReflexive R M] (e : M ≃ₗ[R] N) : IsReflexive R N where
   bijective_dual_eval' := by
-    let ed : Dual R (Dual R N) ≃ₗ[R] Dual R (Dual R M) :=
-      LinearEquiv.dualMap <| LinearEquiv.dualMap <| e |>.symm
-    have : Dual.eval R N = ed.symm.comp ((Dual.eval R M).comp <| e |>.symm.toLinearMap) := by
+    let ed : Dual R (Dual R N) ≃ₗ[R] Dual R (Dual R M) := e.symm.dualMap.dualMap
+    have : Dual.eval R N = ed.symm.comp ((Dual.eval R M).comp e.symm.toLinearMap) := by
       ext m f
       exact FunLike.congr_arg f (e.apply_symm_apply m).symm
     simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
