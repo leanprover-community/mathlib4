@@ -168,7 +168,7 @@ theorem p_le' (p : ℕ → ℂ[X]) (s : ℂ)
     (h : ∃ c, ∀ (q : ℕ), ∀ x ∈ Set.Ioc 0 (Complex.abs s), Complex.abs ((p q).eval (x • exp (s.arg • I))) ≤ c ^ q) :
     ∃ c ≥ 0, ∀ q : ℕ, Complex.abs (P (p q) s) ≤ Real.exp s.re * (Real.exp (Complex.abs s) * c ^ q * (Complex.abs s)) :=
   by
-  simp_rw []; cases' h with c hc; replace hc := fun q x hx => (hc q x hx).trans (le_abs_self _)
+  simp_rw [P]; cases' h with c hc; replace hc := fun q x hx => (hc q x hx).trans (le_abs_self _)
   simp_rw [_root_.abs_pow] at hc ; use |c|, abs_nonneg _; intro q
   have h := integral_f_eq (p q) s
   rw [← sub_div, eq_div_iff (exp_ne_zero _), ← @mul_right_inj' _ _ (exp s) _ _ (exp_ne_zero _),
@@ -176,10 +176,10 @@ theorem p_le' (p : ℕ → ℂ[X]) (s : ℂ)
   replace h := congr_arg Complex.abs h
   simp_rw [map_mul, abs_exp, smul_re, I_re, smul_zero, Real.exp_zero, mul_one] at h
   rw [← h, mul_le_mul_left (Real.exp_pos _), ← Complex.norm_eq_abs,
-    intervalIntegral.integral_of_le (complex.abs.nonneg _)]
+    intervalIntegral.integral_of_le (Complex.abs.nonneg _)]
   clear h
   convert MeasureTheory.norm_set_integral_le_of_norm_le_const' _ _ _
-  · rw [Real.volume_Ioc, sub_zero, ENNReal.toReal_ofReal (complex.abs.nonneg _)]
+  · rw [Real.volume_Ioc, sub_zero, ENNReal.toReal_ofReal (Complex.abs.nonneg _)]
   · rw [Real.volume_Ioc, sub_zero]; exact ENNReal.ofReal_lt_top
   · exact measurableSet_Ioc
   intro x hx; rw [norm_mul]; refine' mul_le_mul _ (hc q x hx) (norm_nonneg _) (Real.exp_pos _).le
@@ -211,6 +211,9 @@ theorem p_le (p : ℕ → ℂ[X]) (s : ℂ)
 #align P_le p_le
 
 open Polynomial
+
+theorem Int.coe_castRingHom' {α} [NonAssocRing α] : ⇑(castRingHom α) = Int.cast :=
+  rfl
 
 theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
     ∃ c,
@@ -260,7 +263,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
     if h : ((p.aroots ℂ).map c').toFinset.Nonempty then ((p.aroots ℂ).map c').toFinset.max' h else 0
   have hc : ∀ x ∈ p.aroots ℂ, c' x ≤ c := by
     intro x hx; dsimp only []
-    split_ifs
+    split_ifs with h
     · apply Finset.le_max'; rw [Multiset.mem_toFinset]
       refine' Multiset.mem_map_of_mem _ hx
     · rw [nonempty_iff_ne_empty, Ne.def, Multiset.toFinset_eq_empty,
@@ -298,10 +301,11 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
               (((p.aroots ℂ).erase r).map fun a : ℂ => X - C a).prod) ^
             q) :=
     by
-    rw [mul_left_comm, ← mul_pow, mul_left_comm (_ - _), Multiset.prod_map_erase hr]
-    have : (p.aroots ℂ).card = (p.map (algebraMap ℤ ℂ)).natDegree :=
+    rw [mul_left_comm, ← mul_pow, mul_left_comm (_ - _),
+      Multiset.prod_map_erase (f := fun a =>  X - C a) hr]
+    have : Multiset.card (p.aroots ℂ) = (p.map (algebraMap ℤ ℂ)).natDegree :=
       splits_iff_card_roots.mp (IsAlgClosed.splits _)
-    rw [C_leading_coeff_mul_prod_multiset_X_sub_C this, Polynomial.map_mul, Polynomial.map_pow,
+    rw [C_leadingCoeff_mul_prod_multiset_X_sub_C this, Polynomial.map_mul, Polynomial.map_pow,
       Polynomial.map_pow, map_X]
   specialize h r this; clear this
   rw [le_div_iff (Nat.cast_pos.mpr (Nat.factorial_pos _) : (0 : ℝ) < _), ← abs_of_nat, ← map_mul,
@@ -309,15 +313,13 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
     Nat.mul_factorial_pred q0, ← h]
   rw [nsmul_eq_mul, ← Int.cast_ofNat, ← zsmul_eq_mul, smul_smul, mul_add, ← nsmul_eq_mul, ←
     nsmul_eq_mul, smul_smul, mul_comm, Nat.mul_factorial_pred q0, ← h', zsmul_eq_mul, aeval_def,
-    eval₂_at_zero, eq_intCast, Int.cast_id, ← Int.coe_castRingHom, ← algebraMap_int_eq, ←
-    eval₂_at_zero, aeval_def, eval₂_eq_eval_map, eval₂_eq_eval_map, mul_comm, ← sumIderiv_map, ← p]
+    eval₂_at_zero, eq_intCast, Int.cast_id, ← Int.coe_castRingHom', ← algebraMap_int_eq, ←
+    eval₂_at_zero, aeval_def, eval₂_eq_eval_map, eval₂_eq_eval_map, mul_comm, ← sumIderiv_map, ← P]
   exact (Pp'_le r q (Nat.one_le_of_lt q0)).trans (pow_le_pow_of_le_left (c'0 r) (hc r hr) _)
 #align exp_polynomial_approx exp_polynomial_approx
 
 namespace AddMonoidAlgebra
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `congrm #[[expr finsupp.sum x (λ g1 r1, _)]] -/
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `congrm #[[expr finsupp.sum y (λ g2 r2, _)]] -/
 @[simps]
 def ringEquivCongrLeft {R S G : Type _} [Semiring R] [Semiring S] [AddMonoid G] (f : R ≃+* S) :
     AddMonoidAlgebra R G ≃+* AddMonoidAlgebra S G :=
@@ -328,16 +330,22 @@ def ringEquivCongrLeft {R S G : Type _} [Semiring R] [Semiring S] [AddMonoid G] 
     invFun :=
       (Finsupp.mapRange f.symm f.symm.map_zero : AddMonoidAlgebra S G → AddMonoidAlgebra R G)
     map_mul' := fun x y => by
-      ext; simp_rw [mul_apply, mul_def, Finsupp.mapRange_apply, Finsupp.sum_apply, map_finsupp_sum]
+      -- Porting note: was `ext`
+      refine Finsupp.ext fun a => ?_
+      simp_rw [mul_apply, mul_def, Finsupp.mapRange_apply]
+      rw [Finsupp.sum_apply, map_finsupp_sum f]
       rw [Finsupp.sum_mapRange_index];
-      trace
-        "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `congrm #[[expr finsupp.sum x (λ g1 r1, _)]]"
+      -- Porting note: was `congrm`
+      apply congr_arg _ <| funext₂ fun g1 r1 => ?_
       rw [Finsupp.sum_mapRange_index];
-      trace
-        "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `congrm #[[expr finsupp.sum y (λ g2 r2, _)]]"
-      · rw [Finsupp.single_apply]; split_ifs <;> simp only [map_mul, map_zero]; contradiction
-      all_goals intro; simp only [MulZeroClass.mul_zero, MulZeroClass.zero_mul];
-        simp only [if_t_t, Finsupp.sum_zero] }
+      rw [Finsupp.sum_apply, map_finsupp_sum f]
+      -- Porting note: was `congrm`
+      apply congr_arg _ <| funext₂ fun g2 r2 => ?_
+      · rw [Finsupp.single_apply]
+        split_ifs with h <;> simp only [h, if_false, if_true, map_mul, map_zero]
+      all_goals
+        intro; simp only [MulZeroClass.mul_zero, MulZeroClass.zero_mul];
+        simp only [ite_self, Finsupp.sum_zero] }
 #align add_monoid_algebra.ring_equiv_congr_left AddMonoidAlgebra.ringEquivCongrLeft
 
 @[simps]
@@ -607,11 +615,11 @@ variable (F : Type _) [Field F] [Algebra ℚ F]
 noncomputable def mapDomainFixed : Subalgebra F (AddMonoidAlgebra F (K s))
     where
   carrier x := ∀ f : Gal s, AddMonoidAlgebra.mapDomainAlgAut ℚ _ f.toAddEquiv x = x
-  mul_mem' a b ha hb f := by rw [map_mul, ha, hb]
-  add_mem' a b ha hb f := by rw [map_add, ha, hb]
+  mul_mem' {a b} ha hb f := by rw [map_mul, ha, hb]
+  add_mem' {a b} ha hb f := by rw [map_add, ha, hb]
   algebraMap_mem' r f :=
     by
-    change Finsupp.equivMapDomain f.to_equiv (Finsupp.single _ _) = Finsupp.single _ _
+    change Finsupp.equivMapDomain f.toEquiv (Finsupp.single _ _) = Finsupp.single _ _
     rw [Finsupp.equivMapDomain_single]
     change Finsupp.single (f 0) _ = _; rw [AlgEquiv.map_zero]
 #align map_domain_fixed mapDomainFixed
