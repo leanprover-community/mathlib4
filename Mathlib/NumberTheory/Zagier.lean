@@ -166,8 +166,7 @@ theorem unique_of_mem_fixedPoints {t : zagierSet k}
   apply_fun Subtype.val at mem
   simp at mem
   split_ifs at mem with less more <;> simp_all
-  · obtain ⟨_, _, _⟩ := mem
-    simp_all
+  · obtain ⟨_, _, _⟩ := mem; simp_all
   · -- True case
     unfold zagierSet at h; simp at h
     replace mem := mem.1
@@ -176,27 +175,24 @@ theorem unique_of_mem_fixedPoints {t : zagierSet k}
     subst mem
     rw [show x * x + 4 * x * z = x * (x + 4 * z) by linarith] at h
     cases' (Nat.dvd_prime hk.out).1 (dvd_of_mul_left_eq _ h) with e e
-    · rw [e, mul_one] at h; subst h
-      simp_all [show z = 0 by linarith [e]]
-    · rw [e, mul_left_eq_self₀] at h; simp_all
-      linarith [e]
+    · rw [e, mul_one] at h; subst h; simp_all [show z = 0 by linarith [e]]
+    · rw [e, mul_left_eq_self₀] at h; simp_all; linarith [e]
 
 theorem fixedPoints_eq_singleton :
     MulAction.fixedPoints (powers (complexInvo k)) (zagierSet k) =
     {⟨(1, 1, k), (by unfold zagierSet; simp; linarith)⟩} := by
   rw [Set.eq_singleton_iff_unique_mem]
   constructor
-  · simp
+  · simp only [MulAction.mem_fixedPoints, Subtype.forall]
     intro f h
     rw [Submonoid.smul_def, End.smul_def]
-    simp
+    dsimp only
     rw [mem_powers_iff] at h
     obtain ⟨n, h⟩ := h
-    have hi := (complexInvo_sq k)
     rcases Nat.even_or_odd' n with ⟨m, hm | hm⟩ <;> rw [hm] at h
-    · rw [pow_mul, hi, one_pow] at h
+    · rw [pow_mul, complexInvo_sq k, one_pow] at h
       rw [← h]; rfl
-    · rw [pow_add, pow_mul, hi, one_pow, one_mul, pow_one] at h
+    · rw [pow_add, pow_mul, complexInvo_sq k, one_pow, pow_one, one_mul] at h
       rw [← h]; unfold complexInvo; simp
   · intro t mem
     replace mem := unique_of_mem_fixedPoints k mem
