@@ -82,9 +82,9 @@ def kIdeal : Ideal (MvPolynomial (Fin 3) (ZMod 2)) :=
 theorem mem_kIdeal_iff (x : MvPolynomial (Fin 3) (ZMod 2)) :
     x ∈ kIdeal ↔ ∀ m : Fin 3 →₀ ℕ, m ∈ x.support → ∃ i, 2 ≤ m i := by
   have :
-      kIdeal =
-        Ideal.span ((monomial (R := ZMod 2) · (1 : ZMod 2)) '' Set.range (Finsupp.single · 2)) :=
-    by simp_rw [kIdeal, X, monomial_mul, one_mul, ← Finsupp.single_add, ← Set.range_comp,
+      kIdeal = Ideal.span (
+        (monomial (R := ZMod 2) · (1 : ZMod 2)) '' Set.range (Finsupp.single · 2)) := by
+    simp_rw [kIdeal, X, monomial_mul, one_mul, ← Finsupp.single_add, ← Set.range_comp,
       Function.comp]
   rw [this, mem_ideal_span_monomial_image]
   simp
@@ -120,9 +120,8 @@ theorem mul_self_mem_kIdeal_of_X0_X1_X2_mul_mem {x : MvPolynomial (Fin 3) (ZMod 
   simp_rw [←one_add_one_eq_two]
   refine' ⟨i, Nat.add_le_add _ _⟩ <;> rwa [Nat.one_le_iff_ne_zero]
 
--- 𝔽₂[α, β, γ] / (α², β², γ²)
-def K : Type _ :=
-  _ ⧸ kIdeal
+/-- `𝔽₂[α, β, γ] / (α², β², γ²)` -/
+def K : Type _ := _ ⧸ kIdeal
 
 instance : CommRing K := by dsimp only [K]; infer_instance
 instance : CommSemiring K := by dsimp only [K]; infer_instance
@@ -146,27 +145,19 @@ instance K.charP : CharP K 2 := by
   rw [this, ← Ideal.comap_comap, ← RingHom.comap_ker]
   exact Ideal.comap_mono (comap_C_span_le_bot.trans bot_le)
 
-abbrev α : K :=
-  Ideal.Quotient.mk _ (MvPolynomial.X 0)
+/-- The generators of `K`. -/
+def K.gen (i : Fin 3) : K := Ideal.Quotient.mk _ (MvPolynomial.X i)
 
-abbrev β : K :=
-  Ideal.Quotient.mk _ (MvPolynomial.X 1)
-
-abbrev γ : K :=
-  Ideal.Quotient.mk _ (MvPolynomial.X 2)
+local notation "α" => K.gen 0
+local notation "β" => K.gen 1
+local notation "γ" => K.gen 2
 
 /-- The elements above square to zero -/
 @[simp]
-theorem X_sq (i : Fin 3) :
-    Ideal.Quotient.mk _ (MvPolynomial.X i) * Ideal.Quotient.mk _ (MvPolynomial.X i) = (0 : K) := by
+theorem X_sq (i : Fin 3) : K.gen i * K.gen i = (0 : K) := by
   change Ideal.Quotient.mk _ _ = _
   rw [Ideal.Quotient.eq_zero_iff_mem]
   exact Ideal.subset_span ⟨i, rfl⟩
-
--- rw can use `X_sq`, but `simp` needs these specializations
-@[simp] theorem α_sq : α * α = 0 := X_sq _
-@[simp] theorem β_sq : β * β = 0 := X_sq _
-@[simp] theorem γ_sq : γ * γ = 0 := X_sq _
 
 /-- If an element multiplied by `αβγ` is zero then it squares to zero. -/
 theorem sq_zero_of_αβγ_mul {x : K} : α * β * γ * x = 0 → x * x = 0 := by
@@ -179,16 +170,19 @@ theorem sq_zero_of_αβγ_mul {x : K} : α * β * γ * x = 0 → x * x = 0 := by
 theorem αβγ_ne_zero : α * β * γ ≠ 0 := fun h =>
   X0_X1_X2_nmem_kIdeal <| Ideal.Quotient.eq_zero_iff_mem.1 h
 
-local macro_rules | `($x • $y) => `(@HSMul.hSMul _ _ _ instHSMul $x $y) -- Porting note: See issue lean4#2220
+-- A variant of lean4#2220
+local macro_rules | `($x • $y) => `(@HSMul.hSMul _ _ _ instHSMul $x $y)
 
+/-- The 1-form on $K^3$, the kernel of which we will take a quotient by. -/
 @[simps!]
 def lFunc : (Fin 3 → K) →ₗ[K] K :=
   letI proj : Fin 3 → (Fin 3 → K) →ₗ[K] K := LinearMap.proj
   α • proj 0 - β • proj 1 - γ • proj 2
 
-/-- The quotient of k^3 by the specified relation-/
+/-- The quotient of `K^3` by the specified relation. -/
 abbrev L : Type _ :=  _ ⧸ LinearMap.ker lFunc
 
+/-- The quadratic form corresponding to squaring a single coefficient. -/
 def sq {ι R : Type _} [CommRing R] (i : ι) : QuadraticForm R (ι → R) :=
   QuadraticForm.sq.comp <| LinearMap.proj i
 
@@ -262,22 +256,23 @@ def Q : QuadraticForm K L :=
 
 open CliffordAlgebra
 
-/-! Shorthand for basis vectors in the Clifford algebra -/
+/-- Basis vectors in the Clifford algebra -/
+def gen (i : Fin 3) : CliffordAlgebra Q := ι Q <| Submodule.Quotient.mk (Pi.single i 1)
 
-abbrev x' : CliffordAlgebra Q := ι Q <| Submodule.Quotient.mk (Pi.single 0 1)
-abbrev y' : CliffordAlgebra Q := ι Q <| Submodule.Quotient.mk (Pi.single 1 1)
-abbrev z' : CliffordAlgebra Q := ι Q <| Submodule.Quotient.mk (Pi.single 2 1)
+local notation "x'" => gen 0
+local notation "y'" => gen 1
+local notation "z'" => gen 2
 
 /-- The basis vectors square to one -/
 @[simp]
-theorem x_mul_x : x' * x' = 1 := by
-  dsimp only [x']
+theorem gen_mul_gen (i) : gen i * gen i = 1 := by
+  dsimp only [gen]
   simp_rw [CliffordAlgebra.ι_sq_scalar, Q_apply, ← Submodule.Quotient.mk''_eq_mk,
     Quotient.liftOn'_mk'', Q'_apply_single, mul_one, map_one]
 
 /-- By virtue of the quotient, terms of this form are zero -/
 theorem quot_obv : α • x' - β • y' - γ • z' = 0 := by
-  dsimp only [x', y', z']
+  dsimp only [gen]
   simp only [← (LinearMap.map_smul), ← (LinearMap.map_sub), ← Submodule.Quotient.mk_smul, ←
     Submodule.Quotient.mk_sub]
   convert LinearMap.map_zero _ using 2
@@ -286,24 +281,25 @@ theorem quot_obv : α • x' - β • y' - γ • z' = 0 := by
 
 set_option maxHeartbeats 400000 in
 /-- The core of the proof - scaling `1` by `α * β * γ` gives zero -/
-theorem αβγ_smul_eq_zero : (α * β * γ) • (1 : CliffordAlgebra Q) = 0 :=
-  by
-  suffices α • 1 - β • (y' * x') - γ • (z' * x') = 0
-    by
+theorem αβγ_smul_eq_zero : (α * β * γ) • (1 : CliffordAlgebra Q) = 0 := by
+  suffices α • 1 - β • (y' * x') - γ • (z' * x') = 0 by
     have := congr_arg (fun x => (β * γ) • x) this
     dsimp only at this
     simp_rw [smul_sub, smul_smul] at this
-    rwa [mul_assoc β γ γ, mul_right_comm β γ β, mul_right_comm β γ α, mul_comm β α, X_sq, X_sq, zero_mul, mul_zero,
-      zero_smul, zero_smul, sub_zero, sub_zero, smul_zero] at this
+    rwa [mul_assoc β γ γ, mul_right_comm β γ β, mul_right_comm β γ α, mul_comm β α, X_sq, X_sq,
+      zero_mul, mul_zero, zero_smul, zero_smul, sub_zero, sub_zero, smul_zero] at this
   have : (α • x' - β • y' - γ • z') * x' = α • 1 - β • (y' * x') - γ • (z' * x') := by
-    simp_rw [sub_mul, smul_mul_assoc, x_mul_x]
+    simp_rw [sub_mul, smul_mul_assoc, gen_mul_gen]
   rw [← this]
   rw [quot_obv, MulZeroClass.zero_mul]
 
-/-- Our final result -/
+theorem algebraMap_αβγ_eq_zero : algebraMap K (CliffordAlgebra Q) (α * β * γ) = 0 := by
+  rw [Algebra.algebraMap_eq_smul_one, αβγ_smul_eq_zero]
+
+/-- Our final result: for the quadratic form `Q60596.Q`, the algebra map to the clifford algebra
+is not injective, as it sends the non-zero `α * β * γ` to zero. -/
 theorem algebraMap_not_injective : ¬Function.Injective (algebraMap K <| CliffordAlgebra Q) :=
-  fun h => αβγ_ne_zero <| h <| by
-    rw [Algebra.algebraMap_eq_smul_one, RingHom.map_zero, αβγ_smul_eq_zero]
+  fun h => αβγ_ne_zero <| h <| by rw [algebraMap_αβγ_eq_zero, RingHom.map_zero]
 
 end Q60596
 
