@@ -407,7 +407,7 @@ def congrLeftₗ (R: Type*) [Semiring R] [AddCommMonoid Z] [Module R Z] (e : X �
 /-- `LocallyConstant.congrLeft` as a `RingEquiv`. -/
 @[simps!]
 noncomputable
-def congrLeftRing [Semiring Z] (e : X ≃ₜ Y) :
+def congrLeftRingEquiv [Semiring Z] (e : X ≃ₜ Y) :
     LocallyConstant X Z ≃+* LocallyConstant Y Z where
   toEquiv := congrLeft e
   __ := comapMonoidHom _ e.symm.continuous
