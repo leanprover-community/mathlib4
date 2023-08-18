@@ -248,8 +248,7 @@ theorem ax_grothendieck_zeroLocus
 
 Any injective polynomial map `K^n → K^n` is also surjective if `K` is an
 algberaically closed field. -/
-theorem ax_grothendieck_univ {ι K : Type*} [Finite ι] [Field K]
-    [IsAlgClosed K] (p : ι → MvPolynomial ι K) :
+theorem ax_grothendieck_univ (p : ι → MvPolynomial ι K) :
     Injective (fun v i => MvPolynomial.eval v (p i)) →
     Surjective fun v i => MvPolynomial.eval v (p i) := by
   simpa [← Set.injective_iff_injOn_univ,
