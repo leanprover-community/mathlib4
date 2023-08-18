@@ -227,7 +227,7 @@ theorem denom_cocycle (x y : GL(2, ℝ)⁺) (z : ℍ) :
     denom (x * y) z = denom x (smulAux y z) * denom y z := by
   change _ = (_ * (_ / _) + _) * _
   field_simp [denom_ne_zero]
-  simp only [Matrix.mul, dotProduct, Fin.sum_univ_succ, denom, num, Subgroup.coe_mul,
+  simp only [Matrix.mul_apply, dotProduct, Fin.sum_univ_succ, denom, num, Subgroup.coe_mul,
     GeneralLinearGroup.coe_mul, Fintype.univ_ofSubsingleton, Fin.mk_zero, Finset.sum_singleton,
     Fin.succ_zero_eq_one, Complex.ofReal_add, Complex.ofReal_mul]
   ring
@@ -239,7 +239,7 @@ theorem mul_smul' (x y : GL(2, ℝ)⁺) (z : ℍ) : smulAux (x * y) z = smulAux 
   change _ / _ = (_ * (_ / _) + _) / _
   rw [denom_cocycle]
   field_simp [denom_ne_zero]
-  simp only [Matrix.mul, dotProduct, Fin.sum_univ_succ, num, denom, Subgroup.coe_mul,
+  simp only [Matrix.mul_apply, dotProduct, Fin.sum_univ_succ, num, denom, Subgroup.coe_mul,
     GeneralLinearGroup.coe_mul, Fintype.univ_ofSubsingleton, Fin.mk_zero, Finset.sum_singleton,
     Fin.succ_zero_eq_one, Complex.ofReal_add, Complex.ofReal_mul]
   ring

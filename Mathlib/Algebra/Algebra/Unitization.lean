@@ -137,6 +137,14 @@ theorem inr_injective [Zero R] : Function.Injective ((↑) : A → Unitization R
   Function.LeftInverse.injective <| snd_inr _
 #align unitization.coe_injective Unitization.inr_injective
 
+instance instNontrivialLeft {𝕜 A} [Nontrivial 𝕜] [Nonempty A] :
+    Nontrivial (Unitization 𝕜 A) :=
+  nontrivial_prod_left
+
+instance instNontrivialRight {𝕜 A} [Nonempty 𝕜] [Nontrivial A] :
+    Nontrivial (Unitization 𝕜 A) :=
+  nontrivial_prod_right
+
 end Basic
 
 /-! ### Structures inherited from `Prod`
@@ -207,6 +215,11 @@ instance instDistribMulAction [Monoid S] [AddMonoid R] [AddMonoid A] [DistribMul
 instance instModule [Semiring S] [AddCommMonoid R] [AddCommMonoid A] [Module S R] [Module S A] :
     Module S (Unitization R A) :=
   Prod.instModule
+
+variable (R A) in
+/-- The identity map between `Unitization R A` and `R × A` as an `AddEquiv`. -/
+def addEquiv [Add R] [Add A] : Unitization R A ≃+ R × A :=
+  AddEquiv.refl _
 
 @[simp]
 theorem fst_zero [Zero R] [Zero A] : (0 : Unitization R A).fst = 0 :=

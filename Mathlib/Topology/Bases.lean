@@ -230,11 +230,10 @@ theorem IsTopologicalBasis.isOpenMap_iff {β} [TopologicalSpace β] {B : Set (Se
 #align topological_space.is_topological_basis.is_open_map_iff TopologicalSpace.IsTopologicalBasis.isOpenMap_iff
 
 theorem IsTopologicalBasis.exists_nonempty_subset {B : Set (Set α)} (hb : IsTopologicalBasis B)
-    {u : Set α} (hu : u.Nonempty) (ou : IsOpen u) : ∃ v ∈ B, Set.Nonempty v ∧ v ⊆ u := by
-  cases' hu with x hx
-  rw [hb.open_eq_sUnion' ou, mem_sUnion] at hx
-  rcases hx with ⟨v, hv, hxv⟩
-  exact ⟨v, hv.1, ⟨x, hxv⟩, hv.2⟩
+    {u : Set α} (hu : u.Nonempty) (ou : IsOpen u) : ∃ v ∈ B, Set.Nonempty v ∧ v ⊆ u :=
+  let ⟨x, hx⟩ := hu
+  let ⟨v, vB, xv, vu⟩ := hb.exists_subset_of_mem_open hx ou
+  ⟨v, vB, ⟨x, xv⟩, vu⟩
 #align topological_space.is_topological_basis.exists_nonempty_subset TopologicalSpace.IsTopologicalBasis.exists_nonempty_subset
 
 theorem isTopologicalBasis_opens : IsTopologicalBasis { U : Set α | IsOpen U } :=

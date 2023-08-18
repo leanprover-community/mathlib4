@@ -657,6 +657,7 @@ import Mathlib.Analysis.Convex.StrictConvexSpace
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.Convolution
+import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 import Mathlib.Analysis.Distribution.SchwartzSpace
 import Mathlib.Analysis.Fourier.AddCircle
 import Mathlib.Analysis.Fourier.FourierTransform
@@ -685,6 +686,7 @@ import Mathlib.Analysis.InnerProductSpace.TwoDim
 import Mathlib.Analysis.InnerProductSpace.l2Space
 import Mathlib.Analysis.LocallyConvex.AbsConvex
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
+import Mathlib.Analysis.LocallyConvex.Barrelled
 import Mathlib.Analysis.LocallyConvex.Basic
 import Mathlib.Analysis.LocallyConvex.Bounded
 import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
@@ -770,6 +772,7 @@ import Mathlib.Analysis.NormedSpace.Star.Multiplier
 import Mathlib.Analysis.NormedSpace.Star.Spectrum
 import Mathlib.Analysis.NormedSpace.Star.Unitization
 import Mathlib.Analysis.NormedSpace.TrivSqZeroExt
+import Mathlib.Analysis.NormedSpace.Unitization
 import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Analysis.NormedSpace.WeakDual
 import Mathlib.Analysis.NormedSpace.WithLp
@@ -1492,6 +1495,7 @@ import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Destutter
 import Mathlib.Data.List.Duplicate
+import Mathlib.Data.List.EditDistance.Defs
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Func

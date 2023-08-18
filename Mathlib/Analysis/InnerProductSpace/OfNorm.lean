@@ -219,14 +219,14 @@ private theorem add_left_aux7 (y z : E) :
     2 * (‖(I : 𝕜) • y + z‖ * ‖(I : 𝕜) • y + z‖ + ‖z‖ * ‖z‖) - ‖(I : 𝕜) • y‖ * ‖(I : 𝕜) • y‖ := by
   apply eq_sub_of_add_eq
   have h₀ := parallelogram_identity ((I : 𝕜) • y + z) z
-  convert h₀ using 4 <;> · try simp only [two_smul, smul_add]; abel
+  convert h₀ using 4 <;> · (try simp only [two_smul, smul_add]); abel
 
 private theorem add_left_aux8 (y z : E) :
     ‖(I : 𝕜) • y - 2 • z‖ * ‖(I : 𝕜) • y - 2 • z‖ =
     2 * (‖(I : 𝕜) • y - z‖ * ‖(I : 𝕜) • y - z‖ + ‖z‖ * ‖z‖) - ‖(I : 𝕜) • y‖ * ‖(I : 𝕜) • y‖ := by
   apply eq_sub_of_add_eq'
   have h₀ := parallelogram_identity ((I : 𝕜) • y - z) z
-  convert h₀ using 4 <;> · try simp only [two_smul, smul_add]; abel
+  convert h₀ using 4 <;> · (try simp only [two_smul, smul_add]); abel
 
 theorem add_left (x y z : E) : inner_ 𝕜 (x + y) z = inner_ 𝕜 x z + inner_ 𝕜 y z := by
   simp only [inner_, ← mul_add]

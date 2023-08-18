@@ -833,10 +833,3 @@ theorem toAlgEquiv_injective [FaithfulSMul G A] :
 end
 
 end MulSemiringAction
-
--- porting note: disable `dupNamespace` linter for aux lemmas
-open Lean in
-run_cmd do
-  for i in List.range 2 do
-    Elab.Command.elabCommand (← `(attribute [nolint dupNamespace]
-      $(mkCIdent (.num `Mathlib.Algebra.Algebra.Equiv._auxLemma (i + 1)))))
