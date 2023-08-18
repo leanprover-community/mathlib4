@@ -64,6 +64,7 @@ structure IsFundamentalDomain (G : Type _) {α : Type _} [One G] [SMul G α] [To
   protected covers : (⋃ g : G, closure (g • s)) = univ
   protected disjoint : Pairwise <| (Disjoint on fun g : G ↦ interior (g • s))
      --∀ g₁ g₂ : G, g₁ ≠ g₂ → Disjoint (interior (g₁ • s)) (interior (g₂ • s))
+     --∀ g₁ g₂ : G, g₁ ≠ g₂ → (g₁ • s) ∩ (g₂ • s) ⊆ frontier (g₁ • s)
 
 end FundamentalDomain
 
@@ -95,33 +96,112 @@ lemma isOpen_DirichletSet₀ (x : α) (g : G) : IsOpen (DirichletSet₀ G x g) :
   · exact @Continuous.dist α α _ _ (fun y ↦ x) (fun y ↦ y) continuous_const continuous_id
   · exact @Continuous.dist α α _ _ (fun y ↦ (g • x)) (fun y ↦ y) continuous_const continuous_id
 
+/- Move elsewhere -/
 structure ExtendableSpace (α : Type _) [PseudoMetricSpace α] : Prop where
-  protected extendable : ∀ x y : α, ∃ᶠ z in 𝓝 y, dist x y < dist x z
+  protected extendable : ∀ x y : α, x ≠ y → ∃ᶠ z in 𝓝 y, dist x y < dist x z
 
+/- Move same place -/
 lemma interior_closedBall'' {α : Type _} [MetricSpace α] {hα : ExtendableSpace α} (x : α)
-    (r : ℝ) (hr : 0 < r) :
-    interior (Metric.closedBall x r) = Metric.ball x r := by
+    (r : ℝ) (hr : r ≠ 0) : interior (Metric.closedBall x r) = Metric.ball x r := by
+  cases' hr.lt_or_lt with hr hr
+  · rw [Metric.closedBall_eq_empty.2 hr, Metric.ball_eq_empty.2 hr.le, interior_empty]
   refine Subset.antisymm ?_ Metric.ball_subset_interior_closedBall
   intro y hy
-  simp only [interior, mem_sUnion] at hy
-  obtain ⟨t, ht₁, ht₂⟩ := hy
-  simp only [mem_setOf] at ht₁
-  simp only [Metric.mem_ball]
-  by_contra hh
-  have dxyr : dist x y = r
-  · rw [dist_comm]
-    push_neg at hh
-    have : y ∈ Metric.closedBall x r := Set.mem_of_subset_of_mem ht₁.2 ht₂
-    rw [Metric.mem_closedBall] at this
-    exact le_antisymm this hh
+  by_cases x_eq_y : x = y
+  · rw [x_eq_y]
+    exact Metric.mem_ball_self hr
+  obtain ⟨t, ⟨t_isOpen, t_in_closedBall⟩, y_in_t⟩ := hy
+  have extend := (hα.extendable x y x_eq_y)
+  rw [Filter.frequently_iff] at extend
+  obtain ⟨z, z_in_t, dist_xz⟩ := extend (IsOpen.mem_nhds t_isOpen y_in_t)
+  have z_in_ball : z ∈ Metric.closedBall x r := mem_of_subset_of_mem t_in_closedBall z_in_t
+  rw [Metric.mem_closedBall, dist_comm] at z_in_ball
+  rw [Metric.mem_ball, dist_comm]
+  linarith
 
+/- Move somewhere -/
+theorem NotMemBallSelf {α : Type _} [MetricSpace α] (x y : α) : ¬ y ∈ Metric.ball x (dist x y) := by
+  rw [Metric.mem_ball, dist_comm]
+  linarith
 
+/- Move same place -/
+lemma Extendable_of_interior_closedBall {α : Type _} [MetricSpace α]
+    (h : ∀ x : α, ∀ (r : ℝ), r ≠ 0 → interior (Metric.closedBall x r) = Metric.ball x r) :
+    ExtendableSpace α where
+      extendable := by
+        intro x y x_ne_y
+        by_contra hh
+        simp_rw [Filter.not_frequently, Filter.eventually_iff, not_lt] at hh
+        have ball_in_𝓝 : Metric.closedBall x (dist x y) ∈ 𝓝 y
+        · convert hh
+          ext z
+          simp [Metric.mem_closedBall, Metric.mem_ball, dist_comm, mem_setOf]
+        have := interior_mem_nhds.mpr ball_in_𝓝
+        rw [h x (dist x y) (ne_of_gt (dist_pos.mpr x_ne_y)), mem_nhds_iff] at this
+        obtain ⟨t, t_in_ball, -, y_in_t⟩ := this
+        have y_in : y ∈ Metric.ball x (dist x y) := mem_of_mem_of_subset y_in_t t_in_ball
+        exact NotMemBallSelf x y y_in
 
-
-
-
-
+theorem Extendable_iff_interior_closedBall {α : Type _} [MetricSpace α] :
+    ExtendableSpace α ↔
+    ∀ x : α, ∀ (r : ℝ), r ≠ 0 → interior (Metric.closedBall x r) = Metric.ball x r :=
+  ⟨fun i ↦ @interior_closedBall'' α _ i, fun h ↦ Extendable_of_interior_closedBall h⟩
+  -- constructor
+  -- · intro i
+  --   exact @interior_closedBall'' α _ i
+  -- · intro h
+  --   exact Extendable_of_interior_closedBall h
+--    exact fun x r hr => interior_closedBall'' x r hr
 #exit
+
+
+structure ExtendableSpace (α : Type _) [PseudoMetricSpace α] : Prop where
+  protected extendable : ∀ x y : α, x ≠ y → ∃ᶠ z in 𝓝 y, dist x y < dist x z
+
+lemma interior_closedBall'' {α : Type _} [PseudoMetricSpace α] {hα : ExtendableSpace α} (x : α)
+    (r : ℝ) (hr : r ≠ 0) : interior (Metric.closedBall x r) = Metric.ball x r := by
+  cases' hr.lt_or_lt with hr hr
+  · rw [Metric.closedBall_eq_empty.2 hr, Metric.ball_eq_empty.2 hr.le, interior_empty]
+  refine Subset.antisymm ?_ Metric.ball_subset_interior_closedBall
+  intro y hy
+  by_cases x_eq_y : x = y
+  · rw [x_eq_y]
+    exact Metric.mem_ball_self hr
+  obtain ⟨t, ⟨t_isOpen, t_in_closedBall⟩, y_in_t⟩ := hy
+  have extend := (hα.extendable x y x_eq_y)
+  rw [Filter.frequently_iff] at extend
+  obtain ⟨z, z_in_t, dist_xz⟩ := extend (IsOpen.mem_nhds t_isOpen y_in_t)
+  have z_in_ball : z ∈ Metric.closedBall x r := mem_of_subset_of_mem t_in_closedBall z_in_t
+  rw [Metric.mem_closedBall, dist_comm] at z_in_ball
+  rw [Metric.mem_ball, dist_comm]
+  linarith
+
+theorem NotMemBallSelf {α : Type _} [PseudoMetricSpace α] (x y : α) :
+    ¬ y ∈ Metric.ball x (dist x y) := by
+  rw [Metric.mem_ball, dist_comm]
+  linarith
+
+lemma Extendable_of_interior_closedBall {α : Type _} [MetricSpace α]
+    (h : ∀ x : α, ∀ (r : ℝ), r ≠ 0 → interior (Metric.closedBall x r) = Metric.ball x r) :
+    ExtendableSpace α where
+      extendable := by
+        intro x y x_ne_y
+        by_contra hh
+        simp_rw [Filter.not_frequently, Filter.eventually_iff, not_lt] at hh
+        have ball_in_𝓝 : Metric.closedBall x (dist x y) ∈ 𝓝 y
+        · convert hh
+          ext z
+          simp [Metric.mem_closedBall, Metric.mem_ball, dist_comm, mem_setOf]
+        have := interior_mem_nhds.mpr ball_in_𝓝
+        rw [h x (dist x y) (ne_of_gt (dist_pos.mpr x_ne_y)), mem_nhds_iff] at this
+        obtain ⟨t, t_in_ball, -, y_in_t⟩ := this
+        have y_in : y ∈ Metric.ball x (dist x y) := mem_of_mem_of_subset y_in_t t_in_ball
+        exact NotMemBallSelf x y y_in
+
+theorem Extendable_iff_interior_closedBall {α : Type _} [MetricSpace α] :
+    ExtendableSpace α ↔
+    ∀ x : α, ∀ (r : ℝ), r ≠ 0 → interior (Metric.closedBall x r) = Metric.ball x r :=
+  ⟨fun i ↦ @interior_closedBall'' α _ i, fun h ↦ Extendable_of_interior_closedBall h⟩
 
 
 lemma interior_DirichletSet (x : α) (g : G) :
