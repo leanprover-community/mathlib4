@@ -60,11 +60,6 @@ theorem Finsupp.equivFunOnFinite_const {α β} [Fintype α] [AddCommMonoid β] (
     Finsupp.equivFunOnFinite.symm (fun _ => b : α → β) = ∑ i : α, Finsupp.single i b := by
   ext; simp [Finsupp.finset_sum_apply]
 
--- note; more general than `mv_polynomial.support_smul`
-theorem MvPolynomial.support_smul' {S R σ} [CommSemiring R] [Monoid S] [DistribMulAction S R]
-    {r : S} {p : MvPolynomial σ R} : (r • p).support ⊆ p.support :=
-  Finsupp.support_smul
-
 namespace Finsupp
 
 theorem toMultiset_sup {α} [DecidableEq α] (f g : α →₀ ℕ) :
@@ -308,13 +303,15 @@ theorem quot_obv : α • x' - β • y' - γ • z' = 0 := by
 
 set_option maxHeartbeats 400000 in
 /-- The core of the proof - scaling `1` by `α * β * γ` gives zero -/
-theorem αβγ_smul_eq_zero : (α * β * γ) • (1 : CliffordAlgebra Q) = 0 := by
-  suffices α • 1 - β • (y' * x') - γ • (z' * x') = 0 by
+theorem αβγ_smul_eq_zero : (α * β * γ) • (1 : CliffordAlgebra Q) = 0 :=
+  by
+  suffices α • 1 - β • (y' * x') - γ • (z' * x') = 0
+    by
     have := congr_arg (fun x => (β * γ) • x) this
     dsimp only at this
     simp_rw [smul_sub, smul_smul] at this
-    rwa [mul_assoc β γ γ, mul_right_comm β γ β, mul_right_comm β γ α, mul_comm β α, X_sq, X_sq,
-      zero_mul, mul_zero, zero_smul, zero_smul, sub_zero, sub_zero, smul_zero] at this
+    rwa [mul_assoc β γ γ, mul_right_comm β γ β, mul_right_comm β γ α, mul_comm β α, X_sq, X_sq, zero_mul, mul_zero,
+      zero_smul, zero_smul, sub_zero, sub_zero, smul_zero] at this
   have : (α • x' - β • y' - γ • z') * x' = α • 1 - β • (y' * x') - γ • (z' * x') := by
     simp_rw [sub_mul, smul_mul_assoc, x_mul_x]
   rw [← this]
