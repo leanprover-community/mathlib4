@@ -23,13 +23,6 @@ import Mathlib.FieldTheory.GalConj
 
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
--- TODO move
-instance LinearMap.instCoeFun
-  {R : Type*} {S : Type*} {M : Type*} {M₃ : Type*} [Semiring R] [Semiring S] [AddCommMonoid M]
-  [AddCommMonoid M₃] [Module R M] [Module S M₃] {σ : R →+* S} :
-CoeFun (M →ₛₗ[σ] M₃) fun _ => M → M₃ := inferInstance
-
-
 noncomputable section
 
 open scoped BigOperators Classical Polynomial
