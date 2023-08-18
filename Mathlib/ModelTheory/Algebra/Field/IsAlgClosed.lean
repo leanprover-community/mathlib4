@@ -243,7 +243,6 @@ theorem finite_ACF_prime_not_realize_of_ACF0_realize
       letI := fieldOfModelACF q K
       haveI := modelField_of_modelACF q K
       letI := compatibleRingOfModelField K
-      letI := isAlgClosed_of_model_ACF q K
       simp only [eqZero, Term.equal, Term.relabel, BoundedFormula.realize_not,
         BoundedFormula.realize_bdEqual, Term.realize_relabel, Sum.elim_comp_inl,
         realize_termOfFreeCommRing, map_natCast, Term.realize_func, CompatibleRing.funMap_zero,
@@ -266,8 +265,7 @@ of algebraically closed fields of characteristic zero if and only if it is model
 the theory of algebraically closed fields of characteristic `p` for infinitely many `p`. -/
 theorem ACF0_realize_iff_infinite_ACF_prime_realize {φ : Language.ring.Sentence} :
     Theory.ACF 0 ⊨ᵇ φ ↔ Set.Infinite { p : Nat.Primes | Theory.ACF p ⊨ᵇ φ } := by
-  refine ⟨fun h => Set.infinite_of_finite_compl
-      (finite_ACF_prime_not_realize_of_ACF0_realize φ h),
+  refine ⟨fun h => Set.infinite_of_finite_compl (finite_ACF_prime_not_realize_of_ACF0_realize φ h),
     not_imp_not.1 ?_⟩
   simpa [(ACF_isComplete (Or.inr rfl)).models_not_iff,
       fun p : Nat.Primes => (ACF_isComplete (Or.inl p.2)).models_not_iff] using
