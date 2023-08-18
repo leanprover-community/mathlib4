@@ -22,7 +22,7 @@ in the namespace `StructuredArrow.IsUniversal`:
 
 ## Implementation Notes
 We use the Is-Has design pattern, which is used for the implementation of limits and colimits in
-the category theory library. This means that `is_Kan t` is a structure containing the data of
+the category theory library. This means that `IsKan t` is a structure containing the data of
 2-morphisms which ensure that `t` is a Kan extension, while `HasKan f g` (to be implemented in
 the near future) is a `Prop`-valued typeclass asserting that a Kan extension of `g` along `f`
 exists.
