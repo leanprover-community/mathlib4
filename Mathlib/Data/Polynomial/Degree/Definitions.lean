@@ -888,11 +888,10 @@ theorem leadingCoeff_add_of_degree_lt (h : degree p < degree q) :
     coeff_add, zero_add]
 #align polynomial.leading_coeff_add_of_degree_lt Polynomial.leadingCoeff_add_of_degree_lt
 
-theorem leadingCoeff_add_of_degree_lt_left [Semiring R] (p q : R[X]) (h : degree q < degree p) :
+theorem leadingCoeff_add_of_degree_lt' (h : degree q < degree p) :
     leadingCoeff (p + q) = leadingCoeff p := by
   rw [add_comm]
-  apply leadingCoeff_add_of_degree_lt
-  exact h
+  exact leadingCoeff_add_of_degree_lt h
 
 theorem leadingCoeff_add_of_degree_eq (h : degree p = degree q)
     (hlc : leadingCoeff p + leadingCoeff q ≠ 0) :
