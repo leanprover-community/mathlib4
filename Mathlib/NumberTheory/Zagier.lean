@@ -67,14 +67,14 @@ instance : Fintype (zagierSet k) := by rw [← coe_zagierFinset]; infer_instance
 
 end Defs
 
-section Key
+section Instances
 
 variable {α : Type*} [Fintype α] [DecidableEq α] {p : ℕ} [hp : Fact p.Prime]
   (f : Function.End α) (hf : f ^ p = 1)
 
-open Function Submonoid
+open Submonoid
 
-instance isPGroup_of_powers : @IsPGroup p (powers f) (instGroupOfPowers hp.out.pos hf) := by
+instance isPGroupOfPowers : @IsPGroup p (powers f) (instGroupOfPowers hp.out.pos hf) := by
   intro ⟨g, hg⟩
   use 1
   simp; congr
@@ -82,20 +82,17 @@ instance isPGroup_of_powers : @IsPGroup p (powers f) (instGroupOfPowers hp.out.p
   obtain ⟨k, hk⟩ := hg
   rw [← hk, ← pow_mul, mul_comm, pow_mul, hf, one_pow]
 
-noncomputable instance : Fintype (MulAction.fixedPoints (powers f) α) :=
-  Fintype.ofFinite (MulAction.fixedPoints (powers f) α)
+noncomputable instance : Fintype (MulAction.fixedPoints (powers f) α) := Fintype.ofFinite _
 
-theorem card_modEq_card_fixedPoints_of_involutive (hf : Involutive f) :
-    Fintype.card α ≡ Fintype.card (MulAction.fixedPoints (powers f) α) [MOD 2] := by
-  replace hf := hf.comp_self
-  rw [show f ∘ f = f * f by rfl, ← sq] at hf
-  exact @IsPGroup.card_modEq_card_fixedPoints _ _ (_) (isPGroup_of_powers f hf) _ _ _ _ _
+theorem card_modEq_card_fixedPoints_of_sq (hf : f ^ 2 = 1) :
+    Fintype.card α ≡ Fintype.card (MulAction.fixedPoints (powers f) α) [MOD 2] :=
+  @IsPGroup.card_modEq_card_fixedPoints _ _ (_) (isPGroupOfPowers f hf) _ _ _ _ _
 
-end Key
+end Instances
 
-section Involution
+section Involutions
 
-open Finset Function Submonoid
+open Function Submonoid
 
 variable (k : ℕ) [hk : Fact (4 * k + 1).Prime]
 
@@ -104,11 +101,7 @@ of `4 * k + 1` as a sum of two squares. -/
 def obvInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ => ⟨⟨x, z, y⟩, by
   unfold zagierSet at h ⊢; simp_all; linarith [h]⟩
 
-lemma obvInvo_apply {p : ℕ × ℕ × ℕ} {hp : p ∈ zagierSet k} :
-    (obvInvo k) ⟨p, hp⟩ = (p.1, p.2.2, p.2.1) := by
-  rfl
-
-theorem involutive_obvInvo : Involutive (obvInvo k) := by unfold Involutive obvInvo; simp
+theorem obvInvo_sq : obvInvo k ^ 2 = 1 := rfl
 
 theorem sq_add_sq_of_nonempty_fixedPoints
     (hn : (MulAction.fixedPoints (powers (obvInvo k)) (zagierSet k)).Nonempty) :
@@ -136,14 +129,14 @@ def complexInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ =>
   · push_neg at less; zify [less, more.le] at h ⊢; linarith [h]
   · push_neg at less more; zify [less, more] at h ⊢; linarith [h]⟩
 
-theorem involutive_complexInvo : Involutive (complexInvo k) := by
-  intro ⟨⟨x, y, z⟩, h⟩
+theorem complexInvo_sq : complexInvo k ^ 2 = 1 := by
+  change complexInvo k ∘ complexInvo k = id
+  funext t
+  obtain ⟨⟨x, y, z⟩, h⟩ := t
+  rw [comp_apply]
   obtain ⟨xb, _, _⟩ := zagierSet_lower_bound k h
-  conv_lhs =>
-    arg 2
-    tactic => unfold complexInvo
-    dsimp
-  split_ifs with less more <;> (unfold complexInvo; simp; congr)
+  conv_lhs => arg 2; tactic => unfold complexInvo; dsimp
+  split_ifs with less more <;> (unfold complexInvo; dsimp)
   · simp [show ¬(x + 2 * z + (y - x - z) < z) by linarith [less], xb]
     rw [Nat.sub_sub, two_mul, ← tsub_add_eq_add_tsub (by linarith), ← add_assoc,
       Nat.add_sub_cancel, add_comm (x + z), Nat.sub_add_cancel (less.le)]
@@ -163,7 +156,7 @@ theorem involutive_complexInvo : Involutive (complexInvo k) := by
 
 theorem unique_of_mem_fixedPoints {t : zagierSet k}
     (mem : t ∈ (MulAction.fixedPoints (powers (complexInvo k)) (zagierSet k))) :
-    t.val = (1, 1, k):= by
+    t.val = (1, 1, k) := by
   simp only [MulAction.mem_fixedPoints, Subtype.forall] at mem
   replace mem := mem (complexInvo k) (mem_powers _)
   rw [Submonoid.smul_def, End.smul_def] at mem
@@ -199,13 +192,11 @@ theorem fixedPoints_eq_singleton :
     simp
     rw [mem_powers_iff] at h
     obtain ⟨n, h⟩ := h
-    have hi := (involutive_complexInvo k).comp_self
-    have h1 : id = (1 : Function.End (zagierSet k)) := by rfl
-    rw [show _ ∘ _ = _ * complexInvo k by rfl, ← sq] at hi
+    have hi := (complexInvo_sq k)
     rcases Nat.even_or_odd' n with ⟨m, hm | hm⟩ <;> rw [hm] at h
-    · rw [pow_mul, hi, h1, one_pow, ← h1] at h
-      rw [← h, id_eq]
-    · rw [pow_add, pow_mul, hi, pow_one, h1, one_pow, one_mul] at h
+    · rw [pow_mul, hi, one_pow] at h
+      rw [← h]; rfl
+    · rw [pow_add, pow_mul, hi, one_pow, one_mul, pow_one] at h
       rw [← h]; unfold complexInvo; simp
   · intro t mem
     replace mem := unique_of_mem_fixedPoints k mem
@@ -213,15 +204,15 @@ theorem fixedPoints_eq_singleton :
 
 theorem exists_sq_add_sq : ∃ a b : ℕ, a ^ 2 + b ^ 2 = 4 * k + 1 := by
   apply sq_add_sq_of_nonempty_fixedPoints
-  have := (card_modEq_card_fixedPoints_of_involutive (obvInvo k) (involutive_obvInvo k)).symm.trans
-    (card_modEq_card_fixedPoints_of_involutive (complexInvo k) (involutive_complexInvo k))
+  have := (card_modEq_card_fixedPoints_of_sq (obvInvo k) (obvInvo_sq k)).symm.trans
+    (card_modEq_card_fixedPoints_of_sq (complexInvo k) (complexInvo_sq k))
   simp_rw [fixedPoints_eq_singleton, Nat.ModEq] at this
   norm_num at this; rw [← Nat.odd_iff] at this
   replace this := Odd.pos this
-  rw [← Set.toFinset_card, card_pos, Set.toFinset_nonempty] at this
+  rw [← Set.toFinset_card, Finset.card_pos, Set.toFinset_nonempty] at this
   assumption
 
-end Involution
+end Involutions
 
 end Zagier
 
