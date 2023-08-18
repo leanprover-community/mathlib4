@@ -29,6 +29,25 @@ section Finset
 
 open Finset
 
+-- move to Data.Finset.Basic
+theorem Finset.monotone_iff {α β : Type _} [Preorder β] (f : Finset α → β) :
+    Monotone f ↔ ∀ s : Finset α, ∀ {i} (hi : i ∉ s), f s ≤ f (insert i s) := by
+  refine ⟨fun h s i hi ↦ ?_, fun h ↦ ?_⟩
+  · exact h (Finset.subset_insert i s)
+  · intro s
+    suffices : ∀ t, s ∩ t = ∅ → f s ≤ f (s ∪ t)
+    · intro v huv
+      calc f s ≤ f (s ∪ (v \ s)) := this _ (Finset.inter_sdiff_self s v)
+        _ = f v := by rw [union_sdiff_of_subset huv]
+    intro t hst
+    induction' t using Finset.induction with i t hit ih
+    · simp
+    · have his : i ∉ s := by aesop
+      have hst' : s ∩ t = ∅ := by aesop
+      calc f s ≤ f (s ∪ t) := ih hst'
+        _ ≤ f (insert i (s ∪ t)) := h _ (by aesop)
+        _ = f (s ∪ (insert i t)) := by rw [Finset.union_insert]
+
 namespace Real
 
 theorem prod_rpow {ι} (s : Finset ι) {f : ι → ℝ} (hf : 0 ≤ f) (r : ℝ) :
@@ -903,7 +922,7 @@ theorem _root_.Measurable.marginal (hf : Measurable f) : Measurable (∫⋯∫_s
   · simp [hi, updateSet]
     exact measurable_pi_iff.1 measurable_fst _
 
-theorem marginal_empty (f : (∀ i, π i) → ℝ≥0∞) : ∫⋯∫_∅, f ∂μ = f := by
+@[simp] theorem marginal_empty (f : (∀ i, π i) → ℝ≥0∞) : ∫⋯∫_∅, f ∂μ = f := by
   ext1 x
   simp_rw [marginal, Measure.pi_of_empty fun i : (∅ : Finset δ) => μ i]
   apply lintegral_dirac'
@@ -967,11 +986,40 @@ theorem integral_update (f : (∀ i, π i) → ℝ≥0∞) (i : δ) (x : ∀ i, 
     ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i = (∫⋯∫_{i}, f ∂μ) x := by
   simp_rw [marginal_singleton f i]
 
+/-- Peel off a single integral from a `marginal` integral at the beginning (compare with
+`marginal_insert'`, which peels off an integral at the end). -/
 theorem marginal_insert (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {i : δ} (hi : i ∉ s)
     (x : ∀ i, π i) :
     (∫⋯∫_insert i s, f ∂μ) x = ∫⁻ xᵢ, (∫⋯∫_s, f ∂μ) (Function.update x i xᵢ) ∂μ i := by
   rw [Finset.insert_eq, marginal_union μ f hf (Finset.disjoint_singleton_left.mpr hi),
     marginal_singleton]
+
+-- move next to `measurable_update` in `MeasureTheory.MeasurableSpace`
+theorem measurable_update' {δ : Type _} {π : δ → Type _} [∀ a : δ, MeasurableSpace (π a)]
+    {a : δ} [DecidableEq δ] : Measurable (fun p : (∀ i, π i) × π a ↦ update p.1 a p.2) := by
+  rw [measurable_pi_iff]; intro j
+  dsimp [update]
+  split_ifs with h
+  · subst h
+    dsimp
+    exact measurable_snd
+  · exact measurable_pi_iff.1 measurable_fst _
+
+/-- Peel off a single integral from a `marginal` integral at the end (compare with
+`marginal_insert`, which peels off an integral at the beginning).
+
+We prove this by induction from `marginal_insert` but it could also be proved directly. -/
+theorem marginal_insert' (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {i : δ} (hi : i ∉ s) :
+    ∫⋯∫_insert i s, f ∂μ = ∫⋯∫_s, (fun x ↦ ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ∂μ := by
+  induction' s using Finset.induction with j s hj ih <;> ext y
+  · rw [marginal_insert _ hf hi]
+    simp
+  · have H : j ∉ insert i s ∧ i ∉ s
+    · simp only [Finset.mem_insert] at hi ⊢
+      tauto
+    rw [Insert.comm, marginal_insert _ _ hj, marginal_insert _ hf H.1]
+    · simp_rw [ih H.2]
+    · exact Measurable.lintegral_prod_right (hf.comp measurable_update')
 
 open Filter
 
@@ -1018,6 +1066,10 @@ lemma rhsAux_univ (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) :
    rhsAux μ f univ x = (∫⁻ x, f x ∂(Measure.pi μ)) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
   simp [rhsAux, marginal_univ, Finset.card_univ]
 
+lemma Measurable.rhsAux (hf : Measurable f) : Measurable (rhsAux μ f s) := by
+  refine ((hf.marginal μ).pow_const _).mul ?_
+  exact Finset.measurable_prod _ fun i _ ↦ ((hf.marginal μ).pow_const _)
+
 /--
 The main inductive step
 
@@ -1025,8 +1077,14 @@ Note: this also holds without assuming `Nontrivial ι`, by tracing through the j
 (note that `s = ∅` in that case).
 -/
 theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f)
-    (s : Finset ι) (i : ι) (hi : i ∉ s) (x : ∀ i, π i):
-    ∫⁻ t, rhsAux μ f s (update x i t) ∂(μ i) ≤ rhsAux μ f (insert i s) x := by
+    (s : Finset ι) (i : ι) (hi : i ∉ s) :
+    ∫⋯∫_sᶜ, rhsAux μ f s ∂μ ≤ ∫⋯∫_(insert i s)ᶜ, rhsAux μ f (insert i s) ∂μ := by
+  have hi' : i ∉ (insert i s)ᶜ := not_mem_compl.mpr <| mem_insert_self i s
+  calc ∫⋯∫_sᶜ, rhsAux μ f s ∂μ
+      = ∫⋯∫_insert i (insert i s)ᶜ, rhsAux μ f s ∂μ := by simp_rw [← insert_compl_insert hi]
+    _ = ∫⋯∫_(insert i s)ᶜ, (fun x ↦ ∫⁻ xᵢ, rhsAux μ f s (Function.update x i xᵢ) ∂μ i) ∂μ :=
+        marginal_insert' _ (hf.rhsAux μ) hi'
+    _ ≤ ∫⋯∫_(insert i s)ᶜ, rhsAux μ f (insert i s) ∂μ := marginal_mono (fun x ↦ ?_)
   have hι : 2 ≤ (#ι : ℝ) := by exact_mod_cast Fintype.one_lt_card
   have : 1 ≤ (#ι:ℝ) - 1 := by linarith
   let p : ℝ := 1 / ((#ι:ℝ) - 1)
@@ -1052,7 +1110,6 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
               clear_value F X
               congr! 1
               ext t
-              have hi' : i ∉ (insert i s)ᶜ := not_mem_compl.mpr <| mem_insert_self i s
               simp_rw [← insert_compl_insert hi, prod_insert hi']
               ring_nf
     _ = F (insert i s) x ^ p *
@@ -1100,24 +1157,9 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
               push_cast
               ring_nf
 
-lemma Measurable.rhsAux (hf : Measurable f) : Measurable (rhsAux μ f s) := by
-  refine ((hf.marginal μ).pow_const _).mul ?_
-  exact Finset.measurable_prod _ fun i _ ↦ ((hf.marginal μ).pow_const _)
-
-theorem marginal_rhsAux_empty_le [Nontrivial ι] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f)
-    (s : Finset ι) : ∫⋯∫_s, rhsAux μ f ∅ ∂μ ≤ rhsAux μ f s := by
-  induction' s using Finset.induction with i s hi ih
-  · simp [marginal_empty]
-  intro x
-  calc (∫⋯∫_insert i s, rhsAux μ f ∅ ∂μ) x
-      = ∫⁻ t, (∫⋯∫_s, rhsAux μ f ∅ ∂μ) (update x i t) ∂(μ i) := by
-        rw [marginal_insert]
-        · exact hf.rhsAux μ
-        · exact hi
-    _ ≤ ∫⁻ t, rhsAux μ f s (update x i t) ∂(μ i) := by
-        apply lintegral_mono; intro t; dsimp -- should be `gcongr`
-        apply ih
-    _ ≤ rhsAux μ f (insert i s) x := marginal_singleton_rhsAux_le _ _ hf _ _ hi x
+theorem marginal_rhsAux_monotone [Nontrivial ι] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) :
+    Monotone (fun s ↦ ∫⋯∫_sᶜ, rhsAux μ f s ∂μ) := by
+  simpa [Finset.monotone_iff] using marginal_singleton_rhsAux_le μ f hf
 
 theorem lintegral_prod_lintegral_pow_le [Nontrivial ι] (hf : Measurable f) :
     ∫⁻ x, ∏ i, (∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) ∂Measure.pi μ ≤
@@ -1125,8 +1167,8 @@ theorem lintegral_prod_lintegral_pow_le [Nontrivial ι] (hf : Measurable f) :
   cases isEmpty_or_nonempty (∀ i, π i)
   · simp_rw [lintegral_of_isEmpty]; refine' zero_le _
   inhabit ∀ i, π i
-  simpa [marginal_univ, rhsAux_empty, rhsAux_univ] using
-    marginal_rhsAux_empty_le μ f hf Finset.univ default
+  have H : (∅ : Finset ι) ≤ Finset.univ := Finset.empty_subset _
+  simpa [marginal_univ, rhsAux_empty, rhsAux_univ] using marginal_rhsAux_monotone μ f hf H default
 
 -- theorem integral_prod_integral_pow_le {f : (∀ i, π i) → ℝ} (hf : Measurable f)
 --     (h2f : ∀ x, 0 ≤ f x) :
