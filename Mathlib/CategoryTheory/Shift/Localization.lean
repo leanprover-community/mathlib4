@@ -1,27 +1,51 @@
+/-
+Copyright (c) 2023 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Shift.Induced
 import Mathlib.CategoryTheory.Localization.Predicate
 import Mathlib.CategoryTheory.Localization.HasLocalization
 
+/-!
+# The shift induced on a localized category
+
+Let `C` be a category equipped with a shift by a monoid `A`. If `W : MorphismProperty C`
+is compatible with the shift, then the corresponding localized can be equipped with
+a shift by `A`. This condition `[W.IsCompatibleWithShift]` expresses that for any
+`a : A`, a morphism `f` is in `W` iff `f⟦a⟧'` is.
+
+--/
+
+
+universe v₁ v₂ u₁ u₂ w
+
 namespace CategoryTheory
 
-variable {C D : Type _} [Category C] [Category D]
+variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
   (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
-  (A : Type _) [AddMonoid A] [HasShift C A]
+  (A : Type w) [AddMonoid A] [HasShift C A]
 
 namespace MorphismProperty
 
+/-- A morphism property `W` on a category `C` is compatible with the shift by a
+monoid `A` when for all `a : A`, a morphism `f` belongs to `W`
+if and only if `f⟦a⟧'` does. -/
 class IsCompatibleWithShift : Prop :=
-  translate : ∀ (a : A), W.inverseImage (shiftFunctor C a) = W
+  /-- the condition that for all `a : A`, the morphism property `W` is not changed when
+  we take its inverse image by the shift functor by `a` -/
+  condition : ∀ (a : A), W.inverseImage (shiftFunctor C a) = W
+
+variable [W.IsCompatibleWithShift A]
 
 namespace IsCompatibleWithShift
 
 variable {A}
 
-lemma iff [W.IsCompatibleWithShift A]
-    {X Y : C} (f : X ⟶ Y) (a : A) : W (f⟦a⟧') ↔ W f := by
-  conv_rhs => rw [← @IsCompatibleWithShift.translate _ _ W A _ _ _ a]
+lemma iff {X Y : C} (f : X ⟶ Y) (a : A) : W (f⟦a⟧') ↔ W f := by
+  conv_rhs => rw [← @IsCompatibleWithShift.condition _ _ W A _ _ _ a]
 
-lemma shiftFunctor_comp_inverts [W.IsCompatibleWithShift A] (a : A) :
+lemma shiftFunctor_comp_inverts (a : A) :
     W.IsInvertedBy (shiftFunctor C a ⋙ L) := fun _ _ f hf =>
   Localization.inverts L W _ (by simpa only [iff] using hf)
 
@@ -29,40 +53,32 @@ end IsCompatibleWithShift
 
 end MorphismProperty
 
-variable (s : A → D ⥤ D) (i : ∀ a, L ⋙ s a ≅ shiftFunctor C a ⋙ L)
+variable [W.IsCompatibleWithShift A]
 
-lemma HasShift.localized'_aux :
-  Nonempty (Full ((whiskeringLeft C D D).obj L)) ∧ Faithful ((whiskeringLeft C D D).obj L) :=
-  ⟨⟨(inferInstance : Full ((Localization.whiskeringLeftFunctor' L W D)))⟩,
-    (inferInstance : Faithful ((Localization.whiskeringLeftFunctor' L W D)))⟩
-
-noncomputable def HasShift.localized' :
-    HasShift D A :=
-  HasShift.induced L A s i (HasShift.localized'_aux L W)
-
-noncomputable def Functor.CommShift.localized' :
-    letI : HasShift D A := HasShift.localized' L W A s i
-    L.CommShift A :=
-  Functor.CommShift.ofInduced _ _ _ _ _
-
-noncomputable def HasShift.localized [W.IsCompatibleWithShift A] :
-    HasShift D A :=
-  HasShift.localized' L W A (fun a =>
-    Localization.lift (shiftFunctor C a ⋙ L) (MorphismProperty.IsCompatibleWithShift.shiftFunctor_comp_inverts L W a) L)
+/-- When `L : C ⥤ D` is a localization functor with respect to a morphism property `W`
+that is compatible with the shift by a monoid `A` on `C`, this is the induced
+shift on the category `D`. -/
+noncomputable def HasShift.localized  : HasShift D A :=
+  HasShift.induced L A
+    (fun a => Localization.lift (shiftFunctor C a ⋙ L) (MorphismProperty.IsCompatibleWithShift.shiftFunctor_comp_inverts L W a) L)
     (fun _ => Localization.fac _ _ _)
+    ⟨⟨(inferInstance : Full ((Localization.whiskeringLeftFunctor' L W D)))⟩,
+      (inferInstance : Faithful ((Localization.whiskeringLeftFunctor' L W D)))⟩
 
-noncomputable def Functor.CommShift.localized [W.IsCompatibleWithShift A] :
+/-- The localization functor `L : C ⥤ D` is compatible with the shift. -/
+noncomputable def Functor.CommShift.localized :
     @Functor.CommShift _ _ _ _ L A _ _ (HasShift.localized L W A) :=
-  Functor.CommShift.localized' _ _ _ _ _
+  Functor.CommShift.ofInduced _ _ _ _ _
 
 attribute [irreducible] HasShift.localized Functor.CommShift.localized
 
-noncomputable instance HasShift.localization [W.IsCompatibleWithShift A] :
+/-- The localized category `W.Localization` is endowed with the induced shift.  -/
+noncomputable instance HasShift.localization :
     HasShift W.Localization A :=
   HasShift.localized W.Q W A
 
-noncomputable instance MorphismProperty.commShift_Q
-    [W.IsCompatibleWithShift A] :
+/-- The localization functor `W.Q : C ⥤ W.Localization` is compatible with the shift. -/
+noncomputable instance MorphismProperty.commShift_Q :
     W.Q.CommShift A :=
   Functor.CommShift.localized W.Q W A
 
