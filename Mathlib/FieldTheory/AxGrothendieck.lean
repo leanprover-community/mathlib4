@@ -30,10 +30,6 @@ algberaically closed field.
 * `ax_grothendieck_of_locally_finite`: any injective polynomial map `R^n → R^n` is also surjective
 whenever `R` is an algebraic extension of a finite field.
 
-## TODO
-
-Generalize to polynomial maps from a definable set to itself.
-
 -/
 
 
