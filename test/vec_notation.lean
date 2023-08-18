@@ -4,8 +4,8 @@ https://github.com/leanprover-community/mathlib/blob/fee91d74414e681a8b72cb7160e
 -/
 import Mathlib.Data.Fin.VecNotation
 
-/-! These tests are testing `PiFin.toExpr` and fail with
-`local attribute [-instance] PiFin.toExpr` -/
+/-! These tests are testing `PiFin.instToExprQ` and fail with
+`local attribute [-instance] PiFin.instToExprQ` -/
 
 open Lean
 open Lean.Meta
