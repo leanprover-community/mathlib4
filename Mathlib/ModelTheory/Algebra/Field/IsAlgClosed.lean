@@ -220,67 +220,58 @@ theorem ACF_isComplete {p : ℕ} (hp : p.Prime ∨ p = 0) :
     · rw [hM]; exact Order.lt_succ _
     · rw [hM, hN]
 
-theorem ACF0_realize_of_infinite_ACF_prime_realize (φ : Language.ring.Sentence)
-    (hφ : Set.Infinite { p : Nat.Primes | (Theory.ACF p) ⊨ᵇ φ }) :
-    Theory.ACF 0 ⊨ᵇ φ := by
-  rw [← @not_not (_ ⊨ᵇ _), ← (ACF_isComplete (Or.inr rfl)).models_not_iff,
-    Theory.models_iff_finset_models]
-  push_neg
-  intro T0 hT0
+theorem finite_ACF_prime_not_realize_of_ACF0_realize
+    (φ : Language.ring.Sentence) (h : Theory.ACF 0 ⊨ᵇ φ) :
+    Set.Finite { p : Nat.Primes | ¬ Theory.ACF p ⊨ᵇ φ } := by
+  rw [Theory.models_iff_finset_models] at h
+  rcases h with ⟨T0, hT0, h⟩
   have f : ∀ ψ ∈ Theory.ACF 0,
-      { s : Finset Nat.Primes // ∀ q : Nat.Primes, (¬ (Theory.ACF q) ⊨ᵇ ψ) → q ∈ s } := by
+      { s : Finset Nat.Primes // ∀ q : Nat.Primes, q ∉ s → Theory.ACF q ⊨ᵇ ψ } := by
     intro ψ hψ
     rw [Theory.ACF, Theory.fieldOfChar, Set.union_right_comm, Set.mem_union, if_pos rfl,
       Set.mem_image] at hψ
     apply Classical.choice
     rcases hψ with h | ⟨p, hp, rfl⟩
     · refine ⟨⟨∅, ?_⟩⟩
-      intro q hq
-      exact (hq (Theory.models_sentence_of_mem
+      intro q _
+      exact Theory.models_sentence_of_mem
         (by rw [Theory.ACF, Theory.fieldOfChar, Set.union_right_comm];
-            exact Set.mem_union_left _ h))).elim
+            exact Set.mem_union_left _ h)
     · refine ⟨⟨{⟨p, hp⟩}, ?_⟩⟩
-      intro q hq
-      rw [Theory.models_sentence_iff, not_forall] at hq
-      rcases hq with ⟨K, hK⟩
+      rintro ⟨q, _⟩ hq ⟨K⟩ _ _
+      have hqp : q ≠ p := by simpa [← Nat.Primes.coe_nat_inj] using hq
       letI := fieldOfModelACF q K
       haveI := modelField_of_modelACF q K
       letI := compatibleRingOfModelField K
       letI := isAlgClosed_of_model_ACF q K
-      simp only [Sentence.Realize, eqZero, Formula.realize_not, Formula.realize_equal,
-        realize_termOfFreeCommRing, map_natCast, ne_eq, realize_zero,
-        not_not, ← CharP.charP_iff_prime_eq_zero hp] at hK
+      simp only [eqZero, Term.equal, Term.relabel, BoundedFormula.realize_not,
+        BoundedFormula.realize_bdEqual, Term.realize_relabel, Sum.elim_comp_inl,
+        realize_termOfFreeCommRing, map_natCast, Term.realize_func, CompatibleRing.funMap_zero,
+        ne_eq, ← CharP.charP_iff_prime_eq_zero hp]
+      intro _
       haveI := @charP_of_model_fieldOfChar
-      rw [Finset.mem_singleton]
-      exact Subtype.eq <| CharP.eq K inferInstance inferInstance
+      exact hqp <| CharP.eq K inferInstance inferInstance
   let s : Finset Nat.Primes := T0.attach.biUnion (fun φ => f φ.1 (hT0 φ.2))
-  have hs : ∀ (p : Nat.Primes) ψ, ψ ∈ T0 → ¬ (Theory.ACF p) ⊨ᵇ ψ → p ∈ s := by
+  have hs : ∀ (p : Nat.Primes) ψ, ψ ∈ T0 → p ∉ s → Theory.ACF p ⊨ᵇ ψ := by
     intro p ψ hψ hpψ
-    refine Finset.mem_biUnion.2 ?_
-    refine ⟨⟨ψ, hψ⟩, Finset.mem_attach _ _, ?_⟩
-    exact (f ψ (hT0 hψ)).2 p hpψ
-  rcases hφ.exists_not_mem_finset s with ⟨p, hpφ, hps⟩
-  have hpT0 : ∀ ψ ∈ T0, Theory.ACF p ⊨ᵇ ψ :=
-    fun ψ hψ => not_not.1 (mt (hs p ψ hψ) hps)
-  intro h
-  have : Theory.ACF p ⊨ᵇ Formula.not φ := Theory.models_of_models_theory hpT0 h
-  rw [(ACF_isComplete (Or.inl p.2)).models_not_iff] at this
-  exact this hpφ
+    simp only [Finset.mem_biUnion, Finset.mem_attach, true_and,
+      Subtype.exists, not_exists] at hpψ
+    exact (f ψ (hT0 hψ)).2 p (hpψ _ hψ)
+  refine Set.Finite.subset (Finset.finite_toSet s) (Set.compl_subset_comm.2 ?_)
+  intro p hp
+  exact Theory.models_of_models_theory (fun ψ hψ => hs p ψ hψ hp) h
 
 /-- The Lefschetz principle. A first order sentence is modeled by the theory
 of algebraically closed fields of characteristic zero if and only if it is modeled by
 the theory of algebraically closed fields of characteristic `p` for infinitely many `p`. -/
 theorem ACF0_realize_iff_infinite_ACF_prime_realize {φ : Language.ring.Sentence} :
     Theory.ACF 0 ⊨ᵇ φ ↔ Set.Infinite { p : Nat.Primes | Theory.ACF p ⊨ᵇ φ } := by
-  refine ⟨?_, ACF0_realize_of_infinite_ACF_prime_realize φ⟩
-  rw [← not_imp_not, ← (ACF_isComplete (Or.inr rfl)).models_not_iff,
-    Set.not_infinite]
-  intro hs
-  apply ACF0_realize_of_infinite_ACF_prime_realize
-  apply Set.infinite_of_finite_compl
-  convert hs using 1
-  ext p
-  simp [(ACF_isComplete (Or.inl p.2)).models_not_iff]
+  refine ⟨fun h => Set.infinite_of_finite_compl
+      (finite_ACF_prime_not_realize_of_ACF0_realize φ h),
+    not_imp_not.1 ?_⟩
+  simpa [(ACF_isComplete (Or.inr rfl)).models_not_iff,
+      fun p : Nat.Primes => (ACF_isComplete (Or.inl p.2)).models_not_iff] using
+    finite_ACF_prime_not_realize_of_ACF0_realize φ.not
 
 end Field
 
