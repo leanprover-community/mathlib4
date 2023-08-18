@@ -43,7 +43,7 @@ attribute [to_additive] OrderedCommMonoid
 
 /-- An ordered (additive) commutative monoid *with one* is an additive commutative monoid with one
 with a partial order such that `a ≤ b → c + a ≤ c + b` (addition is monotone) and `0 ≤ 1`. -/
-class OrderedAddCommMonoidWithOne (α : Type _) extends AddCommMonoidWithOne α, PartialOrder α where
+class OrderedAddCommMonoidWithOne (α : Type*) extends AddCommMonoidWithOne α, PartialOrder α where
   /-- Addition is monotone in an `OrderedAddCommMonoidWithOne`. -/
   protected add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
   /-- One is nonnegative in an `OrderedAddCommMonoidWithOne`. -/
@@ -52,12 +52,12 @@ class OrderedAddCommMonoidWithOne (α : Type _) extends AddCommMonoidWithOne α,
 section OrderedInstances
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderedAddCommMonoidWithOne.toOrderedAddCommMonoid {M : Type _}
+instance (priority := 100) OrderedAddCommMonoidWithOne.toOrderedAddCommMonoid {M : Type*}
     [OrderedAddCommMonoidWithOne M] : OrderedAddCommMonoid M where
   add_le_add_left := OrderedAddCommMonoidWithOne.add_le_add_left
 
 -- see Note [lower instance priority]
-instance (priority := 100) OrderedAddCommMonoidWithOne.zeroLEOneClass {M : Type _}
+instance (priority := 100) OrderedAddCommMonoidWithOne.zeroLEOneClass {M : Type*}
     [OrderedAddCommMonoidWithOne M] : ZeroLEOneClass M where
   zero_le_one := OrderedAddCommMonoidWithOne.zero_le_one
 

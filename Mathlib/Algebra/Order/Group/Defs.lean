@@ -45,20 +45,20 @@ class OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
 
 /-- An ordered (additive) commutative group *with one* is an additive commutative group with one
 with a partial order such that `a ≤ b → c + a ≤ c + b` (addition is monotone) and `0 ≤ 1`. -/
-class OrderedAddCommGroupWithOne (α : Type _) extends AddCommGroupWithOne α, PartialOrder α where
+class OrderedAddCommGroupWithOne (α : Type u) extends AddCommGroupWithOne α, PartialOrder α where
   /-- Addition is monotone in an `OrderedAddCommGroupWithOne`. -/
   protected add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
   /-- One is nonnegative in an `OrderedAddCommGroupWithOne`. -/
   protected zero_le_one : (0 : α) ≤ 1
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderedAddCommGroupWithOne.toOrderedAddCommGroup {M : Type _}
-    [OrderedAddCommGroupWithOne M] : OrderedAddCommGroup M where
+instance (priority := 100) OrderedAddCommGroupWithOne.toOrderedAddCommGroup {α : Type u}
+    [OrderedAddCommGroupWithOne α] : OrderedAddCommGroup α where
   add_le_add_left := OrderedAddCommGroupWithOne.add_le_add_left
 
 -- see Note [lower instance priority]
-instance (priority := 100) OrderedAddCommGroupWithOne.toOrderedAddCommMonoidWithOne {M : Type _}
-    [OrderedAddCommGroupWithOne M] : OrderedAddCommMonoidWithOne M where
+instance (priority := 100) OrderedAddCommGroupWithOne.toOrderedAddCommMonoidWithOne {α : Type u}
+    [OrderedAddCommGroupWithOne α] : OrderedAddCommMonoidWithOne α where
   add_le_add_left := OrderedAddCommGroupWithOne.add_le_add_left
   zero_le_one := OrderedAddCommGroupWithOne.zero_le_one
 

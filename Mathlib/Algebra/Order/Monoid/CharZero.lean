@@ -18,7 +18,7 @@ has characteristic zero. This includes `StrictOrderedSemiring`s as well as `Star
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 -- see Note [lower instance priority]
 instance (priority := 100) OrderedAddCommMonoidWithOne.to_charZero
