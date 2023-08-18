@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fangming Li, Jujian Zhang
 -/
 
-import Init.Core
 import Mathlib.Order.KrullDimension
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.RingTheory.Ideal.Basic
@@ -176,6 +175,10 @@ noncomputable def PID_finiteDimensional (R : Type _) [CommRing R] [IsPrincipalId
           rw [←hx] at hr2
           rw [←mul_left_cancel₀ h hr2] at hr1
           exact (hr1 x.isUnit).elim
+
+lemma PID_eq_one_of_not_IsField (R : Type _) [CommRing R] [IsPrincipalIdealRing R] [IsDomain R]
+  (hR : ¬ IsField R) : ringKrullDim R = 1 := by
+{ rw [ringKrullDim, @krullDim.eq_len_of_orderTop _ _ (PID_finiteDimensional _ hR)]; rfl }
 
 /--
 https://stacks.math.columbia.edu/tag/00KG
