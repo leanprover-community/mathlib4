@@ -597,8 +597,9 @@ end Pdiv
 
 section ProdToFinsetFactors
 
-def prodToFinsetFactors [CommMonoidWithZero R] (f : ℕ → R) : ArithmeticFunction R :=
-  ⟨fun d => if d = 0 then 0 else ∏ p in d.factors.toFinset, f p, if_pos rfl⟩
+def prodToFinsetFactors [CommMonoidWithZero R] (f : ℕ → R) : ArithmeticFunction R where
+  toFun d := if d = 0 then 0 else ∏ p in d.factors.toFinset, f p
+  map_zero' := if_pos rfl
 
 open Std.ExtendedBinder
 
