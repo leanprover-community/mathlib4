@@ -23,16 +23,16 @@ namespace Zagier
 
 section Sets
 
-open Finset
+open Set
 
 variable (k : ℕ) [hk : Fact (4 * k + 1).Prime]
 
 /-- The set of all triples of natural numbers `(x, y, z)` satisfying
-`x * x + 4 * y * z = 4 * k + 1`, as a `Set`. -/
+`x * x + 4 * y * z = 4 * k + 1`. -/
 def zagierSet : Set (ℕ × ℕ × ℕ) := {t | t.1 * t.1 + 4 * t.2.1 * t.2.2 = 4 * k + 1}
 
 lemma zagierSet_lower_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) : 0 < x ∧ 0 < y ∧ 0 < z := by
-  simp_rw [zagierSet, Set.mem_setOf_eq] at h
+  simp_rw [zagierSet, mem_setOf_eq] at h
   refine' ⟨_, _, _⟩ <;> (by_contra q; push_neg at q; rw [le_zero_iff] at q; subst q; simp at h)
   · apply_fun (· % 4) at h
     simp [mul_assoc, Nat.add_mod] at h
@@ -42,28 +42,18 @@ lemma zagierSet_lower_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) : 0 < 
 lemma zagierSet_upper_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) :
     x ≤ k + 1 ∧ y ≤ k ∧ z ≤ k := by
   obtain ⟨hx, hy, hz⟩ := zagierSet_lower_bound k h
-  simp_rw [zagierSet, Set.mem_setOf_eq] at h
+  simp_rw [zagierSet, mem_setOf_eq] at h
   refine' ⟨_, _, _⟩ <;> nlinarith
 
-/-- The set of all triples of natural numbers `(x, y, z) ∈ (0, k + 1] × (0, k] × (0, k]` satisfying
-`x * x + 4 * y * z = 4 * k + 1`, as a `Finset`. This is shown to be equivalent to `zagierSet`. -/
-def zagierFinset : Finset (ℕ × ℕ × ℕ) :=
-  ((Ioc 0 (k + 1)).product ((Ioc 0 k).product (Ioc 0 k))).filter
-    (fun ⟨x, y, z⟩ => x * x + 4 * y * z = 4 * k + 1)
+lemma zagierSet_subset : zagierSet k ⊆ Ioc 0 (k + 1) ×ˢ Ioc 0 k ×ˢ Ioc 0 k := by
+  intro x h
+  have lb := zagierSet_lower_bound k h
+  have ub := zagierSet_upper_bound k h
+  exact ⟨⟨lb.1, ub.1⟩, ⟨lb.2.1, ub.2.1⟩, ⟨lb.2.2, ub.2.2⟩⟩
 
-theorem coe_zagierFinset : zagierFinset k = zagierSet k := by
-  ext ⟨x, y, z⟩
-  refine' ⟨fun h => _, fun h => _⟩
-  · unfold zagierFinset at h; unfold zagierSet; simp_all
-  · unfold zagierSet at h; unfold zagierFinset; simp_all
-    have lb := zagierSet_lower_bound k h
-    have ub := zagierSet_upper_bound k h
-    apply mem_product.2; simp
-    constructor; · exact ⟨lb.1, ub.1⟩
-    apply mem_product.2; simp
-    exact ⟨⟨lb.2.1, ub.2.1⟩, ⟨lb.2.2, ub.2.2⟩⟩
-
-instance : Fintype (zagierSet k) := by rw [← coe_zagierFinset]; infer_instance
+noncomputable instance : Fintype (zagierSet k) :=
+  (((finite_Ioc 0 (k + 1)).prod ((finite_Ioc 0 k).prod (finite_Ioc 0 k))).subset
+    (zagierSet_subset k)).fintype
 
 end Sets
 
