@@ -701,3 +701,203 @@ noncomputable def mapDomainFixedEquivSubtype :
 #align map_domain_fixed_equiv_subtype mapDomainFixedEquivSubtype
 
 end
+
+section toConjEquiv
+
+variable (F : Type _) [Field F] [Algebra ℚ F]
+
+open GalConjClasses
+
+def toConjEquiv : mapDomainFixed s F ≃ (GalConjClasses ℚ (K s) →₀ F) :=
+  by
+  refine' (mapDomainFixedEquivSubtype s F).trans _
+  refine'
+    { toFun := fun f =>
+        @Quotient.liftFinsupp _ _ (IsGalConj.setoid _ _) _ (f : AddMonoidAlgebra F (K s)) f.2
+      invFun := fun f => ⟨_, _⟩
+      left_inv := _
+      right_inv := _ }
+  · refine' ⟨f.support.bUnion fun i => i.orbit.to_finset, fun x => f (mk _ x), fun i => _⟩
+    simp_rw [mem_bUnion, Set.mem_toFinset, mem_orbit, Finsupp.mem_support_iff, exists_prop,
+      exists_eq_right']
+  · change ∀ i j, i ∈ MulAction.orbit (Gal s) j → f (Quotient.mk'' i) = f (Quotient.mk'' j)
+    exact fun i j h => congr_arg f (Quotient.sound' h)
+  · exact fun _ => Subtype.eq <| Finsupp.ext fun x => rfl
+  · refine' fun f => Finsupp.ext fun x => Quotient.inductionOn' x fun i => rfl
+#align to_conj_equiv toConjEquiv
+
+@[simp]
+theorem toConjEquiv_apply_apply_mk (f : mapDomainFixed s F) (i : K s) :
+    toConjEquiv s F f (mk ℚ i) = f i :=
+  rfl
+#align to_conj_equiv_apply_apply_mk toConjEquiv_apply_apply_mk
+
+@[simp]
+theorem toConjEquiv_symm_apply_apply (f : GalConjClasses ℚ (K s) →₀ F) (i : K s) :
+    (toConjEquiv s F).symm f i = f (mk ℚ i) :=
+  rfl
+#align to_conj_equiv_symm_apply_apply toConjEquiv_symm_apply_apply
+
+@[simp]
+theorem toConjEquiv_apply_apply (f : mapDomainFixed s F) (i : GalConjClasses ℚ (K s)) :
+    toConjEquiv s F f i = f i.out := by rw [← i.out_eq, toConjEquiv_apply_apply_mk, i.out_eq]
+#align to_conj_equiv_apply_apply toConjEquiv_apply_apply
+
+@[simp]
+theorem toConjEquiv_apply_zero_eq (f : mapDomainFixed s F) : toConjEquiv s F f 0 = f 0 := by
+  rw [toConjEquiv_apply_apply, GalConjClasses.zero_out]
+#align to_conj_equiv_apply_zero_eq toConjEquiv_apply_zero_eq
+
+@[simp]
+theorem toConjEquiv_symm_apply_zero_eq (f : GalConjClasses ℚ (K s) →₀ F) :
+    (toConjEquiv s F).symm f 0 = f 0 := by rw [toConjEquiv_symm_apply_apply]; rfl
+#align to_conj_equiv_symm_apply_zero_eq toConjEquiv_symm_apply_zero_eq
+
+@[simps]
+def toConjLinearEquiv : mapDomainFixed s F ≃ₗ[F] GalConjClasses ℚ (K s) →₀ F :=
+  { toConjEquiv s F with
+    toFun := toConjEquiv s F
+    invFun := (toConjEquiv s F).symm
+    map_add' := fun x y => by
+      ext i; simp_rw [Finsupp.coe_add, Pi.add_apply, toConjEquiv_apply_apply]
+      rfl
+    map_smul' := fun r x => by
+      ext i; simp_rw [Finsupp.coe_smul, Pi.smul_apply, toConjEquiv_apply_apply]
+      rfl }
+#align to_conj_linear_equiv toConjLinearEquiv
+
+namespace Finsupp.GalConjClasses
+
+instance : CommRing (GalConjClasses ℚ (K s) →₀ F) :=
+  {
+    (inferInstance : AddCommGroup
+        (GalConjClasses ℚ (K s) →₀ F)) with
+    zero := 0
+    add := (· + ·)
+    one := toConjLinearEquiv s F 1
+    mul := fun x y =>
+      toConjLinearEquiv s F <| (toConjLinearEquiv s F).symm x * (toConjLinearEquiv s F).symm y
+    mul_assoc := fun a b c => by simp_rw [mul_def, LinearEquiv.symm_apply_apply, mul_assoc]
+    one_mul := fun a => by
+      simp_rw [LinearEquiv.symm_apply_apply, one_mul, LinearEquiv.apply_symm_apply]
+    mul_one := fun a => by
+      simp_rw [LinearEquiv.symm_apply_apply, mul_one, LinearEquiv.apply_symm_apply]
+    left_distrib := fun a b c => by simp only [← map_add, ← mul_add]
+    right_distrib := fun a b c => by simp only [← map_add, ← add_mul]
+    mul_comm := fun a b =>
+      by
+      change toConjLinearEquiv s F _ = toConjLinearEquiv s F _
+      exact congr_arg _ (mul_comm _ _) }
+
+theorem one_def : (1 : GalConjClasses ℚ (K s) →₀ F) = toConjLinearEquiv s F 1 :=
+  rfl
+#align finsupp.gal_conj_classes.one_def Finsupp.GalConjClasses.one_def
+
+theorem mul_def (x y : GalConjClasses ℚ (K s) →₀ F) :
+    x * y =
+      toConjLinearEquiv s F ((toConjLinearEquiv s F).symm x * (toConjLinearEquiv s F).symm y) :=
+  rfl
+#align finsupp.gal_conj_classes.mul_def Finsupp.GalConjClasses.mul_def
+
+instance cache : IsScalarTower F (mapDomainFixed s F) (mapDomainFixed s F) :=
+  IsScalarTower.right
+#align finsupp.gal_conj_classes.cache Finsupp.GalConjClasses.cache
+
+instance : Algebra F (GalConjClasses ℚ (K s) →₀ F) :=
+  Algebra.ofModule'
+    (fun r x => by
+      rw [one_def, mul_def, SMulHomClass.map_smul, LinearEquiv.symm_apply_apply, smul_one_mul, ←
+        SMulHomClass.map_smul, LinearEquiv.apply_symm_apply])
+    fun r x => by
+    rw [one_def, mul_def, SMulHomClass.map_smul, LinearEquiv.symm_apply_apply, mul_smul_one, ←
+      SMulHomClass.map_smul, LinearEquiv.apply_symm_apply]
+
+theorem one_eq_single : (1 : GalConjClasses ℚ (K s) →₀ F) = Finsupp.single 0 1 :=
+  by
+  change toConjEquiv s F 1 = _
+  ext i; rw [toConjEquiv_apply_apply]
+  change (1 : AddMonoidAlgebra F (K s)) i.out = Finsupp.single 0 1 i
+  simp_rw [AddMonoidAlgebra.one_def, Finsupp.single_apply]
+  change (ite (0 = i.out) 1 0 : F) = ite (0 = i) 1 0
+  simp_rw [@eq_comm _ _ i.out, @eq_comm _ _ i, GalConjClasses.out_eq_zero_iff]
+#align finsupp.gal_conj_classes.one_eq_single Finsupp.GalConjClasses.one_eq_single
+
+theorem algebraMap_eq_single (x : F) :
+    algebraMap F (GalConjClasses ℚ (K s) →₀ F) x = Finsupp.single 0 x :=
+  by
+  change x • (1 : GalConjClasses ℚ (K s) →₀ F) = Finsupp.single 0 x
+  rw [one_eq_single, Finsupp.smul_single, smul_eq_mul, mul_one]
+#align finsupp.gal_conj_classes.algebra_map_eq_single Finsupp.GalConjClasses.algebraMap_eq_single
+
+end Finsupp.GalConjClasses
+
+@[simps]
+def toConjAlgEquiv : mapDomainFixed s F ≃ₐ[F] GalConjClasses ℚ (K s) →₀ F :=
+  { toConjLinearEquiv s F with
+    toFun := toConjLinearEquiv s F
+    invFun := (toConjLinearEquiv s F).symm
+    map_mul' := fun x y => by simp_rw [Finsupp.GalConjClasses.mul_def, LinearEquiv.symm_apply_apply]
+    commutes' := fun r =>
+      by
+      simp_rw [Finsupp.GalConjClasses.algebraMap_eq_single]
+      change toConjEquiv s F (algebraMap F (mapDomainFixed s F) r) = _
+      ext i; rw [toConjEquiv_apply_apply]
+      change Finsupp.single 0 r i.out = Finsupp.single 0 r i
+      simp_rw [Finsupp.single_apply]
+      change ite (0 = i.out) r 0 = ite (0 = i) r 0
+      simp_rw [@eq_comm _ _ i.out, @eq_comm _ _ i, out_eq_zero_iff] }
+#align to_conj_alg_equiv toConjAlgEquiv
+
+theorem ToConjEquivSymmSingle.aux (x : GalConjClasses ℚ (K s)) (a : F) :
+    (Finsupp.indicator x.orbit.toFinset fun _ _ => a) ∈ mapDomainFixed s F :=
+  by
+  rw [mem_mapDomainFixed_iff]
+  rintro i j h
+  simp_rw [Finsupp.indicator_apply, Set.mem_toFinset]; dsimp; congr 1
+  simp_rw [mem_orbit, eq_iff_iff]
+  apply Eq.congr_left
+  rwa [GalConjClasses.eq]
+#align to_conj_equiv_symm_single.aux ToConjEquivSymmSingle.aux
+
+theorem toConjEquiv_symm_single (x : GalConjClasses ℚ (K s)) (a : F) :
+    (toConjEquiv s F).symm (Finsupp.single x a) =
+      ⟨Finsupp.indicator x.orbit.toFinset fun _ _ => a, ToConjEquivSymmSingle.aux s F x a⟩ :=
+  by
+  rw [Equiv.symm_apply_eq]
+  ext i; rw [toConjEquiv_apply_apply]
+  change Finsupp.single x a i = Finsupp.indicator x.orbit.to_finset (fun _ _ => a) i.out
+  rw [Finsupp.single_apply, Finsupp.indicator_apply]; dsimp; congr 1
+  rw [Set.mem_toFinset, mem_orbit, out_eq, @eq_comm _ i]
+#align to_conj_equiv_symm_single toConjEquiv_symm_single
+
+theorem single_prod_apply_zero_ne_zero_iff (x : GalConjClasses ℚ (K s)) {a : F} (ha : a ≠ 0)
+    (y : GalConjClasses ℚ (K s)) {b : F} (hb : b ≠ 0) :
+    (Finsupp.single x a * Finsupp.single y b) 0 ≠ 0 ↔ x = -y :=
+  by
+  simp_rw [Finsupp.GalConjClasses.mul_def, toConjLinearEquiv_apply, toConjLinearEquiv_symm_apply,
+    toConjEquiv_apply_zero_eq]
+  simp_rw [toConjEquiv_symm_single, MulMemClass.mk_mul_mk]
+  change
+    ((Finsupp.indicator x.orbit.to_finset fun _ _ => a) *
+              Finsupp.indicator y.orbit.to_finset fun _ _ => b :
+            AddMonoidAlgebra _ _)
+          0 ≠
+        _ ↔
+      _
+  haveI := Nat.noZeroSMulDivisors ℚ F
+  simp_rw [Finsupp.indicator_const_eq_sum_single, sum_mul, mul_sum,
+    AddMonoidAlgebra.single_mul_single, Finsupp.coe_finset_sum, sum_apply, Finsupp.single_apply, ←
+    sum_product', sum_ite, sum_const_zero, add_zero, sum_const, smul_ne_zero_iff, mul_ne_zero_iff,
+    iff_true_intro ha, iff_true_intro hb, and_true_iff, Ne.def, card_eq_zero, filter_eq_empty_iff]
+  push_neg
+  simp_rw [Prod.exists, mem_product, Set.mem_toFinset]
+  exact GalConjClasses.exist_mem_orbit_add_eq_zero x y
+#align single_prod_apply_zero_ne_zero_iff single_prod_apply_zero_ne_zero_iff
+
+theorem single_prod_apply_zero_eq_zero_iff (x : GalConjClasses ℚ (K s)) {a : F} (ha : a ≠ 0)
+    (y : GalConjClasses ℚ (K s)) {b : F} (hb : b ≠ 0) :
+    (Finsupp.single x a * Finsupp.single y b) 0 = 0 ↔ x ≠ -y := by
+  convert (single_prod_apply_zero_ne_zero_iff s F x ha y hb).Not; rw [Ne.def, Classical.not_not]
+#align single_prod_apply_zero_eq_zero_iff single_prod_apply_zero_eq_zero_iff
+
+end toConjEquiv
