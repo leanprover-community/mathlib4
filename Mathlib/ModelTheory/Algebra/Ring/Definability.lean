@@ -6,6 +6,7 @@ Authors: Chris Hughes
 
 import Mathlib.ModelTheory.Definability
 import Mathlib.ModelTheory.Algebra.Ring.MvPolynomial
+import Mathlib.RingTheory.Nullstellensatz
 
 /-!
 
@@ -19,25 +20,24 @@ namespace FirstOrder
 
 namespace Ring
 
-open MvPolynomial Language
+open MvPolynomial Language BoundedFormula
 
-theorem mvPolynomial_zero_set_definable {ι κ R : Type*} [CommRing R]
-    [CompatibleRing R] [Finite ι] (p : ι → MvPolynomial κ R) :
-    Set.Definable (⋃ i : ι, (p i).coeff '' (p i).support : Set R) Language.ring
-     { x : κ → R | ∀ i, eval x (p i) = 0 } := by
+theorem mvPolynomial_zeroLocus_definable {κ K : Type*} [Field K]
+    [CompatibleRing K] (S : Finset (MvPolynomial κ K)) :
+    Set.Definable (⋃ p ∈ S, p.coeff '' p.support : Set K) Language.ring
+     (zeroLocus (Ideal.span (S : Set (MvPolynomial κ K)))) := by
   rw [Set.definable_iff_exists_formula_sum]
-  let p' := genericPolyMap (fun i => (p i).support)
-  letI := Fintype.ofFinite ι
+  let p' := genericPolyMap (fun p : S => p.1.support)
   letI := Classical.decEq κ
-  letI := Classical.decEq R
-  refine ⟨((Finset.univ : Finset ι).toList.map
+  letI := Classical.decEq K
+  rw [MvPolynomial.zeroLocus_span]
+  refine ⟨BoundedFormula.iInf S.attach
       (fun i => Term.equal
         ((termOfFreeCommRing (p' i)).relabel
-          (Sum.map (fun i => ⟨(p i.1).coeff i.2.1,
-            Set.mem_iUnion.2 ⟨i.1, i.2.1, i.2.2, rfl⟩⟩) id)) 0)).foldr
-      (. ⊓ .)
-      ⊤, ?_⟩
-  simp [Formula.Realize, Term.equal, lift_genericPolyMap, Function.comp]
+          (Sum.map (fun p => ⟨p.1.1.coeff p.2.1, by
+            simp only [Set.mem_iUnion]
+            exact ⟨p.1.1, p.1.2, Set.mem_image_of_mem _ p.2.2⟩⟩) id)) 0), ?_⟩
+  simp [Formula.Realize, Term.equal, Function.comp]
 
 end Ring
 
