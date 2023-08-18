@@ -657,13 +657,13 @@ theorem map_prod {ι : Type*} [CommMonoidWithZero R] (g : ι → ℕ) {f : Nat.A
     exact Nat.coprime_prod_right fun i hi => hs.2 _ hi (hi.ne_of_not_mem has).symm
 #align nat.arithmetic_function.is_multiplicative.map_prod Nat.ArithmeticFunction.IsMultiplicative.map_prod
 
-theorem map_prod_of_prime {R : Type _} [CommSemiring R] {f : Nat.ArithmeticFunction R}
+theorem map_prod_of_prime [CommSemiring R] {f : Nat.ArithmeticFunction R}
     (h_mult : Nat.ArithmeticFunction.IsMultiplicative f)
     (t : Finset ℕ) (ht : ∀ p ∈ t, p.Prime) :
     f (∏ a in t, a) = ∏ a : ℕ in t, f a :=
   map_prod _ h_mult t fun x hx y hy hxy => (coprime_primes (ht x hx) (ht y hy)).mpr hxy
 
-theorem map_prod_of_subset_factors {R : Type _} [CommSemiring R] {f : Nat.ArithmeticFunction R}
+theorem map_prod_of_subset_factors [CommSemiring R] {f : Nat.ArithmeticFunction R}
     (h_mult : Nat.ArithmeticFunction.IsMultiplicative f) (l : ℕ)
     (t : Finset ℕ) (ht : t ⊆ l.factors.toFinset) :
      f (∏ a in t, a) = ∏ a : ℕ in t, f a :=
@@ -813,8 +813,9 @@ theorem prodToFinsetFactors [CommMonoidWithZero R] (f : ℕ → R) : IsMultiplic
   have h_disj := List.disjoint_toFinset_iff_disjoint.mpr (coprime_factors_disjoint hxy)
   rw[Nat.factors_mul_toFinset hx hy, ←Finset.prod_disjUnion h_disj, Finset.disjUnion_eq_union]
 
-theorem prodToFinsetFactors_add_of_squarefree {R : Type _} [CommSemiring R] {f g : ArithmeticFunction R} (hf : IsMultiplicative f) (hg : IsMultiplicative g)
-  (n : ℕ) (hn : Squarefree n) :
+theorem prodToFinsetFactors_add_of_squarefree [CommSemiring R]
+  {f g : ArithmeticFunction R} (hf : IsMultiplicative f) (hg : IsMultiplicative g) (n : ℕ)
+  (hn : Squarefree n) :
     ∏ᵖ p ∣ n, (f + g) p = (f * g) n := by
   rw [prodToFinsetFactors_apply_of_ne_zero hn.ne_zero]; simp_rw [add_apply (f:=f) (g:=g)]
   rw [Finset.prod_add, mul_apply, Nat.sum_divisorsAntidiagonal (f:= λ x y => f x * g y),
@@ -1100,7 +1101,7 @@ theorem isMultiplicative_moebius : IsMultiplicative μ := by
   simp           -- porting note: added
 #align nat.arithmetic_function.is_multiplicative_moebius Nat.ArithmeticFunction.isMultiplicative_moebius
 
-theorem IsMultiplicative.prodToFinsetFactors_one_add_of_squarefree {R : Type _} [CommSemiring R]
+theorem IsMultiplicative.prodToFinsetFactors_one_add_of_squarefree [CommSemiring R]
   { f : Nat.ArithmeticFunction R} (h_mult : f.IsMultiplicative) {l : ℕ} (hl : Squarefree l) :
     ∏ p in l.factors.toFinset, (1 + f p) = ∑ d in l.divisors, f d := by
   haveI : NeZero l := ⟨hl.ne_zero⟩
@@ -1111,7 +1112,7 @@ theorem IsMultiplicative.prodToFinsetFactors_one_add_of_squarefree {R : Type _} 
   rw [isMultiplicative_zeta.nat_cast.prodToFinsetFactors_add_of_squarefree h_mult _ hl,
     coe_zeta_mul_apply]
 
-theorem prodToFinsetFactors_one_sub_of_squarefree {R : Type _} [CommRing R]
+theorem prodToFinsetFactors_one_sub_of_squarefree [CommRing R]
     (f : Nat.ArithmeticFunction R) (hf : f.IsMultiplicative) {l : ℕ} (hl : Squarefree l) :
     ∏ p in l.factors.toFinset, (1 - f p) = ∑ d in l.divisors, μ d * f d := by
   trans (∏ p in l.factors.toFinset, (1 + (ArithmeticFunction.pmul (μ:ArithmeticFunction R) f) p))
