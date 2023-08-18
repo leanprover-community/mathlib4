@@ -559,8 +559,9 @@ theorem mulIndicator_compl (s : Set α) (f : α → G) :
 #align set.mul_indicator_compl Set.mulIndicator_compl
 #align set.indicator_compl' Set.indicator_compl'
 
-theorem indicator_compl {G} [AddGroup G] (s : Set α) (f : α → G) :
-    indicator sᶜ f = f - indicator s f := by rw [sub_eq_add_neg, indicator_compl']
+@[to_additive indicator_compl]
+theorem mulIndicator_compl' (s : Set α) (f : α → G) :
+    mulIndicator sᶜ f = f / mulIndicator s f := by rw [div_eq_mul_inv, mulIndicator_compl]
 #align set.indicator_compl Set.indicator_compl
 
 @[to_additive indicator_diff']
