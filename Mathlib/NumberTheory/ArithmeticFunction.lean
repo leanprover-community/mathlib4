@@ -615,8 +615,8 @@ theorem prodToFinsetFactors_apply [CommMonoidWithZero R] {f: ℕ → R} {n : ℕ
     ∏ᵖ p ∣ n, f p = ∏ p in n.factors.toFinset, f p :=
   if_neg (hn.ne)
 
-theorem prodToFinsetFactors_apply_of_ne_zero [CommMonoidWithZero R] {f: ℕ → R} {n : ℕ} (hn : n ≠ 0) :
-    ∏ᵖ p ∣ n, f p = ∏ p in n.factors.toFinset, f p :=
+theorem prodToFinsetFactors_apply_of_ne_zero [CommMonoidWithZero R] {f: ℕ → R} {n : ℕ}
+    (hn : n ≠ 0) : ∏ᵖ p ∣ n, f p = ∏ p in n.factors.toFinset, f p :=
   haveI : NeZero n := ⟨hn⟩
   prodToFinsetFactors_apply
 
@@ -801,8 +801,7 @@ theorem eq_iff_eq_on_prime_powers [CommMonoidWithZero R] (f : ArithmeticFunction
   exact h p _ (Nat.prime_of_mem_factors hp)
 #align nat.arithmetic_function.is_multiplicative.eq_iff_eq_on_prime_powers Nat.ArithmeticFunction.IsMultiplicative.eq_iff_eq_on_prime_powers
 
-theorem prodToFinsetFactors [CommMonoidWithZero R] (f : ℕ → R) : IsMultiplicative (∏ᵖ f) :=
-  by
+theorem prodToFinsetFactors [CommMonoidWithZero R] (f : ℕ → R) : IsMultiplicative (∏ᵖ f) := by
   rw [iff_ne_zero]
   constructor
   · apply prodToFinsetFactors_apply
