@@ -190,9 +190,9 @@ theorem fixedPoints_eq_singleton :
     rw [mem_powers_iff] at h
     obtain ⟨n, h⟩ := h
     rcases Nat.even_or_odd' n with ⟨m, hm | hm⟩ <;> rw [hm] at h
-    · rw [pow_mul, complexInvo_sq k, one_pow] at h
+    · rw [pow_mul, complexInvo_sq, one_pow] at h
       rw [← h]; rfl
-    · rw [pow_add, pow_mul, complexInvo_sq k, one_pow, pow_one, one_mul] at h
+    · rw [pow_add, pow_mul, complexInvo_sq, one_pow, pow_one, one_mul] at h
       rw [← h]; unfold complexInvo; simp
   · intro t mem
     replace mem := unique_of_mem_fixedPoints k mem
