@@ -711,14 +711,15 @@ open GalConjClasses
 def toConjEquiv : mapDomainFixed s F ≃ (GalConjClasses ℚ (K s) →₀ F) :=
   by
   refine' (mapDomainFixedEquivSubtype s F).trans _
+  letI f' (f : { f : AddMonoidAlgebra F (K s) // MulAction.orbitRel (_root_.Gal s) (K s) ≤ Setoid.ker ↑f }) :=
+    @Quotient.liftFinsupp _ _ (IsGalConj.setoid _ _) _ (f : AddMonoidAlgebra F (K s)) f.2
   refine'
-    { toFun := fun f =>
-        @Quotient.liftFinsupp _ _ (IsGalConj.setoid _ _) _ (f : AddMonoidAlgebra F (K s)) f.2
+    { toFun := f'
       invFun := fun f => ⟨_, _⟩
       left_inv := _
       right_inv := _ }
-  · refine' ⟨f.support.bUnion fun i => i.orbit.to_finset, fun x => f (mk _ x), fun i => _⟩
-    simp_rw [mem_bUnion, Set.mem_toFinset, mem_orbit, Finsupp.mem_support_iff, exists_prop,
+  · refine' ⟨f.support.biUnion fun i => i.orbit.toFinset, fun x => f (GalConjClasses.mk ℚ x), fun i => _⟩
+    simp_rw [mem_biUnion, Set.mem_toFinset, mem_orbit, Finsupp.mem_support_iff, exists_prop,
       exists_eq_right']
   · change ∀ i j, i ∈ MulAction.orbit (Gal s) j → f (Quotient.mk'' i) = f (Quotient.mk'' j)
     exact fun i j h => congr_arg f (Quotient.sound' h)
