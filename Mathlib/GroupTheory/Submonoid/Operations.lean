@@ -1245,10 +1245,10 @@ theorem mker_inr : mker (inr M N) = ⊥ := by
 #align add_monoid_hom.mker_inr AddMonoidHom.mker_inr
 
 @[to_additive (attr := simp)]
-lemma mker_fst : mker (fst M N) = (.prod ⊥ ⊤) := SetLike.ext fun _ => (and_true_iff _).symm
+lemma mker_fst : mker (fst M N) = .prod ⊥ ⊤ := SetLike.ext fun _ => (and_true_iff _).symm
 
 @[to_additive (attr := simp)]
-lemma mker_snd : mker (snd M N) = (.prod ⊤ ⊥) := SetLike.ext fun _ => (true_and_iff _).symm
+lemma mker_snd : mker (snd M N) = .prod ⊤ ⊥ := SetLike.ext fun _ => (true_and_iff _).symm
 
 /-- The `MonoidHom` from the preimage of a submonoid to itself. -/
 @[to_additive (attr := simps)
