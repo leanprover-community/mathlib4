@@ -548,6 +548,9 @@ theorem AnalyticAt.congr (hf : AnalyticAt 𝕜 f x) (hg : f =ᶠ[𝓝 x] g) : An
   let ⟨_, hpf⟩ := hf
   (hpf.congr hg).analyticAt
 
+theorem analyticAt_congr (h : f =ᶠ[𝓝 x] g) : AnalyticAt 𝕜 f x ↔ AnalyticAt 𝕜 g x :=
+  ⟨fun hf ↦ hf.congr h, fun hg ↦ hg.congr h.symm⟩
+
 theorem AnalyticAt.add (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) : AnalyticAt 𝕜 (f + g) x :=
   let ⟨_, hpf⟩ := hf
   let ⟨_, hqf⟩ := hg
@@ -599,6 +602,9 @@ theorem AnalyticOn.congr' {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : ∀ z ∈
 theorem AnalyticOn.congr {s : Set E} (hs : IsOpen s) (hf : AnalyticOn 𝕜 f s)
     (hg : ∀ z ∈ s, f z = g z) : AnalyticOn 𝕜 g s :=
   hf.congr' (fun _ hz ↦ eventuallyEq_iff_exists_mem.mpr ⟨s, hs.mem_nhds hz, hg⟩)
+
+theorem analyticOn_congr {s : Set E} (hs : IsOpen s) (h : ∀ z ∈ s, f z = g z) : AnalyticOn 𝕜 f s ↔
+    AnalyticOn 𝕜 g s := ⟨fun hf ↦ hf.congr hs h, fun hg ↦ hg.congr hs (fun z hz ↦ (h z hz).symm)⟩
 
 theorem AnalyticOn.add {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
     AnalyticOn 𝕜 (f + g) s :=
