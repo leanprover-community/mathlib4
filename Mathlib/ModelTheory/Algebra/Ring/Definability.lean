@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 
 import Mathlib.ModelTheory.Definability
+import Mathlib.ModelTheory.Ring.Basic
 import Mathlib.RingTheory.Nullstellensatz
 
 /-!
@@ -21,13 +22,13 @@ namespace Ring
 
 open MvPolynomial Language BoundedFormula
 
-theorem mvPolynomial_zeroLocus_definable {κ K : Type*} [Field K]
-    [CompatibleRing K] (S : Finset (MvPolynomial κ K)) :
+theorem mvPolynomial_zeroLocus_definable {ι K : Type*} [Field K]
+    [CompatibleRing K] (S : Finset (MvPolynomial ι K)) :
     Set.Definable (⋃ p ∈ S, p.coeff '' p.support : Set K) Language.ring
-     (zeroLocus (Ideal.span (S : Set (MvPolynomial κ K)))) := by
+     (zeroLocus (Ideal.span (S : Set (MvPolynomial ι K)))) := by
   rw [Set.definable_iff_exists_formula_sum]
   let p' := genericPolyMap (fun p : S => p.1.support)
-  letI := Classical.decEq κ
+  letI := Classical.decEq ι
   letI := Classical.decEq K
   rw [MvPolynomial.zeroLocus_span]
   refine ⟨BoundedFormula.iInf S.attach
