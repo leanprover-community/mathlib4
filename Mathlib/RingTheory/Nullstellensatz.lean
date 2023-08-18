@@ -98,6 +98,13 @@ theorem zeroLocus_vanishingIdeal_galoisConnection :
     le_trans (zeroLocus_anti_mono h) (zeroLocus_vanishingIdeal_le V)⟩
 #align mv_polynomial.zero_locus_vanishing_ideal_galois_connection MvPolynomial.zeroLocus_vanishingIdeal_galoisConnection
 
+theorem zeroLocus_span (S : Set (MvPolynomial σ k)) :
+    zeroLocus (Ideal.span S) = { x | ∀ p ∈ S, eval x p = 0 } :=
+  Set.Subset.antisymm
+    (fun _ hx _ hp => hx _ (Ideal.subset_span hp))
+    (zeroLocus_vanishingIdeal_galoisConnection.l_le <|
+      Ideal.span_le.2 <| fun _ hp _ hx => hx _ hp)
+
 theorem mem_vanishingIdeal_singleton_iff (x : σ → k) (p : MvPolynomial σ k) :
     p ∈ (vanishingIdeal {x} : Ideal (MvPolynomial σ k)) ↔ eval x p = 0 :=
   ⟨fun h => h x rfl, fun hpx _ hy => hy.symm ▸ hpx⟩
