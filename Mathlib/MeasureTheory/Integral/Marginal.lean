@@ -1036,9 +1036,8 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
     have H₂ : ((insert i s).card : ℝ) + (insert i s)ᶜ.card = #ι
     · exact_mod_cast (insert i s).card_add_card_compl
     have H₃ : p * (#ι - 1) = 1
-    · dsimp only
-      have : (#ι:ℝ) - 1 ≠ 0 := by positivity
-      field_simp [this]
+    · have : (#ι:ℝ) - 1 ≠ 0 := by positivity
+      field_simp
     linear_combination -p * H₁ + p * H₂ + H₃
   have hf' : ∀ {s' : Finset ι}, Measurable fun t ↦ (∫⋯∫_s', f ∂μ) (update x i t) :=
     fun {_} ↦ hf.marginal μ |>.comp <| measurable_update _
@@ -1053,7 +1052,7 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
               clear_value F X
               congr! 1
               ext t
-              have hi' : i ∉ (insert i s)ᶜ := (not_mem_compl.mpr <| mem_insert_self i s)
+              have hi' : i ∉ (insert i s)ᶜ := not_mem_compl.mpr <| mem_insert_self i s
               simp_rw [← insert_compl_insert hi, prod_insert hi']
               ring_nf
     _ = F (insert i s) x ^ p *
@@ -1079,7 +1078,7 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
           (F (insert i s) x ^ (m * p) *
             ∏ j in (insert i s)ᶜ, F (insert i (insert j s)) x ^ p) := by
               -- absorb the newly-created integrals into `∫⋯∫`
-              simp only
+              dsimp only
               rw [marginal_insert _ hf hi]
               congr! 2; refine prod_congr rfl fun j hj => ?_
               have hi' : i ∉ insert j s
