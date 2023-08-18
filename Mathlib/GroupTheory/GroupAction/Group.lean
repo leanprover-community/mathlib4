@@ -6,7 +6,7 @@ Authors: Chris Hughes
 import Mathlib.Algebra.Hom.Aut
 import Mathlib.GroupTheory.GroupAction.Units
 
-#align_import group_theory.group_action.group from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"
+#align_import group_theory.group_action.group from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
 
 /-!
 # Group actions applied to various types of group

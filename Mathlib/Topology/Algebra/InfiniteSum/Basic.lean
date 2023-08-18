@@ -8,7 +8,7 @@ import Mathlib.Logic.Encodable.Lattice
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.Algebra.Star
 
-#align_import topology.algebra.infinite_sum.basic from "leanprover-community/mathlib"@"3b1890e71632be9e3b2086ab512c3259a7e9a3ef"
+#align_import topology.algebra.infinite_sum.basic from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
 
 /-!
 # Infinite sum over a topological monoid

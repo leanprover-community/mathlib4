@@ -6,7 +6,7 @@ Authors: Yury G. Kudryashov
 import Mathlib.MeasureTheory.Group.Action
 import Mathlib.MeasureTheory.Integral.SetIntegral
 
-#align_import measure_theory.group.fundamental_domain from "leanprover-community/mathlib"@"eb810cf549db839dadf13353dbe69bac55acdbbc"
+#align_import measure_theory.group.fundamental_domain from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
 
 /-!
 # Fundamental domain of a group action

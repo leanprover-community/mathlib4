@@ -7,7 +7,7 @@ import Mathlib.MeasureTheory.Measure.Haar.Basic
 import Mathlib.MeasureTheory.Group.FundamentalDomain
 import Mathlib.Algebra.Group.Opposite
 
-#align_import measure_theory.measure.haar.quotient from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
+#align_import measure_theory.measure.haar.quotient from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
 
 /-!
 # Haar quotient measure
