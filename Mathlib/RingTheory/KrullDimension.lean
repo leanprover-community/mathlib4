@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fangming Li, Jujian Zhang
 -/
 
+import Init.Core
 import Mathlib.Order.KrullDimension
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.RingTheory.Ideal.Basic
@@ -127,6 +128,54 @@ lemma eq_zero_of_IsArtinianRing (R : Type _) [CommRing R] [Nontrivial R] [IsArti
         exact (ne_of_lt this (show q 0 = q 1 by
           rw [Subtype.ext_iff_val, PrimeSpectrum.ext_iff];
           exact H0.eq_of_le (q 1).1.IsPrime.1 (le_of_lt this))) }
+
+/--
+Any PID that is not a field is finite dimensional with dimension 1.
+-/
+@[simps]
+noncomputable def PID_finiteDimensional (R : Type _) [CommRing R] [IsPrincipalIdealRing R]
+  [IsDomain R] (hR : ¬ IsField R) : OrderTop (LTSeries (PrimeSpectrum R)) where
+    top := {
+      length := 1
+      toFun := (finTwoArrowEquiv $ PrimeSpectrum R).symm ⟨⟨⊥, Ideal.bot_prime⟩,
+        ⟨(Ideal.exists_maximal R).choose, (Ideal.exists_maximal R).choose_spec.isPrime⟩⟩
+      step := λ i ↦ by
+        fin_cases i
+        rw [show ⟨⊥, _⟩ = (⊥ : PrimeSpectrum R) by rfl]
+        exact @Ideal.bot_lt_of_maximal R _ _ (Ideal.exists_maximal R).choose
+          (Ideal.exists_maximal R).choose_spec hR }
+    le_top := λ ⟨l, f, m⟩ ↦
+      show l ≤ 1 from Decidable.by_contradiction $ λ rid ↦ by
+      · rw [not_le] at rid
+        let a := Submodule.IsPrincipal.generator (f 1).asIdeal
+        let b := Submodule.IsPrincipal.generator (f 2).asIdeal
+        have hf1 : (f 1).asIdeal ≠ ⊥ := λ h ↦ by
+          have : (f 0).asIdeal < (f 1).asIdeal := by
+            rw [←(show Fin.castSucc ⟨0, Nat.lt_of_succ_lt rid⟩ = 0 by rfl), ←(show Fin.succ
+              ⟨0, Nat.lt_of_succ_lt rid⟩ = 1 by exact Iff.mpr Fin.mk_eq_mk (id (Eq.symm (show
+              @Fin.val (l + 1) 1 = 1 by simp [OfNat.ofNat]; exact Nat.lt.step rid))))]
+            exact m ⟨0, Nat.lt_of_succ_lt rid⟩
+          rw [h] at this
+          exact (not_le_of_lt this bot_le).elim
+        have hf12 : (f 1).asIdeal < (f 2).asIdeal := by
+          rw [←(show Fin.castSucc ⟨1, rid⟩ = 1 by exact Iff.mpr Fin.mk_eq_mk (id (Eq.symm
+            (show @Fin.val (l + 1) 1 = 1 by simp [OfNat.ofNat]; exact Nat.lt.step rid)))),
+            ←(show Fin.succ ⟨1, rid⟩ = 2 by rw [show Fin.succ ⟨1, rid⟩ = 1 + 1 by
+            refine Eq.symm (Fin.ext ?_); simp [HAdd.hAdd, Add.add, Fin.add];
+            exact Nat.add_lt_of_lt_sub rid]; exact one_add_one_eq_two)]
+          exact m ⟨1, rid⟩
+        have lt1 : Ideal.span {a} < Ideal.span {b} := by
+          rw [Ideal.span_singleton_generator, Ideal.span_singleton_generator]
+          exact hf12
+        rw [Ideal.span_singleton_lt_span_singleton] at lt1
+        rcases lt1 with ⟨h, ⟨r, hr1, hr2⟩⟩
+        have ha : Prime a := Submodule.IsPrincipal.prime_generator_of_isPrime (f 1).asIdeal hf1
+        have hb : Prime b := Submodule.IsPrincipal.prime_generator_of_isPrime (f 2).asIdeal $
+          Iff.mp bot_lt_iff_ne_bot (lt_trans (Ne.bot_lt hf1) hf12)
+        · obtain ⟨x, hx⟩ := (hb.dvd_prime_iff_associated ha).mp ⟨r, hr2⟩
+          rw [←hx] at hr2
+          rw [←mul_left_cancel₀ h hr2] at hr1
+          exact (hr1 x.isUnit).elim
 
 /--
 https://stacks.math.columbia.edu/tag/00KG
