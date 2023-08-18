@@ -173,7 +173,7 @@ theorem exists_sq_add_sq : ∃ a b : ℕ, a ^ 2 + b ^ 2 = 4 * k + 1 := by
   apply sq_add_sq_of_nonempty_fixedPoints
   have := (card_modEq_card_fixedPoints_of_sq (obvInvo k) (obvInvo_sq k)).symm.trans
     (card_modEq_card_fixedPoints_of_sq (complexInvo k) (complexInvo_sq k))
-  contrapose! this
+  contrapose this
   rw [Set.not_nonempty_iff_eq_empty] at this
   simp_rw [this, Fintype.card_of_isEmpty, fixedPoints_eq_singleton, Fintype.card_ofSubsingleton]
 
