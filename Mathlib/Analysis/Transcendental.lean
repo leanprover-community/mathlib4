@@ -358,10 +358,11 @@ def algEquivCongrLeft {k R S G : Type _} [CommSemiring k] [Semiring R] [Algebra 
     invFun :=
       (Finsupp.mapRange f.symm f.symm.map_zero : AddMonoidAlgebra S G → AddMonoidAlgebra R G)
     commutes' := fun r => by
-      ext
+      -- Porting note: was `ext`
+      refine Finsupp.ext fun a => ?_
       simp_rw [AddMonoidAlgebra.coe_algebraMap, Function.comp_apply, Finsupp.mapRange_single]
       congr 2
-      change f.to_alg_hom ((algebraMap k R) r) = (algebraMap k S) r
+      change f.toAlgHom ((algebraMap k R) r) = (algebraMap k S) r
       rw [AlgHom.map_algebraMap] }
 #align add_monoid_algebra.alg_equiv_congr_left AddMonoidAlgebra.algEquivCongrLeft
 
@@ -370,8 +371,14 @@ def algAutCongrLeft {k R G : Type _} [CommSemiring k] [Semiring R] [Algebra k R]
     (R ≃ₐ[k] R) →* AddMonoidAlgebra R G ≃ₐ[k] AddMonoidAlgebra R G
     where
   toFun f := algEquivCongrLeft f
-  map_one' := by ext; rfl
-  map_mul' x y := by ext; rfl
+  map_one' := by
+    ext
+    refine Finsupp.ext fun a => ?_
+    simp [Finsupp.mapRange_apply]
+  map_mul' x y := by
+    ext
+    refine Finsupp.ext fun a => ?_
+    simp [Finsupp.mapRange_apply]
 #align add_monoid_algebra.alg_aut_congr_left AddMonoidAlgebra.algAutCongrLeft
 
 @[simps]
@@ -382,11 +389,18 @@ def mapDomainRingEquiv (k : Type _) [Semiring k] {G H : Type _} [AddMonoid G] [A
     invFun := Finsupp.equivMapDomain f.symm
     map_mul' := fun x y => by
       simp_rw [← Finsupp.domCongr_apply]
-      induction x using Finsupp.induction_linear
-      · simp only [map_zero, MulZeroClass.zero_mul]; · simp only [add_mul, map_add, *]
+      induction x using Finsupp.induction_linear with
+      | h0 =>
+          simp only [map_zero, MulZeroClass.zero_mul]
+      | hadd f g hf hg =>
+        -- Porting note: was
+        -- simp only [add_mul, map_add, *]
+        rw [add_mul, map_add, hf, hg, map_add, add_mul]
+      | hsingle => ?_
       induction y using Finsupp.induction_linear <;>
         simp only [MulZeroClass.mul_zero, MulZeroClass.zero_mul, map_zero, mul_add, map_add, *]
-      ext;
+      -- Porting note: was `ext`
+      refine Finsupp.ext fun a => ?_
       simp only [Finsupp.domCongr_apply, single_mul_single, Finsupp.equivMapDomain_single,
         AddEquiv.coe_toEquiv, map_add] }
 #align add_monoid_algebra.map_domain_ring_equiv AddMonoidAlgebra.mapDomainRingEquiv
@@ -407,8 +421,14 @@ def mapDomainAlgAut (k A : Type _) [CommSemiring k] [Semiring A] [Algebra k A] {
     [AddMonoid G] : AddAut G →* AddMonoidAlgebra A G ≃ₐ[k] AddMonoidAlgebra A G
     where
   toFun := mapDomainAlgEquiv k A
-  map_one' := by ext; rfl
-  map_mul' x y := by ext; rfl
+  map_one' := by
+    ext
+    refine Finsupp.ext fun a => ?_
+    rfl
+  map_mul' x y := by
+    ext
+    refine Finsupp.ext fun a => ?_
+    rfl
 #align add_monoid_algebra.map_domain_alg_aut AddMonoidAlgebra.mapDomainAlgAut
 
 end AddMonoidAlgebra
