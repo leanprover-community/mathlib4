@@ -19,7 +19,7 @@ This file proves basic results about the sum type `α ⊕ β`.
 * `Sum.isLeft`: Returns whether `x : α ⊕ β` comes from the left component or not.
 * `Sum.isRight`: Returns whether `x : α ⊕ β` comes from the right component or not.
 * `Sum.getLeft`: Retrieves the left content of a `x : α ⊕ β` that is known to come from the left.
-* `Sum.getRight?`: Retrieves the right content of `x : α ⊕ β` that is known to come from the right.
+* `Sum.getRight`: Retrieves the right content of `x : α ⊕ β` that is known to come from the right.
 * `Sum.getLeft?`: Retrieves the left content of `x : α ⊕ β` as an option type or returns `none`
   if it's coming from the right.
 * `Sum.getRight?`: Retrieves the right content of `x : α ⊕ β` as an option type or returns `none`
@@ -108,17 +108,17 @@ variable {x y : Sum α β}
 @[simp] theorem isRight_inl (x : α) : (inl x : α ⊕ β).isRight = false := rfl
 @[simp] theorem isRight_inr (x : β) : (inr x : α ⊕ β).isRight = true := rfl
 
-@[simp] lemma getLeft_inl (x : α) (h : (inl x : α ⊕ β).isLeft) : (inl x).getLeft h = x := rfl
-@[simp] lemma getRight_inr (x : β) (h : (inr x : α ⊕ β).isRight) : (inr x).getRight h = x := rfl
+@[simp] theorem getLeft_inl (x : α) (h : (inl x : α ⊕ β).isLeft) : (inl x).getLeft h = x := rfl
+@[simp] theorem getRight_inr (x : β) (h : (inr x : α ⊕ β).isRight) : (inr x).getRight h = x := rfl
 
 @[simp] theorem getLeft?_inl (x : α) : (inl x : α ⊕ β).getLeft? = some x := rfl
 @[simp] theorem getLeft?_inr (x : β) : (inr x : α ⊕ β).getLeft? = none := rfl
 @[simp] theorem getRight?_inl (x : α) : (inl x : α ⊕ β).getRight? = none := rfl
 @[simp] theorem getRight?_inr (x : β) : (inr x : α ⊕ β).getRight? = some x := rfl
 
-@[simp] lemma inl_getLeft : ∀ (x : α ⊕ β) (h : x.isLeft), inl (x.getLeft h) = x
+@[simp] theorem inl_getLeft : ∀ (x : α ⊕ β) (h : x.isLeft), inl (x.getLeft h) = x
   | inl _, _ => rfl
-@[simp] lemma inr_getRight : ∀ (x : α ⊕ β) (h : x.isRight), inr (x.getRight h) = x
+@[simp] theorem inr_getRight : ∀ (x : α ⊕ β) (h : x.isRight), inr (x.getRight h) = x
   | inr _, _ => rfl
 
 @[simp] theorem getLeft?_eq_none_iff : x.getLeft? = none ↔ x.isRight := by
@@ -129,36 +129,36 @@ variable {x y : Sum α β}
   cases x <;> simp only [getRight?, isLeft, eq_self_iff_true]
 #align sum.get_right_eq_none_iff Sum.getRight?_eq_none_iff
 
-lemma eq_left_getLeft_of_isLeft : ∀ {x : α ⊕ β} (h : x.isLeft), x = inl (x.getLeft h)
+theorem eq_left_getLeft_of_isLeft : ∀ {x : α ⊕ β} (h : x.isLeft), x = inl (x.getLeft h)
   | inl _, _ => rfl
 
-lemma eq_left_iff_getLeft_eq {a : α} : x = inl a ↔ ∃ h, x.getLeft h = a := by
+theorem eq_left_iff_getLeft_eq {a : α} : x = inl a ↔ ∃ h, x.getLeft h = a := by
   cases x <;> simp; exact fun c => c.elim
 
-@[simp] lemma getLeft_eq_iff {a : α} (h : x.isLeft) : x.getLeft h = a ↔ x = inl a := by
+@[simp] theorem getLeft_eq_iff {a : α} (h : x.isLeft) : x.getLeft h = a ↔ x = inl a := by
   cases x <;> simp at h ⊢
 
-lemma eq_right_getRight_of_isRight : ∀ {x : α ⊕ β} (h : x.isRight), x = inr (x.getRight h)
+theorem eq_right_getRight_of_isRight : ∀ {x : α ⊕ β} (h : x.isRight), x = inr (x.getRight h)
   | inr _, _ => rfl
 
-lemma eq_right_iff_getRight_eq {b : β} : x = inr b ↔ ∃ h, x.getRight h = b := by
+theorem eq_right_iff_getRight_eq {b : β} : x = inr b ↔ ∃ h, x.getRight h = b := by
   cases x <;> simp; exact fun c => c.elim
 
-@[simp] lemma getRight_eq_iff {b : β} (h : x.isRight) : x.getRight h = b ↔ x = inr b := by
+@[simp] theorem getRight_eq_iff {b : β} (h : x.isRight) : x.getRight h = b ↔ x = inr b := by
   cases x <;> simp at h ⊢
 
-@[simp] lemma getLeft?_eq_some_iff {a : α} : x.getLeft? = some a ↔ x = inl a := by
+@[simp] theorem getLeft?_eq_some_iff {a : α} : x.getLeft? = some a ↔ x = inl a := by
   cases x <;> simp only [getLeft?, Option.some.injEq, inl.injEq]
 #align sum.get_left_eq_some_iff Sum.getLeft?_eq_some_iff
 
-@[simp] lemma getRight?_eq_some_iff {b : β} : x.getRight? = some b ↔ x = inr b := by
+@[simp] theorem getRight?_eq_some_iff {b : β} : x.getRight? = some b ↔ x = inr b := by
   cases x <;> simp only [getRight?, Option.some.injEq, inr.injEq]
 #align sum.get_right_eq_some_iff Sum.getRight?_eq_some_iff
 
-lemma getLeft_eq_getLeft? (h₁ : x.isLeft) (h₂ : x.getLeft?.isSome) :
+theorem getLeft_eq_getLeft? (h₁ : x.isLeft) (h₂ : x.getLeft?.isSome) :
 x.getLeft h₁ = x.getLeft?.get h₂ := by simp [← getLeft?_eq_some_iff]
 
-lemma getRight_eq_getRight? (h₁ : x.isRight) (h₂ : x.getRight?.isSome) :
+theorem getRight_eq_getRight? (h₁ : x.isRight) (h₂ : x.getRight?.isSome) :
 x.getRight h₁ = x.getRight?.get h₂ := by simp [← getRight?_eq_some_iff]
 
 @[simp]
@@ -189,10 +189,10 @@ theorem isLeft_iff : x.isLeft ↔ ∃ y, x = Sum.inl y := by cases x <;> simp
 theorem isRight_iff : x.isRight ↔ ∃ y, x = Sum.inr y := by cases x <;> simp
 #align sum.is_right_iff Sum.isRight_iff
 
-@[simp] lemma isSome_getLeft?_iff_isLeft : x.getLeft?.isSome ↔ x.isLeft := by
+@[simp] theorem isSome_getLeft?_iff_isLeft : x.getLeft?.isSome ↔ x.isLeft := by
 rw [isLeft_iff, Option.isSome_iff_exists]; simp
 
-@[simp] lemma isSome_getRight?_iff_isRight : x.getRight?.isSome ↔ x.isRight := by
+@[simp] theorem isSome_getRight?_iff_isRight : x.getRight?.isSome ↔ x.isRight := by
 rw [isRight_iff, Option.isSome_iff_exists]; simp
 
 end get
