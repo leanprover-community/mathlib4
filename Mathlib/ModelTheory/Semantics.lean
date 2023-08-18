@@ -394,6 +394,7 @@ theorem realize_mapTermRel_add_castLe [L'.Structure M] {k : ℕ}
   · simp [mapTermRel, Realize, ih, hv]
 #align first_order.language.bounded_formula.realize_map_term_rel_add_cast_le FirstOrder.Language.BoundedFormula.realize_mapTermRel_add_castLe
 
+@[simp]
 theorem realize_relabel {m n : ℕ} {φ : L.BoundedFormula α n} {g : α → Sum β (Fin m)} {v : β → M}
     {xs : Fin (m + n) → M} :
     (φ.relabel g).Realize v xs ↔
