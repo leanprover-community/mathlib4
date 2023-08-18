@@ -628,7 +628,7 @@ def ratCoeffEquiv : ratCoeff s ≃ₐ[ℚ] AddMonoidAlgebra ℚ (K s) :=
 #align rat_coeff_equiv ratCoeffEquiv
 
 theorem ratCoeffEquiv_apply_apply (x : ratCoeff s) (i : K s) :
-    ratCoeffEquiv s x i = (IntermediateField.botEquiv ℚ (K s)) ⟨x i, x.2 i⟩ :=
+    ratCoeffEquiv s x i = (IntermediateField.botEquiv ℚ (K s)) ⟨(x : AddMonoidAlgebra (K s) (K s)) i, x.2 i⟩ :=
   rfl
 #align rat_coeff_equiv_apply_apply ratCoeffEquiv_apply_apply
 
