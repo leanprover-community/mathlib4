@@ -199,6 +199,10 @@ open Function FirstOrder Language Field Ring MvPolynomial
 
 variable {K : Type*} [Field K] [IsAlgClosed K] {ι κ : Type*} [Finite ι] [Finite κ]
 
+/-- A slight generalization of the **Ax-Grothendieck** theorem
+
+If `K` is an algebraically closed field, and `S` is a definable subset of `ι → K`, then any
+injective polynomial map `S → S`  is also surjective on `S`. -/
 theorem ax_grothendieck_of_definable [CompatibleRing K] {c : Set K}
     (S : Set (ι → K)) (hS : c.Definable Language.ring S)
     (ps : ι → MvPolynomial ι K) :
@@ -220,6 +224,11 @@ theorem ax_grothendieck_of_definable [CompatibleRing K] {c : Set K}
     realize_genericPolyMapSurjOnOfInjOn] at this
   exact this Subtype.val ⟨ps, fun i => Set.Subset.refl _⟩
 
+/-- The **Ax-Grothendieck** theorem
+
+If `K` is an algebraically closed field, and `S : Set (ι → K)` is the `zeroLocus` of an ideal
+of the multivariable polynomial ring, then any injective polynomial map `S → S`  is also
+surjective on `S`. -/
 theorem ax_grothendieck_zeroLocus
     (I : Ideal (MvPolynomial ι K))
     (ps : ι → MvPolynomial ι K) :
@@ -234,11 +243,11 @@ theorem ax_grothendieck_zeroLocus
   exact ax_grothendieck_of_definable
     S (mvPolynomial_zeroLocus_definable s) ps
 
-/-- The **Ax-Grothendieck** theorem
+/-- A special case of the **Ax-Grothendieck** theorem
 
 Any injective polynomial map `K^n → K^n` is also surjective if `K` is an
 algberaically closed field. -/
-theorem ax_grothendieck {ι K : Type*} [Finite ι] [Field K]
+theorem ax_grothendieck_univ {ι K : Type*} [Finite ι] [Field K]
     [IsAlgClosed K] (ps : ι → MvPolynomial ι K) :
     Injective (fun v i => MvPolynomial.eval v (ps i)) →
     Surjective fun v i => MvPolynomial.eval v (ps i) := by
