@@ -173,11 +173,9 @@ theorem exists_sq_add_sq : ∃ a b : ℕ, a ^ 2 + b ^ 2 = 4 * k + 1 := by
   apply sq_add_sq_of_nonempty_fixedPoints
   have := (card_modEq_card_fixedPoints_of_sq (obvInvo k) (obvInvo_sq k)).symm.trans
     (card_modEq_card_fixedPoints_of_sq (complexInvo k) (complexInvo_sq k))
-  simp_rw [fixedPoints_eq_singleton, Nat.ModEq] at this
-  norm_num at this; rw [← Nat.odd_iff] at this
-  replace this := Odd.pos this
-  rw [← Set.toFinset_card, Finset.card_pos, Set.toFinset_nonempty] at this
-  assumption
+  contrapose! this
+  rw [Set.not_nonempty_iff_eq_empty] at this
+  simp_rw [this, Fintype.card_of_isEmpty, fixedPoints_eq_singleton, Fintype.card_ofSubsingleton]
 
 end Involutions
 
@@ -185,10 +183,7 @@ end Zagier
 
 /-- **Fermat's theorem on sums of two squares** (Wiedijk #20).
 Every prime congruent to 1 mod 4 is the sum of two squares, proved using Zagier's involutions. -/
-theorem Nat.Prime.sq_add_sq' {p : ℕ} [Fact p.Prime] (hp : p % 4 = 1) :
+theorem Nat.Prime.sq_add_sq' {p : ℕ} [h : Fact p.Prime] (hp : p % 4 = 1) :
     ∃ a b : ℕ, a ^ 2 + b ^ 2 = p := by
-  have md := div_add_mod p 4
-  rw [hp] at md
-  have := @Zagier.exists_sq_add_sq (p / 4) (by rw [md]; infer_instance)
-  rw [md] at this
-  assumption
+  rw [←div_add_mod p 4, hp] at h ⊢
+  apply Zagier.exists_sq_add_sq
