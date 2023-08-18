@@ -251,7 +251,7 @@ syntax term_pattern := term:max
 /-- a single `#find` pattern -/
 syntax find_pattern := name_pattern <|> ident_pattern <|> conclusion_pattern <|> term_pattern
 
--- This is useful for other tools (e.g. CLI tools) wrapping the find functionality
+/-- A syntax category for the argument to `#find`, so that it can be used by external tools. -/
 declare_syntax_cat find_patterns
 /-- `#find` patterns -/
 syntax find_pattern* : find_patterns
