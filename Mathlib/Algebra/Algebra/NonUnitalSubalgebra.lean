@@ -432,24 +432,30 @@ theorem range_comp_le_range (f : A →ₙₐ[R] B) (g : B →ₙₐ[R] C) :
     NonUnitalAlgHom.range (g.comp f) ≤ NonUnitalAlgHom.range g :=
   SetLike.coe_mono (Set.range_comp_subset_range f g)
 
+section codRestrict
+
+variable {S : Type*} [SetLike S B] [NonUnitalSubsemiringClass S B] [SMulMemClass S R B]
+
 /-- Restrict the codomain of a non-unital algebra homomorphism. -/
-def codRestrict (f : F) (S : NonUnitalSubalgebra R B) (hf : ∀ x, f x ∈ S) : A →ₙₐ[R] S :=
-  { NonUnitalRingHom.codRestrict (f : A →ₙ+* B) S.toNonUnitalSubsemiring hf with
+def codRestrict (f : F) (s : S) (hf : ∀ x, f x ∈ s) : A →ₙₐ[R] s :=
+  { NonUnitalRingHom.codRestrict (f : A →ₙ+* B) s hf with
     map_smul' := fun r a => Subtype.ext <| map_smul f r a }
 
 @[simp]
-theorem subtype_comp_codRestrict (f : F) (S : NonUnitalSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
-    (NonUnitalSubalgebraClass.subtype S).comp (NonUnitalAlgHom.codRestrict f S hf) = f :=
+theorem subtype_comp_codRestrict (f : F) (s : S) (hf : ∀ x : A, f x ∈ s) :
+    (NonUnitalSubalgebraClass.subtype s).comp (NonUnitalAlgHom.codRestrict f s hf) = f :=
   NonUnitalAlgHom.ext fun _ => rfl
 
 @[simp]
-theorem coe_codRestrict (f : F) (S : NonUnitalSubalgebra R B) (hf : ∀ x, f x ∈ S) (x : A) :
-    ↑(NonUnitalAlgHom.codRestrict f S hf x) = f x :=
+theorem coe_codRestrict (f : F) (s : S) (hf : ∀ x, f x ∈ s) (x : A) :
+    NonUnitalAlgHom.codRestrict f s hf x = f x :=
   rfl
 
-theorem injective_codRestrict (f : F) (S : NonUnitalSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
-    Function.Injective (NonUnitalAlgHom.codRestrict f S hf) ↔ Function.Injective f :=
+theorem injective_codRestrict (f : F) (s : S) (hf : ∀ x : A, f x ∈ s) :
+    Function.Injective (NonUnitalAlgHom.codRestrict f s hf) ↔ Function.Injective f :=
   ⟨fun H _x _y hxy => H <| Subtype.eq hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy : _)⟩
+
+end codRestrict
 
 /-- Restrict the codomain of an alg_hom `f` to `f.range`.
 
