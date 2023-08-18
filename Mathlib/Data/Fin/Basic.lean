@@ -1916,10 +1916,10 @@ protected def toExprQ (i : Fin n) : Q(Fin $n) :=
   q(OfNat.ofNat $i)
 
 open Qq in
-instance toExpr (n : ℕ) : ToExprQ (Fin n) where
+instance instToExprQ (n : ℕ) : ToExprQ (Fin n) where
   level := .zero
   toTypeExprQ := q(Fin $n)
   toExprQ := Fin.toExprQ
-#align fin.reflect Fin.toExprₓ
+#align fin.reflect Fin.instToExprQₓ
 
 end Fin
