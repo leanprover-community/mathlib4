@@ -29,7 +29,7 @@ This file proves basic results about the sum type `α ⊕ β`.
 
 ## Notes
 
-The definition of `Sum` takes values in `Type _`. This effectively forbids `Prop`- valued sum types.
+The definition of `Sum` takes values in `Type*`. This effectively forbids `Prop`- valued sum types.
 To this effect, we have `PSum`, which takes value in `Sort*` and carries a more complicated
 universe signature in consequence. The `Prop` version is `or`.
 -/
@@ -37,7 +37,7 @@ universe signature in consequence. The `Prop` version is `or`.
 
 universe u v w x
 
-variable {α : Type u} {α' : Type w} {β : Type v} {β' : Type x} {γ δ : Type _}
+variable {α : Type u} {α' : Type w} {β : Type v} {β' : Type x} {γ δ : Type*}
 
 namespace Sum
 
@@ -58,6 +58,18 @@ theorem «exists» {p : Sum α β → Prop} : (∃ x, p x) ↔ (∃ a, p (inl a)
     | Or.inl ⟨a, h⟩ => ⟨inl a, h⟩
     | Or.inr ⟨b, h⟩ => ⟨inr b, h⟩⟩
 #align sum.exists Sum.exists
+
+theorem forall_sum_pi {γ : α ⊕ β → Sort*} (p : (∀ ab, γ ab) → Prop) :
+    (∀ fab, p fab) ↔ (∀ fa fb, p (Sum.rec fa fb)) :=
+  ⟨fun h fa fb => h _, fun h fab => by
+    have h1 : fab = Sum.rec (fun a => fab (Sum.inl a)) (fun b => fab (Sum.inr b)) := by
+      ext ab; cases ab <;> rfl
+    rw [h1]; exact h _ _⟩
+
+theorem exists_sum_pi {γ : α ⊕ β → Sort*} (p : (∀ ab, γ ab) → Prop) :
+    (∃ fab, p fab) ↔ (∃ fa fb, p (Sum.rec fa fb)) := by
+  rw [← not_forall_not, forall_sum_pi]
+  simp
 
 theorem inl_injective : Function.Injective (inl : α → Sum α β) := fun _ _ ↦ inl.inj
 #align sum.inl_injective Sum.inl_injective
@@ -491,7 +503,7 @@ theorem lex_inr_inl : ¬Lex r s (inr b) (inl a) :=
   fun.
 #align sum.lex_inr_inl Sum.lex_inr_inl
 
-instance [DecidableRel r] [DecidableRel s] : DecidableRel (Lex r s)
+instance instDecidableRelSumLex [DecidableRel r] [DecidableRel s] : DecidableRel (Lex r s)
   | inl _, inl _ => decidable_of_iff' _ lex_inl_inl
   | inl _, inr _ => Decidable.isTrue (Lex.sep _ _)
   | inr _, inl _ => Decidable.isFalse lex_inr_inl

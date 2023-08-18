@@ -40,8 +40,8 @@ equality. We also require that `D 1 = 0`. See `Derivation.mk'` for a constructor
 assumption from the Leibniz rule when `M` is cancellative.
 
 TODO: update this when bimodules are defined. -/
-structure Derivation (R : Type _) (A : Type _) [CommSemiring R] [CommSemiring A] [Algebra R A]
-    (M : Type _) [AddCommMonoid M] [Module A M] [Module R M] extends A →ₗ[R] M where
+structure Derivation (R : Type*) (A : Type*) [CommSemiring R] [CommSemiring A] [Algebra R A]
+    (M : Type*) [AddCommMonoid M] [Module A M] [Module R M] extends A →ₗ[R] M where
   protected map_one_eq_zero' : toLinearMap 1 = 0
   protected leibniz' (a b : A) : toLinearMap (a * b) = a • toLinearMap b + b • toLinearMap a
 #align derivation Derivation
@@ -53,11 +53,11 @@ namespace Derivation
 
 section
 
-variable {R : Type _} [CommSemiring R]
+variable {R : Type*} [CommSemiring R]
 
-variable {A : Type _} [CommSemiring A] [Algebra R A]
+variable {A : Type*} [CommSemiring A] [Algebra R A]
 
-variable {M : Type _} [AddCommMonoid M] [Module A M] [Module R M]
+variable {M : Type*} [AddCommMonoid M] [Module A M] [Module R M]
 
 variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (r : R) (a b : A)
 
@@ -126,12 +126,12 @@ theorem leibniz : D (a * b) = a • D b + b • D a :=
   D.leibniz' _ _
 #align derivation.leibniz Derivation.leibniz
 
-theorem map_sum {ι : Type _} (s : Finset ι) (f : ι → A) : D (∑ i in s, f i) = ∑ i in s, D (f i) :=
+theorem map_sum {ι : Type*} (s : Finset ι) (f : ι → A) : D (∑ i in s, f i) = ∑ i in s, D (f i) :=
   D.toLinearMap.map_sum
 #align derivation.map_sum Derivation.map_sum
 
 @[simp]
-theorem map_smul_of_tower {S : Type _} [SMul S A] [SMul S M] [LinearMap.CompatibleSMul A M S R]
+theorem map_smul_of_tower {S : Type*} [SMul S A] [SMul S M] [LinearMap.CompatibleSMul A M S R]
     (D : Derivation R A M) (r : S) (a : A) : D (r • a) = r • D a :=
   D.toLinearMap.map_smul_of_tower r a
 #align derivation.map_smul_of_tower Derivation.map_smul_of_tower
@@ -220,7 +220,7 @@ instance : Inhabited (Derivation R A M) :=
 
 section Scalar
 
-variable {S T : Type _}
+variable {S T : Type*}
 
 variable [Monoid S] [DistribMulAction S M] [SMulCommClass R S M] [SMulCommClass S A M]
 
@@ -271,13 +271,13 @@ instance [SMulCommClass S T M] : SMulCommClass S T (Derivation R A M) :=
 
 end Scalar
 
-instance instModule {S : Type _} [Semiring S] [Module S M] [SMulCommClass R S M]
+instance instModule {S : Type*} [Semiring S] [Module S M] [SMulCommClass R S M]
     [SMulCommClass S A M] : Module S (Derivation R A M) :=
   Function.Injective.module S coeFnAddMonoidHom coe_injective coe_smul
 
 section PushForward
 
-variable {N : Type _} [AddCommMonoid N] [Module A N] [Module R N] [IsScalarTower R A M]
+variable {N : Type*} [AddCommMonoid N] [Module A N] [Module R N] [IsScalarTower R A M]
   [IsScalarTower R A N]
 
 variable (f : M →ₗ[A] N) (e : M ≃ₗ[A] N)
@@ -325,7 +325,7 @@ end PushForward
 
 section RestrictScalars
 
-variable {S : Type _} [CommSemiring S]
+variable {S : Type*} [CommSemiring S]
 
 variable [Algebra S A] [Module S M] [LinearMap.CompatibleSMul A M R S]
 
@@ -345,7 +345,7 @@ end
 
 section Cancel
 
-variable {R : Type _} [CommSemiring R] {A : Type _} [CommSemiring A] [Algebra R A] {M : Type _}
+variable {R : Type*} [CommSemiring R] {A : Type*} [CommSemiring A] [Algebra R A] {M : Type*}
   [AddCancelCommMonoid M] [Module R M] [Module A M]
 
 /-- Define `Derivation R A M` from a linear map when `M` is cancellative by verifying the Leibniz
@@ -370,13 +370,13 @@ end Cancel
 
 section
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
-variable {A : Type _} [CommRing A] [Algebra R A]
+variable {A : Type*} [CommRing A] [Algebra R A]
 
 section
 
-variable {M : Type _} [AddCommGroup M] [Module A M] [Module R M]
+variable {M : Type*} [AddCommGroup M] [Module A M] [Module R M]
 
 variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (r : R) (a b : A)
 
@@ -407,7 +407,7 @@ theorem leibniz_invOf [Invertible a] : D (⅟ a) = -⅟ a ^ 2 • D a :=
   D.leibniz_of_mul_eq_one <| invOf_mul_self a
 #align derivation.leibniz_inv_of Derivation.leibniz_invOf
 
-theorem leibniz_inv {K : Type _} [Field K] [Module K M] [Algebra R K] (D : Derivation R K M)
+theorem leibniz_inv {K : Type*} [Field K] [Module K M] [Algebra R K] (D : Derivation R K M)
     (a : K) : D a⁻¹ = -a⁻¹ ^ 2 • D a := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp

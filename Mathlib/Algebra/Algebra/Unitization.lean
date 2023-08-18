@@ -58,7 +58,7 @@ extension to a (unital) algebra homomorphism from `Unitization R A` to `B`.
 
 /-- The minimal unitization of a non-unital `R`-algebra `A`. This is just a type synonym for
 `R × A`.-/
-def Unitization (R A : Type _) :=
+def Unitization (R A : Type*) :=
   R × A
 #align unitization Unitization
 
@@ -66,7 +66,7 @@ namespace Unitization
 
 section Basic
 
-variable {R A : Type _}
+variable {R A : Type*}
 
 /-- The canonical inclusion `R → Unitization R A`. -/
 def inl [Zero A] (r : R) : Unitization R A :=
@@ -137,6 +137,14 @@ theorem inr_injective [Zero R] : Function.Injective ((↑) : A → Unitization R
   Function.LeftInverse.injective <| snd_inr _
 #align unitization.coe_injective Unitization.inr_injective
 
+instance instNontrivialLeft {𝕜 A} [Nontrivial 𝕜] [Nonempty A] :
+    Nontrivial (Unitization 𝕜 A) :=
+  nontrivial_prod_left
+
+instance instNontrivialRight {𝕜 A} [Nonempty 𝕜] [Nontrivial A] :
+    Nontrivial (Unitization 𝕜 A) :=
+  nontrivial_prod_right
+
 end Basic
 
 /-! ### Structures inherited from `Prod`
@@ -146,41 +154,41 @@ Additive operators and scalar multiplication operate elementwise. -/
 
 section Additive
 
-variable {T : Type _} {S : Type _} {R : Type _} {A : Type _}
+variable {T : Type*} {S : Type*} {R : Type*} {A : Type*}
 
 instance instInhabited [Inhabited R] [Inhabited A] : Inhabited (Unitization R A) :=
   instInhabitedProd
 
 instance instZero [Zero R] [Zero A] : Zero (Unitization R A) :=
-  Prod.instZeroSum
+  Prod.instZero
 
 instance instAdd [Add R] [Add A] : Add (Unitization R A) :=
-  Prod.instAddSum
+  Prod.instAdd
 
 instance instNeg [Neg R] [Neg A] : Neg (Unitization R A) :=
-  Prod.instNegSum
+  Prod.instNeg
 
 instance instAddSemigroup [AddSemigroup R] [AddSemigroup A] : AddSemigroup (Unitization R A) :=
-  Prod.instAddSemigroupSum
+  Prod.instAddSemigroup
 
 instance instAddZeroClass [AddZeroClass R] [AddZeroClass A] : AddZeroClass (Unitization R A) :=
-  Prod.instAddZeroClassSum
+  Prod.instAddZeroClass
 
 instance instAddMonoid [AddMonoid R] [AddMonoid A] : AddMonoid (Unitization R A) :=
-  Prod.instAddMonoidSum
+  Prod.instAddMonoid
 
 instance instAddGroup [AddGroup R] [AddGroup A] : AddGroup (Unitization R A) :=
-  Prod.instAddGroupSum
+  Prod.instAddGroup
 
 instance instAddCommSemigroup [AddCommSemigroup R] [AddCommSemigroup A] :
     AddCommSemigroup (Unitization R A) :=
-  Prod.instAddCommSemigroupSum
+  Prod.instAddCommSemigroup
 
 instance instAddCommMonoid [AddCommMonoid R] [AddCommMonoid A] : AddCommMonoid (Unitization R A) :=
-  Prod.instAddCommMonoidSum
+  Prod.instAddCommMonoid
 
 instance instAddCommGroup [AddCommGroup R] [AddCommGroup A] : AddCommGroup (Unitization R A) :=
-  Prod.instAddCommGroupSum
+  Prod.instAddCommGroup
 
 instance instSMul [SMul S R] [SMul S A] : SMul S (Unitization R A) :=
   Prod.smul
@@ -206,7 +214,12 @@ instance instDistribMulAction [Monoid S] [AddMonoid R] [AddMonoid A] [DistribMul
 
 instance instModule [Semiring S] [AddCommMonoid R] [AddCommMonoid A] [Module S R] [Module S A] :
     Module S (Unitization R A) :=
-  Prod.module
+  Prod.instModule
+
+variable (R A) in
+/-- The identity map between `Unitization R A` and `R × A` as an `AddEquiv`. -/
+def addEquiv [Add R] [Add A] : Unitization R A ≃+ R × A :=
+  AddEquiv.refl _
 
 @[simp]
 theorem fst_zero [Zero R] [Zero A] : (0 : Unitization R A).fst = 0 :=
@@ -346,7 +359,7 @@ end Additive
 
 section Mul
 
-variable {R A : Type _}
+variable {R A : Type*}
 
 instance instOne [One R] [Zero A] : One (Unitization R A) :=
   ⟨(1, 0)⟩
@@ -528,7 +541,7 @@ end Mul
 
 section Star
 
-variable {R A : Type _}
+variable {R A : Type*}
 
 instance instStar [Star R] [Star A] : Star (Unitization R A) :=
   ⟨fun ra => (star ra.fst, star ra.snd)⟩
@@ -578,7 +591,7 @@ end Star
 
 section Algebra
 
-variable (S R A : Type _) [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A] [Module R A]
+variable (S R A : Type*) [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A] [Module R A]
   [IsScalarTower R A A] [SMulCommClass R A A] [Algebra S R] [DistribMulAction S A]
   [IsScalarTower S R A]
 
@@ -630,7 +643,7 @@ section coe
 /-- The coercion from a non-unital `R`-algebra `A` to its unitization `Unitization R A`
 realized as a non-unital algebra homomorphism. -/
 @[simps]
-def inrNonUnitalAlgHom (R A : Type _) [CommSemiring R] [NonUnitalSemiring A] [Module R A] :
+def inrNonUnitalAlgHom (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] :
     A →ₙₐ[R] Unitization R A where
   toFun := (↑)
   map_smul' := inr_smul R
@@ -642,7 +655,7 @@ def inrNonUnitalAlgHom (R A : Type _) [CommSemiring R] [NonUnitalSemiring A] [Mo
 /-- The coercion from a non-unital `R`-algebra `A` to its unitization `unitization R A`
 realized as a non-unital star algebra homomorphism. -/
 @[simps!]
-def inrNonUnitalStarAlgHom (R A : Type _) [CommSemiring R] [StarAddMonoid R]
+def inrNonUnitalStarAlgHom (R A : Type*) [CommSemiring R] [StarAddMonoid R]
     [NonUnitalSemiring A] [Star A] [Module R A] :
     A →⋆ₙₐ[R] Unitization R A where
   toNonUnitalAlgHom := inrNonUnitalAlgHom R A
@@ -652,11 +665,11 @@ end coe
 
 section AlgHom
 
-variable {S R A : Type _} [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A] [Module R A]
-  [SMulCommClass R A A] [IsScalarTower R A A] {B : Type _} [Semiring B] [Algebra S B] [Algebra S R]
-  [DistribMulAction S A] [IsScalarTower S R A] {C : Type _} [Semiring C] [Algebra R C]
+variable {S R A : Type*} [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A] [Module R A]
+  [SMulCommClass R A A] [IsScalarTower R A A] {B : Type*} [Semiring B] [Algebra S B] [Algebra S R]
+  [DistribMulAction S A] [IsScalarTower S R A] {C : Type*} [Semiring C] [Algebra R C]
 
-theorem algHom_ext {F : Type _} [AlgHomClass F S (Unitization R A) B] {φ ψ : F}
+theorem algHom_ext {F : Type*} [AlgHomClass F S (Unitization R A) B] {φ ψ : F}
     (h : ∀ a : A, φ a = ψ a)
     (h' : ∀ r, φ (algebraMap R (Unitization R A) r) = ψ (algebraMap R (Unitization R A) r)) :
     φ = ψ := by
@@ -665,7 +678,7 @@ theorem algHom_ext {F : Type _} [AlgHomClass F S (Unitization R A) B] {φ ψ : F
   simp only [map_add, ← algebraMap_eq_inl, h, h']
 #align unitization.alg_hom_ext Unitization.algHom_ext
 
-lemma algHom_ext'' {F : Type _} [AlgHomClass F R (Unitization R A) C] {φ ψ : F}
+lemma algHom_ext'' {F : Type*} [AlgHomClass F R (Unitization R A) C] {φ ψ : F}
     (h : ∀ a : A, φ a = ψ a) : φ = ψ :=
   algHom_ext h (fun r => by simp only [AlgHomClass.commutes])
 
@@ -735,7 +748,7 @@ end AlgHom
 
 section StarAlgHom
 
-variable {R A C : Type _} [CommSemiring R] [StarRing R] [NonUnitalSemiring A] [StarRing A]
+variable {R A C : Type*} [CommSemiring R] [StarRing R] [NonUnitalSemiring A] [StarRing A]
 variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] [StarModule R A]
 variable [Semiring C] [Algebra R C] [StarRing C] [StarModule R C]
 

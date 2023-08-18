@@ -30,7 +30,7 @@ and use the parallelogram identity
 
 $$‖x + y‖^2 + ‖x - y‖^2 = 2 (‖x‖^2 + ‖y‖^2)$$
 
-to prove it is an inner product, i.e., that it is conjugate-symmetric (`Inner_.conj_symm`) and
+to prove it is an inner product, i.e., that it is conjugate-symmetric (`inner_.conj_symm`) and
 linear in the first argument. `add_left` is proved by judicious application of the parallelogram
 identity followed by tedious arithmetic. `smul_left` is proved step by step, first noting that
 $\langle λ x, y \rangle = λ \langle x, y \rangle$ for $λ ∈ ℕ$, $λ = -1$, hence $λ ∈ ℤ$ and $λ ∈ ℚ$
@@ -57,7 +57,7 @@ open IsROrC
 
 open scoped ComplexConjugate
 
-variable {𝕜 : Type _} [IsROrC 𝕜] (E : Type _) [NormedAddCommGroup E]
+variable {𝕜 : Type*} [IsROrC 𝕜] (E : Type*) [NormedAddCommGroup E]
 
 /-- Predicate for the parallelogram identity to hold in a normed group. This is a scalar-less
 version of `InnerProductSpace`. If you have an `InnerProductSpaceable` assumption, you can
@@ -124,7 +124,7 @@ theorem _root_.Continuous.inner_ {f g : ℝ → E} (hf : Continuous f) (hg : Con
   continuity
 #align inner_product_spaceable.continuous.inner_ Continuous.inner_
 
-theorem Inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
+theorem inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
   simp only [inner_]
   have h₁ : IsROrC.normSq (4 : 𝕜) = 16 := by
     have : ((4 : ℝ) : 𝕜) = (4 : 𝕜) := by norm_cast
@@ -134,9 +134,9 @@ theorem Inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
   simp only [h₁, h₂, algebraMap_eq_ofReal, sub_self, norm_zero, mul_re, inv_re, ofNat_re, map_sub,
     map_add, ofReal_re, ofNat_im, ofReal_im, mul_im, I_re, inv_im]
   ring
-#align inner_product_spaceable.inner_.norm_sq InnerProductSpaceable.Inner_.norm_sq
+#align inner_product_spaceable.inner_.norm_sq InnerProductSpaceable.inner_.norm_sq
 
-theorem Inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y := by
+theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y := by
   simp only [inner_]
   have h4 : conj (4⁻¹ : 𝕜) = 4⁻¹ := by norm_num
   rw [map_mul, h4]
@@ -159,7 +159,7 @@ theorem Inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y :=
     · rw [smul_add, smul_smul, I_mul_I_of_nonzero hI, neg_one_smul, ← neg_add_eq_sub]
   rw [h₁, h₂, ← sub_add_eq_add_sub]
   simp only [neg_mul, sub_eq_add_neg, neg_neg]
-#align inner_product_spaceable.inner_.conj_symm InnerProductSpaceable.Inner_.conj_symm
+#align inner_product_spaceable.inner_.conj_symm InnerProductSpaceable.inner_.conj_symm
 
 variable [InnerProductSpaceable E]
 
@@ -219,14 +219,14 @@ private theorem add_left_aux7 (y z : E) :
     2 * (‖(I : 𝕜) • y + z‖ * ‖(I : 𝕜) • y + z‖ + ‖z‖ * ‖z‖) - ‖(I : 𝕜) • y‖ * ‖(I : 𝕜) • y‖ := by
   apply eq_sub_of_add_eq
   have h₀ := parallelogram_identity ((I : 𝕜) • y + z) z
-  convert h₀ using 4 <;> · try simp only [two_smul, smul_add]; abel
+  convert h₀ using 4 <;> · (try simp only [two_smul, smul_add]); abel
 
 private theorem add_left_aux8 (y z : E) :
     ‖(I : 𝕜) • y - 2 • z‖ * ‖(I : 𝕜) • y - 2 • z‖ =
     2 * (‖(I : 𝕜) • y - z‖ * ‖(I : 𝕜) • y - z‖ + ‖z‖ * ‖z‖) - ‖(I : 𝕜) • y‖ * ‖(I : 𝕜) • y‖ := by
   apply eq_sub_of_add_eq'
   have h₀ := parallelogram_identity ((I : 𝕜) • y - z) z
-  convert h₀ using 4 <;> · try simp only [two_smul, smul_add]; abel
+  convert h₀ using 4 <;> · (try simp only [two_smul, smul_add]); abel
 
 theorem add_left (x y z : E) : inner_ 𝕜 (x + y) z = inner_ 𝕜 x z + inner_ 𝕜 y z := by
   simp only [inner_, ← mul_add]
@@ -320,8 +320,8 @@ noncomputable def InnerProductSpace.ofNorm
     InnerProductSpace 𝕜 E :=
   haveI : InnerProductSpaceable E := ⟨h⟩
   { inner := inner_ 𝕜
-    norm_sq_eq_inner := Inner_.norm_sq
-    conj_symm := Inner_.conj_symm
+    norm_sq_eq_inner := inner_.norm_sq
+    conj_symm := inner_.conj_symm
     add_left := InnerProductSpaceable.add_left
     smul_left := fun _ _ _ => innerProp _ _ _ }
 #align inner_product_space.of_norm InnerProductSpace.ofNorm
@@ -336,8 +336,8 @@ parallelogram identity can be given a compatible inner product. Do
 `InnerProductSpace 𝕜 E`. -/
 theorem nonempty_innerProductSpace : Nonempty (InnerProductSpace 𝕜 E) :=
   ⟨{  inner := inner_ 𝕜
-      norm_sq_eq_inner := Inner_.norm_sq
-      conj_symm := Inner_.conj_symm
+      norm_sq_eq_inner := inner_.norm_sq
+      conj_symm := inner_.conj_symm
       add_left := add_left
       smul_left := fun _ _ _ => innerProp _ _ _ }⟩
 #align nonempty_inner_product_space nonempty_innerProductSpace

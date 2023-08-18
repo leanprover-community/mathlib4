@@ -49,7 +49,7 @@ def proj (S : D) (T : C ⥤ D) : StructuredArrow S T ⥤ C :=
   Comma.snd _ _
 #align category_theory.structured_arrow.proj CategoryTheory.StructuredArrow.proj
 
-variable {S S' S'' : D} {Y Y' : C} {T : C ⥤ D}
+variable {S S' S'' : D} {Y Y' : C} {T T' : C ⥤ D}
 
 -- porting note: this lemma was added because `Comma.hom_ext`
 -- was not triggered automatically
@@ -113,13 +113,12 @@ def homMk {f f' : StructuredArrow S T} (g : f.right ⟶ f'.right)
 picks up on it (seems like a bug). Either way simp solves it.  -/
 attribute [-simp, nolint simpNF] homMk_left
 
-/-- Given a structured arrow `X ⟶ F(U)`, and an arrow `U ⟶ Y`, we can construct a morphism of
-structured arrow given by `(X ⟶ F(U)) ⟶ (X ⟶ F(U) ⟶ F(Y))`.
--/
-def homMk' {F : C ⥤ D} {X : D} {Y : C} (U : StructuredArrow X F) (f : U.right ⟶ Y) :
-    U ⟶ mk (U.hom ≫ F.map f) where
+/-- Given a structured arrow `X ⟶ T(Y)`, and an arrow `Y ⟶ Y'`, we can construct a morphism of
+    structured arrows given by `(X ⟶ T(Y)) ⟶ (X ⟶ T(Y) ⟶ T(Y'))`.  -/
+@[simps]
+def homMk' (f : StructuredArrow S T) (g : f.right ⟶ Y') : f ⟶ mk (f.hom ≫ T.map g) where
   left := eqToHom (by ext)
-  right := f
+  right := g
 #align category_theory.structured_arrow.hom_mk' CategoryTheory.StructuredArrow.homMk'
 
 /-- To construct an isomorphism of structured arrows,
@@ -149,6 +148,9 @@ instance proj_faithful : Faithful (proj S T) where
   map_injective {_ _} := ext
 #align category_theory.structured_arrow.proj_faithful CategoryTheory.StructuredArrow.proj_faithful
 
+instance : LocallySmall.{v₁} (StructuredArrow S T) where
+  hom_small _ _ := small_of_injective ext
+
 /-- The converse of this is true with additional assumptions, see `mono_iff_mono_right`. -/
 theorem mono_of_mono_right {A B : StructuredArrow S T} (f : A ⟶ B) [h : Mono f.right] : Mono f :=
   (proj S T).mono_of_mono_map h
@@ -168,11 +170,10 @@ instance epi_homMk {A B : StructuredArrow S T} (f : A.right ⟶ B.right) (w) [h 
   (proj S T).epi_of_epi_map h
 #align category_theory.structured_arrow.epi_hom_mk CategoryTheory.StructuredArrow.epi_homMk
 
-/-- Eta rule for structured arrows. Prefer `StructuredArrow.eta`, since equality of objects tends
-    to cause problems. -/
-theorem eq_mk (f : StructuredArrow S T) : f = mk f.hom := by
-  cases f
-  congr
+/-- Eta rule for structured arrows. Prefer `StructuredArrow.eta` for rewriting, since equality of
+    objects tends to cause problems. -/
+theorem eq_mk (f : StructuredArrow S T) : f = mk f.hom :=
+  rfl
 #align category_theory.structured_arrow.eq_mk CategoryTheory.StructuredArrow.eq_mk
 
 /-- Eta rule for structured arrows. -/
@@ -215,6 +216,17 @@ theorem map_comp {f : S ⟶ S'} {f' : S' ⟶ S''} {h : StructuredArrow S'' T} :
   rw [eq_mk h]
   simp
 #align category_theory.structured_arrow.map_comp CategoryTheory.StructuredArrow.map_comp
+
+/-- An isomorphism `S ≅ S'` induces an equivalence `StructuredArrow S T ≌ StructuredArrow S' T`. -/
+@[simp]
+def mapIso (i : S ≅ S') : StructuredArrow S T ≌ StructuredArrow S' T :=
+  Comma.mapLeftIso _ ((Functor.const _).mapIso i)
+
+/-- A natural isomorphism `T ≅ T'` induces an equivalence
+    `StructuredArrow S T ≌ StructuredArrow S T'`.-/
+@[simp]
+def mapNatIso (i : T ≅ T') : StructuredArrow S T ≌ StructuredArrow S T' :=
+  Comma.mapRightIso _ i
 
 instance proj_reflectsIsomorphisms : ReflectsIsomorphisms (proj S T) where
   reflects {Y Z} f t :=
@@ -309,7 +321,7 @@ def proj (S : C ⥤ D) (T : D) : CostructuredArrow S T ⥤ C :=
   Comma.fst _ _
 #align category_theory.costructured_arrow.proj CategoryTheory.CostructuredArrow.proj
 
-variable {T T' T'' : D} {Y Y' : C} {S : C ⥤ D}
+variable {T T' T'' : D} {Y Y' : C} {S S' : C ⥤ D}
 
 -- porting note: this lemma was added because `Comma.hom_ext`
 -- was not triggered automatically
@@ -376,6 +388,13 @@ def homMk {f f' : CostructuredArrow S T} (g : f.left ⟶ f'.left)
 picks up on it. Either way simp can prove this -/
 attribute [-simp, nolint simpNF] homMk_right_down_down
 
+/-- Given a costructured arrow `S(Y) ⟶ X`, and an arrow `Y' ⟶ Y'`, we can construct a morphism of
+    costructured arrows given by `(S(Y) ⟶ X) ⟶ (S(Y') ⟶ S(Y) ⟶ X)`. -/
+@[simps]
+def homMk' (f : CostructuredArrow S T) (g : Y' ⟶ f.left) : mk (S.map g ≫ f.hom) ⟶ f where
+  left := g
+  right := eqToHom (by ext)
+
 /-- To construct an isomorphism of costructured arrows,
 we need an isomorphism of the objects underlying the source,
 and to check that the triangle commutes.
@@ -401,6 +420,9 @@ theorem ext_iff {A B : CostructuredArrow S T} (f g : A ⟶ B) : f = g ↔ f.left
 instance proj_faithful : Faithful (proj S T) where map_injective {_ _} := ext
 #align category_theory.costructured_arrow.proj_faithful CategoryTheory.CostructuredArrow.proj_faithful
 
+instance : LocallySmall.{v₁} (CostructuredArrow S T) where
+  hom_small _ _ := small_of_injective ext
+
 theorem mono_of_mono_left {A B : CostructuredArrow S T} (f : A ⟶ B) [h : Mono f.left] : Mono f :=
   (proj S T).mono_of_mono_map h
 #align category_theory.costructured_arrow.mono_of_mono_left CategoryTheory.CostructuredArrow.mono_of_mono_left
@@ -420,11 +442,10 @@ instance epi_homMk {A B : CostructuredArrow S T} (f : A.left ⟶ B.left) (w) [h 
   (proj S T).epi_of_epi_map h
 #align category_theory.costructured_arrow.epi_hom_mk CategoryTheory.CostructuredArrow.epi_homMk
 
-/-- Eta rule for costructured arrows. Prefer `CostructuredArrow.eta`, as equality of objects tends
-    to cause problems. -/
-theorem eq_mk (f : CostructuredArrow S T) : f = mk f.hom := by
-  cases f
-  congr
+/-- Eta rule for costructured arrows. Prefer `CostructuredArrow.eta` for rewriting, as equality of
+    objects tends to cause problems. -/
+theorem eq_mk (f : CostructuredArrow S T) : f = mk f.hom :=
+  rfl
 #align category_theory.costructured_arrow.eq_mk CategoryTheory.CostructuredArrow.eq_mk
 
 /-- Eta rule for costructured arrows. -/
@@ -467,6 +488,18 @@ theorem map_comp {f : T ⟶ T'} {f' : T' ⟶ T''} {h : CostructuredArrow S T} :
   rw [eq_mk h]
   simp
 #align category_theory.costructured_arrow.map_comp CategoryTheory.CostructuredArrow.map_comp
+
+/-- An isomorphism `T ≅ T'` induces an equivalence
+    `CostructuredArrow S T ≌ CostructuredArrow S T'`. -/
+@[simp]
+def mapIso (i : T ≅ T') : CostructuredArrow S T ≌ CostructuredArrow S T' :=
+  Comma.mapRightIso _ ((Functor.const _).mapIso i)
+
+/-- A natural isomorphism `S ≅ S'` induces an equivalence
+    `CostrucutredArrow S T ≌ CostructuredArrow S' T`. -/
+@[simp]
+def mapNatIso (i : S ≅ S') : CostructuredArrow S T ≌ CostructuredArrow S' T :=
+  Comma.mapLeftIso _ i
 
 instance proj_reflectsIsomorphisms : ReflectsIsomorphisms (proj S T) where
   reflects {Y Z} f t :=
