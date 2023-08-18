@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2021 Eric Wieser. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Eric Wieser
+-/
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Algebra.CharP.Pi
 import Mathlib.Algebra.CharP.Quotient
@@ -11,7 +16,6 @@ import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.RingTheory.MvPolynomial.Ideal
--- import Mathlib.Tactic.NormFin
 
 /-! # `algebraMap R (CliffordAlgebra Q)` is not always injective.
 
@@ -60,29 +64,8 @@ theorem Finsupp.equivFunOnFinite_const {α β} [Fintype α] [AddCommMonoid β] (
     Finsupp.equivFunOnFinite.symm (fun _ => b : α → β) = ∑ i : α, Finsupp.single i b := by
   ext; simp [Finsupp.finset_sum_apply]
 
-namespace Finsupp
-
-theorem toMultiset_sup {α} [DecidableEq α] (f g : α →₀ ℕ) :
-    toMultiset (f ⊔ g) = toMultiset f ∪ toMultiset g := by
-  ext
-  simp_rw [Multiset.count_union, Finsupp.count_toMultiset, Finsupp.sup_apply, sup_eq_max]
-
-theorem toMultiset_inf {α} [DecidableEq α] (f g : α →₀ ℕ) :
-    toMultiset (f ⊓ g) = toMultiset f ∩ toMultiset g := by
-  ext
-  simp_rw [Multiset.count_inter, Finsupp.count_toMultiset, Finsupp.inf_apply, inf_eq_min]
-
-end Finsupp
-
-/-- `equiv.ulift` as a `linear_equiv`. -/
-@[simps]
-def LinearEquiv.ulift.{w, u, v} (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M]
-    [Module R M] : ULift.{w} M ≃ₗ[R] M :=
-  { Equiv.ulift with
-    map_add' := fun _x _y => rfl
-    map_smul' := fun _c _x => rfl }
-
-nonrec theorem Ideal.mem_span_range_iff_exists_fun {ι R} [Fintype ι] [CommSemiring R] (g : ι → R) (x : R) :
+nonrec theorem Ideal.mem_span_range_iff_exists_fun {ι R} [Fintype ι] [CommSemiring R]
+    (g : ι → R) (x : R) :
     x ∈ Ideal.span (Set.range g) ↔ ∃ f : ι → R, ∑ i, f i * g i = x :=
   mem_span_range_iff_exists_fun _
 
@@ -99,8 +82,8 @@ def kIdeal : Ideal (MvPolynomial (Fin 3) (ZMod 2)) :=
 theorem mem_kIdeal_iff (x : MvPolynomial (Fin 3) (ZMod 2)) :
     x ∈ kIdeal ↔ ∀ m : Fin 3 →₀ ℕ, m ∈ x.support → ∃ i, 2 ≤ m i := by
   have :
-    kIdeal =
-      Ideal.span ((fun i : Fin 3 →₀ ℕ => monomial (R := ZMod 2) i (1 : ZMod 2)) '' Set.range fun i => Finsupp.single i 2) :=
+      kIdeal =
+        Ideal.span ((fun i : Fin 3 →₀ ℕ => monomial (R := ZMod 2) i (1 : ZMod 2)) '' Set.range fun i => Finsupp.single i 2) :=
     by simp_rw [kIdeal, X, monomial_mul, one_mul, ← Finsupp.single_add, ← Set.range_comp,
       Function.comp]
   rw [this, mem_ideal_span_monomial_image]
@@ -325,19 +308,16 @@ theorem algebraMap_not_injective : ¬Function.Injective (algebraMap K <| Cliffor
 end Q60596
 
 set_option pp.proofs.withType false in
--- The generate statement: not every Clifford algebra has an injective algebra map
--- TODO: https://github.com/leanprover-community/mathlib/pull/18644/files
+/-- The general statement: not every Clifford algebra over a module has an injective algebra map. -/
 theorem CliffordAlgebra.not_forall_algebraMap_injective.{v} :
+    -- TODO: make `R` universe polymorphic
     ¬∀ (R : Type) (M : Type v) [CommRing R] [AddCommGroup M],
         ∀ [Module R M],
           ∀ Q : QuadraticForm R M, Function.Injective (algebraMap R <| CliffordAlgebra Q) :=
   fun h => Q60596.algebraMap_not_injective fun x y hxy => by
-    let uQ := Q60596.Q.comp (LinearEquiv.ulift Q60596.K _).toLinearMap
-    refine'
-      h Q60596.K (ULift Q60596.L) (Q60596.Q.comp <| (LinearEquiv.ulift Q60596.K Q60596.L).toLinearMap) _
-    let uC :=
-      CliffordAlgebra.map Q60596.Q uQ (LinearEquiv.ulift Q60596.K Q60596.L).symm.toLinearMap
-        fun _ => rfl
+    let uU := ULift.moduleEquiv (R := Q60596.K) (M := Q60596.L)
+    let uQ := Q60596.Q.comp uU.toLinearMap
+    refine' h Q60596.K (ULift Q60596.L) (Q60596.Q.comp <| uU.toLinearMap) _
+    let uC := CliffordAlgebra.map Q60596.Q uQ uU.symm.toLinearMap fun _ => rfl
     have := uC.congr_arg hxy
-    rw [AlgHom.commutes, AlgHom.commutes] at this
-    simpa using this
+    rwa [AlgHom.commutes, AlgHom.commutes] at this
