@@ -1,9 +1,9 @@
 /-
 Copyright (c) 2023 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Tan
+Authors: Jeremy Tan, Thomas Browning
 -/
-import Mathlib.GroupTheory.PGroup
+import Mathlib.GroupTheory.Perm.Cycle.Type
 
 /-!
 # Zagier's "one-sentence proof" of Fermat's theorem on sums of two squares
