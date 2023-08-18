@@ -8,6 +8,7 @@ import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.GroupTheory.Submonoid.ZeroDivisors
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Algebra.GeomSum
+import Mathlib.LinearAlgebra.Matrix.ToLin
 
 #align_import ring_theory.nilpotent from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 
@@ -283,6 +284,16 @@ theorem isNilpotent_mulRight_iff (a : A) : IsNilpotent (mulRight R a) ↔ IsNilp
       simp only [mulRight_eq_zero_iff, pow_mulRight] at hn ⊢ <;>
     exact hn
 #align linear_map.is_nilpotent_mul_right_iff LinearMap.isNilpotent_mulRight_iff
+
+variable {R}
+variable {ι M : Type*} [Fintype ι] [DecidableEq ι] [AddCommMonoid M] [Module R M]
+
+@[simp]
+lemma isNilpotent_toMatrix_iff (b : Basis ι R M) (f : M →ₗ[R] M) :
+    IsNilpotent (toMatrix b b f) ↔ IsNilpotent f := by
+  refine' exists_congr fun k ↦ _
+  rw [toMatrix_pow]
+  exact (toMatrix b b).map_eq_zero_iff
 
 end LinearMap
 
