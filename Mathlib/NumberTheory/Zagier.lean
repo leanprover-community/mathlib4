@@ -19,6 +19,8 @@ has exactly one fixed point, so `|S|` is odd and the involution defined by
 -/
 
 
+namespace Zagier
+
 section Defs
 
 open Finset
@@ -49,7 +51,7 @@ def zagierFinset : Finset (ℕ × ℕ × ℕ) :=
   ((Ioc 0 (k + 1)).product ((Ioc 0 k).product (Ioc 0 k))).filter
     (fun ⟨x, y, z⟩ => x * x + 4 * y * z = 4 * k + 1)
 
-theorem coe_zagierFinset : ↑(zagierFinset k) = zagierSet k := by
+theorem coe_zagierFinset : zagierFinset k = zagierSet k := by
   ext ⟨x, y, z⟩
   refine' ⟨fun h => _, fun h => _⟩
   · unfold zagierFinset at h
@@ -63,43 +65,31 @@ theorem coe_zagierFinset : ↑(zagierFinset k) = zagierSet k := by
     apply mem_product.2; simp
     exact ⟨⟨lb.2.1, ub.2.1⟩, ⟨lb.2.2, ub.2.2⟩⟩
 
-instance : Fintype (zagierSet k) := by
-  rw [← coe_zagierFinset]
-  infer_instance
+instance : Fintype (zagierSet k) := by rw [← coe_zagierFinset]; infer_instance
 
 end Defs
 
 section Key
 
 variable {α : Type*} [Fintype α] [DecidableEq α] {p : ℕ} [hp : Fact p.Prime]
-  (f : Function.End α) (hf : f^[p] = id)
+  (f : Function.End α) (hf : f ^ p = 1)
 
 open Function Submonoid
 
-/-- A shim theorem. -/
-theorem pow_eq_iterate (k : ℕ) : f ^ k = f^[k] := by
-  induction k with
-    | zero => rfl
-    | succ n ih =>
-      simp only [iterate_succ', ← ih, pow_succ]
-      rfl
-
 /-- The powers of a periodic endomorphism form a group with composition as the operation. -/
 def groupPowers : Group (powers f) where
-  inv := fun ⟨g, hg⟩ => ⟨g^[p - 1], by
+  inv := fun ⟨g, hg⟩ => ⟨g ^ (p - 1), by
     rw [mem_powers_iff] at hg ⊢
     obtain ⟨k, hk⟩ := hg
     use k * (p - 1)
-    rw [← pow_eq_iterate, ← hk, pow_mul]⟩
+    rw [← hk, pow_mul]⟩
   mul_left_inv := fun ⟨g, hg⟩ => by
     simp only [ge_iff_le, mk_mul_mk]
     congr
-    rw [← pow_eq_iterate, ← pow_succ',
-      Nat.sub_add_cancel (one_le_two.trans (Nat.Prime.two_le hp.out))]
+    rw [← pow_succ', Nat.sub_add_cancel (one_le_two.trans hp.out.two_le)]
     rw [mem_powers_iff] at hg
     obtain ⟨k, hk⟩ := hg
-    rw [← hk, ← pow_mul, mul_comm, pow_mul, pow_eq_iterate f, hf, pow_eq_iterate, iterate_id]
-    rfl
+    rw [← hk, ← pow_mul, mul_comm, pow_mul, hf, one_pow]
 
 theorem isPGroup_of_powers : @IsPGroup p (powers f) (groupPowers f hf) := by
   unfold IsPGroup
@@ -108,15 +98,15 @@ theorem isPGroup_of_powers : @IsPGroup p (powers f) (groupPowers f hf) := by
   simp; congr
   rw [mem_powers_iff] at hg
   obtain ⟨k, hk⟩ := hg
-  rw [← hk, ← pow_mul, mul_comm, pow_mul, pow_eq_iterate f, hf, pow_eq_iterate, iterate_id]
-  rfl
+  rw [← hk, ← pow_mul, mul_comm, pow_mul, hf, one_pow]
 
 noncomputable instance : Fintype (MulAction.fixedPoints (powers f) α) :=
   Fintype.ofFinite (MulAction.fixedPoints (powers f) α)
 
-theorem key (hf : Involutive f) :
+theorem card_modEq_card_fixedPoints_of_involutive (hf : Involutive f) :
     Fintype.card α ≡ Fintype.card (MulAction.fixedPoints (powers f) α) [MOD 2] := by
-  rw [involutive_iff_iter_2_eq_id] at hf
+  replace hf := hf.comp_self
+  rw [show f ∘ f = f * f by rfl, ← sq] at hf
   exact @IsPGroup.card_modEq_card_fixedPoints _ _ (_) (isPGroup_of_powers f hf) _ _ _ _ _
 
 end Key
@@ -166,15 +156,12 @@ def complexInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ =>
   split_ifs with less more <;> simp
   · rw [Nat.sub_sub]
     zify [less.le] at h ⊢
-    ring_nf
     linarith [h]
   · push_neg at less
     zify [less, more.le] at h ⊢
-    ring_nf
     linarith [h]
   · push_neg at less more
     zify [less, more] at h ⊢
-    ring_nf
     linarith [h]⟩
 
 theorem involutive_complexInvo : Involutive (complexInvo k) := by
@@ -202,7 +189,7 @@ theorem involutive_complexInvo : Involutive (complexInvo k) := by
     · rw [← Nat.add_sub_assoc less (2 * y - x), ← add_assoc, Nat.sub_add_cancel more,
         Nat.sub_sub _ _ y, ← two_mul, add_comm, Nat.add_sub_cancel]
 
-theorem unique {t : zagierSet k}
+theorem unique_of_mem_fixedPoints {t : zagierSet k}
     (mem : t ∈ (MulAction.fixedPoints (powers (complexInvo k)) (zagierSet k))) :
     t.val = (1, 1, k):= by
   simp only [MulAction.mem_fixedPoints, Subtype.forall] at mem
@@ -229,7 +216,7 @@ theorem unique {t : zagierSet k}
     · rw [e, mul_left_eq_self₀] at h; simp_all
       linarith [e]
 
-theorem aux :
+theorem fixedPoints_eq_singleton :
     MulAction.fixedPoints (powers (complexInvo k)) (zagierSet k) =
     {⟨(1, 1, k), (by unfold zagierSet; simp; linarith)⟩} := by
   rw [Set.eq_singleton_iff_unique_mem]
@@ -240,39 +227,39 @@ theorem aux :
     simp
     rw [mem_powers_iff] at h
     obtain ⟨n, h⟩ := h
-    cases' Nat.even_or_odd n with heven hodd <;> rw [pow_eq_iterate] at h
-    · rw [(involutive_complexInvo k).iterate_even heven] at h
+    have hi := (involutive_complexInvo k).comp_self
+    have h1 : id = (1 : Function.End (zagierSet k)) := by rfl
+    rw [show _ ∘ _ = _ * complexInvo k by rfl, ← sq] at hi
+    rcases Nat.even_or_odd' n with ⟨m, hm | hm⟩ <;> rw [hm] at h
+    · rw [pow_mul, hi, h1, one_pow, ← h1] at h
       rw [← h, id_eq]
-    · rw [(involutive_complexInvo k).iterate_odd hodd] at h
-      rw [← h]
-      unfold complexInvo
-      simp
+    · rw [pow_add, pow_mul, hi, pow_one, h1, one_pow, one_mul] at h
+      rw [← h]; unfold complexInvo; simp
   · intro t mem
-    replace mem := unique k mem
+    replace mem := unique_of_mem_fixedPoints k mem
     unfold zagierSet at t
     congr!
 
-theorem positive_of_odd {n : ℕ} (h : n % 2 = 1) : 0 < n := by
-  by_contra j; push_neg at j; rw [nonpos_iff_eq_zero] at j; subst j; norm_num at h
-
-theorem result : ∃ a b : ℕ, a ^ 2 + b ^ 2 = 4 * k + 1 := by
+theorem exists_sq_add_sq : ∃ a b : ℕ, a ^ 2 + b ^ 2 = 4 * k + 1 := by
   apply sq_add_sq_of_nonempty_fixedPoints
-  have := (key (obvInvo k) (involutive_obvInvo k)).symm.trans
-    (key (complexInvo k) (involutive_complexInvo k))
-  rw [← Set.toFinset_card] at this
-  simp [aux] at this; unfold Nat.ModEq at this; norm_num at this
-  replace this := positive_of_odd this
+  have := (card_modEq_card_fixedPoints_of_involutive (obvInvo k) (involutive_obvInvo k)).symm.trans
+    (card_modEq_card_fixedPoints_of_involutive (complexInvo k) (involutive_complexInvo k))
+  simp_rw [fixedPoints_eq_singleton, Nat.ModEq] at this
+  norm_num at this; rw [← Nat.odd_iff] at this
+  replace this := Odd.pos this
   rw [← Set.toFinset_card, card_pos, Set.toFinset_nonempty] at this
   assumption
 
 end Involution
 
-/-- **Fermat's theorem on sums of two squares**. Every prime congruent to 1 mod 4 is the sum
-of two squares, proved using Zagier's involutions. -/
+end Zagier
+
+/-- **Fermat's theorem on sums of two squares** (Wiedijk #20).
+Every prime congruent to 1 mod 4 is the sum of two squares, proved using Zagier's involutions. -/
 theorem Nat.Prime.sq_add_sq' {p : ℕ} [Fact p.Prime] (hp : p % 4 = 1) :
     ∃ a b : ℕ, a ^ 2 + b ^ 2 = p := by
   have md := div_add_mod p 4
   rw [hp] at md
-  have := @result (p / 4) (by rw [md]; infer_instance)
+  have := @Zagier.exists_sq_add_sq (p / 4) (by rw [md]; infer_instance)
   rw [md] at this
   assumption
