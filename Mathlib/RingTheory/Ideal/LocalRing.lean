@@ -199,14 +199,14 @@ end CommRing
 section
 
 /-- If `f : R →+* S` is a local ring hom, then `R` is a local ring if `S` is. -/
-theorem map_local_ring [CommSemiring R] [CommSemiring S] [LocalRing S]
+theorem map_localRing [CommSemiring R] [CommSemiring S] [LocalRing S]
     [RingHomClass F R S] (f : F) [IsLocalRingHom f] : LocalRing R := by
   haveI : Nontrivial R := pullback_nonzero f (map_zero f) (map_one f)
   apply LocalRing.of_nonunits_add
   intro a b
   simp_rw [← map_mem_nonunits_iff f, map_add]
   exact LocalRing.nonunits_add
-#align ring_hom.domain_local_ring map_local_ring
+#align ring_hom.domain_local_ring map_localRing
 
 -- note to reviewers: these instances are obviously not very `FunLike` but not sure
 -- what is the best way to make them be so. For now, I am just leaving them
