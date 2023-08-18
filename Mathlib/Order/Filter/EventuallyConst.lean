@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Floris van Doorn
 -/
 import Mathlib.Order.Filter.AtTopBot
-import Mathlib.Order.Filter.Ultrafilter
+import Mathlib.Order.Filter.Subsingleton
 import Mathlib.Algebra.IndicatorFunction
 /-!
 # Functions that are eventually constant along a filter
@@ -12,72 +12,33 @@ import Mathlib.Algebra.IndicatorFunction
 In this file we define a predicate `Filter.EventuallyConst f l` saying that a function `f : α → β`
 is eventually equal to a constant along a filter `l`. We also prove some basic properties of these
 functions.
--/
 
-set_option autoImplicit true
+## Implementation notes
+
+A naive definition of `Filter.EventuallyConst f l` is `∃ y, ∀ᶠ x in l, f x = y`.
+However, this proposition is false for empty `α`, `β`.
+Instead, we say that `Filter.map f l` is supported on a subsingleton.
+This allows us to drop `[Nonempty _]` assumptions here and there.
+-/
 
 open Set
 
+variable {α β γ δ : Type*} {l : Filter α} {f : α → β}
+
 namespace Filter
-
-variable {l : Filter α}
-
-/-- We say that a filter is a *subsingleton* if there exists a subsingleton set
-that belongs to the filter. -/
-protected def Subsingleton (l : Filter α) : Prop := ∃ s ∈ l, Set.Subsingleton s
-
-theorem Subsingleton.mono (hl : l.Subsingleton) (hl' : l' ≤ l) : l'.Subsingleton :=
-  let ⟨s, hsl, hs⟩ := hl; ⟨s, hl' hsl, hs⟩
-
-@[nontriviality]
-theorem Subsingleton.of_subsingleton [Subsingleton α] : l.Subsingleton :=
-  ⟨univ, univ_mem, subsingleton_univ⟩
-
-theorem Subsingleton.map (hl : l.Subsingleton) (f : α → β) : (map f l).Subsingleton :=
-  let ⟨s, hsl, hs⟩ := hl; ⟨f '' s, image_mem_map hsl, hs.image f⟩
-
-theorem Subsingleton.prod (hl : l.Subsingleton) {l' : Filter β} (hl' : l'.Subsingleton) :
-    (l ×ˢ l').Subsingleton :=
-  let ⟨s, hsl, hs⟩ := hl; let ⟨t, htl', ht⟩ := hl'; ⟨s ×ˢ t, prod_mem_prod hsl htl', hs.prod ht⟩
-
-@[simp]
-theorem subsingleton_pure {a : α} : Filter.Subsingleton (pure a) :=
-  ⟨{a}, rfl, subsingleton_singleton⟩
-
-@[simp]
-theorem subsingleton_bot : Filter.Subsingleton (⊥ : Filter α) :=
-  ⟨∅, trivial, subsingleton_empty⟩
-
-/-- A nontrivial subsingleton filter is equal to `pure a` for some `a`. -/
-theorem Subsingleton.exists_eq_pure [l.NeBot] (hl : l.Subsingleton) : ∃ a, l = pure a := by
-  rcases hl with ⟨s, hsl, hs⟩
-  rcases exists_eq_singleton_iff_nonempty_subsingleton.2 ⟨nonempty_of_mem hsl, hs⟩ with ⟨a, rfl⟩
-  refine ⟨a, (NeBot.le_pure_iff ‹_›).1 ?_⟩
-  rwa [le_pure_iff]
-
-/-- A filter is a subsingleton iff it is equal to `⊥` or to `pure a` for some `a`. -/
-theorem subsingleton_iff_bot_or_pure : l.Subsingleton ↔ l = ⊥ ∨ ∃ a, l = pure a := by
-  refine ⟨fun hl ↦ ?_, ?_⟩
-  · exact (eq_or_neBot l).imp_right (@Subsingleton.exists_eq_pure _ _ · hl)
-  · rintro (rfl | ⟨a, rfl⟩) <;> simp
-
-/-- In a nonempty type, a filter is a subsingleton iff
-it is less than or equal to a pure filter. -/
-theorem subsingleton_iff_exists_le_pure [Nonempty α] : l.Subsingleton ↔ ∃ a, l ≤ pure a := by
-  rcases eq_or_neBot l with rfl | hbot
-  · simp
-  · simp [subsingleton_iff_bot_or_pure, ← hbot.le_pure_iff, hbot.ne]
-
-theorem subsingleton_iff_exists_singleton_mem [Nonempty α] : l.Subsingleton ↔ ∃ a, {a} ∈ l := by
-  simp only [subsingleton_iff_exists_le_pure, le_pure_iff]
-
-/-- A subsingleton filter on a nonempty type is less than or equal to `pure a` for some `a`. -/
-alias subsingleton_iff_exists_le_pure ↔ Subsingleton.exists_le_pure _
-  
-variable {f : α → β}
 
 /-- The proposition that a function is eventually constant along a filter on the domain. -/
 def EventuallyConst (f : α → β) (l : Filter α) : Prop := (map f l).Subsingleton
+
+theorem HasBasis.eventuallyConst_iff {ι : Sort*} {p : ι → Prop} {s : ι → Set α}
+    (h : l.HasBasis p s) : EventuallyConst f l ↔ ∃ i, p i ∧ ∀ x ∈ s i, ∀ y ∈ s i, f x = f y :=
+  (h.map f).subsingleton_iff.trans <| by simp only [Set.Subsingleton, ball_image_iff]
+
+theorem HasBasis.eventuallyConst_iff' {ι : Sort*} {p : ι → Prop} {s : ι → Set α}
+    {x : ι → α} (h : l.HasBasis p s) (hx : ∀ i, p i → x i ∈ s i) :
+    EventuallyConst f l ↔ ∃ i, p i ∧ ∀ y ∈ s i, f y = f (x i) :=
+  h.eventuallyConst_iff.trans <| exists_congr fun i ↦ and_congr_right fun hi ↦
+    ⟨fun h ↦ (h · · (x i) (hx i hi)), fun h a ha b hb ↦ h a ha ▸ (h b hb).symm⟩
 
 lemma eventuallyConst_iff_tendsto [Nonempty β] :
     EventuallyConst f l ↔ ∃ x, Tendsto f l (pure x) :=
@@ -85,9 +46,14 @@ lemma eventuallyConst_iff_tendsto [Nonempty β] :
 
 alias eventuallyConst_iff_tendsto ↔ EventuallyConst.exists_tendsto _
 
+theorem EventuallyConst.of_tendsto {x : β} (h : Tendsto f l (pure x)) : EventuallyConst f l :=
+  have : Nonempty β := ⟨x⟩; eventuallyConst_iff_tendsto.2 ⟨x, h⟩
+
 theorem eventuallyConst_iff_exists_eventuallyEq [Nonempty β] :
     EventuallyConst f l ↔ ∃ c, f =ᶠ[l] fun _ ↦ c :=
   subsingleton_iff_exists_singleton_mem
+
+alias eventuallyConst_iff_exists_eventuallyEq ↔ EventuallyConst.eventuallyEq_const _
 
 theorem eventuallyConst_pred' {p : α → Prop} :
     EventuallyConst p l ↔ (p =ᶠ[l] fun _ ↦ False) ∨ (p =ᶠ[l] fun _ ↦ True) := by
@@ -98,48 +64,48 @@ theorem eventuallyConst_pred {p : α → Prop} :
   simp [eventuallyConst_pred', or_comm, EventuallyEq]
 
 theorem eventuallyConst_set' {s : Set α} :
-    EventuallyConst (· ∈ s) l ↔ (s =ᶠ[l] (∅ : Set α)) ∨ s =ᶠ[l] univ :=
+    EventuallyConst s l ↔ (s =ᶠ[l] (∅ : Set α)) ∨ s =ᶠ[l] univ :=
   eventuallyConst_pred'
 
 theorem eventuallyConst_set {s : Set α} :
-    EventuallyConst (· ∈ s) l ↔ (∀ᶠ x in l, x ∈ s) ∨ (∀ᶠ x in l, x ∉ s) :=
+    EventuallyConst s l ↔ (∀ᶠ x in l, x ∈ s) ∨ (∀ᶠ x in l, x ∉ s) :=
   eventuallyConst_pred
+
+theorem EventuallyEq.eventuallyConst_iff {g : α → β} (h : f =ᶠ[l] g) :
+    EventuallyConst f l ↔ EventuallyConst g l := by
+  simp only [EventuallyConst, map_congr h]
+
+@[simp] theorem eventuallyConst_id : EventuallyConst id l ↔ l.Subsingleton := Iff.rfl
 
 namespace EventuallyConst
 
-@[simp] protected lemma bot [Nonempty β] : EventuallyConst f ⊥ := by
-  simp [EventuallyConst, EventuallyEq]
+@[simp] protected lemma bot : EventuallyConst f ⊥ := subsingleton_bot
 
+@[simp]
 protected lemma const (c : β) : EventuallyConst (fun _ ↦ c) l :=
-  ⟨c, eventually_of_forall fun _ ↦ rfl⟩
+  .of_tendsto tendsto_const_pure
 
-protected lemma congr (h : EventuallyConst f l) (hg : f =ᶠ[l] g) : EventuallyConst g l :=
-  let ⟨c, hc⟩ := h; ⟨c, hg.symm.trans hc⟩
-
-@[nontriviality]
-lemma of_unique [Unique β] : EventuallyConst f l :=
-  ⟨default, eventually_of_forall fun _ ↦ Unique.uniq _ _⟩
-
-lemma mono (h : EventuallyConst f l) (hl' : l' ≤ l) : EventuallyConst f l' :=
-  h.imp fun _c hc ↦ hl' hc
+protected lemma congr {g} (h : EventuallyConst f l) (hg : f =ᶠ[l] g) : EventuallyConst g l :=
+  hg.eventuallyConst_iff.1 h
 
 @[nontriviality]
-lemma of_subsingleton [Subsingleton α] [Nonempty β] : EventuallyConst f l := by
-  rcases isEmpty_or_nonempty α with h | h
-  · simp only [l.filter_eq_bot_of_isEmpty, EventuallyConst.bot]
-  · inhabit α
-    refine ⟨f default, eventually_of_forall fun x ↦ congr_arg f <| Subsingleton.elim _ _⟩
+lemma of_subsingleton_right [Subsingleton β] : EventuallyConst f l := .of_subsingleton
 
-lemma comp (h : EventuallyConst f l) (g : β → γ) : EventuallyConst (g ∘ f) l :=
-  let ⟨c, hc⟩ := h
-  ⟨g c, hc.fun_comp g⟩
+nonrec lemma anti {l'} (h : EventuallyConst f l) (hl' : l' ≤ l) : EventuallyConst f l' :=
+  h.anti (map_mono hl')
+
+@[nontriviality]
+lemma of_subsingleton_left [Subsingleton α] : EventuallyConst f l :=
+  .map .of_subsingleton f
+
+lemma comp (h : EventuallyConst f l) (g : β → γ) : EventuallyConst (g ∘ f) l := h.map g
 
 @[to_additive]
 protected lemma inv [Inv β] (h : EventuallyConst f l) : EventuallyConst (f⁻¹) l := h.comp Inv.inv
 
 lemma comp_tendsto {lb : Filter β} {g : β → γ} (hg : EventuallyConst g lb)
     (hf : Tendsto f l lb) : EventuallyConst (g ∘ f) l :=
-  let ⟨c, hc⟩ := hg; ⟨c, hf hc⟩
+  hg.anti hf
 
 lemma apply {ι : Type*} {p : ι → Type*} {g : α → ∀ x, p x}
     (h : EventuallyConst g l) (i : ι) : EventuallyConst (g · i) l :=
@@ -147,7 +113,8 @@ lemma apply {ι : Type*} {p : ι → Type*} {g : α → ∀ x, p x}
 
 lemma comp₂ {g : α → γ} (hf : EventuallyConst f l) (op : β → γ → δ) (hg : EventuallyConst g l) :
     EventuallyConst (fun x ↦ op (f x) (g x)) l :=
-  let ⟨cf, hf⟩ := hf; let ⟨cg, hg⟩ := hg; ⟨op cf cg, hg.mp <| hf.mono fun _ ↦ congr_arg₂ op⟩
+  ((hf.prod hg).map op.uncurry).anti <|
+    (tendsto_map (f := op.uncurry)).comp (tendsto_map.prod_mk tendsto_map)
 
 lemma prod_mk {g : α → γ} (hf : EventuallyConst f l) (hg : EventuallyConst g l) :
     EventuallyConst (fun x ↦ (f x, g x)) l :=
@@ -158,31 +125,34 @@ lemma mul [Mul β] {g : α → β} (hf : EventuallyConst f l) (hg : EventuallyCo
     EventuallyConst (f * g) l :=
   hf.comp₂ (· * ·) hg
 
+variable [One β] {s : Set α} {c : β}
+
 @[to_additive]
-lemma of_mulIndicator_const [One β] {s : Set α} {c : β} (hc : c ≠ 1)
-    (h : EventuallyConst (s.mulIndicator fun _ ↦ c) l) : EventuallyConst s l := by
-  rw [eventuallyConst_set]
-  rcases h with ⟨d, hd⟩
-  rcases eq_or_ne d 1 with rfl | hd₁
-  · refine .inr <| hd.mono fun x hx ↦ ?_
-    simpa only [mulIndicator_apply_eq_one, hc] using hx
-  · refine .inl <| hd.mono fun x hx ↦ ?_
-    simpa [hc] using ne_of_eq_of_ne hx hd₁
+lemma of_mulIndicator_const (h : EventuallyConst (s.mulIndicator fun _ ↦ c) l) (hc : c ≠ 1) :
+    EventuallyConst s l := by
+  simpa [(· ∘ ·), hc, imp_false] using h.comp (· = c)
+
+@[to_additive]
+theorem mulIndicator_const (h : EventuallyConst s l) (c : β) :
+    EventuallyConst (s.mulIndicator fun _ ↦ c) l := by
+  classical exact h.comp (if · then c else 1)
+
+@[to_additive]
+theorem mulIndicator_const_iff_of_ne (hc : c ≠ 1) :
+    EventuallyConst (s.mulIndicator fun _ ↦ c) l ↔ EventuallyConst s l :=
+  ⟨(of_mulIndicator_const · hc), (mulIndicator_const · c)⟩
+
+@[to_additive (attr := simp)]
+theorem mulIndicator_const_iff :
+    EventuallyConst (s.mulIndicator fun _ ↦ c) l ↔ c = 1 ∨ EventuallyConst s l := by
+  rcases eq_or_ne c 1 with rfl | hc <;> simp [mulIndicator_const_iff_of_ne, *]
 
 end EventuallyConst
 
-theorem EventuallyEq.eventuallyConst_iff (h : f =ᶠ[l] g) :
-    EventuallyConst f l ↔ EventuallyConst g l :=
-  ⟨(.congr · h), (.congr · h.symm)⟩
-
 lemma eventuallyConst_atTop [SemilatticeSup α] [Nonempty α] :
-    EventuallyConst f atTop ↔ (∃ i, ∀ j, i ≤ j → f j = f i) := by
-  constructor
-  · rintro ⟨c, hc⟩
-    rcases eventually_atTop.1 hc with ⟨i, hi⟩
-    exact ⟨i, fun j hj ↦ (hi j hj).trans (hi i le_rfl).symm⟩
-  · rintro ⟨i, hi⟩
-    exact ⟨f i, eventually_atTop.2 ⟨i, hi⟩⟩
+    EventuallyConst f atTop ↔ (∃ i, ∀ j, i ≤ j → f j = f i) :=
+  (atTop_basis.eventuallyConst_iff' fun i _ ↦ left_mem_Ici).trans <| by
+    simp only [true_and, mem_Ici]
 
 lemma eventuallyConst_atTop_nat {f : ℕ → α} :
     EventuallyConst f atTop ↔ ∃ n, ∀ m, n ≤ m → f (m + 1) = f m := by
