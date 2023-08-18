@@ -73,6 +73,9 @@ theorem zero_im : (0 : ℤ√d).im = 0 :=
   rfl
 #align zsqrtd.zero_im Zsqrtd.zero_im
 
+@[simp]
+theorem zero_eq_zero : {re := 0, im := 0 : ℤ√d} = 0 := rfl
+
 instance : Inhabited (ℤ√d) :=
   ⟨0⟩
 
@@ -1089,3 +1092,4 @@ theorem mker_norm_eq_unitary {d : ℤ} : MonoidHom.mker (@normMonoidHom d) = uni
 #align zsqrtd.mker_norm_eq_unitary Zsqrtd.mker_norm_eq_unitary
 
 end Zsqrtd
+
