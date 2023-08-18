@@ -225,11 +225,12 @@ protected def _root_.PiFin.toExprQ [ToExprQ α] {n : Nat} (v : Fin n → α) :
   | _n + 1 => q(vecCons $(toExprQ (vecHead v)) $(PiFin.toExprQ (vecTail v)))
 
 open Qq in
-protected instance _root_.PiFin.toExpr {α : Type u} [ToExprQ α] (n : ℕ) : ToExprQ (Fin n → α) where
+protected instance _root_.PiFin.instToExprQ {α : Type u} [ToExprQ α] (n : ℕ) :
+    ToExprQ (Fin n → α) where
   level := ToExprQ.level α
   toTypeExprQ := q(Fin $n → $(toTypeExprQ α))
   toExprQ := PiFin.toExprQ
-#align pi_fin.reflect PiFin.toExpr
+#align pi_fin.reflect PiFin.instToExprQₓ
 
 -- Porting note: the next decl is commented out. TODO(eric-wieser)
 
