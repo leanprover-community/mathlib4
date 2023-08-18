@@ -52,10 +52,12 @@ theorem zeroLocus_anti_mono {I J : Ideal (MvPolynomial σ k)} (h : I ≤ J) :
     zeroLocus J ≤ zeroLocus I := fun _ hx p hp => hx p <| h hp
 #align mv_polynomial.zero_locus_anti_mono MvPolynomial.zeroLocus_anti_mono
 
+@[simp]
 theorem zeroLocus_bot : zeroLocus (⊥ : Ideal (MvPolynomial σ k)) = ⊤ :=
   eq_top_iff.2 fun x _ _ hp => Trans.trans (congr_arg (eval x) (mem_bot.1 hp)) (eval x).map_zero
 #align mv_polynomial.zero_locus_bot MvPolynomial.zeroLocus_bot
 
+@[simp]
 theorem zeroLocus_top : zeroLocus (⊤ : Ideal (MvPolynomial σ k)) = ⊥ :=
   eq_bot_iff.2 fun x hx => one_ne_zero ((eval x).map_one ▸ hx 1 Submodule.mem_top : (1 : k) = 0)
 #align mv_polynomial.zero_locus_top MvPolynomial.zeroLocus_top
