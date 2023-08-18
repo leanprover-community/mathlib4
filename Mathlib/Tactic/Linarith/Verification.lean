@@ -20,6 +20,8 @@ This file implements the reconstruction.
 The public facing declaration in this file is `proveFalseByLinarith`.
 -/
 
+set_option autoImplicit true
+
 open Lean Elab Tactic Meta
 
 namespace Qq

@@ -15,6 +15,8 @@ This file defines the notation `K[X] : ChainComplex C ℕ` for the alternating f
 map complex of `(X : SimplicialObject C)` where `C` is a preadditive category, as well
 as `N[X]` for the normalized subcomplex in the case `C` is an abelian category.
 
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
+
 -/
 
 
