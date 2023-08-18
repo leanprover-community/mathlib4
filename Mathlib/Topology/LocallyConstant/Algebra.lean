@@ -391,7 +391,7 @@ lemma ker_comapₗ [Semiring R] [AddCommMonoid Z] [Module R Z] (f : X → Y)
 /-- `LocallyConstant.congrLeft` as a `MulEquiv`. -/
 @[to_additive (attr := simps!) "`LocallyConstant.congrLeft` as an `AddEquiv`."]
 noncomputable
-def congrLeftMul [Mul Z] (e : X ≃ₜ Y) :
+def congrLeftMulEquiv [Mul Z] (e : X ≃ₜ Y) :
     LocallyConstant X Z ≃* LocallyConstant Y Z where
   toEquiv := congrLeft e
   map_mul' := map_mul (comapMulHom _ e.symm.continuous)
