@@ -578,6 +578,8 @@ noncomputable def ratCoeff : Subalgebra ℚ (AddMonoidAlgebra (K s) (K s))
 --cache
 instance : ZeroMemClass (IntermediateField ℚ (K s)) (K s) :=
   inferInstance
+instance : Algebra ℚ (⊥ : IntermediateField ℚ (K s)) :=
+  IntermediateField.algebra _
 
 def RatCoeffEquiv.aux : ratCoeff s ≃ₐ[ℚ] AddMonoidAlgebra (⊥ : IntermediateField ℚ (K s)) (K s)
     where
@@ -598,16 +600,19 @@ def RatCoeffEquiv.aux : ratCoeff s ≃ₐ[ℚ] AddMonoidAlgebra (⊥ : Intermedi
     rfl
   map_mul' x y := by
     refine Finsupp.ext fun a => ?_
+    ext
     change (x * y : AddMonoidAlgebra (K s) (K s)) a = _
     simp_rw [AddMonoidAlgebra.mul_apply, Finsupp.sum, AddSubmonoidClass.coe_finset_sum]
     refine' sum_congr rfl fun i hi => sum_congr rfl fun j hj => _
     split_ifs <;> rfl
   map_add' x y := by
     refine Finsupp.ext fun a => ?_
-    change (x + y : AddMonoidAlgebra (K s) (K s)) a = x a + y a
-    rw [Finsupp.add_apply]; rfl
+    ext
+    change (x + y : AddMonoidAlgebra (K s) (K s)) a = (x : AddMonoidAlgebra (K s) (K s)) a + (y : AddMonoidAlgebra (K s) (K s)) a
+    rw [Finsupp.add_apply]
   commutes' x := by
     refine Finsupp.ext fun a => ?_
+    ext
     change
       (algebraMap ℚ (ratCoeff s) x) a =
         (Finsupp.single 0 (algebraMap ℚ (⊥ : IntermediateField ℚ (K s)) x)) a
