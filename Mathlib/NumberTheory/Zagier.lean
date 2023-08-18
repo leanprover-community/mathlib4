@@ -74,7 +74,7 @@ variable {α : Type*} [Fintype α] [DecidableEq α] {p : ℕ} [hp : Fact p.Prime
 
 open Submonoid
 
-instance isPGroupOfPowers : @IsPGroup p (powers f) (instGroupOfPowers hp.out.pos hf) := by
+lemma isPGroup_of_powers : @IsPGroup p (powers f) (groupOfPowers hp.out.pos hf) := by
   intro ⟨g, hg⟩
   use 1
   simp; congr
@@ -86,7 +86,7 @@ noncomputable instance : Fintype (MulAction.fixedPoints (powers f) α) := Fintyp
 
 theorem card_modEq_card_fixedPoints_of_sq (hf : f ^ 2 = 1) :
     Fintype.card α ≡ Fintype.card (MulAction.fixedPoints (powers f) α) [MOD 2] :=
-  @IsPGroup.card_modEq_card_fixedPoints _ _ (_) (isPGroupOfPowers f hf) _ _ _ _ _
+  @IsPGroup.card_modEq_card_fixedPoints _ _ (_) (isPGroup_of_powers f hf) _ _ _ _ _
 
 end Instances
 
