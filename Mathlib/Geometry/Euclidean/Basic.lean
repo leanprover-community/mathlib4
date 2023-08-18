@@ -2,15 +2,12 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
-
-! This file was ported from Lean 3 source module geometry.euclidean.basic
-! leanprover-community/mathlib commit 2de9c37fa71dde2f1c6feff19876dd6a7b1519f0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Geometry.Euclidean.PerpBisector
 import Mathlib.Algebra.QuadraticDiscriminant
+
+#align_import geometry.euclidean.basic from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
 
 /-!
 # Euclidean spaces
@@ -68,7 +65,7 @@ Euclidean affine spaces.
 -/
 
 
-variable {V : Type _} {P : Type _}
+variable {V : Type*} {P : Type*}
 
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
 
@@ -82,8 +79,8 @@ theorem dist_left_midpoint_eq_dist_right_midpoint (p1 p2 : P) :
 
 /-- The inner product of two vectors given with `weightedVSub`, in
 terms of the pairwise distances. -/
-theorem inner_weightedVSub {ι₁ : Type _} {s₁ : Finset ι₁} {w₁ : ι₁ → ℝ} (p₁ : ι₁ → P)
-    (h₁ : ∑ i in s₁, w₁ i = 0) {ι₂ : Type _} {s₂ : Finset ι₂} {w₂ : ι₂ → ℝ} (p₂ : ι₂ → P)
+theorem inner_weightedVSub {ι₁ : Type*} {s₁ : Finset ι₁} {w₁ : ι₁ → ℝ} (p₁ : ι₁ → P)
+    (h₁ : ∑ i in s₁, w₁ i = 0) {ι₂ : Type*} {s₂ : Finset ι₂} {w₂ : ι₂ → ℝ} (p₂ : ι₂ → P)
     (h₂ : ∑ i in s₂, w₂ i = 0) :
     ⟪s₁.weightedVSub p₁ w₁, s₂.weightedVSub p₂ w₂⟫ =
       (-∑ i₁ in s₁, ∑ i₂ in s₂, w₁ i₁ * w₂ i₂ * (dist (p₁ i₁) (p₂ i₂) * dist (p₁ i₁) (p₂ i₂))) /
@@ -97,7 +94,7 @@ theorem inner_weightedVSub {ι₁ : Type _} {s₁ : Finset ι₁} {w₁ : ι₁ 
 /-- The distance between two points given with `affineCombination`,
 in terms of the pairwise distances between the points in that
 combination. -/
-theorem dist_affineCombination {ι : Type _} {s : Finset ι} {w₁ w₂ : ι → ℝ} (p : ι → P)
+theorem dist_affineCombination {ι : Type*} {s : Finset ι} {w₁ w₂ : ι → ℝ} (p : ι → P)
     (h₁ : ∑ i in s, w₁ i = 1) (h₂ : ∑ i in s, w₂ i = 1) : by
       have a₁ := s.affineCombination ℝ p w₁
       have a₂ := s.affineCombination ℝ p w₂

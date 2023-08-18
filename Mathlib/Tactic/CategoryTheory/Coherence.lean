@@ -2,14 +2,11 @@
 Copyright (c) 2022. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Yuma Mizuno, Oleksandr Manzyuk
-
-! This file was ported from Lean 3 source module category_theory.monoidal.coherence
-! leanprover-community/mathlib commit f187f1074fa1857c94589cc653c786cadc4c35ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
+
+#align_import category_theory.monoidal.coherence from "leanprover-community/mathlib"@"f187f1074fa1857c94589cc653c786cadc4c35ff"
 
 /-!
 # A `coherence` tactic for monoidal categories, and `⊗≫` (composition up to associators)
@@ -28,6 +25,8 @@ We also provide `f ⊗≫ g`, the `monoidal_comp` operation,
 which automatically inserts associators and unitors as needed
 to make the target of `f` match the source of `g`.
 -/
+
+set_option autoImplicit true
 
 -- Porting note: restore when ported
 -- import Mathlib.CategoryTheory.Bicategory.CoherenceTactic
@@ -292,11 +291,11 @@ elab (name := liftable_prefixes) "liftable_prefixes" : tactic => do
     (apply (cancel_epi (𝟙 _)).1 <;> try infer_instance) <;>
     simp only [assoc_liftHom, Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂]))
 
-lemma insert_id_lhs {C : Type _} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f ≫ 𝟙 _ = g) :
+lemma insert_id_lhs {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f ≫ 𝟙 _ = g) :
     f = g := by
   simpa using w
 
-lemma insert_id_rhs {C : Type _} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f = g ≫ 𝟙 _) :
+lemma insert_id_rhs {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f = g ≫ 𝟙 _) :
     f = g := by
   simpa using w
 

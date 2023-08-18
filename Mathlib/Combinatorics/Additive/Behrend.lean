@@ -2,16 +2,13 @@
 Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module combinatorics.additive.behrend
-! leanprover-community/mathlib commit 4fa54b337f7d52805480306db1b1439c741848c8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Combinatorics.Additive.SalemSpencer
 import Mathlib.Combinatorics.Pigeonhole
 import Mathlib.Data.Complex.ExponentialBounds
+
+#align_import combinatorics.additive.behrend from "leanprover-community/mathlib"@"4fa54b337f7d52805480306db1b1439c741848c8"
 
 /-!
 # Behrend's bound on Roth numbers
@@ -56,7 +53,7 @@ open scoped BigOperators Pointwise
 
 namespace Behrend
 
-variable {α β : Type _} {n d k N : ℕ} {x : Fin n → ℕ}
+variable {α β : Type*} {n d k N : ℕ} {x : Fin n → ℕ}
 
 /-!
 ### Turning the sphere into a Salem-Spencer set
@@ -468,7 +465,6 @@ theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (1 / nValue N : ℝ) / exp 1 < dVa
       rw [cast_pos]
       exact hN.trans_lt' (by norm_num1)
     refine' le_trans _ this
-    simp only [cast_one]
     rw [← div_le_iff']
     · exact log_two_gt_d9.le.trans' (by norm_num1)
     · norm_num1

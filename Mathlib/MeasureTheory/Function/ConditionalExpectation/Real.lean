@@ -2,15 +2,12 @@
 Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Kexing Ying
-
-! This file was ported from Lean 3 source module measure_theory.function.conditional_expectation.real
-! leanprover-community/mathlib commit b2ff9a3d7a15fd5b0f060b135421d6a89a999c2f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
 import Mathlib.MeasureTheory.Function.UniformIntegrable
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
+
+#align_import measure_theory.function.conditional_expectation.real from "leanprover-community/mathlib"@"b2ff9a3d7a15fd5b0f060b135421d6a89a999c2f"
 
 /-!
 
@@ -38,7 +35,7 @@ open scoped NNReal ENNReal Topology BigOperators MeasureTheory
 
 namespace MeasureTheory
 
-variable {α : Type _} {m m0 : MeasurableSpace α} {μ : Measure α}
+variable {α : Type*} {m m0 : MeasurableSpace α} {μ : Measure α}
 
 theorem rnDeriv_ae_eq_condexp {hm : m ≤ m0} [hμm : SigmaFinite (μ.trim hm)] {f : α → ℝ}
     (hf : Integrable f μ) :
@@ -186,7 +183,7 @@ theorem ae_bdd_condexp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
 
 /-- Given an integrable function `g`, the conditional expectations of `g` with respect to
 a sequence of sub-σ-algebras is uniformly integrable. -/
-theorem Integrable.uniformIntegrable_condexp {ι : Type _} [IsFiniteMeasure μ] {g : α → ℝ}
+theorem Integrable.uniformIntegrable_condexp {ι : Type*} [IsFiniteMeasure μ] {g : α → ℝ}
     (hint : Integrable g μ) {ℱ : ι → MeasurableSpace α} (hℱ : ∀ i, ℱ i ≤ m0) :
     UniformIntegrable (fun i => μ[g|ℱ i]) 1 μ := by
   have hmeas : ∀ n, ∀ C, MeasurableSet {x | C ≤ ‖(μ[g|ℱ n]) x‖₊} := fun n C =>

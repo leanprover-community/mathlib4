@@ -2,14 +2,11 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.verschiebung
-! leanprover-community/mathlib commit 32b08ef840dd25ca2e47e035c5da03ce16d2dc3c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.IsPoly
+
+#align_import ring_theory.witt_vector.verschiebung from "leanprover-community/mathlib"@"32b08ef840dd25ca2e47e035c5da03ce16d2dc3c"
 
 /-!
 ## The Verschiebung operator
@@ -26,7 +23,7 @@ namespace WittVector
 
 open MvPolynomial
 
-variable {p : ℕ} {R S : Type _} [hp : Fact p.Prime] [CommRing R] [CommRing S]
+variable {p : ℕ} {R S : Type*} [hp : Fact p.Prime] [CommRing R] [CommRing S]
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
@@ -109,7 +106,7 @@ instance verschiebungFun_isPoly : IsPoly p fun R _Rcr => @verschiebungFun p R _R
 -- Porting note: we add this example as a verification that Lean 4's instance resolution
 -- can handle what in Lean 3 we needed the `@[is_poly]` attribute to help with.
 example (p : ℕ) (f : ⦃R : Type _⦄ → [CommRing R] → WittVector p R → WittVector p R) [IsPoly p f] :
-    IsPoly p (λ (R : Type _) (I : CommRing R) => verschiebungFun ∘ (@f R I)) :=
+    IsPoly p (λ (R : Type*) (I : CommRing R) => verschiebungFun ∘ (@f R I)) :=
   inferInstance
 
 variable {p}

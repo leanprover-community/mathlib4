@@ -2,15 +2,12 @@
 Copyright (c) 2022 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
-
-! This file was ported from Lean 3 source module analysis.normed_space.algebra
-! leanprover-community/mathlib commit 17ef379e997badd73e5eabb4d38f11919ab3c4b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Module.CharacterSpace
 import Mathlib.Analysis.NormedSpace.WeakDual
 import Mathlib.Analysis.NormedSpace.Spectrum
+
+#align_import analysis.normed_space.algebra from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
 
 /-!
 # Normed algebras
@@ -32,7 +29,7 @@ normed algebra, character space, continuous functional calculus
 -/
 
 
-variable {𝕜 : Type _} {A : Type _}
+variable {𝕜 : Type*} {A : Type*}
 
 namespace WeakDual
 

@@ -2,13 +2,10 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.order.monoid.cancel.defs
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
+
+#align_import algebra.order.monoid.cancel.defs from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # Ordered cancellative monoids
@@ -65,7 +62,7 @@ theorem OrderedCancelCommMonoid.lt_of_mul_lt_mul_left : ∀ a b c : α, a * b < 
 #align ordered_cancel_add_comm_monoid.lt_of_add_lt_add_left OrderedCancelAddCommMonoid.lt_of_add_lt_add_left
 
 @[to_additive]
-instance OrderedCancelCommMonoid.to_contravariantClass_left (M : Type _)
+instance OrderedCancelCommMonoid.to_contravariantClass_left (M : Type*)
     [OrderedCancelCommMonoid M] :
     ContravariantClass M M (· * ·) (· < ·) where
   elim _ _ _ := OrderedCancelCommMonoid.lt_of_mul_lt_mul_left _ _ _
@@ -77,7 +74,7 @@ instance `OrderedCancelCommMonoid.to_covariantClass_right` above, I imagine that
 this instance, some Type would not have a `ContravariantClass M M (function.swap (*)) (<)`
 instance. -/
 @[to_additive]
-instance OrderedCancelCommMonoid.to_contravariantClass_right (M : Type _)
+instance OrderedCancelCommMonoid.to_contravariantClass_right (M : Type*)
     [OrderedCancelCommMonoid M] :
     ContravariantClass M M (swap (· * ·)) (· < ·) :=
   contravariant_swap_mul_lt_of_contravariant_mul_lt M

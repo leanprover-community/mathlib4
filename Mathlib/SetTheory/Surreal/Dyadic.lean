@@ -2,16 +2,13 @@
 Copyright (c) 2021 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
-
-! This file was ported from Lean 3 source module set_theory.surreal.dyadic
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.SetTheory.Game.Birthday
 import Mathlib.SetTheory.Surreal.Basic
 import Mathlib.RingTheory.Localization.Basic
+
+#align_import set_theory.surreal.dyadic from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 # Dyadic numbers
@@ -245,7 +242,7 @@ def dyadicMap : Localization.Away (2 : ℤ) →+ Surreal where
       have h₂ : 1 < (2 : ℤ).natAbs := one_lt_two
       have hpow₂ := Submonoid.log_pow_int_eq_self h₂
       simp_rw [Submonoid.pow_apply] at hpow₂
-      simp_rw [Localization.add_mk, Localization.liftOn_mk, Subtype.coe_mk,
+      simp_rw [Localization.add_mk, Localization.liftOn_mk,
         Submonoid.log_mul (Int.pow_right_injective h₂), hpow₂]
       calc
         (2 ^ b' * c + 2 ^ d' * a) • powHalf (b' + d') =

@@ -2,17 +2,14 @@
 Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
-
-! This file was ported from Lean 3 source module ring_theory.dedekind_domain.adic_valuation
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.ValuationSubring
 import Mathlib.Topology.Algebra.ValuedField
 import Mathlib.Algebra.Order.Group.TypeTags
+
+#align_import ring_theory.dedekind_domain.adic_valuation from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Adic valuations on Dedekind domains
@@ -67,7 +64,7 @@ open scoped Classical DiscreteValuation
 
 open Multiplicative IsDedekindDomain
 
-variable {R : Type _} [CommRing R] [IsDomain R] [IsDedekindDomain R] {K : Type _} [Field K]
+variable {R : Type*} [CommRing R] [IsDomain R] [IsDedekindDomain R] {K : Type*} [Field K]
   [Algebra R K] [IsFractionRing R K] (v : HeightOneSpectrum R)
 
 namespace IsDedekindDomain.HeightOneSpectrum
@@ -448,13 +445,13 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     ext
     --Porting note: added instance
     letI : Valued K ℤₘ₀ := adicValued v
-    simp_rw [RingHom.map_mul, Subring.coe_mul, Subtype.coe_mk, UniformSpace.Completion.coe_mul]
+    simp_rw [RingHom.map_mul, Subring.coe_mul, UniformSpace.Completion.coe_mul]
   map_zero' := by simp only [map_zero]; rfl
   map_add' x y := by
     ext
     --Porting note: added instance
     letI : Valued K ℤₘ₀ := adicValued v
-    simp_rw [RingHom.map_add, Subring.coe_add, Subtype.coe_mk, UniformSpace.Completion.coe_add]
+    simp_rw [RingHom.map_add, Subring.coe_add, UniformSpace.Completion.coe_add]
   commutes' r x := by
     -- Porting note: added `dsimp` line
     dsimp

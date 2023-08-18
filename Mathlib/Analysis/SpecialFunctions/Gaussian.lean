@@ -2,17 +2,14 @@
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module analysis.special_functions.gaussian
-! leanprover-community/mathlib commit 7982767093ae38cba236487f9c9dd9cd99f63c16
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 import Mathlib.Analysis.SpecialFunctions.PolarCoord
 import Mathlib.Analysis.Convex.Complex
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Fourier.PoissonSummation
+
+#align_import analysis.special_functions.gaussian from "leanprover-community/mathlib"@"7982767093ae38cba236487f9c9dd9cd99f63c16"
 
 /-!
 # Gaussian integral
@@ -40,7 +37,7 @@ for positive real `a`, or complex `a` with positive real part. (See also
 `NumberTheory.ModularForms.JacobiTheta`.)
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 
@@ -299,8 +296,8 @@ theorem integral_gaussian_complex_Ioi {b : ℂ} (hb : 0 < re b) :
   have : ∀ c : ℝ, ∫ x in (0 : ℝ)..c, cexp (-b * (x : ℂ) ^ 2) =
       ∫ x in -c..0, cexp (-b * (x : ℂ) ^ 2) := by
     intro c
-    have :=
-      @intervalIntegral.integral_comp_sub_left _ _ _ _ 0 c (fun x => cexp (-b * (x : ℂ) ^ 2)) 0
+    have := intervalIntegral.integral_comp_sub_left (a := 0) (b := c)
+      (fun x => cexp (-b * (x : ℂ) ^ 2)) 0
     simpa [zero_sub, neg_sq, neg_zero] using this
   have t1 :=
     intervalIntegral_tendsto_integral_Ioi 0 (integrable_cexp_neg_mul_sq hb).integrableOn tendsto_id
@@ -547,7 +544,7 @@ theorem _root_.fourier_transform_gaussian_pi (hb : 0 < b.re) :
   convert _root_.fourier_transform_gaussian h1 (-2 * π * t) using 1
   · congr 1 with x : 1
     congr 2
-    all_goals push_cast; ring
+    any_goals push_cast; ring
   · conv_lhs => rw [mul_comm]
     congr 2
     · field_simp [ofReal_ne_zero.mpr pi_ne_zero]; ring
@@ -563,7 +560,7 @@ section GaussianPoisson
 /-! ## Poisson summation applied to the Gaussian -/
 
 
-variable {E : Type _} [NormedAddCommGroup E]
+variable {E : Type*} [NormedAddCommGroup E]
 
 theorem tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact {a : ℝ} (ha : 0 < a) (s : ℝ) :
     Tendsto (fun x : ℝ => |x| ^ s * rexp (-a * x ^ 2)) (cocompact ℝ) (𝓝 0) := by

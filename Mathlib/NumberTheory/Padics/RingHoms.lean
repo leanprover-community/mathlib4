@@ -2,14 +2,11 @@
 Copyright (c) 2020 Johan Commelin, Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module number_theory.padics.ring_homs
-! leanprover-community/mathlib commit 565eb991e264d0db702722b4bde52ee5173c9950
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.NumberTheory.Padics.PadicIntegers
+
+#align_import number_theory.padics.ring_homs from "leanprover-community/mathlib"@"565eb991e264d0db702722b4bde52ee5173c9950"
 
 /-!
 
@@ -344,7 +341,6 @@ theorem dvd_appr_sub_appr (x : ℤ_[p]) (m n : ℕ) (h : m ≤ n) : p ^ m ∣ x.
   dsimp [appr]
   split_ifs with h
   · exact ih
-  dsimp
   rw [add_comm, add_tsub_assoc_of_le (appr_mono _ (Nat.le_add_right m k))]
   apply dvd_add _ ih
   apply dvd_mul_of_dvd_left
@@ -480,7 +476,7 @@ section lift
 
 open CauSeq PadicSeq
 
-variable {R : Type _} [NonAssocSemiring R] (f : ∀ k : ℕ, R →+* ZMod (p ^ k))
+variable {R : Type*} [NonAssocSemiring R] (f : ∀ k : ℕ, R →+* ZMod (p ^ k))
   (f_compat : ∀ (k1 k2) (hk : k1 ≤ k2), (ZMod.castHom (pow_dvd_pow p hk) _).comp (f k2) = f k1)
 
 /-- Given a family of ring homs `f : Π n : ℕ, R →+* ZMod (p ^ n)`,
@@ -677,7 +673,7 @@ theorem ext_of_toZModPow {x y : ℤ_[p]} : (∀ n, toZModPow n x = toZModPow n y
     rfl
 #align padic_int.ext_of_to_zmod_pow PadicInt.ext_of_toZModPow
 
-theorem toZModPow_eq_iff_ext {R : Type _} [NonAssocSemiring R] {g g' : R →+* ℤ_[p]} :
+theorem toZModPow_eq_iff_ext {R : Type*} [NonAssocSemiring R] {g g' : R →+* ℤ_[p]} :
     (∀ n, (toZModPow n).comp g = (toZModPow n).comp g') ↔ g = g' := by
   constructor
   · intro hg

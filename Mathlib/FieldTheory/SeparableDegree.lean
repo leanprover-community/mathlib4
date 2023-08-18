@@ -2,15 +2,12 @@
 Copyright (c) 2021 Jakob Scholbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Scholbach
-
-! This file was ported from Lean 3 source module field_theory.separable_degree
-! leanprover-community/mathlib commit d11893b411025250c8e61ff2f12ccbd7ee35ab15
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.FieldTheory.Separable
+
+#align_import field_theory.separable_degree from "leanprover-community/mathlib"@"d11893b411025250c8e61ff2f12ccbd7ee35ab15"
 
 /-!
 
@@ -47,7 +44,7 @@ open Classical Polynomial
 
 section CommSemiring
 
-variable {F : Type _} [CommSemiring F] (q : ℕ)
+variable {F : Type*} [CommSemiring F] (q : ℕ)
 
 /-- A separable contraction of a polynomial `f` is a separable polynomial `g` such that
 `g(x^(q^m)) = f(x)` for some `m : ℕ`.-/
@@ -101,7 +98,7 @@ end CommSemiring
 
 section Field
 
-variable {F : Type _} [Field F]
+variable {F : Type*} [Field F]
 
 variable (q : ℕ) {f : F[X]} (hf : HasSeparableContraction q f)
 

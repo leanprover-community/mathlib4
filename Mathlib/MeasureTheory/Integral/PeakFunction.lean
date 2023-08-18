@@ -2,14 +2,11 @@
 Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module measure_theory.integral.peak_function
-! leanprover-community/mathlib commit 13b0d72fd8533ba459ac66e9a885e35ffabb32b2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
+
+#align_import measure_theory.integral.peak_function from "leanprover-community/mathlib"@"13b0d72fd8533ba459ac66e9a885e35ffabb32b2"
 
 /-!
 # Integrals against peak functions
@@ -34,7 +31,7 @@ Note that there are related results about convolution with respect to peak funct
 -/
 
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
 
@@ -42,13 +39,13 @@ open scoped Topology ENNReal
 
 /-- This lemma exists for finsets, but not for sets currently. porting note: move to
 data.set.basic after the port. -/
-theorem Set.disjoint_sdiff_inter {α : Type _} (s t : Set α) : Disjoint (s \ t) (s ∩ t) :=
+theorem Set.disjoint_sdiff_inter {α : Type*} (s t : Set α) : Disjoint (s \ t) (s ∩ t) :=
   disjoint_of_subset_right (inter_subset_right _ _) disjoint_sdiff_left
 #align set.disjoint_sdiff_inter Set.disjoint_sdiff_inter
 
 open Set
 
-variable {α E ι : Type _} {hm : MeasurableSpace α} {μ : Measure α} [TopologicalSpace α]
+variable {α E ι : Type*} {hm : MeasurableSpace α} {μ : Measure α} [TopologicalSpace α]
   [BorelSpace α] [NormedAddCommGroup E] [NormedSpace ℝ E] {g : α → E} {l : Filter ι} {x₀ : α}
   {s : Set α} {φ : ι → α → ℝ}
 

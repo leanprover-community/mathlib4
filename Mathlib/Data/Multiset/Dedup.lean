@@ -2,13 +2,10 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.multiset.dedup
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Nodup
+
+#align_import data.multiset.dedup from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Erasing duplicates in a multiset.
@@ -19,7 +16,7 @@ namespace Multiset
 
 open List
 
-variable {α β : Type _} [DecidableEq α]
+variable {α β : Type*} [DecidableEq α]
 
 /-! ### dedup -/
 
@@ -147,7 +144,7 @@ theorem Nodup.le_dedup_iff_le {s t : Multiset α} (hno : s.Nodup) : s ≤ t.dedu
 
 end Multiset
 
-theorem Multiset.Nodup.le_nsmul_iff_le {α : Type _} {s t : Multiset α} {n : ℕ} (h : s.Nodup)
+theorem Multiset.Nodup.le_nsmul_iff_le {α : Type*} {s t : Multiset α} {n : ℕ} (h : s.Nodup)
     (hn : n ≠ 0) : s ≤ n • t ↔ s ≤ t := by
   classical
     rw [← h.le_dedup_iff_le, Iff.comm, ← h.le_dedup_iff_le]

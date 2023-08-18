@@ -2,16 +2,13 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.pairwise
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Count
 import Mathlib.Data.List.Lex
 import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation
+
+#align_import data.list.pairwise from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Pairwise relations on a list
@@ -35,7 +32,7 @@ open Nat Function
 
 namespace List
 
-variable {α β : Type _} {R S T : α → α → Prop} {a : α} {l : List α}
+variable {α β : Type*} {R S T : α → α → Prop} {a : α} {l : List α}
 
 mk_iff_of_inductive_prop List.Pairwise List.pairwise_iff
 #align list.pairwise_iff List.pairwise_iff
@@ -340,7 +337,7 @@ theorem pairwise_iff_nthLe {R} {l : List α} : Pairwise R l ↔
      fun h i j hij => h i j _ hij⟩
 #align list.pairwise_iff_nth_le List.pairwise_iff_nthLe
 
-theorem pairwise_replicate {α : Type _} {r : α → α → Prop} {x : α} (hx : r x x) :
+theorem pairwise_replicate {α : Type*} {r : α → α → Prop} {x : α} (hx : r x x) :
     ∀ n : ℕ, Pairwise r (List.replicate n x)
   | 0 => by simp
   | n + 1 => by simp only [replicate, add_eq, add_zero, pairwise_cons, mem_replicate, ne_eq,
@@ -435,7 +432,7 @@ theorem forall_mem_pwFilter (neg_trans : ∀ {x y z}, R x z → R x y ∨ R y z)
   ⟨by
     induction' l with x l IH; · exact fun _ _ h => (not_mem_nil _ h).elim
     simp only [forall_mem_cons]
-    by_cases h : ∀ y ∈ pwFilter R l, R x y <;> dsimp at h
+    by_cases h : ∀ y ∈ pwFilter R l, R x y
     · simp only [pwFilter_cons_of_pos h, forall_mem_cons, and_imp]
       exact fun r H => ⟨r, IH H⟩
     · rw [pwFilter_cons_of_neg h]

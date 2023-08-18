@@ -2,14 +2,11 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
-
-! This file was ported from Lean 3 source module ring_theory.graded_algebra.homogeneous_localization
-! leanprover-community/mathlib commit 831c494092374cfe9f50591ed0ac81a25efc5b86
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.GradedAlgebra.Basic
+
+#align_import ring_theory.graded_algebra.homogeneous_localization from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
 /-!
 # Homogeneous Localization
@@ -72,7 +69,7 @@ open DirectSum BigOperators Pointwise
 
 open DirectSum SetLike
 
-variable {ι R A : Type _}
+variable {ι R A : Type*}
 
 variable [AddCommMonoid ι] [DecidableEq ι]
 
@@ -256,7 +253,7 @@ theorem den_pow (c : NumDenSameDeg 𝒜 x) (n : ℕ) : ((c ^ n).den : A) = (c.de
 
 section SMul
 
-variable {α : Type _} [SMul α R] [SMul α A] [IsScalarTower α R A]
+variable {α : Type*} [SMul α R] [SMul α A] [IsScalarTower α R A]
 
 instance : SMul α (NumDenSameDeg 𝒜 x) where
   smul m c := ⟨c.deg, m • c.num, c.den, c.den_mem⟩
@@ -337,7 +334,7 @@ instance hasPow : Pow (HomogeneousLocalization 𝒜 x) ℕ where
 
 section SMul
 
-variable {α : Type _} [SMul α R] [SMul α A] [IsScalarTower α R A]
+variable {α : Type*} [SMul α R] [SMul α A] [IsScalarTower α R A]
 
 variable [IsScalarTower α A A]
 
@@ -350,7 +347,6 @@ instance : SMul α (HomogeneousLocalization 𝒜 x) where
 @[simp]
 theorem smul_val (y : HomogeneousLocalization 𝒜 x) (n : α) : (n • y).val = n • y.val := by
   induction y using Quotient.inductionOn
-  simp only [Quotient.liftOn₂'_mk, Quotient.liftOn'_mk]
   change Localization.mk _ _ = n • Localization.mk _ _
   dsimp only
   rw [Localization.smul_mk]
@@ -411,7 +407,6 @@ theorem one_val : (1 : HomogeneousLocalization 𝒜 x).val = 1 :=
 theorem add_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 + y2).val = y1.val + y2.val := by
   induction y1 using Quotient.inductionOn
   induction y2 using Quotient.inductionOn
-  simp only [Quotient.liftOn₂'_mk, Quotient.liftOn'_mk]
   change Localization.mk _ _ = Localization.mk _ _ + Localization.mk _ _
   dsimp only
   rw [Localization.add_mk]
@@ -422,7 +417,6 @@ theorem add_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 + y2).val = y1.va
 theorem mul_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 * y2).val = y1.val * y2.val := by
   induction y1 using Quotient.inductionOn
   induction y2 using Quotient.inductionOn
-  simp only [Quotient.liftOn₂'_mk, Quotient.liftOn'_mk]
   change Localization.mk _ _ = Localization.mk _ _ * Localization.mk _ _
   dsimp only
   rw [Localization.mk_mul]
@@ -432,7 +426,6 @@ theorem mul_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 * y2).val = y1.va
 @[simp]
 theorem neg_val (y : HomogeneousLocalization 𝒜 x) : (-y).val = -y.val := by
   induction y using Quotient.inductionOn
-  simp only [Quotient.liftOn₂'_mk, Quotient.liftOn'_mk]
   change Localization.mk _ _ = -Localization.mk _ _
   dsimp only
   rw [Localization.neg_mk]
@@ -447,7 +440,6 @@ theorem sub_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 - y2).val = y1.va
 @[simp]
 theorem pow_val (y : HomogeneousLocalization 𝒜 x) (n : ℕ) : (y ^ n).val = y.val ^ n := by
   induction y using Quotient.inductionOn
-  simp only [Quotient.liftOn₂'_mk, Quotient.liftOn'_mk]
   change Localization.mk _ _ = Localization.mk _ _ ^ n
   rw [Localization.mk_pow]
   dsimp only
@@ -528,7 +520,6 @@ theorem eq_num_div_den (f : HomogeneousLocalization 𝒜 x) :
   have := Quotient.out_eq' f
   apply_fun HomogeneousLocalization.val at this
   rw [← this]
-  simp only [Quotient.liftOn'_mk'']
   rfl
 #align homogeneous_localization.eq_num_div_denom HomogeneousLocalization.eq_num_div_den
 

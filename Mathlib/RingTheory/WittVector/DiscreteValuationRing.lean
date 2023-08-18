@@ -2,16 +2,13 @@
 Copyright (c) 2022 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Heather Macbeth, Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.discrete_valuation_ring
-! leanprover-community/mathlib commit c163ec99dfc664628ca15d215fce0a5b9c265b68
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.Domain
 import Mathlib.RingTheory.WittVector.MulCoeff
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.Tactic.LinearCombination
+
+#align_import ring_theory.witt_vector.discrete_valuation_ring from "leanprover-community/mathlib"@"c163ec99dfc664628ca15d215fce0a5b9c265b68"
 
 /-!
 
@@ -33,7 +30,7 @@ When `k` is also a field, this `b` can be chosen to be a unit of `𝕎 k`.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 namespace WittVector
 
@@ -43,7 +40,7 @@ local notation "𝕎" => WittVector p
 
 section CommRing
 
-variable {k : Type _} [CommRing k] [CharP k p]
+variable {k : Type*} [CommRing k] [CharP k p]
 
 /-- This is the `n+1`st coefficient of our inverse. -/
 def succNthValUnits (n : ℕ) (a : Units k) (A : 𝕎 k) (bs : Fin (n + 1) → k) : k :=
@@ -88,7 +85,7 @@ end CommRing
 
 section Field
 
-variable {k : Type _} [Field k] [CharP k p]
+variable {k : Type*} [Field k] [CharP k p]
 
 theorem isUnit_of_coeff_zero_ne_zero (x : 𝕎 k) (hx : x.coeff 0 ≠ 0) : IsUnit x := by
   let y : kˣ := Units.mk0 (x.coeff 0) hx
@@ -121,7 +118,7 @@ end Field
 
 section PerfectRing
 
-variable {k : Type _} [CommRing k] [CharP k p] [PerfectRing k p]
+variable {k : Type*} [CommRing k] [CharP k p] [PerfectRing k p]
 
 theorem exists_eq_pow_p_mul (a : 𝕎 k) (ha : a ≠ 0) :
     ∃ (m : ℕ) (b : 𝕎 k), b.coeff 0 ≠ 0 ∧ a = (p : 𝕎 k) ^ m * b := by
@@ -145,7 +142,7 @@ end PerfectRing
 
 section PerfectField
 
-variable {k : Type _} [Field k] [CharP k p] [PerfectRing k p]
+variable {k : Type*} [Field k] [CharP k p] [PerfectRing k p]
 
 theorem exists_eq_pow_p_mul' (a : 𝕎 k) (ha : a ≠ 0) :
     ∃ (m : ℕ) (b : Units (𝕎 k)), a = (p : 𝕎 k) ^ m * b := by

@@ -2,11 +2,6 @@
 Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module analysis.normed_space.spectrum
-! leanprover-community/mathlib commit d608fc5d4e69d4cc21885913fb573a88b0deb521
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 import Mathlib.Analysis.Complex.Liouville
@@ -14,6 +9,8 @@ import Mathlib.Analysis.Complex.Polynomial
 import Mathlib.Analysis.Analytic.RadiusLiminf
 import Mathlib.Topology.Algebra.Module.CharacterSpace
 import Mathlib.Analysis.NormedSpace.Exponential
+
+#align_import analysis.normed_space.spectrum from "leanprover-community/mathlib"@"d608fc5d4e69d4cc21885913fb573a88b0deb521"
 
 /-!
 # The spectrum of elements in a complete normed algebra
@@ -50,17 +47,17 @@ This file contains the basic theory for the resolvent and spectrum of a Banach a
 
 open scoped ENNReal NNReal
 
-/-- The *spectral radius* is the supremum of the `nnnorm` (`‖⬝‖₊`) of elements in the spectrum,
+/-- The *spectral radius* is the supremum of the `nnnorm` (`‖·‖₊`) of elements in the spectrum,
     coerced into an element of `ℝ≥0∞`. Note that it is possible for `spectrum 𝕜 a = ∅`. In this
     case, `spectralRadius a = 0`. It is also possible that `spectrum 𝕜 a` be unbounded (though
     not for Banach algebras, see `spectrum.is_bounded`, below).  In this case,
     `spectralRadius a = ∞`. -/
-noncomputable def spectralRadius (𝕜 : Type _) {A : Type _} [NormedField 𝕜] [Ring A] [Algebra 𝕜 A]
+noncomputable def spectralRadius (𝕜 : Type*) {A : Type*} [NormedField 𝕜] [Ring A] [Algebra 𝕜 A]
     (a : A) : ℝ≥0∞ :=
   ⨆ k ∈ spectrum 𝕜 a, ‖k‖₊
 #align spectral_radius spectralRadius
 
-variable {𝕜 : Type _} {A : Type _}
+variable {𝕜 : Type*} {A : Type*}
 
 namespace spectrum
 
@@ -529,7 +526,7 @@ namespace AlgHom
 
 section NormedField
 
-variable {F : Type _} [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable {F : Type*} [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 local notation "↑ₐ" => algebraMap 𝕜 A
 

@@ -2,16 +2,13 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.graded_object
-! leanprover-community/mathlib commit 6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
+
+#align_import category_theory.graded_object from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
 
 /-!
 # The category of graded objects
@@ -29,6 +26,8 @@ functor on `β`-graded objects
 When `C` has coproducts we construct the `total` functor `GradedObject β C ⥤ C`,
 show that it is faithful, and deduce that when `C` is concrete so is `GradedObject β C`.
 -/
+
+set_option autoImplicit true
 
 
 open CategoryTheory.Limits
@@ -85,7 +84,7 @@ variable (C)
 
 -- porting note: added to ease the port
 /-- Pull back an `I`-graded object in `C` to a `J`-graded object along a function `J → I`. -/
-abbrev comap {I J : Type _} (h : J → I) : GradedObject I C ⥤ GradedObject J C :=
+abbrev comap {I J : Type*} (h : J → I) : GradedObject I C ⥤ GradedObject J C :=
   Pi.comap (fun _ => C) h
 
 -- porting note: added to ease the port, this is a special case of `Functor.eqToHom_proj`
@@ -135,7 +134,7 @@ def comapEquiv {β γ : Type w} (e : β ≃ γ) : GradedObject β C ≌ GradedOb
 -- See note [dsimp, simp].
 end
 
-instance hasShift {β : Type _} [AddCommGroup β] (s : β) : HasShift (GradedObjectWithShift s C) ℤ :=
+instance hasShift {β : Type*} [AddCommGroup β] (s : β) : HasShift (GradedObjectWithShift s C) ℤ :=
   hasShiftMk _ _
     { F := fun n => comap C fun b : β => b + n • s
       zero := comapEq C (by aesop_cat) ≪≫ Pi.comapId β fun _ => C
@@ -144,13 +143,13 @@ instance hasShift {β : Type _} [AddCommGroup β] (s : β) : HasShift (GradedObj
 #align category_theory.graded_object.has_shift CategoryTheory.GradedObject.hasShift
 
 @[simp]
-theorem shiftFunctor_obj_apply {β : Type _} [AddCommGroup β] (s : β) (X : β → C) (t : β) (n : ℤ) :
+theorem shiftFunctor_obj_apply {β : Type*} [AddCommGroup β] (s : β) (X : β → C) (t : β) (n : ℤ) :
     (shiftFunctor (GradedObjectWithShift s C) n).obj X t = X (t + n • s) :=
   rfl
 #align category_theory.graded_object.shift_functor_obj_apply CategoryTheory.GradedObject.shiftFunctor_obj_apply
 
 @[simp]
-theorem shiftFunctor_map_apply {β : Type _} [AddCommGroup β] (s : β)
+theorem shiftFunctor_map_apply {β : Type*} [AddCommGroup β] (s : β)
     {X Y : GradedObjectWithShift s C} (f : X ⟶ Y) (t : β) (n : ℤ) :
     (shiftFunctor (GradedObjectWithShift s C) n).map f t = f (t + n • s) :=
   rfl

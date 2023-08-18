@@ -2,13 +2,10 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.semiquot
-! leanprover-community/mathlib commit 09597669f02422ed388036273d8848119699c22f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Lattice
+
+#align_import data.semiquot from "leanprover-community/mathlib"@"09597669f02422ed388036273d8848119699c22f"
 
 /-! # Semiquotients
 
@@ -28,7 +25,7 @@ predicate `S`) but are not completely determined.
   is hidden by a quotient construction, allowing for the representation
   of nondeterministic functions. -/
   -- porting notes: removed universe parameter
-structure Semiquot (α : Type _) where mk' ::
+structure Semiquot (α : Type*) where mk' ::
   /-- Set containing some element of `α`-/
   s : Set α
   /-- Assertion of non-emptiness via `Trunc`-/
@@ -37,7 +34,7 @@ structure Semiquot (α : Type _) where mk' ::
 
 namespace Semiquot
 
-variable {α : Type _} {β : Type _}
+variable {α : Type*} {β : Type*}
 
 instance : Membership α (Semiquot α) :=
   ⟨fun a q => a ∈ q.s⟩

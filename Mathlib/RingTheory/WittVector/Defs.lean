@@ -2,13 +2,10 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.defs
-! leanprover-community/mathlib commit f1944b30c97c5eb626e498307dec8b022a05bd0a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.StructurePolynomial
+
+#align_import ring_theory.witt_vector.defs from "leanprover-community/mathlib"@"f1944b30c97c5eb626e498307dec8b022a05bd0a"
 
 /-!
 # Witt vectors
@@ -50,12 +47,12 @@ If `p` is invertible in `R`, this ring is isomorphic to `ℕ → R` (the product
 If `R` is a ring of characteristic `p`, then `witt_vector p R` is a ring of characteristic `0`.
 The canonical example is `witt_vector p (zmod p)`,
 which is isomorphic to the `p`-adic integers `ℤ_[p]`. -/
-structure WittVector (p : ℕ) (R : Type _) where mk' ::
+structure WittVector (p : ℕ) (R : Type*) where mk' ::
   coeff : ℕ → R
 #align witt_vector WittVector
 
 -- Porting note: added to make the `p` argument explicit
-def WittVector.mk (p : ℕ) {R : Type _} (coeff : ℕ → R) : WittVector p R := mk' coeff
+def WittVector.mk (p : ℕ) {R : Type*} (coeff : ℕ → R) : WittVector p R := mk' coeff
 
 variable {p : ℕ}
 
@@ -68,7 +65,7 @@ local notation "𝕎" => WittVector p
 -- type as `\bbW`
 namespace WittVector
 
-variable {R : Type _}
+variable {R : Type*}
 
 /-- Construct a Witt vector `mk p x : 𝕎 R` from a sequence `x` of elements of `R`. -/
 add_decl_doc WittVector.mk

@@ -2,13 +2,10 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module field_theory.splitting_field.construction
-! leanprover-community/mathlib commit e3f4be1fcb5376c4948d7f095bec45350bfb9d1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.Normal
+
+#align_import field_theory.splitting_field.construction from "leanprover-community/mathlib"@"e3f4be1fcb5376c4948d7f095bec45350bfb9d1a"
 
 /-!
 # Splitting fields
@@ -274,18 +271,18 @@ instance inhabited : Inhabited (SplittingField f) :=
   ⟨37⟩
 #align polynomial.splitting_field.inhabited Polynomial.SplittingField.inhabited
 
-instance {S : Type _} [DistribSMul S K] [IsScalarTower S K K] : SMul S (SplittingField f) :=
-  Submodule.Quotient.hasSmul' _
+instance {S : Type*} [DistribSMul S K] [IsScalarTower S K K] : SMul S (SplittingField f) :=
+  Submodule.Quotient.instSMul' _
 
 instance algebra : Algebra K (SplittingField f) :=
   Ideal.Quotient.algebra _
 #align polynomial.splitting_field.algebra Polynomial.SplittingField.algebra
 
-instance algebra' {R : Type _} [CommSemiring R] [Algebra R K] : Algebra R (SplittingField f) :=
+instance algebra' {R : Type*} [CommSemiring R] [Algebra R K] : Algebra R (SplittingField f) :=
   Ideal.Quotient.algebra _
 #align polynomial.splitting_field.algebra' Polynomial.SplittingField.algebra'
 
-instance isScalarTower {R : Type _} [CommSemiring R] [Algebra R K] :
+instance isScalarTower {R : Type*} [CommSemiring R] [Algebra R K] :
     IsScalarTower R K (SplittingField f) :=
   Ideal.Quotient.isScalarTower _ _ _
 #align polynomial.splitting_field.is_scalar_tower Polynomial.SplittingField.isScalarTower
@@ -324,8 +321,11 @@ instance : Field (SplittingField f) :=
       assumption
     inv_zero := by simp }
 
-instance [CharZero K] : CharZero (SplittingField f) :=
+instance instCharZero [CharZero K] : CharZero (SplittingField f) :=
   charZero_of_injective_algebraMap (algebraMap K _).injective
+
+instance instCharP (p : ℕ) [CharP K p] : CharP (SplittingField f) p :=
+  charP_of_injective_algebraMap (algebraMap K _).injective p
 
 -- The algebra instance deriving from `K` should be definitionally equal to that
 -- deriving from the field structure on `SplittingField f`.

@@ -2,16 +2,13 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module algebraic_geometry.locally_ringed_space.has_colimits
-! leanprover-community/mathlib commit 533f62f4dd62a5aad24a04326e6e787c8f7e98b1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.LocallyRingedSpace
 import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.AlgebraicGeometry.OpenImmersion.Basic
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+
+#align_import algebraic_geometry.locally_ringed_space.has_colimits from "leanprover-community/mathlib"@"533f62f4dd62a5aad24a04326e6e787c8f7e98b1"
 
 /-!
 # Colimits of LocallyRingedSpace
@@ -134,7 +131,7 @@ noncomputable instance (J : Type _) :
     PreservesColimitsOfShape (Discrete.{u} J) forgetToSheafedSpace.{u} :=
   ⟨fun {G} =>
     preservesColimitOfPreservesColimitCocone (coproductCofanIsColimit G)
-      ((colimit.isColimit  (C := SheafedSpace.{u+1, u, u} CommRingCatMax.{u, u}) _).ofIsoColimit
+      ((colimit.isColimit (C := SheafedSpace.{u+1, u, u} CommRingCatMax.{u, u}) _).ofIsoColimit
         (Cocones.ext (Iso.refl _) fun _ => Category.comp_id _))⟩
 
 end HasCoproducts

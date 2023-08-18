@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yury Kudriashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudriashov, Malo Jaffré
-
-! This file was ported from Lean 3 source module analysis.convex.slope
-! leanprover-community/mathlib commit a8b2226cfb0a79f5986492053fc49b1a0c6aeffb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
+
+#align_import analysis.convex.slope from "leanprover-community/mathlib"@"a8b2226cfb0a79f5986492053fc49b1a0c6aeffb"
 
 /-!
 # Slopes of convex functions
@@ -22,7 +19,7 @@ The main use is to show convexity/concavity from monotonicity of the derivative.
 -/
 
 
-variable {𝕜 : Type _} [LinearOrderedField 𝕜] {s : Set 𝕜} {f : 𝕜 → 𝕜}
+variable {𝕜 : Type*} [LinearOrderedField 𝕜] {s : Set 𝕜} {f : 𝕜 → 𝕜}
 
 /-- If `f : 𝕜 → 𝕜` is convex, then for any three points `x < y < z` the slope of the secant line of
 `f` on `[x, y]` is less than the slope of the secant line of `f` on `[x, z]`. -/

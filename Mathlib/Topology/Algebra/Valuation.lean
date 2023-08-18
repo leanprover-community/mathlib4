@@ -2,15 +2,12 @@
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module topology.algebra.valuation
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.RingTheory.Valuation.Basic
+
+#align_import topology.algebra.valuation from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # The topology on a valued ring
@@ -59,8 +56,7 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
         change v (x * y) < _
         rw [Valuation.map_mul, Hx, MulZeroClass.zero_mul]
         exact Units.zero_lt γ
-      · simp only [image_subset_iff, setOf_subset_setOf, preimage_setOf_eq, Valuation.map_mul]
-        use γx⁻¹ * γ
+      · use γx⁻¹ * γ
         rintro y (vy_lt : v y < ↑(γx⁻¹ * γ))
         change (v (x * y) : Γ₀) < γ
         rw [Valuation.map_mul, Hx, mul_comm]

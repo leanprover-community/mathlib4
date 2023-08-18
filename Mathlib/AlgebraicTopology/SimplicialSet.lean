@@ -2,18 +2,15 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison, Adam Topaz
-
-! This file was ported from Lean 3 source module algebraic_topology.simplicial_set
-! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.SimplicialObject
 import Mathlib.AlgebraicTopology.TopologicalSimplex
 import Mathlib.CategoryTheory.Limits.Presheaf
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Topology.Category.TopCat.Limits.Basic
+
+#align_import algebraic_topology.simplicial_set from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
 /-!
 A simplicial set is just a simplicial object in `Type`,
@@ -34,6 +31,8 @@ As an example, we should have a function that constructs
 from a non-surjective order preserving function `Fin n → Fin n`
 a morphism `Δ[n] ⟶ ∂Δ[n]`.
 -/
+
+set_option autoImplicit true
 
 
 universe v u

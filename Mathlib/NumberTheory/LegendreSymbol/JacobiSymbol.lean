@@ -2,13 +2,10 @@
 Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
-
-! This file was ported from Lean 3 source module number_theory.legendre_symbol.jacobi_symbol
-! leanprover-community/mathlib commit 74a27133cf29446a0983779e37c8f829a85368f3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
+
+#align_import number_theory.legendre_symbol.jacobi_symbol from "leanprover-community/mathlib"@"74a27133cf29446a0983779e37c8f829a85368f3"
 
 /-!
 # The Jacobi Symbol
@@ -325,7 +322,7 @@ namespace jacobiSym
 
 /-- If `χ` is a multiplicative function such that `J(a | p) = χ p` for all odd primes `p`,
 then `J(a | b)` equals `χ b` for all odd natural numbers `b`. -/
-theorem value_at (a : ℤ) {R : Type _} [CommSemiring R] (χ : R →* ℤ)
+theorem value_at (a : ℤ) {R : Type*} [CommSemiring R] (χ : R →* ℤ)
     (hp : ∀ (p : ℕ) (pp : p.Prime) (_ : p ≠ 2), @legendreSym p ⟨pp⟩ a = χ p) {b : ℕ} (hb : Odd b) :
     J(a | b) = χ b := by
   conv_rhs => rw [← prod_factors hb.pos.ne', cast_list_prod, χ.map_list_prod]

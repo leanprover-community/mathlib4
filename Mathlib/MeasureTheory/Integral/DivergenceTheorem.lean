@@ -2,17 +2,14 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.integral.divergence_theorem
-! leanprover-community/mathlib commit 3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.BoxIntegral.DivergenceTheorem
 import Mathlib.Analysis.BoxIntegral.Integrability
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
+
+#align_import measure_theory.integral.divergence_theorem from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
 /-!
 # Divergence theorem for Bochner integral
@@ -319,7 +316,7 @@ end
 
 /-- An auxiliary lemma that is used to specialize the general divergence theorem to spaces that do
 not have the form `Fin n → ℝ`. -/
-theorem integral_divergence_of_hasFDerivWithinAt_off_countable_of_equiv {F : Type _}
+theorem integral_divergence_of_hasFDerivWithinAt_off_countable_of_equiv {F : Type*}
     [NormedAddCommGroup F] [NormedSpace ℝ F] [PartialOrder F] [MeasureSpace F] [BorelSpace F]
     (eL : F ≃L[ℝ] ℝⁿ⁺¹) (he_ord : ∀ x y, eL x ≤ eL y ↔ x ≤ y)
     (he_vol : MeasurePreserving eL volume volume) (f : Fin (n + 1) → F → E)

@@ -2,13 +2,10 @@
 Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module probability.independence.zero_one
-! leanprover-community/mathlib commit 2f8347015b12b0864dfaf366ec4909eb70c78740
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.Independence.Basic
+
+#align_import probability.independence.zero_one from "leanprover-community/mathlib"@"2f8347015b12b0864dfaf366ec4909eb70c78740"
 
 /-!
 # Kolmogorov's 0-1 law
@@ -30,10 +27,11 @@ open scoped MeasureTheory ENNReal
 
 namespace ProbabilityTheory
 
-variable {Ω ι : Type _} {m m0 : MeasurableSpace Ω} {μ : Measure Ω}
+variable {Ω ι : Type*} {m m0 : MeasurableSpace Ω} {μ : Measure Ω}
 
 theorem measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
     (h_indep : IndepSet t t μ) : μ t = 0 ∨ μ t = 1 ∨ μ t = ∞ := by
+  rw [IndepSet_iff] at h_indep
   specialize h_indep t t (measurableSet_generateFrom (Set.mem_singleton t))
     (measurableSet_generateFrom (Set.mem_singleton t))
   by_cases h0 : μ t = 0
@@ -61,7 +59,7 @@ theorem indep_biSup_compl (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) (t 
 
 section Abstract
 
-variable {α : Type _} {p : Set ι → Prop} {f : Filter ι} {ns : α → Set ι}
+variable {α : Type*} {p : Set ι → Prop} {f : Filter ι} {ns : α → Set ι}
 
 /-! We prove a version of Kolmogorov's 0-1 law for the σ-algebra `limsup s f` where `f` is a filter
 for which we can define the following two functions:

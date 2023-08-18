@@ -2,11 +2,6 @@
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module geometry.manifold.instances.sphere
-! leanprover-community/mathlib commit 0dc4079202c28226b2841a51eb6d3cc2135bb80f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.NormedSpace.BallAction
@@ -16,6 +11,8 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.MFDeriv
+
+#align_import geometry.manifold.instances.sphere from "leanprover-community/mathlib"@"0dc4079202c28226b2841a51eb6d3cc2135bb80f"
 
 /-!
 # Manifold structure on the sphere
@@ -67,7 +64,7 @@ Relate the stereographic projection to the inversion of the space.
 -/
 
 
-variable {E : Type _} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 noncomputable section
 
@@ -75,7 +72,7 @@ open Metric FiniteDimensional Function
 
 open scoped Manifold
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 section StereographicProjection
 
@@ -479,11 +476,11 @@ theorem contMDiff_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
           U.symm.contDiff).contDiffOn
 #align cont_mdiff_coe_sphere contMDiff_coe_sphere
 
-variable {F : Type _} [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
-variable {H : Type _} [TopologicalSpace H] {I : ModelWithCorners ℝ F H}
+variable {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ F H}
 
-variable {M : Type _} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
+variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
 
 /-- If a `cont_mdiff` function `f : M → E`, where `M` is some manifold, takes values in the
 sphere, then it restricts to a `cont_mdiff` function from `M` to the sphere. -/

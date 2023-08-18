@@ -2,13 +2,10 @@
 Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
-
-! This file was ported from Lean 3 source module algebra.indicator_function
-! leanprover-community/mathlib commit 2445c98ae4b87eabebdde552593519b9b6dc350c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Support
+
+#align_import algebra.indicator_function from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 
 /-!
 # Indicator function
@@ -180,7 +177,7 @@ theorem mulIndicator_mulSupport : mulIndicator (mulSupport f) f = f :=
 #align set.indicator_support Set.indicator_support
 
 @[to_additive (attr := simp)]
-theorem mulIndicator_range_comp {ι : Sort _} (f : ι → α) (g : α → M) :
+theorem mulIndicator_range_comp {ι : Sort*} (f : ι → α) (g : α → M) :
     mulIndicator (range f) g ∘ f = g ∘ f :=
   letI := Classical.decPred (· ∈ range f)
   piecewise_range_comp _ _ _
@@ -485,7 +482,7 @@ end Monoid
 
 section DistribMulAction
 
-variable {A : Type _} [AddMonoid A] [Monoid M] [DistribMulAction M A]
+variable {A : Type*} [AddMonoid A] [Monoid M] [DistribMulAction M A]
 
 theorem indicator_smul_apply (s : Set α) (r : α → M) (f : α → A) (x : α) :
     indicator s (fun x => r x • f x) x = r x • indicator s f x := by
@@ -513,7 +510,7 @@ end DistribMulAction
 
 section SMulWithZero
 
-variable {A : Type _} [Zero A] [Zero M] [SMulWithZero M A]
+variable {A : Type*} [Zero A] [Zero M] [SMulWithZero M A]
 
 theorem indicator_smul_apply_left (s : Set α) (r : α → M) (f : α → A) (x : α) :
     indicator s (fun x => r x • f x) x = indicator s r x • f x := by
@@ -537,7 +534,7 @@ end SMulWithZero
 
 section Group
 
-variable {G : Type _} [Group G] {s t : Set α} {f g : α → G} {a : α}
+variable {G : Type*} [Group G] {s t : Set α} {f g : α → G} {a : α}
 
 @[to_additive]
 theorem mulIndicator_inv' (s : Set α) (f : α → G) : mulIndicator s f⁻¹ = (mulIndicator s f)⁻¹ :=
@@ -587,7 +584,7 @@ theorem mulIndicator_diff (h : s ⊆ t) (f : α → G) :
 #align set.mul_indicator_diff Set.mulIndicator_diff
 #align set.indicator_diff' Set.indicator_diff'
 
-theorem indicator_diff {G : Type _} [AddGroup G] {s t : Set α} (h : s ⊆ t) (f : α → G) :
+theorem indicator_diff {G : Type*} [AddGroup G] {s t : Set α} (h : s ⊆ t) (f : α → G) :
     indicator (t \ s) f = indicator t f - indicator s f := by rw [indicator_diff' h, sub_eq_add_neg]
 #align set.indicator_diff Set.indicator_diff
 
@@ -872,6 +869,20 @@ theorem mulIndicator_iUnion_apply {ι M} [CompleteLattice M] [One M] (h1 : (⊥ 
 #align set.mul_indicator_Union_apply Set.mulIndicator_iUnion_apply
 #align set.indicator_Union_apply Set.indicator_iUnion_apply
 
+@[to_additive] lemma mulIndicator_iInter_apply {ι M} [Nonempty ι] [CompleteLattice M] [One M]
+    (h1 : (⊥ : M) = 1) (s : ι → Set α) (f : α → M) (x : α) :
+    mulIndicator (⋂ i, s i) f x = ⨅ i, mulIndicator (s i) f x := by
+  by_cases hx : x ∈ ⋂ i, s i
+  · rw [mulIndicator_of_mem hx]
+    rw [mem_iInter] at hx
+    refine le_antisymm ?_ (by simp only [mulIndicator_of_mem (hx _), ciInf_const, le_refl])
+    exact le_iInf (fun j ↦ by simp only [mulIndicator_of_mem (hx j), le_refl])
+  · rw [mulIndicator_of_not_mem hx]
+    simp only [mem_iInter, not_exists, not_forall] at hx
+    rcases hx with ⟨j, hj⟩
+    refine le_antisymm (by simp only [← h1, le_iInf_iff, bot_le, forall_const]) ?_
+    simpa [mulIndicator_of_not_mem hj] using (iInf_le (fun i ↦ (s i).mulIndicator f) j) x
+
 end Order
 
 section CanonicallyOrderedMonoid
@@ -920,7 +931,7 @@ theorem indicator_nonpos_le_indicator {β} [LinearOrder β] [Zero β] (s : Set �
 end Set
 
 @[to_additive]
-theorem MonoidHom.map_mulIndicator {M N : Type _} [MulOneClass M] [MulOneClass N] (f : M →* N)
+theorem MonoidHom.map_mulIndicator {M N : Type*} [MulOneClass M] [MulOneClass N] (f : M →* N)
     (s : Set α) (g : α → M) (x : α) : f (s.mulIndicator g x) = s.mulIndicator (f ∘ g) x := by
   simp [Set.mulIndicator_comp_of_one]
 #align monoid_hom.map_mul_indicator MonoidHom.map_mulIndicator

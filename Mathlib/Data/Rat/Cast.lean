@@ -2,11 +2,6 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.rat.cast
-! leanprover-community/mathlib commit acebd8d49928f6ed8920e502a6c90674e75bd441
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Rat.Lemmas
@@ -14,6 +9,8 @@ import Mathlib.Data.Int.CharZero
 import Mathlib.Algebra.GroupWithZero.Power
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Order.Field.Basic
+
+#align_import data.rat.cast from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
 
 /-!
@@ -34,7 +31,7 @@ rat, rationals, field, ℚ, numerator, denominator, num, denom, cast, coercion, 
 -/
 
 
-variable {F ι α β : Type _}
+variable {F ι α β : Type*}
 
 namespace Rat
 
@@ -294,7 +291,7 @@ end WithDivRing
 
 section LinearOrderedField
 
-variable {K : Type _} [LinearOrderedField K]
+variable {K : Type*} [LinearOrderedField K]
 
 theorem cast_pos_of_pos {r : ℚ} (hr : 0 < r) : (0 : K) < r := by
   rw [Rat.cast_def]
@@ -446,7 +443,7 @@ theorem eq_ratCast {k} [DivisionRing k] [RingHomClass F ℚ k] (f : F) (r : ℚ)
 
 namespace MonoidWithZeroHom
 
-variable {M₀ : Type _} [MonoidWithZero M₀] [MonoidWithZeroHomClass F ℚ M₀] {f g : F}
+variable {M₀ : Type*} [MonoidWithZero M₀] [MonoidWithZeroHomClass F ℚ M₀] {f g : F}
 
 
 /-- If `f` and `g` agree on the integers then they are equal `φ`. -/
@@ -481,13 +478,13 @@ end MonoidWithZeroHom
 
 /-- Any two ring homomorphisms from `ℚ` to a semiring are equal. If the codomain is a division ring,
 then this lemma follows from `eq_ratCast`. -/
-theorem RingHom.ext_rat {R : Type _} [Semiring R] [RingHomClass F ℚ R] (f g : F) : f = g :=
+theorem RingHom.ext_rat {R : Type*} [Semiring R] [RingHomClass F ℚ R] (f g : F) : f = g :=
   MonoidWithZeroHom.ext_rat' <|
     RingHom.congr_fun <|
       ((f : ℚ →+* R).comp (Int.castRingHom ℚ)).ext_int ((g : ℚ →+* R).comp (Int.castRingHom ℚ))
 #align ring_hom.ext_rat RingHom.ext_rat
 
-instance Rat.subsingleton_ringHom {R : Type _} [Semiring R] : Subsingleton (ℚ →+* R) :=
+instance Rat.subsingleton_ringHom {R : Type*} [Semiring R] : Subsingleton (ℚ →+* R) :=
   ⟨RingHom.ext_rat⟩
 #align rat.subsingleton_ring_hom Rat.subsingleton_ringHom
 
@@ -495,7 +492,7 @@ section SMul
 
 namespace Rat
 
-variable {K : Type _} [DivisionRing K]
+variable {K : Type*} [DivisionRing K]
 
 instance (priority := 100) distribSMul : DistribSMul ℚ K where
   smul := (· • ·)

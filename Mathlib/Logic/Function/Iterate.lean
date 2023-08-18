@@ -2,13 +2,10 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module logic.function.iterate
-! leanprover-community/mathlib commit 792a2a264169d64986541c6f8f7e3bbb6acb6295
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Function.Conjugate
+
+#align_import logic.function.iterate from "leanprover-community/mathlib"@"792a2a264169d64986541c6f8f7e3bbb6acb6295"
 
 /-!
 # Iterations of a function
@@ -38,6 +35,8 @@ universe u v
 variable {α : Type u} {β : Type v}
 
 namespace Function
+
+open Function (Commute)
 
 variable (f : α → α)
 
@@ -190,14 +189,14 @@ theorem comp_iterate_pred_of_pos {n : ℕ} (hn : 0 < n) : f ∘ f^[n.pred] = f^[
 #align function.comp_iterate_pred_of_pos Function.comp_iterate_pred_of_pos
 
 /-- A recursor for the iterate of a function. -/
-def Iterate.rec (p : α → Sort _) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) (n : ℕ) :
+def Iterate.rec (p : α → Sort*) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) (n : ℕ) :
     p (f^[n] a) :=
   match n with
   | 0 => ha
   | m+1 => Iterate.rec p h (h _ ha) m
 #align function.iterate.rec Function.Iterate.rec
 
-theorem Iterate.rec_zero (p : α → Sort _) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) :
+theorem Iterate.rec_zero (p : α → Sort*) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) :
     Iterate.rec p h ha 0 = ha :=
   rfl
 #align function.iterate.rec_zero Function.Iterate.rec_zero

@@ -2,16 +2,13 @@
 Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
-
-! This file was ported from Lean 3 source module algebra.module.pid
-! leanprover-community/mathlib commit cdc34484a07418af43daf8198beaf5c00324bca8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.DedekindDomain
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.Algebra.Module.Projective
 import Mathlib.Algebra.Category.ModuleCat.Biproducts
+
+#align_import algebra.module.pid from "leanprover-community/mathlib"@"cdc34484a07418af43daf8198beaf5c00324bca8"
 
 /-!
 # Structure of finitely generated modules over a PID
@@ -28,7 +25,7 @@ import Mathlib.Algebra.Category.ModuleCat.Biproducts
 
 * `R` is a PID and `M` is a (finitely generated for main statements) `R`-module, with additional
   torsion hypotheses in the intermediate lemmas.
-* `N` is a `R`-module lying over a higher type universe than `R`. This assumption is needed on the
+* `N` is an `R`-module lying over a higher type universe than `R`. This assumption is needed on the
   final statement for technical reasons.
 * `p` is an irreducible element of `R` or a tuple of these.
 
@@ -202,7 +199,7 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
       · exact fun a => (fun i => (Option.rec (pOrder hN (s j)) k i : ℕ)) (finSuccEquiv d a)
       · refine (((@lequivProdOfRightSplitExact _ _ _ _ _ _ _ _ _ _ _ _
           ((f.trans ULift.moduleEquiv.{u, u, v}.symm).toLinearMap.comp <| mkQ _)
-          ((DirectSum.toModule _ _ _ fun i => (liftQSpanSingleton.{u, u} (p ^ k i)
+          ((DirectSum.toModule _ _ _ fun i => (liftQSpanSingleton (p ^ k i)
               (LinearMap.toSpanSingleton _ _ _) (this i).choose_spec.left : R ⧸ _ →ₗ[R] _)).comp
             ULift.moduleEquiv.toLinearMap) (R ∙ s j).injective_subtype ?_ ?_).symm.trans
           (((quotTorsionOfEquivSpanSingleton R N (s j)).symm.trans
@@ -246,7 +243,7 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R N] (hN : Module.IsTor
     ∀ i,
       ∃ (d : ℕ) (k : Fin d → ℕ),
         Nonempty <| torsionBy R N (p i ^ e i) ≃ₗ[R] ⨁ j, R ⧸ R ∙ p i ^ k j := by
-    haveI := isNoetherian_of_fg_of_noetherian' (Module.finite_def.mp h')
+    have := isNoetherian_of_isNoetherianRing_of_finite R N
     haveI := fun i => isNoetherian_submodule' (torsionBy R N <| p i ^ e i)
     exact fun i =>
       torsion_by_prime_power_decomposition.{u, v} (hp i)
@@ -269,7 +266,7 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R N] (hN : Module.IsTor
 theorem equiv_free_prod_directSum [h' : Module.Finite R N] :
     ∃ (n : ℕ) (ι : Type u) (_ : Fintype ι) (p : ι → R) (_ : ∀ i, Irreducible <| p i) (e : ι → ℕ),
       Nonempty <| N ≃ₗ[R] (Fin n →₀ R) × ⨁ i : ι, R ⧸ R ∙ p i ^ e i := by
-  haveI := isNoetherian_of_fg_of_noetherian' (Module.finite_def.mp h')
+  have := isNoetherian_of_isNoetherianRing_of_finite R N
   haveI := isNoetherian_submodule' (torsion R N)
   haveI := Module.Finite.of_surjective _ (torsion R N).mkQ_surjective
   obtain ⟨I, fI, p, hp, e, ⟨h⟩⟩ :=

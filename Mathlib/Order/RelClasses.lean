@@ -2,15 +2,12 @@
 Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module order.rel_classes
-! leanprover-community/mathlib commit 7413128c3bcb3b0818e3e18720abc9ea3100fb49
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Relation
 import Mathlib.Order.Basic
+
+#align_import order.rel_classes from "leanprover-community/mathlib"@"7413128c3bcb3b0818e3e18720abc9ea3100fb49"
 
 /-!
 # Unbundled relation classes
@@ -288,7 +285,7 @@ instance WellFoundedRelation.isWellFounded [h : WellFoundedRelation α] :
     IsWellFounded α WellFoundedRelation.rel :=
   { h with }
 
-theorem WellFoundedRelation.asymmetric {α : Sort _} [WellFoundedRelation α] {a b : α} :
+theorem WellFoundedRelation.asymmetric {α : Sort*} [WellFoundedRelation α] {a b : α} :
     WellFoundedRelation.rel a b → ¬ WellFoundedRelation.rel b a :=
   fun hab hba => WellFoundedRelation.asymmetric hba hab
 termination_by _ => a
@@ -314,12 +311,12 @@ theorem apply : ∀ a, Acc r a :=
 
 /-- Creates data, given a way to generate a value from all that compare as less under a well-founded
 relation. See also `IsWellFounded.fix_eq`. -/
-def fix {C : α → Sort _} : (∀ x : α, (∀ y : α, r y x → C y) → C x) → ∀ x : α, C x :=
+def fix {C : α → Sort*} : (∀ x : α, (∀ y : α, r y x → C y) → C x) → ∀ x : α, C x :=
   wf.fix
 #align is_well_founded.fix IsWellFounded.fix
 
 /-- The value from `IsWellFounded.fix` is built from the previous ones as specified. -/
-theorem fix_eq {C : α → Sort _} (F : ∀ x : α, (∀ y : α, r y x → C y) → C x) :
+theorem fix_eq {C : α → Sort*} (F : ∀ x : α, (∀ y : α, r y x → C y) → C x) :
     ∀ x, fix r F x = F x fun y _ => fix r F y :=
   wf.fix_eq F
 #align is_well_founded.fix_eq IsWellFounded.fix_eq
@@ -330,7 +327,7 @@ def toWellFoundedRelation : WellFoundedRelation α :=
 
 end IsWellFounded
 
-theorem WellFounded.asymmetric {α : Sort _} {r : α → α → Prop} (h : WellFounded r) (a b) :
+theorem WellFounded.asymmetric {α : Sort*} {r : α → α → Prop} (h : WellFounded r) (a b) :
     r a b → ¬r b a :=
   @WellFoundedRelation.asymmetric _ ⟨_, h⟩ _ _
 #align well_founded.asymmetric WellFounded.asymmetric
@@ -348,29 +345,29 @@ instance (r : α → α → Prop) [i : IsWellFounded α r] : IsWellFounded α (R
 
 /-- A class for a well founded relation `<`. -/
 @[reducible]
-def WellFoundedLT (α : Type _) [LT α] : Prop :=
+def WellFoundedLT (α : Type*) [LT α] : Prop :=
   IsWellFounded α (· < ·)
 #align well_founded_lt WellFoundedLT
 
 /-- A class for a well founded relation `>`. -/
 @[reducible]
-def WellFoundedGT (α : Type _) [LT α] : Prop :=
+def WellFoundedGT (α : Type*) [LT α] : Prop :=
   IsWellFounded α (· > ·)
 #align well_founded_gt WellFoundedGT
 
 -- See note [lower instance priority]
-instance (priority := 100) (α : Type _) [LT α] [h : WellFoundedLT α] : WellFoundedGT αᵒᵈ :=
+instance (priority := 100) (α : Type*) [LT α] [h : WellFoundedLT α] : WellFoundedGT αᵒᵈ :=
   h
 
 -- See note [lower instance priority]
-instance (priority := 100) (α : Type _) [LT α] [h : WellFoundedGT α] : WellFoundedLT αᵒᵈ :=
+instance (priority := 100) (α : Type*) [LT α] [h : WellFoundedGT α] : WellFoundedLT αᵒᵈ :=
   h
 
-theorem wellFoundedGT_dual_iff (α : Type _) [LT α] : WellFoundedGT αᵒᵈ ↔ WellFoundedLT α :=
+theorem wellFoundedGT_dual_iff (α : Type*) [LT α] : WellFoundedGT αᵒᵈ ↔ WellFoundedLT α :=
   ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
 #align well_founded_gt_dual_iff wellFoundedGT_dual_iff
 
-theorem wellFoundedLT_dual_iff (α : Type _) [LT α] : WellFoundedLT αᵒᵈ ↔ WellFoundedGT α :=
+theorem wellFoundedLT_dual_iff (α : Type*) [LT α] : WellFoundedLT αᵒᵈ ↔ WellFoundedGT α :=
   ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
 #align well_founded_lt_dual_iff wellFoundedLT_dual_iff
 
@@ -415,12 +412,12 @@ theorem apply : ∀ a : α, Acc (· < ·) a :=
 
 /-- Creates data, given a way to generate a value from all that compare as lesser. See also
 `WellFoundedLT.fix_eq`. -/
-def fix {C : α → Sort _} : (∀ x : α, (∀ y : α, y < x → C y) → C x) → ∀ x : α, C x :=
+def fix {C : α → Sort*} : (∀ x : α, (∀ y : α, y < x → C y) → C x) → ∀ x : α, C x :=
   IsWellFounded.fix (· < ·)
 #align well_founded_lt.fix WellFoundedLT.fix
 
 /-- The value from `WellFoundedLT.fix` is built from the previous ones as specified. -/
-theorem fix_eq {C : α → Sort _} (F : ∀ x : α, (∀ y : α, y < x → C y) → C x) :
+theorem fix_eq {C : α → Sort*} (F : ∀ x : α, (∀ y : α, y < x → C y) → C x) :
     ∀ x, fix F x = F x fun y _ => fix F y :=
   IsWellFounded.fix_eq _ F
 #align well_founded_lt.fix_eq WellFoundedLT.fix_eq
@@ -447,12 +444,12 @@ theorem apply : ∀ a : α, Acc (· > ·) a :=
 
 /-- Creates data, given a way to generate a value from all that compare as greater. See also
 `WellFoundedGT.fix_eq`. -/
-def fix {C : α → Sort _} : (∀ x : α, (∀ y : α, x < y → C y) → C x) → ∀ x : α, C x :=
+def fix {C : α → Sort*} : (∀ x : α, (∀ y : α, x < y → C y) → C x) → ∀ x : α, C x :=
   IsWellFounded.fix (· > ·)
 #align well_founded_gt.fix WellFoundedGT.fix
 
 /-- The value from `WellFoundedGT.fix` is built from the successive ones as specified. -/
-theorem fix_eq {C : α → Sort _} (F : ∀ x : α, (∀ y : α, x < y → C y) → C x) :
+theorem fix_eq {C : α → Sort*} (F : ∀ x : α, (∀ y : α, x < y → C y) → C x) :
     ∀ x, fix F x = F x fun y _ => fix F y :=
   IsWellFounded.fix_eq _ F
 #align well_founded_gt.fix_eq WellFoundedGT.fix_eq
@@ -521,6 +518,24 @@ theorem Subrelation.isWellFounded (r : α → α → Prop) [IsWellFounded α r] 
   ⟨h.wf IsWellFounded.wf⟩
 #align subrelation.is_well_founded Subrelation.isWellFounded
 
+instance Prod.wellFoundedLT [PartialOrder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
+    WellFoundedLT (α × β) where
+  wf := by
+    refine @Subrelation.wf (α × β) (Prod.Lex (· < ·) (· < ·)) (· < ·) ?_ IsWellFounded.wf
+    rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ w
+    simp only [Prod.mk_lt_mk] at w
+    rcases eq_or_ne a₁ a₂ with rfl | ha
+    · right
+      simpa using w
+    · left
+      rcases w with ⟨a_lt, _⟩ | ⟨a_le, _⟩
+      · assumption
+      · exact Ne.lt_of_le ha a_le
+
+instance Prod.wellFoundedGT [PartialOrder α] [WellFoundedGT α] [Preorder β] [WellFoundedGT β] :
+    WellFoundedGT (α × β) :=
+  @Prod.wellFoundedLT αᵒᵈ βᵒᵈ _ _ _ _
+
 namespace Set
 
 /-- An unbounded or cofinal set. -/
@@ -573,7 +588,8 @@ end Prod
 /-- An unbundled relation class stating that `r` is the nonstrict relation corresponding to the
 strict relation `s`. Compare `Preorder.lt_iff_le_not_le`. This is mostly meant to provide dot
 notation on `(⊆)` and `(⊂)`. -/
-class IsNonstrictStrictOrder (α : Type _) (r : semiOutParam (α → α → Prop)) (s : α → α → Prop) where
+class IsNonstrictStrictOrder (α : Type*) (r : semiOutParam (α → α → Prop)) (s : α → α → Prop) :
+    Prop where
   /-- The relation `r` is the nonstrict relation corresponding to the strict relation `s`. -/
   right_iff_left_not_left (a b : α) : s a b ↔ r a b ∧ ¬r b a
 #align is_nonstrict_strict_order IsNonstrictStrictOrder

@@ -2,16 +2,13 @@
 Copyright (c) 2021 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
-
-! This file was ported from Lean 3 source module ring_theory.nullstellensatz
-! leanprover-community/mathlib commit 9556784a5b84697562e9c6acb40500d4a82e675a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Jacobson
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.MvPolynomial
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
+
+#align_import ring_theory.nullstellensatz from "leanprover-community/mathlib"@"9556784a5b84697562e9c6acb40500d4a82e675a"
 
 /-!
 # Nullstellensatz
@@ -36,9 +33,9 @@ namespace MvPolynomial
 
 open MvPolynomial
 
-variable {k : Type _} [Field k]
+variable {k : Type*} [Field k]
 
-variable {σ : Type _}
+variable {σ : Type*}
 
 /-- Set of points that are zeroes of all polynomials in an ideal -/
 def zeroLocus (I : Ideal (MvPolynomial σ k)) : Set (σ → k) :=

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.limits.full_subcategory
-! leanprover-community/mathlib commit fe5e4ce6c72d96d77ad40ac832a6e7f8040990bc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Creates
+
+#align_import category_theory.limits.full_subcategory from "leanprover-community/mathlib"@"fe5e4ce6c72d96d77ad40ac832a6e7f8040990bc"
 
 /-!
 # Limits in full subcategories

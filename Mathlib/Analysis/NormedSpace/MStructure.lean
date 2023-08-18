@@ -2,15 +2,12 @@
 Copyright (c) 2022 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
-
-! This file was ported from Lean 3 source module analysis.normed_space.M_structure
-! leanprover-community/mathlib commit d11893b411025250c8e61ff2f12ccbd7ee35ab15
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Tactic.NoncommRing
+
+#align_import analysis.normed_space.M_structure from "leanprover-community/mathlib"@"d11893b411025250c8e61ff2f12ccbd7ee35ab15"
 
 /-!
 # M-structure
@@ -63,9 +60,9 @@ M-summand, M-projection, L-summand, L-projection, M-ideal, M-structure
 
 -/
 
-variable (X : Type _) [NormedAddCommGroup X]
+variable (X : Type*) [NormedAddCommGroup X]
 
-variable {M : Type _} [Ring M] [Module M X]
+variable {M : Type*} [Ring M] [Module M X]
 
 --porting note: Mathlib3 uses names with uppercase 'L' for L-projections
 set_option linter.uppercaseLean3 false

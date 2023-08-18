@@ -2,16 +2,13 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Wieser, Jujian Zhang
-
-! This file was ported from Lean 3 source module homogeneous_prime_not_prime
-! leanprover-community/mathlib commit 328375597f2c0dd00522d9c2e5a33b6a6128feeb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Divisibility.Prod
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Tactic.DeriveFintype
+
+#align_import homogeneous_prime_not_prime from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
 /-!
 # A homogeneous ideal that is homogeneously prime but not prime
@@ -49,14 +46,14 @@ abbrev Two :=
   WithZero Unit
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.two Counterexample.CounterexampleNotPrimeButHomogeneousPrime.Two
 
-instance Two.LinearOrder : LinearOrder Two :=
+instance Two.instLinearOrder : LinearOrder Two :=
   inferInstance
 
-instance Two.AddCommMonoid : AddCommMonoid Two :=
+instance Two.instAddCommMonoid : AddCommMonoid Two :=
   inferInstance
 
 instance : LinearOrderedAddCommMonoid Two :=
-  { Two.LinearOrder, Two.AddCommMonoid with
+  { Two.instLinearOrder, Two.instAddCommMonoid with
     add_le_add_left := by
       delta Two WithZero; decide }
 section

@@ -2,13 +2,10 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module measure_theory.measure.giry_monad
-! leanprover-community/mathlib commit 56f4cd1ef396e9fd389b5d8371ee9ad91d163625
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.Lebesgue
+
+#align_import measure_theory.measure.giry_monad from "leanprover-community/mathlib"@"56f4cd1ef396e9fd389b5d8371ee9ad91d163625"
 
 /-!
 # The Giry monad
@@ -39,7 +36,7 @@ open Classical BigOperators ENNReal
 
 open Classical Set Filter
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace MeasureTheory
 
@@ -63,7 +60,7 @@ theorem measurable_of_measurable_coe (f : β → Measure α)
       MeasurableSpace.comap_le_iff_le_map.2 <| by rw [MeasurableSpace.map_comp]; exact h s hs
 #align measure_theory.measure.measurable_of_measurable_coe MeasureTheory.Measure.measurable_of_measurable_coe
 
-instance instMeasurableAdd₂ {α : Type _} {m : MeasurableSpace α} : MeasurableAdd₂ (Measure α) := by
+instance instMeasurableAdd₂ {α : Type*} {m : MeasurableSpace α} : MeasurableAdd₂ (Measure α) := by
   refine' ⟨Measure.measurable_of_measurable_coe _ fun s hs => _⟩
   simp_rw [Measure.coe_add, Pi.add_apply]
   refine' Measurable.add _ _
