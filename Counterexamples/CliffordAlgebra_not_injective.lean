@@ -83,7 +83,7 @@ theorem mem_kIdeal_iff (x : MvPolynomial (Fin 3) (ZMod 2)) :
     x ∈ kIdeal ↔ ∀ m : Fin 3 →₀ ℕ, m ∈ x.support → ∃ i, 2 ≤ m i := by
   have :
       kIdeal =
-        Ideal.span ((fun i : Fin 3 →₀ ℕ => monomial (R := ZMod 2) i (1 : ZMod 2)) '' Set.range fun i => Finsupp.single i 2) :=
+        Ideal.span ((monomial (R := ZMod 2) · (1 : ZMod 2)) '' Set.range (Finsupp.single · 2)) :=
     by simp_rw [kIdeal, X, monomial_mul, one_mul, ← Finsupp.single_add, ← Set.range_comp,
       Function.comp]
   rw [this, mem_ideal_span_monomial_image]
@@ -102,7 +102,7 @@ theorem mul_self_mem_kIdeal_of_X0_X1_X2_mul_mem {x : MvPolynomial (Fin 3) (ZMod 
     rw [mem_ideal_span_X_image]
     intro m hm
     simp_rw [mul_assoc, support_X_mul, Finset.map_map, Finset.mem_map,
-      Function.Embedding.trans_apply, addLeftEmbedding_apply, exists_prop, forall_exists_index,
+      Function.Embedding.trans_apply, addLeftEmbedding_apply, forall_exists_index,
       and_imp, forall_apply_eq_imp_iff₂, ← add_assoc, ←
       Fin.sum_univ_three fun i => Finsupp.single i 1, ← Finsupp.equivFunOnFinite_const,
       Finsupp.add_apply, Finsupp.equivFunOnFinite_symm_apply_toFun] at h
@@ -302,22 +302,21 @@ theorem αβγ_smul_eq_zero : (α * β * γ) • (1 : CliffordAlgebra Q) = 0 :=
 
 /-- Our final result -/
 theorem algebraMap_not_injective : ¬Function.Injective (algebraMap K <| CliffordAlgebra Q) :=
-  fun h =>
-  αβγ_ne_zero <| h (by rw [Algebra.algebraMap_eq_smul_one, RingHom.map_zero, αβγ_smul_eq_zero])
+  fun h => αβγ_ne_zero <| h <| by
+    rw [Algebra.algebraMap_eq_smul_one, RingHom.map_zero, αβγ_smul_eq_zero]
 
 end Q60596
 
-set_option pp.proofs.withType false in
+open Q60596 in
 /-- The general statement: not every Clifford algebra over a module has an injective algebra map. -/
 theorem CliffordAlgebra.not_forall_algebraMap_injective.{v} :
     -- TODO: make `R` universe polymorphic
-    ¬∀ (R : Type) (M : Type v) [CommRing R] [AddCommGroup M],
-        ∀ [Module R M],
-          ∀ Q : QuadraticForm R M, Function.Injective (algebraMap R <| CliffordAlgebra Q) :=
-  fun h => Q60596.algebraMap_not_injective fun x y hxy => by
-    let uU := ULift.moduleEquiv (R := Q60596.K) (M := Q60596.L)
-    let uQ := Q60596.Q.comp uU.toLinearMap
-    refine' h Q60596.K (ULift Q60596.L) (Q60596.Q.comp <| uU.toLinearMap) _
-    let uC := CliffordAlgebra.map Q60596.Q uQ uU.symm.toLinearMap fun _ => rfl
+    ¬∀ (R : Type) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M] (Q : QuadraticForm R M),
+      Function.Injective (algebraMap R <| CliffordAlgebra Q) :=
+  fun h => algebraMap_not_injective fun x y hxy => by
+    let uU := ULift.moduleEquiv (R := K) (M := L)
+    let uQ := Q.comp uU.toLinearMap
+    refine' h K (ULift L) (Q.comp uU.toLinearMap) _
+    let uC := CliffordAlgebra.map Q uQ uU.symm.toLinearMap fun _ => rfl
     have := uC.congr_arg hxy
     rwa [AlgHom.commutes, AlgHom.commutes] at this
