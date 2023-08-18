@@ -6,8 +6,9 @@ Authors: Chris Hughes
 
 import Mathlib.RingTheory.Algebraic
 import Mathlib.Data.Fintype.Card
-import Mathlib.ModelTheory.Algebra.Field.AlgClosed
+import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
 import Mathlib.ModelTheory.Algebra.Ring.Definability
+import Mathlib.RingTheory.Polynomial
 
 #align_import field_theory.ax_grothendieck from "leanprover-community/mathlib"@"4e529b03dd62b7b7d13806c3fb974d9d4848910e"
 
