@@ -232,26 +232,26 @@ of the multivariable polynomial ring, then any injective polynomial map `S → S
 surjective on `S`. -/
 theorem ax_grothendieck_zeroLocus
     (I : Ideal (MvPolynomial ι K))
-    (ps : ι → MvPolynomial ι K) :
+    (p : ι → MvPolynomial ι K) :
     let S := zeroLocus I
-    S.MapsTo (fun v i => MvPolynomial.eval v (ps i)) S →
-    S.InjOn (fun v i => MvPolynomial.eval v (ps i)) →
-    S.SurjOn (fun v i => MvPolynomial.eval v (ps i)) S := by
+    S.MapsTo (fun v i => MvPolynomial.eval v (p i)) S →
+    S.InjOn (fun v i => MvPolynomial.eval v (p i)) →
+    S.SurjOn (fun v i => MvPolynomial.eval v (p i)) S := by
   letI := compatibleRingOfRing K
   intro S
   have i_fg : I.FG := IsNoetherian.noetherian I
   rcases i_fg with ⟨s, rfl⟩
   exact ax_grothendieck_of_definable
-    S (mvPolynomial_zeroLocus_definable s) ps
+    S (mvPolynomial_zeroLocus_definable s) p
 
 /-- A special case of the **Ax-Grothendieck** theorem
 
 Any injective polynomial map `K^n → K^n` is also surjective if `K` is an
 algberaically closed field. -/
 theorem ax_grothendieck_univ {ι K : Type*} [Finite ι] [Field K]
-    [IsAlgClosed K] (ps : ι → MvPolynomial ι K) :
-    Injective (fun v i => MvPolynomial.eval v (ps i)) →
-    Surjective fun v i => MvPolynomial.eval v (ps i) := by
+    [IsAlgClosed K] (p : ι → MvPolynomial ι K) :
+    Injective (fun v i => MvPolynomial.eval v (p i)) →
+    Surjective fun v i => MvPolynomial.eval v (p i) := by
   simpa [← Set.injective_iff_injOn_univ,
          ← Set.surjective_iff_surjOn_univ] using
-      ax_grothendieck_zeroLocus 0 ps
+      ax_grothendieck_zeroLocus 0 p
