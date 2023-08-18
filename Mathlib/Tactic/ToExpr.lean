@@ -41,7 +41,7 @@ attribute [-instance] Lean.instToExprProd
 
 deriving instance ToExprQ for Prod
 
-deriving instance ToExpr for System.FilePath
+deriving instance ToExprQ for System.FilePath
 
 end Lean
 end override
