@@ -399,6 +399,10 @@ def mapDomainRingEquiv (k : Type _) [Semiring k] {G H : Type _} [AddMonoid G] [A
       | hsingle => ?_
       induction y using Finsupp.induction_linear <;>
         simp only [MulZeroClass.mul_zero, MulZeroClass.zero_mul, map_zero, mul_add, map_add, *]
+      · -- Porting note: added
+        rw [mul_add, map_add]
+        simp only [*]
+        rw [mul_add]
       -- Porting note: was `ext`
       refine Finsupp.ext fun a => ?_
       simp only [Finsupp.domCongr_apply, single_mul_single, Finsupp.equivMapDomain_single,
@@ -490,13 +494,14 @@ end Aux
 
 namespace Quot
 
-@[reducible, elab_as_elim]
+@[reducible] --, elab_as_elim]
 protected def liftFinsupp {α : Type _} {r : α → α → Prop} {β : Type _} [Zero β] (f : α →₀ β)
     (h : ∀ a b, r a b → f a = f b) : Quot r →₀ β :=
   by
-  refine' ⟨image (mk r) f.support, Quot.lift f h, fun a => ⟨_, a.ind fun b => _⟩⟩
-  · rw [mem_image]; rintro ⟨b, hb, rfl⟩; exact finsupp.mem_support_iff.mp hb
-  · rw [lift_mk _ h]; refine' fun hb => mem_image_of_mem _ (finsupp.mem_support_iff.mpr hb)
+  refine' ⟨image (mk r) f.support, Quot.lift f h, fun a => ⟨_, _⟩⟩
+  · rw [mem_image]; rintro ⟨b, hb, rfl⟩; exact Finsupp.mem_support_iff.mp hb
+  · induction a using Quot.ind
+    rw [lift_mk _ h]; refine' fun hb => mem_image_of_mem _ (Finsupp.mem_support_iff.mpr hb)
 #align quot.lift_finsupp Quot.liftFinsupp
 
 theorem liftFinsupp_mk {α : Type _} {r : α → α → Prop} {γ : Type _} [Zero γ] (f : α →₀ γ)
@@ -508,7 +513,7 @@ end Quot
 
 namespace Quotient
 
-@[reducible, elab_as_elim]
+@[reducible] --, elab_as_elim]
 protected def liftFinsupp {α : Type _} {β : Type _} [s : Setoid α] [Zero β] (f : α →₀ β) :
     (∀ a b, a ≈ b → f a = f b) → Quotient s →₀ β :=
   Quot.liftFinsupp f
@@ -542,15 +547,13 @@ abbrev Gal : Type _ :=
   (poly s).Gal
 #align Gal Gal
 
-/- warning: Lift clashes with lift -> lift
-Case conversion may be inaccurate. Consider using '#align Lift liftₓ'. -/
-#print lift /-
-abbrev lift : k' s ≃ₐ[ℚ] K s :=
+abbrev Transcendental.lift : k' s ≃ₐ[ℚ] K s :=
   IsSplittingField.algEquiv (k' s) (poly s)
-#align Lift lift
--/
+#align Lift Transcendental.lift
 
-theorem algebraMap_k_apply (x) : algebraMap (K s) ℂ x = ((lift s).symm x : ℂ) :=
+open Transcendental
+
+theorem algebraMap_k_apply (x) : algebraMap (K s) ℂ x = ((Transcendental.lift s).symm x : ℂ) :=
   rfl
 #align algebra_map_K_apply algebraMap_k_apply
 
@@ -561,11 +564,11 @@ theorem poly_ne_zero (hs : ∀ x ∈ s, IsIntegral ℚ x) : poly s ≠ 0 :=
 noncomputable def ratCoeff : Subalgebra ℚ (AddMonoidAlgebra (K s) (K s))
     where
   carrier x := ∀ i : K s, x i ∈ (⊥ : IntermediateField ℚ (K s))
-  mul_mem' a b ha hb i := by
+  mul_mem' {a b} ha hb i := by
     rw [AddMonoidAlgebra.mul_apply]
     refine' sum_mem fun c hc => sum_mem fun d hd => _
     dsimp only; split_ifs; exacts [mul_mem (ha c) (hb d), zero_mem _]
-  add_mem' a b ha hb i := by rw [Finsupp.add_apply]; exact add_mem (ha i) (hb i)
+  add_mem' {a b} ha hb i := by rw [Finsupp.add_apply]; exact add_mem (ha i) (hb i)
   algebraMap_mem' r hr :=
     by
     rw [AddMonoidAlgebra.coe_algebraMap, Function.comp_apply, Finsupp.single_apply]
@@ -580,27 +583,31 @@ def RatCoeffEquiv.aux : ratCoeff s ≃ₐ[ℚ] AddMonoidAlgebra (⊥ : Intermedi
     where
   toFun x :=
     { support := (x : AddMonoidAlgebra (K s) (K s)).support
-      toFun := fun i => ⟨x i, x.2 i⟩
+      toFun := fun i => ⟨(x : AddMonoidAlgebra (K s) (K s)) i, x.2 i⟩
       mem_support_toFun := fun i => by
         rw [Finsupp.mem_support_iff]
         have : (0 : (⊥ : IntermediateField ℚ (K s))) = ⟨0, ZeroMemClass.zero_mem _⟩ := rfl
-        simp_rw [this, Ne.def, Subtype.mk.inj_eq]; rfl }
+        simp_rw [this, Ne.def, Subtype.mk_eq_mk] }
   invFun x :=
     ⟨⟨x.support, fun i => x i, fun i => by
         simp_rw [Finsupp.mem_support_iff, Ne.def, ZeroMemClass.coe_eq_zero]⟩,
       fun i => SetLike.coe_mem _⟩
   left_inv x := by ext; rfl
-  right_inv x := by ext; rfl
+  right_inv x := by
+    refine Finsupp.ext fun a => ?_
+    rfl
   map_mul' x y := by
-    ext; change (x * y : AddMonoidAlgebra (K s) (K s)) a = _
+    refine Finsupp.ext fun a => ?_
+    change (x * y : AddMonoidAlgebra (K s) (K s)) a = _
     simp_rw [AddMonoidAlgebra.mul_apply, Finsupp.sum, AddSubmonoidClass.coe_finset_sum]
     refine' sum_congr rfl fun i hi => sum_congr rfl fun j hj => _
     split_ifs <;> rfl
   map_add' x y := by
-    ext; change (x + y : AddMonoidAlgebra (K s) (K s)) a = x a + y a
+    refine Finsupp.ext fun a => ?_
+    change (x + y : AddMonoidAlgebra (K s) (K s)) a = x a + y a
     rw [Finsupp.add_apply]; rfl
   commutes' x := by
-    ext
+    refine Finsupp.ext fun a => ?_
     change
       (algebraMap ℚ (ratCoeff s) x) a =
         (Finsupp.single 0 (algebraMap ℚ (⊥ : IntermediateField ℚ (K s)) x)) a
