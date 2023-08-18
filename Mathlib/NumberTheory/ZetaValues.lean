@@ -28,7 +28,7 @@ zeta functions, in terms of Bernoulli polynomials.
   an explicit multiple of `Bₖ(x)`, for any `x ∈ [0, 1]` and `k ≥ 3` odd.
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 
@@ -86,7 +86,6 @@ theorem integral_bernoulliFun_eq_zero {k : ℕ} (hk : k ≠ 0) :
     ∫ x : ℝ in (0)..1, bernoulliFun k x = 0 := by
   rw [integral_eq_sub_of_hasDerivAt (fun x _ => antideriv_bernoulliFun k x)
       ((Polynomial.continuous _).intervalIntegrable _ _)]
-  dsimp only
   rw [bernoulliFun_eval_one]
   split_ifs with h
   · exfalso; exact hk (Nat.succ_inj'.mp h)

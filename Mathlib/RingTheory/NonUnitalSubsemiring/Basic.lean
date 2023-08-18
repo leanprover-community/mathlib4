@@ -29,13 +29,13 @@ variable {R : Type u} {S : Type v} {T : Type w} [NonUnitalNonAssocSemiring R] (M
 
 /-- `NonUnitalSubsemiringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both an additive submonoid and also a multiplicative subsemigroup. -/
-class NonUnitalSubsemiringClass (S : Type _) (R : Type u) [NonUnitalNonAssocSemiring R]
+class NonUnitalSubsemiringClass (S : Type*) (R : Type u) [NonUnitalNonAssocSemiring R]
   [SetLike S R] extends AddSubmonoidClass S R : Prop where
   mul_mem : ∀ {s : S} {a b : R}, a ∈ s → b ∈ s → a * b ∈ s
 #align non_unital_subsemiring_class NonUnitalSubsemiringClass
 
 -- See note [lower instance priority]
-instance (priority := 100) NonUnitalSubsemiringClass.mulMemClass (S : Type _) (R : Type u)
+instance (priority := 100) NonUnitalSubsemiringClass.mulMemClass (S : Type*) (R : Type u)
     [NonUnitalNonAssocSemiring R] [SetLike S R] [h : NonUnitalSubsemiringClass S R] :
     MulMemClass S R :=
   { h with }
@@ -62,7 +62,7 @@ instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
 /-- The natural non-unital ring hom from a non-unital subsemiring of a non-unital semiring `R` to
 `R`. -/
 def subtype : s →ₙ+* R :=
-  { AddSubmonoidClass.Subtype s, MulMemClass.subtype s with toFun := (↑) }
+  { AddSubmonoidClass.subtype s, MulMemClass.subtype s with toFun := (↑) }
 #align non_unital_subsemiring_class.subtype NonUnitalSubsemiringClass.subtype
 
 @[simp]
@@ -207,7 +207,7 @@ end NonUnitalSubsemiring
 
 namespace NonUnitalSubsemiring
 
-variable {F G : Type _} [NonUnitalRingHomClass F R S] [NonUnitalRingHomClass G S T]
+variable {F G : Type*} [NonUnitalRingHomClass F R S] [NonUnitalRingHomClass G S T]
   (s : NonUnitalSubsemiring R)
 
 @[simp, norm_cast]
@@ -348,7 +348,7 @@ namespace NonUnitalRingHom
 
 open NonUnitalSubsemiring
 
-variable {F G : Type _} [NonUnitalRingHomClass F R S] [NonUnitalRingHomClass G S T] (f : F) (g : G)
+variable {F G : Type*} [NonUnitalRingHomClass F R S] [NonUnitalRingHomClass G S T] (f : F) (g : G)
 
 /-- The range of a non-unital ring homomorphism is a non-unital subsemiring.
 See note [range copy pattern]. -/
@@ -709,7 +709,7 @@ protected def gi : GaloisInsertion (@closure R _) (↑) where
 #align non_unital_subsemiring.gi NonUnitalSubsemiring.gi
 
 variable {R}
-variable {F : Type _} [NonUnitalRingHomClass F R S]
+variable {F : Type*} [NonUnitalRingHomClass F R S]
 
 /-- Closure of a non-unital subsemiring `S` equals `S`. -/
 theorem closure_eq (s : NonUnitalSubsemiring R) : closure (s : Set R) = s :=
@@ -743,7 +743,7 @@ theorem map_sup (s t : NonUnitalSubsemiring R) (f : F) :
   @GaloisConnection.l_sup _ _ s t _ _ _ _ (gc_map_comap f)
 #align non_unital_subsemiring.map_sup NonUnitalSubsemiring.map_sup
 
-theorem map_iSup {ι : Sort _} (f : F) (s : ι → NonUnitalSubsemiring R) :
+theorem map_iSup {ι : Sort*} (f : F) (s : ι → NonUnitalSubsemiring R) :
     (map f (iSup s) : NonUnitalSubsemiring S) = ⨆ i, map f (s i) :=
   @GaloisConnection.l_iSup _ _ _ _ _ _ _ (gc_map_comap f) s
 #align non_unital_subsemiring.map_supr NonUnitalSubsemiring.map_iSup
@@ -753,7 +753,7 @@ theorem comap_inf (s t : NonUnitalSubsemiring S) (f : F) :
   @GaloisConnection.u_inf _ _ s t _ _ _ _ (gc_map_comap f)
 #align non_unital_subsemiring.comap_inf NonUnitalSubsemiring.comap_inf
 
-theorem comap_iInf {ι : Sort _} (f : F) (s : ι → NonUnitalSubsemiring S) :
+theorem comap_iInf {ι : Sort*} (f : F) (s : ι → NonUnitalSubsemiring S) :
     (comap f (iInf s) : NonUnitalSubsemiring R) = ⨅ i, comap f (s i) :=
   @GaloisConnection.u_iInf _ _ _ _ _ _ _ (gc_map_comap f) s
 #align non_unital_subsemiring.comap_infi NonUnitalSubsemiring.comap_iInf
@@ -856,8 +856,8 @@ end NonUnitalSubsemiring
 
 namespace NonUnitalRingHom
 
-variable {F : Type _} [NonUnitalNonAssocSemiring T] [NonUnitalRingHomClass F R S]
-  {S' : Type _} [SetLike S' S] [NonUnitalSubsemiringClass S' S]
+variable {F : Type*} [NonUnitalNonAssocSemiring T] [NonUnitalRingHomClass F R S]
+  {S' : Type*} [SetLike S' S] [NonUnitalSubsemiringClass S' S]
   {s : NonUnitalSubsemiring R}
 
 open NonUnitalSubsemiringClass NonUnitalSubsemiring
@@ -974,7 +974,7 @@ open NonUnitalRingHom NonUnitalSubsemiringClass
 
 variable {s t : NonUnitalSubsemiring R}
 
-variable {F : Type _} [NonUnitalRingHomClass F R S]
+variable {F : Type*} [NonUnitalRingHomClass F R S]
 
 /-- Makes the identity isomorphism from a proof two non-unital subsemirings of a multiplicative
 monoid are equal. -/

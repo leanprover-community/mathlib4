@@ -34,7 +34,7 @@ open MulOpposite
 
 open Pointwise
 
-variable {α : Type _} [DecidableEq α]
+variable {α : Type*} [DecidableEq α]
 
 namespace Finset
 

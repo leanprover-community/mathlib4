@@ -101,8 +101,8 @@ open scoped uniformity Filter Topology
 
 section LimitsOfDerivatives
 
-variable {ι : Type _} {l : Filter ι} {E : Type _} [NormedAddCommGroup E] {𝕜 : Type _} [IsROrC 𝕜]
-  [NormedSpace 𝕜 E] {G : Type _} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {f : ι → E → G}
+variable {ι : Type*} {l : Filter ι} {E : Type*} [NormedAddCommGroup E] {𝕜 : Type*} [IsROrC 𝕜]
+  [NormedSpace 𝕜 E] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {f : ι → E → G}
   {g : E → G} {f' : ι → E → E →L[𝕜] G} {g' : E → E →L[𝕜] G} {x : E}
 
 /-- If a sequence of functions real or complex functions are eventually differentiable on a
@@ -450,7 +450,7 @@ In this section, we provide `deriv` equivalents of the `fderiv` lemmas in the pr
 -/
 
 
-variable {ι : Type _} {l : Filter ι} {𝕜 : Type _} [IsROrC 𝕜] {G : Type _} [NormedAddCommGroup G]
+variable {ι : Type*} {l : Filter ι} {𝕜 : Type*} [IsROrC 𝕜] {G : Type*} [NormedAddCommGroup G]
   [NormedSpace 𝕜 G] {f : ι → 𝕜 → G} {g : 𝕜 → G} {f' : ι → 𝕜 → G} {g' : 𝕜 → G} {x : 𝕜}
 
 /-- If our derivatives converge uniformly, then the Fréchet derivatives converge uniformly -/

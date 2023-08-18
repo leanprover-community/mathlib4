@@ -38,7 +38,7 @@ Appropriate definitions and results are also transported to the additive theory 
 
 open Function MulOpposite
 
-variable {F α β γ : Type _}
+variable {F α β γ : Type*}
 
 namespace Set
 
@@ -74,7 +74,7 @@ scoped[Pointwise] attribute [instance] Set.vaddSet Set.vadd
 
 section SMul
 
-variable {ι : Sort _} {κ : ι → Sort _} [SMul α β] {s s₁ s₂ : Set α} {t t₁ t₂ u : Set β} {a : α}
+variable {ι : Sort*} {κ : ι → Sort*} [SMul α β] {s s₁ s₂ : Set α} {t t₁ t₂ u : Set β} {a : α}
   {b : β}
 
 /- Porting note: Could `@[simp, to_additive]` be automatically changed to
@@ -304,7 +304,7 @@ end SMul
 
 section SMulSet
 
-variable {ι : Sort _} {κ : ι → Sort _} [SMul α β] {s t t₁ t₂ : Set β} {a : α} {b : β} {x y : β}
+variable {ι : Sort*} {κ : ι → Sort*} [SMul α β] {s t t₁ t₂ : Set β} {a : α} {b : β} {x y : β}
 
 @[to_additive]
 theorem image_smul : (fun x ↦ a • x) '' t = a • t :=
@@ -446,7 +446,7 @@ end Mul
 variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {a : α} {b : β}
 
 @[to_additive]
-theorem range_smul_range {ι κ : Type _} [SMul α β] (b : ι → α) (c : κ → β) :
+theorem range_smul_range {ι κ : Type*} [SMul α β] (b : ι → α) (c : κ → β) :
     range b • range c = range fun p : ι × κ ↦ b p.1 • c p.2 :=
   ext fun _x ↦
     ⟨fun hx ↦
@@ -457,7 +457,7 @@ theorem range_smul_range {ι κ : Type _} [SMul α β] (b : ι → α) (c : κ �
 #align set.range_vadd_range Set.range_vadd_range
 
 @[to_additive]
-theorem smul_set_range [SMul α β] {ι : Sort _} {f : ι → β} :
+theorem smul_set_range [SMul α β] {ι : Sort*} {f : ι → β} :
     a • range f = range fun i ↦ a • f i :=
   (range_comp _ _).symm
 #align set.smul_set_range Set.smul_set_range
@@ -591,7 +591,7 @@ end SMul
 
 section VSub
 
-variable {ι : Sort _} {κ : ι → Sort _} [VSub α β] {s s₁ s₂ t t₁ t₂ : Set β} {u : Set α} {a : α}
+variable {ι : Sort*} {κ : ι → Sort*} [VSub α β] {s s₁ s₂ t t₁ t₂ : Set β} {u : Set α} {a : α}
   {b c : β}
 
 instance vsub : VSub (Set α) (Set β) :=
@@ -941,10 +941,10 @@ theorem smul_set_sdiff : a • (s \ t) = a • s \ a • t :=
 #align set.vadd_set_sdiff Set.vadd_set_sdiff
 
 @[to_additive]
-theorem smul_set_symm_diff : a • s ∆ t = (a • s) ∆ (a • t) :=
-  image_symm_diff (MulAction.injective a) _ _
-#align set.smul_set_symm_diff Set.smul_set_symm_diff
-#align set.vadd_set_symm_diff Set.vadd_set_symm_diff
+theorem smul_set_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
+  image_symmDiff (MulAction.injective a) _ _
+#align set.smul_set_symm_diff Set.smul_set_symmDiff
+#align set.vadd_set_symm_diff Set.vadd_set_symmDiff
 
 @[to_additive (attr := simp)]
 theorem smul_set_univ : a • (univ : Set β) = univ :=
@@ -1053,9 +1053,9 @@ theorem smul_set_sdiff₀ (ha : a ≠ 0) : a • (s \ t) = a • s \ a • t :=
   image_diff (MulAction.injective₀ ha) _ _
 #align set.smul_set_sdiff₀ Set.smul_set_sdiff₀
 
-theorem smul_set_symm_diff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=
-  image_symm_diff (MulAction.injective₀ ha) _ _
-#align set.smul_set_symm_diff₀ Set.smul_set_symm_diff₀
+theorem smul_set_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=
+  image_symmDiff (MulAction.injective₀ ha) _ _
+#align set.smul_set_symm_diff₀ Set.smul_set_symmDiff₀
 
 theorem smul_set_univ₀ (ha : a ≠ 0) : a • (univ : Set β) = univ :=
   image_univ_of_surjective <| MulAction.surjective₀ ha

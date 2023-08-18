@@ -35,7 +35,7 @@ open Function OrderDual
 
 universe u v
 
-variable {α : Type u} {β : Type v} {γ δ : Type _}
+variable {α : Type u} {β : Type v} {γ δ : Type*}
 
 /-! ### Top, bottom element -/
 
@@ -81,7 +81,7 @@ section OrderTop
 
 /-- An order is (noncomputably) either an `OrderTop` or a `NoTopOrder`. Use as
 `casesI topOrderOrNoTopOrder α`. -/
-noncomputable def topOrderOrNoTopOrder (α : Type _) [LE α] : PSum (OrderTop α) (NoTopOrder α) := by
+noncomputable def topOrderOrNoTopOrder (α : Type*) [LE α] : PSum (OrderTop α) (NoTopOrder α) := by
   by_cases H : ∀ a : α, ∃ b, ¬b ≤ a
   · exact PSum.inr ⟨H⟩
   · push_neg at H
@@ -247,7 +247,7 @@ section OrderBot
 
 /-- An order is (noncomputably) either an `OrderBot` or a `NoBotOrder`. Use as
 `casesI botOrderOrNoBotOrder α`. -/
-noncomputable def botOrderOrNoBotOrder (α : Type _) [LE α] : PSum (OrderBot α) (NoBotOrder α) := by
+noncomputable def botOrderOrNoBotOrder (α : Type*) [LE α] : PSum (OrderBot α) (NoBotOrder α) := by
   by_cases H : ∀ a : α, ∃ b, ¬a ≤ b
   · exact PSum.inr ⟨H⟩
   · push_neg at H
@@ -590,6 +590,22 @@ theorem Antitone.ball {P : β → α → Prop} {s : Set β} (hP : ∀ x ∈ s, A
     Antitone fun y => ∀ x ∈ s, P x y := fun _ _ hy h x hx => hP x hx hy (h x hx)
 #align antitone.ball Antitone.ball
 
+theorem Monotone.exists {P : β → α → Prop} (hP : ∀ x, Monotone (P x)) :
+    Monotone fun y => ∃ x, P x y :=
+  fun _ _ hy ⟨x, hx⟩ ↦ ⟨x, hP x hy hx⟩
+
+theorem Antitone.exists {P : β → α → Prop} (hP : ∀ x, Antitone (P x)) :
+    Antitone fun y => ∃ x, P x y :=
+  fun _ _ hy ⟨x, hx⟩ ↦ ⟨x, hP x hy hx⟩
+
+theorem forall_ge_iff {P : α → Prop} {x₀ : α} (hP : Monotone P) :
+    (∀ x ≥ x₀, P x) ↔ P x₀ :=
+  ⟨fun H ↦ H x₀ le_rfl, fun H _ hx ↦ hP hx H⟩
+
+theorem forall_le_iff {P : α → Prop} {x₀ : α} (hP : Antitone P) :
+    (∀ x ≤ x₀, P x) ↔ P x₀ :=
+  ⟨fun H ↦ H x₀ le_rfl, fun H _ hx ↦ hP hx H⟩
+
 end Preorder
 
 section SemilatticeSup
@@ -622,7 +638,7 @@ end Logic
 
 namespace Pi
 
-variable {ι : Type _} {α' : ι → Type _}
+variable {ι : Type*} {α' : ι → Type*}
 
 instance [∀ i, Bot (α' i)] : Bot (∀ i, α' i) :=
   ⟨fun _ => ⊥⟩
