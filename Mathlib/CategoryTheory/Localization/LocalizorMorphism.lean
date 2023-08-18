@@ -94,7 +94,7 @@ lemma nonempty_isEquivalence_iff : Nonempty (IsEquivalence G) ↔ Nonempty (IsEq
 
 end
 
-/-- condition that `LocalizorMorphism` induces an equivalence of localized categories -/
+/-- condition that `LocalizorMorphism` induces an equivalence on the localized categories -/
 class IsLocalizedEquivalence : Prop :=
   /-- the induced functor on the constructed localized categories is an equivalence -/
   nonempty_isEquivalence : Nonempty (IsEquivalence (Φ.localizedFunctor W₁.Q W₂.Q))
