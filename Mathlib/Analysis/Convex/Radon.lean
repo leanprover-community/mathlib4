@@ -34,7 +34,7 @@ variable {𝕜 : Type*} {E : Type u} [LinearOrderedField 𝕜] [AddCommGroup E] 
 convex hulls of `I` and `Iᶜ` intersect. -/
 theorem radon_partition {ι : Type*} {f : ι → E}
     (h : ¬AffineIndependent 𝕜 f) : ∃ (I : Set ι),
-    (Set.Nonempty ((convexHull 𝕜 (f '' I)) ∩ (convexHull 𝕜 (f '' Iᶜ)))) := by 
+    (Set.Nonempty ((convexHull 𝕜 (f '' I)) ∩ (convexHull 𝕜 (f '' Iᶜ)))) := by
   unfold AffineIndependent at h; push_neg at h
   rcases h with ⟨s1, w, h_wsum, h_vsum, nonzero_w_index, h1, h2⟩
   let I : Finset ι := s1.filter (fun i => w i ≥ 0)
