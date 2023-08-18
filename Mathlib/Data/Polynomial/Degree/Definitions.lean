@@ -1311,12 +1311,11 @@ theorem degree_sub_le_of_le {a b : WithBot ℕ} (hp : degree p ≤ a) (hq : degr
     degree (p - q) ≤ max a b :=
 (p.degree_sub_le q).trans <| max_le_max ‹_› ‹_›
 
-theorem leadingCoeff_sub_of_degree_lt [Ring R] (p q : R[X])
-    (h : Polynomial.degree q < Polynomial.degree p) : (p - q).leadingCoeff = p.leadingCoeff := by
+theorem leadingCoeff_sub_of_degree_lt (h : Polynomial.degree q < Polynomial.degree p) :
+    (p - q).leadingCoeff = p.leadingCoeff := by
   rw [sub_eq_add_neg]
-  apply leadingCoeff_add_of_degree_lt_left
-  rw [degree_neg]
-  exact h
+  rw [← q.degree_neg] at h
+  exact leadingCoeff_add_of_degree_lt' h
 
 theorem leadingCoeff_sub_of_degree_eq [Ring R] (p q : R[X]) (h : degree p = degree q)
     (hlc : leadingCoeff p - leadingCoeff q ≠ 0) :
