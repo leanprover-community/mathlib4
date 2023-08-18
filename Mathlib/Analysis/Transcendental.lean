@@ -148,7 +148,7 @@ theorem integral_f_eq (p : ℂ[X]) (s : ℂ) :
   any_goals simp_rw [real_smul, abs_mul_exp_arg_mul_I]
   · simp_rw [zero_smul, neg_zero, Complex.exp_zero, one_mul]
     simp only [ofReal_zero, zero_mul, neg_zero, exp_zero, one_mul]
-  · intro x hx; apply ((Differentiable.mul _ _).neg.div_const _).differentiableAt
+  · intro x _; apply ((Differentiable.mul _ _).neg.div_const _).differentiableAt
     apply @Differentiable.real_of_complex fun c : ℂ => exp (-(c * exp (s.arg • I)))
     refine' (differentiable_id.mul_const _).neg.cexp
     change Differentiable ℝ ((fun y : ℂ => p.sumIderiv.eval y) ∘ fun x : ℝ => x • exp (s.arg • I))
@@ -162,9 +162,10 @@ theorem integral_f_eq (p : ℂ[X]) (s : ℂ) :
 
 def P (p : ℂ[X]) (s : ℂ) :=
   exp s * p.sumIderiv.eval 0 - p.sumIderiv.eval s
+set_option linter.uppercaseLean3 false in
 #align P P
 
-theorem p_le' (p : ℕ → ℂ[X]) (s : ℂ)
+theorem P_le' (p : ℕ → ℂ[X]) (s : ℂ)
     (h : ∃ c, ∀ (q : ℕ), ∀ x ∈ Set.Ioc 0 (Complex.abs s), Complex.abs ((p q).eval (x • exp (s.arg • I))) ≤ c ^ q) :
     ∃ c ≥ 0, ∀ q : ℕ, Complex.abs (P (p q) s) ≤ Real.exp s.re * (Real.exp (Complex.abs s) * c ^ q * (Complex.abs s)) :=
   by
@@ -187,13 +188,14 @@ theorem p_le' (p : ℕ → ℂ[X]) (s : ℂ)
   rw [← norm_eq_abs, norm_neg, norm_smul, norm_eq_abs, abs_exp, smul_re, I_re, smul_zero,
     Real.exp_zero, mul_one, Real.norm_eq_abs, abs_eq_self.mpr hx.1.le]
   exact hx.2
-#align P_le' p_le'
+set_option linter.uppercaseLean3 false in
+#align P_le' P_le'
 
-theorem p_le (p : ℕ → ℂ[X]) (s : ℂ)
+theorem P_le (p : ℕ → ℂ[X]) (s : ℂ)
     (h : ∃ c, ∀ (q : ℕ), ∀ x ∈ Set.Ioc 0 (Complex.abs s), Complex.abs ((p q).eval (x • exp (s.arg • I))) ≤ c ^ q) :
     ∃ c ≥ 0, ∀ q ≥ 1, Complex.abs (P (p q) s) ≤ c ^ q :=
   by
-  simp_rw []; obtain ⟨c', hc', h'⟩ := p_le' p s h; clear h
+  simp_rw []; obtain ⟨c', hc', h'⟩ := P_le' p s h; clear h
   let c₁ := max (Real.exp s.re) 1
   let c₂ := max (Real.exp (Complex.abs s)) 1; have h₂ : 0 ≤ Real.exp (Complex.abs s) := (Real.exp_pos _).le
   let c₃ := max (Complex.abs s) 1; have h₃ : 0 ≤ (Complex.abs s) := Complex.abs.nonneg _
@@ -208,7 +210,8 @@ theorem p_le (p : ℕ → ℂ[X]) (s : ℂ)
   refine' mul_le_mul le_max_one_pow _ (mul_nonneg (mul_nonneg h₂ hcq') h₃) hcq
   refine' mul_le_mul _ le_max_one_pow h₃ (mul_nonneg hcq hcq')
   refine' mul_le_mul le_max_one_pow le_rfl hcq' hcq
-#align P_le p_le
+set_option linter.uppercaseLean3 false in
+#align P_le P_le
 
 open Polynomial
 
@@ -255,10 +258,10 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
       exact pow_le_one _ (abs_nonneg _) hx1
     · push_neg at hx1
       rw [_root_.abs_abs]; exact pow_le_pow hx1.le (Nat.sub_le _ _)
-  let c' r := (p_le p' r (this r)).choose
-  have c'0 : ∀ r, 0 ≤ c' r := fun r => (p_le p' r (this r)).choose_spec.1
+  let c' r := (P_le p' r (this r)).choose
+  have c'0 : ∀ r, 0 ≤ c' r := fun r => (P_le p' r (this r)).choose_spec.1
   have Pp'_le : ∀ (r : ℂ), ∀ q ≥ 1, abs (P (p' q) r) ≤ c' r ^ q := fun r =>
-    (p_le p' r (this r)).choose_spec.2
+    (P_le p' r (this r)).choose_spec.2
   let c :=
     if h : ((p.aroots ℂ).map c').toFinset.Nonempty then ((p.aroots ℂ).map c').toFinset.max' h else 0
   have hc : ∀ x ∈ p.aroots ℂ, c' x ≤ c := by
@@ -273,7 +276,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
   use c
   intro q q_gt prime_q
   have q0 : 0 < q := Nat.Prime.pos prime_q
-  obtain ⟨gp', gp'_le, h'⟩ := sumIderiv_sl' ℤ (X ^ (q - 1) * p ^ q) q0
+  obtain ⟨gp', -, h'⟩ := sumIderiv_sl' ℤ (X ^ (q - 1) * p ^ q) q0
   simp_rw [RingHom.algebraMap_toAlgebra, map_id] at h'
   specialize h' (RingHom.injective_int _) 0 (by rw [C_0, sub_zero])
   rw [eval_pow] at h'
@@ -284,7 +287,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
       Int.dvd_iff_emod_eq_zero]
     intro h
     replace h := Int.Prime.dvd_pow' prime_q h; rw [Int.coe_nat_dvd_left] at h
-    replace h := Nat.le_of_dvd (Int.natAbs_pos_of_ne_zero p0) h
+    replace h := Nat.le_of_dvd (Int.natAbs_pos.mpr p0) h
     revert h; rwa [imp_false, not_le]
   obtain ⟨gp, gp'_le, h⟩ := sumIderiv_sl ℂ (X ^ (q - 1) * p ^ q) q
   refine' ⟨gp, _, _⟩
@@ -441,16 +444,19 @@ namespace Aux
 
 variable (p : ℚ[X])
 
-abbrev k' : IntermediateField ℚ ℂ :=
+abbrev K' : IntermediateField ℚ ℂ :=
   IntermediateField.adjoin ℚ (p.rootSet ℂ)
-#align aux.K' Aux.k'
+set_option linter.uppercaseLean3 false in
+#align aux.K' Aux.K'
 
-instance k'.isSplittingField : IsSplittingField ℚ (k' p) p :=
+instance K'.isSplittingField : IsSplittingField ℚ (K' p) p :=
   IntermediateField.adjoin_rootSet_isSplittingField (IsAlgClosed.splits_codomain p)
-#align aux.K'.is_splitting_field Aux.k'.isSplittingField
+set_option linter.uppercaseLean3 false in
+#align aux.K'.is_splitting_field Aux.K'.isSplittingField
 
 abbrev K : Type _ :=
   p.SplittingField
+set_option linter.uppercaseLean3 false in
 #align aux.K Aux.K
 
 instance : CharZero (K p) :=
@@ -458,12 +464,14 @@ instance : CharZero (K p) :=
 
 instance : IsGalois ℚ (K p) where
 
-abbrev lift : k' p ≃ₐ[ℚ] K p :=
-  IsSplittingField.algEquiv (k' p) p
+abbrev lift : K' p ≃ₐ[ℚ] K p :=
+  IsSplittingField.algEquiv (K' p) p
+set_option linter.uppercaseLean3 false in
 #align aux.Lift Aux.lift
 
 instance algebraKℂ : Algebra (K p) ℂ :=
-  ((k' p).val.comp (lift p).symm.toAlgHom).toRingHom.toAlgebra
+  ((K' p).val.comp (lift p).symm.toAlgHom).toRingHom.toAlgebra
+set_option linter.uppercaseLean3 false in
 #align aux.algebra_K_ℂ Aux.algebraKℂ
 
 instance avoidDiamondCache : Algebra (⊥ : IntermediateField ℚ (K p)) (K p) :=
@@ -482,13 +490,15 @@ instance : Algebra ℚ (K p) :=
 instance : SMul ℚ (K p) :=
   Algebra.toSMul
 
-instance cache_ℚ_k_ℂ : IsScalarTower ℚ (K p) ℂ :=
+instance cache_ℚ_K_ℂ : IsScalarTower ℚ (K p) ℂ :=
   inferInstance
-#align aux.cache_ℚ_K_ℂ Aux.cache_ℚ_k_ℂ
+set_option linter.uppercaseLean3 false in
+#align aux.cache_ℚ_K_ℂ Aux.cache_ℚ_K_ℂ
 
-instance cache_ℤ_k_ℂ : IsScalarTower ℤ (K p) ℂ :=
+instance cache_ℤ_K_ℂ : IsScalarTower ℤ (K p) ℂ :=
   inferInstance
-#align aux.cache_ℤ_K_ℂ Aux.cache_ℤ_k_ℂ
+set_option linter.uppercaseLean3 false in
+#align aux.cache_ℤ_K_ℂ Aux.cache_ℤ_K_ℂ
 
 end Aux
 
@@ -520,7 +530,7 @@ protected def liftFinsupp {α : Type _} {β : Type _} [s : Setoid α] [Zero β] 
 #align quotient.lift_finsupp Quotient.liftFinsupp
 
 @[simp]
-theorem liftFinsupp_mk' {α : Type _} {β : Type _} [s : Setoid α] [Zero β] (f : α →₀ β)
+theorem liftFinsupp_mk' {α : Type _} {β : Type _} [Setoid α] [Zero β] (f : α →₀ β)
     (h : ∀ a b : α, a ≈ b → f a = f b) (x : α) : Quotient.liftFinsupp f h (Quotient.mk' x) = f x :=
   rfl
 #align quotient.lift_finsupp_mk Quotient.liftFinsupp_mk'
@@ -533,32 +543,39 @@ variable (s : Finset ℂ)
 
 abbrev poly : ℚ[X] :=
   ∏ x in s, minpoly ℚ x
+set_option linter.uppercaseLean3 false in
 #align Poly poly
 
-abbrev k' : IntermediateField ℚ ℂ :=
+abbrev K' : IntermediateField ℚ ℂ :=
   IntermediateField.adjoin ℚ ((poly s).rootSet ℂ)
-#align K' k'
+set_option linter.uppercaseLean3 false in
+#align K' K'
 
 abbrev K : Type _ :=
   (poly s).SplittingField
+set_option linter.uppercaseLean3 false in
 #align K K
 
 abbrev Gal : Type _ :=
   (poly s).Gal
+set_option linter.uppercaseLean3 false in
 #align Gal Gal
 
-abbrev Transcendental.lift : k' s ≃ₐ[ℚ] K s :=
-  IsSplittingField.algEquiv (k' s) (poly s)
+abbrev Transcendental.lift : K' s ≃ₐ[ℚ] K s :=
+  IsSplittingField.algEquiv (K' s) (poly s)
+set_option linter.uppercaseLean3 false in
 #align Lift Transcendental.lift
 
 open Transcendental
 
-theorem algebraMap_k_apply (x) : algebraMap (K s) ℂ x = ((Transcendental.lift s).symm x : ℂ) :=
+theorem algebraMap_K_apply (x) : algebraMap (K s) ℂ x = ((Transcendental.lift s).symm x : ℂ) :=
   rfl
-#align algebra_map_K_apply algebraMap_k_apply
+set_option linter.uppercaseLean3 false in
+#align algebra_map_K_apply algebraMap_K_apply
 
 theorem poly_ne_zero (hs : ∀ x ∈ s, IsIntegral ℚ x) : poly s ≠ 0 :=
   prod_ne_zero_iff.mpr fun x hx => minpoly.ne_zero (hs x hx)
+set_option linter.uppercaseLean3 false in
 #align Poly_ne_zero poly_ne_zero
 
 noncomputable def ratCoeff : Subalgebra ℚ (AddMonoidAlgebra (K s) (K s))
@@ -566,7 +583,7 @@ noncomputable def ratCoeff : Subalgebra ℚ (AddMonoidAlgebra (K s) (K s))
   carrier x := ∀ i : K s, x i ∈ (⊥ : IntermediateField ℚ (K s))
   mul_mem' {a b} ha hb i := by
     rw [AddMonoidAlgebra.mul_apply]
-    refine' sum_mem fun c hc => sum_mem fun d hd => _
+    refine' sum_mem fun c _ => sum_mem fun d _ => _
     dsimp only; split_ifs; exacts [mul_mem (ha c) (hb d), zero_mem _]
   add_mem' {a b} ha hb i := by rw [Finsupp.add_apply]; exact add_mem (ha i) (hb i)
   algebraMap_mem' r hr :=
@@ -578,6 +595,9 @@ noncomputable def ratCoeff : Subalgebra ℚ (AddMonoidAlgebra (K s) (K s))
 --cache
 instance : ZeroMemClass (IntermediateField ℚ (K s)) (K s) :=
   inferInstance
+instance : AddCommMonoid (⊥ : IntermediateField ℚ (K s)) :=
+  letI : AddCommGroup (⊥ : IntermediateField ℚ (K s)) := NonUnitalNonAssocRing.toAddCommGroup
+  AddCommGroup.toAddCommMonoid
 instance : Algebra ℚ (⊥ : IntermediateField ℚ (K s)) :=
   IntermediateField.algebra _
 
@@ -603,7 +623,7 @@ def RatCoeffEquiv.aux : ratCoeff s ≃ₐ[ℚ] AddMonoidAlgebra (⊥ : Intermedi
     ext
     change (x * y : AddMonoidAlgebra (K s) (K s)) a = _
     simp_rw [AddMonoidAlgebra.mul_apply, Finsupp.sum, AddSubmonoidClass.coe_finset_sum]
-    refine' sum_congr rfl fun i hi => sum_congr rfl fun j hj => _
+    refine' sum_congr rfl fun i _ => sum_congr rfl fun j _ => _
     split_ifs <;> rfl
   map_add' x y := by
     refine Finsupp.ext fun a => ?_
@@ -614,7 +634,7 @@ def RatCoeffEquiv.aux : ratCoeff s ≃ₐ[ℚ] AddMonoidAlgebra (⊥ : Intermedi
     refine Finsupp.ext fun a => ?_
     ext
     change
-      (algebraMap ℚ (ratCoeff s) x) a =
+      ((algebraMap ℚ (ratCoeff s) x) : AddMonoidAlgebra (K s) (K s)) a =
         (Finsupp.single 0 (algebraMap ℚ (⊥ : IntermediateField ℚ (K s)) x)) a
     simp_rw [Algebra.algebraMap_eq_smul_one]
     change (x • Finsupp.single 0 (1 : K s)) a = _
@@ -663,7 +683,7 @@ theorem mem_mapDomainFixed_iff (x : AddMonoidAlgebra F (K s)) :
   change (∀ f : Gal s, Finsupp.equivMapDomain (↑(AlgEquiv.toAddEquiv f)) x = x) ↔ _
   refine' ⟨fun h i j hij => _, fun h f => _⟩
   · obtain ⟨f, rfl⟩ := hij
-    rw [AlgEquiv.smul_def, ← Finsupp.congr_fun (h f) (f j)]
+    rw [AlgEquiv.smul_def, ← FunLike.congr_fun (h f) (f j)]
     change x (f.symm (f j)) = _; rw [AlgEquiv.symm_apply_apply]
   · ext i; change x (f.symm i) = x i
     refine' (h i ((AlgEquiv.symm f) i) ⟨f, _⟩).symm
@@ -676,8 +696,8 @@ noncomputable def mapDomainFixedEquivSubtype :
     where
   toFun f := ⟨f, (mem_mapDomainFixed_iff s F f).mp f.2⟩
   invFun f := ⟨f, (mem_mapDomainFixed_iff s F f).mpr f.2⟩
-  left_inv f := by simp_rw [← Subtype.coe_inj, Subtype.coe_mk]
-  right_inv f := by simp_rw [← Subtype.coe_inj, Subtype.coe_mk]
+  left_inv _ := rfl
+  right_inv _ := rfl
 #align map_domain_fixed_equiv_subtype mapDomainFixedEquivSubtype
 
 end
