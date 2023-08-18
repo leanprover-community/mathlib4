@@ -368,8 +368,7 @@ theorem fourierCoeff_eq_intervalIntegral (f : AddCircle T → E) (n : ℤ) (a : 
 
 theorem fourierCoeff.const_smul (f : AddCircle T → E) (c : ℂ) (n : ℤ) :
     fourierCoeff (c • f) n = c • fourierCoeff f n := by
-  simp_rw [fourierCoeff, Pi.smul_apply, ← smul_assoc, smul_eq_mul, mul_comm, ← smul_eq_mul,
-    smul_assoc, integral_smul]
+  simp_rw [fourierCoeff, Pi.smul_apply, ← smul_assoc, smul_eq_mul, mul_comm, ← smul_eq_mul]
   rw [←integral_smul]
   congr
   ext x

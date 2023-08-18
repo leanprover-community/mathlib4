@@ -287,7 +287,7 @@ isomorphism of the lax braided monoidal functors.
 @[simps]
 def mkIso {F G : LaxBraidedFunctor C D} (i : F.toLaxMonoidalFunctor ≅ G.toLaxMonoidalFunctor) :
     F ≅ G :=
-  { i with }
+  { i with hom := i.hom, inv := i.inv}
 #align category_theory.lax_braided_functor.mk_iso CategoryTheory.LaxBraidedFunctor.mkIso
 
 end LaxBraidedFunctor
@@ -358,9 +358,9 @@ theorem comp_toNatTrans {F G H : BraidedFunctor C D} {α : F ⟶ G} {β : G ⟶ 
 /-- Interpret a natural isomorphism of the underlying monoidal functors as an
 isomorphism of the braided monoidal functors.
 -/
-@[simps]
+@[simps!]
 def mkIso {F G : BraidedFunctor C D} (i : F.toMonoidalFunctor ≅ G.toMonoidalFunctor) : F ≅ G :=
-  { i with }
+  { i with hom := i.hom, inv := i.inv }
 #align category_theory.braided_functor.mk_iso CategoryTheory.BraidedFunctor.mkIso
 
 end BraidedFunctor
