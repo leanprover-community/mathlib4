@@ -184,6 +184,9 @@ theorem IsRat.to_isInt {α} [Ring α] : ∀ {a : α} {n}, IsRat a n (nat_lit 1) 
 theorem IsInt.to_isRat {α} [Ring α] : ∀ {a : α} {n}, IsInt a n → IsRat a n (nat_lit 1)
   | _, _, ⟨rfl⟩ => ⟨⟨1, by simp, by simp⟩, by simp⟩
 
+theorem IsNNRat.to_raw_eq [DivisionSemiring α] : ∀ {a}, IsNNRat (a : α) n d → a = NNRat.rawCast n d
+  | _, ⟨inv, rfl⟩ => by simp [div_eq_mul_inv]
+
 theorem IsRat.to_raw_eq [DivisionRing α] : ∀ {a}, IsRat (a : α) n d → a = Rat.rawCast n d
   | _, ⟨inv, rfl⟩ => by simp [div_eq_mul_inv]
 
@@ -191,12 +194,12 @@ theorem IsRat.neg_to_eq {α} [DivisionRing α] {n d} :
     {a n' d' : α} → IsRat a (.negOfNat n) d → n = n' → d = d' → a = -(n' / d')
   | _, _, _, ⟨_, rfl⟩, rfl, rfl => by simp [div_eq_mul_inv]
 
-theorem IsRat.nonneg_to_eq {α} [DivisionRing α] {n d} :
-    {a n' d' : α} → IsRat a (.ofNat n) d → n = n' → d = d' → a = n' / d'
+theorem IsNNRat.to_eq {α} [DivisionSemiring α] {n d} :
+    {a n' d' : α} → IsNNRat a n d → n = n' → d = d' → a = n' / d'
   | _, _, _, ⟨_, rfl⟩, rfl, rfl => by simp [div_eq_mul_inv]
 
-theorem IsNNRat.of_raw (α) [DivisionRing α] (n : ℕ) (d : ℕ)
-    (h : (d : α) ≠ 0) : IsRat (NNRat.rawCast n d : α) n d :=
+theorem IsNNRat.of_raw (α) [DivisionSemiring α] (n : ℕ) (d : ℕ)
+    (h : (d : α) ≠ 0) : IsNNRat (NNRat.rawCast n d : α) n d :=
   have := invertibleOfNonzero h
   ⟨this, by simp [div_eq_mul_inv]⟩
 
@@ -233,7 +236,9 @@ inductive Result' where
   /-- Untyped version of `Result.isNegNat`. -/
   | isNegNat (inst lit proof : Expr)
   /-- Untyped version of `Result.isRat`. -/
-  | isRat (inst : Expr) (q : Rat) (n d proof : Expr)
+  | isNNRat (inst : Expr) (q : { q : ℚ // 0 ≤ q }) (n d proof : Expr)
+  /-- Untyped version of `Result.isNegNNRat`. -/
+  | isNegNNRat (inst : Expr) (q : Rat) (n d proof : Expr)
   deriving Inhabited
 
 section
@@ -266,9 +271,16 @@ and `proof : isInt x (.negOfNat lit)`. -/
 /-- The result is `proof : isRat x n d`, where `n` is either `.ofNat lit` or `.negOfNat lit`
 with `lit` a raw nat literal and `d` is a raw nat literal (not 0 or 1),
 and `q` is the value of `n / d`. -/
-@[match_pattern, inline] def Result.isRat {α : Q(Type u)} {x : Q($α)} :
-    ∀ (inst : Q(DivisionRing $α) := by assumption) (q : Rat) (n : Q(ℤ)) (d : Q(ℕ))
-      (proof : Q(IsRat $x $n $d)), Result x := Result'.isRat
+@[match_pattern, inline] def Result.isNNRat {α : Q(Type u)} {x : Q($α)} :
+    ∀ (inst : Q(DivisionSemiring $α) := by assumption) (q : { q : ℚ // 0 ≤ q }) (n : Q(ℕ)) (d : Q(ℕ))
+      (proof : Q(IsNNRat $x $n $d)), Result x := Result'.isNNRat
+
+/-- The result is `proof : isRat x n d`, where `n` is either `.ofNat lit` or `.negOfNat lit`
+with `lit` a raw nat literal and `d` is a raw nat literal (not 0 or 1),
+and `q` is the value of `n / d`. -/
+@[match_pattern, inline] def Result.isNegNNRat {α : Q(Type u)} {x : Q($α)} :
+    ∀ (inst : Q(DivisionRing $α) := by assumption) (q : Rat) (n : Q(ℕ)) (d : Q(ℕ))
+      (proof : Q(IsRat $x (.negOfNat $n) $d)), Result x := Result'.isNegNNRat
 
 /-- A shortcut (non)instance for `AddMonoidWithOne α` from `Ring α` to shrink generated proofs. -/
 def instAddMonoidWithOne [Ring α] : AddMonoidWithOne α := inferInstance
@@ -292,12 +304,25 @@ def Result.isInt {α : Q(Type u)} {x : Q($α)} (inst : Q(Ring $α) := by assumpt
   else
     .isNegNat inst lit proof
 
+/-- The result is `q : ℚ` and `proof : isRat x q`. -/
+-- Note the independent arguments `q : Q(ℚ)` and `n : ℚ`.
+-- We ensure these are "the same" when calling.
+def Result.isRat {α : Q(Type u)} {x : Q($α)} (inst : Q(DivisionRing $α) := by assumption)
+    (q : ℚ) (n : Q(ℤ)) (d : Q(ℕ)) (proof : Q(IsRat $x $n $d)) : Result x :=
+  have lit : Q(ℕ) := n.appArg!
+  if hq : 0 ≤ q then
+    let proof : Q(IsRat $x (.ofNat $lit) $d) := proof
+    .isNNRat q(DivisionRing.toDivisionSemiring) ⟨q, hq⟩ lit d q(IsRat.to_isNNRat $proof)
+  else
+    .isNegNNRat inst q lit d proof
+
 /-- Returns the rational number that is the result of `norm_num` evaluation. -/
 def Result.toRat : Result e → Option Rat
   | .isBool .. => none
   | .isNat _ lit _ => some lit.natLit!
   | .isNegNat _ lit _ => some (-lit.natLit!)
-  | .isRat _ q .. => some q
+  | .isNNRat _ q .. => some q
+  | .isNegNNRat _ q .. => some q
 
 end
 
@@ -409,7 +434,8 @@ def Result.toRat' {α : Q(Type u)} {e : Q($α)}
     have proof : Q(@IsInt _ DivisionRing.toRing $e (.negOfNat $lit)) := proof
     some ⟨-lit.natLit!, q(.negOfNat $lit), q(nat_lit 1),
       (q(@IsInt.to_isRat _ DivisionRing.toRing _ _ $proof) : Expr)⟩
-  | .isRat _ q n d proof => some ⟨q, n, d, proof⟩
+  | .isNNRat _ q n d proof => some ⟨q, n, d, proof⟩
+  | .isNegNNRat _ q n d proof => some ⟨q, n, d, proof⟩
 
 instance : ToMessageData (Result x) where
   toMessageData
@@ -417,7 +443,8 @@ instance : ToMessageData (Result x) where
   | .isBool false proof => m!"isFalse ({proof})"
   | .isNat _ lit proof => m!"isNat {lit} ({proof})"
   | .isNegNat _ lit proof => m!"isNegNat {lit} ({proof})"
-  | .isRat _ q _ _ proof => m!"isRat {q} ({proof})"
+  | .isNNRat _ q _ _ proof => m!"isNNRat {q} ({proof})"
+  | .isNegNNRat _ q _ _ proof => m!"isNegNNRat {q} ({proof})"
 
 /--
 Given a `NormNum.Result e` (which uses `IsNat`, `IsInt`, `IsRat` to express equality to a rational
@@ -433,7 +460,8 @@ def Result.toRawEq {α : Q(Type u)} {e : Q($α)} : Result e → (e' : Q($α)) ×
     ⟨(q(True) : Expr), (q(eq_true $p) : Expr)⟩
   | .isNat _ lit p => ⟨q(Nat.rawCast $lit), q(IsNat.to_raw_eq $p)⟩
   | .isNegNat _ lit p => ⟨q(Int.rawCast (.negOfNat $lit)), q(IsInt.to_raw_eq $p)⟩
-  | .isRat _ _ n d p => ⟨q(Rat.rawCast $n $d), q(IsRat.to_raw_eq $p)⟩
+  | .isNNRat _ _ n d p => ⟨q(NNRat.rawCast $n $d), q(IsNNRat.to_raw_eq $p)⟩
+  | .isNegNNRat _ _ n d p => ⟨q(Rat.rawCast (.negOfNat $n) $d), q(IsRat.to_raw_eq $p)⟩
 
 /--
 `Result.toRawEq` but providing an integer. Given a `NormNum.Result e` for something known to be an
@@ -445,7 +473,7 @@ def Result.toRawIntEq {α : Q(Type u)} {e : Q($α)} : Result e →
     Option (ℤ × (e' : Q($α)) × Q($e = $e'))
   | .isNat _ lit p => some ⟨lit.natLit!, q(Nat.rawCast $lit), q(IsNat.to_raw_eq $p)⟩
   | .isNegNat _ lit p => some ⟨-lit.natLit!, q(Int.rawCast (.negOfNat $lit)), q(IsInt.to_raw_eq $p)⟩
-  | .isRat _ .. | .isBool .. => none
+  | .isNNRat _ .. | .isNegNNRat _ ..  | .isBool .. => none
 
 /-- Constructs a `Result` out of a raw nat cast. Assumes `e` is a raw nat cast expression. -/
 def Result.ofRawNat {α : Q(Type u)} (e : Q($α)) : Result e := Id.run do
@@ -463,14 +491,28 @@ def Result.ofRawInt {α : Q(Type u)} (n : ℤ) (e : Q($α)) : Result e :=
 
 /-- Constructs a `Result` out of a raw rat cast.
 Assumes `e` is a raw rat cast expression denoting `n`. -/
+def Result.ofRawNNRat
+    {α : Q(Type u)} (q : {q : ℚ // 0 ≤ q}) (e : Q($α)) (hyp : Option Expr := none) : Result e :=
+  if q.val.den = 1 then
+    Result.ofRawInt q.val.num e
+  else Id.run do
+    let .app (.app (.app _ (dα : Q(DivisionSemiring $α))) (n : Q(ℕ))) (d : Q(ℕ)) := e
+      | panic! "not a raw rat cast"
+    let hyp : Q(($d : $α) ≠ 0) := hyp.get!
+    .isNNRat dα q n d (q(IsNNRat.of_raw $α $n $d $hyp) : Expr)
+
+/-- Constructs a `Result` out of a raw rat cast.
+Assumes `e` is a raw rat cast expression denoting `n`. -/
 def Result.ofRawRat {α : Q(Type u)} (q : ℚ) (e : Q($α)) (hyp : Option Expr := none) : Result e :=
   if q.den = 1 then
     Result.ofRawInt q.num e
+  else if hq : 0 ≤ q then
+    Result.ofRawNNRat ⟨q, hq⟩ e
   else Id.run do
-    let .app (.app (.app _ (dα : Q(DivisionRing $α))) (n : Q(ℤ))) (d : Q(ℕ)) := e
+    let .app (.app (.app _ (dα : Q(DivisionRing $α))) (.app _ (n : Q(ℕ)))) (d : Q(ℕ)) := e
       | panic! "not a raw rat cast"
     let hyp : Q(($d : $α) ≠ 0) := hyp.get!
-    .isRat dα q n d (q(IsRat.of_raw $α $n $d $hyp) : Expr)
+    .isNegNNRat dα q n d (q(IsRat.of_raw $α (.negOfNat $n) $d $hyp) : Expr)
 
 /-- The result depends on whether `q : ℚ` happens to be an integer, in which case the result is
 `.isInt ..` whereas otherwise it's `.isRat ..`. -/
@@ -488,7 +530,8 @@ def Result.toRatNZ : Result e → Option (Rat × Option Expr)
   | .isBool .. => none
   | .isNat _ lit _ => some (lit.natLit!, none)
   | .isNegNat _ lit _ => some (-lit.natLit!, none)
-  | .isRat _ q _ _ p => some (q, q(IsRat.den_nz $p))
+  | .isNNRat _ q _ _ p => some (q, q(IsNNRat.den_nz $p))
+  | .isNegNNRat _ q _ _ p => some (q, q(IsRat.den_nz $p))
 
 /--
 Constructs an `ofNat` application `a'` with the canonical instance, together with a proof that
@@ -530,18 +573,18 @@ def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.
   | .isNegNat _rα lit p => do
     let ⟨a', pa'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) lit
     return { expr := q(-$a'), proof? := q(IsInt.neg_to_eq $p $pa') }
-  | .isRat _ q n d p => do
+  | .isNNRat _ _ n d p => do
     have lit : Q(ℕ) := n.appArg!
-    if q < 0 then
-      let p : Q(IsRat $e (.negOfNat $lit) $d) := p
-      let ⟨n', pn'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) lit
-      let ⟨d', pd'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) d
-      return { expr := q(-($n' / $d')), proof? := q(IsRat.neg_to_eq $p $pn' $pd') }
-    else
-      let p : Q(IsRat $e (.ofNat $lit) $d) := p
-      let ⟨n', pn'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) lit
-      let ⟨d', pd'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) d
-      return { expr := q($n' / $d'), proof? := q(IsRat.nonneg_to_eq $p $pn' $pd') }
+    let p : Q(IsNNRat $e $lit $d) := p
+    let ⟨n', pn'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) lit
+    let ⟨d', pd'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) d
+    return { expr := q($n' / $d'), proof? := q(IsNNRat.to_eq $p $pn' $pd') }
+  | .isNegNNRat _ _ n d p => do
+    have lit : Q(ℕ) := n.appArg!
+    let p : Q(IsRat $e (.negOfNat $lit) $d) := p
+    let ⟨n', pn'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) lit
+    let ⟨d', pd'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) d
+    return { expr := q(-($n' / $d')), proof? := q(IsRat.neg_to_eq $p $pn' $pd') }
 
 /--
 An extension for `norm_num`.
