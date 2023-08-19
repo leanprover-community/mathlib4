@@ -10,8 +10,6 @@ namespace CategoryTheory
 
 namespace Pretriangulated
 
--- TODO : extend this to [HasShift (Triangle C) ℤ]
-
 @[simps]
 noncomputable def Triangle.shiftFunctor (n : ℤ) : Triangle C ⥤ Triangle C where
   obj T := Triangle.mk (CochainComplex.ε n • T.mor₁⟦n⟧') (CochainComplex.ε n • T.mor₂⟦n⟧')
@@ -33,6 +31,7 @@ noncomputable def Triangle.shiftFunctor (n : ℤ) : Triangle C ⥤ Triangle C wh
         congr 2
         exact ((shiftFunctorComm C 1 n).hom.naturality f.hom₁).symm }
 
+@[simps!]
 noncomputable def Triangle.shiftFunctorZero : Triangle.shiftFunctor C 0 ≅ 𝟭 _ :=
   NatIso.ofComponents (fun T => Triangle.isoMk _ _ ((CategoryTheory.shiftFunctorZero C ℤ).app _)
       ((CategoryTheory.shiftFunctorZero C ℤ).app _)
@@ -44,6 +43,7 @@ noncomputable def Triangle.shiftFunctorZero : Triangle.shiftFunctor C 0 ≅ 𝟭
         rw [Functor.map_id, comp_id, NatTrans.naturality]
         rfl)) (by aesop_cat)
 
+@[simps!]
 noncomputable def Triangle.shiftFunctorAdd' (a b n : ℤ) (h : a + b = n) :
     Triangle.shiftFunctor C n ≅ Triangle.shiftFunctor C a ⋙ Triangle.shiftFunctor C b :=
   NatIso.ofComponents (fun T => Triangle.isoMk _ _
@@ -96,6 +96,46 @@ noncomputable def invRotateInvRotateInvRotateIso :
       (by
         dsimp [shiftFunctorCompIsoId]
         simp [shiftFunctorComm_eq C _ _ _ (add_neg_self (1 : ℤ))])) (by aesop_cat)
+
+namespace Triangle
+
+attribute [local simp] Triangle.eqToHom_hom₁
+  Triangle.eqToHom_hom₂ Triangle.eqToHom_hom₃
+  shiftFunctorAdd'_eq_shiftFunctorAdd
+  shiftFunctorAdd_zero_add_hom_app
+  shiftFunctorAdd_add_zero_hom_app
+
+noncomputable instance : HasShift (Triangle C) ℤ :=
+  hasShiftMk (Triangle C) ℤ
+    { F := Triangle.shiftFunctor C
+      zero := Triangle.shiftFunctorZero C
+      add := fun a b => Triangle.shiftFunctorAdd' C a b _ rfl
+      assoc_hom_app := fun a b c T => by
+        ext
+        all_goals
+          dsimp
+          rw [← shiftFunctorAdd'_assoc_hom_app a b c _ _ _ rfl rfl (add_assoc a b c)]
+          dsimp only [CategoryTheory.shiftFunctorAdd']
+          simp }
+
+@[simp]
+lemma shiftFunctor_eq (n : ℤ) :
+    CategoryTheory.shiftFunctor (Triangle C) n = shiftFunctor C n := rfl
+
+@[simp]
+lemma shiftFunctorZero_eq :
+    CategoryTheory.shiftFunctorZero (Triangle C) ℤ = Triangle.shiftFunctorZero C :=
+  ShiftMkCore.shiftFunctorZero_eq _
+
+@[simp]
+lemma shiftFunctorAdd'_eq (a b c : ℤ) (h : a + b = c) :
+    CategoryTheory.shiftFunctorAdd' (Triangle C) a b c h =
+      Triangle.shiftFunctorAdd' C a b c h := by
+  subst h
+  rw [shiftFunctorAdd'_eq_shiftFunctorAdd]
+  apply ShiftMkCore.shiftFunctorAdd_eq
+
+end Triangle
 
 end Pretriangulated
 
