@@ -95,17 +95,18 @@ theorem zeroLocus_vanishingIdeal_le (V : Set (σ → k)) : V ≤ zeroLocus (vani
 
 theorem zeroLocus_vanishingIdeal_galoisConnection :
     @GaloisConnection (Ideal (MvPolynomial σ k)) (Set (σ → k))ᵒᵈ _ _ zeroLocus vanishingIdeal :=
-  fun I V =>
-  ⟨fun h => le_trans (le_vanishingIdeal_zeroLocus I) (vanishingIdeal_anti_mono h), fun h =>
-    le_trans (zeroLocus_anti_mono h) (zeroLocus_vanishingIdeal_le V)⟩
+  GaloisConnection.monotone_intro (fun _ _ ↦ vanishingIdeal_anti_mono)
+    (fun _ _ ↦ zeroLocus_anti_mono) le_vanishingIdeal_zeroLocus zeroLocus_vanishingIdeal_le
 #align mv_polynomial.zero_locus_vanishing_ideal_galois_connection MvPolynomial.zeroLocus_vanishingIdeal_galoisConnection
+
+theorem le_zeroLocus_iff_le_vanishingIdeal {V : Set (σ → k)} {I : Ideal (MvPolynomial σ k)} :
+    V ≤ zeroLocus I ↔ I ≤ vanishingIdeal V :=
+  zeroLocus_vanishingIdeal_galoisConnection.le_iff_le
 
 theorem zeroLocus_span (S : Set (MvPolynomial σ k)) :
     zeroLocus (Ideal.span S) = { x | ∀ p ∈ S, eval x p = 0 } :=
-  Set.Subset.antisymm
-    (fun _ hx _ hp => hx _ (Ideal.subset_span hp))
-    (zeroLocus_vanishingIdeal_galoisConnection.l_le <|
-      Ideal.span_le.2 <| fun _ hp _ hx => hx _ hp)
+  eq_of_forall_le_iff fun _ => le_zeroLocus_iff_le_vanishingIdeal.trans <|
+    Ideal.span_le.trans forall₂_swap
 
 theorem mem_vanishingIdeal_singleton_iff (x : σ → k) (p : MvPolynomial σ k) :
     p ∈ (vanishingIdeal {x} : Ideal (MvPolynomial σ k)) ↔ eval x p = 0 :=
