@@ -782,15 +782,16 @@ class HasFundamentalDomain (G : Type _) (α : Type _) [One G] [SMul G α]
 (has_fundamental_domain_characterization :
   ∃ (s : Set α), IsFundamentalDomain G s ∧ MeasurableSet s)
 
-def covolume (G : Type _) (α : Type _) [One G] [SMul G α] [MeasureSpace α]
-    [funDom : HasFundamentalDomain G α] : ℝ≥0∞ :=
+def HasFundamentalDomain.covolume {G : Type _} {α : Type _} [One G] [SMul G α] [MeasureSpace α]
+    (funDom : HasFundamentalDomain G α) : ℝ≥0∞ :=
   volume funDom.has_fundamental_domain_characterization.choose
 
-lemma covolume_eq_volume (G : Type _) (α : Type _) [Group G] [MulAction G α] [MeasurableSpace G]
-    [Countable G] [MeasureSpace α] [MeasurableSMul G α] [SMulInvariantMeasure G α volume]
-    [funDom : HasFundamentalDomain G α] (s : Set α) (fund_dom_s : IsFundamentalDomain G s) :
-    covolume G α = volume s := by
-  rw [covolume]
+lemma HasFundamentalDomain.covolume_eq_volume {G : Type _} {α : Type _} [Group G] [MulAction G α]
+    [MeasurableSpace G] [Countable G] [MeasureSpace α] [MeasurableSMul G α]
+    [SMulInvariantMeasure G α volume]
+    (funDom : HasFundamentalDomain G α) (s : Set α) (fund_dom_s : IsFundamentalDomain G s) :
+    funDom.covolume = volume s := by
+  rw [HasFundamentalDomain.covolume]
   rw [fund_dom_s.measure_eq]
   exact funDom.has_fundamental_domain_characterization.choose_spec.1
 
@@ -879,90 +880,5 @@ theorem measurePreserving_quotient_mk_of_quotientVolumeEqVolumePreimage
     · assumption
 
 end QuotientVolumeEqVolume
-
----- NEW 8/8/23
-
-section DirichletPolyhedron
-
-variable {α : Type _} [MetricSpace α]  (G : Type _) [Group G] [Countable G] [MulAction G α]
-  [MeasurableSpace α] [OpensMeasurableSpace α]
-
---local notation "α_mod_G" => MulAction.orbitRel G α
-
---local notation "π" => @Quotient.mk _ α_mod_G
-
-def DirichletPolyhedron (x : α) : Set α :=
-  {y : α | ∀ g : G, dist x y ≤ dist (g • x) y}
-
-theorem DirichletPolyhedron_eq_Inter (x : α) :
-    DirichletPolyhedron G x = ⋂ g : G, {y : α | dist x y ≤ dist (g • x) y} := by
-  ext y
-  simp only [DirichletPolyhedron, mem_setOf_eq, mem_iInter]
-
-theorem IsFundamentalDomain_of_DirichletPolyhedron --[LocallyCompactSpace α]
-    [ProperSpace α] [IsometricSMul G α]
-    [i₁ : ProperlyDiscontinuousSMul G α] (x : α) (hx : ∀ g : G, g • x ≠ x) {μ : Measure α} :
-    IsFundamentalDomain G (DirichletPolyhedron G x) μ where
-  nullMeasurableSet := by
-    apply MeasurableSet.nullMeasurableSet
-    dsimp [NullMeasurableSet]
-    rw [DirichletPolyhedron_eq_Inter]
-    apply MeasurableSet.iInter
-    intro g
-    apply @IsClosed.measurableSet α ({y | dist x y ≤ dist (g • x) y}) _ _ _
-    rw [← isOpen_compl_iff]
-    suffices h : IsOpen {y : α | dist (g • x) y < dist x y}
-    · convert h using 1
-      ext y
-      simp only [mem_compl_iff, mem_setOf_eq, not_le]
-    · apply isOpen_lt
-      · exact @Continuous.dist α α _ _ (fun y ↦ (g • x)) (fun y ↦ y) continuous_const continuous_id
-      · exact @Continuous.dist α α _ _ (fun y ↦ x) (fun y ↦ y) continuous_const continuous_id
-  ae_covers := by
-    filter_upwards
-    set s := DirichletPolyhedron G x
-    intro y
-    let t := Metric.closedBall y (dist x y)
-    have comp_t : IsCompact t := isCompact_closedBall y (dist x y)
-    have fin_orbit := i₁.finite_disjoint_inter_image comp_t comp_t
-    set Γ := {γ : G | (fun x ↦ γ • x) '' t ∩ t ≠ ∅}
-    have nonempty_Γ : Set.Nonempty Γ := by
-      use 1
-      simp only [image_smul, Metric.smul_closedBall, ne_eq, mem_setOf_eq, one_smul, inter_self,
-        Metric.closedBall_eq_empty, not_lt]
-      exact dist_nonneg
-    obtain ⟨g, -, hg⟩ :=
-      @Set.exists_min_image G ℝ _ Γ (fun γ ↦ dist x (γ • y)) fin_orbit nonempty_Γ
-    use g
-    simp only [DirichletPolyhedron, mem_setOf_eq]
-    intro γ
-    have dist_eq : dist (γ • x) (g • y) = dist x ((γ⁻¹ * g) • y) := by
-      convert @dist_smul G α _ _ _ γ x ((γ⁻¹ * g) • y) using 2
-      rw [← mul_smul]
-      simp
-    have := hg (γ⁻¹ * g)
-    by_cases hγ : (γ⁻¹ * g) ∈ Γ
-    · have := this hγ
-      convert this using 1
-    · simp only [image_smul, Metric.smul_closedBall, ne_eq, mem_setOf_eq, not_not] at hγ
-      rw [dist_eq]
-      sorry
-
-    -- have : (⋃ g : G, (fun y ↦ g • y) '' s) = univ := by
-    --   ext z
-    --   simp only [image_smul, mem_iUnion, mem_univ, iff_true]
-
-
-  aedisjoint := by
-    set s := DirichletPolyhedron G x
-    intro g₁ g₂ h
-    change μ (( (fun y ↦ g₁ • y) '' s) ∩  (fun y ↦ g₂ • y) '' s) = 0
-
-    sorry
-
-
-
-
-end DirichletPolyhedron
 
 end MeasureTheory
