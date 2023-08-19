@@ -116,18 +116,16 @@ theorem eq_of_degrees_lt_of_eval_index_eq (hvs : Set.InjOn v s) (degree_f_lt : f
   exact Submodule.sub_mem _ degree_f_lt degree_g_lt
 #align polynomial.eq_of_degrees_lt_of_eval_index_eq Polynomial.eq_of_degrees_lt_of_eval_index_eq
 
-theorem eq_of_degrees_le_of_leadingCoeff_eq_of_eval_index_eq (hvs : Set.InjOn v s)
-    (degree_f_le : f.degree ≤ s.card) (degree_f_eq_degree_g : f.degree = g.degree)
-    (leadingCoeffs_eq : f.leadingCoeff = g.leadingCoeff)
-    (eval_fg : ∀ i ∈ s, f.eval (v i) = g.eval (v i)) : f = g := by
-  by_cases f_zero : f = 0
-  · simp only [f_zero] at *
-    apply Eq.symm
-    rw [eq_comm] at leadingCoeffs_eq
-    exact Iff.mp degree_eq_bot (id (Eq.symm degree_f_eq_degree_g))
-  · apply eq_of_degree_sub_lt_of_eval_index_eq (v := v) s hvs
-      (lt_of_lt_of_le (degree_sub_lt degree_f_eq_degree_g f_zero leadingCoeffs_eq) degree_f_le)
-      eval_fg
+theorem eq_of_degrees_le_of_eval_index_eq (hvs : Set.InjOn v s)
+    (h_deg_le : f.degree ≤ s.card)
+    (h_deg_eq : f.degree = g.degree)
+    (hlc : f.leadingCoeff = g.leadingCoeff)
+    (h_eval : ∀ i ∈ s, f.eval (v i) = g.eval (v i)) : f = g := by
+  rcases eq_or_ne f 0 with rfl | hf
+  · rwa [degree_zero, eq_comm, degree_eq_bot, eq_comm] at h_deg_eq
+  · exact eq_of_degree_sub_lt_of_eval_index_eq s hvs
+      (lt_of_lt_of_le (degree_sub_lt h_deg_eq hf hlc) h_deg_le)
+      h_eval
 
 end Indexed
 
