@@ -589,7 +589,7 @@ lemma LinearIndependent.eq_of_pair {x y : M} (h : LinearIndependent R ![x, y])
     {s t s' t' : R} (h' : s • x + t • y = s' • x + t' • y) : s = s' ∧ t = t' := by
   have : (s - s') • x + (t - t') • y = 0 := by
     rw [← sub_eq_zero_of_eq h', ← sub_eq_zero]
-    simp [sub_smul, smul_smul]
+    simp only [sub_smul]
     abel
   simpa [sub_eq_zero] using h.eq_zero_of_pair this
 
