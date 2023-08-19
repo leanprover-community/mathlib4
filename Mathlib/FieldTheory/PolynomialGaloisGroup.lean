@@ -457,7 +457,7 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
     intro z; rw [Set.mem_toFinset, mem_rootSet_of_ne hp]
   have hb : ∀ z : ℂ, z ∈ b ↔ aeval z p = 0 ∧ z.im = 0 := by
     intro z
-    simp_rw [Finset.mem_image, exists_prop, Set.mem_toFinset, mem_rootSet_of_ne hp]
+    simp_rw [Finset.mem_image, Set.mem_toFinset, mem_rootSet_of_ne hp]
     constructor
     · rintro ⟨w, hw, rfl⟩
       exact ⟨by rw [aeval_algHom_apply, hw, AlgHom.map_zero], rfl⟩
@@ -472,7 +472,7 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
     exact Complex.conj_eq_iff_im
   have hc : ∀ z : ℂ, z ∈ c ↔ aeval z p = 0 ∧ z.im ≠ 0 := by
     intro z
-    simp_rw [Finset.mem_image, exists_prop]
+    simp_rw [Finset.mem_image]
     constructor
     · rintro ⟨w, hw, rfl⟩
       exact ⟨(mem_rootSet.mp w.2).2, mt (hc0 w).mpr (Equiv.Perm.mem_support.mp hw)⟩
