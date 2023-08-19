@@ -37,8 +37,6 @@ product of a root of unity times the product of powers of units of the fundament
 number field, units
  -/
 
--- See: https://github.com/leanprover/lean4/issues/2220
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y)
 
 open scoped NumberField
 
@@ -56,7 +54,7 @@ theorem Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} : IsUnit x ↔ (x : ℚ) = 
 
 end Rat
 
-variable (K : Type _) [Field K]
+variable (K : Type*) [Field K]
 
 section IsUnit
 
@@ -127,7 +125,9 @@ instance [NumberField K] : Fintype (torsion K) := by
   · rw [← h_ua]
     exact le_of_eq ((eq_iff_eq _ 1).mp ((mem_torsion K).mp h_tors) φ)
 
-set_option synthInstance.maxHeartbeats 30000 in
+-- a shortcut instance to stop the next instance from timing out
+instance [NumberField K] : Finite (torsion K) := inferInstance
+
 /-- The torsion subgroup is cylic. -/
 instance [NumberField K] : IsCyclic (torsion K) := subgroup_units_cyclic _
 
@@ -136,8 +136,8 @@ def torsion_order [NumberField K] : ℕ+ := ⟨Fintype.card (torsion K), Fintype
 
 /-- If `k` does not divide `torsion_order` then there are no nontrivial roots of unity of
   order dividing `k`. -/
-theorem rootsOfUnity_eq_one [NumberField K] {k : ℕ+} (hc : Nat.coprime k (torsion_order K)) :
-    ζ ∈ rootsOfUnity k (𝓞 K) ↔ ζ = 1 := by
+theorem rootsOfUnity_eq_one [NumberField K] {k : ℕ+} (hc : Nat.coprime k (torsion_order K))
+    {ζ : (𝓞 K)ˣ} : ζ ∈ rootsOfUnity k (𝓞 K) ↔ ζ = 1 := by
   rw [mem_rootsOfUnity]
   refine ⟨fun h => ?_, fun h => by rw [h, one_pow]⟩
   refine orderOf_eq_one_iff.mp (Nat.eq_one_of_dvd_coprimes hc ?_ ?_)
@@ -306,6 +306,9 @@ section span_top
 -- the same ideal and their quotient is the desired unit `u_w₁` (see `exists_unit`).
 
 open NumberField.mixedEmbedding NNReal
+
+-- See: https://github.com/leanprover/lean4/issues/2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y)
 
 variable (w₁ : InfinitePlace K) {B : ℕ} (hB : minkowski_bound K < (constant_factor K) * B)
 
@@ -485,6 +488,7 @@ end dirichlet
 
 variable [NumberField K]
 
+/-- A basis of the quotient `(𝓞 K)ˣ ⧸ (torsion K)` seen as an additive ℤ-module. -/
 def basis_mod_torsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) := by
   let f : (dirichlet.unit_lattice K) ≃ₗ[ℤ] Additive ((𝓞 K)ˣ ⧸ (torsion K)) := by
     refine AddEquiv.toIntLinearEquiv ?_
@@ -512,7 +516,8 @@ def basis_mod_torsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (tors
   refine Basis.reindex (Module.Free.chooseBasis ℤ _) (Fintype.equivOfCardEq ?_)
   rw [← FiniteDimensional.finrank_eq_card_chooseBasisIndex, this, Fintype.card_fin]
 
-/-- A fundamental system of units of `K`. -/
+/-- A fundamental system of units of `K`. The units of `fund_system` are arbitrary lifts of the
+units in `basis_mod_torsion`. -/
 def fund_system : Fin (rank K) → (𝓞 K)ˣ :=
   fun i => Quotient.out' (Additive.toMul (basis_mod_torsion K i))
 

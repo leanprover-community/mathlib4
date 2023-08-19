@@ -36,7 +36,7 @@ open scoped MeasureTheory BigOperators ENNReal
 open TopologicalSpace
 
 -- Porting note: move to `Topology/Instances/Discrete`
-instance (priority := 100) DiscreteTopology.secondCountableTopology_of_countable {α : Type _}
+instance (priority := 100) DiscreteTopology.secondCountableTopology_of_countable {α : Type*}
     [TopologicalSpace α] [DiscreteTopology α] [Countable α] : SecondCountableTopology α :=
   @DiscreteTopology.secondCountableTopology_of_encodable _ _ _ (Encodable.ofCountable _)
 #align discrete_topology.second_countable_topology_of_countable DiscreteTopology.secondCountableTopology_of_countable
@@ -45,12 +45,12 @@ namespace MeasureTheory
 
 namespace Martingale
 
-variable {Ω E : Type _} {m : MeasurableSpace Ω} {μ : Measure Ω} [NormedAddCommGroup E]
+variable {Ω E : Type*} {m : MeasurableSpace Ω} {μ : Measure Ω} [NormedAddCommGroup E]
   [NormedSpace ℝ E] [CompleteSpace E]
 
 section FirstCountableTopology
 
-variable {ι : Type _} [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι]
+variable {ι : Type*} [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι]
   [FirstCountableTopology ι] {ℱ : Filtration ι m} [SigmaFiniteFiltration μ ℱ] {τ σ : Ω → ι}
   {f : ι → Ω → E} {i n : ι}
 
@@ -156,7 +156,7 @@ a subset of `ℕ`. `ι` is equipped with the discrete topology, which is also th
 and is a measurable space with the Borel σ-algebra. -/
 
 
-variable {ι : Type _} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι] [TopologicalSpace ι]
+variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι] [TopologicalSpace ι]
   [DiscreteTopology ι] [MeasurableSpace ι] [BorelSpace ι] [MeasurableSpace E] [BorelSpace E]
   [SecondCountableTopology E] {ℱ : Filtration ι m} {τ σ : Ω → ι} {f : ι → Ω → E} {i n : ι}
 

@@ -21,7 +21,7 @@ This file defines instances for additive and multiplicative actions on the binar
 -/
 
 
-variable {M N P α β γ : Type _}
+variable {M N P α β γ : Type*}
 
 namespace Sum
 

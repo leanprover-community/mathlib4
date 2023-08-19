@@ -16,18 +16,23 @@ import Mathlib.RingTheory.Discriminant
 
 The canonical embedding of a number field `K` of degree `n` is the ring homomorphism
 `K →+* ℂ^n` that sends `x ∈ K` to `(φ_₁(x),...,φ_n(x))` where the `φ_i`'s are the complex
-embeddings of `K`.
+embeddings of `K`. Note that we do not choose an ordering of the embeddings, but instead map `K`
+into the type `(K →+* ℂ) → ℂ` of `ℂ`-vectors indexed by the complex embeddings.
 
 ## Main definitions and results
 
-* `NumberField.canonicalEmbedding.integerLattice.inter_ball_finite`: the intersection of the
+* `canonicalEmbedding`: the ring homorphism `K →+* ((K →+* ℂ) → ℂ)` defined by sending `x : K` to
+the vector `(φ x)` indexed by `φ : K →+* ℂ`.
+
+* `canonicalEmbedding.integerLattice.inter_ball_finite`: the intersection of the
 image of the ring of integers by the canonical embedding and any ball centered at `0` of finite
 radius is finite.
 
-* `NumberField.mixedEmbedding`: the ring homomorphism `K →+* ℝ^r₁ × ℂ^r₂` that sends `x ∈ K` to
-`(φ_₁(x),...,φ_r₁(x)) × (ψ_₁(x),..., ψ_r₂(x)) ` where `(r₁, r₂)` is the signature of `K`,
-`φ_₁,...,φ_r₁` are its real embeddings and `ψ_₁,..., ψ_r₂` are its complex embeddings (up to
-complex conjugation).
+* `mixedEmbedding`: the ring homomorphism from `K →+* ({ w // IsReal w } → ℝ) ×
+({ w // IsComplex w } → ℂ)` that sends `x ∈ K` to `(φ_w x)_w` where `φ_w` is the embedding
+associated to the infinite place `w`. In particular, if `w` is real then `φ_w : K →+* ℝ` and, if
+`w` is complex, `φ_w` is an arbitrary choice between the two complex emebeddings defining the place
+`w`.
 
 * `exists_ne_zero_mem_ringOfIntegers_lt`: let `f : InfinitePlace K → ℝ≥0`, if the product
 `∏ w, f w` is large enough, proves that there exists a nonzero algebraic integer `a` such
@@ -38,7 +43,7 @@ that `w a < f w` for all infinite places `w`.
 number field, infinite places
 -/
 
-variable (K : Type _) [Field K]
+variable (K : Type*) [Field K]
 
 namespace NumberField.canonicalEmbedding
 
@@ -58,7 +63,7 @@ theorem apply_at (φ : K →+* ℂ) (x : K) : (NumberField.canonicalEmbedding K 
 open scoped ComplexConjugate
 
 /-- The image of `canonicalEmbedding` lives in the `ℝ`-submodule of the `x ∈ ((K →+* ℂ) → ℂ)` such
-that `conj x_φ = x_(conj φ)` for all `φ : K →+* ℂ`. -/
+that `conj x_φ = x_(conj φ)` for all `∀ φ : K →+* ℂ`. -/
 theorem conj_apply {x : ((K →+* ℂ) → ℂ)} (φ : K →+* ℂ)
     (hx : x ∈ Submodule.span ℝ (Set.range (canonicalEmbedding K))) :
     conj (x φ) = x (ComplexEmbedding.conjugate φ) := by
@@ -302,14 +307,13 @@ theorem convex_body_symmetric (x : E K) (hx : x ∈ (convex_body K f)) :
     Prod.snd_neg, Complex.norm_eq_abs, hx] at hx ⊢
   exact hx
 
-theorem convex_body_convex :
-    Convex ℝ (convex_body K f) :=
+theorem convex_body_convex : Convex ℝ (convex_body K f) :=
   Convex.prod (convex_pi (fun _ _ => convex_ball _ _)) (convex_pi (fun _ _ => convex_ball _ _))
 
 open Classical Fintype MeasureTheory MeasureTheory.Measure BigOperators
 
 -- See: https://github.com/leanprover/lean4/issues/2220
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y)
 
 variable [NumberField K]
 
@@ -381,7 +385,7 @@ end convex_body
 
 section minkowski
 
-open MeasureTheory MeasureTheory.Measure Classical ENNReal FiniteDimensional
+open MeasureTheory MeasureTheory.Measure Classical NNReal ENNReal FiniteDimensional
 
 variable [NumberField K]
 
@@ -394,6 +398,8 @@ theorem minkowski_bound_lt_top : minkowski_bound K < ⊤ := by
   refine mul_lt_top ?_ ?_
   · exact ne_of_lt (Zspan.fundamentalDomain_bounded (latticeBasis K)).measure_lt_top
   · exact ne_of_lt (pow_lt_top (lt_top_iff_ne_top.mpr two_ne_top) _)
+
+variable {f : InfinitePlace K → ℝ≥0}
 
 /-- Assume that `f : InfinitePlace K → ℝ≥0` is such that
 `minkowski_bound K < volume (convex_body K f)` where `convex_body K f` is the set of points `x`

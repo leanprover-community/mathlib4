@@ -15,7 +15,7 @@ Mathematically, a (topological) fiber bundle with fiber `F` over a base `B` is a
 point is a direct product.
 
 In our formalism, a fiber bundle is by definition the type `Bundle.TotalSpace F E` where
-`E : B → Type _` is a function associating to `x : B` the fiber over `x`. This type
+`E : B → Type*` is a function associating to `x : B` the fiber over `x`. This type
 `Bundle.TotalSpace F E` is a type of pairs `⟨proj : B, snd : E proj⟩`.
 
 To have a fiber bundle structure on `Bundle.TotalSpace F E`, one should
@@ -45,7 +45,7 @@ fiber bundle from trivializations given as local equivalences with minimum addit
 
 ### Basic definitions
 
-* `FiberBundle F E` : Structure saying that `E : B → Type _` is a fiber bundle with fiber `F`.
+* `FiberBundle F E` : Structure saying that `E : B → Type*` is a fiber bundle with fiber `F`.
 
 ### Construction of a bundle from trivializations
 
@@ -164,7 +164,7 @@ Fiber bundle, topological bundle, structure group
 -/
 
 
-variable {ι B F X : Type _} [TopologicalSpace X]
+variable {ι B F X : Type*} [TopologicalSpace X]
 
 open TopologicalSpace Filter Set Bundle Topology
 
@@ -172,7 +172,7 @@ open TopologicalSpace Filter Set Bundle Topology
 
 section FiberBundle
 
-variable (F) [TopologicalSpace B] [TopologicalSpace F] (E : B → Type _)
+variable (F) [TopologicalSpace B] [TopologicalSpace F] (E : B → Type*)
   [TopologicalSpace (TotalSpace F E)] [∀ b, TopologicalSpace (E b)]
 
 /-- A (topological) fiber bundle with fiber `F` over a base `B` is a space projecting on `B`
@@ -394,7 +394,7 @@ Trivialization changes from `i` to `j` are given by continuous maps `coordChange
 `B → F → F` and require continuity on `(baseSet i ∩ baseSet j) × F` to avoid the topology on the
 space of continuous maps on `F`. -/
 -- porting note: was @[nolint has_nonempty_instance]
-structure FiberBundleCore (ι : Type _) (B : Type _) [TopologicalSpace B] (F : Type _)
+structure FiberBundleCore (ι : Type*) (B : Type*) [TopologicalSpace B] (F : Type*)
     [TopologicalSpace F] where
   baseSet : ι → Set B
   isOpen_baseSet : ∀ i, IsOpen (baseSet i)
@@ -756,7 +756,7 @@ end FiberBundleCore
 
 /-! ### Prebundle construction for constructing fiber bundles -/
 
-variable (F) (E : B → Type _) [TopologicalSpace B] [TopologicalSpace F]
+variable (F) (E : B → Type*) [TopologicalSpace B] [TopologicalSpace F]
   [∀ x, TopologicalSpace (E x)]
 
 /-- This structure permits to define a fiber bundle when trivializations are given as local
@@ -898,7 +898,7 @@ instance {e₀} (he₀ : e₀ ∈ a.pretrivializationAtlas) :
 /-- For a fiber bundle `E` over `B` constructed using the `FiberPrebundle` mechanism,
 continuity of a function `TotalSpace F E → X` on an open set `s` can be checked by precomposing at
 each point with the pretrivialization used for the construction at that point. -/
-theorem continuousOn_of_comp_right {X : Type _} [TopologicalSpace X] {f : TotalSpace F E → X}
+theorem continuousOn_of_comp_right {X : Type*} [TopologicalSpace X] {f : TotalSpace F E → X}
     {s : Set B} (hs : IsOpen s) (hf : ∀ b ∈ s,
       ContinuousOn (f ∘ (a.pretrivializationAt b).toLocalEquiv.symm)
         ((s ∩ (a.pretrivializationAt b).baseSet) ×ˢ (Set.univ : Set F))) :
