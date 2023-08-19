@@ -138,6 +138,15 @@ inductive IsRat [Ring α] (a : α) (num : ℤ) (denom : ℕ) : Prop
   | mk (inv : Invertible (denom : α)) (eq : a = num * ⅟(denom : α))
 
 /--
+Assert that an element of a semiring is equal to `num / denom`
+(and `denom` is invertible so that this makes sense).
+We will usually also have `num` and `denom` coprime,
+although this is not part of the definition.
+-/
+inductive IsNNRat [Semiring α] (a : α) (num : ℕ) (denom : ℕ) : Prop
+  | mk (inv : Invertible (denom : α)) (eq : a = num * ⅟(denom : α))
+
+/--
 A "raw rat cast" is an expression of the form:
 
 * `(Nat.rawCast lit : α)` where `lit` is a raw natural number literal
@@ -150,11 +159,24 @@ required in each use of a number literal at type `α`.
 @[simp]
 def _root_.Rat.rawCast [DivisionRing α] (n : ℤ) (d : ℕ) : α := n / d
 
-theorem IsRat.to_isNat {α} [Ring α] : ∀ {a : α} {n}, IsRat a (.ofNat n) (nat_lit 1) → IsNat a n
-  | _, _, ⟨inv, rfl⟩ => have := @invertibleOne α _; ⟨by simp⟩
+@[simp]
+def _root_.NNRat.rawCast [DivisionSemiring α] (n : ℕ) (d : ℕ) : α := n / d
 
-theorem IsNat.to_isRat {α} [Ring α] : ∀ {a : α} {n}, IsNat a n → IsRat a (.ofNat n) (nat_lit 1)
+theorem IsNNRat.to_isNat {α} [Semiring α] : ∀ {a : α} {n}, IsNNRat a (n) (nat_lit 1) → IsNat a n
+  | _, _, ⟨inv, rfl⟩ => have := @invertibleOne α _; ⟨by
+    convert mul_one _
+    convert (rfl : ⅟(1 : α) = _)
+    · rw [Nat.cast_one]
+    · rw [invOf_one]⟩
+
+theorem IsRat.to_isNNRat {α} [Ring α] : ∀ {a : α} {n d}, IsRat a (.ofNat n) (d) → IsNNRat a n d
+  | _, _, _, ⟨inv, rfl⟩ => have := @invertibleOne α _; ⟨inv, by simp⟩
+
+theorem IsNat.to_isNNRat {α} [Semiring α] : ∀ {a : α} {n}, IsNat a n → IsNNRat a (n) (nat_lit 1)
   | _, _, ⟨rfl⟩ => ⟨⟨1, by simp, by simp⟩, by simp⟩
+
+theorem IsNNRat.to_isRat {α} [Ring α] : ∀ {a : α} {n d}, IsNNRat a n d → IsRat a (.ofNat n) d
+  | _, _, _, ⟨inv, rfl⟩ => have := @invertibleOne α _; ⟨inv, by simp⟩
 
 theorem IsRat.to_isInt {α} [Ring α] : ∀ {a : α} {n}, IsRat a n (nat_lit 1) → IsInt a n
   | _, _, ⟨inv, rfl⟩ => have := @invertibleOne α _; ⟨by simp⟩
@@ -173,10 +195,18 @@ theorem IsRat.nonneg_to_eq {α} [DivisionRing α] {n d} :
     {a n' d' : α} → IsRat a (.ofNat n) d → n = n' → d = d' → a = n' / d'
   | _, _, _, ⟨_, rfl⟩, rfl, rfl => by simp [div_eq_mul_inv]
 
+theorem IsNNRat.of_raw (α) [DivisionRing α] (n : ℕ) (d : ℕ)
+    (h : (d : α) ≠ 0) : IsRat (NNRat.rawCast n d : α) n d :=
+  have := invertibleOfNonzero h
+  ⟨this, by simp [div_eq_mul_inv]⟩
+
 theorem IsRat.of_raw (α) [DivisionRing α] (n : ℤ) (d : ℕ)
     (h : (d : α) ≠ 0) : IsRat (Rat.rawCast n d : α) n d :=
   have := invertibleOfNonzero h
   ⟨this, by simp [div_eq_mul_inv]⟩
+
+theorem IsNNRat.den_nz {α} [DivisionSemiring α] {a n d} : IsNNRat (a : α) n d → (d : α) ≠ 0
+  | ⟨_, _⟩ => nonzero_of_invertible (d : α)
 
 theorem IsRat.den_nz {α} [DivisionRing α] {a n d} : IsRat (a : α) n d → (d : α) ≠ 0
   | ⟨_, _⟩ => nonzero_of_invertible (d : α)
@@ -374,7 +404,7 @@ def Result.toRat' {α : Q(Type u)} {e : Q($α)}
   | .isBool .. => none
   | .isNat _ lit proof =>
     have proof : Q(@IsNat _ instAddMonoidWithOne $e $lit) := proof
-    some ⟨lit.natLit!, q(.ofNat $lit), q(nat_lit 1), q(($proof).to_isRat)⟩
+    some ⟨lit.natLit!, q(.ofNat $lit), q(nat_lit 1), q(($proof).to_isNNRat.to_isRat)⟩
   | .isNegNat _ lit proof =>
     have proof : Q(@IsInt _ DivisionRing.toRing $e (.negOfNat $lit)) := proof
     some ⟨-lit.natLit!, q(.negOfNat $lit), q(nat_lit 1),
