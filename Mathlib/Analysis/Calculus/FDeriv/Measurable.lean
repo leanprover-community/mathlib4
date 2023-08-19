@@ -831,12 +831,23 @@ theorem aestronglyMeasurable_derivWithin_Ioi [SecondCountableTopology F] (μ : M
 
 end RightDeriv
 
+lemma glouk {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [MeasurableSpace α]
+  [MeasurableSpace β] [BorelSpace α] [BorelSpace β] [SecondCountableTopology α] :
+  BorelSpace (α × β) := by infer_instance
+
+#check Prod.borelSpace
+
+#exit
+
+
+
 section Uncurry
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {α : Type*} [TopologicalSpace α] [MeasurableSpace (α × E)] [OpensMeasurableSpace (α × E)]
+  {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [MeasurableSpace E]
+  [BorelSpace α] [BorelSpace E]
   {f : α → E → F} (K : Set (E →L[𝕜] F))
 
 namespace FDerivMeasurableAux
@@ -845,6 +856,7 @@ open Uniformity
 
 lemma isOpen_A_uncurry {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[𝕜] F) :
     IsOpen {p : α × E | p.2 ∈ A (f p.1) L r s} := by
+  have : ProperSpace E := properSpace_of_locallyCompactSpace 𝕜
   simp only [A, half_lt_self_iff, not_lt, mem_Ioc, mem_ball, map_sub, mem_setOf_eq]
   apply isOpen_iff_mem_nhds.2
   rintro ⟨a, x⟩ ⟨r', ⟨Irr', Ir'r⟩, hr⟩
@@ -868,14 +880,14 @@ lemma isOpen_A_uncurry {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[𝕜]
       p.1 ∈ u → p.2 ∈ closedBall x t → dist (f.uncurry p) (f.uncurry (a, p.2)) < ε := by
     have C : Continuous (fun (p : α × E) ↦ f a p.2) := by continuity
     have D : ∀ (p : α × E), p ∈ {a} ×ˢ closedBall x t → Function.uncurry f p = f a p.2 := by
-      rintro ⟨b, y⟩ ⟨hb, hy⟩
+      rintro ⟨b, y⟩ ⟨hb, -⟩
       simp at hb
       simp [hb]
     obtain ⟨v, v_open, sub_v, hv⟩ : ∃ v, IsOpen v ∧ {a} ×ˢ closedBall x t ⊆ v ∧
         ∀ p ∈ v, dist (Function.uncurry f p) (f a p.2) < ε :=
       Uniform.exists_is_open_mem_uniformity_of_forall_mem_eq (s := {a} ×ˢ closedBall x t)
-        (fun p hp ↦ hf.continuousAt) (fun p hp ↦ C.continuousAt) D (dist_mem_uniformity εpos)
-    obtain ⟨w, w', w_open, w'_open, sub_w, sub_w', hww'⟩ : ∃ (w : Set α) (w' : Set E),
+        (fun p _ ↦ hf.continuousAt) (fun p _ ↦ C.continuousAt) D (dist_mem_uniformity εpos)
+    obtain ⟨w, w', w_open, -, sub_w, sub_w', hww'⟩ : ∃ (w : Set α) (w' : Set E),
         IsOpen w ∧ IsOpen w' ∧ {a} ⊆ w ∧ closedBall x t ⊆ w' ∧ w ×ˢ w' ⊆ v :=
       generalized_tube_lemma isCompact_singleton (isCompact_closedBall x t) v_open sub_v
     refine ⟨w, w_open, sub_w rfl, ?_⟩
@@ -934,6 +946,7 @@ theorem measurableSet_of_differentiableAt_of_isComplete_uncurry
   refine MeasurableSet.iInter fun _ => ?_
   refine MeasurableSet.iInter fun _ => ?_
   refine MeasurableSet.iInter fun _ => ?_
+  have : SecondCountableTopology E := sorry
   exact (isOpen_B_uncurry hf K).measurableSet
 
 end Uncurry

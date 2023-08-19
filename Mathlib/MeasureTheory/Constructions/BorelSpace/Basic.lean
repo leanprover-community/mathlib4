@@ -279,6 +279,12 @@ instance Subtype.opensMeasurableSpace {α : Type*} [TopologicalSpace α] [Measur
     exact comap_mono h.1⟩
 #align subtype.opens_measurable_space Subtype.opensMeasurableSpace
 
+lemma opensMeasurableSpace_iff_forall_measurableSet
+    [TopologicalSpace α] [MeasurableSpace α] :
+    OpensMeasurableSpace α ↔  (∀ (s : Set α), IsOpen s → MeasurableSet s) := by
+  refine ⟨fun h s hs ↦ ?_, fun h ↦ ⟨generateFrom_le h⟩⟩
+  exact OpensMeasurableSpace.borel_le _ <| GenerateMeasurable.basic _ hs
+
 instance (priority := 100) BorelSpace.countablyGenerated {α : Type*} [TopologicalSpace α]
     [MeasurableSpace α] [BorelSpace α] [SecondCountableTopology α] : CountablyGenerated α := by
   obtain ⟨b, bct, -, hb⟩ := exists_countable_basis α
@@ -398,15 +404,73 @@ instance Pi.opensMeasurableSpace {ι : Type*} {π : ι → Type*} [Countable ι]
   exact .basic _ (hi a ha)
 #align pi.opens_measurable_space Pi.opensMeasurableSpace
 
-instance Prod.opensMeasurableSpace [SecondCountableTopology α] [SecondCountableTopology β] :
+/-- The typeclass `SecondCountableTopologyEither α β` registers the fact that at least one of
+the two spaces has second countable topology. This is the right assumption to ensure that continuous
+maps from `α` to `β` are strongly measurable. -/
+class SecondCountableTopologyEither (α β : Type*) [TopologicalSpace α] [TopologicalSpace β] :
+  Prop where
+  /-- The projection out of `SecondCountableTopologyEither` -/
+  out : SecondCountableTopology α ∨ SecondCountableTopology β
+#align second_countable_topology_either SecondCountableTopologyEither
+
+instance (priority := 100) secondCountableTopologyEither_of_left (α β : Type*) [TopologicalSpace α]
+    [TopologicalSpace β] [SecondCountableTopology α] : SecondCountableTopologyEither α β
+    where out := Or.inl (by infer_instance)
+#align second_countable_topology_either_of_left secondCountableTopologyEither_of_left
+
+instance (priority := 100) secondCountableTopologyEither_of_right (α β : Type*)
+    [TopologicalSpace α] [TopologicalSpace β] [SecondCountableTopology β] :
+    SecondCountableTopologyEither α β where out := Or.inr (by infer_instance)
+#align second_countable_topology_either_of_right secondCountableTopologyEither_of_right
+
+/-- If either `α` or `β` has second-countable topology, then the open sets in `α × β` belong to the
+product sigma-algebra. -/
+instance Prod.opensMeasurableSpace [h : SecondCountableTopologyEither α β] :
     OpensMeasurableSpace (α × β) := by
-  constructor
-  rw [((isBasis_countableBasis α).prod (isBasis_countableBasis β)).borel_eq_generateFrom]
-  apply generateFrom_le
-  rintro _ ⟨u, v, hu, hv, rfl⟩
-  exact (isOpen_of_mem_countableBasis hu).measurableSet.prod
-    (isOpen_of_mem_countableBasis hv).measurableSet
-#align prod.opens_measurable_space Prod.opensMeasurableSpace
+  apply opensMeasurableSpace_iff_forall_measurableSet.2 (fun s hs ↦ ?_)
+  rcases h.out with hα|hβ
+  · let F : Set α → Set β := fun a ↦ {y | ∃ b, IsOpen b ∧ y ∈ b ∧ a ×ˢ b ⊆ s}
+    have A : ∀ a, IsOpen (F a) := by
+      intro a
+      apply isOpen_iff_forall_mem_open.2
+      rintro y ⟨b, b_open, yb, hb⟩
+      exact ⟨b, fun z zb ↦ ⟨b, b_open, zb, hb⟩, b_open, yb⟩
+    have : s = ⋃ a ∈ countableBasis α, a ×ˢ F a := by
+      apply Subset.antisymm
+      · rintro ⟨y1, y2⟩ hy
+        rcases isOpen_prod_iff.1 hs y1 y2 hy with ⟨u, v, u_open, v_open, yu, yv, huv⟩
+        obtain ⟨a, ha, ya, au⟩ : ∃ a ∈ countableBasis α, y1 ∈ a ∧ a ⊆ u :=
+          IsTopologicalBasis.exists_subset_of_mem_open (isBasis_countableBasis α) yu u_open
+        simp only [mem_iUnion, mem_prod, mem_setOf_eq, exists_and_left, exists_prop]
+        exact ⟨a, ya, ha, v, v_open, yv, (Set.prod_mono_left au).trans huv⟩
+      · rintro ⟨y1, y2⟩ hy
+        simp only [mem_iUnion, mem_prod, mem_setOf_eq, exists_and_left, exists_prop] at hy
+        rcases hy with ⟨a, ya, -, b, -, yb, hb⟩
+        exact hb (mem_prod.2 ⟨ya, yb⟩)
+    rw [this]
+    apply MeasurableSet.biUnion (countable_countableBasis α) (fun a ha ↦ ?_)
+    exact (isOpen_of_mem_countableBasis ha).measurableSet.prod (A a).measurableSet
+  · let F : Set β → Set α := fun a ↦ {y | ∃ b, IsOpen b ∧ y ∈ b ∧ b ×ˢ a ⊆ s}
+    have A : ∀ a, IsOpen (F a) := by
+      intro a
+      apply isOpen_iff_forall_mem_open.2
+      rintro y ⟨b, b_open, yb, hb⟩
+      exact ⟨b, fun z zb ↦ ⟨b, b_open, zb, hb⟩, b_open, yb⟩
+    have : s = ⋃ a ∈ countableBasis β, F a ×ˢ a := by
+      apply Subset.antisymm
+      · rintro ⟨y1, y2⟩ hy
+        rcases isOpen_prod_iff.1 hs y1 y2 hy with ⟨u, v, u_open, v_open, yu, yv, huv⟩
+        obtain ⟨a, ha, ya, au⟩ : ∃ a ∈ countableBasis β, y2 ∈ a ∧ a ⊆ v :=
+          IsTopologicalBasis.exists_subset_of_mem_open (isBasis_countableBasis β) yv v_open
+        simp only [mem_iUnion, mem_prod, mem_setOf_eq, exists_and_left, exists_prop]
+        exact ⟨a, ⟨u, u_open, yu, (Set.prod_mono_right au).trans huv⟩, ha, ya⟩
+      · rintro ⟨y1, y2⟩ hy
+        simp only [mem_iUnion, mem_prod, mem_setOf_eq, exists_and_left, exists_prop] at hy
+        rcases hy with ⟨a, ⟨b, -, yb, hb⟩, -, ya⟩
+        exact hb (mem_prod.2 ⟨yb, ya⟩)
+    rw [this]
+    apply MeasurableSet.biUnion (countable_countableBasis β) (fun a ha ↦ ?_)
+    exact (A a).measurableSet.prod (isOpen_of_mem_countableBasis ha).measurableSet
 
 variable {α' : Type*} [TopologicalSpace α'] [MeasurableSpace α']
 
@@ -1010,7 +1074,7 @@ instance Pi.borelSpace {ι : Type*} {π : ι → Type*} [Countable ι] [∀ i, T
   ⟨le_antisymm pi_le_borel_pi OpensMeasurableSpace.borel_le⟩
 #align pi.borel_space Pi.borelSpace
 
-instance Prod.borelSpace [SecondCountableTopology α] [SecondCountableTopology β] :
+instance Prod.borelSpace [SecondCountableTopologyEither α β] :
     BorelSpace (α × β) :=
   ⟨le_antisymm prod_le_borel_prod OpensMeasurableSpace.borel_le⟩
 #align prod.borel_space Prod.borelSpace
