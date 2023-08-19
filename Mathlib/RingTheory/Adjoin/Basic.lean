@@ -311,8 +311,6 @@ theorem adjoin_algebraMap_image_union_eq_adjoin_adjoin (s : Set S) (t : Set A) :
         Algebra.adjoin_algebraMap R A s ▸ ⟨x, x.prop, rfl⟩)
         (Set.Subset.trans (Set.subset_union_right _ _) subset_adjoin))
 
-
-
 theorem adjoin_adjoin_of_tower (s : Set A) : adjoin S (adjoin R s : Set A) = adjoin S s := by
   apply le_antisymm (adjoin_le _)
   · exact adjoin_mono subset_adjoin
@@ -325,7 +323,7 @@ theorem adjoin_adjoin_of_tower (s : Set A) : adjoin S (adjoin R s : Set A) = adj
 #align algebra.adjoin_adjoin_of_tower Algebra.adjoin_adjoin_of_tower
 
 @[simp]
-theorem adjoin_top:
+theorem adjoin_top :
     adjoin (⊤ : Subalgebra R S) t = (adjoin S t).restrictScalars (⊤ : Subalgebra R S) :=
   let equivTop : Subalgebra (⊤ : Subalgebra R S) A ≃o Subalgebra S A :=
     { toFun := fun s => { s with algebraMap_mem' := fun r => s.algebraMap_mem ⟨r, trivial⟩ }
@@ -337,6 +335,7 @@ theorem adjoin_top:
     (adjoin_le <| show t ⊆ adjoin S t from subset_adjoin)
     (equivTop.symm_apply_le.mpr <|
       adjoin_le <| show t ⊆ adjoin (⊤ : Subalgebra R S) t from subset_adjoin)
+
 end Semiring
 
 section CommSemiring

@@ -48,7 +48,7 @@ namespace Finite
 
 open Submodule Set
 
-variable {R M N}
+variable {R S M N}
 
 section Algebra
 
@@ -104,7 +104,7 @@ theorem of_restrictScalars_finiteType [Algebra S A] [IsScalarTower R S A] [hA : 
   exact le (eq_top_iff.1 hS b)
 #align algebra.finite_type.of_restrict_scalars_finite_type Algebra.FiniteType.of_restrictScalars_finiteType
 
-variable {R A B}
+variable {R S A B}
 
 theorem of_surjective (hRA : FiniteType R A) (f : A →ₐ[R] B) (hf : Surjective f) : FiniteType R B :=
   ⟨by
