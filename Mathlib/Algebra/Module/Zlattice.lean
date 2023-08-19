@@ -318,10 +318,10 @@ theorem Zlattice.FG : AddSubgroup.FG L := by
   obtain ⟨s, ⟨h_incl, ⟨h_span, h_lind⟩⟩⟩ := exists_linearIndependent K (L : Set E)
   -- Let `s` be a maximal `K`-linear independent family of elements of `L`. We show that
   -- `L` is finitely generated (as a ℤ-module) because it fits in the exact sequence
-  -- `0 → span ℤ s → L → L / span ℤ s → 0` with `span ℤ s` and `L / span ℤ s` finitely generated.
+  -- `0 → span ℤ s → L → L ⧸ span ℤ s → 0` with `span ℤ s` and `L ⧸ span ℤ s` finitely generated.
   refine fg_of_fg_map_of_fg_inf_ker (span ℤ s).mkQ ?_ ?_
   · -- Let `b` be the `K`-basis of `E` formed by the vectors in `s`. The elements of
-    -- `L / span ℤ s = L /span ℤ b` are in bijection with elements of `L ∩ fundamentalDomain b`
+    -- `L ⧸ span ℤ s = L ⧸ span ℤ b` are in bijection with elements of `L ∩ fundamentalDomain b`
     -- so there are finitely many since `fundamentalDomain b` is bounded.
     refine fg_def.mpr ⟨map (span ℤ s).mkQ (AddSubgroup.toIntSubmodule L), ?_, span_eq _⟩
     let b := Basis.mk h_lind (by
