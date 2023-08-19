@@ -283,7 +283,7 @@ theorem isLittleO_iff_nat_mul_le_aux (h₀ : (∀ x, 0 ≤ ‖f x‖) ∨ ∀ x,
   constructor
   · rintro H (_ | n)
     · refine' (H.def one_pos).mono fun x h₀' => _
-      rw [Nat.cast_zero, MulZeroClass.zero_mul]
+      rw [Nat.cast_zero, zero_mul]
       refine' h₀.elim (fun hf => (hf x).trans _) fun hg => hg x
       rwa [one_mul] at h₀'
     · have : (0 : ℝ) < n.succ := Nat.cast_pos.2 n.succ_pos
@@ -1255,7 +1255,7 @@ variable {g g' l}
 
 @[simp]
 theorem isBigOWith_zero_right_iff : (IsBigOWith c l f'' fun _x => (0 : F')) ↔ f'' =ᶠ[l] 0 := by
-  simp only [IsBigOWith_def, exists_prop, true_and_iff, norm_zero, MulZeroClass.mul_zero,
+  simp only [IsBigOWith_def, exists_prop, true_and_iff, norm_zero, mul_zero,
     norm_le_zero_iff, EventuallyEq, Pi.zero_apply]
 #align asymptotics.is_O_with_zero_right_iff Asymptotics.isBigOWith_zero_right_iff
 
@@ -1319,7 +1319,7 @@ theorem isLittleO_top : f'' =o[⊤] g'' ↔ ∀ x, f'' x = 0 := by
   simp only [isLittleO_iff, eventually_top]
   refine' fun h x => norm_le_zero_iff.1 _
   have : Tendsto (fun c : ℝ => c * ‖g'' x‖) (𝓝[>] 0) (𝓝 0) :=
-    ((continuous_id.mul continuous_const).tendsto' _ _ (MulZeroClass.zero_mul _)).mono_left
+    ((continuous_id.mul continuous_const).tendsto' _ _ (zero_mul _)).mono_left
       inf_le_left
   exact
     le_of_tendsto_of_tendsto tendsto_const_nhds this
@@ -1704,7 +1704,7 @@ theorem IsBigOWith.inv_rev {f : α → 𝕜} {g : α → 𝕜'} (h : IsBigOWith 
     (h₀ : ∀ᶠ x in l, f x = 0 → g x = 0) : IsBigOWith c l (fun x => (g x)⁻¹) fun x => (f x)⁻¹ := by
   refine' IsBigOWith.of_bound (h.bound.mp (h₀.mono fun x h₀ hle => _))
   cases' eq_or_ne (f x) 0 with hx hx
-  · simp only [hx, h₀ hx, inv_zero, norm_zero, MulZeroClass.mul_zero]; rfl
+  · simp only [hx, h₀ hx, inv_zero, norm_zero, mul_zero]; rfl
   · have hc : 0 < c := pos_of_mul_pos_left ((norm_pos_iff.2 hx).trans_le hle) (norm_nonneg _)
     replace hle := inv_le_inv_of_le (norm_pos_iff.2 hx) hle
     simpa only [norm_inv, mul_inv, ← div_eq_inv_mul, div_le_iff hc] using hle
