@@ -12,7 +12,7 @@ import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Algebra.Homology.HomotopyCategory.Epsilon
 import Mathlib.Algebra.Homology.HomotopyCategory.Shift
-import Mathlib.Algebra.GradedType
+import Mathlib.Algebra.GradedHMul
 
 open CategoryTheory Category Preadditive Limits
 

@@ -1,6 +1,6 @@
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.Algebra.GradedType
+import Mathlib.Algebra.GradedHMul
 
 namespace CategoryTheory
 
