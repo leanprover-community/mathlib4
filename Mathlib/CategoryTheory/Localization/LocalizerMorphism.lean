@@ -14,36 +14,36 @@ variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃}
   [Category.{v₄} D₁] [Category.{v₅} D₂] [Category.{v₆} D₂]
   (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) (W₃ : MorphismProperty C₃)
 
-/-- If `W₁ : MorphismProperty C₁` and `W₂ : MorphismProperty C₂`, a `LocalizorMorphism W₁ W₂`
+/-- If `W₁ : MorphismProperty C₁` and `W₂ : MorphismProperty C₂`, a `LocalizerMorphism W₁ W₂`
 is the datum of a functor `C₁ ⥤ C₂` which sends morphisms in `W₁` to morphisms in `W₂` -/
-structure LocalizorMorphism where
+structure LocalizerMorphism where
   /-- a functor between the two categories -/
   functor : C₁ ⥤ C₂
   /-- the functor is compatible with the `MorphismProperty` -/
   map : W₁ ⊆ W₂.inverseImage functor
 
-namespace LocalizorMorphism
+namespace LocalizerMorphism
 
 @[simps]
-def id : LocalizorMorphism W₁ W₁ where
+def id : LocalizerMorphism W₁ W₁ where
   functor := 𝟭 C₁
   map _ _ _ hf := hf
 
 variable {W₁ W₂ W₃}
 
 @[simps]
-def comp (Φ : LocalizorMorphism W₁ W₂) (Ψ : LocalizorMorphism W₂ W₃) :
-    LocalizorMorphism W₁ W₃ where
+def comp (Φ : LocalizerMorphism W₁ W₂) (Ψ : LocalizerMorphism W₂ W₃) :
+    LocalizerMorphism W₁ W₃ where
   functor := Φ.functor ⋙ Ψ.functor
   map _ _ _ hf := Ψ.map _ (Φ.map _ hf)
 
-variable (Φ : LocalizorMorphism W₁ W₂) (L₁ : C₁ ⥤ D₁) [L₁.IsLocalization W₁]
+variable (Φ : LocalizerMorphism W₁ W₂) (L₁ : C₁ ⥤ D₁) [L₁.IsLocalization W₁]
   (L₂ : C₂ ⥤ D₂) [L₂.IsLocalization W₂]
 
 lemma inverts : W₁.IsInvertedBy (Φ.functor ⋙ L₂) :=
   fun _ _ _ hf => Localization.inverts L₂ W₂ _ (Φ.map _ hf)
 
-/-- When `Φ : LocalizorMorphism W₁ W₂` and that `L₁` and `L₂` are localization functors
+/-- When `Φ : LocalizerMorphism W₁ W₂` and that `L₁` and `L₂` are localization functors
 for `W₁` and `W₂`, then `Φ.localizedFunctor L₁ L₂` is the induced functor on the
 localized categories. --/
 noncomputable def localizedFunctor : D₁ ⥤ D₂ :=
@@ -68,7 +68,7 @@ variable [c : CatCommSq Φ.functor L₁ L₂ G]
   (L₁' : C₁ ⥤ D₁') (L₂' : C₂ ⥤ D₂') [L₁'.IsLocalization W₁] [L₂'.IsLocalization W₂]
   (G' : D₁' ⥤ D₂') [c' : CatCommSq Φ.functor L₁' L₂' G']
 
-/-- If a localizor morphism induces an equivalence on some choice of localized categories,
+/-- If a localizer morphism induces an equivalence on some choice of localized categories,
 it will be so for any choice of localized categoriees. -/
 noncomputable def isEquivalence_imp [IsEquivalence G] :
   IsEquivalence G' := by
@@ -94,7 +94,7 @@ lemma nonempty_isEquivalence_iff : Nonempty (IsEquivalence G) ↔ Nonempty (IsEq
 
 end
 
-/-- condition that `LocalizorMorphism` induces an equivalence on the localized categories -/
+/-- condition that `LocalizerMorphism` induces an equivalence on the localized categories -/
 class IsLocalizedEquivalence : Prop :=
   /-- the induced functor on the constructed localized categories is an equivalence -/
   nonempty_isEquivalence : Nonempty (IsEquivalence (Φ.localizedFunctor W₁.Q W₂.Q))
@@ -105,7 +105,7 @@ lemma IsLocalizedEquivalence.mk' [CatCommSq Φ.functor L₁ L₂ G] [IsEquivalen
     rw [Φ.nonempty_isEquivalence_iff W₁.Q W₂.Q (Φ.localizedFunctor W₁.Q W₂.Q) L₁ L₂ G]
     exact ⟨inferInstance⟩
 
-/-- If a `LocalizorMorphism` is a localized equivalence, then any compatible functor
+/-- If a `LocalizerMorphism` is a localized equivalence, then any compatible functor
 on the localized categories is an equivalence. -/
 noncomputable def isEquivalence [h : Φ.IsLocalizedEquivalence] [CatCommSq Φ.functor L₁ L₂ G] :
     IsEquivalence G := by
@@ -113,7 +113,7 @@ noncomputable def isEquivalence [h : Φ.IsLocalizedEquivalence] [CatCommSq Φ.fu
   rw [Φ.nonempty_isEquivalence_iff L₁ L₂ G W₁.Q W₂.Q (Φ.localizedFunctor W₁.Q W₂.Q)]
   exact h.nonempty_isEquivalence
 
-/-- If a `LocalizorMorphism` is a localized equivalence, then the induced functor on
+/-- If a `LocalizerMorphism` is a localized equivalence, then the induced functor on
 the localized categories is an equivalence -/
 noncomputable instance localizedFunctor_isEquivalence [Φ.IsLocalizedEquivalence] :
     IsEquivalence (Φ.localizedFunctor L₁ L₂) :=
@@ -137,6 +137,6 @@ lemma IsLocalizedEquivalence.of_equivalence [IsEquivalence Φ.functor]
     exact h
   exact IsLocalizedEquivalence.of_isLocalization_of_isLocalization Φ W₂.Q
 
-end LocalizorMorphism
+end LocalizerMorphism
 
 end CategoryTheory

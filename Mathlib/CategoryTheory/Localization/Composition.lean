@@ -1,5 +1,5 @@
 import Mathlib.CategoryTheory.Localization.Equivalence
-import Mathlib.CategoryTheory.Localization.LocalizorMorphism
+import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 
@@ -58,7 +58,7 @@ lemma comp {C₁ C₂ C₃ : Type _} [Category C₁] [Category C₂] [Category C
     . intro _ _ f ⟨_, _, f', hf', ⟨e⟩⟩
       exact ((MorphismProperty.RespectsIso.isomorphisms _).arrow_mk_iso_iff
         (L₂.mapArrow.mapIso e)).1 (Localization.inverts L₂ W₂ f' hf')
-  let Φ : LocalizorMorphism W₂' W₂.isoClosure :=
+  let Φ : LocalizerMorphism W₂' W₂.isoClosure :=
   { functor := E₂.functor
     map := by rw [MorphismProperty.subset_iff_le] }
   let iso : (L₁' ⋙ L₂') ⋙ Φ.localizedFunctor W₂'.Q L₂ ≅ L₁ ⋙ L₂ :=
@@ -66,7 +66,7 @@ lemma comp {C₁ C₂ C₃ : Type _} [Category C₁] [Category C₂] [Category C
       isoWhiskerLeft _ (Iso.symm (Φ.catCommSq W₂'.Q L₂).iso) ≪≫
       (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (compUniqFunctor L₁' L₁ W₁) _
   haveI : Φ.IsLocalizedEquivalence :=
-    LocalizorMorphism.IsLocalizedEquivalence.of_equivalence Φ
+    LocalizerMorphism.IsLocalizedEquivalence.of_equivalence Φ
       (by rw [MorphismProperty.map_inverseImage_isoClosure_of_isEquivalence W₂.isoClosure
         W₂.isoClosure_respectsIso Φ.functor, MorphismProperty.subset_iff_le])
   have hW₃' : W₃.IsInvertedBy (L₁' ⋙ L₂') := fun _ _ f hf => by
