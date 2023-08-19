@@ -954,6 +954,11 @@ theorem hasGroupoid_of_le {G₁ G₂ : StructureGroupoid H} (h : HasGroupoid M G
   ⟨fun he he' ↦ hle (h.compatible he he')⟩
 #align has_groupoid_of_le hasGroupoid_of_le
 
+theorem hasGroupoid_inf_iff {G₁ G₂ : StructureGroupoid H} : HasGroupoid M (G₁ ⊓ G₂) ↔
+    HasGroupoid M G₁ ∧ HasGroupoid M G₂ :=
+  ⟨(fun h ↦ ⟨hasGroupoid_of_le h inf_le_left, hasGroupoid_of_le h inf_le_right⟩),
+  fun ⟨h1, h2⟩ ↦ { compatible := fun he he' ↦ ⟨h1.compatible he he', h2.compatible he he'⟩ }⟩
+
 theorem hasGroupoid_of_pregroupoid (PG : Pregroupoid H) (h : ∀ {e e' : LocalHomeomorph M H},
       e ∈ atlas H M → e' ∈ atlas H M → PG.property (e.symm ≫ₕ e') (e.symm ≫ₕ e').source) :
     HasGroupoid M PG.groupoid :=
