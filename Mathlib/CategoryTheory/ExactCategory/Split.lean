@@ -135,7 +135,6 @@ lemma admissibleSplitMono_stableUnderCobaseChange :
   obtain ⟨ψ : X₂' ⟶ X₁', hψ₁, hψ₂⟩ :=  PushoutCocone.IsColimit.desc' sq.isColimit
     (𝟙 X₁') (h.r ≫ i) (by rw [h.f_r_assoc, comp_id])
   dsimp at hφ₁ hφ₂ hψ₁ hψ₂
-  dsimp [CommSq.cocone, IsPushout.cocone] at φ
   refine' ⟨X₃, φ, hφ₁, ⟨_⟩⟩
   exact
   { r := ψ

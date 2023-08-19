@@ -190,7 +190,6 @@ lemma InjectiveResolution.rightDerivedToHomotopyCategory_app_eq
   dsimp [isoRightDerivedToHomotopyCategoryObj, Functor.mapHomotopyCategoryFactors,
     NatTrans.rightDerivedToHomotopyCategory]
   rw [Category.assoc]
-  dsimp
   erw [Category.id_comp, Category.comp_id]
   obtain ⟨β, hβ⟩ := (HomotopyCategory.quotient _ _).map_surjective (iso P).hom
   rw [← hβ]

@@ -228,7 +228,6 @@ lemma γhmul_extClass : (newExt.ofHom S.f) •[zero_add 1] hS.extClass = 0 := by
   apply newExt.hom_injective
   dsimp [extClass]
   have eq := comp_dist_triangle_mor_zero₃₁ _ (hS.singleTriangle_distinguished)
-  dsimp
   rw [ShiftedHom.γhmul_eq]
   dsimp [newExt.ofHom, ShiftedHom.mk₀] at eq ⊢
   simp only [mul_one, CochainComplex.ε_0, shiftFunctorZero'_eq_shiftFunctorZero, Functor.map_comp, assoc, one_smul,

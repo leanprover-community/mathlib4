@@ -14,6 +14,7 @@ import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 In an abelian category, a left-split or right-split short exact sequence admits a splitting.
 -/
 
+/- redundant with the new homology API
 
 noncomputable section
 
@@ -91,3 +92,5 @@ def RightSplit.splitting {f : A ⟶ B} {g : B ⟶ C} (h : RightSplit f g) : Spli
 #align category_theory.right_split.splitting CategoryTheory.RightSplit.splitting
 
 end CategoryTheory
+
+-/

@@ -22,7 +22,6 @@ noncomputable def fromSingleEquiv (A : C) (K : HomologicalComplex C c) (i j : ι
         . subst hk
           dsimp
           obtain rfl : l = j := (c.next_eq' hkl).symm.trans (c.next_eq' hij)
-          dsimp
           simp only [Category.comp_id, Category.id_comp, ite_true, Category.assoc, zero_comp]
           rw [f.2, comp_zero]
         . dsimp
@@ -58,7 +57,6 @@ noncomputable def toSingleEquiv (A : C) (K : HomologicalComplex C c) (i j : ι) 
         . subst hk
           dsimp
           obtain rfl : k = i := (c.prev_eq' hkl).symm.trans (c.prev_eq' hij)
-          dsimp
           simp
           rw [reassoc_of% f.2, zero_comp]
         . dsimp

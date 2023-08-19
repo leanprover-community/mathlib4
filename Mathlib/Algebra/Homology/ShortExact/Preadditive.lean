@@ -24,6 +24,8 @@ short exact sequences admits a splitting.
 -/
 
 
+/- redundant with the new homology API
+
 noncomputable section
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Preadditive
@@ -330,3 +332,5 @@ end Preadditive
 end Splitting
 
 end CategoryTheory
+
+-/

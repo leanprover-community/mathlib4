@@ -89,6 +89,7 @@ lemma ShortExact.moduleCat_surjective_g (hS : S.ShortExact) :
     Function.Surjective S.g :=
   hS.surjective_g
 
+@[simps]
 def moduleCat_mk_of_ker_le_range {X₁ X₂ X₃ : ModuleCat.{v} R} (f : X₁ ⟶ X₂) (g : X₂ ⟶ X₃)
     (hfg : LinearMap.range f ≤ LinearMap.ker g) : ShortComplex (ModuleCat.{v} R) :=
   ShortComplex.mk f g (by
