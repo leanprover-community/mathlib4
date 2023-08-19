@@ -432,7 +432,7 @@ theorem forall_mem_pwFilter (neg_trans : ∀ {x y z}, R x z → R x y ∨ R y z)
   ⟨by
     induction' l with x l IH; · exact fun _ _ h => (not_mem_nil _ h).elim
     simp only [forall_mem_cons]
-    by_cases h : ∀ y ∈ pwFilter R l, R x y <;> dsimp at h
+    by_cases h : ∀ y ∈ pwFilter R l, R x y
     · simp only [pwFilter_cons_of_pos h, forall_mem_cons, and_imp]
       exact fun r H => ⟨r, IH H⟩
     · rw [pwFilter_cons_of_neg h]

@@ -445,13 +445,13 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     ext
     --Porting note: added instance
     letI : Valued K ℤₘ₀ := adicValued v
-    simp_rw [RingHom.map_mul, Subring.coe_mul, Subtype.coe_mk, UniformSpace.Completion.coe_mul]
+    simp_rw [RingHom.map_mul, Subring.coe_mul, UniformSpace.Completion.coe_mul]
   map_zero' := by simp only [map_zero]; rfl
   map_add' x y := by
     ext
     --Porting note: added instance
     letI : Valued K ℤₘ₀ := adicValued v
-    simp_rw [RingHom.map_add, Subring.coe_add, Subtype.coe_mk, UniformSpace.Completion.coe_add]
+    simp_rw [RingHom.map_add, Subring.coe_add, UniformSpace.Completion.coe_add]
   commutes' r x := by
     -- Porting note: added `dsimp` line
     dsimp
