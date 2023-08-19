@@ -831,30 +831,27 @@ theorem aestronglyMeasurable_derivWithin_Ioi [SecondCountableTopology F] (μ : M
 
 end RightDeriv
 
-lemma glouk {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [MeasurableSpace α]
-  [MeasurableSpace β] [BorelSpace α] [BorelSpace β] [SecondCountableTopology α] :
-  BorelSpace (α × β) := by infer_instance
+section WithParam
 
-#check Prod.borelSpace
-
-#exit
-
-
-
-section Uncurry
+/- In this section, we prove the measurability of the derivative in a context with parameters:
+given `f : α → E → F`, we want to show that `p ↦ fderiv 𝕜 (f p.1) p.2` is measurable. Contrary
+to the previous sections, some assumptions are needed for this: if `f p.1` depends arbitrarily on
+`p.1`, this is obviously false. We require that `f` is continuous and `E` is locally compact --
+then the proofs in the previous sections adapt readily, as the set `A` defined above is open, so
+that the differentiability set `D` is measurable. -/
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [MeasurableSpace E]
-  [BorelSpace α] [BorelSpace E]
+  [OpensMeasurableSpace α] [OpensMeasurableSpace E]
   {f : α → E → F} (K : Set (E →L[𝕜] F))
 
 namespace FDerivMeasurableAux
 
 open Uniformity
 
-lemma isOpen_A_uncurry {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[𝕜] F) :
+lemma isOpen_A_with_param {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[𝕜] F) :
     IsOpen {p : α × E | p.2 ∈ A (f p.1) L r s} := by
   have : ProperSpace E := properSpace_of_locallyCompactSpace 𝕜
   simp only [A, half_lt_self_iff, not_lt, mem_Ioc, mem_ball, map_sub, mem_setOf_eq]
@@ -920,19 +917,20 @@ lemma isOpen_A_uncurry {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[𝕜]
       · simp [hb, dyx, dzx]
   _ < s * r := by linarith
 
-lemma isOpen_B_uncurry {r s t : ℝ} (hf : Continuous f.uncurry) (K : Set (E →L[𝕜] F)) :
+lemma isOpen_B_with_param {r s t : ℝ} (hf : Continuous f.uncurry) (K : Set (E →L[𝕜] F)) :
     IsOpen {p : α × E | p.2 ∈ B (f p.1) K r s t} := by
   suffices H : IsOpen (⋃ L ∈ K,
       {p : α × E | p.2 ∈ A (f p.1) L r t ∧ p.2 ∈ A (f p.1) L s t}) by
     convert H; ext p; simp [B]
   refine isOpen_biUnion (fun L _ ↦ ?_)
-  exact (isOpen_A_uncurry hf L).inter (isOpen_A_uncurry hf L)
+  exact (isOpen_A_with_param hf L).inter (isOpen_A_with_param hf L)
 
 end FDerivMeasurableAux
 
 open FDerivMeasurableAux
 
-theorem measurableSet_of_differentiableAt_of_isComplete_uncurry
+variable (𝕜)
+theorem measurableSet_of_differentiableAt_of_isComplete_with_param
     (hf : Continuous f.uncurry) {K : Set (E →L[𝕜] F)} (hK : IsComplete K) :
     MeasurableSet {p : α × E | DifferentiableAt 𝕜 (f p.1) p.2 ∧ fderiv 𝕜 (f p.1) p.2 ∈ K} := by
   have : {p : α × E | DifferentiableAt 𝕜 (f p.1) p.2 ∧ fderiv 𝕜 (f p.1) p.2 ∈ K}
@@ -946,7 +944,62 @@ theorem measurableSet_of_differentiableAt_of_isComplete_uncurry
   refine MeasurableSet.iInter fun _ => ?_
   refine MeasurableSet.iInter fun _ => ?_
   refine MeasurableSet.iInter fun _ => ?_
-  have : SecondCountableTopology E := sorry
-  exact (isOpen_B_uncurry hf K).measurableSet
+  have : ProperSpace E := properSpace_of_locallyCompactSpace 𝕜
+  exact (isOpen_B_with_param hf K).measurableSet
 
-end Uncurry
+variable [CompleteSpace F]
+
+/-- The set of differentiability points of a function taking values in a complete space is
+Borel-measurable. -/
+theorem measurableSet_of_differentiableAt_with_param (hf : Continuous f.uncurry) :
+    MeasurableSet {p : α × E | DifferentiableAt 𝕜 (f p.1) p.2 } := by
+  have : IsComplete (univ : Set (E →L[𝕜] F)) := complete_univ
+  convert measurableSet_of_differentiableAt_of_isComplete_with_param 𝕜 hf this
+  simp
+
+theorem measurable_fderiv_with_param (hf : Continuous f.uncurry) :
+    Measurable (fun (p : α × E) ↦ fderiv 𝕜 (f p.1) p.2) := by
+  refine' measurable_of_isClosed fun s hs => _
+  have :
+    (fun (p : α × E) ↦ fderiv 𝕜 (f p.1) p.2) ⁻¹' s =
+      {p | DifferentiableAt 𝕜 (f p.1) p.2 ∧ fderiv 𝕜 (f p.1) p.2 ∈ s } ∪
+        { p | ¬DifferentiableAt 𝕜 (f p.1) p.2} ∩ { _p | (0 : E →L[𝕜] F) ∈ s} :=
+    Set.ext fun x => mem_preimage.trans fderiv_mem_iff
+  rw [this]
+  exact
+    (measurableSet_of_differentiableAt_of_isComplete_with_param _ hf hs.isComplete).union
+      ((measurableSet_of_differentiableAt_with_param _ hf).compl.inter (MeasurableSet.const _))
+
+theorem measurable_fderiv_apply_const_with_param [MeasurableSpace F] [BorelSpace F]
+    (hf : Continuous f.uncurry) (y : E) :
+    Measurable fun (p : α × E) => fderiv 𝕜 (f p.1) p.2 y :=
+  (ContinuousLinearMap.measurable_apply y).comp (measurable_fderiv_with_param 𝕜 hf)
+
+variable {𝕜}
+
+theorem measurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpace 𝕜]
+    [OpensMeasurableSpace 𝕜] [MeasurableSpace F]
+    [BorelSpace F] {f : α → 𝕜 → F} (hf : Continuous f.uncurry) :
+    Measurable (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2) := by
+  simpa only [fderiv_deriv] using measurable_fderiv_apply_const_with_param 𝕜 hf 1
+
+theorem stronglyMeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpace 𝕜]
+    [OpensMeasurableSpace 𝕜] [SecondCountableTopology F]
+    {f : α → 𝕜 → F} (hf : Continuous f.uncurry) :
+    StronglyMeasurable (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2) := by
+  borelize F
+  exact (measurable_deriv_with_param hf).stronglyMeasurable
+
+theorem aemeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpace 𝕜]
+    [OpensMeasurableSpace 𝕜] [MeasurableSpace F]
+    [BorelSpace F] {f : α → 𝕜 → F} (hf : Continuous f.uncurry) (μ : Measure (α × 𝕜)) :
+    AEMeasurable (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2) μ :=
+  (measurable_deriv_with_param hf).aemeasurable
+
+theorem aestronglyMeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpace 𝕜]
+    [OpensMeasurableSpace 𝕜] [SecondCountableTopology F]
+    {f : α → 𝕜 → F} (hf : Continuous f.uncurry) (μ : Measure (α × 𝕜)) :
+    AEStronglyMeasurable (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2) μ :=
+  (stronglyMeasurable_deriv_with_param hf).aestronglyMeasurable
+
+end WithParam
