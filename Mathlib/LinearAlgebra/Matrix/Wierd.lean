@@ -9,25 +9,25 @@ lemma wierd0 (m : Type)[Fintype m](p: m → Prop)[DecidablePred p] :
   rw [Fintype.card_subtype_compl, ← Nat.add_sub_assoc, Nat.add_sub_cancel_left]
   exact Fintype.card_subtype_le _
 
-lemma wierd01 (m : Type)[Fintype m] (p q : m → Prop) [DecidablePred p] [DecidablePred q] :
-  Fintype.card {i // p i} = Fintype.card {j : {i // p i} // q j} +
-    Fintype.card {j : {i // p i} // ¬ q j} := by
-  exact wierd0 { i // p i } fun i ↦ q ↑i
+-- lemma wierd01 (m : Type)[Fintype m] (p q : m → Prop) [DecidablePred p] [DecidablePred q] :
+--   Fintype.card {i // p i} = Fintype.card {j : {i // p i} // q j} +
+--     Fintype.card {j : {i // p i} // ¬ q j} := by
+--   exact wierd0 { i // p i } fun i ↦ q ↑i
 
 -- set_option pp.explicit true
 /-- A sorted nonnegative list with m elements and exactly r ≤ m non-zero elemnts has the first
 (m - r) elemnts as zero -/
-lemma wierd2 (m r : ℕ) [NeZero m] (hrm : r ≤ m) (f : Fin m → ℝ)
+lemma wierd2 (m r : ℕ) [NeZero m] (f : Fin m → ℝ)
     (h_nonneg : ∀ (i : Fin m), 0 ≤  f i)
     (h_nz_cnt : Fintype.card { i // f i =  0} = r)
     (h_sorted : Monotone f)
     (j : Fin m):
     ( (j:ℕ) < r) → f j = 0 := by
   intro hjm
-  have hj := eq_or_lt_of_le ( h_nonneg j)
-  cases' hj with hj hj
-  · exact hj.symm
-  · exfalso
+  apply Or.by_cases' (eq_or_lt_of_le ( h_nonneg j))
+  · intro h; exact h.symm
+  · intro hj
+    exfalso
     unfold Monotone at h_sorted
     have : ∃ q : Fin m, (r) ≤ q ∧ f q = 0 := by
       by_contra h
@@ -86,3 +86,5 @@ lemma wierd2 (m r : ℕ) [NeZero m] (hrm : r ≤ m) (f : Fin m → ℝ)
       exact hj
     have h2 := h_sorted (le_of_lt hjq)
     apply (not_lt.2 h2) h1
+
+#print axioms eq_or_lt_of_le
