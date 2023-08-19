@@ -499,11 +499,7 @@ theorem bind_eq_bind {α β} (f : α → List β) (l : List α) : l >>= f = l.bi
   rfl
 #align list.bind_eq_bind List.bind_eq_bind
 
--- TODO: duplicate of a lemma in core
-theorem bind_append (f : α → List β) (l₁ l₂ : List α) :
-    (l₁ ++ l₂).bind f = l₁.bind f ++ l₂.bind f :=
-  append_bind _ _ _
-#align list.bind_append List.bind_append
+#align list.bind_append List.append_bind
 
 /-! ### concat -/
 
