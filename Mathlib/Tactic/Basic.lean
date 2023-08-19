@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Kyle Miller
 import Lean
 import Std
 import Mathlib.Tactic.Cases
+import Mathlib.Tactic.PPWithUniv
 
 set_option autoImplicit true
 
@@ -272,3 +273,5 @@ elab (name := clearValue) "clear_value" hs:(ppSpace colGt term:max)+ : tactic =>
     withMainContext do
       let mvarId ← (← getMainGoal).clearValue fvarId
       replaceMainGoal [mvarId]
+
+attribute [pp_with_univ] ULift PUnit PEmpty
