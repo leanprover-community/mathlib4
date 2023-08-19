@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, David Renshaw
 -/
 import Lean
 import Mathlib.Lean.Meta
+import Mathlib.Tactic.Basic
 import Mathlib.Tactic.LeftRight
 
 /-!
@@ -15,13 +16,15 @@ inductive `Prop`s. For example, when applied to `List.Chain`, it creates a decla
 the following type:
 
 ```lean
-∀ {α : Type _} (R : α → α → Prop) (a : α) (l : List α),
+∀ {α : Type*} (R : α → α → Prop) (a : α) (l : List α),
   Chain R a l ↔ l = [] ∨ ∃(b : α) (l' : List α), R a b ∧ Chain R b l ∧ l = b :: l'
 ```
 
 This tactic can be called using either the `mk_iff_of_inductive_prop` user command or
 the `mk_iff` attribute.
 -/
+
+set_option autoImplicit true
 
 namespace Mathlib.Tactic.MkIff
 
@@ -229,7 +232,7 @@ Example:
 listBoolMerge [false, true, false, true] [0, 1, 2, 3, 4] = [none, (some 0), none, (some 1)]
 ```
 -/
-def listBoolMerge {α : Type _} : List Bool → List α → List (Option α)
+def listBoolMerge {α : Type*} : List Bool → List α → List (Option α)
 | [], _ => []
 | false :: xs, ys => none :: listBoolMerge xs ys
 | true :: xs, y :: ys => some y :: listBoolMerge xs ys
@@ -379,7 +382,7 @@ be just `c = i` for some index `i`.
 For example, `mk_iff_of_inductive_prop` on `List.Chain` produces:
 
 ```lean
-∀ { α : Type _} (R : α → α → Prop) (a : α) (l : List α),
+∀ { α : Type*} (R : α → α → Prop) (a : α) (l : List α),
   Chain R a l ↔ l = [] ∨ ∃(b : α) (l' : List α), R a b ∧ Chain R b l ∧ l = b :: l'
 ```
 

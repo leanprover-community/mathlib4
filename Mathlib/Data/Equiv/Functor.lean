@@ -18,6 +18,8 @@ def Functor.mapEquiv (f : Type u → Type v) [functor f] [LawfulFunctor f] :
 
 -/
 
+set_option autoImplicit true
+
 open Equiv
 
 namespace Functor

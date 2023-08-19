@@ -30,7 +30,7 @@ attribute [local simp] add_assoc
 
 namespace PosNum
 
-variable {α : Type _}
+variable {α : Type*}
 
 @[simp, norm_cast]
 theorem cast_one [One α] [Add α] : ((1 : PosNum) : α) = 1 :=
@@ -200,7 +200,7 @@ end PosNum
 
 namespace Num
 
-variable {α : Type _}
+variable {α : Type*}
 
 open PosNum
 
@@ -517,7 +517,7 @@ end Num
 
 namespace PosNum
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Num
 
@@ -711,7 +711,7 @@ end PosNum
 
 namespace Num
 
-variable {α : Type _}
+variable {α : Type*}
 
 open PosNum
 
@@ -834,7 +834,7 @@ end PosNum
 
 namespace Num
 
-variable {α : Type _}
+variable {α : Type*}
 
 open PosNum
 
@@ -897,7 +897,7 @@ theorem bitwise'_to_nat {f : Num → Num → Num} {g : Bool → Bool → Bool} (
   -- Porting note: `change .. with ..` is now `simp only [show .. = .. from rfl]`.
   intros m n
   cases' m with m <;> cases' n with n <;>
-      simp only [show zero = 0 from rfl, show ((0 : Num) : ℕ) = 0 from rfl]
+      try simp only [show zero = 0 from rfl, show ((0 : Num) : ℕ) = 0 from rfl]
   · rw [f00, Nat.bitwise'_zero]; rfl
   · unfold Nat.bitwise'
     rw [f0n, Nat.binaryRec_zero]
@@ -1029,7 +1029,7 @@ end Num
 
 namespace ZNum
 
-variable {α : Type _}
+variable {α : Type*}
 
 open PosNum
 
@@ -1178,7 +1178,7 @@ end ZNum
 
 namespace PosNum
 
-variable {α : Type _}
+variable {α : Type*}
 
 theorem cast_to_znum : ∀ n : PosNum, (n : ZNum) = ZNum.pos n
   | 1 => rfl
@@ -1226,7 +1226,7 @@ end PosNum
 
 namespace Num
 
-variable {α : Type _}
+variable {α : Type*}
 
 @[simp]
 theorem cast_sub' [AddGroupWithOne α] : ∀ m n : Num, (sub' m n : α) = m - n
@@ -1318,7 +1318,7 @@ end Num
 
 namespace ZNum
 
-variable {α : Type _}
+variable {α : Type*}
 
 @[simp, norm_cast]
 theorem cast_add [AddGroupWithOne α] : ∀ m n, ((m + n : ZNum) : α) = m + n

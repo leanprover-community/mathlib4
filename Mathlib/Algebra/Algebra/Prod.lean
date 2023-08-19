@@ -20,7 +20,7 @@ The R-algebra structure on `(i : I) → A i` when each `A i` is an R-algebra.
 -/
 
 
-variable {R A B C : Type _}
+variable {R A B C : Type*}
 
 variable [CommSemiring R]
 
