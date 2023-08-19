@@ -25,6 +25,11 @@ We also show the same results for the right derivative on the real line
 (see `measurable_derivWithin_Ici` and `measurable_derivWithin_Ioi`), following the same
 proof strategy.
 
+We also prove measurability statements for functions depending on a parameter: for `f : α → E → F`,
+we show the measurability of `(p : α × E) ↦ fderiv 𝕜 (f p.1) p.2`. This requires additional
+assumptions. We give versions of the above statements (appending `with_param` to their names) when
+`f` is continuous and `E` is locally compact.
+
 ## Implementation
 
 We give a proof that avoids second-countability issues, by expressing the differentiability set
@@ -949,8 +954,8 @@ theorem measurableSet_of_differentiableAt_of_isComplete_with_param
 
 variable [CompleteSpace F]
 
-/-- The set of differentiability points of a function taking values in a complete space is
-Borel-measurable. -/
+/-- The set of differentiability points of a continuous function depending on a parameter taking
+values in a complete space is Borel-measurable. -/
 theorem measurableSet_of_differentiableAt_with_param (hf : Continuous f.uncurry) :
     MeasurableSet {p : α × E | DifferentiableAt 𝕜 (f p.1) p.2 } := by
   have : IsComplete (univ : Set (E →L[𝕜] F)) := complete_univ
