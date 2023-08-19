@@ -182,6 +182,7 @@ structure Equivalence (a b : B) where
 
 namespace Equivalence
 
+/-- The identity 1-morphism is an equivalence. -/
 def id (a : B) : a ≌ a := ⟨_, _, (ρ_ _).symm, ρ_ _, by ext; simp [bicategoricalIsoComp]⟩
 
 instance : Inhabited (Equivalence a a) := ⟨id a⟩
