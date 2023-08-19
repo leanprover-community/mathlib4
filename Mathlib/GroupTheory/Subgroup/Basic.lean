@@ -2887,6 +2887,12 @@ instance (priority := 100) normal_ker (f : G →* M) : f.ker.Normal :=
 #align monoid_hom.normal_ker MonoidHom.normal_ker
 #align add_monoid_hom.normal_ker AddMonoidHom.normal_ker
 
+@[to_additive (attr := simp)]
+lemma ker_fst : ker (fst G G') = .prod ⊥ ⊤ := SetLike.ext fun _ => (and_true_iff _).symm
+
+@[to_additive (attr := simp)]
+lemma ker_snd : ker (snd G G') = .prod ⊤ ⊥ := SetLike.ext fun _ => (true_and_iff _).symm
+
 end Ker
 
 section EqLocus

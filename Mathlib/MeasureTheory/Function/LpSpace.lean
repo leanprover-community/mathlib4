@@ -788,13 +788,13 @@ theorem dist_indicatorConstLp_eq_norm {t : Set α} (ht : MeasurableSet t) (hμt 
   rw [Lp.dist_edist, edist_indicatorConstLp_eq_nnnorm, ENNReal.coe_toReal, Lp.coe_nnnorm]
 
 @[simp]
-theorem indicatorConst_empty :
+theorem indicatorConstLp_empty :
     indicatorConstLp p MeasurableSet.empty (by simp : μ ∅ ≠ ∞) c = 0 := by
   rw [Lp.eq_zero_iff_ae_eq_zero]
   convert indicatorConstLp_coeFn (E := E)
   simp [Set.indicator_empty']
   rfl
-#align measure_theory.indicator_const_empty MeasureTheory.indicatorConst_empty
+#align measure_theory.indicator_const_empty MeasureTheory.indicatorConstLp_empty
 
 theorem memℒp_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (support g))
     (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
@@ -808,10 +808,7 @@ theorem memℒp_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (supp
 /-- The indicator of a disjoint union of two sets is the sum of the indicators of the sets. -/
 theorem indicatorConstLp_disjoint_union {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
     (hμs : μ s ≠ ∞) (hμt : μ t ≠ ∞) (hst : s ∩ t = ∅) (c : E) :
-    indicatorConstLp p (hs.union ht)
-        ((measure_union_le s t).trans_lt
-            (lt_top_iff_ne_top.mpr (ENNReal.add_ne_top.mpr ⟨hμs, hμt⟩))).ne
-        c =
+    indicatorConstLp p (hs.union ht) (measure_union_ne_top hμs hμt) c =
       indicatorConstLp p hs hμs c + indicatorConstLp p ht hμt c := by
   ext1
   refine' indicatorConstLp_coeFn.trans (EventuallyEq.trans _ (Lp.coeFn_add _ _).symm)
