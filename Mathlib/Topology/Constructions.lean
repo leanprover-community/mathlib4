@@ -1099,6 +1099,7 @@ theorem closure_subtype {x : { a // p a }} {s : Set { a // p a }} :
   closure_induced
 #align closure_subtype closure_subtype
 
+@[simp]
 theorem continuousAt_codRestrict_iff {f : α → β} {t : Set β} (h1 : ∀ x, f x ∈ t) {x : α} :
     ContinuousAt (codRestrict f t h1) x ↔ ContinuousAt f x :=
   inducing_subtype_val.continuousAt_iff
@@ -1123,10 +1124,12 @@ theorem Continuous.codRestrict {f : α → β} {s : Set β} (hf : Continuous f) 
   hf.subtype_mk hs
 #align continuous.cod_restrict Continuous.codRestrict
 
+@[continuity]
 theorem Continuous.restrict {f : α → β} {s : Set α} {t : Set β} (h1 : MapsTo f s t)
     (h2 : Continuous f) : Continuous (h1.restrict f s t) :=
   (h2.comp continuous_subtype_val).codRestrict _
 
+@[continuity]
 theorem Continuous.restrictPreimage {f : α → β} {s : Set β} (h : Continuous f) :
     Continuous (s.restrictPreimage f) :=
   h.restrict _
