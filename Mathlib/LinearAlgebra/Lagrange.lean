@@ -71,18 +71,16 @@ theorem eq_of_degrees_lt_of_eval_finset_eq (degree_f_lt : f.degree < s.card)
 Two polynomials, with the same degree and leading coefficient, which have the same evaluation
 on a set of distinct values with cardinality equal to the degree, are equal.
 -/
-theorem eq_of_degrees_le_of_leadingCoeff_eq_of_eval_finset_eq (degree_f_le : f.degree ≤ s.card)
-    (degree_f_eq_degree_g : f.degree = g.degree)
-    (leadingCoeffs_eq : f.leadingCoeff = g.leadingCoeff) (eval_fg : ∀ x ∈ s, f.eval x = g.eval x) :
+theorem eq_of_degree_le_of_eval_finset_eq
+    (h_deg_le : f.degree ≤ s.card)
+    (h_deg_eq : f.degree = g.degree)
+    (hlc : f.leadingCoeff = g.leadingCoeff)
+    (h_eval : ∀ x ∈ s, f.eval x = g.eval x) :
     f = g := by
-  by_cases f_zero : f = 0
-  · simp only [f_zero] at *
-    apply Eq.symm
-    rw [eq_comm] at leadingCoeffs_eq
-    exact Iff.mp degree_eq_bot (id (Eq.symm degree_f_eq_degree_g))
+  rcases eq_or_ne f 0 with rfl | hf
+  · rwa [degree_zero, eq_comm, degree_eq_bot, eq_comm] at h_deg_eq
   · exact eq_of_degree_sub_lt_of_eval_finset_eq s
-      (lt_of_lt_of_le (degree_sub_lt degree_f_eq_degree_g f_zero leadingCoeffs_eq) degree_f_le)
-      eval_fg
+      (lt_of_lt_of_le (degree_sub_lt h_deg_eq hf hlc) h_deg_le) h_eval
 
 end Finset
 
