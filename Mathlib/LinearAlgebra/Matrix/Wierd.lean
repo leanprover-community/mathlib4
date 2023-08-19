@@ -9,11 +9,15 @@ lemma wierd0 (m : Type)[Fintype m](p: m → Prop)[DecidablePred p] :
   rw [Fintype.card_subtype_compl, ← Nat.add_sub_assoc, Nat.add_sub_cancel_left]
   exact Fintype.card_subtype_le _
 
-lemma wierdm1 (m : ℕ) (h : 1 ≤ m) : 0 < m := h
+lemma wierd01 (m : Type)[Fintype m] (p q : m → Prop) [DecidablePred p] [DecidablePred q] :
+  Fintype.card {i // p i} = Fintype.card {j : {i // p i} // q j} +
+    Fintype.card {j : {i // p i} // ¬ q j} := by
+  exact wierd0 { i // p i } fun i ↦ q ↑i
 
+-- set_option pp.explicit true
 /-- A sorted nonnegative list with m elements and exactly r ≤ m non-zero elemnts has the first
 (m - r) elemnts as zero -/
-lemma wierd1 (m r : ℕ) (hrm : r ≤ m) (f : Fin m → ℝ)
+lemma wierd2 (m r : ℕ) (hrm : r ≤ m) (f : Fin m → ℝ)
     (h_nonneg : ∀ (i : Fin m), 0 ≤  f i)
     (h_nz_cnt : Fintype.card { i // f i =  0} = r)
     (h_sorted : Monotone f)
@@ -37,8 +41,10 @@ lemma wierd1 (m r : ℕ) (hrm : r ≤ m) (f : Fin m → ℝ)
           refine' Nonempty.intro ?_
           refine' ⟨ ⟨ j, ne_of_gt hj⟩, hjm ⟩
         have h4 : (m - r) ≤ Fintype.card {j : {i // f i ≠ 0} // ¬ (j < r)} := by
-          simp only [not_lt, tsub_le_iff_right]
-          sorry
+          simp only [tsub_le_iff_right]
+          have h6 : Fintype.card {j : {i // f i ≠ 0} //  ¬ (j < r)} = m - r := by sorry
+
+          rwa [h6, Nat.sub_add_cancel]
         have h5 : m - r < m - r + 1 := by exact Nat.lt.base (m - r)
         apply lt_of_lt_of_le h5 _
         rw [Nat.add_comm]
