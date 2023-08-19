@@ -95,8 +95,8 @@ theorem id_f (X : DifferentialObject S C) : (𝟙 X : X ⟶ X).f = 𝟙 X.obj :=
 #align category_theory.differential_object.id_f CategoryTheory.DifferentialObject.id_f
 
 @[simp]
-theorem comp_f {X Y Z : DifferentialObject S C} (f : X ⟶ Y) (g : Y ⟶ Z) : 
-    (f ≫ g).f = f.f ≫ g.f := 
+theorem comp_f {X Y Z : DifferentialObject S C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).f = f.f ≫ g.f :=
   rfl
 #align category_theory.differential_object.comp_f CategoryTheory.DifferentialObject.comp_f
 
@@ -137,8 +137,8 @@ instance hasZeroMorphisms : HasZeroMorphisms (DifferentialObject S C) where
 def isoApp {X Y : DifferentialObject S C} (f : X ≅ Y) : X.obj ≅ Y.obj where
   hom := f.hom.f
   inv := f.inv.f
-  hom_inv_id := by dsimp; rw [← comp_f, Iso.hom_inv_id, id_f]
-  inv_hom_id := by dsimp; rw [← comp_f, Iso.inv_hom_id, id_f]
+  hom_inv_id := by rw [← comp_f, Iso.hom_inv_id, id_f]
+  inv_hom_id := by rw [← comp_f, Iso.inv_hom_id, id_f]
 #align category_theory.differential_object.iso_app CategoryTheory.DifferentialObject.isoApp
 
 @[simp]
@@ -162,7 +162,6 @@ def mkIso {X Y : DifferentialObject S C} (f : X.obj ≅ Y.obj) (hf : X.d ≫ f.h
     X ≅ Y where
   hom := ⟨f.hom, hf⟩
   inv := ⟨f.inv, by
-    dsimp
     rw [← Functor.mapIso_inv, Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp, Functor.mapIso_hom,
       hf]⟩
   hom_inv_id := by ext1; dsimp; exact f.hom_inv_id

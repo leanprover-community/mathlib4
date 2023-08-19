@@ -220,7 +220,7 @@ def IsAffineOpen.fromSpec {X : Scheme} {U : Opens X} (hU : IsAffineOpen U) :
 
 instance IsAffineOpen.isOpenImmersion_fromSpec {X : Scheme} {U : Opens X}
     (hU : IsAffineOpen U) : IsOpenImmersion hU.fromSpec := by
-  delta IsAffineOpen.fromSpec; dsimp; simp only [Scheme.comp_val]
+  delta IsAffineOpen.fromSpec; dsimp
   -- Porting note : this was automatic
   repeat apply (config := { allowSynthFailures := true }) PresheafedSpace.IsOpenImmersion.comp
 #align algebraic_geometry.is_affine_open.is_open_immersion_from_Spec AlgebraicGeometry.IsAffineOpen.isOpenImmersion_fromSpec
