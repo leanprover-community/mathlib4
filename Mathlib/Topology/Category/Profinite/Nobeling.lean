@@ -2046,11 +2046,6 @@ lemma GoodProducts.linearIndependent (hC : IsClosed C) :
   GoodProducts.linearIndependentAux (Ordinal.type (·<· : I → I → Prop)) (le_refl _)
     C hC (fun _ _ _ _ ↦ Ordinal.typein_lt_type _ _)
 
--- Test
--- Test
--- Test
--- Test
-
 noncomputable
 def GoodProducts.Basis (hC : IsClosed C) :
     Basis (GoodProducts C) ℤ (LocallyConstant C ℤ) :=
