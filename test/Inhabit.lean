@@ -1,5 +1,7 @@
 import Mathlib.Tactic.Inhabit
 
+universe u
+
 -- Most basic test (prop)
 noncomputable example {p : Prop} [Nonempty p] : Inhabited p := by
   inhabit p
