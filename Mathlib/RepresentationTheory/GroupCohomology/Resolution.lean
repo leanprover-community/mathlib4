@@ -425,7 +425,6 @@ def cechNerveTerminalFromIso :
   NatIso.ofComponents (fun n => limit.isoLimitCone (Action.ofMulActionLimitCone _ _)) fun f => by
     refine' IsLimit.hom_ext (Action.ofMulActionLimitCone.{u, 0} G fun _ => G).2 fun j => _
     dsimp only [cechNerveTerminalFrom, Pi.lift]
-    dsimp
     rw [Category.assoc, limit.isoLimitCone_hom_π, limit.lift_π, Category.assoc]
     exact (limit.isoLimitCone_hom_π _ _).symm
 #align classifying_space_universal_cover.cech_nerve_terminal_from_iso classifyingSpaceUniversalCover.cechNerveTerminalFromIso

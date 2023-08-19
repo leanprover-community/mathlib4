@@ -1263,7 +1263,7 @@ theorem integral_nonpos {f : α → ℝ} (hf : f ≤ 0) : ∫ a, f a ∂μ ≤ 0
 theorem integral_eq_zero_iff_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f) (hfi : Integrable f μ) :
     ∫ x, f x ∂μ = 0 ↔ f =ᵐ[μ] 0 := by
   simp_rw [integral_eq_lintegral_of_nonneg_ae hf hfi.1, ENNReal.toReal_eq_zero_iff,
-    ← ENNReal.not_lt_top, ← hasFiniteIntegral_iff_ofReal hf, hfi.2, not_true, or_false_iff]
+    ← ENNReal.not_lt_top, ← hasFiniteIntegral_iff_ofReal hf, hfi.2, or_false_iff]
   -- Porting note: split into parts, to make `rw` and `simp` work
   rw [lintegral_eq_zero_iff']
   · rw [← hf.le_iff_eq, Filter.EventuallyEq, Filter.EventuallyLE]
@@ -1538,7 +1538,7 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AES
   · intro n
     filter_upwards with x
     rfl
-  · simp_rw [← coe_nnnorm, ← NNReal.coe_tsum]
+  · simp_rw [← NNReal.coe_tsum]
     rw [aestronglyMeasurable_iff_aemeasurable]
     apply AEMeasurable.coe_nnreal_real
     apply AEMeasurable.nnreal_tsum
