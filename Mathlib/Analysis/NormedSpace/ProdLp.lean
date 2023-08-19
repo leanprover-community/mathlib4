@@ -160,11 +160,10 @@ instance instProdEDist : EDist (WithLp p (α × β)) where
 variable {p α β}
 variable (x y : WithLp p (α × β)) (x' : α × β)
 
-open Classical in
 @[simp]
-theorem prod_edist_eq_card (f g : WithLp 0 (α × β)) :
-    edist f g = (if f.fst = g.fst then 0 else 1) + (if f.snd = g.snd then 0 else 1) :=
-  if_pos rfl
+theorem prod_edist_eq_card [DecidableEq α] [DecidableEq β] (f g : WithLp 0 (α × β)) :
+    edist f g = (if f.fst = g.fst then 0 else 1) + (if f.snd = g.snd then 0 else 1) := by
+  convert if_pos rfl
 
 theorem prod_edist_eq_add (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
     edist f g = (edist f.fst g.fst ^ p.toReal + edist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal) :=
@@ -187,7 +186,8 @@ variable [PseudoEMetricSpace α] [PseudoEMetricSpace β]
 from `WithLp.instProdPseudoEMetricSpace` so it can be used also for `p < 1`. -/
 theorem prod_edist_self (f : WithLp p (α × β)) : edist f f = 0 := by
   rcases p.trichotomy with (rfl | rfl | h)
-  · simp
+  · classical
+    simp
   · simp [prod_edist_eq_sup]
   · simp [prod_edist_eq_add h, ENNReal.zero_rpow_of_pos h,
       ENNReal.zero_rpow_of_pos (inv_pos.2 <| h)]
@@ -226,10 +226,9 @@ instance instProdDist : Dist (WithLp p (α × β)) where
 
 variable {p α β}
 
-open Classical in
-theorem prod_dist_eq_card (f g : WithLp 0 (α × β)) : dist f g =
-    (if f.fst = g.fst then 0 else 1) + (if f.snd = g.snd then 0 else 1) :=
-  if_pos rfl
+theorem prod_dist_eq_card [DecidableEq α] [DecidableEq β] (f g : WithLp 0 (α × β)) : dist f g =
+    (if f.fst = g.fst then 0 else 1) + (if f.snd = g.snd then 0 else 1) := by
+  convert if_pos rfl
 
 theorem prod_dist_eq_add (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
     dist f g = (dist f.fst g.fst ^ p.toReal + dist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal) :=
@@ -653,7 +652,7 @@ variable {α β}
 
 theorem prod_dist_eq_of_L2 (x y : WithLp 2 (α × β)) :
     dist x y = (dist x.fst y.fst ^ 2 + dist x.snd y.snd ^ 2).sqrt := by
-  simp_rw [dist_eq_norm, prod_norm_eq_of_L2, Pi.sub_apply]
+  simp_rw [dist_eq_norm, prod_norm_eq_of_L2]
   rfl
 
 theorem prod_nndist_eq_of_L2 (x y : WithLp 2 (α × β)) :
