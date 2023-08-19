@@ -168,8 +168,7 @@ theorem ext_iff {f g : Lp E p μ} : f = g ↔ f =ᵐ[μ] g :=
   ⟨fun h => by rw [h], fun h => ext h⟩
 #align measure_theory.Lp.ext_iff MeasureTheory.Lp.ext_iff
 
-theorem mem_Lp_iff_snorm_lt_top {f : α →ₘ[μ] E} : f ∈ Lp E p μ ↔ snorm f p μ < ∞ :=
-  Iff.refl _
+theorem mem_Lp_iff_snorm_lt_top {f : α →ₘ[μ] E} : f ∈ Lp E p μ ↔ snorm f p μ < ∞ := Iff.rfl
 #align measure_theory.Lp.mem_Lp_iff_snorm_lt_top MeasureTheory.Lp.mem_Lp_iff_snorm_lt_top
 
 theorem mem_Lp_iff_memℒp {f : α →ₘ[μ] E} : f ∈ Lp E p μ ↔ Memℒp f p μ := by
@@ -269,6 +268,10 @@ theorem nnnorm_def (f : Lp E p μ) : ‖f‖₊ = ENNReal.toNNReal (snorm f p μ
 protected theorem coe_nnnorm (f : Lp E p μ) : (‖f‖₊ : ℝ) = ‖f‖ :=
   rfl
 #align measure_theory.Lp.coe_nnnorm MeasureTheory.Lp.coe_nnnorm
+
+@[simp, norm_cast]
+theorem nnnorm_coe_ennreal (f : Lp E p μ) : (‖f‖₊ : ℝ≥0∞) = snorm f p μ :=
+  ENNReal.coe_toNNReal <| ne_of_lt f.2
 
 @[simp]
 theorem norm_toLp (f : α → E) (hf : Memℒp f p μ) : ‖hf.toLp f‖ = ENNReal.toReal (snorm f p μ) := by
@@ -432,6 +435,30 @@ theorem norm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ} (hC :
   have := nnnorm_le_of_ae_bound hfC
   rwa [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_rpow] at this
 #align measure_theory.Lp.norm_le_of_ae_bound MeasureTheory.Lp.norm_le_of_ae_bound
+
+protected lemma nnnorm_add_le (f g : Lp E p μ) : ‖f + g‖₊ ≤ LpAddConst p * (‖f‖₊ + ‖g‖₊) := by
+  simp only [← ENNReal.coe_le_coe]
+  push_cast [snorm_congr_ae (AEEqFun.coeFn_add f.1 g.1)]
+  exact snorm_add_le' (Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _) _
+
+protected lemma norm_add_le (f g : Lp E p μ) : ‖f + g‖ ≤ LpAddConst p * (‖f‖ + ‖g‖) :=
+  Lp.nnnorm_add_le f g
+
+instance : UniformSpace (Lp E p μ) :=
+  .ofCore
+    { uniformity := ⨅ (ε : ℝ) (_ : 0 < ε), (𝓟 {x | dist x.1 x.2 < ε}),
+      refl := le_iInf₂ fun ε hε ↦ principal_mono.2 <| idRel_subset.2 fun x ↦ by simpa [dist_def],
+      symm := tendsto_iInf_iInf fun r => tendsto_iInf_iInf fun _ => tendsto_principal_principal.2
+        fun x hx => by rwa [Set.mem_setOf, Lp.dist_def, ← snorm_neg, neg_sub, ← Lp.dist_def],
+      comp := le_iInf₂ fun ε hε => by
+        lift ε to ℝ≥0 using hε.le; rw [NNReal.coe_pos] at hε
+        rcases exists_Lp_half E μ p (ENNReal.coe_ne_zero.2 hε.ne') with ⟨δ, δ0, hδ⟩
+        
+--let ⟨δ, h0, hδε⟩ := exists_Lp_half (ENNReal.ofReal r) hr; le_principal_iff.2 <|
+--      mem_of_superset (mem_lift' <| mem_iInf_of_mem δ <| mem_iInf_of_mem h0 <| mem_principal_self _)
+--        fun (x, z) ⟨y, h₁, h₂⟩ => (triangle _ _ _).trans_lt (hδr _ h₁ _ h₂) }
+    }
+  
 
 instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E p μ) :=
   { AddGroupNorm.toNormedAddCommGroup

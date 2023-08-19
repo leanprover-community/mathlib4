@@ -37,6 +37,7 @@ and is almost everywhere strongly measurable.
 
 noncomputable section
 
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 set_option linter.uppercaseLean3 false
 
 open TopologicalSpace MeasureTheory Filter
@@ -250,6 +251,31 @@ theorem snorm_measure_zero {f : α → F} : snorm f p (0 : Measure α) = 0 := by
 #align measure_theory.snorm_measure_zero MeasureTheory.snorm_measure_zero
 
 end Zero
+
+section Neg
+
+@[simp]
+theorem snorm'_neg {f : α → F} : snorm' (-f) q μ = snorm' f q μ := by simp [snorm']
+#align measure_theory.snorm'_neg MeasureTheory.snorm'_neg
+
+@[simp]
+theorem snorm_neg {f : α → F} : snorm (-f) p μ = snorm f p μ := by
+  by_cases h0 : p = 0
+  · simp [h0]
+  by_cases h_top : p = ∞
+  · simp [h_top, snormEssSup]
+  simp [snorm_eq_snorm' h0 h_top]
+#align measure_theory.snorm_neg MeasureTheory.snorm_neg
+
+theorem Memℒp.neg {f : α → E} (hf : Memℒp f p μ) : Memℒp (-f) p μ :=
+  ⟨AEStronglyMeasurable.neg hf.1, by simp [hf.right]⟩
+#align measure_theory.mem_ℒp.neg MeasureTheory.Memℒp.neg
+
+theorem memℒp_neg_iff {f : α → E} : Memℒp (-f) p μ ↔ Memℒp f p μ :=
+  ⟨fun h => neg_neg f ▸ h.neg, Memℒp.neg⟩
+#align measure_theory.mem_ℒp_neg_iff MeasureTheory.memℒp_neg_iff
+
+end Neg
 
 section Const
 
@@ -783,30 +809,18 @@ theorem snorm_add_le {f g : α → E} (hf : AEStronglyMeasurable f μ) (hg : AES
 
 /-- A constant for the inequality `‖f + g‖_{L^p} ≤ C * (‖f‖_{L^p} + ‖g‖_{L^p})`. It is equal to `1`
 for `p ≥ 1` or `p = 0`, and `2^(1/p-1)` in the more tricky interval `(0, 1)`. -/
-def LpAddConst (p : ℝ≥0∞) : ℝ≥0∞ :=
-  if p ∈ Set.Ioo (0 : ℝ≥0∞) 1 then (2 : ℝ≥0∞) ^ (1 / p.toReal - 1) else 1
+def LpAddConst (p : ℝ≥0∞) : ℝ≥0 :=
+  if p ∈ Set.Ioo (0 : ℝ≥0∞) 1 then (2 : ℝ≥0) ^ (1 / p.toReal - 1) else 1
 #align measure_theory.Lp_add_const MeasureTheory.LpAddConst
 
-theorem LpAddConst_of_one_le {p : ℝ≥0∞} (hp : 1 ≤ p) : LpAddConst p = 1 := by
-  rw [LpAddConst, if_neg]
-  intro h
-  exact lt_irrefl _ (h.2.trans_le hp)
+theorem LpAddConst_of_one_le {p : ℝ≥0∞} (hp : 1 ≤ p) : LpAddConst p = 1 :=
+  if_neg fun h ↦ hp.not_lt h.2
 #align measure_theory.Lp_add_const_of_one_le MeasureTheory.LpAddConst_of_one_le
 
-theorem LpAddConst_zero : LpAddConst 0 = 1 := by
-  rw [LpAddConst, if_neg]
-  intro h
-  exact lt_irrefl _ h.1
+theorem LpAddConst_zero : LpAddConst 0 = 1 := if_neg fun h ↦ h.1.ne rfl
 #align measure_theory.Lp_add_const_zero MeasureTheory.LpAddConst_zero
 
-theorem LpAddConst_lt_top (p : ℝ≥0∞) : LpAddConst p < ∞ := by
-  rw [LpAddConst]
-  split_ifs with h
-  · apply ENNReal.rpow_lt_top_of_nonneg _ ENNReal.two_ne_top
-    simp only [one_div, sub_nonneg]
-    apply one_le_inv (ENNReal.toReal_pos h.1.ne' (h.2.trans ENNReal.one_lt_top).ne)
-    simpa using ENNReal.toReal_mono ENNReal.one_ne_top h.2.le
-  · exact ENNReal.one_lt_top
+theorem LpAddConst_lt_top (p : ℝ≥0∞) : LpAddConst p < ∞ := ENNReal.coe_lt_top
 #align measure_theory.Lp_add_const_lt_top MeasureTheory.LpAddConst_lt_top
 
 theorem snorm_add_le' {f g : α → E} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
@@ -818,6 +832,10 @@ theorem snorm_add_le' {f g : α → E} (hf : AEStronglyMeasurable f μ) (hg : AE
     convert snorm'_add_le_of_le_one hf ENNReal.toReal_nonneg _
     · have : p ∈ Set.Ioo (0 : ℝ≥0∞) 1 := ⟨hp.bot_lt, h'p⟩
       simp only [LpAddConst, if_pos this]
+      rw [← ENNReal.coe_rpow_of_nonneg, ENNReal.coe_ofNat]
+      refine sub_nonneg.2 ((one_le_div ?_).2 ?_)
+      · exact ENNReal.toReal_pos hp h'p.ne_top
+      · exact ENNReal.toReal_le_coe_of_le_coe h'p.le
     · simpa using ENNReal.toReal_mono ENNReal.one_ne_top h'p.le
   · simp [LpAddConst_of_one_le h'p]
     exact snorm_add_le hf hg h'p
@@ -830,14 +848,13 @@ there exists `η` such that two functions bounded by `η` in `L^p` have a sum bo
 could take `η = δ / 2` for `p ≥ 1`, but the point of the lemma is that it works also for `p < 1`.
 -/
 theorem exists_Lp_half (p : ℝ≥0∞) {δ : ℝ≥0∞} (hδ : δ ≠ 0) :
-    ∃ η : ℝ≥0∞,
+    ∃ η : ℝ≥0,
       0 < η ∧
         ∀ (f g : α → E), AEStronglyMeasurable f μ → AEStronglyMeasurable g μ →
           snorm f p μ ≤ η → snorm g p μ ≤ η → snorm (f + g) p μ < δ := by
   have :
-    Tendsto (fun η : ℝ≥0∞ => LpAddConst p * (η + η)) (𝓝[>] 0) (𝓝 (LpAddConst p * (0 + 0))) :=
-    (ENNReal.Tendsto.const_mul (tendsto_id.add tendsto_id)
-          (Or.inr (LpAddConst_lt_top p).ne)).mono_left
+    Tendsto (fun η : ℝ≥0 => LpAddConst p * (η + η)) (𝓝[>] 0) (𝓝 (LpAddConst p * (0 + 0))) :=
+    (ENNReal.Tendsto.const_mul (tendsto_id.add tendsto_id) (Or.inr ENNReal.coe_ne_top)).mono_left
       nhdsWithin_le_nhds
   simp only [add_zero, MulZeroClass.mul_zero] at this
   rcases (((tendsto_order.1 this).2 δ hδ.bot_lt).and self_mem_nhdsWithin).exists with ⟨η, hη, ηpos⟩
@@ -851,21 +868,8 @@ theorem exists_Lp_half (p : ℝ≥0∞) {δ : ℝ≥0∞} (hδ : δ ≠ 0) :
 variable {μ E}
 
 theorem snorm_sub_le' {f g : α → E} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
-    (p : ℝ≥0∞) : snorm (f - g) p μ ≤ LpAddConst p * (snorm f p μ + snorm g p μ) :=
-  calc
-    snorm (f - g) p μ = snorm (f + -g) p μ := by rw [sub_eq_add_neg]
-    -- We cannot use snorm_add_le on f and (-g) because we don't have `AEMeasurable (-g) μ`, since
-    -- we don't suppose `[BorelSpace E]`.
-    _ = snorm (fun x => ‖f x + -g x‖) p μ :=
-      (snorm_norm (f + -g)).symm
-    _ ≤ snorm (fun x => ‖f x‖ + ‖-g x‖) p μ := by
-      refine' snorm_mono_real fun x => _
-      rw [norm_norm]
-      exact norm_add_le _ _
-    _ = snorm (fun x => ‖f x‖ + ‖g x‖) p μ := by simp_rw [norm_neg]
-    _ ≤ LpAddConst p * (snorm (fun x => ‖f x‖) p μ + snorm (fun x => ‖g x‖) p μ) :=
-      (snorm_add_le' hf.norm hg.norm p)
-    _ = LpAddConst p * (snorm f p μ + snorm g p μ) := by rw [← snorm_norm f, ← snorm_norm g]
+    (p : ℝ≥0∞) : snorm (f - g) p μ ≤ LpAddConst p * (snorm f p μ + snorm g p μ) := by
+  simpa only [sub_eq_add_neg, snorm_neg] using snorm_add_le' hf hg.neg p
 #align measure_theory.snorm_sub_le' MeasureTheory.snorm_sub_le'
 
 theorem snorm_sub_le {f g : α → E} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
@@ -878,9 +882,7 @@ theorem snorm_add_lt_top {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g 
   calc
     snorm (f + g) p μ ≤ LpAddConst p * (snorm f p μ + snorm g p μ) :=
       snorm_add_le' hf.aestronglyMeasurable hg.aestronglyMeasurable p
-    _ < ∞ := by
-      apply ENNReal.mul_lt_top (LpAddConst_lt_top p).ne
-      exact (ENNReal.add_lt_top.2 ⟨hf.2, hg.2⟩).ne
+    _ < ∞ := ENNReal.mul_lt_top ENNReal.coe_ne_top <| ENNReal.add_ne_top.2 ⟨hf.2.ne, hg.2.ne⟩
 #align measure_theory.snorm_add_lt_top MeasureTheory.snorm_add_lt_top
 
 theorem ae_le_snormEssSup {f : α → F} : ∀ᵐ y ∂μ, ‖f y‖₊ ≤ snormEssSup f μ :=
@@ -1021,27 +1023,6 @@ theorem memℒp_of_memℒp_trim (hm : m ≤ m0) {f : α → E} (hf : Memℒp f p
 #align measure_theory.mem_ℒp_of_mem_ℒp_trim MeasureTheory.memℒp_of_memℒp_trim
 
 end Trim
-
-@[simp]
-theorem snorm'_neg {f : α → F} : snorm' (-f) q μ = snorm' f q μ := by simp [snorm']
-#align measure_theory.snorm'_neg MeasureTheory.snorm'_neg
-
-@[simp]
-theorem snorm_neg {f : α → F} : snorm (-f) p μ = snorm f p μ := by
-  by_cases h0 : p = 0
-  · simp [h0]
-  by_cases h_top : p = ∞
-  · simp [h_top, snormEssSup]
-  simp [snorm_eq_snorm' h0 h_top]
-#align measure_theory.snorm_neg MeasureTheory.snorm_neg
-
-theorem Memℒp.neg {f : α → E} (hf : Memℒp f p μ) : Memℒp (-f) p μ :=
-  ⟨AEStronglyMeasurable.neg hf.1, by simp [hf.right]⟩
-#align measure_theory.mem_ℒp.neg MeasureTheory.Memℒp.neg
-
-theorem memℒp_neg_iff {f : α → E} : Memℒp (-f) p μ ↔ Memℒp f p μ :=
-  ⟨fun h => neg_neg f ▸ h.neg, Memℒp.neg⟩
-#align measure_theory.mem_ℒp_neg_iff MeasureTheory.memℒp_neg_iff
 
 theorem snorm'_le_snorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) (hpq : p ≤ q) {f : α → E}
     (hf : AEStronglyMeasurable f μ) :
