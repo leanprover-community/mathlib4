@@ -676,6 +676,9 @@ noncomputable def mapDomainFixed : Subalgebra F (AddMonoidAlgebra F (K s))
     change Finsupp.single (f 0) _ = _; rw [AlgEquiv.map_zero]
 #align map_domain_fixed mapDomainFixed
 
+instance : CoeFun (mapDomainFixed s F) fun _ => (K s) → F where
+  coe f := f.1
+
 theorem mem_mapDomainFixed_iff (x : AddMonoidAlgebra F (K s)) :
     x ∈ mapDomainFixed s F ↔ ∀ i j, i ∈ MulAction.orbit (Gal s) j → x i = x j :=
   by
@@ -754,6 +757,10 @@ theorem toConjEquiv_symm_apply_zero_eq (f : GalConjClasses ℚ (K s) →₀ F) :
     (toConjEquiv s F).symm f 0 = f 0 := by rw [toConjEquiv_symm_apply_apply]; rfl
 #align to_conj_equiv_symm_apply_zero_eq toConjEquiv_symm_apply_zero_eq
 
+instance : AddCommMonoid (mapDomainFixed s F) :=
+  letI : AddCommGroup (mapDomainFixed s F) := NonUnitalNonAssocRing.toAddCommGroup
+  AddCommGroup.toAddCommMonoid
+
 @[simps]
 def toConjLinearEquiv : mapDomainFixed s F ≃ₗ[F] GalConjClasses ℚ (K s) →₀ F :=
   { toConjEquiv s F with
@@ -764,7 +771,10 @@ def toConjLinearEquiv : mapDomainFixed s F ≃ₗ[F] GalConjClasses ℚ (K s) �
       rfl
     map_smul' := fun r x => by
       ext i; simp_rw [Finsupp.coe_smul, Pi.smul_apply, toConjEquiv_apply_apply]
-      rfl }
+      simp only [SetLike.val_smul, RingHom.id_apply]
+      rw [Finsupp.coe_smul, Pi.smul_apply]
+      rw [Pi.smul_apply]
+      rw [toConjEquiv_apply_apply] }
 #align to_conj_linear_equiv toConjLinearEquiv
 
 namespace Finsupp.GalConjClasses
@@ -785,8 +795,7 @@ instance : CommRing (GalConjClasses ℚ (K s) →₀ F) :=
       simp_rw [LinearEquiv.symm_apply_apply, mul_one, LinearEquiv.apply_symm_apply]
     left_distrib := fun a b c => by simp only [← map_add, ← mul_add]
     right_distrib := fun a b c => by simp only [← map_add, ← add_mul]
-    mul_comm := fun a b =>
-      by
+    mul_comm := fun a b => by
       change toConjLinearEquiv s F _ = toConjLinearEquiv s F _
       exact congr_arg _ (mul_comm _ _) }
 
