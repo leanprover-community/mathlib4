@@ -440,7 +440,7 @@ lemma exists_iso_binaryBiproduct_of_dist_triang (T : Triangle C) (hT : T ∈ dis
   obtain ⟨fst, hfst⟩ := coyoneda_exact₂ _ hT (𝟙 T.obj₂ - T.mor₂ ≫ inr) (by
     simp only [sub_comp, assoc, ← inr_snd, comp_id, id_comp, sub_self])
   let d := binaryBiproductData _ hT zero inr inr_snd.symm fst
-    (by dsimp ; simp only [← hfst, sub_add_cancel])
+    (by simp only [← hfst, sub_add_cancel])
   refine' ⟨d.isoBiprod.symm, ⟨_, by simp⟩⟩
   ext
   . simpa using d.bicone.inl_fst

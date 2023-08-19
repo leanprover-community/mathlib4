@@ -83,7 +83,6 @@ lemma d_eq (r : ℤ) (hr : 2 ≤ r) (pq pq' : ℤ × ℤ) (hpq' : pq + (r, 1-r) 
   substs hD₀ hD₁ hD₂ hD₃ hD₄ hD₅
   dsimp [d, pageIsoE, Arrow₃.isoMk, Arrow₄.δ₀, Arrow₅.δ₀]
   erw [EIsoOfEq_refl, Iso.refl_hom, NatTrans.id_app]
-  dsimp
   erw [id_comp, Functor.map_id, id_comp]
   rfl
 

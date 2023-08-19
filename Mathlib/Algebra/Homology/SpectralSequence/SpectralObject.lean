@@ -1075,7 +1075,6 @@ lemma dFromSrcΦ_fac :
       whiskerLeft Arrow₄.δ₀ (X.toSrcΦ n₀ n₁ hn₁) ≫ X.dFromSrcΦ n₀ n₁ n₂ hn₁ hn₂ ≫
     whiskerLeft Arrow₄.δ₄ (X.opcyclesι n₀ n₁ n₂ hn₁ hn₂) =
       whiskerLeft Arrow₄.δ₀ (X.Ψ n₀ n₁ hn₁) := by
-  dsimp only [dToSrcΦ]
   erw [(X.δ₀PullbackCokernelSequenceSrcΦ_exact n₀ n₁ hn₁).g_desc_assoc,
     (X.δ₄PullbackKernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂).lift_f]
 
@@ -1441,7 +1440,6 @@ lemma cokernelSequenceD_exact : (X.cokernelSequenceD n₀ n₁ n₂ n₃ hn₁ h
   dsimp at y₂ hy₂
   obtain ⟨y₃, y₄, rfl⟩ : ∃ y₃ y₄, y₂ = biprod.lift y₃ y₄ :=
     ⟨y₂ ≫ biprod.fst, y₂ ≫ biprod.snd, by
-      dsimp
       ext <;> dsimp <;> simp⟩
   simp only [biprod.lift_desc] at hy₂
   refine' ⟨A₂, π₂ ≫ π₁, epi_comp _ _, y₄ ≫ (X.HπE n₀ n₁ n₂ hn₁ hn₂).app (Arrow₃.mk f₃ f₄ f₅), _⟩

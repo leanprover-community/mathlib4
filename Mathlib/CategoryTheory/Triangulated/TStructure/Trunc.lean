@@ -538,7 +538,8 @@ noncomputable def truncLTt : ℤt ⥤ C ⥤ C where
     replace hab := leOfHom hab
     replace hbc := leOfHom hbc
     obtain (_|_|_) := a <;> obtain (_|_|_) := b <;> obtain (_|_|_) := c
-    all_goals simp at hbc hab <;> dsimp [TruncLTt.map] <;> simp
+    all_goals simp (config := {failIfUnchanged := false}) at hbc hab <;>
+      dsimp [TruncLTt.map] <;> simp
 
 @[simp]
 lemma truncLTt_obj_top : t.truncLTt.obj ⊤ = 𝟭 _ := rfl
@@ -588,7 +589,8 @@ noncomputable def truncGEt : ℤt ⥤ C ⥤ C where
     replace hab := leOfHom hab
     replace hbc := leOfHom hbc
     obtain (_|_|_) := a <;> obtain (_|_|_) := b <;> obtain (_|_|_) := c
-    all_goals simp at hbc hab <;> dsimp [TruncGEt.map] <;> simp
+    all_goals simp (config := {failIfUnchanged := false}) at hbc hab <;>
+      dsimp [TruncGEt.map] <;> simp
 
 @[simp]
 lemma truncGEt_obj_bot :
@@ -618,7 +620,7 @@ noncomputable def truncGEtδLTt :
     obtain (_|_|a) := a
     . apply IsZero.eq_of_src
       exact isZero_zero _
-    all_goals obtain (_|_|b) := b <;> simp at hab <;>
+    all_goals obtain (_|_|b) := b <;> simp (config := {failIfUnchanged := false}) at hab <;>
       dsimp [TruncGEtδLTt.app, truncGEt, truncLTt, TruncGEt.map, TruncLTt.map] <;>
       simp [t.truncGEδLT_comp_whiskerRight_natTransTruncLTOfLE]
 
@@ -850,7 +852,7 @@ lemma from_truncGE_obj_ext (n : ℤ) (X : C) {Y : C}
   obtain ⟨g, hg⟩ := yoneda_exact₃ _
     (t.triangleLTGE_distinguished n X) f hf
   have hg' := t.zero_of_isLE_of_isGE g (n-2) n (by linarith)
-    (by dsimp ; exact t.isLE_shift _ (n-1) 1 (n-2) (by linarith)) (by dsimp ; infer_instance)
+    (by dsimp ; exact t.isLE_shift _ (n-1) 1 (n-2) (by linarith)) (by infer_instance)
   rw [hg, hg', comp_zero]
 
 lemma to_truncLE_obj_ext (n : ℤ) (Y : C) {X : C}
@@ -862,7 +864,7 @@ lemma to_truncLE_obj_ext (n : ℤ) (Y : C) {X : C}
   intro f hf
   obtain ⟨g, hg⟩ := coyoneda_exact₂ _ (inv_rot_of_dist_triangle _
     (t.triangleLEGT_distinguished n X)) f hf
-  have hg' := t.zero_of_isLE_of_isGE g n (n+2) (by linarith) (by dsimp ; infer_instance)
+  have hg' := t.zero_of_isLE_of_isGE g n (n+2) (by linarith) (by infer_instance)
     (by dsimp ; apply (t.isGE_shift _ (n+1) (-1) (n+2) (by linarith)))
   rw [hg, hg', zero_comp]
 

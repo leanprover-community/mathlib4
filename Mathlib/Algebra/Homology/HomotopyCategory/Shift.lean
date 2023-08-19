@@ -159,7 +159,7 @@ variable {C}
 lemma shiftFunctorComm_hom_app_f (K : CochainComplex C ℤ) (a b p : ℤ) :
     ((shiftFunctorComm (CochainComplex C ℤ) a b).hom.app K).f p =
       (K.XIsoOfEq (show p + b + a = p + a + b
-        by dsimp ; rw [add_assoc, add_comm b, add_assoc])).hom := by
+        by rw [add_assoc, add_comm b, add_assoc])).hom := by
   rw [shiftFunctorComm_eq _ _ _ _ rfl]
   dsimp
   rw [shiftFunctorAdd'_inv_app_f', shiftFunctorAdd'_hom_app_f']

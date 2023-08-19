@@ -271,7 +271,7 @@ lemma zero_add.map {add : ObjOperation₂ X} {zero : ObjOperation₀ X}
     (h : add.zero_add zero) (F : C ⥤ D) [HasTerminal D] [PreservesLimit (Functor.empty C) F]
     [HasBinaryProduct (F.obj X) (F.obj X)] [PreservesLimit (pair X X) F] :
     (add.map F).zero_add (zero.map F) := by
-  dsimp only [add_zero]
+  --dsimp only [add_zero]
   refine' Eq.trans _ ((congr_arg (fun (f : ObjOperation₁ X) => f.map F) h).trans _)
   . dsimp [ObjOperation₂.map, ObjOperation₁.map, ObjOperation₀.map]
     simp only [F.map_comp, ← Category.assoc]
@@ -293,7 +293,7 @@ lemma add_left_neg.map {add : ObjOperation₂ X} {neg : ObjOperation₁ X} {zero
     (h : add.add_left_neg neg zero) (F : C ⥤ D) [HasTerminal D] [PreservesLimit (Functor.empty C) F]
     [HasBinaryProduct (F.obj X) (F.obj X)] [PreservesLimit (pair X X) F] :
     (add.map F).add_left_neg (neg.map F) (zero.map F) := by
-  dsimp only [add_zero]
+  --dsimp only [add_zero]
   refine' Eq.trans _ ((congr_arg (fun (f : ObjOperation₁ X) => f.map F) h).trans _)
   . dsimp [ObjOperation₂.map, ObjOperation₁.map, ObjOperation₀.map]
     simp only [F.map_comp, ← Category.assoc]

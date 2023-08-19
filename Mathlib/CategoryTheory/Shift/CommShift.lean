@@ -234,7 +234,6 @@ instance of_iso_inv [NatTrans.CommShift e.hom A] :
   dsimp
   rw [← cancel_epi (e.hom.app (X⟦a⟧)), e.hom_inv_id_app_assoc, ← comm_app_assoc,
     ← Functor.map_comp, e.hom_inv_id_app, Functor.map_id]
-  dsimp
   rw [Category.comp_id]⟩
 
 lemma of_isIso [IsIso τ] [NatTrans.CommShift τ A] :
