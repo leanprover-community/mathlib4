@@ -55,7 +55,7 @@ stars and bars, multichoose
 
 open Finset Fintype Function Sum Nat
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Sym
 
@@ -107,7 +107,7 @@ theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = mult
 #align sym.card_sym_fin_eq_multichoose Sym.card_sym_fin_eq_multichoose
 
 /-- For any fintype `α` of cardinality `n`, `card (Sym α k) = multichoose (card α) k`. -/
-theorem card_sym_eq_multichoose (α : Type _) (k : ℕ) [Fintype α] [Fintype (Sym α k)] :
+theorem card_sym_eq_multichoose (α : Type*) (k : ℕ) [Fintype α] [Fintype (Sym α k)] :
     card (Sym α k) = multichoose (card α) k := by
   rw [← card_sym_fin_eq_multichoose]
   exact card_congr (equivCongr (equivFin α))
@@ -115,7 +115,7 @@ theorem card_sym_eq_multichoose (α : Type _) (k : ℕ) [Fintype α] [Fintype (S
 
 /-- The *stars and bars* lemma: the cardinality of `Sym α k` is equal to
 `Nat.choose (card α + k - 1) k`. -/
-theorem card_sym_eq_choose {α : Type _} [Fintype α] (k : ℕ) [Fintype (Sym α k)] :
+theorem card_sym_eq_choose {α : Type*} [Fintype α] (k : ℕ) [Fintype (Sym α k)] :
     card (Sym α k) = (card α + k - 1).choose k := by
   rw [card_sym_eq_multichoose, Nat.multichoose_eq]
 #align sym.card_sym_eq_choose Sym.card_sym_eq_choose

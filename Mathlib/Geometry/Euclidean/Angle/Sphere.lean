@@ -24,7 +24,7 @@ open scoped EuclideanGeometry Real RealInnerProductSpace ComplexConjugate
 
 namespace Orientation
 
-variable {V : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 
 variable [Fact (finrank ℝ V = 2)] (o : Orientation ℝ V (Fin 2))
 
@@ -72,7 +72,7 @@ end Orientation
 
 namespace EuclideanGeometry
 
-variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
 
 local notation "o" => Module.Oriented.positiveOrientation
@@ -255,7 +255,7 @@ namespace Triangle
 
 open EuclideanGeometry
 
-variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
 
 local notation "o" => Module.Oriented.positiveOrientation
@@ -355,7 +355,7 @@ end Affine
 
 namespace EuclideanGeometry
 
-variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
 
 local notation "o" => Module.Oriented.positiveOrientation

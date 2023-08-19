@@ -108,7 +108,7 @@ theorem iInf_ker_proj : (⨅ i, ker (proj i : ((i : ι) → φ i) →ₗ[R] φ i
 /-- Linear map between the function spaces `I → M₂` and `I → M₃`, induced by a linear map `f`
 between `M₂` and `M₃`. -/
 @[simps]
-protected def compLeft (f : M₂ →ₗ[R] M₃) (I : Type _) : (I → M₂) →ₗ[R] I → M₃ :=
+protected def compLeft (f : M₂ →ₗ[R] M₃) (I : Type*) : (I → M₂) →ₗ[R] I → M₃ :=
   { f.toAddMonoidHom.compLeft I with
     toFun := fun h => f ∘ h
     map_smul' := fun c h => by
@@ -161,7 +161,7 @@ theorem lsum_apply (S) [AddCommMonoid M] [Module R M] [Fintype ι] [DecidableEq 
 #align linear_map.apply LinearMap.lsum_apply
 
 @[simp high]
-theorem lsum_single {ι R : Type _} [Fintype ι] [DecidableEq ι] [CommRing R] {M : ι → Type _}
+theorem lsum_single {ι R : Type*} [Fintype ι] [DecidableEq ι] [CommRing R] {M : ι → Type*}
     [(i : ι) → AddCommGroup (M i)] [(i : ι) → Module R (M i)] :
     LinearMap.lsum R M R LinearMap.single = LinearMap.id :=
   LinearMap.ext fun x => by simp [Finset.univ_sum_single]
@@ -254,7 +254,7 @@ end LinearMap
 
 namespace Submodule
 
-variable [Semiring R] {φ : ι → Type _} [(i : ι) → AddCommMonoid (φ i)] [(i : ι) → Module R (φ i)]
+variable [Semiring R] {φ : ι → Type*} [(i : ι) → AddCommMonoid (φ i)] [(i : ι) → Module R (φ i)]
 
 open LinearMap
 
@@ -332,7 +332,7 @@ end Submodule
 
 namespace LinearEquiv
 
-variable [Semiring R] {φ ψ χ : ι → Type _}
+variable [Semiring R] {φ ψ χ : ι → Type*}
 
 variable [(i : ι) → AddCommMonoid (φ i)] [(i : ι) → Module R (φ i)]
 
@@ -393,7 +393,7 @@ def piCongrLeft (e : ι' ≃ ι) : ((i' : ι') → φ (e i')) ≃ₗ[R] (i : ι)
 #align linear_equiv.Pi_congr_left LinearEquiv.piCongrLeft
 
 /-- This is `Equiv.piOptionEquivProd` as a `LinearEquiv` -/
-def piOptionEquivProd {ι : Type _} {M : Option ι → Type _} [(i : Option ι) → AddCommGroup (M i)]
+def piOptionEquivProd {ι : Type*} {M : Option ι → Type*} [(i : Option ι) → AddCommGroup (M i)]
     [(i : Option ι) → Module R (M i)] :
     ((i : Option ι) → M i) ≃ₗ[R] M none × ((i : ι) → M (some i)) :=
   { Equiv.piOptionEquivProd with
@@ -401,7 +401,7 @@ def piOptionEquivProd {ι : Type _} {M : Option ι → Type _} [(i : Option ι) 
     map_smul' := by simp [Function.funext_iff] }
 #align linear_equiv.pi_option_equiv_prod LinearEquiv.piOptionEquivProd
 
-variable (ι M) (S : Type _) [Fintype ι] [DecidableEq ι] [Semiring S] [AddCommMonoid M]
+variable (ι M) (S : Type*) [Fintype ι] [DecidableEq ι] [Semiring S] [AddCommMonoid M]
   [Module R M] [Module S M] [SMulCommClass R S M]
 
 /-- Linear equivalence between linear functions `Rⁿ → M` and `Mⁿ`. The spaces `Rⁿ` and `Mⁿ`
@@ -431,7 +431,7 @@ theorem piRing_symm_apply (f : ι → M) (g : ι → R) : (piRing R M ι S).symm
 -- TODO additive version?
 /-- `Equiv.sumArrowEquivProdArrow` as a linear equivalence.
 -/
-def sumArrowLequivProdArrow (α β R M : Type _) [Semiring R] [AddCommMonoid M] [Module R M] :
+def sumArrowLequivProdArrow (α β R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] :
     (Sum α β → M) ≃ₗ[R] (α → M) × (β → M) :=
   { Equiv.sumArrowEquivProdArrow α β
       M with
@@ -471,7 +471,7 @@ theorem sumArrowLequivProdArrow_symm_apply_inr {α β} (f : α → M) (g : β �
 @[simps (config :=
       { simpRhs := true
         fullyApplied := false }) symm_apply]
-def funUnique (ι R M : Type _) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M] :
+def funUnique (ι R M : Type*) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M] :
     (ι → M) ≃ₗ[R] M :=
   { Equiv.funUnique ι M with
     map_add' := fun _ _ => rfl
@@ -480,7 +480,7 @@ def funUnique (ι R M : Type _) [Unique ι] [Semiring R] [AddCommMonoid M] [Modu
 #align linear_equiv.fun_unique_symm_apply LinearEquiv.funUnique_symm_apply
 
 @[simp]
-theorem funUnique_apply (ι R M : Type _) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M] :
+theorem funUnique_apply (ι R M : Type*) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M] :
     (funUnique ι R M : (ι → M) → M) = eval default := rfl
 #align linear_equiv.fun_unique_apply LinearEquiv.funUnique_apply
 
