@@ -47,27 +47,21 @@ refine' Eq.symm $ krullDim.eq_OrderDual.trans $ krullDim.eq_of_OrderIso $ OrderI
     dsimp
     rw [PrimeSpectrum.vanishingIdeal_zeroLocus_eq_radical, p.IsPrime.radical]
   right_inv := λ s ↦ by
-    dsimp [OrderDual.toDual, OrderDual.ofDual, Equiv.coe_refl, id, Subtype.coe_mk,
-      Function.comp_apply]
+    dsimp [OrderDual.ofDual]
     simp only [PrimeSpectrum.zeroLocus_vanishingIdeal_eq_closure, show
       closure (Subtype.val s) = Subtype.val s by exact s.2.1.closure_eq]
     exact rfl
   map_rel_iff' := by
     intro p q
-    simp [Equiv.coe_fn_mk, OrderDual.toDual_le_toDual, Subtype.mk_le_mk,
-      PrimeSpectrum.zeroLocus_subset_zeroLocus_iff, q.IsPrime.radical] }
+    simp [PrimeSpectrum.zeroLocus_subset_zeroLocus_iff, q.IsPrime.radical] }
 
 /--
 If `R ⟶ S` is a surjective ring homomorphism, then `ringKrullDim S ≤ ringKrullDim R`.
 -/
 theorem le_of_surj (R S : Type _) [CommRing R] [CommRing S] (f : R →+* S)
-  (hf : Function.Surjective f) : ringKrullDim S ≤ ringKrullDim R := by
-{ refine' krullDim.le_of_strictMono (PrimeSpectrum.comap f)
-    (Monotone.strictMono_of_injective ?_ (PrimeSpectrum.comap_injective_of_surjective f hf))
-  · intro a b hab
-    change ((PrimeSpectrum.comap f) a).asIdeal ≤ ((PrimeSpectrum.comap f) b).asIdeal
-    rw [PrimeSpectrum.comap_asIdeal, PrimeSpectrum.comap_asIdeal]
-    exact Ideal.comap_mono hab }
+  (hf : Function.Surjective f) : ringKrullDim S ≤ ringKrullDim R :=
+krullDim.le_of_strictMono (PrimeSpectrum.comap f) (Monotone.strictMono_of_injective
+  (λ _ _ hab ↦ Ideal.comap_mono hab) (PrimeSpectrum.comap_injective_of_surjective f hf))
 
 /--
 If `I` is an ideal of `R`, then `ringKrullDim (R ⧸ I) ≤ ringKrullDim R`.
@@ -87,9 +81,8 @@ le_antisymm (le_of_surj S R (RingEquiv.symm e) (EquivLike.surjective (RingEquiv.
 instance (F : Type _) [Field F] : Unique (PrimeSpectrum F) where
   default := ⟨⊥, Ideal.bot_prime⟩
   uniq := λ p ↦ PrimeSpectrum.ext _ _ $ Ideal.ext $ λ x ↦ by
-    erw [Submodule.mem_bot]
     refine ⟨λ h ↦ ?_, λ h ↦ h.symm ▸ Submodule.zero_mem _⟩
-    rwa [p.asIdeal.eq_bot_of_prime, Submodule.mem_bot] at h
+    rwa [p.asIdeal.eq_bot_of_prime] at h
 
 instance (F : Type _) [Field F] : OrderTop (LTSeries (PrimeSpectrum F)) where
   top := default
@@ -101,9 +94,7 @@ lemma eq_zero_of_Field (F : Type _) [Field F] : ringKrullDim F = 0 :=
 
 lemma eq_zero_of_isArtinianRing (R : Type _) [CommRing R] [Nontrivial R] [IsArtinianRing R] :
   ringKrullDim R = 0 := by
-{ haveI : Inhabited (PrimeSpectrum R) := Classical.inhabited_of_nonempty
-    PrimeSpectrum.instNonemptyPrimeSpectrum
-  rw [ringKrullDim, krullDim.eq_iSup_height]
+{ rw [ringKrullDim, krullDim.eq_iSup_height]
   suffices : ∀ (a : PrimeSpectrum R), height (PrimeSpectrum R) a = 0
   { simp_rw [this]; rw [iSup_const] }
   · intro p
@@ -111,17 +102,13 @@ lemma eq_zero_of_isArtinianRing (R : Type _) [CommRing R] [Nontrivial R] [IsArti
     · refine iSup_le (λ q ↦ ?_)
       · erw [WithBot.coe_le_coe, WithTop.coe_le_coe]
         by_contra' r
-        haveI : Fact (2 ≤ q.length + 1) := by
-          constructor
-          linarith
         have : q 0 < q 1 := by
-          change RelSeries.toFun q 0 < RelSeries.toFun q 1
           let hq := q.step ⟨0, r⟩
           rw [show (Fin.castSucc { val := 0, isLt := r }) = 0 by exact rfl,
             show (Fin.succ { val := 0, isLt := r }) = 1 by
-              rw [show (Fin.succ { val := 0, isLt := r }) = 0 + 1 by
-                exact Fin.ext $ Eq.symm (Fin.val_add_one_of_lt r)];
-                exact Fin.zero_add 1] at hq
+            rw [show (Fin.succ { val := 0, isLt := r }) = 0 + 1 by
+            exact Fin.ext $ Eq.symm (Fin.val_add_one_of_lt r)];
+            exact Fin.zero_add 1] at hq
           exact hq
         haveI H0 : (q 0).1.asIdeal.IsMaximal := inferInstance
         exact (ne_of_lt this (show q 0 = q 1 by
@@ -215,7 +202,6 @@ is defined as `J.localization I.asIdeal.primeCompl`.
 -/
 abbrev _root_.Ideal.localizationAtPrime := J.localization I.asIdeal.primeCompl
 
-
 /-- The canonical map from the ideal J of R to its image JR_I in the localisation. -/
 @[simps apply] def _root_.Ideal.toLocalization (x : Submonoid R) :
   J →ₗ[R] J.localization x where
@@ -235,10 +221,9 @@ def _root_.Ideal.localization' (y : Submonoid R) : Ideal (Localization y) where
     ⟨⟨_, J.add_mem (J.mul_mem_left b1 (SetLike.coe_mem a2))
       (J.mul_mem_left b2 (SetLike.coe_mem a1))⟩, ⟨b1 * b2, Localization.add_mk _ _ _ _⟩⟩
   zero_mem' := ⟨0, ⟨1, by
-    simp only [ZeroMemClass.coe_zero, Localization.mk_eq_monoidOf_mk']
+    simp only [Localization.mk_eq_monoidOf_mk']
     rw [Submonoid.LocalizationMap.mk']
     simp only [map_one, inv_one, Units.val_one, mul_one]
-    rw [Submonoid.LocalizationMap.toMap]
     exact Eq.symm (Localization.mk_zero 1)⟩⟩
   smul_mem' := λ c ↦ Localization.induction_on c $ by
     rintro ⟨c1, c2⟩ ⟨j, ⟨a, rfl⟩⟩
@@ -268,7 +253,7 @@ lemma _root_.Ideal.localization'_eq_localization (y : Submonoid R) :
 instance _root_.Ideal.localization'_IsPrime (J : Set.Iic I) :
   (J.1.asIdeal.localization' I.asIdeal.primeCompl).IsPrime where
 ne_top' := fun hit => by
-  rw [Ideal.eq_top_iff_one, Ideal.mem_localization'_iff] at hit
+  rw [Ideal.eq_top_iff_one] at hit
   rcases hit with ⟨a, ⟨b, hb⟩⟩
   exact (IsLocalization.AtPrime.isUnit_mk'_iff (Localization.AtPrime I.asIdeal) _
     (a : R) b).mp (by simpa only [←Localization.mk_eq_mk', ←hb] using isUnit_one) (J.2 a.2)
@@ -319,16 +304,14 @@ lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIic_IsLeftInverse :
 { intro J; ext x; constructor
   · intro hx
     change Localization.mk x 1 ∈ _root_.Ideal.localization' J.val.asIdeal I.asIdeal.primeCompl at hx
-    rw [Ideal.mem_localization'_iff] at hx
     rcases hx with ⟨a, b, hab⟩
-    erw [Localization.mk_eq_mk_iff, Localization.r_iff_exists, Submonoid.coe_one, one_mul] at hab
+    erw [Localization.mk_eq_mk_iff, Localization.r_iff_exists, one_mul] at hab
     rcases hab with ⟨c, hc⟩
     rw [←mul_assoc] at hc
     exact (or_iff_not_imp_left.1 (Ideal.IsPrime.mem_or_mem J.val.2 (@Set.mem_of_eq_of_mem R
       (↑c * ↑b * x) (↑c * ↑a) J.val.asIdeal hc (Ideal.mul_mem_left J.val.asIdeal ↑c a.2))))
         (λ hi ↦ (Submonoid.mul_mem I.asIdeal.primeCompl c.2 b.2) (J.2 hi))
   · intro hx
-    change Localization.mk x 1 ∈ _root_.Ideal.localization' J.val.asIdeal I.asIdeal.primeCompl
     exact ⟨⟨x, hx⟩, ⟨1, rfl⟩⟩ }
 
 /--
@@ -340,8 +323,6 @@ lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIic_IsRightInverse :
     (PrimeSpectrum.IicToLocalizationAtPrime I) := by
 { intro J; ext x; constructor
   · intro hx
-    simp_rw [PrimeSpectrum.IicToLocalizationAtPrime, PrimeSpectrum.LocalizationAtPrimeToIic,
-      Ideal.mem_comap, Ideal.mem_localization'_iff] at hx
     rcases hx with ⟨⟨a, ha⟩, ⟨b, hab⟩⟩
     dsimp at ha hab
     rw [←one_mul a, ←mul_one b, ←Localization.mk_mul] at hab; rw [hab]
