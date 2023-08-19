@@ -110,6 +110,7 @@ theorem coeff_natDegree : coeff p (natDegree p) = leadingCoeff p :=
   rfl
 #align polynomial.coeff_nat_degree Polynomial.coeff_natDegree
 
+@[simp]
 theorem degree_eq_bot : degree p = ⊥ ↔ p = 0 :=
   ⟨fun h => support_eq_empty.1 (Finset.max_eq_bot.1 h), fun h => h.symm ▸ rfl⟩
 #align polynomial.degree_eq_bot Polynomial.degree_eq_bot
