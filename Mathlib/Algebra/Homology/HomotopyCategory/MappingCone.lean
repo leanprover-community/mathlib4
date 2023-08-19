@@ -456,7 +456,7 @@ lemma liftCochain_fst {K : CochainComplex C ℤ} {n m : ℤ} (α : Cochain K F m
     (β : Cochain K G n) (h : n + 1 = m) :
     (liftCochain φ α β h) •[h] (fst φ : Cochain (mappingCone φ) F 1) = α := by
   dsimp only [liftCochain]
-  simp only [Cochain.add_comp, γhmul_assoc_of_second_degree_eq_neq_third_degree,
+  simp only [Cochain.add_comp, γhmul_assoc_of_second_degree_eq_neg_third_degree,
     inl_fst, Cochain.comp_id, γhmul_assoc_of_second_degree_eq_zero, inr_fst,
     Cochain.comp_zero, add_zero]
 
@@ -569,7 +569,7 @@ noncomputable def liftHomotopy {K : CochainComplex C ℤ} (f₁ f₂ : K ⟶ map
       . simp only [h₁, Cochain.add_comp, γhmul_assoc_of_first_degree_eq_zero,
           Cochain.neg_comp,
           inl_fst, Cochain.comp_id, inr_fst, Cochain.comp_zero, add_zero,
-          γhmul_assoc_of_second_degree_eq_neq_third_degree]
+          γhmul_assoc_of_second_degree_eq_neg_third_degree]
       . simp only [h₂, Cochain.add_comp, γhmul_assoc_of_first_degree_eq_zero,
           Cochain.neg_comp, γhmul_assoc_of_third_degree_eq_zero, inl_snd,
           Cochain.comp_zero, neg_zero, inr_snd, Cochain.comp_id, zero_add]⟩

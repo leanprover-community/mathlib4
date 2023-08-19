@@ -1,10 +1,10 @@
 import Mathlib.Algebra.Group.Defs
 
-universe u
+universe u₁ u₂
 
-abbrev GradedType (M : Type _) := M → Type u
+abbrev GradedType (M : Type u₁) := M → Type u₂
 
-variable {M : Type _} {G : Type _}
+variable {M : Type u₁} {G : Type u₁}
 
 class HasGradedHMul [Add M] (X Y : GradedType M) (Z : outParam (GradedType M)) where
   γhmul' (a b c : M) (h : a + b = c) (α : X a) (β : Y b) : Z c
@@ -51,7 +51,7 @@ variable [AddGroup G] (X' Y' Z' : GradedType G) (XY' YZ' XYZ' : outParam (Graded
   [HasGradedHMul X' YZ' XYZ'] [HasGradedHMul XY' Z' XYZ']
 
 @[simp]
-lemma γhmul_assoc_of_second_degree_eq_neq_third_degree
+lemma γhmul_assoc_of_second_degree_eq_neg_third_degree
     [IsAssocGradedHMul X' Y' Z' XY' YZ' XYZ']
     {a b ab : G} (α : X' a) (β : Y' (-b)) (γ : Z' b) (hab : a + (-b) = ab) :
     (α •[hab] β) •[show ab + b = a by rw [← hab, add_assoc, neg_add_self, add_zero]] γ =
