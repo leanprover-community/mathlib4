@@ -1105,25 +1105,25 @@ theorem isMultiplicative_moebius : IsMultiplicative μ := by
 #align nat.arithmetic_function.is_multiplicative_moebius Nat.ArithmeticFunction.isMultiplicative_moebius
 
 theorem IsMultiplicative.prodToFinsetFactors_one_add_of_squarefree [CommSemiring R]
-  { f : Nat.ArithmeticFunction R} (h_mult : f.IsMultiplicative) {l : ℕ} (hl : Squarefree l) :
-    ∏ p in l.factors.toFinset, (1 + f p) = ∑ d in l.divisors, f d := by
-  haveI : NeZero l := ⟨hl.ne_zero⟩
-  trans (∏ᵖ p ∣ l, ((ζ:ArithmeticFunction R) + f) p)
+  {f : Nat.ArithmeticFunction R} (h_mult : f.IsMultiplicative) {n : ℕ} (hn : Squarefree n) :
+    ∏ p in n.factors.toFinset, (1 + f p) = ∑ d in n.divisors, f d := by
+  haveI : NeZero n := ⟨hn.ne_zero⟩
+  trans (∏ᵖ p ∣ n, ((ζ:ArithmeticFunction R) + f) p)
   · simp_rw [prodToFinsetFactors_apply, add_apply, natCoe_apply]
     apply Finset.prod_congr rfl; intro p hp;
     rw [zeta_apply_ne (Nat.prime_of_mem_factors $ List.mem_toFinset.mp hp).ne_zero, cast_one]
-  rw [isMultiplicative_zeta.nat_cast.prodToFinsetFactors_add_of_squarefree h_mult _ hl,
+  rw [isMultiplicative_zeta.nat_cast.prodToFinsetFactors_add_of_squarefree h_mult _ hn,
     coe_zeta_mul_apply]
 
-theorem prodToFinsetFactors_one_sub_of_squarefree [CommRing R]
-    (f : Nat.ArithmeticFunction R) (hf : f.IsMultiplicative) {l : ℕ} (hl : Squarefree l) :
-    ∏ p in l.factors.toFinset, (1 - f p) = ∑ d in l.divisors, μ d * f d := by
-  trans (∏ p in l.factors.toFinset, (1 + (ArithmeticFunction.pmul (μ:ArithmeticFunction R) f) p))
+theorem IsMultiplicative.prodToFinsetFactors_one_sub_of_squarefree [CommRing R]
+    (f : Nat.ArithmeticFunction R) (hf : f.IsMultiplicative) {n : ℕ} (hn : Squarefree n) :
+    ∏ p in n.factors.toFinset, (1 - f p) = ∑ d in n.divisors, μ d * f d := by
+  trans (∏ p in n.factors.toFinset, (1 + (ArithmeticFunction.pmul (μ:ArithmeticFunction R) f) p))
   · apply Finset.prod_congr rfl; intro p hp
     rw [pmul_apply, intCoe_apply, Nat.ArithmeticFunction.moebius_apply_prime
         (Nat.prime_of_mem_factors (List.mem_toFinset.mp hp))]
     ring
-  · rw [(isMultiplicative_moebius.int_cast.pmul hf).prodToFinsetFactors_one_add_of_squarefree hl]
+  · rw [(isMultiplicative_moebius.int_cast.pmul hf).prodToFinsetFactors_one_add_of_squarefree hn]
     simp_rw [pmul_apply, intCoe_apply]
 
 open UniqueFactorizationMonoid
