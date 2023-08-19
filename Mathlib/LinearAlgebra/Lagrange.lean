@@ -652,11 +652,9 @@ theorem eval_interpolate_not_at_node' (hvs : Set.InjOn v s) (hs : s.Nonempty)
   simp only [mul_div_mul_left _ _ (eval_nodal_not_at_node hx), Pi.one_apply, mul_one]
 #align lagrange.eval_interpolate_not_at_node' Lagrange.eval_interpolate_not_at_node'
 
-/--
-The vanishing polynomial on a multiplicative subgroup is of the form X ^ n - 1
--/
-theorem nodal_subgroup_eq_X_pow_card_sub_one (G : Subgroup (Units F)) [Fintype G] :
-  nodal G.carrier.toFinset (fun (x : Fˣ) => (x : F)) = X ^ (Fintype.card G) - C 1 := by
+/-- The vanishing polynomial on a multiplicative subgroup is of the form X ^ n - 1. -/
+theorem nodal_subgroup_eq_X_pow_card_sub_one (G : Subgroup Fˣ) [Fintype G] :
+  nodal (G : Set Fˣ).toFinset ((↑) : Fˣ → F) = X ^ (Fintype.card G) - 1 := by
   apply eq_of_degrees_le_of_leadingCoeff_eq_of_eval_index_eq
     (v := (fun (x : Fˣ) => (x : F))) (G.carrier.toFinset)
   · apply Set.injOn_of_injective Units.ext
