@@ -52,7 +52,9 @@ theorem continuum_le_cardinal_of_module
   simpa using A.trans (Cardinal.mk_le_of_module 𝕜 E)
 
 /-- In a topological vector space over a nontrivially normed field, any neighborhood of zero has
-the same cardinality as the whole space. -/
+the same cardinality as the whole space.
+
+See also `cardinal_eq_of_mem_nhds`. -/
 lemma cardinal_eq_of_mem_nhds_zero
     {E : Type*} (𝕜 : Type*) [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [TopologicalSpace E] [ContinuousSMul 𝕜 E] {s : Set E} (hs : s ∈ 𝓝 (0 : E)) : #s = #E := by
