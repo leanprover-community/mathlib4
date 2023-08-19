@@ -575,7 +575,7 @@ theorem mul_left_strictMono [IsDedekindDomain A] {I : FractionalIdeal A⁰ K} (h
 protected theorem div_eq_mul_inv [IsDedekindDomain A] (I J : FractionalIdeal A⁰ K) :
     I / J = I * J⁻¹ := by
   by_cases hJ : J = 0
-  · rw [hJ, div_zero, inv_zero', MulZeroClass.mul_zero]
+  · rw [hJ, div_zero, inv_zero', mul_zero]
   refine' le_antisymm ((mul_right_le_iff hJ).mp _) ((le_div_iff_mul_le hJ).mpr _)
   · rw [mul_assoc, mul_comm J⁻¹, FractionalIdeal.mul_inv_cancel hJ, mul_one, mul_le]
     intro x hx y hy
@@ -804,7 +804,7 @@ theorem Ideal.exist_integer_multiples_not_mem {J : Ideal A} (hJ : J ≠ ⊤) {ι
       -- then `a` is actually an element of `J / I`, contradiction.
       refine' (mem_div_iff_of_nonzero hI0).mpr fun y hy => Submodule.span_induction hy _ _ _ _
       · rintro _ ⟨i, hi, rfl⟩; exact hpI i hi
-      · rw [MulZeroClass.mul_zero]; exact Submodule.zero_mem _
+      · rw [mul_zero]; exact Submodule.zero_mem _
       · intro x y hx hy; rw [mul_add]; exact Submodule.add_mem _ hx hy
       · intro b x hx; rw [mul_smul_comm]; exact Submodule.smul_mem _ b hx
   -- To show the inclusion of `J / I` into `I⁻¹ = 1 / I`, note that `J < I`.
@@ -1237,7 +1237,7 @@ theorem Ideal.le_mul_of_no_prime_factors {I J K : Ideal R}
     (coprime : ∀ P, J ≤ P → K ≤ P → ¬IsPrime P) (hJ : I ≤ J) (hK : I ≤ K) : I ≤ J * K := by
   simp only [← Ideal.dvd_iff_le] at coprime hJ hK ⊢
   by_cases hJ0 : J = 0
-  · simpa only [hJ0, MulZeroClass.zero_mul] using hJ
+  · simpa only [hJ0, zero_mul] using hJ
   obtain ⟨I', rfl⟩ := hK
   rw [mul_comm]
   refine mul_dvd_mul_left K

@@ -152,7 +152,7 @@ theorem tendsto_normSq_coprime_pair :
     · show (z : ℂ).im⁻¹ * ((z : ℂ) * conj (f c)).im = c 1
       rw [f_def, RingHom.map_add, RingHom.map_mul, mul_add, mul_left_comm, mul_conj, conj_ofReal,
         conj_ofReal, ← ofReal_mul, add_im, ofReal_im, zero_add, inv_mul_eq_iff_eq_mul₀ hz]
-      simp only [ofReal_im, ofReal_re, mul_im, zero_add, MulZeroClass.mul_zero]
+      simp only [ofReal_im, ofReal_re, mul_im, zero_add, mul_zero]
   have hf' : ClosedEmbedding f := by
     have := @LinearEquiv.closedEmbedding_of_injective ℝ _ (Fin 2 → ℝ) _ _ ℂ _ _ _ f
     exact this hf

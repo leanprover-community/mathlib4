@@ -105,8 +105,8 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     have hm₀ : 0 < m := by
       have hf₀ : f 0 = 0 := by
         -- Porting note: was
-        -- simp only [floor_eq_zero_iff, algebraMap.coe_zero, MulZeroClass.mul_zero, fract_zero,
-        --   MulZeroClass.zero_mul, Set.left_mem_Ico, zero_lt_one]
+        -- simp only [floor_eq_zero_iff, algebraMap.coe_zero, mul_zero, fract_zero,
+        --   zero_mul, Set.left_mem_Ico, zero_lt_one]
         simp only [cast_zero, mul_zero, fract_zero, zero_mul, floor_zero]
       refine' Ne.lt_of_le (fun h => n_pos.ne _) (mem_Icc.mp hm).1
       exact_mod_cast hf₀.symm.trans (h.symm ▸ hf : f 0 = n)
@@ -541,7 +541,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
   induction v using Nat.strong_induction_on generalizing ξ u with | h v ih => ?_
   rcases lt_trichotomy v 1 with (ht | rfl | ht)
   · replace h := h.2.2
-    simp only [Nat.lt_one_iff.mp ht, Nat.cast_zero, div_zero, tsub_zero, MulZeroClass.zero_mul,
+    simp only [Nat.lt_one_iff.mp ht, Nat.cast_zero, div_zero, tsub_zero, zero_mul,
       cast_zero, inv_zero] at h
     exact False.elim (lt_irrefl _ <| (abs_nonneg ξ).trans_lt h)
   · rw [Nat.cast_one, div_one]
