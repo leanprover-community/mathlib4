@@ -116,9 +116,8 @@ theorem norm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, ‖f a‖ =
 #align matrix.norm_map_eq Matrix.norm_map_eq
 
 @[simp]
-theorem nnnorm_transpose (A : Matrix m n α) : ‖Aᵀ‖₊ = ‖A‖₊ := by
-  simp_rw [Pi.nnnorm_def]
-  exact Finset.sup_comm _ _ _
+theorem nnnorm_transpose (A : Matrix m n α) : ‖Aᵀ‖₊ = ‖A‖₊ :=
+  Finset.sup_comm _ _ _
 #align matrix.nnnorm_transpose Matrix.nnnorm_transpose
 
 @[simp]
@@ -304,7 +303,7 @@ section NonUnitalSeminormedRing
 variable [NonUnitalSeminormedRing α]
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (k j) -/
-theorem linfty_op_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A ⬝ B‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
+theorem linfty_op_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
   simp_rw [linfty_op_nnnorm_def, Matrix.mul_apply]
   calc
     (Finset.univ.sup fun i => ∑ k, ‖∑ j, A i j * B j k‖₊) ≤
@@ -322,7 +321,7 @@ theorem linfty_op_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A ⬝ 
       rfl
 #align matrix.linfty_op_nnnorm_mul Matrix.linfty_op_nnnorm_mul
 
-theorem linfty_op_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A ⬝ B‖ ≤ ‖A‖ * ‖B‖ :=
+theorem linfty_op_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖ ≤ ‖A‖ * ‖B‖ :=
   linfty_op_nnnorm_mul _ _
 #align matrix.linfty_op_norm_mul Matrix.linfty_op_norm_mul
 
@@ -544,7 +543,7 @@ section IsROrC
 
 variable [IsROrC α]
 
-theorem frobenius_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A ⬝ B‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
+theorem frobenius_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
   simp_rw [frobenius_nnnorm_def, Matrix.mul_apply]
   rw [← NNReal.mul_rpow, @Finset.sum_comm _ n m, Finset.sum_mul_sum, Finset.sum_product]
   refine' NNReal.rpow_le_rpow _ one_half_pos.le
@@ -560,7 +559,7 @@ theorem frobenius_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A ⬝ 
     NNReal.rpow_two] using this
 #align matrix.frobenius_nnnorm_mul Matrix.frobenius_nnnorm_mul
 
-theorem frobenius_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A ⬝ B‖ ≤ ‖A‖ * ‖B‖ :=
+theorem frobenius_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖ ≤ ‖A‖ * ‖B‖ :=
   frobenius_nnnorm_mul A B
 #align matrix.frobenius_norm_mul Matrix.frobenius_norm_mul
 
