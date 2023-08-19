@@ -185,6 +185,7 @@ def map₂ (f : Type u → Type v → Type w) (hf : ∀ α β γ δ, α ≃ β �
 
 /-- The universe lift operation on cardinals. You can specify the universes explicitly with
   `lift.{u v} : Cardinal.{v} → Cardinal.{max v u}` -/
+@[pp_with_univ]
 def lift (c : Cardinal.{v}) : Cardinal.{max v u} :=
   map ULift.{u, v} (fun _ _ e => Equiv.ulift.trans <| e.trans Equiv.ulift.symm) c
 #align cardinal.lift Cardinal.lift
@@ -196,8 +197,7 @@ theorem mk_uLift (α) : #(ULift.{v, u} α) = lift.{v} #α :=
 
 -- Porting note : simpNF is not happy with universe levels, but this is needed as simp lemma
 -- further down in this file
-/-- `lift.{(max u v) u}` equals `lift.{v u}`. Using `set_option pp.universes true` will make it much
-    easier to understand what's happening when using this lemma. -/
+/-- `lift.{(max u v) u}` equals `lift.{v u}`. -/
 @[simp, nolint simpNF]
 theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
   funext fun a => inductionOn a fun _ => (Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
@@ -205,8 +205,7 @@ theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
 
 -- Porting note : simpNF is not happy with universe levels, but this is needed as simp lemma
 -- further down in this file
-/-- `lift.{(max v u) u}` equals `lift.{v u}`. Using `set_option pp.universes true` will make it much
-    easier to understand what's happening when using this lemma. -/
+/-- `lift.{(max v u) u}` equals `lift.{v u}`. -/
 @[simp, nolint simpNF]
 theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
   lift_umax
