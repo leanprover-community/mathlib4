@@ -91,6 +91,22 @@ lemma ShortExact.ab_surjective_g (hS : S.ShortExact) :
     Function.Surjective S.g :=
   (AddCommGroupCat.epi_iff_surjective _).1 hS.epi_g
 
+lemma ab_exact_iff_ker_le_range :
+    S.Exact ↔ S.g.ker ≤ S.f.range :=
+  S.ab_exact_iff
+
+lemma ab_exact_iff_range_eq_ker :
+    S.Exact ↔ S.f.range = S.g.ker := by
+  rw [ab_exact_iff_ker_le_range]
+  constructor
+  · intro h
+    refine' le_antisymm _ h
+    rintro _ ⟨x₁, rfl⟩
+    rw [AddMonoidHom.mem_ker, ← comp_apply, S.zero]
+    rfl
+  · intro h
+    rw [h]
+
 end ShortComplex
 
 end CategoryTheory

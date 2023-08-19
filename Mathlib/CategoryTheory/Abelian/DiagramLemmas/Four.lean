@@ -49,6 +49,7 @@ equivalence of exactness and co-exactness follows easily.
 four lemma, five lemma, diagram lemma, diagram chase
 -/
 
+/- redundant with the new homology API
 
 open CategoryTheory hiding comp_apply
 
@@ -216,3 +217,5 @@ theorem isIso_of_epi_of_isIso_of_isIso_of_mono : IsIso γ :=
 end Five
 
 end CategoryTheory.Abelian
+
+-/

@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Preadditive.LeftExact
 import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.Algebra.Homology.Exact
+import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Tactic.TFAE
 
 #align_import category_theory.abelian.exact from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
@@ -42,6 +42,8 @@ noncomputable section
 open CategoryTheory Limits Preadditive
 
 variable {C : Type u₁} [Category.{v₁} C] [Abelian C]
+
+/- redundant with the new homology API
 
 namespace CategoryTheory
 
@@ -319,7 +321,13 @@ theorem Exact.unop_iff {X Y Z : Cᵒᵖ} (g : X ⟶ Y) (f : Y ⟶ Z) : Exact' f.
 
 end Opposite
 
-end Abelian
+end Abelian-/
+
+namespace CategoryTheory
+
+/-
+
+this is now in `CategoryTheory.Functor.ReflectsExactSequences`
 
 namespace Functor
 
@@ -330,7 +338,7 @@ variable {D : Type u₂} [Category.{v₂} D] [Abelian D]
 variable (F : C ⥤ D) [PreservesZeroMorphisms F]
 
 instance (priority := 100) reflectsExactSequences'OfPreservesZeroMorphismsOfFaithful [Faithful F] :
-    ReflectsExactSequences' F where
+    ReflectsExactSequences F where
   reflects {X Y Z} f g hfg := by
     rw [Abelian.exact_iff, ← F.map_comp, F.map_eq_zero_iff] at hfg
     refine' (Abelian.exact_iff _ _).2 ⟨hfg.1, F.zero_of_map_zero _ _⟩
@@ -345,7 +353,7 @@ instance (priority := 100) reflectsExactSequences'OfPreservesZeroMorphismsOfFait
 
 end
 
-end Functor
+end Functor-/
 
 namespace Functor
 
@@ -361,6 +369,10 @@ section
 
 variable [PreservesFiniteLimits L] [PreservesFiniteColimits L]
 
+
+/- redundant with the new homologhy API, because this works
+instance : L.PreservesHomology := inferInstance
+
 /-- A functor preserving finite limits and finite colimits preserves exactness. The converse
 result is also true, see `Functor.preservesFiniteLimitsOfMapExact` and
 `Functor.preservesFiniteColimitsOfMapExact`. -/
@@ -370,74 +382,75 @@ theorem map_exact {X Y Z : A} (f : X ⟶ Y) (g : Y ⟶ Z) (e1 : Exact' f g) :
   let hker := isLimitOfHasKernelOfPreservesLimit L g
   refine' (exact_iff' _ _ hker hcoker).2 ⟨by simp [← L.map_comp, e1.1], _⟩
   simp only [Fork.ι_ofι, Cofork.π_ofπ, ← L.map_comp, kernel_comp_cokernel _ _ e1, L.map_zero]
-#align category_theory.functor.map_exact CategoryTheory.Functor.map_exact
+#align category_theory.functor.map_exact CategoryTheory.Functor.map_exact-/
 
 end
 
 section
 
-variable (h : ∀ ⦃X Y Z : A⦄ {f : X ⟶ Y} {g : Y ⟶ Z}, Exact' f g → Exact' (L.map f) (L.map g))
+--variable (h : ∀ ⦃X Y Z : A⦄ {f : X ⟶ Y} {g : Y ⟶ Z}, Exact' f g → Exact' (L.map f) (L.map g))
+
+variable [L.PreservesZeroMorphisms]
+variable (h : ∀ (S : ShortComplex A), S.Exact → (S.map L).Exact)
 
 open ZeroObject
 
+/-
 /-- A functor which preserves exactness preserves zero morphisms. -/
 theorem preservesZeroMorphisms_of_map_exact : L.PreservesZeroMorphisms := by
   replace h := (h (exact_of_zero (𝟙 0) (𝟙 0))).w
   rw [L.map_id, Category.comp_id] at h
   exact preservesZeroMorphisms_of_map_zero_object (idZeroEquivIsoZero _ h)
-#align category_theory.functor.preserves_zero_morphisms_of_map_exact CategoryTheory.Functor.preservesZeroMorphisms_of_map_exact
+#align category_theory.functor.preserves_zero_morphisms_of_map_exact CategoryTheory.Functor.preservesZeroMorphisms_of_map_exact-/
 
 /-- A functor which preserves exactness preserves monomorphisms. -/
 theorem preservesMonomorphisms_of_map_exact : L.PreservesMonomorphisms where
-  preserves f hf := by
-    letI := preservesZeroMorphisms_of_map_exact L h
-    apply ((tfae_mono (L.obj 0) (L.map f)).out 2 0).mp
-    rw [← L.map_zero]
-    exact h (((tfae_mono 0 f).out 0 2).mp hf)
+  preserves {X Y} f hf := by
+    let S := ShortComplex.mk (0 : 0 ⟶ X) f zero_comp
+    erw [← S.exact_iff_mono rfl] at hf
+    erw [← (S.map L).exact_iff_mono (by simp)]
+    exact h _ hf
 #align category_theory.functor.preserves_monomorphisms_of_map_exact CategoryTheory.Functor.preservesMonomorphisms_of_map_exact
 
 /-- A functor which preserves exactness preserves epimorphisms. -/
 theorem preservesEpimorphisms_of_map_exact : L.PreservesEpimorphisms where
-  preserves f hf := by
-    letI := preservesZeroMorphisms_of_map_exact L h
-    apply ((tfae_epi (L.obj 0) (L.map f)).out 2 0).mp
-    rw [← L.map_zero]
-    exact h (((tfae_epi 0 f).out 0 2).mp hf)
+  preserves {X Y} f hf := by
+    let S := ShortComplex.mk f (0 : Y ⟶ 0) comp_zero
+    erw [← S.exact_iff_epi rfl] at hf
+    erw [← (S.map L).exact_iff_epi (by simp)]
+    exact h _ hf
 #align category_theory.functor.preserves_epimorphisms_of_map_exact CategoryTheory.Functor.preservesEpimorphisms_of_map_exact
 
 /-- A functor which preserves exactness preserves kernels. -/
 def preservesKernelsOfMapExact (X Y : A) (f : X ⟶ Y) : PreservesLimit (parallelPair f 0) L where
-  preserves {c} ic := by
-    letI := preservesZeroMorphisms_of_map_exact L h
-    letI := preservesMonomorphisms_of_map_exact L h
+  preserves {c : KernelFork f} ic := by
+    apply (c.isLimitMapConeEquiv L).invFun
     letI := mono_of_isLimit_fork ic
-    have hf :=
-      (isLimitMapConeForkEquiv' L (KernelFork.condition c)).symm
-        (isLimitOfExactOfMono (L.map (Fork.ι c)) (L.map f)
-          (h (exact_of_is_kernel (Fork.ι c) f (KernelFork.condition c)
-              (ic.ofIsoLimit (isoOfι _)))))
-    exact hf.ofIsoLimit ((Cones.functoriality _ L).mapIso (isoOfι _).symm)
+    letI := preservesMonomorphisms_of_map_exact L h
+    let S := ShortComplex.mk c.ι f c.condition
+    have : Mono (S.map L).f := by
+      dsimp; infer_instance
+    exact (h S (ShortComplex.exact_of_f_is_kernel _
+      (IsLimit.ofIsoLimit ic (Fork.ext (Iso.refl _) (by simp))))).fIsKernel
 #align category_theory.functor.preserves_kernels_of_map_exact CategoryTheory.Functor.preservesKernelsOfMapExact
 
 /-- A functor which preserves exactness preserves zero cokernels. -/
 def preservesCokernelsOfMapExact (X Y : A) (f : X ⟶ Y) :
     PreservesColimit (parallelPair f 0) L where
-  preserves {c} ic := by
-    letI := preservesZeroMorphisms_of_map_exact L h
-    letI := preservesEpimorphisms_of_map_exact L h
+  preserves {c : CokernelCofork f} ic := by
+    apply (c.isColimitMapCoconeEquiv L).invFun
     letI := epi_of_isColimit_cofork ic
-    have hf :=
-      (isColimitMapCoconeCoforkEquiv' L (CokernelCofork.condition c)).symm
-        (isColimitOfExactOfEpi (L.map f) (L.map (Cofork.π c))
-          (h (exact_of_is_cokernel f (Cofork.π c) (CokernelCofork.condition c)
-              (ic.ofIsoColimit (isoOfπ _)))))
-    exact hf.ofIsoColimit ((Cocones.functoriality _ L).mapIso (isoOfπ _).symm)
+    letI := preservesEpimorphisms_of_map_exact L h
+    let S := ShortComplex.mk f c.π c.condition
+    have : Epi (S.map L).g := by
+      dsimp; infer_instance
+    exact (h S (ShortComplex.exact_of_g_is_cokernel _
+      (IsColimit.ofIsoColimit ic (Cofork.ext (Iso.refl _) (by simp))))).gIsCokernel
 #align category_theory.functor.preserves_cokernels_of_map_exact CategoryTheory.Functor.preservesCokernelsOfMapExact
 
 /-- A functor which preserves exactness is left exact, i.e. preserves finite limits.
 This is part of the inverse implication to `Functor.map_exact`. -/
 def preservesFiniteLimitsOfMapExact : PreservesFiniteLimits L := by
-  letI := preservesZeroMorphisms_of_map_exact L h
   letI := preservesKernelsOfMapExact L h
   apply preservesFiniteLimitsOfPreservesKernels
 #align category_theory.functor.preserves_finite_limits_of_map_exact CategoryTheory.Functor.preservesFiniteLimitsOfMapExact
@@ -445,7 +458,6 @@ def preservesFiniteLimitsOfMapExact : PreservesFiniteLimits L := by
 /-- A functor which preserves exactness is right exact, i.e. preserves finite colimits.
 This is part of the inverse implication to `Functor.map_exact`. -/
 def preservesFiniteColimitsOfMapExact : PreservesFiniteColimits L := by
-  letI := preservesZeroMorphisms_of_map_exact L h
   letI := preservesCokernelsOfMapExact L h
   apply preservesFiniteColimitsOfPreservesCokernels
 #align category_theory.functor.preserves_finite_colimits_of_map_exact CategoryTheory.Functor.preservesFiniteColimitsOfMapExact
@@ -459,10 +471,21 @@ def preservesFiniteLimitsOfPreservesMonosAndCokernels [PreservesZeroMorphisms L]
     [PreservesMonomorphisms L] [∀ {X Y} (f : X ⟶ Y), PreservesColimit (parallelPair f 0) L] :
     PreservesFiniteLimits L := by
   apply preservesFiniteLimitsOfMapExact
-  intro X Y Z f g h
-  rw [← Abelian.coimage.fac g, L.map_comp, exact_comp_mono_iff]
-  exact
-    exact_of_is_cokernel _ _ _ (isColimitCoforkMapOfIsColimit' L _ (isColimitCoimage f g h))
+  intro S hS
+  let T := ShortComplex.mk S.f (coimage.π S.g) (by
+    simp only [← cancel_mono (Abelian.factorThruCoimage S.g),
+      coequalizer_as_cokernel, Category.assoc, cokernel.π_desc, ShortComplex.zero, zero_comp])
+  let φ : T ⟶ S :=
+    { τ₁ := 𝟙 _
+      τ₂ := 𝟙 _
+      τ₃ := Abelian.factorThruCoimage S.g }
+  have : Epi (L.mapShortComplex.map φ).τ₁ := by dsimp; infer_instance
+  have : IsIso (L.mapShortComplex.map φ).τ₂ := by dsimp; infer_instance
+  have : Mono (L.mapShortComplex.map φ).τ₃ := by dsimp; infer_instance
+  rw [← ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ] at hS
+  erw [← ShortComplex.exact_iff_of_epi_of_isIso_of_mono (L.mapShortComplex.map φ)]
+  exact ShortComplex.Exact.map_of_epi_of_preservesCokernel hS L
+    (by dsimp; infer_instance) inferInstance
 #align category_theory.functor.preserves_finite_limits_of_preserves_monos_and_cokernels CategoryTheory.Functor.preservesFiniteLimitsOfPreservesMonosAndCokernels
 
 /-- A functor preserving zero morphisms, epis, and kernels preserves finite colimits. -/
@@ -470,9 +493,21 @@ def preservesFiniteColimitsOfPreservesEpisAndKernels [PreservesZeroMorphisms L]
     [PreservesEpimorphisms L] [∀ {X Y} (f : X ⟶ Y), PreservesLimit (parallelPair f 0) L] :
     PreservesFiniteColimits L := by
   apply preservesFiniteColimitsOfMapExact
-  intro X Y Z f g h
-  rw [← Abelian.image.fac f, L.map_comp, exact_epi_comp_iff]
-  exact exact_of_is_kernel _ _ _ (isLimitForkMapOfIsLimit' L _ (isLimitImage f g h))
+  intro S hS
+  let T := ShortComplex.mk (Abelian.image.ι S.f) S.g (by
+    simp only [← cancel_epi (Abelian.factorThruImage S.f),
+      equalizer_as_kernel, kernel.lift_ι_assoc, ShortComplex.zero, comp_zero])
+  let φ : S ⟶ T :=
+    { τ₁ := Abelian.factorThruImage S.f
+      τ₂ := 𝟙 _
+      τ₃ := 𝟙 _ }
+  have : Epi (L.mapShortComplex.map φ).τ₁ := by dsimp; infer_instance
+  have : IsIso (L.mapShortComplex.map φ).τ₂ := by dsimp; infer_instance
+  have : Mono (L.mapShortComplex.map φ).τ₃ := by dsimp; infer_instance
+  rw [ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ] at hS
+  erw [ShortComplex.exact_iff_of_epi_of_isIso_of_mono (L.mapShortComplex.map φ)]
+  exact ShortComplex.Exact.map_of_mono_of_preservesKernel hS L
+    (by dsimp; infer_instance) inferInstance
 #align category_theory.functor.preserves_finite_colimits_of_preserves_epis_and_kernels CategoryTheory.Functor.preservesFiniteColimitsOfPreservesEpisAndKernels
 
 end

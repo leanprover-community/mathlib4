@@ -39,6 +39,9 @@ these results are found in `CategoryTheory/Abelian/Exact.lean`.
 
 -/
 
+/-
+
+redundant with the new homology API
 
 universe v v₂ u u₂
 
@@ -367,3 +370,5 @@ theorem exact_of_exact_map (F : V ⥤ W) [ReflectsExactSequences' F] {A B C : V}
 end Functor
 
 end CategoryTheory
+
+-/
