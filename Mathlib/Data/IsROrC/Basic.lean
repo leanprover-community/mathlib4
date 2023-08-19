@@ -23,21 +23,23 @@ typeclass, which basically amounts to doing the complex case, and the two cases 
 immediately from the two instances of the class.
 
 The instance for `ℝ` is registered in this file.
-The instance for `ℂ` is declared in `analysis.complex.basic`.
+The instance for `ℂ` is declared in `Mathlib/Analysis/Complex/Basic.lean`.
 
 ## Implementation notes
 
-The coercion from reals into an `IsROrC` field is done by registering `algebraMap ℝ K` as
-a `CoeTCₓ`. For this to work, we must proceed carefully to avoid problems involving circular
+The coercion from reals into an `IsROrC` field is done by registering `IsROrC.ofReal` as
+a `CoeTC`. For this to work, we must proceed carefully to avoid problems involving circular
 coercions in the case `K=ℝ`; in particular, we cannot use the plain `Coe` and must set
 priorities carefully. This problem was already solved for `ℕ`, and we copy the solution detailed
-in `data/Nat/cast`. See also Note [coercion into rings] for more details.
+in `Mathlib/Data/Nat/Cast/Defs.lean`. See also Note [coercion into rings] for more details.
 
 In addition, several lemmas need to be set at priority 900 to make sure that they do not override
-their counterparts in `complex.lean` (which causes linter errors).
+their counterparts in `Mathlib/Analysis/Complex/Basic.lean` (which causes linter errors).
 
-A few lemmas requiring heavier imports are in `data.is_R_or_C.lemmas`.
+A few lemmas requiring heavier imports are in `Mathlib/Data/IsROrC/Lemmas.lean`.
 -/
+
+set_option autoImplicit true
 
 
 open BigOperators
@@ -88,7 +90,7 @@ open ComplexConjugate
 @[coe] abbrev ofReal : ℝ → K := Algebra.cast
 
 /- The priority must be set at 900 to ensure that coercions are tried in the right order.
-See Note [coercion into rings], or `data/nat/cast.lean` for more details. -/
+See Note [coercion into rings], or `Mathlib/Data/Nat/Cast/Basic.lean` for more details. -/
 noncomputable instance (priority := 900) algebraMapCoe : CoeTC ℝ K :=
   ⟨ofReal⟩
 #align is_R_or_C.algebra_map_coe IsROrC.algebraMapCoe
@@ -412,11 +414,11 @@ open List in
 theorem is_real_TFAE (z : K) : TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(re z) = z, im z = 0] := by
   tfae_have 1 → 4
   · intro h
-    rw [← @ofReal_inj K, im_eq_conj_sub, h, sub_self, MulZeroClass.mul_zero, zero_div,
+    rw [← @ofReal_inj K, im_eq_conj_sub, h, sub_self, mul_zero, zero_div,
       ofReal_zero]
   tfae_have 4 → 3
   · intro h
-    conv_rhs => rw [← re_add_im z, h, ofReal_zero, MulZeroClass.zero_mul, add_zero]
+    conv_rhs => rw [← re_add_im z, h, ofReal_zero, zero_mul, add_zero]
   tfae_have 3 → 2; exact fun h => ⟨_, h⟩
   tfae_have 2 → 1; exact fun ⟨r, hr⟩ => hr ▸ conj_ofReal _
   tfae_finish
@@ -452,7 +454,7 @@ variable {K}
 /-- The norm squared function. -/
 def normSq : K →*₀ ℝ where
   toFun z := re z * re z + im z * im z
-  map_zero' := by simp only [add_zero, MulZeroClass.mul_zero, map_zero]
+  map_zero' := by simp only [add_zero, mul_zero, map_zero]
   map_one' := by simp only [one_im, add_zero, mul_one, one_re, mul_zero]
   map_mul' z w := by
     simp only [mul_im, mul_re]
@@ -826,7 +828,7 @@ noncomputable instance Real.isROrC : IsROrC ℝ where
   conj_I_ax := by simp only [RingHom.map_zero, neg_zero]
   norm_sq_eq_def_ax z := by simp only [sq, Real.norm_eq_abs, ← abs_mul, abs_mul_self z, add_zero,
     mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]
-  mul_im_I_ax z := by simp only [MulZeroClass.mul_zero, AddMonoidHom.zero_apply]
+  mul_im_I_ax z := by simp only [mul_zero, AddMonoidHom.zero_apply]
   le_iff_re_im := (and_iff_left rfl).symm
 #align real.is_R_or_C Real.isROrC
 

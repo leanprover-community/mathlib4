@@ -39,6 +39,8 @@ multiplicative group actions).
 
 -/
 
+set_option autoImplicit true
+
 
 /-- An `AddTorsor G P` gives a structure to the nonempty type `P`,
 acted on by an `AddGroup G` with a transitive and free action given

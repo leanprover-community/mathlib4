@@ -30,6 +30,8 @@ compact Hausdorff spaces.
 [Gleason, *Projective topological spaces*][gleason1958]
 -/
 
+set_option autoImplicit true
+
 noncomputable section
 
 open Classical Function Set

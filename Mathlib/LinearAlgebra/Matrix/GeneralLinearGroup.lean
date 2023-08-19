@@ -67,8 +67,8 @@ def det : GL n R →* Rˣ where
   toFun A :=
     { val := (↑A : Matrix n n R).det
       inv := (↑A⁻¹ : Matrix n n R).det
-      val_inv := by rw [← det_mul, ← mul_eq_mul, A.mul_inv, det_one]
-      inv_val := by rw [← det_mul, ← mul_eq_mul, A.inv_mul, det_one] }
+      val_inv := by rw [← det_mul, A.mul_inv, det_one]
+      inv_val := by rw [← det_mul, A.inv_mul, det_one] }
   map_one' := Units.ext det_one
   map_mul' A B := Units.ext <| det_mul _ _
 #align matrix.general_linear_group.det Matrix.GeneralLinearGroup.det
@@ -108,7 +108,7 @@ section CoeLemmas
 variable (A B : GL n R)
 
 @[simp]
-theorem coe_mul : ↑(A * B) = (↑A : Matrix n n R) ⬝ (↑B : Matrix n n R) :=
+theorem coe_mul : ↑(A * B) = (↑A : Matrix n n R) * (↑B : Matrix n n R) :=
   rfl
 #align matrix.general_linear_group.coe_mul Matrix.GeneralLinearGroup.coe_mul
 
