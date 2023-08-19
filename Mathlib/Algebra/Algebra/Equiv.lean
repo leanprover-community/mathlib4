@@ -80,7 +80,7 @@ def toAlgEquiv {F R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Alg
   { (f : A ≃ B), (f : A ≃+* B) with commutes' := commutes f }
 
 instance (F R A B : Type*) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-    [_h : AlgEquivClass F R A B] : CoeTC F (A ≃ₐ[R] B) :=
+    [AlgEquivClass F R A B] : CoeTC F (A ≃ₐ[R] B) :=
   ⟨toAlgEquiv⟩
 end AlgEquivClass
 

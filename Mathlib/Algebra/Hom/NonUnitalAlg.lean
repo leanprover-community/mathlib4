@@ -95,6 +95,7 @@ instance (priority := 100) {F : Type*} [NonUnitalAlgHomClass F R A B] : LinearMa
 
 /-- Turn an element of a type `F` satisfying `NonUnitalAlgHomClass F R A B` into an actual
 `NonUnitalAlgHom`. This is declared as the default coercion from `F` to `A →ₙₐ[R] B`. -/
+@[coe]
 def toNonUnitalAlgHom {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]
     [DistribMulAction R A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
     [NonUnitalAlgHomClass F R A B] (f : F) : A →ₙₐ[R] B :=
