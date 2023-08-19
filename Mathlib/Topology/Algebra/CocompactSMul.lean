@@ -27,8 +27,10 @@ class CocompactSMul (M X : Type*) [SMul M X] [TopologicalSpace X] : Prop where
   /-- The preimage of a compact set under `(c • ·)` is a compact set. -/
   isCompact_preimage_smul (c : M) {s : Set X} (hs : IsCompact s) : IsCompact ((c • ·) ⁻¹' s)
 
+/-- The preimage of a compact set under `(c • ·)` is a compact set. -/
 alias CocompactSMul.isCompact_preimage_smul ← IsCompact.preimage_smul
-attribute [to_additive] IsCompact.preimage_smul
+attribute [to_additive "The preimage of a compact set under `(c +ᵥ ·)` is a compact set."]
+  IsCompact.preimage_smul
 
 @[to_additive]
 instance (priority := 100) {M X : Type*} [SMul M X] [TopologicalSpace X] [ContinuousConstSMul M X]
