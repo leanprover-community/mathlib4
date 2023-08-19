@@ -636,18 +636,6 @@ def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) 
       · simp only [cond_true, restrict_dite, Subtype.coe_eta]
         exact hf
 
--- TODO: remove once #6616 is merged
-theorem _root_.Continuous.restrict {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
-    {f : α → β} {s : Set α} {t : Set β} (h1 : MapsTo f s t)
-    (h2 : Continuous f) : Continuous (h1.restrict f s t) :=
-  (h2.comp continuous_subtype_val).codRestrict _
-
--- TODO: remove once #6616 is merged
-theorem _root_.Continuous.restrictPreimage{α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
-    {f : α → β} {s : Set β} (h : Continuous f) :
-    Continuous (s.restrictPreimage f) :=
-  h.restrict _
-
 /-- A variant of `LocallyConstant.piecewise` where the two closed sets cover a subset.
 
 TODO: Generalise this construction to `ContinuousMap`. -/
