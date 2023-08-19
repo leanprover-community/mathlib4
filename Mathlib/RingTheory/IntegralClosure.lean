@@ -8,6 +8,7 @@ import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 import Mathlib.RingTheory.Adjoin.FG
 import Mathlib.RingTheory.FiniteType
+import Mathlib.RingTheory.Polynomial.IntegralNormalization
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 import Mathlib.RingTheory.Polynomial.Tower
 import Mathlib.RingTheory.TensorProduct
@@ -717,91 +718,19 @@ theorem IsIntegral.tmul (x : A) {y : B} (h : IsIntegral R y) : IsIntegral A (x �
 
 section
 
-variable (p : R[X]) (x : S)
-
-/-- The monic polynomial whose roots are `p.leadingCoeff * x` for roots `x` of `p`. -/
-noncomputable def normalizeScaleRoots (p : R[X]) : R[X] :=
-  ∑ i in p.support,
-    monomial i (if i = p.natDegree then 1 else p.coeff i * p.leadingCoeff ^ (p.natDegree - 1 - i))
-#align normalize_scale_roots normalizeScaleRoots
-
-theorem normalizeScaleRoots_coeff_mul_leadingCoeff_pow (i : ℕ) (hp : 1 ≤ natDegree p) :
-    (normalizeScaleRoots p).coeff i * p.leadingCoeff ^ i =
-      p.coeff i * p.leadingCoeff ^ (p.natDegree - 1) := by
-  simp only [normalizeScaleRoots, finset_sum_coeff, coeff_monomial, Finset.sum_ite_eq', one_mul,
-    MulZeroClass.zero_mul, mem_support_iff, ite_mul, Ne.def, ite_not]
-  split_ifs with h₁ h₂
-  · simp [h₁]
-  · rw [h₂, leadingCoeff, ← pow_succ, tsub_add_cancel_of_le hp]
-  · rw [mul_assoc, ← pow_add, tsub_add_cancel_of_le]
-    apply Nat.le_pred_of_lt
-    rw [lt_iff_le_and_ne]
-    exact ⟨le_natDegree_of_ne_zero h₁, h₂⟩
-#align normalize_scale_roots_coeff_mul_leading_coeff_pow normalizeScaleRoots_coeff_mul_leadingCoeff_pow
-
-theorem leadingCoeff_smul_normalizeScaleRoots (p : R[X]) :
-    p.leadingCoeff • normalizeScaleRoots p = scaleRoots p p.leadingCoeff := by
-  ext
-  simp only [coeff_scaleRoots, normalizeScaleRoots, coeff_monomial, coeff_smul, Finset.smul_sum,
-    Ne.def, Finset.sum_ite_eq', finset_sum_coeff, smul_ite, smul_zero, mem_support_iff]
-  -- porting note: added the following `simp only`
-  simp only [ge_iff_le, tsub_le_iff_right, smul_eq_mul, mul_ite, mul_one, mul_zero,
-    Finset.sum_ite_eq', mem_support_iff, ne_eq, ite_not]
-  split_ifs with h₁ h₂
-  · simp [*]
-  · simp [*]
-  · rw [mul_comm, mul_assoc, ← pow_succ', tsub_right_comm,
-      tsub_add_cancel_of_le]
-    rw [Nat.succ_le_iff]
-    exact tsub_pos_of_lt (lt_of_le_of_ne (le_natDegree_of_ne_zero h₁) h₂)
-#align leading_coeff_smul_normalize_scale_roots leadingCoeff_smul_normalizeScaleRoots
-
-theorem normalizeScaleRoots_support : (normalizeScaleRoots p).support ≤ p.support := by
-  intro x
-  contrapose
-  simp only [not_mem_support_iff, normalizeScaleRoots, finset_sum_coeff, coeff_monomial,
-    Finset.sum_ite_eq', mem_support_iff, Ne.def, Classical.not_not, ite_eq_right_iff]
-  intro h₁ h₂
-  exact (h₂ h₁).elim
-#align normalize_scale_roots_support normalizeScaleRoots_support
-
-theorem normalizeScaleRoots_degree : (normalizeScaleRoots p).degree = p.degree := by
-  apply le_antisymm
-  · exact Finset.sup_mono (normalizeScaleRoots_support p)
-  · rw [← degree_scaleRoots, ← leadingCoeff_smul_normalizeScaleRoots]
-    exact degree_smul_le _ _
-#align normalize_scale_roots_degree normalizeScaleRoots_degree
-
-theorem normalizeScaleRoots_eval₂_leadingCoeff_mul (h : 1 ≤ p.natDegree) (f : R →+* S) (x : S) :
-    (normalizeScaleRoots p).eval₂ f (f p.leadingCoeff * x) =
-      f p.leadingCoeff ^ (p.natDegree - 1) * p.eval₂ f x := by
-  rw [eval₂_eq_sum_range, eval₂_eq_sum_range, Finset.mul_sum]
-  apply Finset.sum_congr
-  · rw [natDegree_eq_of_degree_eq (normalizeScaleRoots_degree p)]
-  intro n _hn
-  rw [mul_pow, ← mul_assoc, ← f.map_pow, ← f.map_mul,
-    normalizeScaleRoots_coeff_mul_leadingCoeff_pow _ _ h, f.map_mul, f.map_pow]
-  ring
-#align normalize_scale_roots_eval₂_leading_coeff_mul normalizeScaleRoots_eval₂_leadingCoeff_mul
-
-theorem normalizeScaleRoots_monic (h : p ≠ 0) : (normalizeScaleRoots p).Monic := by
-  delta Monic leadingCoeff
-  rw [natDegree_eq_of_degree_eq (normalizeScaleRoots_degree p)]
-  suffices p = 0 → (0 : R) = 1 by simpa [normalizeScaleRoots, coeff_monomial]
-  exact fun h' => (h h').elim
-#align normalize_scale_roots_monic normalizeScaleRoots_monic
+variable {p : R[X]} (x : S)
 
 /-- Given a `p : R[X]` and a `x : S` such that `p.eval₂ f x = 0`,
 `f p.leadingCoeff * x` is integral. -/
 theorem RingHom.isIntegralElem_leadingCoeff_mul (h : p.eval₂ f x = 0) :
     f.IsIntegralElem (f p.leadingCoeff * x) := by
   by_cases h' : 1 ≤ p.natDegree
-  · use normalizeScaleRoots p
+  · use integralNormalization p
     have : p ≠ 0 := fun h'' => by
       rw [h'', natDegree_zero] at h'
       exact Nat.not_succ_le_zero 0 h'
-    use normalizeScaleRoots_monic p this
-    rw [normalizeScaleRoots_eval₂_leadingCoeff_mul p h' f x, h, MulZeroClass.mul_zero]
+    use p.monic_integralNormalization this
+    rw [integralNormalization_eval₂_leadingCoeff_mul h' f x, h, MulZeroClass.mul_zero]
   · by_cases hp : p.map f = 0
     · apply_fun fun q => coeff q p.natDegree at hp
       rw [coeff_map, coeff_zero, coeff_natDegree] at hp
@@ -819,7 +748,7 @@ theorem isIntegral_leadingCoeff_smul [Algebra R S] (h : aeval x p = 0) :
     IsIntegral R (p.leadingCoeff • x) := by
   rw [aeval_def] at h
   rw [Algebra.smul_def]
-  exact (algebraMap R S).isIntegralElem_leadingCoeff_mul p x h
+  exact (algebraMap R S).isIntegralElem_leadingCoeff_mul x h
 #align is_integral_leading_coeff_smul isIntegral_leadingCoeff_smul
 
 end

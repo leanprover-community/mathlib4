@@ -333,7 +333,7 @@ theorem isFractionRing_of_algebraic (alg : IsAlgebraic A L)
             hy (inj _ (by rw [IsScalarTower.algebraMap_apply A C L, h, RingHom.map_zero]))⟩,
         by
           simp only
-          rw [algebraMap_mk', ← IsScalarTower.algebraMap_apply A C L, hxy]⟩
+          rw [algebraMap_mk', ← IsScalarTower.algebraMap_apply A C L, mul_comm, hxy]⟩
     eq_iff_exists' := fun {x y} =>
       ⟨fun h => ⟨1, by simpa using algebraMap_injective C A L h⟩, fun ⟨c, hc⟩ =>
         congr_arg (algebraMap _ L) (mul_left_cancel₀ (mem_nonZeroDivisors_iff_ne_zero.mp c.2) hc)⟩ }
