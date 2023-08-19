@@ -17,12 +17,12 @@ lemma wierd01 (m : Type)[Fintype m] (p q : m → Prop) [DecidablePred p] [Decida
 -- set_option pp.explicit true
 /-- A sorted nonnegative list with m elements and exactly r ≤ m non-zero elemnts has the first
 (m - r) elemnts as zero -/
-lemma wierd2 (m r : ℕ) (hrm : r ≤ m) (f : Fin m → ℝ)
+lemma wierd2 (m r : ℕ) [NeZero m] (hrm : r ≤ m) (f : Fin m → ℝ)
     (h_nonneg : ∀ (i : Fin m), 0 ≤  f i)
     (h_nz_cnt : Fintype.card { i // f i =  0} = r)
     (h_sorted : Monotone f)
     (j : Fin m):
-    ( j < r) → f j = 0 := by
+    ( (j:ℕ) < r) → f j = 0 := by
   intro hjm
   have hj := eq_or_lt_of_le ( h_nonneg j)
   cases' hj with hj hj
@@ -40,15 +40,42 @@ lemma wierd2 (m r : ℕ) (hrm : r ≤ m) (f : Fin m → ℝ)
           apply Fintype.card_pos_iff.2
           refine' Nonempty.intro ?_
           refine' ⟨ ⟨ j, ne_of_gt hj⟩, hjm ⟩
-        have h4 : (m - r) ≤ Fintype.card {j : {i // f i ≠ 0} // ¬ (j < r)} := by
-          simp only [tsub_le_iff_right]
-          have h6 : Fintype.card {j : {i // f i ≠ 0} //  ¬ (j < r)} = m - r := by sorry
-
-          rwa [h6, Nat.sub_add_cancel]
+        have h4 : (m - r) = Fintype.card {j : {i // f i ≠ 0} // ¬ (j < r)} := by
+          simp only [ne_eq, not_lt]
+          rw [← Fintype.card_fin (m - r)]
+          rw [Fintype.card_eq]
+          apply Nonempty.intro
+          refine' ⟨fun z => ?_, fun y => ?_ , ?_, ?_ ⟩
+          · let q : Fin m := ⟨r + z, ?_ ⟩
+            have hrq : r ≤ q := by simp only [le_add_iff_nonneg_right, zero_le]
+            refine ⟨ ⟨q, ?_⟩, ?_ ⟩
+            apply h q hrq
+            simp only [le_add_iff_nonneg_right, zero_le]
+            have : z < m - r := by apply Fin.is_lt
+            rw [add_comm]
+            apply Nat.add_lt_of_lt_sub this
+          · refine' ⟨y - r, ?_⟩
+            apply Nat.lt_sub_of_add_lt
+            rw [Nat.sub_add_cancel]
+            apply Fin.is_lt
+            apply y.prop
+          · intro x
+            dsimp
+            simp only [ge_iff_le, add_le_iff_nonpos_right, nonpos_iff_eq_zero, add_tsub_cancel_left, Fin.eta]
+          · intro x
+            dsimp
+            conv_lhs =>
+              congr
+              congr
+              congr
+              rw [Nat.add_sub_cancel']
+              rfl
+              exact x.prop
+            done
         have h5 : m - r < m - r + 1 := by exact Nat.lt.base (m - r)
         apply lt_of_lt_of_le h5 _
         rw [Nat.add_comm]
-        exact (Nat.add_le_add h3 h4)
+        exact (Nat.add_le_add h3 (le_of_eq h4))
       simp only [Fintype.card_subtype_compl, Fintype.card_fin] at h1
       rw [h_nz_cnt] at h1
       apply (lt_irrefl _) h1
