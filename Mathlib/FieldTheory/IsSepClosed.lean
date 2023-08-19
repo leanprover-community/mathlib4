@@ -197,7 +197,7 @@ end IsSepClosure
 
 namespace IsSepClosed
 
-open lift SubfieldWithHom
+open IsAlgClosed lift SubfieldWithHom
 
 variable {K : Type u} {L : Type v} {M : Type w} [Field K] [Field L] [Algebra K L] [Field M]
   [Algebra K M] [IsSepClosed M] [IsSeparable K L]
