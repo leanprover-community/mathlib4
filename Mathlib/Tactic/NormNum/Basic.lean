@@ -115,6 +115,10 @@ theorem isInt_ratCast [DivisionRing R] : {q : ℚ} → {n : ℤ} →
     IsInt q n → IsInt (q : R) n
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
 
+theorem isNNRat_ratCast [DivisionRing R] [CharZero R] : {q : ℚ} → {n : ℕ} → {d : ℕ} →
+    IsNNRat q n d → IsNNRat (q : R) n d
+  | _, _, _, ⟨⟨qi,_,_⟩, rfl⟩ => ⟨⟨qi, by norm_cast, by norm_cast⟩, by simp only []; norm_cast⟩
+
 theorem isRat_ratCast [DivisionRing R] [CharZero R] : {q : ℚ} → {n : ℤ} → {d : ℕ} →
     IsRat q n d → IsRat (q : R) n d
   | _, _, _, ⟨⟨qi,_,_⟩, rfl⟩ => ⟨⟨qi, by norm_cast, by norm_cast⟩, by simp only []; norm_cast⟩
@@ -134,7 +138,11 @@ recognizes `q`, returning the cast of `q`. -/
   | .isNegNat _ na pa =>
     assumeInstancesCommute
     return .isNegNat _ na q(isInt_ratCast $pa)
-  | .isRat _ qa na da pa =>
+  | .isNNRat _ qa na da pa =>
+    assumeInstancesCommute
+    let i ← inferCharZeroOfDivisionRing dα
+    return .isNNRat dα qa na da q(isNNRat_ratCast $pa)
+  | .isNegNNRat _ qa na da pa =>
     assumeInstancesCommute
     let i ← inferCharZeroOfDivisionRing dα
     return .isRat dα qa na da q(isRat_ratCast $pa)
