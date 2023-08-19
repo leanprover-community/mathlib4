@@ -656,24 +656,27 @@ theorem eval_interpolate_not_at_node' (hvs : Set.InjOn v s) (hs : s.Nonempty)
 theorem nodal_subgroup_eq_X_pow_card_sub_one (G : Subgroup Fˣ) [Fintype G] :
   nodal (G : Set Fˣ).toFinset ((↑) : Fˣ → F) = X ^ (Fintype.card G) - 1 := by
   apply eq_of_degrees_le_of_leadingCoeff_eq_of_eval_index_eq
-    (v := (fun (x : Fˣ) => (x : F))) (G.carrier.toFinset)
+    (v := ((↑) : Fˣ → F)) (G.carrier.toFinset)
   · apply Set.injOn_of_injective Units.ext
-  · simp only [degree_nodal, Set.toFinset_card, le_refl]
+  · apply le_of_eq
+    simp only [degree_nodal, Set.toFinset_card, SetLike.coe_sort_coe, Nat.cast_le]
+    exact rfl
   · rw [degree_sub_eq_left_of_degree_lt]
     · rw [degree_nodal, Set.toFinset_card, degree_pow, degree_X, nsmul_eq_mul, mul_one,
         Nat.cast_inj]
       exact rfl
-    · rw [map_one, degree_one, degree_pow, degree_X, nsmul_eq_mul, mul_one, Nat.cast_pos]
+    · simp only [degree_one, degree_pow, degree_X, nsmul_eq_mul, mul_one, Nat.cast_pos]
       exact Fintype.card_pos
-  · rw [map_one, nodal_monic, leadingCoeff_sub_of_degree_lt]
+  · rw [nodal_monic, leadingCoeff_sub_of_degree_lt]
     · rw [monic_X_pow]
     · rw [degree_one, degree_pow, degree_X, nsmul_eq_mul, mul_one, Nat.cast_pos]
       exact Fintype.card_pos
   · intros i hi
-    rw [eval_nodal_at_node hi]
+    have i_mem_G : i ∈ Set.toFinset G := hi
+    rw [eval_nodal_at_node i_mem_G]
     simp at hi
     rcases (CanLift.prf i hi : ∃ g : G, g.val = i) with ⟨g, g_eq⟩
-    rw [← g_eq, map_one, eval_sub, eval_pow, eval_X, eval_one, ← Units.val_pow_eq_pow_val,
+    rw [← g_eq, eval_sub, eval_pow, eval_X, eval_one, ← Units.val_pow_eq_pow_val,
       ← Subgroup.coe_pow G, pow_card_eq_one, Subgroup.coe_one, Units.val_one, sub_self]
 
 end Nodal
