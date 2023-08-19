@@ -77,12 +77,16 @@ def rightZigzag (η : 𝟙 a ⟶ f ≫ g) (ε : g ≫ f ⟶ 𝟙 b) :=
 
 /-- Adjunction between two 1-morphisms. -/
 structure Adjunction (f : a ⟶ b) (g : b ⟶ a) where
+  /-- The unit of an adjuntion. -/
   unit : 𝟙 a ⟶ f ≫ g
+  /-- The counit of an adjuntion. -/
   counit : g ≫ f ⟶ 𝟙 b
+  /-- The composition of the unit and the counit is equal to the identity up to unitors. -/
   left_triangle : leftZigzag unit counit = (λ_ _).hom ≫ (ρ_ _).inv := by aesop_cat
+  /-- The composition of the unit and the counit is equal to the identity up to unitors. -/
   right_triangle : rightZigzag unit counit = (ρ_ _).hom ≫ (λ_ _).inv := by aesop_cat
 
-scoped infixr:15 " ⊣ " => Bicategory.Adjunction
+@[inherit_doc] scoped infixr:15 " ⊣ " => Bicategory.Adjunction
 
 namespace Adjunction
 
@@ -163,13 +167,18 @@ theorem adjointifyCounit_left_triangle (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f �
 
 /-- Adjoint equivalences between two objects. -/
 structure Equivalence (a b : B) where
+  /-- A 1-morphism in one direction. -/
   hom : a ⟶ b
+  /-- A 1-morphism in the other direction. -/
   inv : b ⟶ a
+  /-- The composition `hom ≫ inv` is isomorphic to the identity. -/
   unit : 𝟙 a ≅ hom ≫ inv
+  /-- The composition `inv ≫ hom` is isomorphic to the identity. -/
   counit : inv ≫ hom ≅ 𝟙 b
+  /-- The composition of the unit and the counit is equal to the identity up to unitors. -/
   left_triangle : leftZigzagIso unit counit = λ_ hom ≪≫ (ρ_ hom).symm := by aesop_cat
 
-scoped infixr:10 " ≌ " => Bicategory.Equivalence
+@[inherit_doc] scoped infixr:10 " ≌ " => Bicategory.Equivalence
 
 namespace Equivalence
 
