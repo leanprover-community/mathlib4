@@ -34,7 +34,7 @@ open Opposite CategoryTheory Limits
 
 section
 
-variable {V : Type*} [Category V] [Abelian V]
+/-variable {V : Type*} [Category V] [Abelian V]
 
 theorem imageToKernel_op {X Y Z : V} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
     imageToKernel g.op f.op (by rw [← op_comp, w, op_zero]) =
@@ -60,7 +60,7 @@ theorem imageToKernel_unop {X Y Z : Vᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f 
   simp only [Iso.trans_hom, Iso.symm_hom, Iso.trans_inv, kernelUnopUnop_inv, Category.assoc,
     imageToKernel_arrow, kernelSubobject_arrow', kernel.lift_ι, cokernel.π_desc, Iso.unop_inv,
     ← unop_comp, factorThruImage_comp_imageUnopOp_inv, Quiver.Hom.unop_op, imageSubobject_arrow]
-#align image_to_kernel_unop imageToKernel_unop
+#align image_to_kernel_unop imageToKernel_unop-/
 
 /- redundant with the new homology API
 

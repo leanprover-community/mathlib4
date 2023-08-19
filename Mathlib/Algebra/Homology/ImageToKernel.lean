@@ -19,6 +19,8 @@ we have `image_le_kernel f g w : imageSubobject f ≤ kernelSubobject g`
 We define `homology f g w` of such a pair as the cokernel of `imageToKernel f g w`.
 -/
 
+/- redundant with the new homology API
+
 set_option autoImplicit true
 
 
@@ -371,11 +373,10 @@ variable {A B C : V} {f : A ⟶ B} {g : B ⟶ C} (w : f ≫ g = 0) {f' : A ⟶ B
 -- porting note: removed the private auxiliary tactic which becomes unnecessary
 --/-- Custom tactic to golf and speedup boring proofs in `homology'.congr`. -/
 --private unsafe def aux_tac : tactic Unit :=
---  sorry
+--  sorry -/
 
-/-- `homology' f g w ≅ homology' f' g' w'` if `f = f'` and `g = g'`.
+/- `homology' f g w ≅ homology' f' g' w'` if `f = f'` and `g = g'`.
 (Note the objects are not changing here.)
--/
 @[simps]
 def homology'.congr (pf : f = f') (pg : g = g') : homology' f g w ≅ homology' f' g' w' where
   hom := homology'.map w w' ⟨𝟙 _, 𝟙 _, by aesop_cat⟩ ⟨𝟙 _, 𝟙 _, by aesop_cat⟩ rfl
@@ -469,4 +470,4 @@ def homology'IsoCokernelLift (w : f ≫ g = 0) : homology' f g w ≅ cokernel (k
   exact (cokernelEpiComp _ _).symm ≪≫ cokernelIsoOfEq p
 #align homology_iso_cokernel_lift homology'IsoCokernelLift
 
-end imageToKernel'
+end imageToKernel'-/
