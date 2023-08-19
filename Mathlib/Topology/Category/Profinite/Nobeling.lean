@@ -1667,30 +1667,6 @@ def GoodProducts.v : GoodProducts (C.proj (ord I · < o)) →
     LocallyConstant (C.proj (ord I · < o)) ℤ :=
   eval (C.proj (ord I · < o))
 
-lemma GoodProducts.injective_u : Function.Injective (u C ho) := by
-  have hr : GoodProducts (C.proj (ord I · < o)) ⊆ GoodProducts C
-  · rw [union_succ C hsC ho]
-    exact Set.subset_union_left _ _
-  have hs : StartingWithMax C ho ⊆ GoodProducts C := fun l hl ↦ hl.1
-  apply Function.Injective.sum_elim
-  · have : (fun (l : GoodProducts (C.proj (ord I · < o))) ↦ l.val.eval C) =
-      eval C ∘ Set.inclusion hr := rfl
-    rw [this]
-    exact Function.Injective.comp (injective C) (Set.inclusion_injective hr)
-  · have : (fun (l : StartingWithMax C ho) ↦ l.val.eval C) =
-      eval C ∘ Set.inclusion hs := rfl
-    rw [this]
-    exact Function.Injective.comp (injective C) (Set.inclusion_injective hs)
-  · intro a b h
-    have ha : (⟨a.val, hr a.prop⟩ : GoodProducts C).val = a.val := by rfl
-    have hb : (⟨b.val, hs b.prop⟩ : GoodProducts C).val = b.val := by rfl
-    rw [← ha, ← hb] at h
-    rw [← (injective C h)] at hb
-    have ha' := Products.prop_of_isGood  C _ a.prop
-    rw [hb] at ha'
-    specialize ha' (term I ho) b.prop.2
-    simp only [ord_term_aux, lt_self_iff_false] at ha'
-
 lemma GoodProducts.huv : u C ho ∘ Sum.inl = πs C o ∘ v C o := by
   ext l
   dsimp [u]
