@@ -261,9 +261,13 @@ theorem eigenvectorBasis_apply_self_apply (v : E) (i : Fin n) :
     ∀ w : EuclideanSpace 𝕜 (Fin n),
       T ((hT.eigenvectorBasis hn).repr.symm w) =
         (hT.eigenvectorBasis hn).repr.symm fun i => hT.eigenvalues hn i * w i by
-    simpa [OrthonormalBasis.sum_repr_symm] using
-      congr_arg (fun v => (hT.eigenvectorBasis hn).repr v i)
+    have z := congr_arg (fun v => (hT.eigenvectorBasis hn).repr v i)
         (this ((hT.eigenvectorBasis hn).repr v))
+    dsimp at z
+    simpa only [LinearIsometryEquiv.symm_apply_apply, LinearIsometryEquiv.apply_symm_apply] using z
+
+      -- congr_arg (fun v => (hT.eigenvectorBasis hn).repr v i)
+      --   (this ((hT.eigenvectorBasis hn).repr v))
   intro w
   simp_rw [← OrthonormalBasis.sum_repr_symm, LinearMap.map_sum, LinearMap.map_smul,
     apply_eigenvectorBasis]
@@ -278,16 +282,21 @@ section MohanadsAttempt
 
 variable {n : ℕ} (hn : FiniteDimensional.finrank 𝕜 E = n)
 
+/-- A permutation that sorts eigenvalues in an increasing order of magnitude -/
 noncomputable def eigs_orderDesc : Equiv.Perm (Fin n) := by
   let z : Fin n → ℝ := fun i =>
     @IsROrC.re 𝕜 _ <| (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
       hT.orthogonalFamily_eigenspaces').val
   exact (Tuple.sort (fun (j : Fin n) => ‖ z j‖))
 
+/-- The sequence of real eigenvalues associated to the standard orthonormal basis of eigenvectors
+for a self-adjoint operator `T` on `E`. -/
 noncomputable irreducible_def xeigenvalues (i : Fin n) : ℝ :=
   @IsROrC.re 𝕜 _ <| (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn
     (eigs_orderDesc hT hn i) hT.orthogonalFamily_eigenspaces').val
 
+/-- A choice of orthonormal basis of eigenvectors for self-adjoint operator `T` on a
+finite-dimensional inner product space `E`. -/
 noncomputable irreducible_def xeigenvectorBasis : OrthonormalBasis (Fin n) 𝕜 E :=
   (hT.direct_sum_isInternal.subordinateOrthonormalBasis hn hT.orthogonalFamily_eigenspaces').reindex
   (eigs_orderDesc hT hn).symm
@@ -311,13 +320,27 @@ theorem xhasEigenvector_eigenvectorBasis (i : Fin n) :
   rw [re_μ]
   exact key
 
-theorem xhasEigenvalue_eigenvalues (i : Fin n) : HasEigenvalue T (hT.xeigenvalues hn i) := by sorry
+theorem xhasEigenvalue_eigenvalues (i : Fin n) : HasEigenvalue T (hT.xeigenvalues hn i) :=
+  Module.End.hasEigenvalue_of_hasEigenvector (hT.xhasEigenvector_eigenvectorBasis hn i)
 
 theorem xapply_eigenvectorBasis (i : Fin n) :
-    T (hT.xeigenvectorBasis hn i) = (hT.xeigenvalues hn i : 𝕜) • hT.xeigenvectorBasis hn i := by sorry
+    T (hT.xeigenvectorBasis hn i) = (hT.xeigenvalues hn i : 𝕜) • hT.xeigenvectorBasis hn i := by
+  exact mem_eigenspace_iff.mp (hT.xhasEigenvector_eigenvectorBasis hn i).1
 
--- theorem xeigenvectorBasis_apply_self_apply (v : E) (i : Fin n) :
---     (hT.xeigenvectorBasis hn).repr (T v) i = by sorry
+theorem xeigenvectorBasis_apply_self_apply (v : E) (i : Fin n) :
+    (hT.xeigenvectorBasis hn).repr (T v) i =
+      hT.xeigenvalues hn i * (hT.xeigenvectorBasis hn).repr v i := by
+  suffices ∀ w : EuclideanSpace 𝕜 (Fin n), T ((hT.xeigenvectorBasis hn).repr.symm w) =
+      (hT.xeigenvectorBasis hn).repr.symm fun i => hT.xeigenvalues hn i * w i by
+    simpa [OrthonormalBasis.sum_repr_symm] using
+      congr_arg  (fun v => (hT.xeigenvectorBasis hn).repr v i)
+        (this ((hT.xeigenvectorBasis hn).repr v))
+  intro w
+  simp_rw [← OrthonormalBasis.sum_repr_symm, LinearMap.map_sum, LinearMap.map_smul,
+    xapply_eigenvectorBasis]
+  apply Fintype.sum_congr
+  intro a
+  rw [smul_smul, mul_comm]
 
 end MohanadsAttempt
 
