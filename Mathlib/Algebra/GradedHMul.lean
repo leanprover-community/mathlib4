@@ -88,7 +88,7 @@ in degree zero. -/
 @[simp]
 lemma γhmul_assoc_of_first_degree_eq_zero [IsAssocGradedHMul X Y Z XY YZ XYZ]
     {b c : M} (α : X 0) (β : Y b) (γ : Z c) (bc : M) (hbc : b + c = bc) :
-  (α •[zero_add _] β) •[hbc] γ = α •[zero_add _] β •[hbc] γ := by
+    (α •[zero_add _] β) •[hbc] γ = α •[zero_add _] β •[hbc] γ := by
   apply IsAssocGradedHMul.γhmul_assoc
 
 @[simp]
