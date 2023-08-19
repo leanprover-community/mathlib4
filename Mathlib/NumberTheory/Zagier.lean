@@ -41,7 +41,7 @@ lemma zagierSet_lower_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) : 0 < 
 
 lemma zagierSet_upper_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) :
     x ≤ k + 1 ∧ y ≤ k ∧ z ≤ k := by
-  obtain ⟨hx, hy, hz⟩ := zagierSet_lower_bound k h
+  obtain ⟨_, _, _⟩ := zagierSet_lower_bound k h
   simp_rw [zagierSet, mem_setOf_eq] at h
   refine' ⟨_, _, _⟩ <;> nlinarith
 
@@ -108,8 +108,7 @@ def complexInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ =>
 
 theorem complexInvo_sq : complexInvo k ^ 2 = 1 := by
   change complexInvo k ∘ complexInvo k = id
-  funext t
-  obtain ⟨⟨x, y, z⟩, h⟩ := t
+  funext ⟨⟨x, y, z⟩, h⟩
   rw [comp_apply]
   obtain ⟨xb, _, _⟩ := zagierSet_lower_bound k h
   conv_lhs => arg 2; tactic => unfold complexInvo; dsimp
@@ -175,5 +174,5 @@ end Zagier
 Every prime congruent to 1 mod 4 is the sum of two squares, proved using Zagier's involutions. -/
 theorem Nat.Prime.sq_add_sq' {p : ℕ} [h : Fact p.Prime] (hp : p % 4 = 1) :
     ∃ a b : ℕ, a ^ 2 + b ^ 2 = p := by
-  rw [←div_add_mod p 4, hp] at h ⊢
+  rw [← div_add_mod p 4, hp] at h ⊢
   apply Zagier.exists_sq_add_sq
