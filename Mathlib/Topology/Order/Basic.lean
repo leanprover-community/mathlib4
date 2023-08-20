@@ -1460,9 +1460,9 @@ instance instIsCountablyGenerated_atTop [SecondCountableTopology α] :
     rw [this]
     exact ⟨_, (countable_range _).image _, rfl⟩
 
-instance instIsCountableGenerated_atBot [SecondCountableTopology α] :
+instance instIsCountablyGenerated_atBot [SecondCountableTopology α] :
     IsCountablyGenerated (atBot : Filter α) :=
-  @isCountablyGenerated_atTop_inst αᵒᵈ _ _ _ _
+  @instIsCountablyGenerated_atTop αᵒᵈ _ _ _ _
 
 section Pi
 
