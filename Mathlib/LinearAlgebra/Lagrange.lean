@@ -116,7 +116,7 @@ theorem eq_of_degrees_lt_of_eval_index_eq (hvs : Set.InjOn v s) (degree_f_lt : f
   exact Submodule.sub_mem _ degree_f_lt degree_g_lt
 #align polynomial.eq_of_degrees_lt_of_eval_index_eq Polynomial.eq_of_degrees_lt_of_eval_index_eq
 
-theorem eq_of_degrees_le_of_eval_index_eq (hvs : Set.InjOn v s)
+theorem eq_of_degree_le_of_eval_index_eq (hvs : Set.InjOn v s)
     (h_deg_le : f.degree ≤ s.card)
     (h_deg_eq : f.degree = g.degree)
     (hlc : f.leadingCoeff = g.leadingCoeff)
