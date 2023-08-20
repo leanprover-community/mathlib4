@@ -128,12 +128,19 @@ lemma shiftFunctorZero_eq :
   ShiftMkCore.shiftFunctorZero_eq _
 
 @[simp]
+lemma shiftFunctorAdd_eq (a b : ℤ) :
+    CategoryTheory.shiftFunctorAdd (Triangle C) a b =
+      Triangle.shiftFunctorAdd' C a b _ rfl :=
+  ShiftMkCore.shiftFunctorAdd_eq _ _ _
+
+@[simp]
 lemma shiftFunctorAdd'_eq (a b c : ℤ) (h : a + b = c) :
     CategoryTheory.shiftFunctorAdd' (Triangle C) a b c h =
       Triangle.shiftFunctorAdd' C a b c h := by
   subst h
   rw [shiftFunctorAdd'_eq_shiftFunctorAdd]
-  apply ShiftMkCore.shiftFunctorAdd_eq
+  apply shiftFunctorAdd_eq
+
 
 end Triangle
 

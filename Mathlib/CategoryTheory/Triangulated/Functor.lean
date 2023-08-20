@@ -30,9 +30,11 @@ def mapTriangle : Pretriangulated.Triangle C ⥤ Pretriangulated.Triangle D wher
           ← F.map_comp_assoc, f.comm₃] }
 
 attribute [local simp] map_zsmul comp_zsmul zsmul_comp
+  commShiftIso_zero commShiftIso_add
+  shiftFunctorAdd'_eq_shiftFunctorAdd
+  commShiftIso_comp_hom_app
 
--- TODO : extend this to [(F.mapTriangle).CommShift ℤ]
-
+@[simps!]
 noncomputable def mapTriangleCommShiftIso [F.Additive] (n : ℤ) :
     Triangle.shiftFunctor C n ⋙ F.mapTriangle ≅ F.mapTriangle ⋙ Triangle.shiftFunctor D n :=
   NatIso.ofComponents (fun T => Triangle.isoMk _ _
@@ -50,6 +52,10 @@ noncomputable def mapTriangleCommShiftIso [F.Additive] (n : ℤ) :
       simp only [Functor.map_id, comp_id]))
     (by aesop_cat)
 
+set_option maxHeartbeats 400000 in
+noncomputable instance [F.Additive] [∀ (n : ℤ), (shiftFunctor C n).Additive]
+    [∀ (n : ℤ), (shiftFunctor D n).Additive] : (F.mapTriangle).CommShift ℤ where
+  iso := F.mapTriangleCommShiftIso
 
 @[simps!]
 def mapTriangleRotateIso [F.Additive] :
@@ -67,8 +73,6 @@ noncomputable def mapTriangleInvRotateIso [F.Additive] :
     NatIso.ofComponents
       (fun T => Triangle.isoMk _ _ ((F.commShiftIso (-1 : ℤ)).symm.app _) (Iso.refl _) (Iso.refl _)
         (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
-
-attribute [local simp] commShiftIso_comp_hom_app
 
 @[simps!]
 def mapTriangleCompIso : (F ⋙ G).mapTriangle ≅ F.mapTriangle ⋙ G.mapTriangle :=
@@ -90,7 +94,7 @@ namespace IsTriangulated
 
 variable [F.IsTriangulated]
 
-noncomputable def map_zero_object : F.obj 0 ≅ 0 := by
+noncomputable def mapZeroObject : F.obj 0 ≅ 0 := by
   apply IsZero.isoZero
   apply isZero_of_isIso_mor₁ _ (F.map_distinguished _ (contractible_distinguished (0 : C)))
   dsimp
