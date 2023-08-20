@@ -172,8 +172,8 @@ theorem sphere_aux_emptyset_eq_sphere_aux_univ (R : ℝ) :
 /-- The volume of a Euclidean ball of radius `R` in the space `ι → ℝ`, equipped with the product
 measure, is `B (Fintype.card ι) * R ^ Fintype.card ι`. -/
 theorem volume_ball (R : ℝ≥0) :
-    volume {x : ι → ℝ | 0 ≤ R ^ 2 - ∑ j, x j ^ 2} = B (Fintype.card ι) * R ^ Fintype.card ι := by
-  calc volume {x : ι → ℝ | 0 ≤ R ^ 2 - ∑ j, x j ^ 2}
+    volume {x : ι → ℝ | ∑ j, x j ^ 2 ≤ R ^ 2} = B (Fintype.card ι) * R ^ Fintype.card ι := by
+  calc volume {x : ι → ℝ | ∑ j, x j ^ 2 ≤ R ^ 2}
       = ∫⁻ x : ι → ℝ, Set.indicator {y : ι → ℝ | (0:ℝ) ≤ R ^ 2 - ∑ i : ι, y i ^ 2} 1 x := by
           convert (lintegral_indicator_const _ 1).symm
           · simp
