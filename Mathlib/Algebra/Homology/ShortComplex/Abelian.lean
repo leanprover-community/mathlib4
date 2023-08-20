@@ -21,7 +21,7 @@ there is a `RightHomologyData` for which the `H` is the
 image of `kernel.ι S.g ≫ cokernel.π S.f`. The fact that
 these left and right homology data are compatible (i.e.
 provide a `HomologyData`) is obtained by using the
-coimage-image isomophism in abelian categories.
+coimage-image isomorphism in abelian categories.
 
 -/
 
