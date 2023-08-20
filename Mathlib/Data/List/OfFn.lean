@@ -186,7 +186,6 @@ theorem ofFn_get : ∀ l : List α, (ofFn (get l)) = l
   | a :: l => by
     rw [ofFn_succ]
     congr
-    simp only [Fin.val_succ]
     exact ofFn_get l
 
 set_option linter.deprecated false in

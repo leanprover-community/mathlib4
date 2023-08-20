@@ -18,6 +18,8 @@ import Qq
 This file sets up the basic `positivity` extensions tagged with the `@[positivity]` attribute.
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Meta.Positivity
 open Lean Meta Qq Function
 
