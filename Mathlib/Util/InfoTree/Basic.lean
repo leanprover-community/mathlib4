@@ -89,35 +89,33 @@ end Lean.Elab.TacticInfo
 
 namespace Lean.Elab.InfoTree
 
+/--
+Keep `.node` nodes and `.hole` nodes satisfying predicates.
+
+Returns a `List InfoTree`, although in most situations this will be a singleton.
+-/
+partial def filter (p : Info → Bool) (m : MVarId → Bool := fun _ => false) :
+    InfoTree → List InfoTree
+  | .context ctx tree => tree.filter p m |>.map (.context ctx)
+  | .node info children =>
+    if p info then
+      [.node info (children.toList.map (filter p m)).join.toPArray']
+    else
+      (children.toList.map (filter p m)).join
+  | .hole mvar => if m mvar then [.hole mvar] else []
+
 /-- Discard all nodes besides `.context` nodes and `TacticInfo` nodes. -/
-partial def retainTacticInfo : InfoTree → List InfoTree
-  | .context ctx tree => tree.retainTacticInfo |>.map (.context ctx)
-  | .node (.ofTacticInfo i) children =>
-    [.node (.ofTacticInfo i) (children.toList.map retainTacticInfo).join.toPArray']
-  | .node _ children => (children.toList.map retainTacticInfo).join
-  | .hole _ => []
+partial def retainTacticInfo (tree : InfoTree) : List InfoTree :=
+  tree.filter fun | .ofTacticInfo _ => true | _ => false
 
 /-- Retain only nodes with "original" syntax. -/
-partial def retainOriginal : InfoTree → List InfoTree
-  | .context ctx tree => tree.retainOriginal |>.map (InfoTree.context ctx)
-  | .node i children =>
-    if i.isOriginal then
-      [.node i (children.toList.map retainOriginal).join.toPArray']
-    else
-      (children.toList.map retainOriginal).join
-  | .hole _ => []
+partial def retainOriginal (tree : InfoTree) : List InfoTree :=
+  tree.filter Info.isOriginal
 
 /-- Discard all TacticInfo nodes that are tactic combinators or structuring tactics. -/
 -- There is considerable grey area here: what to do with `classical`?
-partial def retainSubstantive : InfoTree → List InfoTree
-  | .context ctx tree => tree.retainSubstantive |>.map (InfoTree.context ctx)
-  | .node (.ofTacticInfo i) children =>
-    if i.isSubstantive then
-      [.node (.ofTacticInfo i) (children.toList.map retainSubstantive).join.toPArray']
-    else
-      (children.toList.map retainSubstantive).join
-  | .node _ children => (children.toList.map retainSubstantive).join
-  | e@(.hole _) => [e]
+partial def retainSubstantive (tree : InfoTree) : List InfoTree :=
+  tree.filter fun | .ofTacticInfo i => i.isSubstantive | _ => true
 
 /-- Discard any enclosing `InfoTree.context` layers. -/
 def consumeContext : InfoTree → InfoTree

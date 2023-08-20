@@ -26,7 +26,7 @@ Contains the `Environment` before and after,
 the `src : Substring` and `stx : Syntax` of the command,
 and any `Message`s and `InfoTree`s produced while processing.
 -/
-structure ProcessedCommand where
+structure CompilationStep where
   src : Substring
   stx : Syntax
   before : Environment
@@ -34,13 +34,13 @@ structure ProcessedCommand where
   msgs : List Message
   trees : List InfoTree
 
-namespace ProcessedCommand
+namespace CompilationStep
 
 /--
-Process one command, returning a `ProcessedCommand` and
+Process one command, returning a `CompilationStep` and
 `done : Bool`, indicating whether this was the last command.
 -/
-def one : FrontendM (ProcessedCommand × Bool) := do
+def one : FrontendM (CompilationStep × Bool) := do
   let s := (← get).commandState
   let beforePos := (← get).cmdPos
   let before := s.env
@@ -54,27 +54,27 @@ def one : FrontendM (ProcessedCommand × Bool) := do
   return ({ src, stx, before, after, msgs, trees }, done)
 
 /-- Process all commands in the input. -/
-partial def all : FrontendM (List ProcessedCommand) := do
-  let (cmd, done) ← ProcessedCommand.one
+partial def all : FrontendM (List CompilationStep) := do
+  let (cmd, done) ← CompilationStep.one
   if done then
     return [cmd]
   else
     return cmd :: (← all)
 
 /-- Return all new `ConstantInfo`s added during the processed command. -/
-def diff (cmd : ProcessedCommand) : List ConstantInfo :=
+def diff (cmd : CompilationStep) : List ConstantInfo :=
   cmd.after.constants.map₂.toList.filterMap
     fun (c, i) => if cmd.before.constants.map₂.contains c then none else some i
 
-end ProcessedCommand
+end CompilationStep
 
 /--
 Variant of `processCommands` that returns information for each command in the input.
 -/
 def processCommands' (inputCtx : Parser.InputContext) (parserState : Parser.ModuleParserState)
-    (commandState : Command.State) : IO (List ProcessedCommand) := do
+    (commandState : Command.State) : IO (List CompilationStep) := do
   let commandState := { commandState with infoState.enabled := true }
-  (ProcessedCommand.all.run { inputCtx := inputCtx }).run'
+  (CompilationStep.all.run { inputCtx := inputCtx }).run'
     { commandState := commandState, parserState := parserState, cmdPos := parserState.pos }
 
 /--
@@ -88,7 +88,7 @@ Be aware of https://github.com/leanprover/lean4/issues/2408 when using the front
 -/
 def processInput' (input : String) (env? : Option Environment)
     (opts : Options) (fileName : Option String := none) :
-    IO (List ProcessedCommand) := unsafe do
+    IO (List CompilationStep) := unsafe do
   let fileName   := fileName.getD "<input>"
   let inputCtx   := Parser.mkInputContext input fileName
   let (parserState, commandState) ← match env? with
@@ -131,8 +131,6 @@ If there is no existing environment, we parse the input for headers (e.g. import
 and create a new environment.
 Otherwise, we add to the existing environment.
 Returns the resulting environment, along with a list of messages and info trees.
-
-Be aware of https://github.com/leanprover/lean4/issues/2408 when using the frontend.
 -/
 def processInput (input : String) (env? : Option Environment)
     (opts : Options) (fileName : Option String := none) :
@@ -172,26 +170,22 @@ def moduleSource (mod : Name) : IO String := do
     sourceCache.set (m.insert mod v)
     return v
 
--- Building a cache is a bit ridiculous when
--- https://github.com/leanprover/lean4/issues/2408
--- prevents compiling multiple modules at all.
--- However, it does avoid error messages from attempting to recompile the same
--- module twice.
-
 /-- Implementation of `compileModule`, which is the cached version of this function. -/
-def compileModule' (mod : Name) : IO (List ProcessedCommand) := do
+def compileModule' (mod : Name) : IO (List CompilationStep) := do
   Lean.Elab.IO.processInput' (← moduleSource mod) none {} (← findLean mod).toString
 
-initialize compilationCache : IO.Ref <| HashMap Name (List ProcessedCommand) ←
+initialize compilationCache : IO.Ref <| HashMap Name (List CompilationStep) ←
   IO.mkRef .empty
 
 /--
 Compile the source file for the named module, returning the
 resulting environment, any generated messages, and all info trees.
 
-The results are cached.
+The results are cached, although be aware that compiling multiple files in the same session
+is unsupported, and may lead to exciting results:
+you should check all compiled files for error messages if attempting this.
 -/
-def compileModule (mod : Name) : IO (List ProcessedCommand) := do
+def compileModule (mod : Name) : IO (List CompilationStep) := do
   let m ← compilationCache.get
   match m.find? mod with
   | some r => return r

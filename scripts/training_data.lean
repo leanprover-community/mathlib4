@@ -11,7 +11,7 @@ open Cli System
 
 namespace Lean.Elab.TacticInvocation
 
-def trainingData (module : Name) (i : TacticInvocation) : IO String := do
+def verboseTrainingData (module : Name) (i : TacticInvocation) : IO String := do
   let mut result := "===\n"
   result := result ++ s!"{module}\n---\n"
   let sourceUpToTactic := Substring.mk (← moduleSource module) 0 (i.info.stx.getPos?.getD 0)
@@ -26,6 +26,11 @@ def trainingData (module : Name) (i : TacticInvocation) : IO String := do
   result := result ++ (Format.joinSep (← i.goalStateAfter) "\n").pretty ++ "\n---\n"
   return result
 
+def proofStepData (i : TacticInvocation) : IO String := do
+  let mut result := "[GOAL]\n" ++ (Format.joinSep (← i.goalState) "\n").pretty ++ "\n[PROOFSTEP]\n" ++ (← i.pp).pretty
+
+  return result
+
 end Lean.Elab.TacticInvocation
 
 def trainingData (args : Cli.Parsed) : IO UInt32 := do
@@ -37,7 +42,10 @@ def trainingData (args : Cli.Parsed) : IO UInt32 := do
     trees := trees.bind InfoTree.retainSubstantive
     for t in trees do
       for t in t.tactics do
-        IO.println (← t.trainingData module)
+        if args.hasFlag "proofstep" then
+          IO.println (← t.proofStepData)
+        else
+          IO.println (← t.verboseTrainingData module)
     return 0
 
 /-- Setting up command line options and help text for `lake exe training_data`. -/
@@ -92,6 +100,9 @@ Here:
 * `rintro s t ⟨u, a, hr, he⟩` is the tactic used in the library.
 * After that is the goal state after running the tactic.
   (Often multiple goals.)"
+
+  FLAGS:
+    "proofstep";       "Use the proofstep format: [GOAL]tactic-state[PROOFSTEP]next-tactic[END]"
 
   ARGS:
     module : Name; "Lean module to compile and export training data."

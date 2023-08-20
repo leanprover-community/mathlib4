@@ -48,6 +48,8 @@ def reportOutOfHeartbeats (tac : Name) (stx : Syntax) (threshold : Nat := 90) : 
 Term elaborator that retrieves the current `SearchPath`.
 
 This can only be used in files that are compiled locally.
+(That is, if used in an imported file it will embed the search path from whichever machine
+compiled the `.olean`.)
 -/
 elab "compileTimeSearchPath%" : term =>
   return toExpr (← searchPathRef.get)
