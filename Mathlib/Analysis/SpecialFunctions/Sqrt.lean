@@ -46,7 +46,7 @@ noncomputable def sqLocalHomeomorph : LocalHomeomorph ℝ ℝ where
 theorem deriv_sqrt_aux {x : ℝ} (hx : x ≠ 0) :
     HasStrictDerivAt sqrt (1 / (2 * sqrt x)) x ∧ ∀ n, ContDiffAt ℝ n sqrt x := by
   cases' hx.lt_or_lt with hx hx
-  · rw [sqrt_eq_zero_of_nonpos hx.le, MulZeroClass.mul_zero, div_zero]
+  · rw [sqrt_eq_zero_of_nonpos hx.le, mul_zero, div_zero]
     have : sqrt =ᶠ[𝓝 x] fun _ => 0 := (gt_mem_nhds hx).mono fun x hx => sqrt_eq_zero_of_nonpos hx.le
     exact
       ⟨(hasStrictDerivAt_const x (0 : ℝ)).congr_of_eventuallyEq this.symm, fun n =>

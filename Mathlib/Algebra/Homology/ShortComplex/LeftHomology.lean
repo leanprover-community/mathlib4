@@ -1021,7 +1021,7 @@ noncomputable def leftHomologyIsoCokernelLift [S.HasLeftHomology] [HasKernel S.g
     S.leftHomology ≅ cokernel (kernel.lift S.g S.f S.zero) :=
   (LeftHomologyData.ofHasKernelOfHasCokernel S).leftHomologyIso
 
-/- The following lemmas and instance gives a sufficient condition for a morphism
+/-! The following lemmas and instance gives a sufficient condition for a morphism
 of short complexes to induce an isomorphism on cycles. -/
 
 lemma isIso_cyclesMap'_of_isIso_of_mono (φ : S₁ ⟶ S₂) (h₂ : IsIso φ.τ₂) (h₃ : Mono φ.τ₃)

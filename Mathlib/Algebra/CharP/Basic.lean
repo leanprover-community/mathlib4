@@ -177,12 +177,12 @@ theorem CharP.exists [NonAssocSemiring R] : ∃ p, CharP R p :=
                     rwa [← Nat.mod_add_div x (Nat.find (not_forall.1 H)), Nat.cast_add,
                       Nat.cast_mul,
                       of_not_not (not_not_of_not_imp <| Nat.find_spec (not_forall.1 H)),
-                      MulZeroClass.zero_mul, add_zero] at H1,
+                      zero_mul, add_zero] at H1,
                     H2⟩)),
           fun H1 => by
           rw [← Nat.mul_div_cancel' H1, Nat.cast_mul,
             of_not_not (not_not_of_not_imp <| Nat.find_spec (not_forall.1 H)),
-            MulZeroClass.zero_mul]⟩⟩⟩
+            zero_mul]⟩⟩⟩
 #align char_p.exists CharP.exists
 
 theorem CharP.exists_unique [NonAssocSemiring R] : ∃! p, CharP R p :=
@@ -582,7 +582,7 @@ instance (priority := 100) CharOne.subsingleton [CharP R 1] : Subsingleton R :=
       r = 1 * r := by rw [one_mul]
       _ = (1 : ℕ) * r := by rw [Nat.cast_one]
       _ = 0 * r := by rw [CharP.cast_eq_zero]
-      _ = 0 := by rw [MulZeroClass.zero_mul]
+      _ = 0 := by rw [zero_mul]
 
 theorem false_of_nontrivial_of_char_one [Nontrivial R] [CharP R 1] : False :=
   false_of_nontrivial_of_subsingleton R
@@ -654,14 +654,14 @@ theorem charP_of_ne_zero (hn : Fintype.card R = n) (hR : ∀ i < n, (i : R) = 0 
       intro k
       constructor
       · intro h
-        rw [← Nat.mod_add_div k n, Nat.cast_add, Nat.cast_mul, H, MulZeroClass.zero_mul,
+        rw [← Nat.mod_add_div k n, Nat.cast_add, Nat.cast_mul, H, zero_mul,
           add_zero] at h
         rw [Nat.dvd_iff_mod_eq_zero]
         apply hR _ (Nat.mod_lt _ _) h
         rw [← hn, gt_iff_lt, Fintype.card_pos_iff]
         exact ⟨0⟩
       · rintro ⟨k, rfl⟩
-        rw [Nat.cast_mul, H, MulZeroClass.zero_mul] }
+        rw [Nat.cast_mul, H, zero_mul] }
 #align char_p_of_ne_zero charP_of_ne_zero
 
 theorem charP_of_prime_pow_injective (R) [Ring R] [Fintype R] (p : ℕ) [hp : Fact p.Prime] (n : ℕ)
