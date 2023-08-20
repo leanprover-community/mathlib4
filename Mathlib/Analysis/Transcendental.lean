@@ -895,7 +895,13 @@ theorem single_prod_apply_zero_ne_zero_iff (x : GalConjClasses ℚ (K s)) {a : F
   --     _
   haveI := Nat.noZeroSMulDivisors ℚ F
   simp_rw [Finsupp.indicator_const_eq_sum_single, sum_mul, mul_sum,
-    AddMonoidAlgebra.single_mul_single, Finsupp.coe_finset_sum, sum_apply, Finsupp.single_apply, ←
+    AddMonoidAlgebra.single_mul_single]
+  -- Porting note: next four lines were `simp_rw [Finsupp.coe_finset_sum, sum_apply]`
+  rw [Finsupp.coe_finset_sum, sum_apply]
+  conv =>
+    enter [1, 1, 2, c]
+    rw [Finsupp.coe_finset_sum, sum_apply]
+  simp_rw [Finsupp.single_apply, ←
     sum_product', sum_ite, sum_const_zero, add_zero, sum_const, smul_ne_zero_iff, mul_ne_zero_iff,
     iff_true_intro ha, iff_true_intro hb, and_true_iff, Ne.def, card_eq_zero, filter_eq_empty_iff]
   push_neg
