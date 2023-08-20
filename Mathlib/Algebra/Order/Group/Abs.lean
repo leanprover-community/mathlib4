@@ -2,22 +2,19 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.order.group.abs
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Abs
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Order.MinMax
+
+#align_import algebra.order.group.abs from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
 # Absolute values in ordered groups.
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Function
 
@@ -249,7 +246,7 @@ theorem le_of_abs_le (h : |a| ≤ b) : a ≤ b :=
 #align le_of_abs_le le_of_abs_le
 
 @[to_additive]
-theorem apply_abs_le_mul_of_one_le' {β : Type _} [MulOneClass β] [Preorder β]
+theorem apply_abs_le_mul_of_one_le' {β : Type*} [MulOneClass β] [Preorder β]
     [CovariantClass β β (· * ·) (· ≤ ·)] [CovariantClass β β (swap (· * ·)) (· ≤ ·)] {f : α → β}
     {a : α} (h₁ : 1 ≤ f a) (h₂ : 1 ≤ f (-a)) : f |a| ≤ f a * f (-a) :=
   (le_total a 0).rec (fun ha => (abs_of_nonpos ha).symm ▸ le_mul_of_one_le_left' h₁) fun ha =>
@@ -258,7 +255,7 @@ theorem apply_abs_le_mul_of_one_le' {β : Type _} [MulOneClass β] [Preorder β]
 #align apply_abs_le_add_of_nonneg' apply_abs_le_add_of_nonneg'
 
 @[to_additive]
-theorem apply_abs_le_mul_of_one_le {β : Type _} [MulOneClass β] [Preorder β]
+theorem apply_abs_le_mul_of_one_le {β : Type*} [MulOneClass β] [Preorder β]
     [CovariantClass β β (· * ·) (· ≤ ·)] [CovariantClass β β (swap (· * ·)) (· ≤ ·)] {f : α → β}
     (h : ∀ x, 1 ≤ f x) (a : α) : f |a| ≤ f a * f (-a) :=
   apply_abs_le_mul_of_one_le' (h _) (h _)

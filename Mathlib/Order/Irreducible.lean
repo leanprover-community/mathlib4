@@ -2,14 +2,11 @@
 Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.irreducible
-! leanprover-community/mathlib commit bf2428c9486c407ca38b5b3fb10b87dad0bc99fa
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Fintype.Card
+
+#align_import order.irreducible from "leanprover-community/mathlib"@"bf2428c9486c407ca38b5b3fb10b87dad0bc99fa"
 
 /-!
 # Irreducible and prime elements in an order
@@ -37,7 +34,7 @@ Both hold for all (non-minimal) elements in a linear order.
 
 open Finset OrderDual
 
-variable {ι α : Type _}
+variable {ι α : Type*}
 
 /-! ### Irreducible and prime elements -/
 
@@ -116,7 +113,7 @@ theorem SupIrred.finset_sup_eq (ha : SupIrred a) (h : s.sup f = a) : ∃ i ∈ s
   induction' s using Finset.induction with i s _ ih
   · simpa [ha.ne_bot] using h.symm
   simp only [exists_prop, exists_mem_insert] at ih ⊢
-  rw [sup_insert] at h 
+  rw [sup_insert] at h
   exact (ha.2 h).imp_right ih
 #align sup_irred.finset_sup_eq SupIrred.finset_sup_eq
 
@@ -139,7 +136,7 @@ theorem exists_supIrred_decomposition (a : α) :
   rintro a ih
   by_cases ha : SupIrred a
   · exact ⟨{a}, by simp [ha]⟩
-  rw [not_supIrred] at ha 
+  rw [not_supIrred] at ha
   obtain ha | ⟨b, c, rfl, hb, hc⟩ := ha
   · exact ⟨∅, by simp [ha.eq_bot]⟩
   obtain ⟨s, rfl, hs⟩ := ih _ hb

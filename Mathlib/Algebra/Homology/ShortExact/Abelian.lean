@@ -2,14 +2,11 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Andrew Yang, Pierre-Alexandre Bazin
-
-! This file was ported from Lean 3 source module algebra.homology.short_exact.abelian
-! leanprover-community/mathlib commit 356447fe00e75e54777321045cdff7c9ea212e60
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.ShortExact.Preadditive
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
+
+#align_import algebra.homology.short_exact.abelian from "leanprover-community/mathlib"@"356447fe00e75e54777321045cdff7c9ea212e60"
 
 /-!
 # Short exact sequences in abelian categories
@@ -22,7 +19,7 @@ noncomputable section
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Preadditive
 
-variable {𝒜 : Type _} [Category 𝒜]
+variable {𝒜 : Type*} [Category 𝒜]
 
 namespace CategoryTheory
 
@@ -38,7 +35,7 @@ theorem isIso_of_shortExact_of_isIso_of_isIso (h : ShortExact f g) (h' : ShortEx
     (comm₂ : i₂ ≫ g' = g ≫ i₃ := by aesop_cat) [IsIso i₁] [IsIso i₃] : IsIso i₂ := by
   obtain ⟨_⟩ := h
   obtain ⟨_⟩ := h'
-  refine @Abelian.isIso_of_isIso_of_isIso_of_isIso_of_isIso 𝒜 _ _ 0 _ _ _ 0 _ _ _ 0 f g 0 f' g'
+  refine @Abelian.isIso_of_epi_of_isIso_of_isIso_of_mono 𝒜 _ _ 0 _ _ _ 0 _ _ _ 0 f g 0 f' g'
       0 i₁ i₂ i₃ ?_ comm₁ comm₂ 0 0 0 0 0 ?_ ?_ ?_ ?_ ?_ ?_ ?_ _ _ _ _
   all_goals try simp
   all_goals try assumption

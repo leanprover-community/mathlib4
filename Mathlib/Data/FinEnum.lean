@@ -2,16 +2,13 @@
 Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module data.fin_enum
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Monad.Basic
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Pi
+
+#align_import data.fin_enum from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 Type class for finitely enumerable types. The property is stronger
@@ -28,7 +25,7 @@ open Finset
   infer kinds are unsupported in Lean 4: #[`Equiv] [] -/
 /-- `FinEnum α` means that `α` is finite and can be enumerated in some order,
   i.e. `α` has an explicit bijection with `Fin n` for some n. -/
-class FinEnum (α : Sort _) where
+class FinEnum (α : Sort*) where
   /-- `FinEnum.card` is the cardinality of the `FinEnum` -/
   card : ℕ
   /-- `FinEnum.Equiv` states that type `α` is in bijection with `Fin card`,

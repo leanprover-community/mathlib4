@@ -2,13 +2,10 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.functor.currying
-! leanprover-community/mathlib commit 369525b73f229ccd76a6ec0e0e0bf2be57599768
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Products.Bifunctor
+
+#align_import category_theory.functor.currying from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
 /-!
 # Curry and uncurry, as functors.
@@ -61,7 +58,7 @@ def curryObj (F : C × D ⥤ E) : C ⥤ D ⥤ E
       map_comp := fun f g => by simp [←F.map_comp]}
   map f :=
     { app := fun Y => F.map (f, 𝟙 Y)
-      naturality := fun {Y} {Y'} g => by simp [←F.map_comp]  }
+      naturality := fun {Y} {Y'} g => by simp [←F.map_comp] }
   map_id := fun X => by ext Y; exact F.map_id _
   map_comp := fun f g => by ext Y; dsimp; simp [←F.map_comp]
 #align category_theory.curry_obj CategoryTheory.curryObj

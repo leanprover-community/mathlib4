@@ -2,15 +2,12 @@
 Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module algebra.covariant_and_contravariant
-! leanprover-community/mathlib commit 2258b40dacd2942571c8ce136215350c702dc78f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Order.Basic
 import Mathlib.Order.Monotone.Basic
+
+#align_import algebra.covariant_and_contravariant from "leanprover-community/mathlib"@"2258b40dacd2942571c8ce136215350c702dc78f"
 
 /-!
 
@@ -71,7 +68,7 @@ open Function
 
 section Variants
 
-variable {M N : Type _} (μ : M → N → N) (r : N → N → Prop)
+variable {M N : Type*} (μ : M → N → N) (r : N → N → Prop)
 
 variable (M N)
 
@@ -246,7 +243,7 @@ end Contravariant
 
 section Monotone
 
-variable {α : Type _} {M N μ} [Preorder α] [Preorder N]
+variable {α : Type*} {M N μ} [Preorder α] [Preorder N]
 
 variable {f : N → α}
 

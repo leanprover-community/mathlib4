@@ -2,13 +2,10 @@
 Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
-
-! This file was ported from Lean 3 source module geometry.manifold.vector_bundle.tangent
-! leanprover-community/mathlib commit e473c3198bb41f68560cab68a0529c854b618833
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.VectorBundle.Basic
+
+#align_import geometry.manifold.vector_bundle.tangent from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 
 /-! # Tangent bundles
 
@@ -42,12 +39,12 @@ noncomputable section
 
 section General
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {E' : Type _} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type _}
-  [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type _} [TopologicalSpace H']
-  {I' : ModelWithCorners 𝕜 E' H'} {M : Type _} [TopologicalSpace M] [ChartedSpace H M]
-  [SmoothManifoldWithCorners I M] {M' : Type _} [TopologicalSpace M'] [ChartedSpace H' M']
-  [SmoothManifoldWithCorners I' M'] {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
+  [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type*} [TopologicalSpace H']
+  {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  [SmoothManifoldWithCorners I M] {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  [SmoothManifoldWithCorners I' M'] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 variable (I)
 
@@ -133,7 +130,7 @@ kernel.
 @[nolint unusedArguments]
 def TangentSpace {𝕜} [NontriviallyNormedField 𝕜] {E} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M} [TopologicalSpace M]
-    [ChartedSpace H M] [SmoothManifoldWithCorners I M] (_x : M) : Type _ := E
+    [ChartedSpace H M] [SmoothManifoldWithCorners I M] (_x : M) : Type* := E
 -- porting note: was deriving TopologicalSpace, AddCommGroup, TopologicalAddGroup
 #align tangent_space TangentSpace
 
@@ -310,7 +307,7 @@ instance tangentBundleCore.isSmooth : (tangentBundleCore I M).IsSmooth I := by
   rw [SmoothOn, contMDiffOn_iff_source_of_mem_maximalAtlas (subset_maximalAtlas I i.2),
     contMDiffOn_iff_contDiffOn]
   refine' ((contDiffOn_fderiv_coord_change I i j).congr fun x hx => _).mono _
-  · rw [LocalEquiv.trans_source'] at hx 
+  · rw [LocalEquiv.trans_source'] at hx
     simp_rw [Function.comp_apply, tangentBundleCore_coordChange, (i.1.extend I).right_inv hx.1]
   · exact (i.1.extend_image_source_inter j.1 I).subset
   · apply inter_subset_left
@@ -398,7 +395,7 @@ theorem tangentBundleModelSpaceHomeomorph_coe_symm :
 
 section inTangentCoordinates
 
-variable (I') {M H} {N : Type _}
+variable (I') {M H} {N : Type*}
 
 /-- The map `in_coordinates` for the tangent bundle is trivial on the model spaces -/
 theorem inCoordinates_tangent_bundle_core_model_space (x₀ x : H) (y₀ y : H') (ϕ : E →L[𝕜] E') :
@@ -442,8 +439,8 @@ end General
 
 section Real
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type _} [TopologicalSpace H]
-  {I : ModelWithCorners ℝ E H} {M : Type _} [TopologicalSpace M] [ChartedSpace H M]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
+  {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [SmoothManifoldWithCorners I M]
 
 instance {x : M} : PathConnectedSpace (TangentSpace I x) := by unfold TangentSpace; infer_instance

@@ -2,15 +2,12 @@
 Copyright (c) 2020 Ruben Van de Velde. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde
-
-! This file was ported from Lean 3 source module analysis.normed_space.extend
-! leanprover-community/mathlib commit 3f655f5297b030a87d641ad4e825af8d9679eb0b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.OperatorNorm
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Data.IsROrC.Basic
+
+#align_import analysis.normed_space.extend from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 
 /-!
 # Extending a continuous `ℝ`-linear map to a continuous `𝕜`-linear map
@@ -40,7 +37,7 @@ open IsROrC
 
 open ComplexConjugate
 
-variable {𝕜 : Type _} [IsROrC 𝕜] {F : Type _} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 : Type*} [IsROrC 𝕜] {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 namespace LinearMap
 
@@ -89,7 +86,7 @@ theorem extendTo𝕜'_apply (fr : F →ₗ[ℝ] ℝ) (x : F) :
 
 @[simp]
 theorem extendTo𝕜'_apply_re (fr : F →ₗ[ℝ] ℝ) (x : F) : re (fr.extendTo𝕜' x : 𝕜) = fr x := by
-  simp only [extendTo𝕜'_apply, map_sub, MulZeroClass.zero_mul, MulZeroClass.mul_zero, sub_zero,
+  simp only [extendTo𝕜'_apply, map_sub, zero_mul, mul_zero, sub_zero,
     isROrC_simps]
 #align linear_map.extend_to_𝕜'_apply_re LinearMap.extendTo𝕜'_apply_re
 

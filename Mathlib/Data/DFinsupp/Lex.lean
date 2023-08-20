@@ -2,15 +2,12 @@
 Copyright (c) 2022 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Junyan Xu
-
-! This file was ported from Lean 3 source module data.dfinsupp.lex
-! leanprover-community/mathlib commit dde670c9a3f503647fd5bfdf1037bad526d3397a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.DFinsupp.Order
 import Mathlib.Data.DFinsupp.NeLocus
 import Mathlib.Order.WellFoundedSet
+
+#align_import data.dfinsupp.lex from "leanprover-community/mathlib"@"dde670c9a3f503647fd5bfdf1037bad526d3397a"
 
 /-!
 # Lexicographic order on finitely supported dependent functions
@@ -19,7 +16,7 @@ This file defines the lexicographic order on `DFinsupp`.
 -/
 
 
-variable {ι : Type _} {α : ι → Type _}
+variable {ι : Type*} {α : ι → Type*}
 
 namespace DFinsupp
 
@@ -88,7 +85,7 @@ variable [∀ i, LinearOrder (α i)]
 
 /-- Auxiliary helper to case split computably. There is no need for this to be public, as it
 can be written with `Or.by_cases` on `lt_trichotomy` once the instances below are constructed. -/
-private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) → Sort _}
+private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) → Sort*}
     (h_lt : ∀ {f g}, toLex f < toLex g → P (toLex f) (toLex g))
     (h_eq : ∀ {f g}, toLex f = toLex g → P (toLex f) (toLex g))
     (h_gt : ∀ {f g}, toLex g < toLex f → P (toLex f) (toLex g)) : ∀ f g, P f g :=
@@ -190,5 +187,35 @@ instance Lex.covariantClass_le_right :
 end Right
 
 end Covariants
+
+section OrderedAddMonoid
+
+variable [LinearOrder ι]
+
+instance Lex.orderBot [∀ i, CanonicallyOrderedAddMonoid (α i)] : OrderBot (Lex (Π₀ i, α i)) where
+  bot := 0
+  bot_le _ := DFinsupp.toLex_monotone bot_le
+
+instance Lex.orderedAddCancelCommMonoid [∀ i, OrderedCancelAddCommMonoid (α i)] :
+    OrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) where
+  add_le_add_left _ _ h _ := add_le_add_left (α := Lex (∀ i, α i)) h _
+  le_of_add_le_add_left _ _ _ := le_of_add_le_add_left (α := Lex (∀ i, α i))
+
+instance Lex.orderedAddCommGroup [∀ i, OrderedAddCommGroup (α i)] :
+    OrderedAddCommGroup (Lex (Π₀ i, α i)) where
+  add_le_add_left _ _ := add_le_add_left
+
+instance Lex.linearOrderedCancelAddCommMonoid
+    [∀ i, LinearOrderedCancelAddCommMonoid (α i)] :
+    LinearOrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) where
+  __ := (inferInstance : LinearOrder (Lex (Π₀ i, α i)))
+  __ := (inferInstance : OrderedCancelAddCommMonoid (Lex (Π₀ i, α i)))
+
+instance Lex.linearOrderedAddCommGroup [∀ i, LinearOrderedAddCommGroup (α i)] :
+    LinearOrderedAddCommGroup (Lex (Π₀ i, α i)) where
+  __ := (inferInstance : LinearOrder (Lex (Π₀ i, α i)))
+  add_le_add_left _ _ := add_le_add_left
+
+end OrderedAddMonoid
 
 end DFinsupp

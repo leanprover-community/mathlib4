@@ -2,17 +2,14 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Alex Kontorovich, Heather Macbeth
-
-! This file was ported from Lean 3 source module measure_theory.integral.periodic
-! leanprover-community/mathlib commit 9f55d0d4363ae59948c33864cbc52e0b12e0e8ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Measure.Haar.Quotient
 import Mathlib.MeasureTheory.Constructions.Polish
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.Topology.Algebra.Order.Floor
+
+#align_import measure_theory.integral.periodic from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
 
 /-!
 # Integrals of periodic functions
@@ -174,7 +171,7 @@ protected theorem lintegral_preimage (t : ℝ) (f : AddCircle T → ℝ≥0∞) 
     rfl
 #align add_circle.lintegral_preimage AddCircle.lintegral_preimage
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 /-- The integral of an almost-everywhere strongly measurable function over `AddCircle T` is equal
 to the integral over an interval (t, t + T] in `ℝ` of its lift to `ℝ`. -/
@@ -235,7 +232,7 @@ protected theorem lintegral_preimage (t : ℝ) (f : UnitAddCircle → ℝ≥0∞
   AddCircle.lintegral_preimage 1 t f
 #align unit_add_circle.lintegral_preimage UnitAddCircle.lintegral_preimage
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 /-- The integral of an almost-everywhere strongly measurable function over `UnitAddCircle` is
 equal to the integral over an interval (t, t + 1] in `ℝ` of its lift to `ℝ`. -/
@@ -253,7 +250,7 @@ protected theorem intervalIntegral_preimage (t : ℝ) (f : UnitAddCircle → E) 
 
 end UnitAddCircle
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 namespace Function
 

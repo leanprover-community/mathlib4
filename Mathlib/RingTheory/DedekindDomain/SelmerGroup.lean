@@ -2,16 +2,13 @@
 Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
-
-! This file was ported from Lean 3 source module ring_theory.dedekind_domain.selmer_group
-! leanprover-community/mathlib commit 2032a878972d5672e7c27c957e7a6e297b044973
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Equiv.TypeTags
 import Mathlib.Data.ZMod.Quotient
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.Norm
+
+#align_import ring_theory.dedekind_domain.selmer_group from "leanprover-community/mathlib"@"2032a878972d5672e7c27c957e7a6e297b044973"
 
 /-!
 # Selmer groups of fraction fields of Dedekind domains
@@ -218,10 +215,10 @@ theorem fromUnit_ker [hn : Fact <| 0 < n] :
     have hi : ↑(_ ^ n : Kˣ)⁻¹ = algebraMap R K _ := by exact congr_arg Units.inv hx
     rw [Units.val_pow_eq_pow_val] at hv
     rw [← inv_pow, Units.inv_mk, Units.val_pow_eq_pow_val] at hi
-    rcases@IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow R _ _ _ _ _ _ _ v _ hn.out
+    rcases IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow (R := R) (x := v) hn.out
         (hv.symm ▸ isIntegral_algebraMap) with
       ⟨v', rfl⟩
-    rcases@IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow R _ _ _ _ _ _ _ i _ hn.out
+    rcases IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow (R := R) (x := i) hn.out
         (hi.symm ▸ isIntegral_algebraMap) with
       ⟨i', rfl⟩
     rw [← map_mul, map_eq_one_iff _ <| NoZeroSMulDivisors.algebraMap_injective R K] at vi

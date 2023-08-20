@@ -2,16 +2,13 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.closed.types
-! leanprover-community/mathlib commit 024a4231815538ac739f52d08dd20a55da0d6b23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Closed.Cartesian
+
+#align_import category_theory.closed.types from "leanprover-community/mathlib"@"024a4231815538ac739f52d08dd20a55da0d6b23"
 
 /-!
 # Cartesian closure of Type

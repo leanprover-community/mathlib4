@@ -2,13 +2,10 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.measure.null_measurable
-! leanprover-community/mathlib commit e4edb23029fff178210b9945dcb77d293f001e1c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.AEDisjoint
+
+#align_import measure_theory.measure.null_measurable from "leanprover-community/mathlib"@"e4edb23029fff178210b9945dcb77d293f001e1c"
 
 /-!
 # Null measurable sets and complete measures
@@ -61,13 +58,13 @@ measurable, measure, null measurable, completion
 
 open Filter Set Encodable
 
-variable {ι α β γ : Type _}
+variable {ι α β γ : Type*}
 
 namespace MeasureTheory
 
 /-- A type tag for `α` with `MeasurableSet` given by `NullMeasurableSet`. -/
 @[nolint unusedArguments]
-def NullMeasurableSpace (α : Type _) [MeasurableSpace α]
+def NullMeasurableSpace (α : Type*) [MeasurableSpace α]
     (_μ : Measure α := by volume_tac) : Type _ :=
   α
 #align measure_theory.null_measurable_space MeasureTheory.NullMeasurableSpace
@@ -146,7 +143,7 @@ protected theorem congr (hs : NullMeasurableSet s μ) (h : s =ᵐ[μ] t) : NullM
   ⟨s', hm, h.symm.trans hs'⟩
 #align measure_theory.null_measurable_set.congr MeasureTheory.NullMeasurableSet.congr
 
-protected theorem iUnion {ι : Sort _} [Countable ι] {s : ι → Set α}
+protected theorem iUnion {ι : Sort*} [Countable ι] {s : ι → Set α}
     (h : ∀ i, NullMeasurableSet (s i) μ) : NullMeasurableSet (⋃ i, s i) μ :=
   MeasurableSet.iUnion h
 #align measure_theory.null_measurable_set.Union MeasureTheory.NullMeasurableSet.iUnion
@@ -168,7 +165,7 @@ protected theorem sUnion {s : Set (Set α)} (hs : s.Countable) (h : ∀ t ∈ s,
   exact MeasurableSet.biUnion hs h
 #align measure_theory.null_measurable_set.sUnion MeasureTheory.NullMeasurableSet.sUnion
 
-protected theorem iInter {ι : Sort _} [Countable ι] {f : ι → Set α}
+protected theorem iInter {ι : Sort*} [Countable ι] {f : ι → Set α}
     (h : ∀ i, NullMeasurableSet (f i) μ) : NullMeasurableSet (⋂ i, f i) μ :=
   MeasurableSet.iInter h
 #align measure_theory.null_measurable_set.Inter MeasureTheory.NullMeasurableSet.iInter

@@ -2,17 +2,14 @@
 Copyright (c) 2020 Bhavik Mehta, E. W. Ayers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, E. W. Ayers
-
-! This file was ported from Lean 3 source module category_theory.sites.grothendieck
-! leanprover-community/mathlib commit 14b69e9f3c16630440a2cbd46f1ddad0d561dee7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.Sieves
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.Order.Copy
+
+#align_import category_theory.sites.grothendieck from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
 /-!
 # Grothendieck topologies
@@ -256,7 +253,7 @@ theorem trivial_covering : S ∈ trivial C X ↔ S = ⊤ :=
 #align category_theory.grothendieck_topology.trivial_covering CategoryTheory.GrothendieckTopology.trivial_covering
 
 /-- See <https://stacks.math.columbia.edu/tag/00Z6> -/
-instance : LE (GrothendieckTopology C)
+instance instLEGrothendieckTopology : LE (GrothendieckTopology C)
     where le J₁ J₂ := (J₁ : ∀ X : C, Set (Sieve X)) ≤ (J₂ : ∀ X : C, Set (Sieve X))
 
 theorem le_def {J₁ J₂ : GrothendieckTopology C} : J₁ ≤ J₂ ↔ (J₁ : ∀ X : C, Set (Sieve X)) ≤ J₂ :=

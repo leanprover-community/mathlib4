@@ -2,14 +2,11 @@
 Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
-
-! This file was ported from Lean 3 source module set_theory.ordinal.natural_ops
-! leanprover-community/mathlib commit 31b269b60935483943542d547a6dd83a66b37dc7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.Tactic.Abel
+
+#align_import set_theory.ordinal.natural_ops from "leanprover-community/mathlib"@"31b269b60935483943542d547a6dd83a66b37dc7"
 
 /-!
 # Natural operations on ordinals
@@ -43,6 +40,8 @@ between both types, we attempt to prove and state most results on `Ordinal`.
 - Prove the characterizations of natural addition and multiplication in terms of the Cantor normal
   form.
 -/
+
+set_option autoImplicit true
 
 
 universe u v
@@ -135,7 +134,7 @@ theorem succ_def (a : NatOrdinal) : succ a = toNatOrdinal (toOrdinal a + 1) :=
 #align nat_ordinal.succ_def NatOrdinal.succ_def
 
 /-- A recursor for `NatOrdinal`. Use as `induction x using NatOrdinal.rec`. -/
-protected def rec {β : NatOrdinal → Sort _} (h : ∀ a, β (toNatOrdinal a)) : ∀ a, β a := fun a =>
+protected def rec {β : NatOrdinal → Sort*} (h : ∀ a, β (toNatOrdinal a)) : ∀ a, β a := fun a =>
   h (toOrdinal a)
 #align nat_ordinal.rec NatOrdinal.rec
 
@@ -295,8 +294,8 @@ theorem blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
 theorem nadd_assoc (a b c) : a ♯ b ♯ c = a ♯ (b ♯ c) := by
   rw [nadd_def a (b ♯ c), nadd_def, blsub_nadd_of_mono, blsub_nadd_of_mono, max_assoc]
   · congr <;> ext (d hd) <;> apply nadd_assoc
-  · exact fun  _ _ h => nadd_le_nadd_left h a
-  · exact fun  _ _ h => nadd_le_nadd_right h c
+  · exact fun _ _ h => nadd_le_nadd_left h a
+  · exact fun _ _ h => nadd_le_nadd_right h c
 termination_by _ => (a, b, c)
 -- Porting note: above lines replaces
 -- decreasing_by solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]

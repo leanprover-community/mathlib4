@@ -2,15 +2,12 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.complex.upper_half_plane.metric
-! leanprover-community/mathlib commit caa58cbf5bfb7f81ccbaca4e8b8ac4bc2b39cc1c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 import Mathlib.Analysis.SpecialFunctions.Arsinh
 import Mathlib.Geometry.Euclidean.Inversion.Basic
+
+#align_import analysis.complex.upper_half_plane.metric from "leanprover-community/mathlib"@"caa58cbf5bfb7f81ccbaca4e8b8ac4bc2b39cc1c"
 
 /-!
 # Metric on the upper half-plane
@@ -132,7 +129,7 @@ theorem dist_le_dist_coe_div_sqrt (z w : ℍ) : dist z w ≤ dist (z : ℂ) w / 
 to `TopologicalSpace`. We replace it later. -/
 def metricSpaceAux : MetricSpace ℍ where
   dist := dist
-  dist_self z := by rw [dist_eq, dist_self, zero_div, arsinh_zero, MulZeroClass.mul_zero]
+  dist_self z := by rw [dist_eq, dist_self, zero_div, arsinh_zero, mul_zero]
   dist_comm := UpperHalfPlane.dist_comm
   dist_triangle := UpperHalfPlane.dist_triangle
   eq_of_dist_eq_zero {z w} h := by

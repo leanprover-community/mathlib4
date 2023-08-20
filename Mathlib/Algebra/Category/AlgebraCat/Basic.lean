@@ -2,16 +2,13 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.Algebra.basic
-! leanprover-community/mathlib commit 79ffb5563b56fefdea3d60b5736dad168a9494ab
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.FreeAlgebra
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Algebra.Category.ModuleCat.Basic
+
+#align_import algebra.category.Algebra.basic from "leanprover-community/mathlib"@"79ffb5563b56fefdea3d60b5736dad168a9494ab"
 
 /-!
 # Category instance for algebras over a commutative ring

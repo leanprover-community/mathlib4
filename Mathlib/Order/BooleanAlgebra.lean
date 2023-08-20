@@ -2,13 +2,10 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Bryan Gin-ge Chen
-
-! This file was ported from Lean 3 source module order.boolean_algebra
-! leanprover-community/mathlib commit 9ac7c0c8c4d7a535ec3e5b34b8859aab9233b2f4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Heyting.Basic
+
+#align_import order.boolean_algebra from "leanprover-community/mathlib"@"9ac7c0c8c4d7a535ec3e5b34b8859aab9233b2f4"
 
 /-!
 # (Generalized) Boolean algebras
@@ -63,7 +60,7 @@ open Function OrderDual
 
 universe u v
 
-variable {α : Type u} {β : Type _} {w x y z : α}
+variable {α : Type u} {β : Type*} {w x y z : α}
 
 /-!
 ### Generalized Boolean algebras

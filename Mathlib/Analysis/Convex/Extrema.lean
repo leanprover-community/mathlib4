@@ -2,16 +2,13 @@
 Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
-
-! This file was ported from Lean 3 source module analysis.convex.extrema
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.LocalExtr
 import Mathlib.Topology.MetricSpace.Basic
+
+#align_import analysis.convex.extrema from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Minima and maxima of convex functions
@@ -21,7 +18,7 @@ a global minimum, and likewise for concave functions.
 -/
 
 
-variable {E β : Type _} [AddCommGroup E] [TopologicalSpace E] [Module ℝ E] [TopologicalAddGroup E]
+variable {E β : Type*} [AddCommGroup E] [TopologicalSpace E] [Module ℝ E] [TopologicalAddGroup E]
   [ContinuousSMul ℝ E] [OrderedAddCommGroup β] [Module ℝ β] [OrderedSMul ℝ β] {s : Set E}
 
 open Set Filter Function

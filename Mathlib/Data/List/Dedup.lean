@@ -2,13 +2,10 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.dedup
-! leanprover-community/mathlib commit d9e96a3e3e0894e93e10aff5244f4c96655bac1c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Nodup
+
+#align_import data.list.dedup from "leanprover-community/mathlib"@"d9e96a3e3e0894e93e10aff5244f4c96655bac1c"
 
 /-!
 # Erasure of duplicates in a list
@@ -127,7 +124,7 @@ theorem dedup_idempotent {l : List α} : dedup (dedup l) = dedup l :=
 
 theorem dedup_append (l₁ l₂ : List α) : dedup (l₁ ++ l₂) = l₁ ∪ dedup l₂ := by
   induction' l₁ with a l₁ IH; · rfl
-  simp only [instUnionList, cons_union] at *
+  simp only [cons_union] at *
   rw [← IH, cons_append]
   by_cases h : a ∈ dedup (l₁ ++ l₂)
   · rw [dedup_cons_of_mem' h, insert_of_mem h]

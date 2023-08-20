@@ -2,17 +2,14 @@
 Copyright (c) 2018 Guy Leroy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.int.gcd
-! leanprover-community/mathlib commit 47a1a73351de8dd6c8d3d32b569c8e434b03ca47
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Order.Bounds.Basic
+
+#align_import data.int.gcd from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
 
 /-!
 # Extended GCD and divisibility over ℤ
@@ -31,6 +28,8 @@ import Mathlib.Order.Bounds.Basic
 
 Bézout's lemma, Bezout's lemma
 -/
+
+set_option autoImplicit true
 
 
 /-! ### Extended Euclidean algorithm -/
@@ -503,7 +502,7 @@ theorem lcm_dvd {i j k : ℤ} : i ∣ k → j ∣ k → (lcm i j : ℤ) ∣ k :=
 end Int
 
 @[to_additive gcd_nsmul_eq_zero]
-theorem pow_gcd_eq_one {M : Type _} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m = 1) (hn : x ^ n = 1) :
+theorem pow_gcd_eq_one {M : Type*} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m = 1) (hn : x ^ n = 1) :
     x ^ m.gcd n = 1 := by
   rcases m with (rfl | m); · simp [hn]
   obtain ⟨y, rfl⟩ := isUnit_ofPowEqOne hm m.succ_ne_zero

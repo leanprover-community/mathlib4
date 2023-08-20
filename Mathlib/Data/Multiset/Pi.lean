@@ -2,13 +2,10 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module data.multiset.pi
-! leanprover-community/mathlib commit b2c89893177f66a48daf993b7ba5ef7cddeff8c9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Nodup
+
+#align_import data.multiset.pi from "leanprover-community/mathlib"@"b2c89893177f66a48daf993b7ba5ef7cddeff8c9"
 
 /-!
 # The cartesian product of multisets
@@ -22,17 +19,17 @@ section Pi
 open Function
 
 namespace Pi
-variable {ι : Type _} [DecidableEq ι] {α : ι → Sort _}
+variable {ι : Type*} [DecidableEq ι] {α : ι → Sort*}
 
-/-- Given `β : α → Type _`, `Pi.empty β` is the trivial dependent function out of the empty
+/-- Given `α : ι → Type*`, `Pi.empty α` is the trivial dependent function out of the empty
 multiset. -/
-def empty {ι : Type _} (α : ι → Sort _) : ∀ a ∈ (0 : Multiset ι), α a :=
+def empty {ι : Type*} (α : ι → Sort*) : ∀ a ∈ (0 : Multiset ι), α a :=
   fun.
 #align multiset.pi.empty Multiset.Pi.empty
 
 variable {i : ι} {m : Multiset ι}
 
-/-- Given `α : ι → Sort _`, a multiset `m` and a term `i`, as well as a term `a : α i` and a
+/-- Given `α : ι → Sort*`, a multiset `m` and a term `i`, as well as a term `a : α i` and a
 function `f` such that `f j : α j` for all `j` in `m`, `Pi.cons a f` is a function `g` such
 that `g k : α k` for all `k` in `i ::ₘ m`. -/
 def cons (a : α i) (f : ∀ j ∈ m, α j) : ∀ j ∈ (i ::ₘ m), α j :=

@@ -2,15 +2,12 @@
 Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
-
-! This file was ported from Lean 3 source module topology.homotopy.path
-! leanprover-community/mathlib commit bb9d1c5085e0b7ea619806a68c5021927cecb2a6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Homotopy.Basic
 import Mathlib.Topology.PathConnected
 import Mathlib.Analysis.Convex.Basic
+
+#align_import topology.homotopy.path from "leanprover-community/mathlib"@"bb9d1c5085e0b7ea619806a68c5021927cecb2a6"
 
 /-!
 # Homotopy between paths
@@ -370,7 +367,7 @@ namespace ContinuousMap.Homotopy
 /-- Given a homotopy `H : f ∼ g`, get the path traced by the point `x` as it moves from
 `f x` to `g x`.
 -/
-def evalAt {X : Type _} {Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] {f g : C(X, Y)}
+def evalAt {X : Type*} {Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f g : C(X, Y)}
     (H : ContinuousMap.Homotopy f g) (x : X) : Path (f x) (g x) where
   toFun t := H (t, x)
   source' := H.apply_zero x

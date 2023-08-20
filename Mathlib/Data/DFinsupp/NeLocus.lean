@@ -2,13 +2,10 @@
 Copyright (c) 2022 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Junyan Xu
-
-! This file was ported from Lean 3 source module data.dfinsupp.ne_locus
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.DFinsupp.Basic
+
+#align_import data.dfinsupp.ne_locus from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Locus of unequal values of finitely supported dependent functions
@@ -24,7 +21,7 @@ In the case in which `N a` is an additive group for all `a`, `DFinsupp.neLocus f
 -/
 
 
-variable {α : Type _} {N : α → Type _}
+variable {α : Type*} {N : α → Type*}
 
 namespace DFinsupp
 
@@ -86,7 +83,7 @@ end NHasZero
 
 section NeLocusAndMaps
 
-variable {M P : α → Type _} [∀ a, Zero (N a)] [∀ a, Zero (M a)] [∀ a, Zero (P a)]
+variable {M P : α → Type*} [∀ a, Zero (N a)] [∀ a, Zero (M a)] [∀ a, Zero (P a)]
 
 theorem subset_mapRange_neLocus [∀ a, DecidableEq (N a)] [∀ a, DecidableEq (M a)] (f g : Π₀ a, N a)
     {F : ∀ a, N a → M a} (F0 : ∀ a, F a 0 = 0) :

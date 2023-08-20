@@ -2,13 +2,10 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
-
-! This file was ported from Lean 3 source module analysis.special_functions.trigonometric.basic
-! leanprover-community/mathlib commit 2c1d8ca2812b64f88992a5294ea3dba144755cd1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Exp
+
+#align_import analysis.special_functions.trigonometric.basic from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
 
 /-!
 # Trigonometric functions
@@ -523,7 +520,7 @@ theorem sin_ne_zero_iff {x : ℝ} : sin x ≠ 0 ↔ ∀ n : ℤ, (n : ℝ) * π 
 
 theorem sin_eq_zero_iff_cos_eq {x : ℝ} : sin x = 0 ↔ cos x = 1 ∨ cos x = -1 := by
   rw [← mul_self_eq_one_iff, ← sin_sq_add_cos_sq x, sq, sq, ← sub_eq_iff_eq_add, sub_self]
-  exact ⟨fun h => by rw [h, MulZeroClass.mul_zero], eq_zero_of_mul_self_eq_zero ∘ Eq.symm⟩
+  exact ⟨fun h => by rw [h, mul_zero], eq_zero_of_mul_self_eq_zero ∘ Eq.symm⟩
 #align real.sin_eq_zero_iff_cos_eq Real.sin_eq_zero_iff_cos_eq
 
 theorem cos_eq_one_iff (x : ℝ) : cos x = 1 ↔ ∃ n : ℤ, (n : ℝ) * (2 * π) = x :=
@@ -1101,7 +1098,7 @@ open Real
 
 theorem sin_eq_zero_iff_cos_eq {z : ℂ} : sin z = 0 ↔ cos z = 1 ∨ cos z = -1 := by
   rw [← mul_self_eq_one_iff, ← sin_sq_add_cos_sq, sq, sq, ← sub_eq_iff_eq_add, sub_self]
-  exact ⟨fun h => by rw [h, MulZeroClass.mul_zero], eq_zero_of_mul_self_eq_zero ∘ Eq.symm⟩
+  exact ⟨fun h => by rw [h, mul_zero], eq_zero_of_mul_self_eq_zero ∘ Eq.symm⟩
 #align complex.sin_eq_zero_iff_cos_eq Complex.sin_eq_zero_iff_cos_eq
 
 @[simp]

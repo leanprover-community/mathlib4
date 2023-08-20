@@ -2,14 +2,11 @@
 Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
-
-! This file was ported from Lean 3 source module linear_algebra.free_module.norm
-! leanprover-community/mathlib commit 90b0d53ee6ffa910e5c2a977ce7e2fc704647974
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 import Mathlib.RingTheory.Norm
+
+#align_import linear_algebra.free_module.norm from "leanprover-community/mathlib"@"90b0d53ee6ffa910e5c2a977ce7e2fc704647974"
 
 /-!
 # Norms on free modules over principal ideal domains
@@ -20,12 +17,12 @@ open Ideal Polynomial
 
 open scoped BigOperators Polynomial
 
-variable {R S ι : Type _} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [CommRing S]
+variable {R S ι : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [CommRing S]
   [IsDomain S] [Algebra R S]
 
 section CommRing
 
-variable (F : Type _) [CommRing F] [Algebra F R] [Algebra F S] [IsScalarTower F R S]
+variable (F : Type*) [CommRing F] [Algebra F R] [Algebra F S] [IsScalarTower F R S]
 
 /-- For a nonzero element `f` in an algebra `S` over a principal ideal domain `R` that is finite and
 free as an `R`-module, the norm of `f` relative to `R` is associated to the product of the Smith
@@ -56,7 +53,7 @@ end CommRing
 
 section Field
 
-variable {F : Type _} [Field F] [Algebra F[X] S] [Finite ι]
+variable {F : Type*} [Field F] [Algebra F[X] S] [Finite ι]
 
 set_option maxHeartbeats 210000 in
 instance (b : Basis ι F[X] S) {I : Ideal S} (hI : I ≠ ⊥) (i : ι) :

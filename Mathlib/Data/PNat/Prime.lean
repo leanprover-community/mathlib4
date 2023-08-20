@@ -2,14 +2,11 @@
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Neil Strickland
-
-! This file was ported from Lean 3 source module data.pnat.prime
-! leanprover-community/mathlib commit 09597669f02422ed388036273d8848119699c22f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.PNat.Basic
+
+#align_import data.pnat.prime from "leanprover-community/mathlib"@"09597669f02422ed388036273d8848119699c22f"
 
 /-!
 # Primality and GCD on pnat
@@ -299,7 +296,7 @@ theorem gcd_eq_left {m n : ℕ+} : m ∣ n → m.gcd n = m := by
 #align pnat.gcd_eq_left PNat.gcd_eq_left
 
 theorem Coprime.pow {m n : ℕ+} (k l : ℕ) (h : m.Coprime n) : (m ^ k).coprime (n ^ l) := by
-  rw [← coprime_coe] at *; simp only [pow_coe]; apply Nat.coprime.pow; apply h
+  rw [← coprime_coe] at *; apply Nat.coprime.pow; apply h
 #align pnat.coprime.pow PNat.Coprime.pow
 
 end Coprime

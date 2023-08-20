@@ -2,14 +2,11 @@
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module analysis.special_functions.polar_coord
-! leanprover-community/mathlib commit 8f9fea08977f7e450770933ee6abb20733b47c92
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 import Mathlib.MeasureTheory.Function.Jacobian
+
+#align_import analysis.special_functions.polar_coord from "leanprover-community/mathlib"@"8f9fea08977f7e450770933ee6abb20733b47c92"
 
 /-!
 # Polar coordinates
@@ -25,7 +22,7 @@ It satisfies the following change of variables formula (see `integral_comp_polar
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Real Set MeasureTheory
 
@@ -75,7 +72,7 @@ def polarCoord : LocalHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     rintro ⟨x, y⟩ _
     have A : sqrt (x ^ 2 + y ^ 2) = Complex.abs (x + y * Complex.I) := by
       simp [Complex.abs_def, Complex.normSq, pow_two, MonoidWithZeroHom.coe_mk, Complex.add_re,
-        Complex.ofReal_re, Complex.mul_re, Complex.I_re, MulZeroClass.mul_zero, Complex.ofReal_im,
+        Complex.ofReal_re, Complex.mul_re, Complex.I_re, mul_zero, Complex.ofReal_im,
         Complex.I_im, sub_self, add_zero, Complex.add_im, Complex.mul_im, mul_one, zero_add]
     have Z := Complex.abs_mul_cos_add_sin_mul_I (x + y * Complex.I)
     simp only [← Complex.ofReal_cos, ← Complex.ofReal_sin, mul_add, ← Complex.ofReal_mul, ←
@@ -130,7 +127,7 @@ theorem polarCoord_source_ae_eq_univ : polarCoord.source =ᵐ[volume] univ := by
   exact le_antisymm ((measure_mono A).trans (le_of_eq B)) bot_le
 #align polar_coord_source_ae_eq_univ polarCoord_source_ae_eq_univ
 
-theorem integral_comp_polarCoord_symm {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [CompleteSpace E] (f : ℝ × ℝ → E) :
     (∫ p in polarCoord.target, p.1 • f (polarCoord.symm p)) = ∫ p, f p := by
   set B : ℝ × ℝ → ℝ × ℝ →L[ℝ] ℝ × ℝ := fun p =>

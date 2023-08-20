@@ -2,13 +2,10 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
-
-! This file was ported from Lean 3 source module set_theory.ordinal.arithmetic
-! leanprover-community/mathlib commit 31b269b60935483943542d547a6dd83a66b37dc7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.Basic
+
+#align_import set_theory.ordinal.arithmetic from "leanprover-community/mathlib"@"31b269b60935483943542d547a6dd83a66b37dc7"
 
 /-!
 # Ordinal arithmetic
@@ -63,7 +60,7 @@ universe u v w
 
 namespace Ordinal
 
-variable {α : Type _} {β : Type _} {γ : Type _} {r : α → α → Prop} {s : β → β → Prop}
+variable {α : Type*} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
   {t : γ → γ → Prop}
 
 /-! ### Further properties of addition on ordinals -/
@@ -307,7 +304,7 @@ theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ (∃ a, o = succ a) ∨ 
 /-- Main induction principle of ordinals: if one can prove a property by
   induction at successor ordinals and at limit ordinals, then it holds for all ordinals. -/
 @[elab_as_elim]
-def limitRecOn {C : Ordinal → Sort _} (o : Ordinal) (H₁ : C 0) (H₂ : ∀ o, C o → C (succ o))
+def limitRecOn {C : Ordinal → Sort*} (o : Ordinal) (H₁ : C 0) (H₂ : ∀ o, C o → C (succ o))
     (H₃ : ∀ o, IsLimit o → (∀ o' < o, C o') → C o) : C o :=
   lt_wf.fix
     (fun o IH =>
@@ -1078,7 +1075,7 @@ theorem dvd_iff_mod_eq_zero {a b : Ordinal} : b ∣ a ↔ a % b = 0 :=
 #align ordinal.dvd_iff_mod_eq_zero Ordinal.dvd_iff_mod_eq_zero
 
 @[simp]
-theorem mul_add_mod_self (x y z : Ordinal) : (x * y + z) % x = z % x :=  by
+theorem mul_add_mod_self (x y z : Ordinal) : (x * y + z) % x = z % x := by
   rcases eq_or_ne x 0 with rfl | hx
   · simp
   · rwa [mod_def, mul_add_div, mul_add, ← sub_sub, add_sub_cancel, mod_def]

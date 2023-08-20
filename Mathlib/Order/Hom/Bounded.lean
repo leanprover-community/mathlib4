@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.hom.bounded
-! leanprover-community/mathlib commit f1a2caaf51ef593799107fe9a8d5e411599f3996
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Hom.Basic
 import Mathlib.Order.BoundedOrder
+
+#align_import order.hom.bounded from "leanprover-community/mathlib"@"f1a2caaf51ef593799107fe9a8d5e411599f3996"
 
 /-!
 # Bounded order homomorphisms
@@ -35,10 +32,10 @@ be satisfied by itself and all stricter types.
 
 open Function OrderDual
 
-variable {F α β γ δ : Type _}
+variable {F α β γ δ : Type*}
 
 /-- The type of `⊤`-preserving functions from `α` to `β`. -/
-structure TopHom (α β : Type _) [Top α] [Top β] where
+structure TopHom (α β : Type*) [Top α] [Top β] where
   /-- The underlying function. The preferred spelling is `FunLike.coe`. -/
   toFun : α → β
   /-- The function preserves the top element. The preferred spelling is `map_top`. -/
@@ -46,7 +43,7 @@ structure TopHom (α β : Type _) [Top α] [Top β] where
 #align top_hom TopHom
 
 /-- The type of `⊥`-preserving functions from `α` to `β`. -/
-structure BotHom (α β : Type _) [Bot α] [Bot β] where
+structure BotHom (α β : Type*) [Bot α] [Bot β] where
   /-- The underlying function. The preferred spelling is `FunLike.coe`. -/
   toFun : α → β
   /-- The function preserves the bottom element. The preferred spelling is `map_bot`. -/
@@ -54,7 +51,7 @@ structure BotHom (α β : Type _) [Bot α] [Bot β] where
 #align bot_hom BotHom
 
 /-- The type of bounded order homomorphisms from `α` to `β`. -/
-structure BoundedOrderHom (α β : Type _) [Preorder α] [Preorder β] [BoundedOrder α]
+structure BoundedOrderHom (α β : Type*) [Preorder α] [Preorder β] [BoundedOrder α]
   [BoundedOrder β] extends OrderHom α β where
   /-- The function preserves the top element. The preferred spelling is `map_top`. -/
   map_top' : toFun ⊤ = ⊤
@@ -67,7 +64,7 @@ section
 /-- `TopHomClass F α β` states that `F` is a type of `⊤`-preserving morphisms.
 
 You should extend this class when you extend `TopHom`. -/
-class TopHomClass (F : Type _) (α β : outParam <| Type _) [Top α] [Top β] extends
+class TopHomClass (F : Type*) (α β : outParam <| Type*) [Top α] [Top β] extends
   FunLike F α fun _ => β where
   /-- A `TopHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
@@ -76,7 +73,7 @@ class TopHomClass (F : Type _) (α β : outParam <| Type _) [Top α] [Top β] ex
 /-- `BotHomClass F α β` states that `F` is a type of `⊥`-preserving morphisms.
 
 You should extend this class when you extend `BotHom`. -/
-class BotHomClass (F : Type _) (α β : outParam <| Type _) [Bot α] [Bot β] extends
+class BotHomClass (F : Type*) (α β : outParam <| Type*) [Bot α] [Bot β] extends
   FunLike F α fun _ => β where
   /-- A `BotHomClass` morphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
@@ -85,7 +82,7 @@ class BotHomClass (F : Type _) (α β : outParam <| Type _) [Bot α] [Bot β] ex
 /-- `BoundedOrderHomClass F α β` states that `F` is a type of bounded order morphisms.
 
 You should extend this class when you extend `BoundedOrderHom`. -/
-class BoundedOrderHomClass (F : Type _) (α β : outParam <| Type _) [LE α] [LE β] [BoundedOrder α]
+class BoundedOrderHomClass (F : Type*) (α β : outParam <| Type*) [LE α] [LE β] [BoundedOrder α]
   [BoundedOrder β] extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) where
   /-- Morphisms preserve the top element. The preferred spelling is `_root_.map_top`. -/
   map_top (f : F) : f ⊤ = ⊤

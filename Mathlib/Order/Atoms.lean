@@ -2,15 +2,12 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module order.atoms
-! leanprover-community/mathlib commit 422e70f7ce183d2900c586a8cda8381e788a0c62
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.ModularLattice
 import Mathlib.Order.WellFounded
 import Mathlib.Tactic.Nontriviality
+
+#align_import order.atoms from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
 /-!
 # Atoms, Coatoms, and Simple Lattices
@@ -51,8 +48,10 @@ which are lattices with only two elements, and related ideas.
 
 -/
 
+set_option autoImplicit true
 
-variable {α β : Type _}
+
+variable {α β : Type*}
 
 section Atoms
 
@@ -510,7 +509,7 @@ end CompleteAtomicBooleanAlgebra
 end Atomistic
 
 /-- An order is simple iff it has exactly two elements, `⊥` and `⊤`. -/
-class IsSimpleOrder (α : Type _) [LE α] [BoundedOrder α] extends Nontrivial α : Prop where
+class IsSimpleOrder (α : Type*) [LE α] [BoundedOrder α] extends Nontrivial α : Prop where
   /-- Every element is either `⊥` or `⊤` -/
   eq_bot_or_eq_top : ∀ a : α, a = ⊥ ∨ a = ⊤
 #align is_simple_order IsSimpleOrder

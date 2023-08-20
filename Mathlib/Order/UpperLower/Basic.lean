@@ -2,15 +2,12 @@
 Copyright (c) 2022 Yaël Dillies, Sara Rousta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
-
-! This file was ported from Lean 3 source module order.upper_lower.basic
-! leanprover-community/mathlib commit e9ce88cd0d54891c714c604076084f763dd480ed
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Set.Intervals.OrdConnected
 import Mathlib.Data.Set.Intervals.OrderIso
+
+#align_import order.upper_lower.basic from "leanprover-community/mathlib"@"e9ce88cd0d54891c714c604076084f763dd480ed"
 
 /-!
 # Up-sets and down-sets
@@ -49,7 +46,7 @@ Lattice structure on antichains. Order equivalence between upper/lower sets and 
 
 open OrderDual Set
 
-variable {α β γ : Type _} {ι : Sort _} {κ : ι → Sort _}
+variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 /-! ### Unbundled upper/lower sets -/
 
@@ -396,7 +393,7 @@ section LE
 variable [LE α]
 
 /-- The type of upper sets of an order. -/
-structure UpperSet (α : Type _) [LE α] where
+structure UpperSet (α : Type*) [LE α] where
   /-- The carrier of an `UpperSet`. -/
   carrier : Set α
   /-- The carrier of an `UpperSet` is an upper set. -/
@@ -404,7 +401,7 @@ structure UpperSet (α : Type _) [LE α] where
 #align upper_set UpperSet
 
 /-- The type of lower sets of an order. -/
-structure LowerSet (α : Type _) [LE α] where
+structure LowerSet (α : Type*) [LE α] where
   /-- The carrier of a `LowerSet`. -/
   carrier : Set α
   /-- The carrier of a `LowerSet` is a lower set. -/
