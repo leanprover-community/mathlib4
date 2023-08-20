@@ -224,8 +224,8 @@ theorem IsSRGWith.matrix_eq {α : Type*} [Semiring α] (h : G.IsSRGWith n k ℓ 
   · rw [← Set.toFinset_card]
     simp [commonNeighbors, ← neighborFinset_def, h.regular v]
   · simp only [Matrix.one_apply_ne' hn.symm, ne_eq, hn]
-    by_cases ha : G.Adj v w <;> simp only [smul_zero, ha, ite_true, ite_false, add_zero, zero_add,
-      nsmul_eq_mul, mul_one]
+    by_cases ha : G.Adj v w <;>
+      simp only [ha, ite_true, ite_false, add_zero, zero_add, nsmul_eq_mul, smul_zero, mul_one]
     · rw [h.of_adj v w ha]
     · rw [h.of_not_adj v w hn ha]
 
