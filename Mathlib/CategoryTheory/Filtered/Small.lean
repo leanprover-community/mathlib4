@@ -15,7 +15,7 @@ This is occasionally useful, for example in the proof of the recognition theorem
 (Proposition 6.1.5 in [Kashiwara2006]).
 -/
 
-universe w v u
+universe w v v₁ u u₁
 
 namespace CategoryTheory
 
