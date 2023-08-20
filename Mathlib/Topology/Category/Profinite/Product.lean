@@ -1,4 +1,31 @@
+/-
+Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
 import Mathlib.Topology.Category.Profinite.Basic
+
+/-!
+# Compact subsets of products as limits in `Profinite`
+
+This file exhibits a compact subset `C` of a product `(i : ι) → X i` of totally disconnected
+Hausdorff spaces as a limit in `Profinite` indexed by `Finset ι`.
+
+## Main definitions
+
+- `FinsetsToProfinite` is the functor `(Finset ι)ᵒᵖ ⥤ Profinite` indexing the limit. It maps `J` to
+  `C.proj J`, the restriction of `C` to `J`
+- `FinsetsCone` is a cone on `FinsetsToProfinite` with cone point `C`
+
+## Main results
+
+- `Profinite.isIso_finsetsCone_lift` says that the natural map from the cone point of the explicit
+  limit cone in `Profinite` on `FinsetsToProfinite` to the cone point of `FinsetsCone` is an
+  isomorphism
+- `Profinite.asLimitFinsetsConeIso` is the induced isomorphism of cones.
+- `Profinite.finsetsCone_isLimit` says that `FinsetsCone` is a limit cone.
+
+-/
 
 universe u
 
@@ -9,9 +36,26 @@ section General
 
 variable {J K L : ι → Prop} [∀ i, Decidable (J i)] [∀ i, Decidable (K i)] [∀ i, Decidable (L i)]
 
+@[simps!]
 def ProjRestricts (h : ∀ i, J i → K i) : C.proj K → C.proj J :=
   Homeomorph.setCongr (proj_eq_of_subset C J K h) ∘ ProjRestrict (C.proj K) J
 
+lemma projRestricts_eq_self (x : C.proj K) (i : ι) (hJK : ∀ i, J i → K i) (h : J i) :
+    (ProjRestricts C hJK x).val i = x.val i := by
+  simp only [Set.proj, Proj, ProjRestricts_coe, ite_eq_left_iff]
+  exact fun hJ ↦ (by exfalso; exact hJ h)
+
+lemma projRestricts_ne_default_iff (x : C.proj K) (i : ι) (hJK : ∀ i, J i → K i) :
+    (ProjRestricts C hJK x).val i ≠ default ↔ J i ∧ x.val i ≠ default := by
+  simp only [Set.proj, Proj, ProjRestricts_coe, ne_eq, ite_eq_right_iff, not_forall, exists_prop]
+
+lemma projRestricts_eq_default_iff (x : C.proj K) (i : ι) (hJK : ∀ i, J i → K i) :
+    (ProjRestricts C hJK x).val i = default ↔ ¬ J i ∨ x.val i = default := by
+  rw [← not_iff_not]
+  simp only [projRestricts_ne_default_iff, ne_eq]
+  rw [not_or, not_not]
+
+@[simp]
 lemma continuous_projRestricts (h : ∀ i, J i → K i) : Continuous (ProjRestricts C h) :=
   Continuous.comp (Homeomorph.continuous _) (continuous_projRestrict _ _)
 
@@ -21,31 +65,35 @@ lemma surjective_projRestricts (h : ∀ i, J i → K i) : Function.Surjective (P
 variable (J) in
 lemma projRestricts_eq_id  :
     ProjRestricts C (fun i (h : J i) ↦ h) = id := by
-  ext ⟨_, ⟨y, hy⟩⟩ i
-  simp only [ProjRestricts, Homeomorph.setCongr, Homeomorph.homeomorph_mk_coe, ProjRestrict, Proj,
-    Function.comp_apply, Equiv.setCongr_apply, Set.val_codRestrict_apply, id_eq, ite_eq_left_iff]
-  rw [← hy.2, eq_comm]
+  ext x i
+  simp only [Set.proj, Proj, ProjRestricts_coe, id_eq, ite_eq_left_iff]
+  obtain ⟨y, hy⟩ := x.prop
+  rw [← hy.2]
+  intro hijn
+  apply Eq.symm
   simp only [Proj, Bool.default_bool, ite_eq_right_iff]
-  exact fun h₁ h₂ ↦ by simp [h₁] at h₂
+  intro hij
+  exfalso
+  exact hijn hij
 
 lemma projRestricts_eq_comp (hJK : ∀ i, J i → K i) (hKL : ∀ i, K i → L i) :
     ProjRestricts C hJK ∘ ProjRestricts C hKL = ProjRestricts C (fun i ↦ hKL i ∘ hJK i) := by
   ext x i
-  dsimp [ProjRestricts, ProjRestrict, Proj, Homeomorph.setCongr]
-  simp only [Function.comp_apply, Proj]
+  simp only [Set.proj, Proj, Function.comp_apply, ProjRestricts_coe]
   split_ifs with h hh
   · rfl
-  · simp only [hJK i h, not_true] at hh
+  · exfalso; exact hh (hJK i h)
   · rfl
 
 lemma projRestricts_comp_projRestrict (h : ∀ i, J i → K i) :
     ProjRestricts C h ∘ ProjRestrict C K = ProjRestrict C J := by
   ext x i
-  dsimp [ProjRestricts, ProjRestrict, Proj, Homeomorph.setCongr, Function.comp_apply, Proj]
+  simp only [Set.proj, Proj, Function.comp_apply, ProjRestricts_coe, ProjRestrict_coe]
   split_ifs with hh hh'
   · rfl
-  · simp only [h i hh, not_true] at hh'
+  · exfalso; exact hh' (h i hh)
   · rfl
+
 
 end General
 
@@ -100,10 +148,9 @@ lemma eq_of_forall_proj_eq (a b : C) (h : ∀ (J : Finset ι), ProjRestrict C (�
     ProjRestrict C (· ∈ J) b) : a = b := by
   ext i
   specialize h ({i} : Finset ι)
-  dsimp [ProjRestrict, Proj] at h
   rw [Subtype.ext_iff] at h
   have hh := congr_fun h i
-  simp only [Finset.mem_singleton, Set.val_codRestrict_apply, Function.comp_apply, ite_true] at hh
+  simp only [ProjRestrict_coe, Proj, Finset.mem_singleton, ite_true] at hh
   exact hh
 
 namespace Profinite

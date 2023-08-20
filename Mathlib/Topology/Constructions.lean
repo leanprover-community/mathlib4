@@ -1452,9 +1452,11 @@ lemma continuous_proj :
 
 def Set.proj : Set ((i : ι) → π i) := (Proj π J) '' C
 
+@[simps!]
 def ProjRestrict : C → C.proj J :=
-  Set.codRestrict (Proj π J ∘ Subtype.val) (C.proj J) (fun x ↦ Set.mem_image_of_mem _ x.prop)
+    Set.MapsTo.restrict (Proj π J) _ _ (Set.mapsTo_image _ _)
 
+@[simp]
 lemma continuous_projRestrict :
     Continuous (ProjRestrict C J) :=
   Continuous.codRestrict (Continuous.comp (continuous_proj _) continuous_subtype_val) _
@@ -1470,7 +1472,7 @@ lemma proj_eq_self {x : (i : ι) → π i} (h : ∀ i, x i ≠ default → J i) 
   exact h i
 
 lemma projRestrict_eq_self {x : C} {i : ι} (h : J i) : (ProjRestrict C J x).val i = x.val i := by
-  simp only [ProjRestrict, Proj, Set.val_codRestrict_apply, Function.comp_apply, ite_eq_left_iff]
+  simp only [ProjRestrict, Proj, MapsTo.val_restrict_apply, ite_eq_left_iff]
   exact fun hJ ↦ (by exfalso; exact hJ h)
 
 lemma proj_prop_eq_self (hh : ∀ i x, x ∈ C → x i ≠ default → J i) : C.proj J = C := by
