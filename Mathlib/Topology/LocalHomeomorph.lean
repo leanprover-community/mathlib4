@@ -1116,6 +1116,39 @@ def disjointUnion (e e' : LocalHomeomorph α β) [∀ x, Decidable (x ∈ e.sour
     (LocalEquiv.disjointUnion_eq_piecewise _ _ _ _).symm
 #align local_homeomorph.disjoint_union LocalHomeomorph.disjointUnion
 
+@[simps! source target]
+noncomputable def disjoint_iUnion {I : Type _} [Nonempty I]
+    (h : I → LocalHomeomorph α β)
+    (disj₁ : Pairwise (Disjoint on fun i : I => (h i).source))
+    (disj₂ : Pairwise (Disjoint on fun i : I => (h i).target)) : LocalHomeomorph α β :=
+  by
+  have opn_src : IsOpen (⋃ i, (h i).source) := isOpen_iUnion fun i => (h i).open_source
+  have opn_tgt : IsOpen (⋃ i, (h i).target) := isOpen_iUnion fun i => (h i).open_target
+  refine
+    ⟨LocalEquiv.disjoint_iUnion (fun i => (h i).toLocalEquiv) disj₁ disj₂, opn_src, opn_tgt, ?_, ?_⟩
+  · simp only [LocalEquiv.disjoint_iUnion, opn_src.continuousOn_iff, Set.mem_iUnion]
+    rintro x ⟨i, hx⟩
+    refine ((h i).continuousAt hx).congr
+      (Filter.eventuallyEq_of_mem ((h i).open_source.mem_nhds hx) ?_)
+    intro x' hx'
+    simp [disj₁.disjoint_inv_iUnion_eq hx']
+  · simp only [LocalEquiv.disjoint_iUnion, opn_tgt.continuousOn_iff, Set.mem_iUnion]
+    rintro y ⟨i, hy⟩
+    refine ((h i).symm.continuousAt hy).congr
+      (Filter.eventuallyEq_of_mem ((h i).open_target.mem_nhds hy) ?_)
+    intro y' hy'
+    simp [disj₂.disjoint_inv_iUnion_eq hy']
+
+theorem disjoint_iUnion_apply' {I : Type _} [Nonempty I]
+    (h : I → LocalHomeomorph α β) (i : I) (disj₁ disj₂)
+    (x : α) (hx : x ∈ (h i).source) : disjoint_iUnion h disj₁ disj₂ x = h i x :=
+  LocalEquiv.disjoint_iUnion_apply' (fun i => (h i).toLocalEquiv) i disj₁ disj₂ x hx
+
+theorem disjoint_iUnion_symm_apply' {I : Type _} [Nonempty I]
+    (h : I → LocalHomeomorph α β) (i : I) (disj₁ disj₂)
+    (y : β) (hy : y ∈ (h i).target) : (disjoint_iUnion h disj₁ disj₂).symm y = (h i).symm y :=
+  LocalEquiv.disjoint_iUnion_symm_apply' (fun i => (h i).toLocalEquiv) i disj₁ disj₂ y hy
+
 end Piecewise
 
 section Pi
@@ -1318,6 +1351,18 @@ noncomputable def toLocalHomeomorph [Nonempty α] : LocalHomeomorph α β :=
     h.continuous.continuousOn h.isOpenMap isOpen_univ
 #align open_embedding.to_local_homeomorph OpenEmbedding.toLocalHomeomorph
 
+/-- An open embedding of `α` into `β` interpreted as a local homeomorphism on the set `s`.
+  This is equivalent to `(toLocalHomeomorph e h).restrOpen s hs` but with better
+  definitional equalities -/
+@[simps! (config := mfld_cfg) apply source target]
+noncomputable def toLocalHomeomorphOn [Nonempty α] (s : Set α) (hs : IsOpen s) :
+    LocalHomeomorph α β :=
+  LocalHomeomorph.ofContinuousOpen ((h.toEmbedding.inj.injOn s).toLocalEquiv _ _)
+    h.continuous.continuousOn h.isOpenMap hs
+
+@[simp] lemma toLocalHomeomorphOn_univ [Nonempty α] :
+    toLocalHomeomorphOn f h univ isOpen_univ = toLocalHomeomorph f h := rfl
+
 theorem continuousAt_iff {f : α → β} {g : β → γ} (hf : OpenEmbedding f) {x : α} :
     ContinuousAt (g ∘ f) x ↔ ContinuousAt g (f x) :=
   hf.tendsto_nhds_iff'
@@ -1432,5 +1477,22 @@ theorem subtypeRestr_symm_eqOn_of_le {U V : Opens α} [Nonempty U] [Nonempty V] 
     show _ = U.localHomeomorphSubtypeCoe _
     rw [U.localHomeomorphSubtypeCoe.right_inv hy.2]
 #align local_homeomorph.subtype_restr_symm_eq_on_of_le LocalHomeomorph.subtypeRestr_symm_eqOn_of_le
+
+section Discrete
+
+theorem OpenEmbedding.prodMkRight [DiscreteTopology β] (b : β) :
+    OpenEmbedding ((·, b) : α → α × β) where
+  open_range := by convert isOpen_univ.prod (isOpen_discrete {b}); ext; simp
+  toEmbedding := Function.LeftInverse.embedding (f := Prod.fst) (by simp [LeftInverse])
+    continuous_fst (by continuity)
+
+
+theorem OpenEmbedding.prodMkLeft [DiscreteTopology β] (b : β) :
+    OpenEmbedding ((b, ·) : α → β × α) where
+  open_range := by convert (isOpen_discrete {b}).prod isOpen_univ; ext; simp
+  toEmbedding := Function.LeftInverse.embedding (f := Prod.snd) (by simp [LeftInverse])
+    continuous_snd (by continuity)
+
+end Discrete
 
 end LocalHomeomorph
