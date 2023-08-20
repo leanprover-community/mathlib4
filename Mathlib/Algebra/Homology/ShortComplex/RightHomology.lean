@@ -1238,7 +1238,7 @@ noncomputable def rightHomologyIsoKernelDesc [S.HasRightHomology] [HasCokernel S
     S.rightHomology ≅ kernel (cokernel.desc S.f S.g S.zero) :=
   (RightHomologyData.ofHasCokernelOfHasKernel S).rightHomologyIso
 
-/- The following lemmas and instance gives a sufficient condition for a morphism
+/-! The following lemmas and instance gives a sufficient condition for a morphism
 of short complexes to induce an isomorphism on opcycles. -/
 
 lemma isIso_opcyclesMap'_of_isIso_of_epi (φ : S₁ ⟶ S₂) (h₂ : IsIso φ.τ₂) (h₁ : Epi φ.τ₁)
