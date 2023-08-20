@@ -1120,8 +1120,7 @@ def disjointUnion (e e' : LocalHomeomorph α β) [∀ x, Decidable (x ∈ e.sour
 noncomputable def disjoint_iUnion {I : Type _} [Nonempty I]
     (h : I → LocalHomeomorph α β)
     (disj₁ : Pairwise (Disjoint on fun i : I => (h i).source))
-    (disj₂ : Pairwise (Disjoint on fun i : I => (h i).target)) : LocalHomeomorph α β :=
-  by
+    (disj₂ : Pairwise (Disjoint on fun i : I => (h i).target)) : LocalHomeomorph α β := by
   have opn_src : IsOpen (⋃ i, (h i).source) := isOpen_iUnion fun i => (h i).open_source
   have opn_tgt : IsOpen (⋃ i, (h i).target) := isOpen_iUnion fun i => (h i).open_target
   refine

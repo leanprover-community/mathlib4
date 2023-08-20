@@ -8,7 +8,6 @@ import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Pairwise
 import Mathlib.Tactic.Core
 import Mathlib.Data.Set.Lattice
-import Mathlib.Mathport.Notation
 
 #align_import logic.equiv.local_equiv from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
@@ -1092,7 +1091,8 @@ theorem disjoint_iUnion_apply' {I : Type _} [Nonempty I] (h : I → LocalEquiv �
   rw [disjoint_iUnion_apply, disj₁.disjoint_inv_iUnion_eq hx]
 
 theorem disjoint_iUnion_symm_apply' {I : Type _} [Nonempty I] (h : I → LocalEquiv α β) (i : I)
-    (disj₁ disj₂) (y : β) (hy : y ∈ (h i).target) : (disjoint_iUnion h disj₁ disj₂).symm y = (h i).symm y := by
+    (disj₁ disj₂) (y : β) (hy : y ∈ (h i).target) :
+    (disjoint_iUnion h disj₁ disj₂).symm y = (h i).symm y := by
   rw [disjoint_iUnion_symm_apply, disj₂.disjoint_inv_iUnion_eq hy]
 
 section Pi
