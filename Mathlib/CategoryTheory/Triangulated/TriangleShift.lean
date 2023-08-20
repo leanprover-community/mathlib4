@@ -138,7 +138,7 @@ noncomputable def invRotateIsoRotateRotateShiftFunctorNegOne :
           isoWhiskerLeft _ (Functor.associator _ _ _ ≪≫
             isoWhiskerLeft _ (Functor.associator _ _ _)) ≪≫ (Functor.associator _ _ _).symm
     _ ≅ 𝟭 _ ⋙ rotate C ⋙ rotate C ⋙ Triangle.shiftFunctor C (-1) :=
-          isoWhiskerRight ((triangleRotation C).counitIso) _
+          isoWhiskerRight (triangleRotation C).counitIso _
     _ ≅ _ := Functor.leftUnitor _
 
 noncomputable instance : HasShift (Triangle C) ℤ :=
