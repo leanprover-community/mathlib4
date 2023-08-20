@@ -258,70 +258,84 @@ section
 /-! `Subalgebra`s inherit structure from their `Subsemiring` / `Semiring` coercions. -/
 
 
+@[nolint docBlame]
 abbrev toSemiring {R A} [CommSemiring R] [Semiring A] [Algebra R A] (S : Subalgebra R A) :
     Semiring S :=
   inferInstance
 #align subalgebra.to_semiring Subalgebra.toSemiring
 
+@[nolint docBlame]
 abbrev toCommSemiring {R A} [CommSemiring R] [CommSemiring A] [Algebra R A] (S : Subalgebra R A) :
     CommSemiring S :=
   inferInstance
 #align subalgebra.to_comm_semiring Subalgebra.toCommSemiring
 
+@[nolint docBlame]
 abbrev toRing {R A} [CommRing R] [Ring A] [Algebra R A] (S : Subalgebra R A) : Ring S :=
   inferInstance
 #align subalgebra.to_ring Subalgebra.toRing
 
+@[nolint docBlame]
 abbrev toCommRing {R A} [CommRing R] [CommRing A] [Algebra R A] (S : Subalgebra R A) :
     CommRing S :=
   inferInstance
 #align subalgebra.to_comm_ring Subalgebra.toCommRing
 
+@[nolint docBlame]
 abbrev toOrderedSemiring {R A} [CommSemiring R] [OrderedSemiring A] [Algebra R A]
     (S : Subalgebra R A) : OrderedSemiring S :=
   inferInstance
 #align subalgebra.to_ordered_semiring Subalgebra.toOrderedSemiring
 
+@[nolint docBlame]
 abbrev toStrictOrderedSemiring {R A} [CommSemiring R] [StrictOrderedSemiring A] [Algebra R A]
     (S : Subalgebra R A) : StrictOrderedSemiring S :=
   inferInstance
 #align subalgebra.to_strict_ordered_semiring Subalgebra.toStrictOrderedSemiring
 
+@[nolint docBlame]
 abbrev toOrderedCommSemiring {R A} [CommSemiring R] [OrderedCommSemiring A] [Algebra R A]
     (S : Subalgebra R A) : OrderedCommSemiring S :=
   inferInstance
 #align subalgebra.to_ordered_comm_semiring Subalgebra.toOrderedCommSemiring
 
+@[nolint docBlame]
 abbrev toStrictOrderedCommSemiring {R A} [CommSemiring R] [StrictOrderedCommSemiring A]
     [Algebra R A] (S : Subalgebra R A) : StrictOrderedCommSemiring S :=
   inferInstance
 #align subalgebra.to_strict_ordered_comm_semiring Subalgebra.toStrictOrderedCommSemiring
 
+@[nolint docBlame]
 abbrev toOrderedRing {R A} [CommRing R] [OrderedRing A] [Algebra R A] (S : Subalgebra R A) :
     OrderedRing S :=
   inferInstance
 #align subalgebra.to_ordered_ring Subalgebra.toOrderedRing
 
+@[nolint docBlame]
 abbrev toOrderedCommRing {R A} [CommRing R] [OrderedCommRing A] [Algebra R A]
     (S : Subalgebra R A) : OrderedCommRing S :=
   inferInstance
 #align subalgebra.to_ordered_comm_ring Subalgebra.toOrderedCommRing
 
+@[nolint docBlame]
 abbrev toLinearOrderedSemiring {R A} [CommSemiring R] [LinearOrderedSemiring A] [Algebra R A]
     (S : Subalgebra R A) : LinearOrderedSemiring S :=
   inferInstance
 #align subalgebra.to_linear_ordered_semiring Subalgebra.toLinearOrderedSemiring
 
+@[nolint docBlame]
 abbrev toLinearOrderedCommSemiring {R A} [CommSemiring R] [LinearOrderedCommSemiring A]
     [Algebra R A] (S : Subalgebra R A) : LinearOrderedCommSemiring S :=
   inferInstance
 #align subalgebra.to_linear_ordered_comm_semiring Subalgebra.toLinearOrderedCommSemiring
 
+@[nolint docBlame]
 abbrev toLinearOrderedRing {R A} [CommRing R] [LinearOrderedRing A] [Algebra R A]
     (S : Subalgebra R A) : LinearOrderedRing S :=
   inferInstance
 #align subalgebra.to_linear_ordered_ring Subalgebra.toLinearOrderedRing
 
+@[nolint docBlame]
 abbrev toLinearOrderedCommRing {R A} [CommRing R] [LinearOrderedCommRing A] [Algebra R A]
     (S : Subalgebra R A) : LinearOrderedCommRing S :=
   inferInstance

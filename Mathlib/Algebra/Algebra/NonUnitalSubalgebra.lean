@@ -174,18 +174,22 @@ section
 coercions. -/
 
 
+@[nolint docBlame]
 abbrev toNonUnitalSemiring {R A} [CommSemiring R] [NonUnitalSemiring A] [Module R A]
     (S : NonUnitalSubalgebra R A) : NonUnitalSemiring S :=
   inferInstance
 
+@[nolint docBlame]
 abbrev toNonUnitalCommSemiring {R A} [CommSemiring R] [NonUnitalCommSemiring A] [Module R A]
     (S : NonUnitalSubalgebra R A) : NonUnitalCommSemiring S :=
   inferInstance
 
+@[nolint docBlame]
 abbrev toNonUnitalRing {R A} [CommRing R] [NonUnitalRing A] [Module R A]
     (S : NonUnitalSubalgebra R A) : NonUnitalRing S :=
   inferInstance
 
+@[nolint docBlame]
 abbrev toNonUnitalCommRing {R A} [CommRing R] [NonUnitalCommRing A] [Module R A]
     (S : NonUnitalSubalgebra R A) : NonUnitalCommRing S :=
   inferInstance
