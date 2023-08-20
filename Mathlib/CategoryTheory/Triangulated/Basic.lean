@@ -193,10 +193,10 @@ def Triangle.isoMk (A B : Triangle C)
 #align category_theory.pretriangulated.triangle.iso_mk CategoryTheory.Pretriangulated.Triangle.isoMk
 
 lemma Triangle.eqToHom_hom₁ {A B : Triangle C} (h : A = B) :
-  (eqToHom h).hom₁ = eqToHom (by subst h; rfl) := by subst h; rfl
+    (eqToHom h).hom₁ = eqToHom (by subst h; rfl) := by subst h; rfl
 lemma Triangle.eqToHom_hom₂ {A B : Triangle C} (h : A = B) :
-  (eqToHom h).hom₂ = eqToHom (by subst h; rfl) := by subst h; rfl
+    (eqToHom h).hom₂ = eqToHom (by subst h; rfl) := by subst h; rfl
 lemma Triangle.eqToHom_hom₃ {A B : Triangle C} (h : A = B) :
-  (eqToHom h).hom₃ = eqToHom (by subst h; rfl) := by subst h; rfl
+    (eqToHom h).hom₃ = eqToHom (by subst h; rfl) := by subst h; rfl
 
 end CategoryTheory.Pretriangulated
