@@ -1430,7 +1430,7 @@ theorem Set.PairwiseDisjoint.countable_of_Ioo [SecondCountableTopology α] {y : 
   this.of_diff countable_setOf_covby_right
 #align set.pairwise_disjoint.countable_of_Ioo Set.PairwiseDisjoint.countable_of_Ioo
 
-instance isCountablyGenerated_atTop_inst [SecondCountableTopology α] :
+instance instIsCountablyGenerated_atTop [SecondCountableTopology α] :
     IsCountablyGenerated (atTop : Filter α) := by
   by_cases h : ∃ (x : α), IsTop x
   · rcases h with ⟨x, hx⟩
@@ -1460,7 +1460,7 @@ instance isCountablyGenerated_atTop_inst [SecondCountableTopology α] :
     rw [this]
     exact ⟨_, (countable_range _).image _, rfl⟩
 
-instance isCountableGenerated_atBot_inst [SecondCountableTopology α] :
+instance instIsCountableGenerated_atBot [SecondCountableTopology α] :
     IsCountablyGenerated (atBot : Filter α) :=
   @isCountablyGenerated_atTop_inst αᵒᵈ _ _ _ _
 
