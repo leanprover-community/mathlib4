@@ -424,7 +424,6 @@ theorem cofinal_of_colimit_comp_coyoneda_iso_pUnit
       exact ⟨StructuredArrow.mk y⟩
     apply zigzag_isConnected
     rintro ⟨⟨⟨⟩⟩, X₁, f₁⟩ ⟨⟨⟨⟩⟩, X₂, f₂⟩
-    dsimp at *
     let y₁ := colimit.ι (F ⋙ coyoneda.obj (op d)) X₁ f₁
     let y₂ := colimit.ι (F ⋙ coyoneda.obj (op d)) X₂ f₂
     have e : y₁ = y₂ := by
