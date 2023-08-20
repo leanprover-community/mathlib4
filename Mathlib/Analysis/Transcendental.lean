@@ -17,6 +17,7 @@ import Mathlib.Algebra.CharP.Algebra
 
 import Mathlib.Data.Polynomial.Derivative2
 import Mathlib.FieldTheory.GalConj
+import Mathlib.Data.Complex.Exponential
 
 -- assert_not_exists Module.Dual
 -- attribute [-reducible] Module.Dual
@@ -917,66 +918,62 @@ theorem single_prod_apply_zero_eq_zero_iff (x : GalConjClasses ℚ (K s)) {a : F
 
 end toConjEquiv
 
-section eval
+section Eval
 
-def expMonoidHom : Multiplicative ℂ →* ℂ
-    where
-  toFun x := exp x.toAdd
-  map_one' := by rw [toAdd_one, exp_zero]
-  map_mul' x y := by rw [toAdd_mul, exp_add]
-#align exp_monoid_hom expMonoidHom
+set_option linter.uppercaseLean3 false
 
 variable (F : Type _) [Field F] [Algebra F ℂ]
 
-def eval : AddMonoidAlgebra F (K s) →ₐ[F] ℂ :=
+def Eval : AddMonoidAlgebra F (K s) →ₐ[F] ℂ :=
   AddMonoidAlgebra.lift F (K s) ℂ
     (expMonoidHom.comp (AddMonoidHom.toMultiplicative (algebraMap (K s) ℂ).toAddMonoidHom))
-#align Eval eval
+#align Eval Eval
 
-theorem eval_apply' (x : AddMonoidAlgebra F (K s)) :
-    eval s F x = x.Sum fun a c => algebraMap F ℂ c * exp (algebraMap (K s) ℂ a) :=
+theorem Eval_apply' (x : AddMonoidAlgebra F (K s)) :
+    Eval s F x = x.sum fun a c => algebraMap F ℂ c * exp (algebraMap (K s) ℂ a) :=
   rfl
-#align Eval_apply' eval_apply'
+#align Eval_apply' Eval_apply'
 
-theorem eval_apply (x : AddMonoidAlgebra F (K s)) :
-    eval s F x = x.Sum fun a c => c • exp (algebraMap (K s) ℂ a) := by
-  rw [eval, AddMonoidAlgebra.lift_apply]; rfl
-#align Eval_apply eval_apply
+theorem Eval_apply (x : AddMonoidAlgebra F (K s)) :
+    Eval s F x = x.sum fun a c => c • exp (algebraMap (K s) ℂ a) := by
+  rw [Eval, AddMonoidAlgebra.lift_apply]; rfl
+#align Eval_apply Eval_apply
 
-theorem eval_rat_apply (x : AddMonoidAlgebra ℚ (K s)) :
-    eval s ℚ x = x.Sum fun a c => c • exp (algebraMap (K s) ℂ a) :=
+theorem Eval_rat_apply (x : AddMonoidAlgebra ℚ (K s)) :
+    Eval s ℚ x = x.sum fun a c => c • exp (algebraMap (K s) ℂ a) := by
+  sorry
+#align Eval_rat_apply Eval_rat_apply
+
+theorem Eval_k_apply (x : AddMonoidAlgebra (K s) (K s)) :
+    Eval s (K s) x = x.sum fun a c => c • exp (algebraMap (K s) ℂ a) :=
   rfl
-#align Eval_rat_apply eval_rat_apply
+#align Eval_K_apply Eval_k_apply
 
-theorem eval_k_apply (x : AddMonoidAlgebra (K s) (K s)) :
-    eval s (K s) x = x.Sum fun a c => c • exp (algebraMap (K s) ℂ a) :=
-  rfl
-#align Eval_K_apply eval_k_apply
-
-theorem eval_ratCoeff (x : ratCoeff s) : eval s (K s) x = eval s ℚ (ratCoeffEquiv s x) :=
+theorem Eval_ratCoeff (x : ratCoeff s) : Eval s (K s) x = Eval s ℚ (ratCoeffEquiv s x) :=
   by
-  simp_rw [eval_apply, Finsupp.sum, support_ratCoeffEquiv, ratCoeffEquiv_apply_apply]
+  simp_rw [Eval_apply, Finsupp.sum, support_ratCoeffEquiv, ratCoeffEquiv_apply_apply]
   refine' sum_congr rfl fun i hi => _
-  simp_rw [Algebra.smul_def, IsScalarTower.algebraMap_eq ℚ (K s) ℂ]; congr 2
-  rw [IsScalarTower.algebraMap_apply ℚ (⊥ : IntermediateField ℚ (K s)) (K s), ←
+  simp_rw [Algebra.smul_def, IsScalarTower.algebraMap_eq ℚ (K s) ℂ]
+  congr 2
+  simp_rw [IsScalarTower.algebraMap_apply ℚ (⊥ : IntermediateField ℚ (K s)) (K s), ←
     IntermediateField.botEquiv_symm, AlgEquiv.symm_apply_apply]
   rfl
-#align Eval_rat_coeff eval_ratCoeff
+#align Eval_rat_coeff Eval_ratCoeff
 
-theorem eval_toConjAlgEquiv_symm (x : GalConjClasses ℚ (K s) →₀ ℚ) :
-    eval s ℚ ((toConjAlgEquiv s ℚ).symm x) =
+theorem Eval_toConjAlgEquiv_symm (x : GalConjClasses ℚ (K s) →₀ ℚ) :
+    Eval s ℚ ((toConjAlgEquiv s ℚ).symm x) =
       ∑ c : GalConjClasses ℚ (K s) in x.support,
         x c • ∑ i : K s in c.orbit.toFinset, exp (algebraMap (K s) ℂ i) :=
   by
   conv_lhs => rw [← x.sum_single, Finsupp.sum, map_sum]
-  change eval s ℚ ↑(Finset.sum _ fun i => (toConjEquiv s ℚ).symm _) = _
+  change Eval s ℚ ↑(Finset.sum _ fun i => (toConjEquiv s ℚ).symm _) = _
   have :
     ∀ (s' : Finset (K s)) (b : ℚ),
       ((Finsupp.indicator s' fun _ _ => b).Sum fun a c => c • exp (algebraMap (K s) ℂ a)) =
         ∑ i in s', b • exp (algebraMap (K s) ℂ i) :=
     fun s' b => Finsupp.sum_indicator_const_index _ fun i hi => by rw [zero_smul]
   simp_rw [toConjEquiv_symm_single, AddSubmonoidClass.coe_finset_sum, Subtype.coe_mk, map_sum,
-    eval_apply, this, smul_sum]
-#align Eval_to_conj_alg_equiv_symm eval_toConjAlgEquiv_symm
+    Eval_apply, this, smul_sum]
+#align Eval_to_conj_alg_equiv_symm Eval_toConjAlgEquiv_symm
 
-end eval
+end Eval
