@@ -153,7 +153,8 @@ theorem sphere_aux_le_sphere_aux_insert {R : ℝ} (s : Finset ι) {i : ι} (hi :
           congr! 2 with t
           have H : ∀ j ∈ (insert i s)ᶜ, update x i t j ^ 2 = x j ^ 2
           · intro j hj
-            rw [update_noteq (by aesop)]
+            have hij : j ≠ i := by aesop
+            rw [update_noteq hij]
           simp only [← insert_compl_insert hi, sum_insert hi', update_same, sum_congr rfl H]
           ring_nf
     _ = B (insert i s).card * I (insert i s).card (R ^ 2 - ∑ j in (insert i s)ᶜ, x j ^ 2) := by
