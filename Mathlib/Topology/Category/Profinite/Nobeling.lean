@@ -84,6 +84,7 @@ variable (J K L : ι → Prop) [∀ i, Decidable (J i)] [∀ i, Decidable (K i)]
 def Proj : ((i : ι) → X i) → ((i : ι) → X i) :=
   fun c i ↦ if J i then c i else default
 
+@[simp]
 lemma continuous_proj :
     Continuous (Proj J : ((i : ι) → X i) → ((i : ι) → X i)) := by
   refine continuous_pi ?_
@@ -95,11 +96,13 @@ lemma continuous_proj :
 
 def Set.proj : Set ((i : ι) → X i) := (Proj J) '' C
 
+@[simps!]
 def ProjRestrict : C → C.proj J :=
-  Set.codRestrict (Proj J ∘ Subtype.val) (C.proj J) (fun x ↦ Set.mem_image_of_mem _ x.prop)
+  Set.MapsTo.restrict (Proj J) _ _ (Set.mapsTo_image _ _)
 
+@[simp]
 lemma continuous_projRestrict : Continuous (ProjRestrict C J) :=
-  Continuous.codRestrict (Continuous.comp (continuous_proj _) continuous_subtype_val) _
+  Continuous.restrict _ (continuous_proj _)
 
 lemma surjective_projRestrict :
     Function.Surjective (ProjRestrict C J) := by
@@ -115,7 +118,7 @@ lemma proj_eq_self {x : (i : ι) → X i} (h : ∀ i, x i ≠ default → J i) :
   exact h i
 
 lemma projRestrict_eq_self {x : C} {i : ι} (h : J i) : (ProjRestrict C J x).val i = x.val i := by
-  simp only [ProjRestrict, Proj, Set.val_codRestrict_apply, Function.comp_apply, ite_eq_left_iff]
+  simp only [ProjRestrict_coe, Proj, ite_eq_left_iff]
   exact fun hJ ↦ (by exfalso; exact hJ h)
 
 lemma proj_prop_eq_self (hh : ∀ i x, x ∈ C → x i ≠ default → J i) : C.proj J = C := by
@@ -144,30 +147,28 @@ lemma proj_eq_of_subset (h : ∀ i, J i → K i) : (C.proj K).proj J = C.proj J 
   · obtain ⟨y, hy⟩ := h
     obtain ⟨z, hz⟩ := hy.1
     rw [← hy.2, ← hz.2]
-    suffices Proj J z = (Proj J ∘ Proj K) z by dsimp at this; rw [← this]; refine ⟨z, ⟨hz.1, rfl⟩⟩
+    suffices Proj J z = (Proj J ∘ Proj K) z by exact ⟨z, ⟨hz.1, this⟩⟩
     rw [proj_comp_of_subset J K h]
   · obtain ⟨y, hy⟩ := h
     dsimp [Set.proj]
     rw [← Set.image_comp]
     refine ⟨y, ⟨hy.1, ?_⟩⟩
-    rw [proj_comp_of_subset _ _ h]
-    exact hy.2
+    rw [← hy.2, proj_comp_of_subset J K h]
 
 variable {J K L}
 
+@[simps!]
 def ProjRestricts (h : ∀ i, J i → K i) : C.proj K → C.proj J :=
   Homeomorph.setCongr (proj_eq_of_subset C J K h) ∘ ProjRestrict (C.proj K) J
 
 lemma projRestricts_eq_self (x : C.proj K) (i : ι) (hJK : ∀ i, J i → K i) (h : J i) :
     (ProjRestricts C hJK x).val i = x.val i := by
-  dsimp [ProjRestricts, Homeomorph.setCongr, ProjRestrict, Proj]
-  simp only [Set.val_codRestrict_apply, Function.comp_apply, ite_eq_left_iff]
+  simp only [Set.proj, Proj, ProjRestricts_coe, ite_eq_left_iff]
   exact fun hJ ↦ (by exfalso; exact hJ h)
 
 lemma projRestricts_ne_default_iff (x : C.proj K) (i : ι) (hJK : ∀ i, J i → K i) :
     (ProjRestricts C hJK x).val i ≠ default ↔ J i ∧ x.val i ≠ default := by
-  dsimp [ProjRestricts, Homeomorph.setCongr, ProjRestrict, Proj]
-  simp only [ite_eq_right_iff, not_forall, exists_prop]
+  simp only [Set.proj, Proj, ProjRestricts_coe, ne_eq, ite_eq_right_iff, not_forall, exists_prop]
 
 lemma projRestricts_eq_default_iff (x : C.proj K) (i : ι) (hJK : ∀ i, J i → K i) :
     (ProjRestricts C hJK x).val i = default ↔ ¬ J i ∨ x.val i = default := by
@@ -175,6 +176,7 @@ lemma projRestricts_eq_default_iff (x : C.proj K) (i : ι) (hJK : ∀ i, J i →
   simp only [projRestricts_ne_default_iff, ne_eq]
   rw [not_or, not_not]
 
+@[simp]
 lemma continuous_projRestricts (h : ∀ i, J i → K i) : Continuous (ProjRestricts C h) :=
   Continuous.comp (Homeomorph.continuous _) (continuous_projRestrict _ _)
 
@@ -185,8 +187,7 @@ variable (J) in
 lemma projRestricts_eq_id  :
     ProjRestricts C (fun i (h : J i) ↦ h) = id := by
   ext x i
-  dsimp [ProjRestricts, ProjRestrict, Proj, Homeomorph.setCongr]
-  simp only [id_eq, Proj, ite_eq_left_iff]
+  simp only [Set.proj, Proj, ProjRestricts_coe, id_eq, ite_eq_left_iff]
   obtain ⟨y, hy⟩ := x.prop
   rw [← hy.2]
   intro hijn
@@ -199,7 +200,7 @@ lemma projRestricts_eq_id  :
 lemma projRestricts_eq_comp (hJK : ∀ i, J i → K i) (hKL : ∀ i, K i → L i) :
     ProjRestricts C hJK ∘ ProjRestricts C hKL = ProjRestricts C (fun i ↦ hKL i ∘ hJK i) := by
   ext x i
-  dsimp [ProjRestricts, ProjRestrict, Proj, Homeomorph.setCongr]
+  simp only [Set.proj, Proj, Function.comp_apply, ProjRestricts_coe]
   split_ifs with h hh
   · rfl
   · exfalso; exact hh (hJK i h)
@@ -208,7 +209,7 @@ lemma projRestricts_eq_comp (hJK : ∀ i, J i → K i) (hKL : ∀ i, K i → L i
 lemma projRestricts_comp_projRestrict (h : ∀ i, J i → K i) :
     ProjRestricts C h ∘ ProjRestrict C K = ProjRestrict C J := by
   ext x i
-  dsimp [ProjRestricts, ProjRestrict, Proj, Homeomorph.setCongr, Function.comp_apply, Proj]
+  simp only [Set.proj, Proj, Function.comp_apply, ProjRestricts_coe, ProjRestrict_coe]
   split_ifs with hh hh'
   · rfl
   · exfalso; exact hh' (h i hh)
@@ -270,10 +271,9 @@ lemma eq_of_forall_proj_eq (a b : C) (h : ∀ (J : Finset ι), ProjRestrict C (�
     ProjRestrict C (· ∈ J) b) : a = b := by
   ext i
   specialize h ({i} : Finset ι)
-  dsimp [ProjRestrict, Proj] at h
   rw [Subtype.ext_iff] at h
   have hh := congr_fun h i
-  simp only [Finset.mem_singleton, Set.val_codRestrict_apply, Function.comp_apply, ite_true] at hh
+  simp only [ProjRestrict_coe, Proj, Finset.mem_singleton, ite_true] at hh
   exact hh
 
 open Profinite in
@@ -551,7 +551,7 @@ lemma evalFacProps {l : Products I} (J K : I → Prop)
     (h : ∀ a, a ∈ l.val → J a) [∀ j, Decidable (J j)] [∀ j, Decidable (K j)]
     (hJK : ∀ i, J i → K i) :
     l.eval (C.proj J) ∘ ProjRestricts C hJK = l.eval (C.proj K) := by
-  dsimp [ProjRestricts]
+  dsimp only [ProjRestricts]
   rw [← Function.comp.assoc, evalFacPropsAux C J K hJK, ← evalFacProp (C.proj K) J h]
 
 lemma prop_of_isGood  {l : Products I} (J : I → Prop) [∀ j, Decidable (J j)]
@@ -852,7 +852,7 @@ lemma GoodProducts.spanFin : ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.proj
         rw [← hc.2]
         have hmap :=
           fun g ↦ map_finsupp_sum (LinearMap.mulLeft ℤ (e (C.proj (· ∈ J)) a)) c g
-        dsimp at hmap
+        dsimp at hmap ⊢
         rw [hmap]
         apply Submodule.finsupp_sum_mem
         intro m hm
@@ -917,7 +917,7 @@ lemma GoodProducts.spanFin : ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.proj
         rw [← hc.2]
         have hmap :=
           fun g ↦ map_finsupp_sum (LinearMap.mulLeft ℤ (e (C.proj (· ∈ J)) a)) c g
-        dsimp at hmap
+        dsimp at hmap ⊢
         ring_nf
         rw [hmap]
         apply Submodule.add_mem
@@ -1166,18 +1166,19 @@ lemma contained_proj (o : Ordinal) : contained (C.proj (ord I · < o)) o := by
   simp only [Bool.ite_eq_true_distrib, if_false_right_eq_and] at hj
   exact hj.1
 
+@[simps!]
 noncomputable
 def πs (o : Ordinal) : LocallyConstant (C.proj (ord I · < o)) ℤ →ₗ[ℤ] LocallyConstant C ℤ :=
   LocallyConstant.comapₗ ℤ (ProjRestrict C (ord I · < o)) (continuous_projRestrict _ _)
 
 lemma coe_πs (o : Ordinal) (f : LocallyConstant (C.proj (ord I · < o)) ℤ) :
     πs C o f = f ∘ ProjRestrict C (ord I · < o) := by
-  simp only [πs, LocallyConstant.comapₗ, LinearMap.coe_mk, AddHom.coe_mk, continuous_projRestrict,
-    LocallyConstant.coe_comap]
+  simp only [πs_apply, continuous_projRestrict, LocallyConstant.coe_comap]
 
 lemma injective_πs (o : Ordinal) : Function.Injective (πs C o) :=
   LocallyConstant.comap_injective _ (continuous_projRestrict _ _) (surjective_projRestrict _ _)
 
+@[simps!]
 noncomputable
 def πs' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) :
     LocallyConstant (C.proj (ord I · < o₁)) ℤ →ₗ[ℤ] LocallyConstant (C.proj (ord I · < o₂)) ℤ :=
@@ -1186,8 +1187,8 @@ def πs' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) :
 
 lemma coe_πs' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) (f : LocallyConstant (C.proj (ord I · < o₁)) ℤ) :
     (πs' C h f).toFun = f.toFun ∘ (ProjRestricts C (fun _ hh ↦ lt_of_lt_of_le hh h)) := by
-  simp only [πs', LocallyConstant.comapₗ, LinearMap.coe_mk, AddHom.coe_mk,
-    LocallyConstant.toFun_eq_coe, continuous_projRestricts, LocallyConstant.coe_comap]
+  simp only [πs'_apply, LocallyConstant.toFun_eq_coe, continuous_projRestricts,
+    LocallyConstant.coe_comap]
 
 lemma injective_πs' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : Function.Injective (πs' C h) :=
   LocallyConstant.comap_injective _ (continuous_projRestricts _ _) (surjective_projRestricts _ _)
@@ -1216,13 +1217,16 @@ theorem lt_iff_head!_lt {l : Products I} {o : Ordinal} :
 
 lemma eval_πs {l : Products I} {o : Ordinal} (hlt : ∀ i ∈ l.val, ord I i < o) :
     πs C o (l.eval (C.proj (ord I · < o))) = l.eval C := by
-  rw [← LocallyConstant.coe_inj, coe_πs]
+  rw [← LocallyConstant.coe_inj]
+  simp only [πs_apply, continuous_projRestrict, LocallyConstant.coe_comap]
   exact evalFacProp C (ord I · < o) hlt
 
 lemma eval_πs' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     (hlt : ∀ i ∈ l.val, ord I i < o₁) :
     πs' C h (l.eval (C.proj (ord I · < o₁))) = l.eval (C.proj (ord I · < o₂)) := by
-  rw [← LocallyConstant.coe_inj, ← LocallyConstant.toFun_eq_coe, coe_πs']
+  rw [← LocallyConstant.coe_inj, ← LocallyConstant.toFun_eq_coe]
+  simp only [πs'_apply, LocallyConstant.toFun_eq_coe, continuous_projRestricts,
+    LocallyConstant.coe_comap]
   exact evalFacProps C (fun (i : I) ↦ ord I i < o₁) (fun (i : I) ↦ ord I i < o₂) hlt _
 
 lemma lt_ord_of_lt {l m : Products I} {o : Ordinal} (hmltl : m < l)
@@ -1258,12 +1262,9 @@ lemma eval_πs_image {l : Products I} {o : Ordinal}
     exact ⟨hm.1, by rfl⟩
   · rw [← Set.image_comp] at hf
     obtain ⟨m,hm⟩ := hf
-    dsimp at hm
-    rw [eval_πs C (lt_ord_of_lt hm.1 hl)] at hm
-    rw [← hm.2]
+    rw [← hm.2, Function.comp_apply, eval_πs C (lt_ord_of_lt hm.1 hl)]
     simp only [Set.mem_image, Set.mem_setOf_eq, exists_exists_and_eq_and]
-    use m
-    exact ⟨hm.1, by rfl⟩
+    exact ⟨m, ⟨hm.1, by rfl⟩⟩
 
 lemma eval_πs_image' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     (hl : ∀ i ∈ l.val, ord I i < o₁) : eval (C.proj (ord I · < o₂)) '' { m | m < l } =
@@ -1278,9 +1279,7 @@ lemma eval_πs_image' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     exact ⟨hm.1, by rfl⟩
   · rw [← Set.image_comp] at hf
     obtain ⟨m,hm⟩ := hf
-    dsimp at hm
-    rw [eval_πs' C h (lt_ord_of_lt hm.1 hl)] at hm
-    rw [← hm.2]
+    rw [← hm.2, Function.comp_apply, eval_πs' C h (lt_ord_of_lt hm.1 hl)]
     simp only [Set.mem_image, Set.mem_setOf_eq, exists_exists_and_eq_and]
     use m
     exact ⟨hm.1, by rfl⟩
@@ -1344,13 +1343,12 @@ lemma linearIndependent_iff_smaller (o : Ordinal) :
 
 lemma smaller_mono {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : smaller C o₁ ⊆ smaller C o₂ := by
   intro f hf
-  dsimp [smaller] at *
+  dsimp only [smaller] at *
   obtain ⟨g, hg⟩ := hf
   simp only [Set.mem_image]
   use πs' C h g
   refine ⟨?_, ?_⟩
-  · dsimp [range]
-    dsimp [range] at hg
+  · dsimp only [range] at hg ⊢
     obtain ⟨⟨l,gl⟩, hl⟩ := hg.1
     use ⟨l, Products.isGood_mono C h gl⟩
     ext x
@@ -1657,10 +1655,8 @@ lemma CC_comp_zero : ∀ y, (Linear_CC' C hsC ho) ((πs C o) y) = 0 := by
   dsimp [Linear_CC', Linear_CC'₀, Linear_CC'₁]
   ext x
   rw [LocallyConstant.sub_apply]
-  simp only [LocallyConstant.comapₗ, LinearMap.coe_mk, AddHom.coe_mk, continuous_CC'₁,
-    LocallyConstant.coe_comap, Function.comp_apply, continuous_CC'₀,
-    LocallyConstant.coe_zero, Pi.zero_apply, AlgHom.toLinearMap_apply]
-  rw [coe_πs, Function.comp_apply, Function.comp_apply]
+  simp only [continuous_CC'₁, LocallyConstant.coe_comap, continuous_projRestrict,
+    Function.comp_apply, continuous_CC'₀, LocallyConstant.coe_zero, Pi.zero_apply]
   suffices :
     ProjRestrict C (ord I · < o) (CC'₁ C hsC ho x) = ProjRestrict C (ord I · < o) (CC'₀ C ho x)
   · rw [this]
@@ -1737,8 +1733,8 @@ lemma CC_exact {f : LocallyConstant C ℤ} (hf : Linear_CC' C hsC ho f = 0) :
   · ext ⟨x,hx⟩
     rw [← union_C0C1_eq C ho] at hx
     cases' hx with hx₀ hx₁
-    · rw [coe_πs]
-      simp only [LocallyConstant.piecewise'_apply, LocallyConstant.coe_mk, Function.comp_apply]
+    · simp only [πs_apply, continuous_projRestrict, LocallyConstant.coe_comap, Function.comp_apply,
+        LocallyConstant.piecewise'_apply]
       split_ifs with h
       · simp only [LocallyConstant.congrLeft, Equiv.invFun_as_coe, Homeomorph.coe_symm_toEquiv,
           Equiv.toFun_as_coe, Homeomorph.coe_toEquiv, Equiv.coe_fn_mk, Set.mem_setOf_eq,
@@ -1748,11 +1744,11 @@ lemma CC_exact {f : LocallyConstant C ℤ} (hf : Linear_CC' C hsC ho f = 0) :
         dsimp [ProjRestrict] at h ⊢
         rw [C0_projOrd C hsC ho x hx₀]
       · dsimp [LocallyConstant.congrLeft]
-        simp only [ProjRestrict, Set.val_codRestrict_apply, Function.comp_apply] at h
+        simp only [ProjRestrict, Set.MapsTo.val_restrict_apply] at h
         rw [C0_projOrd C hsC ho x hx₀] at h
         simp only [hx₀, not_true] at h
-    · rw [coe_πs]
-      simp only [LocallyConstant.piecewise'_apply, LocallyConstant.coe_mk, Function.comp_apply]
+    · simp only [πs_apply, continuous_projRestrict, LocallyConstant.coe_comap, Function.comp_apply,
+        LocallyConstant.piecewise'_apply]
       split_ifs with h
       · simp only [LocallyConstant.congrLeft, Equiv.invFun_as_coe, Homeomorph.coe_symm_toEquiv,
           Equiv.toFun_as_coe, Homeomorph.coe_toEquiv, Equiv.coe_fn_mk, Set.mem_setOf_eq,
