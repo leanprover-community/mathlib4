@@ -169,9 +169,9 @@ theorem mul_def {f g : MonoidAlgebra k G} :
 
 instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (MonoidAlgebra k G) :=
   { Finsupp.addCommMonoid with
-    zero := 0
+    -- zero := 0
     mul := (· * ·)
-    add := (· + ·)
+    -- add := (· + ·)
     -- Porting note: `refine` & `exact` are required because `simp` behaves differently.
     left_distrib := fun f g h => by
       haveI := Classical.decEq G
@@ -211,9 +211,9 @@ variable [Semiring k] [Semigroup G] [Semiring R]
 
 instance nonUnitalSemiring : NonUnitalSemiring (MonoidAlgebra k G) :=
   { MonoidAlgebra.nonUnitalNonAssocSemiring with
-    zero := 0
-    mul := (· * ·)
-    add := (· + ·)
+    -- zero := 0
+    -- mul := (· * ·)
+    -- add := (· + ·)
     mul_assoc := fun f g h => by
       -- Porting note: `reducible` cannot be `local` so proof gets long.
       simp only [mul_def]
@@ -254,10 +254,10 @@ variable [Semiring k] [MulOneClass G]
 
 instance nonAssocSemiring : NonAssocSemiring (MonoidAlgebra k G) :=
   { MonoidAlgebra.nonUnitalNonAssocSemiring with
-    one := 1
-    mul := (· * ·)
-    zero := 0
-    add := (· + ·)
+    -- one := 1
+    -- mul := (· * ·)
+    -- zero := 0
+    -- add := (· + ·)
     natCast := fun n => single 1 n
     natCast_zero := by simp
     natCast_succ := fun _ => by simp; rfl
@@ -284,11 +284,11 @@ variable [Semiring k] [Monoid G]
 
 instance semiring : Semiring (MonoidAlgebra k G) :=
   { MonoidAlgebra.nonUnitalSemiring,
-    MonoidAlgebra.nonAssocSemiring with
-    one := 1
-    mul := (· * ·)
-    zero := 0
-    add := (· + ·) }
+    MonoidAlgebra.nonAssocSemiring with }
+    -- one := 1
+    -- mul := (· * ·)
+    -- zero := 0
+    -- add := (· + ·) }
 #align monoid_algebra.semiring MonoidAlgebra.semiring
 
 variable [Semiring R]
@@ -338,17 +338,22 @@ instance nonUnitalNonAssocRing [Ring k] [Mul G] : NonUnitalNonAssocRing (MonoidA
   { MonoidAlgebra.addCommGroup, MonoidAlgebra.nonUnitalNonAssocSemiring with }
 #align monoid_algebra.non_unital_non_assoc_ring MonoidAlgebra.nonUnitalNonAssocRing
 
+-- TODO: implement Eric's suggesion and come back
 instance nonUnitalRing [Ring k] [Semigroup G] : NonUnitalRing (MonoidAlgebra k G) :=
-  { MonoidAlgebra.addCommGroup, MonoidAlgebra.nonUnitalSemiring with }
+  { MonoidAlgebra.addCommGroup (k := k) (G := G),
+    (inferInstance : NonUnitalNonAssocRing <| MonoidAlgebra k G),
+    MonoidAlgebra.nonUnitalSemiring with }
 #align monoid_algebra.non_unital_ring MonoidAlgebra.nonUnitalRing
 
+-- TODO: implement Eric's suggesion and come back
 instance nonAssocRing [Ring k] [MulOneClass G] : NonAssocRing (MonoidAlgebra k G) :=
-  { MonoidAlgebra.addCommGroup,
+  { MonoidAlgebra.addCommGroup (k := k) (G := G),
+    (inferInstance : NonUnitalNonAssocRing <| MonoidAlgebra k G),
     MonoidAlgebra.nonAssocSemiring with
     intCast := fun z => single 1 (z : k)
     -- Porting note: Both were `simpa`.
     intCast_ofNat := fun n => by simp; rfl
-    intCast_negSucc := fun n => by simp; rfl }
+    intCast_negSucc := fun n => by simp; rfl } -- rfl }
 #align monoid_algebra.non_assoc_ring MonoidAlgebra.nonAssocRing
 
 theorem int_cast_def [Ring k] [MulOneClass G] (z : ℤ) :
@@ -1131,7 +1136,7 @@ protected noncomputable def opRingEquiv [Monoid G] :
       -- Porting note: `reducible` cannot be `local` so proof gets long.
       simp
       rw [AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply,
-        AddEquiv.trans_apply, AddEquiv.trans_apply, MulOpposite.opAddEquiv_apply,
+        AddEquiv.trans_apply, AddEquiv.trans_apply,
         MulOpposite.opAddEquiv_symm_apply, MulOpposite.unop_mul (α := MonoidAlgebra k G)]
       simp }
 #align monoid_algebra.op_ring_equiv MonoidAlgebra.opRingEquiv
@@ -1289,9 +1294,9 @@ theorem mul_def {f g : AddMonoidAlgebra k G} :
 
 instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (AddMonoidAlgebra k G) :=
   { Finsupp.addCommMonoid with
-    zero := 0
-    mul := (· * ·)
-    add := (· + ·)
+    -- zero := 0
+    -- mul := (· * ·)
+    -- add := (· + ·)
     -- Porting note: `refine` & `exact` are required because `simp` behaves differently.
     left_distrib := fun f g h => by
       haveI := Classical.decEq G
@@ -1362,9 +1367,9 @@ variable [Semiring k] [AddSemigroup G]
 
 instance nonUnitalSemiring : NonUnitalSemiring (AddMonoidAlgebra k G) :=
   { AddMonoidAlgebra.nonUnitalNonAssocSemiring with
-    zero := 0
-    mul := (· * ·)
-    add := (· + ·)
+    -- zero := 0
+    -- mul := (· * ·)
+    -- add := (· + ·)
     mul_assoc := fun f g h => by
       -- Porting note: `reducible` cannot be `local` so proof gets long.
       simp only [mul_def]
@@ -1384,10 +1389,10 @@ variable [Semiring k] [AddZeroClass G]
 
 instance nonAssocSemiring : NonAssocSemiring (AddMonoidAlgebra k G) :=
   { AddMonoidAlgebra.nonUnitalNonAssocSemiring with
-    one := 1
-    mul := (· * ·)
-    zero := 0
-    add := (· + ·)
+    -- one := 1
+    -- mul := (· * ·)
+    -- zero := 0
+    -- add := (· + ·)
     natCast := fun n => single 0 n
     natCast_zero := by simp
     natCast_succ := fun _ => by simp; rfl
@@ -1418,11 +1423,11 @@ variable [Semiring k] [AddMonoid G]
 
 instance semiring : Semiring (AddMonoidAlgebra k G) :=
   { AddMonoidAlgebra.nonUnitalSemiring,
-    AddMonoidAlgebra.nonAssocSemiring with
-    one := 1
-    mul := (· * ·)
-    zero := 0
-    add := (· + ·) }
+    AddMonoidAlgebra.nonAssocSemiring with }
+    -- one := 1
+    -- mul := (· * ·)
+    -- zero := 0
+    -- add := (· + ·) }
 #align add_monoid_algebra.semiring AddMonoidAlgebra.semiring
 
 variable [Semiring R]
@@ -1470,11 +1475,14 @@ instance nonUnitalNonAssocRing [Ring k] [Add G] : NonUnitalNonAssocRing (AddMono
 #align add_monoid_algebra.non_unital_non_assoc_ring AddMonoidAlgebra.nonUnitalNonAssocRing
 
 instance nonUnitalRing [Ring k] [AddSemigroup G] : NonUnitalRing (AddMonoidAlgebra k G) :=
-  { AddMonoidAlgebra.addCommGroup, AddMonoidAlgebra.nonUnitalSemiring with }
+  { AddMonoidAlgebra.addCommGroup (k := k) (G := G),
+    (inferInstance : NonUnitalNonAssocRing <| AddMonoidAlgebra k G),
+    AddMonoidAlgebra.nonUnitalSemiring with }
 #align add_monoid_algebra.non_unital_ring AddMonoidAlgebra.nonUnitalRing
 
 instance nonAssocRing [Ring k] [AddZeroClass G] : NonAssocRing (AddMonoidAlgebra k G) :=
-  { AddMonoidAlgebra.addCommGroup,
+  { AddMonoidAlgebra.addCommGroup (k := k) (G := G),
+    (inferInstance : NonUnitalNonAssocRing <| AddMonoidAlgebra k G),
     AddMonoidAlgebra.nonAssocSemiring with
     intCast := fun z => single 0 (z : k)
     -- Porting note: Both were `simpa`.
@@ -1888,7 +1896,7 @@ protected noncomputable def opRingEquiv [AddCommMonoid G] :
       -- Porting note: `reducible` cannot be `local` so proof gets long.
       dsimp
       rw [AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply,
-        MulOpposite.opAddEquiv_apply, MulOpposite.opAddEquiv_symm_apply,
+        MulOpposite.opAddEquiv_symm_apply,
         MulOpposite.unop_mul (α := AddMonoidAlgebra k G)]
       dsimp
       simp only [mapRange_single, single_mul_single, ← op_mul, add_comm] }
