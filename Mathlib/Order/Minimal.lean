@@ -24,6 +24,8 @@ This file defines minimal and maximal of a set with respect to an arbitrary rela
 Do we need a `Finset` version?
 -/
 
+set_option autoImplicit true
+
 
 open Function Set
 
