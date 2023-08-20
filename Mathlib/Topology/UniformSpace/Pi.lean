@@ -69,7 +69,7 @@ lemma Cauchy.pi [Nonempty ι] {l : ∀ i, Filter (α i)} (hl : ∀ i, Cauchy (l 
 
 instance Pi.complete [∀ i, CompleteSpace (α i)] : CompleteSpace (∀ i, α i) where
   complete {f} hf := by
-    haveI := hf.1
+    have := hf.1
     simp_rw [cauchy_pi_iff', cauchy_iff_exists_le_nhds] at hf
     choose x hx using hf
     use x
