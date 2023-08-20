@@ -447,7 +447,10 @@ end List
 
 variable {α : Type*} (r : α → α → Prop)
 
+/-- The type of `r`-decreasing chains -/
 abbrev List.chains := { l : List α // l.Chain' (flip r) }
+
+/-- The lexicographic order on the `r`-decreasing chains -/
 abbrev List.lex_chains (l m : List.chains r) : Prop := List.Lex r l.val m.val
 
 variable {r}
