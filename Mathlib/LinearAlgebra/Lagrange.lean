@@ -651,31 +651,21 @@ theorem eval_interpolate_not_at_node' (hvs : Set.InjOn v s) (hs : s.Nonempty)
 #align lagrange.eval_interpolate_not_at_node' Lagrange.eval_interpolate_not_at_node'
 
 /-- The vanishing polynomial on a multiplicative subgroup is of the form X ^ n - 1. -/
-theorem nodal_subgroup_eq_X_pow_card_sub_one (G : Subgroup Fˣ) [Fintype G] :
+@[simp] theorem nodal_subgroup_eq_X_pow_card_sub_one (G : Subgroup Fˣ) [Fintype G] :
   nodal (G : Set Fˣ).toFinset ((↑) : Fˣ → F) = X ^ (Fintype.card G) - 1 := by
-  apply eq_of_degrees_le_of_eval_index_eq
-    (v := ((↑) : Fˣ → F)) (G.carrier.toFinset)
-  · apply Set.injOn_of_injective Units.ext
-  · apply le_of_eq
-    simp only [degree_nodal, Set.toFinset_card, SetLike.coe_sort_coe, Nat.cast_le]
+  have h : degree (1 : F[X]) < degree ((X : F[X]) ^ Fintype.card G) := by simp [Fintype.card_pos]
+  apply eq_of_degrees_le_of_eval_index_eq (v := ((↑) : Fˣ → F)) (G : Set Fˣ).toFinset
+  · exact Set.injOn_of_injective Units.ext _
+  · simp
+  · rw [degree_sub_eq_left_of_degree_lt h, degree_nodal, Set.toFinset_card, degree_pow, degree_X,
+      nsmul_eq_mul, mul_one, Nat.cast_inj]
     exact rfl
-  · rw [degree_sub_eq_left_of_degree_lt]
-    · rw [degree_nodal, Set.toFinset_card, degree_pow, degree_X, nsmul_eq_mul, mul_one,
-        Nat.cast_inj]
-      exact rfl
-    · simp only [degree_one, degree_pow, degree_X, nsmul_eq_mul, mul_one, Nat.cast_pos]
-      exact Fintype.card_pos
-  · rw [nodal_monic, leadingCoeff_sub_of_degree_lt]
-    · rw [monic_X_pow]
-    · rw [degree_one, degree_pow, degree_X, nsmul_eq_mul, mul_one, Nat.cast_pos]
-      exact Fintype.card_pos
+  · rw [nodal_monic, leadingCoeff_sub_of_degree_lt h, monic_X_pow]
   · intros i hi
-    have i_mem_G : i ∈ Set.toFinset G := hi
-    rw [eval_nodal_at_node i_mem_G]
-    simp at hi
-    rcases (CanLift.prf i hi : ∃ g : G, g.val = i) with ⟨g, g_eq⟩
-    rw [← g_eq, eval_sub, eval_pow, eval_X, eval_one, ← Units.val_pow_eq_pow_val,
-      ← Subgroup.coe_pow G, pow_card_eq_one, Subgroup.coe_one, Units.val_one, sub_self]
+    rw [eval_nodal_at_node hi]
+    replace hi : i ∈ G := by simpa using hi
+    obtain ⟨g, rfl⟩ : ∃ g : G, g.val = i := ⟨⟨i, hi⟩, rfl⟩
+    simp [← Units.val_pow_eq_pow_val, ← Subgroup.coe_pow G]
 
 end Nodal
 
