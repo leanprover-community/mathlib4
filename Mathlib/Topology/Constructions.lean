@@ -1440,7 +1440,10 @@ theorem inducing_iInf_to_pi {X : Type*} (f : ∀ i, X → π i) :
 variable [∀ i, Inhabited (π i)] (C : Set ((i : ι) → π i))
   (J K L : ι → Prop) [∀ i, Decidable (J i)] [∀ i, Decidable (K i)] [∀ i, Decidable (L i)]
 
+
 variable (π) in
+/-- The projection mapping everything that satisfies `J i` to itself, and everything else to
+    `default` -/
 def Proj : ((i : ι) → π i) → ((i : ι) → π i) :=
   fun c i ↦ if J i then c i else default
 
@@ -1450,8 +1453,10 @@ lemma continuous_proj :
   dsimp [Proj]
   split_ifs<;> [exact continuous_apply _; exact continuous_const]
 
+/-- The image of `Proj π J` -/
 def Set.proj : Set ((i : ι) → π i) := (Proj π J) '' C
 
+/-- The restriction `Proj π J` to a subset, mapping to its image. -/
 @[simps!]
 def ProjRestrict : C → C.proj J :=
     Set.MapsTo.restrict (Proj π J) _ _ (Set.mapsTo_image _ _)

@@ -36,6 +36,7 @@ section General
 
 variable {J K L : ι → Prop} [∀ i, Decidable (J i)] [∀ i, Decidable (K i)] [∀ i, Decidable (L i)]
 
+/-- A variant of `ProjRestrict` with domain of the form `C.proj K` -/
 @[simps!]
 def ProjRestricts (h : ∀ i, J i → K i) : C.proj K → C.proj J :=
   Homeomorph.setCongr (proj_eq_of_subset C J K h) ∘ ProjRestrict (C.proj K) J
@@ -117,6 +118,7 @@ lemma mem_projRestrict (h : J ⊆ K) (x : C.proj (· ∈ K)) :
     exact fun hK ↦ by simp only [h hh, not_true] at hK
   · rfl
 
+/-- The functor from the poset of finsets of `ι` to  `Profinite`, indexing the limit. -/
 noncomputable
 def FinsetsToProfinite :
     (Finset ι)ᵒᵖ ⥤ Profinite.{u} where
@@ -126,6 +128,7 @@ def FinsetsToProfinite :
   map_id J := by dsimp; simp_rw [projRestricts_eq_id C (· ∈ (unop J))]; rfl
   map_comp _ _ := by dsimp; congr; dsimp; rw [projRestricts_eq_comp]
 
+/-- The limit cone on `FinsetsToProfinite` -/
 noncomputable
 def FinsetsCone : Cone (FinsetsToProfinite hC) where
   pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
@@ -155,6 +158,7 @@ lemma eq_of_forall_proj_eq (a b : C) (h : ∀ (J : Finset ι), ProjRestrict C (�
 
 namespace Profinite
 
+/-- The canonical map from `C` to the explicit limit is an isomorphism. -/
 instance isIso_finsetsCone_lift [DecidableEq ι] :
     IsIso ((limitConeIsLimit (FinsetsToProfinite hC)).lift (FinsetsCone hC)) :=
   haveI : CompactSpace C := by rwa [← isCompact_iff_compactSpace]
@@ -191,16 +195,19 @@ instance isIso_finsetsCone_lift [DecidableEq ι] :
             (fun J => (hc J (a.val (op J))).isCompact) fun J => hc J (a.val (op J))
         exact ⟨x, Set.mem_iInter.1 hx⟩)
 
+/-- The canonical map from `C` to the explicit limit as an isomorphism. -/
 noncomputable
 def isoFinsetsConeLift [DecidableEq ι] :
     @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _ ≅
     (Profinite.limitCone (FinsetsToProfinite hC)).pt :=
   asIso <| (Profinite.limitConeIsLimit _).lift (FinsetsCone hC)
 
+/-- The isomorphism of cones induced by `isoFinsetsConeLift`. -/
 noncomputable
 def asLimitFinsetsConeIso [DecidableEq ι] : FinsetsCone hC ≅ Profinite.limitCone _ :=
   Limits.Cones.ext (isoFinsetsConeLift hC) fun _ => rfl
 
+/-- `FinsetsCone` is a limit cone. -/
 noncomputable
 def finsetsCone_isLimit [DecidableEq ι] : CategoryTheory.Limits.IsLimit (FinsetsCone hC) :=
   Limits.IsLimit.ofIsoLimit (Profinite.limitConeIsLimit _) (asLimitFinsetsConeIso hC).symm
