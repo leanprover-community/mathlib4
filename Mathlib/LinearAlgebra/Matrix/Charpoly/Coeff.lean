@@ -175,7 +175,7 @@ theorem matPolyEquiv_eval (M : Matrix n n R[X]) (r : R) (i j : n) :
     apply (Finset.sum_subset (support_subset_support_matPolyEquiv _ _ _) _).symm
     intro n _hn h'n
     rw [not_mem_support_iff] at h'n
-    simp only [h'n, MulZeroClass.zero_mul]
+    simp only [h'n, zero_mul]
     simp only [mul_zero]  -- porting note: added
 #align matrix.mat_poly_equiv_eval Matrix.matPolyEquiv_eval
 
