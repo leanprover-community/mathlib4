@@ -51,7 +51,8 @@ export Qq.ToExprQ (toExprQ)
 def toTypeExprQ (α : Type u) [ToExprQ α] : Q(Type $(ToExprQ.level α)) :=
   ToExprQ.toTypeExprQ (α := α)
 
-@[inherit_doc ToExprQ.level]
+/-- `ToExprQ` contains the fields of `ToLevel`, but it would not be safe to make this an instance,
+so does not directly `extend` it. -/
 def ToExprQ.toToLevel (α : Type u) [ToExprQ α] : ToLevel.{u} where
   toLevel := ToExprQ.level α
 
