@@ -78,7 +78,7 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
     simp [zsmul_eq_smul_cast ℝ 2]
   have x_ne_zero : x ≠ 0 := by simpa using sub_ne_zero.2 hab.symm
   obtain ⟨y, hy⟩ : ∃ y, LinearIndependent ℝ ![x, y] :=
-    exists_linear_independent_pair_of_of_one_lt_rank h x_ne_zero
+    exists_linear_independent_pair_of_one_lt_rank h x_ne_zero
   have A : Set.Countable {t : ℝ | ([c + x -[ℝ] c + t • y] ∩ s).Nonempty} := by
     apply countable_nonempty_setOf_of_disjoint _ (fun t ↦ inter_subset_right _ _) hs
     intro t t' htt'
@@ -141,6 +141,8 @@ section NormedSpace
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
+/-- In a real vector space of dimension `> 1`, any sphere of nonnegative radius is
+path connected. -/
 theorem isPathConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr : 0 ≤ r) :
     IsPathConnected (sphere x r) := by
   /- when `r > 0`, we write the sphere as the image of `{0}ᶜ` under the map
@@ -171,10 +173,12 @@ theorem isPathConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr
         simp [hy, mul_inv_cancel rpos.ne']
   rwa [this] at C
 
+/-- In a real vector space of dimension `> 1`, any sphere of nonnegative radius is connected. -/
 theorem isConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr : 0 ≤ r) :
     IsConnected (sphere x r) :=
   (isPathConnected_sphere h x hr).isConnected
 
+/-- In a real vector space of dimension `> 1`, any sphere is preconnected. -/
 theorem isPreconnected_sphere (h : 1 < Module.rank ℝ E) (x : E) (r : ℝ) :
     IsPreconnected (sphere x r) := by
   rcases le_or_lt 0 r with hr|hr
