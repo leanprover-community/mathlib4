@@ -445,12 +445,17 @@ end List
 /-! In this section, we consider the type of `r`-decreasing chains (`List.Chain' (flip r)`)
   equipped with lexicographic order `List.Lex r`. -/
 
-variable {α : Type*} {r : α → α → Prop}
+variable {α : Type*} (r : α → α → Prop)
+
+abbrev List.chains := { l : List α // l.Chain' (flip r) }
+abbrev List.lex_chains (l m : List.chains r) : Prop := List.Lex r l.val m.val
+
+variable {r}
 
 /-- If an `r`-decreasing chain `l` is empty or its head is accessible by `r`, then
   `l` is accessible by the lexicographic order `List.Lex r`. -/
-theorem Acc.list_chain' {l : {l : List α // l.Chain' (flip r)}} (acc : ∀ a ∈ l.val.head?, Acc r a) :
-    Acc (fun l m ↦ List.Lex r l.val m.val) l := by
+theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r a) :
+    Acc (List.lex_chains r) l := by
   obtain ⟨_ | ⟨a, l⟩, hl⟩ := l
   · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
   specialize acc a _
@@ -481,9 +486,9 @@ theorem Acc.list_chain' {l : {l : List α // l.Chain' (flip r)}} (acc : ∀ a �
 
 /-- If `r` is well-founded, the lexicographic order on `r`-decreasing chains is also. -/
 theorem WellFounded.list_chain' (hwf : WellFounded r) :
-    @WellFounded {l : List α // l.Chain' (flip r)} (fun l m ↦ List.Lex r l.val m.val) :=
+    WellFounded (List.lex_chains r) :=
   ⟨fun _ ↦ Acc.list_chain' (fun _ _ => hwf.apply _)⟩
 
 instance [hwf : IsWellFounded α r] :
-    IsWellFounded {l : List α // l.Chain' (flip r)} (fun l m ↦ List.Lex r l.val m.val) :=
+    IsWellFounded (List.chains r) (List.lex_chains r) :=
   ⟨hwf.wf.list_chain'⟩
