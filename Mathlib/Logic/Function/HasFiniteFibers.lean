@@ -26,15 +26,78 @@ namespace Function
 show in `Function.hasFiniteFibers_iff_finite_fibers` that this is actually equivalent to finiteness
 of fibers. -/
 def HasFiniteFibers (f : α → β) : Prop :=
-  ∀ ⦃S : Set β⦄, S.Finite → (f ⁻¹' S).Finite
+  ∀ b, (f ⁻¹' {b}).Finite
 
 /-- `Function.HasFiniteFibers f` means that the preimage by `f` of any finite set is finite. We
 show in `Function.hasFiniteFibers_iff_finite_fibers` that this is actually equivalent to finiteness
 of fibers. -/
 def HasFiniteFibersOn (f : α → β) (U : Set α) : Prop :=
-  ∀ ⦃S : Set β⦄, S.Finite → (f ⁻¹' S ∩ U).Finite
+  ∀ b, (f ⁻¹' {b} ∩ U).Finite
 
 variable {f : α → β} {U : Set α}
+
+lemma hasFiniteFibers_iff_finite_fibers : HasFiniteFibers f ↔ ∀ b, (f ⁻¹' {b}).Finite :=
+  Iff.rfl
+
+lemma hasFiniteFibersOn_iff_finite_fibers_inter : HasFiniteFibersOn f U ↔
+    ∀ b, (f ⁻¹' {b} ∩ U).Finite :=
+  Iff.rfl
+
+lemma HasFiniteFibers.hasFiniteFibersOn (hf : HasFiniteFibers f) :
+    HasFiniteFibersOn f U :=
+  fun b ↦ (hf b).subset <| inter_subset_left _ _
+
+lemma HasFiniteFibersOn.mono {V : Set α} (hf : HasFiniteFibersOn f U) (hUV : V ⊆ U) :
+    HasFiniteFibersOn f V :=
+  fun b ↦ (hf b).subset <| inter_subset_inter_right _ hUV
+
+section NonRelative
+
+lemma Injective.hasFiniteFibers (hf : Injective f) :
+    HasFiniteFibers f :=
+  fun _ ↦ (subsingleton_singleton.preimage hf).finite
+
+lemma hasFiniteFibers_TFAE : List.TFAE
+    [ HasFiniteFibers f,
+      Tendsto f cofinite cofinite,
+      ∀ ⦃S⦄, S.Finite → (f ⁻¹' S).Finite ] := by
+  tfae_have 3 → 1
+  · exact fun H y ↦ H <| finite_singleton _
+  tfae_have 1 → 2
+  · intro H
+    simpa [Tendsto, le_cofinite_iff_eventually_ne]
+  tfae_have 2 → 3
+  · intro H S hS
+    simpa using H hS.compl_mem_cofinite
+  tfae_finish
+
+end NonRelative
+
+lemma hasFiniteFibersOn_TFAE : List.TFAE
+    [ HasFiniteFibersOn f U,
+      Tendsto f (map ((↑) : U → α) cofinite) cofinite,
+      ∀ ⦃S⦄, S.Finite → (f ⁻¹' S ∩ U).Finite,
+      Tendsto (U.restrict f) cofinite cofinite,
+      HasFiniteFibers (U.restrict f) ] := by
+  tfae_have 3 → 1
+  · exact fun H y ↦ H <| finite_singleton _
+  tfae_have 1 → 2
+  · intro H
+    simpa [Tendsto, le_cofinite_iff_eventually_ne]
+  tfae_have 2 → 3
+  · intro H S hS
+    simpa using H hS.compl_mem_cofinite
+  tfae_finish
+
+lemma hasFiniteFibersOn_iff_hasFiniteFibers :
+    HasFiniteFibersOn f U ↔ HasFiniteFibers (U.restrict f) :=
+  sorry
+
+lemma InjOn.hasFiniteFibersOn {U : Set α} (hf : InjOn f U) :
+    HasFiniteFibersOn f U :=
+  sorry
+
+-- OLD
 
 lemma hasFiniteFibers_iff_finite_preimage : HasFiniteFibers f ↔ ∀ S, S.Finite → (f ⁻¹' S).Finite :=
   Iff.rfl
