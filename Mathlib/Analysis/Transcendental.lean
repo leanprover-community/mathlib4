@@ -940,8 +940,8 @@ theorem Eval_apply (x : AddMonoidAlgebra F (K s)) :
 #align Eval_apply Eval_apply
 
 theorem Eval_rat_apply (x : AddMonoidAlgebra ℚ (K s)) :
-    Eval s ℚ x = x.sum fun a c => c • exp (algebraMap (K s) ℂ a) := by
-  sorry
+    Eval s ℚ x = x.sum fun a c => c • exp (algebraMap (K s) ℂ a) :=
+  Eval_apply s ℚ x
 #align Eval_rat_apply Eval_rat_apply
 
 theorem Eval_k_apply (x : AddMonoidAlgebra (K s) (K s)) :
@@ -952,11 +952,12 @@ theorem Eval_k_apply (x : AddMonoidAlgebra (K s) (K s)) :
 theorem Eval_ratCoeff (x : ratCoeff s) : Eval s (K s) x = Eval s ℚ (ratCoeffEquiv s x) :=
   by
   simp_rw [Eval_apply, Finsupp.sum, support_ratCoeffEquiv, ratCoeffEquiv_apply_apply]
-  refine' sum_congr rfl fun i hi => _
-  simp_rw [Algebra.smul_def, IsScalarTower.algebraMap_eq ℚ (K s) ℂ]
+  refine' sum_congr rfl fun i _ => _
+  simp_rw [Algebra.smul_def, IsScalarTower.algebraMap_eq ℚ (K s) ℂ, RingHom.comp_apply]
   congr 2
-  simp_rw [IsScalarTower.algebraMap_apply ℚ (⊥ : IntermediateField ℚ (K s)) (K s), ←
-    IntermediateField.botEquiv_symm, AlgEquiv.symm_apply_apply]
+  simp_rw [IsScalarTower.algebraMap_apply ℚ (⊥ : IntermediateField ℚ (K s)) (K s),
+    ← IntermediateField.botEquiv_symm]
+  rw [AlgEquiv.symm_apply_apply]
   rfl
 #align Eval_rat_coeff Eval_ratCoeff
 
@@ -966,12 +967,12 @@ theorem Eval_toConjAlgEquiv_symm (x : GalConjClasses ℚ (K s) →₀ ℚ) :
         x c • ∑ i : K s in c.orbit.toFinset, exp (algebraMap (K s) ℂ i) :=
   by
   conv_lhs => rw [← x.sum_single, Finsupp.sum, map_sum]
-  change Eval s ℚ ↑(Finset.sum _ fun i => (toConjEquiv s ℚ).symm _) = _
+  simp_rw [toConjAlgEquiv_symm_apply, toConjLinearEquiv_symm_apply]
   have :
     ∀ (s' : Finset (K s)) (b : ℚ),
-      ((Finsupp.indicator s' fun _ _ => b).Sum fun a c => c • exp (algebraMap (K s) ℂ a)) =
+      ((Finsupp.indicator s' fun _ _ => b).sum fun a c => c • exp (algebraMap (K s) ℂ a)) =
         ∑ i in s', b • exp (algebraMap (K s) ℂ i) :=
-    fun s' b => Finsupp.sum_indicator_const_index _ fun i hi => by rw [zero_smul]
+    fun s' b => Finsupp.sum_indicator_const_index _ fun i _ => by rw [zero_smul]
   simp_rw [toConjEquiv_symm_single, AddSubmonoidClass.coe_finset_sum, Subtype.coe_mk, map_sum,
     Eval_apply, this, smul_sum]
 #align Eval_to_conj_alg_equiv_symm Eval_toConjAlgEquiv_symm
