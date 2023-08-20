@@ -1116,6 +1116,7 @@ def disjointUnion (e e' : LocalHomeomorph α β) [∀ x, Decidable (x ∈ e.sour
     (LocalEquiv.disjointUnion_eq_piecewise _ _ _ _).symm
 #align local_homeomorph.disjoint_union LocalHomeomorph.disjointUnion
 
+/-- Combine a family of local homeomorphisms with disjoint sources/targets -/
 @[simps! source target]
 noncomputable def disjoint_iUnion {I : Type _} [Nonempty I]
     (h : I → LocalHomeomorph α β)
