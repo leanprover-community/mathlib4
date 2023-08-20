@@ -22,7 +22,7 @@ language of rings
 
 -/
 
-variable {K : Type*} {p : ℕ}
+variable {p : ℕ} {K : Type*}
 
 namespace FirstOrder
 
@@ -77,12 +77,13 @@ theorem charP_iff_model_fieldOfChar [Field K] [CompatibleRing K] :
     intro H
     cases (CharP.char_is_prime_or_zero K p) <;> simp_all
 
-theorem model_fieldOfChar_of_charP [Field K] [CompatibleRing K]
+instance model_fieldOfChar_of_charP [Field K] [CompatibleRing K]
     [CharP K p] : (Theory.fieldOfChar p).Model K :=
   charP_iff_model_fieldOfChar.2 inferInstance
 
+variable (p) (K)
 /- Not an instance because it caused performance problems in a different file. -/
-instance charP_of_model_fieldOfChar [Field K] [CompatibleRing K]
+theorem charP_of_model_fieldOfChar [Field K] [CompatibleRing K]
     [h : (Theory.fieldOfChar p).Model K] : CharP K p :=
   charP_iff_model_fieldOfChar.1 h
 
