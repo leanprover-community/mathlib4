@@ -637,10 +637,6 @@ theorem FiniteDimensional.proper [FiniteDimensional 𝕜 E] : ProperSpace E := b
 
 end ProperField
 
-open Metric
-
-
-
 /- Over the real numbers, we can register the previous statement as an instance as it will not
 cause problems in instance resolution since the properness of `ℝ` is already known. -/
 instance (priority := 900) FiniteDimensional.proper_real (E : Type u) [NormedAddCommGroup E]
