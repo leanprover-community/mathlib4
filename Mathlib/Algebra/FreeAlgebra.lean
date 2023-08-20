@@ -138,8 +138,8 @@ inductive Rel : Pre R X → Pre R X → Prop-- force `of_scalar` to be a central
   | right_distrib {a b c : Pre R X} :
       Rel ((a + b) * c) (a * c + b * c)-- other relations needed for semiring
 
-  | MulZeroClass.zero_mul {a : Pre R X} : Rel (0 * a) 0
-  | MulZeroClass.mul_zero {a : Pre R X} : Rel (a * 0) 0-- compatibility
+  | zero_mul {a : Pre R X} : Rel (0 * a) 0
+  | mul_zero {a : Pre R X} : Rel (a * 0) 0-- compatibility
 
   | add_compat_left {a b c : Pre R X} : Rel a b → Rel (a + c) (b + c)
   | add_compat_right {a b c : Pre R X} : Rel a b → Rel (c + a) (c + b)
@@ -197,10 +197,10 @@ instance instMonoidWithZero : MonoidWithZero (FreeAlgebra R X) where
     exact Quot.sound Rel.mul_one
   zero_mul := by
     rintro ⟨⟩
-    exact Quot.sound Rel.MulZeroClass.zero_mul
+    exact Quot.sound Rel.zero_mul
   mul_zero := by
     rintro ⟨⟩
-    exact Quot.sound Rel.MulZeroClass.mul_zero
+    exact Quot.sound Rel.mul_zero
 
 instance instDistrib : Distrib (FreeAlgebra R X) where
   left_distrib := by
@@ -229,7 +229,7 @@ instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
     rintro ⟨⟩
     change Quot.mk _ (_ * _) = _
     rw [map_zero]
-    exact Quot.sound Rel.MulZeroClass.zero_mul
+    exact Quot.sound Rel.zero_mul
   nsmul_succ n := by
     rintro ⟨a⟩
     dsimp only [HSMul.hSMul, instSMul, Quot.map]

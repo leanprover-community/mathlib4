@@ -122,7 +122,7 @@ instance instAdd : Add 𝓜(𝕜, A) where
 instance instZero : Zero 𝓜(𝕜, A) where
   zero :=
     { toProd := 0
-      central := fun x y => (MulZeroClass.zero_mul y).trans (MulZeroClass.mul_zero x).symm }
+      central := fun x y => (zero_mul y).trans (mul_zero x).symm }
 
 instance instNeg : Neg 𝓜(𝕜, A) where
   neg a :=

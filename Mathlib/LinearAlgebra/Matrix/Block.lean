@@ -132,8 +132,8 @@ theorem BlockTriangular.mul [Fintype m] {M N : Matrix m m R} (hM : BlockTriangul
   apply Finset.sum_eq_zero
   intro k _
   by_cases hki : b k < b i
-  · simp_rw [hM hki, MulZeroClass.zero_mul]
-  · simp_rw [hN (lt_of_lt_of_le hij (le_of_not_lt hki)), MulZeroClass.mul_zero]
+  · simp_rw [hM hki, zero_mul]
+  · simp_rw [hN (lt_of_lt_of_le hij (le_of_not_lt hki)), mul_zero]
 #align matrix.block_triangular.mul Matrix.BlockTriangular.mul
 
 end LinearOrder
