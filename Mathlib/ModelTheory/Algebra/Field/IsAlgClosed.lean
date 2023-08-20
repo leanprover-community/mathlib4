@@ -115,7 +115,7 @@ noncomputable def genericMonicPolyHasRoot (n : ℕ) : Language.ring.Sentence :=
 theorem realize_genericMonicPolyHasRoot [Field K] [CompatibleRing K] (n : ℕ) :
     K ⊨ genericMonicPolyHasRoot n ↔
       ∀ p : { p : K[X] // p.Monic ∧ p.natDegree = n }, ∃ x, p.1.eval x = 0 := by
-  letI := Classical.decEq K
+  let _ := Classical.decEq K
   rw [Equiv.forall_congr_left' (monicPolyEquivFin n)]
   simp [Sentence.Realize, genericMonicPolyHasRoot, lift_genericMonicPoly]
 
@@ -150,7 +150,7 @@ this as a local instance on a particular Type, you should usually also introduce
 noncomputable def fieldOfModelACF (p : ℕ) (K : Type*)
     [Language.ring.Structure K]
     [h : (Theory.ACF p).Model K] : Field K := by
-  haveI := modelField_of_modelACF p K
+  have := modelField_of_modelACF p K
   exact fieldOfModelField K
 
 theorem isAlgClosed_of_model_ACF (p : ℕ) (K : Type*)
@@ -174,16 +174,16 @@ theorem ACF_isSatisfiable {p : ℕ} (hp : p.Prime ∨ p = 0) :
     (Theory.ACF p).IsSatisfiable := by
   cases hp with
   | inl hp =>
-    haveI : Fact p.Prime := ⟨hp⟩
-    letI := compatibleRingOfRing (AlgebraicClosure (ZMod p))
-    haveI : CharP (AlgebraicClosure (ZMod p)) p :=
+    have : Fact p.Prime := ⟨hp⟩
+    let _ := compatibleRingOfRing (AlgebraicClosure (ZMod p))
+    have : CharP (AlgebraicClosure (ZMod p)) p :=
       charP_of_injective_algebraMap
         (RingHom.injective (algebraMap (ZMod p) (AlgebraicClosure (ZMod p)))) p
     exact ⟨⟨AlgebraicClosure (ZMod p)⟩⟩
   | inr hp =>
     subst hp
-    letI := compatibleRingOfRing (AlgebraicClosure ℚ)
-    haveI : CharP (AlgebraicClosure ℚ) 0 :=
+    let _ := compatibleRingOfRing (AlgebraicClosure ℚ)
+    have : CharP (AlgebraicClosure ℚ) 0 :=
       charP_of_injective_algebraMap
         (RingHom.injective (algebraMap ℚ (AlgebraicClosure ℚ))) 0
     exact ⟨⟨AlgebraicClosure ℚ⟩⟩
@@ -198,21 +198,21 @@ theorem ACF_isComplete {p : ℕ} (hp : p.Prime ∨ p = 0) :
     exact le_trans (le_of_lt (lt_aleph0_of_finite _)) (Order.le_succ _)
   · exact ACF_isSatisfiable hp
   · rintro ⟨M⟩
-    letI := fieldOfModelACF p M
-    haveI := modelField_of_modelACF p M
-    letI := compatibleRingOfModelField M
-    haveI := isAlgClosed_of_model_ACF p M
+    let _ := fieldOfModelACF p M
+    have := modelField_of_modelACF p M
+    let _ := compatibleRingOfModelField M
+    have := isAlgClosed_of_model_ACF p M
     infer_instance
   · rintro ⟨M⟩ ⟨N⟩ hM hN
-    letI := fieldOfModelACF p M
-    haveI := modelField_of_modelACF p M
-    letI := compatibleRingOfModelField M
-    haveI := isAlgClosed_of_model_ACF p M
-    letI := fieldOfModelACF p N
-    haveI := modelField_of_modelACF p N
-    letI := compatibleRingOfModelField N
-    haveI := isAlgClosed_of_model_ACF p N
-    haveI := @charP_of_model_fieldOfChar
+    let _ := fieldOfModelACF p M
+    have := modelField_of_modelACF p M
+    let _ := compatibleRingOfModelField M
+    have := isAlgClosed_of_model_ACF p M
+    let _ := fieldOfModelACF p N
+    have := modelField_of_modelACF p N
+    let _ := compatibleRingOfModelField N
+    have := isAlgClosed_of_model_ACF p N
+    have := @charP_of_model_fieldOfChar
     constructor
     refine languageEquivEquivRingEquiv ?_
     apply Classical.choice
@@ -240,15 +240,16 @@ theorem finite_ACF_prime_not_realize_of_ACF0_realize
     · refine ⟨⟨{⟨p, hp⟩}, ?_⟩⟩
       rintro ⟨q, _⟩ hq ⟨K⟩ _ _
       have hqp : q ≠ p := by simpa [← Nat.Primes.coe_nat_inj] using hq
-      letI := fieldOfModelACF q K
-      haveI := modelField_of_modelACF q K
-      letI := compatibleRingOfModelField K
+      let _ := fieldOfModelACF q K
+      have := modelField_of_modelACF q K
+      let _ := compatibleRingOfModelField K
+      let _ := isAlgClosed_of_model_ACF q K
       simp only [eqZero, Term.equal, Term.relabel, BoundedFormula.realize_not,
         BoundedFormula.realize_bdEqual, Term.realize_relabel, Sum.elim_comp_inl,
         realize_termOfFreeCommRing, map_natCast, Term.realize_func, CompatibleRing.funMap_zero,
         ne_eq, ← CharP.charP_iff_prime_eq_zero hp]
       intro _
-      haveI := @charP_of_model_fieldOfChar
+      have := @charP_of_model_fieldOfChar
       exact hqp <| CharP.eq K inferInstance inferInstance
   let s : Finset Nat.Primes := T0.attach.biUnion (fun φ => f φ.1 (hT0 φ.2))
   have hs : ∀ (p : Nat.Primes) ψ, ψ ∈ T0 → p ∉ s → Theory.ACF p ⊨ᵇ ψ := by

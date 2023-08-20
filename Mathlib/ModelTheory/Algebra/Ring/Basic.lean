@@ -33,7 +33,7 @@ are two different ways to say that `R` is a `Ring`. We can say `Ring R` or
 The recommended way to use this library is to use the hypotheses `CompatibleRing R` and `Ring R`
 on any theorem that requires both a `Ring` instance and a `Language.ring.Structure` instance
 in order to state the theorem. To apply such a theorem to a ring `R` with a `Ring` instance,
-use the tactic `letI := compatibleRingOfRing R`. To apply the theorem to `K`
+use the tactic `let _ := compatibleRingOfRing R`. To apply the theorem to `K`
 a `Language.ring.Structure K` instance and for example an instance of `Theory.field.Model K`,
 you must add local instances with definitions like `ModelTheory.Field.fieldOfModelField K` and
 `FirstOrder.Ring.compatibleRingOfModelField K`.
@@ -207,7 +207,7 @@ by the `Language.ring.Structure` are the same as those given by the `Add` or `Mu
 instances.
 
 This definition can be used when applying a theorem about the model theory of rings
-to a literal ring `R`, by writing `letI := compatibleRingOfRing R`. After this, if,
+to a literal ring `R`, by writing `let _ := compatibleRingOfRing R`. After this, if,
 for example, `R` is a field, then Lean will be able to find the instance for
 `Theory.field.Model R`, and it will be possible to apply theorems about the model theory
 of fields.
