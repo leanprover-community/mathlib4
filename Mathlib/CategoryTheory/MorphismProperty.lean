@@ -807,16 +807,16 @@ theorem bijective_respectsIso : (MorphismProperty.bijective C).RespectsIso :=
 end Bijective
 
 class ContainsIdentities (W : MorphismProperty C) : Prop :=
-  mem' : ∀ (X : C), W (𝟙 X)
+  id_mem' : ∀ (X : C), W (𝟙 X)
 
-lemma ContainsIdentities.mem (W : MorphismProperty C) [W.ContainsIdentities] (X : C) :
-  W (𝟙 X) := ContainsIdentities.mem' X
+lemma id_mem (W : MorphismProperty C) [W.ContainsIdentities] (X : C) :
+  W (𝟙 X) := ContainsIdentities.id_mem' X
 
 instance ContainsIdentities.op (W : MorphismProperty C) [W.ContainsIdentities] :
-    W.op.ContainsIdentities := ⟨fun X => ContainsIdentities.mem W X.unop⟩
+    W.op.ContainsIdentities := ⟨fun X => W.id_mem X.unop⟩
 
 lemma ContainsIdentities.unop (W : MorphismProperty Cᵒᵖ) [W.ContainsIdentities] :
-    W.unop.ContainsIdentities := ⟨fun X => ContainsIdentities.mem W (Opposite.op X)⟩
+    W.unop.ContainsIdentities := ⟨fun X => W.id_mem (Opposite.op X)⟩
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
@@ -829,7 +829,7 @@ def prod (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) : Morphis
 
 instance Prod.containsIdentities (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
     [W₁.ContainsIdentities] [W₂.ContainsIdentities] : (prod W₁ W₂).ContainsIdentities :=
-  ⟨fun _ => ⟨ContainsIdentities.mem _ _, ContainsIdentities.mem _ _⟩⟩
+  ⟨fun _ => ⟨W₁.id_mem _, W₂.id_mem _⟩⟩
 
 lemma IsInvertedBy.prod {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
   {E₁ : Type u₃} [Category.{v₃} E₁] {E₂ : Type u₄} [Category.{v₄} E₂] {F₁ : C₁ ⥤ E₁} {F₂ : C₂ ⥤ E₂}
@@ -856,14 +856,14 @@ lemma IsInvertedBy.pi (F : ∀ j, C j ⥤ D j) (hF : ∀ j, (W j).IsInvertedBy (
     exact hF j _ (hf j)
 
 instance ContainsIdentities.pi [∀ j, (W j).ContainsIdentities] : (pi W).ContainsIdentities :=
-  ⟨fun _ _ => ContainsIdentities.mem _ _⟩
+  ⟨fun _ _ => MorphismProperty.id_mem _ _⟩
 
 end
 
 variable (W : MorphismProperty C)
 
-class IsMultiplicative : Prop :=
-  id : W.ContainsIdentities := by infer_instance
+class IsMultiplicative extends W.ContainsIdentities : Prop :=
+  --id : W.ContainsIdentities := by infer_instance
   comp' : W.StableUnderComposition
 
 namespace IsMultiplicative
@@ -873,13 +873,13 @@ lemma comp (W : MorphismProperty C) {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hf 
     W (f ≫ g) :=
   comp' f g hf hg
 
-attribute [instance] id
+--attribute [instance] id
 
 instance op [IsMultiplicative W] : IsMultiplicative W.op where
   comp' := fun _ _ _ f g hf hg => comp W g.unop f.unop hg hf
 
 lemma unop (W : MorphismProperty Cᵒᵖ) [IsMultiplicative W] : IsMultiplicative W.unop where
-  id := ContainsIdentities.unop W
+  id_mem' _ := W.id_mem _
   comp' := fun _ _ _ f g hf hg => comp W g.op f.op hg hf
 
 end IsMultiplicative

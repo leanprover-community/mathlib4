@@ -20,7 +20,7 @@ variable {E : Type u₅} [Category.{v₅} E]
 noncomputable def prod_lift₁  :
     W₁.Localization ⥤ C₂ ⥤ E := Construction.lift (curry.obj F) (fun _ _ f₁ hf₁ => by
   haveI : ∀ (X₂ : C₂), IsIso (((curry.obj F).map f₁).app X₂) :=
-    fun X₂ => hF _ ⟨hf₁, MorphismProperty.ContainsIdentities.mem _ _⟩
+    fun X₂ => hF _ ⟨hf₁, MorphismProperty.id_mem _ _⟩
   apply NatIso.isIso_of_isIso_app)
 
 lemma prod_fac₁ :
@@ -38,7 +38,7 @@ noncomputable def prod_lift :
     obtain ⟨X₁, rfl⟩ := (Construction.objEquiv W₁).surjective X₁
     exact (isIso_iff_of_arrow_mk_iso (((Functor.mapArrowFunctor _ _).mapIso
       (eqToIso (Functor.congr_obj (prod_fac₁ F hF) X₁))).app (Arrow.mk f₂))).2
-        (hF _ ⟨MorphismProperty.ContainsIdentities.mem _ _, hf₂⟩)
+        (hF _ ⟨MorphismProperty.id_mem _ _, hf₂⟩)
   apply NatIso.isIso_of_isIso_app
 
 lemma prod_fac₂ : W₂.Q ⋙ (curry.obj (prod_lift F hF)).flip = (prod_lift₁ F hF).flip := by

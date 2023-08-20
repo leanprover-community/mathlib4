@@ -16,41 +16,41 @@ namespace MorphismProperty
 
 variable {C D : Type _} [Category C] [Category D] (L : C ⥤ D) {W : MorphismProperty C}
 
-structure HasLeftCalculusOfFractions.ToSq {X' X Y : C} (s : X ⟶ X') (hs : W s) (u : X ⟶ Y) :=
-(obj : C)
-(g : X' ⟶ obj)
-(s' : Y ⟶ obj)
-(hs' : W s')
-(fac : u ≫ s' = s ≫ g)
+structure HasLeftCalculusOfFractions.ToSq {X' X Y : C} (s : X ⟶ X') (hs : W s) (u : X ⟶ Y) where
+  obj : C
+  g : X' ⟶ obj
+  s' : Y ⟶ obj
+  hs' : W s'
+  fac : u ≫ s' = s ≫ g
 
-structure HasRightCalculusOfFractions.ToSq {X Y Y' : C} (s : Y' ⟶ Y) (hs : W s) (u : X ⟶ Y) :=
-(obj : C)
-(g : obj ⟶ Y')
-(s' : obj ⟶ X)
-(hs' : W s')
-(fac : s' ≫ u = g ≫ s)
+structure HasRightCalculusOfFractions.ToSq {X Y Y' : C} (s : Y' ⟶ Y) (hs : W s) (u : X ⟶ Y) where
+  obj : C
+  g : obj ⟶ Y'
+  s' : obj ⟶ X
+  hs' : W s'
+  fac : s' ≫ u = g ≫ s
 
 attribute [reassoc] HasLeftCalculusOfFractions.ToSq.fac
   HasRightCalculusOfFractions.ToSq.fac
 
 variable (W)
 
-class HasLeftCalculusOfFractions : Prop :=
-  multiplicative : W.IsMultiplicative := by infer_instance
+class HasLeftCalculusOfFractions extends W.IsMultiplicative : Prop :=
+  --multiplicative : W.IsMultiplicative := by infer_instance
   nonempty_toSq : ∀ ⦃X' X Y : C⦄ (s : X ⟶ X') (hs : W s) (u : X ⟶ Y),
     Nonempty (HasLeftCalculusOfFractions.ToSq s hs u)
   ext : ∀ ⦃X' X Y : C⦄ (f₁ f₂ : X ⟶ Y) (s : X' ⟶ X) (_ : W s)
     (_ : s ≫ f₁ = s ≫ f₂), ∃ (Y' : C) (t : Y ⟶ Y') (_ : W t), f₁ ≫ t = f₂ ≫ t
 
-class HasRightCalculusOfFractions : Prop :=
-  multiplicative : W.IsMultiplicative := by infer_instance
+class HasRightCalculusOfFractions extends W.IsMultiplicative : Prop :=
+  --multiplicative : W.IsMultiplicative := by infer_instance
   nonempty_toSq : ∀ ⦃X Y Y' : C⦄ (s : Y' ⟶ Y) (hs : W s) (u : X ⟶ Y),
     Nonempty (HasRightCalculusOfFractions.ToSq s hs u)
   ext : ∀ ⦃X Y Y' : C⦄ (f₁ f₂ : X ⟶ Y) (s : Y ⟶ Y') (_ : W s)
     (_ : f₁ ≫ s = f₂ ≫ s), ∃ (X' : C) (t : X' ⟶ X) (_ : W t), t ≫ f₁ = t ≫ f₂
 
-attribute [instance] HasLeftCalculusOfFractions.multiplicative
-  HasRightCalculusOfFractions.multiplicative
+--attribute [instance] HasLeftCalculusOfFractions.multiplicative
+--  HasRightCalculusOfFractions.multiplicative
 
 variable {W}
 
@@ -75,15 +75,16 @@ lemma HasLeftCalculusOfFractions.op [HasLeftCalculusOfFractions W] :
     exact ⟨_, t.op, ht, Quiver.Hom.unop_inj eq⟩
 
 lemma HasLeftCalculusOfFractions.unop (W : MorphismProperty Cᵒᵖ) [HasLeftCalculusOfFractions W] :
-    W.unop.HasRightCalculusOfFractions where
-  multiplicative := IsMultiplicative.unop W
-  nonempty_toSq := fun _ _ _ s hs u => ⟨by
-    let h := HasLeftCalculusOfFractions.toSq s.op hs u.op
-    exact ⟨_, h.g.unop, h.s'.unop, h.hs', Quiver.Hom.op_inj h.fac⟩⟩
-  ext := fun _ _ _ f₁ f₂ s hs fac => by
-    obtain ⟨X', t, ht, eq⟩ := HasLeftCalculusOfFractions.ext f₁.op f₂.op s.op hs
-      (Quiver.Hom.unop_inj fac)
-    exact ⟨_, t.unop, ht, Quiver.Hom.op_inj eq⟩
+    W.unop.HasRightCalculusOfFractions := by
+  have : W.unop.IsMultiplicative := IsMultiplicative.unop W
+  exact {
+    nonempty_toSq := fun _ _ _ s hs u => ⟨by
+      let h := HasLeftCalculusOfFractions.toSq s.op hs u.op
+      exact ⟨_, h.g.unop, h.s'.unop, h.hs', Quiver.Hom.op_inj h.fac⟩⟩
+    ext := fun _ _ _ f₁ f₂ s hs fac => by
+      obtain ⟨X', t, ht, eq⟩ := HasLeftCalculusOfFractions.ext f₁.op f₂.op s.op hs
+        (Quiver.Hom.unop_inj fac)
+      exact ⟨_, t.unop, ht, Quiver.Hom.op_inj eq⟩ }
 
 lemma HasRightCalculusOfFractions.op [HasRightCalculusOfFractions W] :
     W.op.HasLeftCalculusOfFractions where
@@ -96,15 +97,16 @@ lemma HasRightCalculusOfFractions.op [HasRightCalculusOfFractions W] :
     exact ⟨_, t.op, ht, Quiver.Hom.unop_inj eq⟩
 
 lemma HasRightCalculusOfFractions.unop (W : MorphismProperty Cᵒᵖ) [HasRightCalculusOfFractions W] :
-    W.unop.HasLeftCalculusOfFractions where
-  multiplicative := IsMultiplicative.unop W
-  nonempty_toSq := fun _ _ _ s hs u => ⟨by
-    let h := HasRightCalculusOfFractions.toSq s.op hs u.op
-    exact ⟨_, h.g.unop, h.s'.unop, h.hs', Quiver.Hom.op_inj h.fac⟩⟩
-  ext := fun _ _ _ f₁ f₂ s hs fac => by
-    obtain ⟨X', t, ht, eq⟩ := HasRightCalculusOfFractions.ext f₁.op f₂.op s.op hs
-      (Quiver.Hom.unop_inj fac)
-    exact ⟨_, t.unop, ht, Quiver.Hom.op_inj eq⟩
+    W.unop.HasLeftCalculusOfFractions := by
+  have : W.unop.IsMultiplicative := IsMultiplicative.unop W
+  exact {
+    nonempty_toSq := fun _ _ _ s hs u => ⟨by
+      let h := HasRightCalculusOfFractions.toSq s.op hs u.op
+      exact ⟨_, h.g.unop, h.s'.unop, h.hs', Quiver.Hom.op_inj h.fac⟩⟩
+    ext := fun _ _ _ f₁ f₂ s hs fac => by
+      obtain ⟨X', t, ht, eq⟩ := HasRightCalculusOfFractions.ext f₁.op f₂.op s.op hs
+        (Quiver.Hom.unop_inj fac)
+      exact ⟨_, t.unop, ht, Quiver.Hom.op_inj eq⟩ }
 
 attribute [instance] HasLeftCalculusOfFractions.op HasRightCalculusOfFractions.op
 
@@ -118,7 +120,7 @@ structure Roof (X Y : C) :=
 
 @[simps]
 def Roof.ofHom [ContainsIdentities W] {X Y : C} (f : X ⟶ Y) : Roof W X Y :=
-  ⟨Y, f, 𝟙 Y, ContainsIdentities.mem W Y⟩
+  ⟨Y, f, 𝟙 Y, W.id_mem Y⟩
 
 variable {W}
 
@@ -207,8 +209,8 @@ lemma Roof.comp_eq {X Y Z : C} (z : Roof W X Y) (z' : Roof W Y Z)
 
 lemma Roof.ofHom_comp {X Y Z : C} (f : X ⟶ Y) (g : Roof W Y Z) :
     Roof.comp (Roof.ofHom W f) g = Quot.mk _ ⟨g.Z, f ≫ g.f, g.s, g.hs⟩ := by
-  let sq : ToSq (𝟙 Y) (ContainsIdentities.mem W Y) g.f :=
-    ⟨_, g.f, 𝟙 _, ContainsIdentities.mem _ _, by simp⟩
+  let sq : ToSq (𝟙 Y) (W.id_mem Y) g.f :=
+    ⟨_, g.f, 𝟙 _, W.id_mem _, by simp⟩
   rw [Roof.comp_eq (Roof.ofHom W f) g sq]
   dsimp [comp₀]
   congr
@@ -328,8 +330,8 @@ noncomputable instance : Category (Localization W) where
   id_comp := by
     rintro ⟨X⟩ ⟨Y⟩ ⟨f⟩
     dsimp [Hom.comp]
-    let sq : ToSq (𝟙 X) (ContainsIdentities.mem W _) f.f :=
-      ⟨f.Z, f.f, 𝟙 _, ContainsIdentities.mem W _, by simp⟩
+    let sq : ToSq (𝟙 X) (W.id_mem _) f.f :=
+      ⟨f.Z, f.f, 𝟙 _, W.id_mem _, by simp⟩
     rw [Roof.comp_eq (Roof.ofHom _ (𝟙 X)) f sq]
     dsimp [Roof.comp₀]
     congr <;> simp
@@ -388,7 +390,7 @@ noncomputable def Qinv {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj Y ⟶ (Q W
 lemma Qinv_comp {X Y : C} (s : X ⟶ Y) (hs : W s) : Qinv s hs ≫ (Q W).map s = 𝟙 _ := by
   dsimp only [Qinv, comp_eq, id_eq]
   erw [Hom.comp_eq (Roof.inv s hs) (Roof.ofHom W s)
-    ⟨Y, 𝟙 Y, 𝟙 Y, ContainsIdentities.mem _ _, rfl⟩]
+    ⟨Y, 𝟙 Y, 𝟙 Y, W.id_mem _, rfl⟩]
   simp [Roof.comp₀, Roof.ofHom]
   rfl
 
@@ -396,7 +398,7 @@ lemma Qinv_comp {X Y : C} (s : X ⟶ Y) (hs : W s) : Qinv s hs ≫ (Q W).map s =
 lemma comp_Qinv {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).map s ≫ Qinv s hs = 𝟙 _ := by
   dsimp only [Qinv, comp_eq, id_eq]
   erw [Hom.comp_eq (Roof.ofHom W s) (Roof.inv s hs)
-    ⟨Y, 𝟙 Y, 𝟙 Y, ContainsIdentities.mem _ _, rfl⟩]
+    ⟨Y, 𝟙 Y, 𝟙 Y, W.id_mem _, rfl⟩]
   dsimp [Roof.comp₀]
   apply Quot.sound
   refine' ⟨Y, 𝟙 Y, s, by simp, _ , by simpa using hs⟩
@@ -419,7 +421,7 @@ lemma facOfRoof {X Y : C} (z : Roof W X Y) :
     homOfRoof z = (Q W).map z.f ≫ Qinv z.s z.hs := by
   dsimp only [Qinv, comp_eq, homOfRoof, Q]
   erw [Hom.comp_eq (Roof.ofHom W z.f) (Roof.inv z.s z.hs)
-    ⟨_, 𝟙 _, 𝟙 _, ContainsIdentities.mem _ _, rfl⟩]
+    ⟨_, 𝟙 _, 𝟙 _, W.id_mem _, rfl⟩]
   dsimp [Roof.comp₀]
   apply Quot.sound
   exact ⟨z.Z, 𝟙 _, 𝟙 _, by simp, by simp, by simpa using z.hs⟩
