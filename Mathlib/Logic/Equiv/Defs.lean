@@ -51,6 +51,8 @@ Many more such isomorphisms and operations are defined in `Logic.Equiv.Basic`.
 equivalence, congruence, bijective map
 -/
 
+set_option autoImplicit true
+
 
 open Function
 

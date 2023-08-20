@@ -17,6 +17,8 @@ import Mathlib.Control.Traversable.Basic
 This file introduces the infix notation `::ᵥ` for `Vector.cons`.
 -/
 
+set_option autoImplicit true
+
 
 universe u
 
@@ -634,7 +636,7 @@ theorem get_set_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
 
 theorem get_set_eq_if {v : Vector α n} {i j : Fin n} (a : α) :
     (v.set i a).get j = if i = j then a else v.get j := by
-  split_ifs <;> try simp [*] <;> try rw [get_set_of_ne]; assumption
+  split_ifs <;> (try simp [*]); rwa [get_set_of_ne]
 #align vector.nth_update_nth_eq_if Vector.get_set_eq_if
 
 @[to_additive]

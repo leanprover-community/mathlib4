@@ -36,6 +36,8 @@ variable {α : Type u} {β : Type v}
 
 namespace Function
 
+open Function (Commute)
+
 variable (f : α → α)
 
 @[simp]

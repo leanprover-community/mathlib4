@@ -17,6 +17,8 @@ such as `sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 
 -/
 
+set_option autoImplicit true
+
 -- In this file we would like to be able to use multi-character auto-implicits.
 set_option relaxedAutoImplicit true
 
