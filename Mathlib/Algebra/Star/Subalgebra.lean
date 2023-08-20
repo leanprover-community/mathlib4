@@ -794,7 +794,7 @@ protected def codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : 
 
 @[simp]
 theorem coe_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : ∀ x, f x ∈ S) (x : A) :
-    f.codRestrict S hf x = f x :=
+    ↑(f.codRestrict S hf x) = f x :=
   rfl
 
 @[simp]
