@@ -13,7 +13,7 @@ import Mathlib.RingTheory.Localization.Module
 # ℤ-lattices
 
 Let `E` be a finite dimensional vector space over a `NormedLinearOrderedField` `K` with a solid
-norm that is also a `FloorRing`, e.g. `ℚ` or `ℝ`. A (full) `ℤ`-lattice `L` of `E` is a discrete
+norm that is also a `FloorRing`, e.g. `ℝ`. A (full) `ℤ`-lattice `L` of `E` is a discrete
 subgroup of `E` such that `L` spans `E` over `K`.
 
 A `ℤ`-lattice `L` can be defined in two ways:
@@ -29,9 +29,9 @@ point of view are in the `Zlattice` namespace.
 
 * `Zspan.isAddFundamentalDomain`: for a ℤ-lattice `Submodule.span ℤ (Set.range b)`, proves that
 the set defined by `Zspan.fundamentalDomain` is a fundamental domain.
-* `Zlattice.module_free`: an addsubgroup of `E` that is discrete and spans `E` over `K` is a free
+* `Zlattice.module_free`: an AddSubgroup of `E` that is discrete and spans `E` over `K` is a free
 `ℤ`-module
-* `Zlattice.rank`:  an addsubgroup of `E` that is discrete and spans `E` over `K` is a free
+* `Zlattice.rank`:  an AddSubgroup of `E` that is discrete and spans `E` over `K` is a free
 `ℤ`-module of `ℤ`-rank equal to the `K`-rank of `E`
 -/
 
@@ -261,6 +261,12 @@ def QuotientEquiv [Fintype ι] :
 theorem quotientEquiv_apply_mk [Fintype ι] (x : E) :
     QuotientEquiv b (Submodule.Quotient.mk x) = fract_restrict b x := rfl
 
+@[simp]
+theorem quotientEquiv.symm_apply [Fintype ι] (x : fundamentalDomain b) :
+    (QuotientEquiv b).symm x = Submodule.Quotient.mk ↑x := by
+  rw [Equiv.symm_apply_eq, quotientEquiv_apply_mk b ↑x, Subtype.ext_iff, fract_restrict_apply]
+  exact (fract_eq_self.mpr x.prop).symm
+
 end NormedLatticeField
 
 section Real
@@ -302,8 +308,8 @@ section Zlattice
 
 open Submodule
 
-variable (K : Type _) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
+variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
 variable [ProperSpace E] {L : AddSubgroup E} [DiscreteTopology L]
 variable (hs : span K (L : Set E) = ⊤)
 
@@ -312,10 +318,10 @@ theorem Zlattice.FG : AddSubgroup.FG L := by
   obtain ⟨s, ⟨h_incl, ⟨h_span, h_lind⟩⟩⟩ := exists_linearIndependent K (L : Set E)
   -- Let `s` be a maximal `K`-linear independent family of elements of `L`. We show that
   -- `L` is finitely generated (as a ℤ-module) because it fits in the exact sequence
-  -- `0 → span ℤ s → L → L / span ℤ s → 0` with `span ℤ s` and `L / span ℤ s` finitely generated.
+  -- `0 → span ℤ s → L → L ⧸ span ℤ s → 0` with `span ℤ s` and `L ⧸ span ℤ s` finitely generated.
   refine fg_of_fg_map_of_fg_inf_ker (span ℤ s).mkQ ?_ ?_
   · -- Let `b` be the `K`-basis of `E` formed by the vectors in `s`. The elements of
-    -- `L / span ℤ s = L /span ℤ b` are in bijection with elements of `L ∩ fundamentalDomain b`
+    -- `L ⧸ span ℤ s = L ⧸ span ℤ b` are in bijection with elements of `L ∩ fundamentalDomain b`
     -- so there are finitely many since `fundamentalDomain b` is bounded.
     refine fg_def.mpr ⟨map (span ℤ s).mkQ (AddSubgroup.toIntSubmodule L), ?_, span_eq _⟩
     let b := Basis.mk h_lind (by
