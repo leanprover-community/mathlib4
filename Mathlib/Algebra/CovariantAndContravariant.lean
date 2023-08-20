@@ -335,12 +335,12 @@ instance covariant_lt_of_contravariant_le [LinearOrder N]
     [ContravariantClass N N mu (· ≤ ·)] : CovariantClass N N mu (· < ·) where
   elim := (covariant_lt_iff_contravariant_le N N mu).mpr ContravariantClass.elim
 
-instance covariant_flip_le_of_covariant_le [IsSymmOp N N mu]
-    [CovariantClass N N mu r] : CovariantClass N N (flip mu) r where
+instance covariant_swap_le_of_covariant_le [IsSymmOp N N mu]
+    [CovariantClass N N mu r] : CovariantClass N N (swap mu) r where
   elim := (covariant_flip_iff N r mu).mpr CovariantClass.elim
 
-instance contravariant_flip_le_of_contravariant_le [IsSymmOp N N mu]
-    [ContravariantClass N N mu r] : ContravariantClass N N (flip mu) r where
+instance contravariant_swap_le_of_contravariant_le [IsSymmOp N N mu]
+    [ContravariantClass N N mu r] : ContravariantClass N N (swap mu) r where
   elim := (contravariant_flip_iff N r mu).mpr ContravariantClass.elim
 
 instance covariant_lt_of_covariant_le_of_contravariant_eq [ContravariantClass M N μ (· = ·)]
