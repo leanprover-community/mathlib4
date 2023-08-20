@@ -20,6 +20,9 @@ which allow for plugging in new positivity functionality around a positivity-bas
 The actual behavior is in `@[positivity]`-tagged definitions in `Tactic.Positivity.Basic`
 and elsewhere.
 -/
+
+set_option autoImplicit true
+
 open Lean hiding Rat
 open Lean.Meta Qq Lean.Elab Term
 
@@ -124,7 +127,7 @@ lemma nz_of_isNegNat [StrictOrderedRing A]
   simpa using w
 
 lemma pos_of_isRat [LinearOrderedRing A] :
-    (NormNum.IsRat e n d) → (decide (0 < n)) → (0 < (e : A))
+    (NormNum.IsRat e n d) → (decide (0 < n)) → ((0 : A) < (e : A))
   | ⟨inv, eq⟩, h => by
     have pos_invOf_d : (0 < ⅟ (d : A)) := pos_invOf_of_invertible_cast d
     have pos_n : (0 < (n : A)) := Int.cast_pos (n := n) |>.2 (of_decide_eq_true h)

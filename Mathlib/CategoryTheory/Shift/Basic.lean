@@ -44,7 +44,7 @@ noncomputable section
 
 universe v u
 
-variable (C : Type u) (A : Type _) [Category.{v} C]
+variable (C : Type u) (A : Type*) [Category.{v} C]
 
 attribute [local instance] endofunctorMonoidalCategory
 
@@ -56,7 +56,7 @@ variable (A C) [AddMonoid A]
 
 /-- A category has a shift indexed by an additive monoid `A`
 if there is a monoidal functor from `A` to `C ⥤ C`. -/
-class HasShift (C : Type u) (A : Type _) [Category.{v} C] [AddMonoid A] where
+class HasShift (C : Type u) (A : Type*) [Category.{v} C] [AddMonoid A] where
   /-- a shift is a monoidal functor from `A` to `C ⥤ C` -/
   shift : MonoidalFunctor (Discrete A) (C ⥤ C)
 #align category_theory.has_shift CategoryTheory.HasShift
@@ -73,7 +73,7 @@ structure ShiftMkCore where
   /-- compatibility with the associativity -/
   assoc_hom_app : ∀ (m₁ m₂ m₃ : A) (X : C),
     (add (m₁ + m₂) m₃).hom.app X ≫ (F m₃).map ((add m₁ m₂).hom.app X) =
-      eqToHom (by dsimp; rw [add_assoc]) ≫ (add m₁ (m₂ + m₃)).hom.app X ≫
+      eqToHom (by rw [add_assoc]) ≫ (add m₁ (m₂ + m₃)).hom.app X ≫
         (add m₂ m₃).hom.app ((F m₁).obj X) := by aesop_cat
   /-- compatibility with the left addition with 0 -/
   zero_add_hom_app : ∀ (n : A) (X : C), (add 0 n).hom.app X =
@@ -93,7 +93,7 @@ attribute [reassoc] assoc_hom_app
 lemma assoc_inv_app (h : ShiftMkCore C A) (m₁ m₂ m₃ : A) (X : C) :
   (h.F m₃).map ((h.add m₁ m₂).inv.app X) ≫ (h.add (m₁ + m₂) m₃).inv.app X =
     (h.add m₂ m₃).inv.app ((h.F m₁).obj X) ≫ (h.add m₁ (m₂ + m₃)).inv.app X ≫
-      eqToHom (by dsimp; rw [add_assoc]) := by
+      eqToHom (by rw [add_assoc]) := by
   rw [← cancel_mono ((h.add (m₁ + m₂) m₃).hom.app X ≫ (h.F m₃).map ((h.add m₁ m₂).hom.app X)),
     Category.assoc, Category.assoc, Category.assoc, Iso.inv_hom_id_app_assoc, ← Functor.map_comp,
     Iso.inv_hom_id_app, Functor.map_id, h.assoc_hom_app, eqToHom_trans_assoc, eqToHom_refl,
@@ -657,7 +657,7 @@ lemma shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app (m₁ m₂ m�
 
 end AddCommMonoid
 
-variable {D : Type _} [Category D] [AddMonoid A] [HasShift D A]
+variable {D : Type*} [Category D] [AddMonoid A] [HasShift D A]
 
 variable (F : C ⥤ D) [Full F] [Faithful F]
 
