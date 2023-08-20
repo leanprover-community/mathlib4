@@ -100,12 +100,12 @@ variable [MulZeroClass α]
 
 @[simp]
 theorem hadamard_zero : A ⊙ (0 : Matrix m n α) = 0 :=
-  ext fun _ _ => MulZeroClass.mul_zero _
+  ext fun _ _ => mul_zero _
 #align matrix.hadamard_zero Matrix.hadamard_zero
 
 @[simp]
 theorem zero_hadamard : (0 : Matrix m n α) ⊙ A = 0 :=
-  ext fun _ _ => MulZeroClass.zero_mul _
+  ext fun _ _ => zero_mul _
 #align matrix.zero_hadamard Matrix.zero_hadamard
 
 end Zero
@@ -134,7 +134,7 @@ variable [DecidableEq n] [MulZeroClass α]
 
 theorem diagonal_hadamard_diagonal (v : n → α) (w : n → α) :
     diagonal v ⊙ diagonal w = diagonal (v * w) :=
-  ext fun _ _ => (apply_ite₂ _ _ _ _ _ _).trans (congr_arg _ <| MulZeroClass.zero_mul 0)
+  ext fun _ _ => (apply_ite₂ _ _ _ _ _ _).trans (congr_arg _ <| zero_mul 0)
 #align matrix.diagonal_hadamard_diagonal Matrix.diagonal_hadamard_diagonal
 
 end Diagonal

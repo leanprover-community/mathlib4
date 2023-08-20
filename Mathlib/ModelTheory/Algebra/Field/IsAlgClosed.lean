@@ -208,11 +208,12 @@ theorem ACF_isComplete {p : ℕ} (hp : p.Prime ∨ p = 0) :
     have := modelField_of_modelACF p M
     let _ := compatibleRingOfModelField M
     have := isAlgClosed_of_model_ACF p M
+    have := charP_of_model_fieldOfChar p M
     let _ := fieldOfModelACF p N
     have := modelField_of_modelACF p N
     let _ := compatibleRingOfModelField N
     have := isAlgClosed_of_model_ACF p N
-    have := @charP_of_model_fieldOfChar
+    have := charP_of_model_fieldOfChar p N
     constructor
     refine languageEquivEquivRingEquiv ?_
     apply Classical.choice
@@ -243,13 +244,12 @@ theorem finite_ACF_prime_not_realize_of_ACF0_realize
       let _ := fieldOfModelACF q K
       have := modelField_of_modelACF q K
       let _ := compatibleRingOfModelField K
-      let _ := isAlgClosed_of_model_ACF q K
+      have := charP_of_model_fieldOfChar q K
       simp only [eqZero, Term.equal, Term.relabel, BoundedFormula.realize_not,
         BoundedFormula.realize_bdEqual, Term.realize_relabel, Sum.elim_comp_inl,
         realize_termOfFreeCommRing, map_natCast, Term.realize_func, CompatibleRing.funMap_zero,
         ne_eq, ← CharP.charP_iff_prime_eq_zero hp]
       intro _
-      have := @charP_of_model_fieldOfChar
       exact hqp <| CharP.eq K inferInstance inferInstance
   let s : Finset Nat.Primes := T0.attach.biUnion (fun φ => f φ.1 (hT0 φ.2))
   have hs : ∀ (p : Nat.Primes) ψ, ψ ∈ T0 → p ∉ s → Theory.ACF p ⊨ᵇ ψ := by
