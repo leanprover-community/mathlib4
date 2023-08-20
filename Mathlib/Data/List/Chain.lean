@@ -460,18 +460,18 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
   · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
   specialize acc a _
   · rw [List.head?_cons, Option.mem_some_iff]
-  /- For an `r`-decreasing chain of the form `a :: l`, apply induction on `a` -/
+  /- For an r-decreasing chain of the form a :: l, apply induction on a -/
   induction acc generalizing l with
   | intro a _ ih =>
-    /- Bundle `l` with a proof that it is `r`-decreasing to form `l'` -/
+    /- Bundle l with a proof that it is r-decreasing to form l' -/
     have hl' := (List.chain'_cons'.1 hl).2
     let l' : List.chains r := ⟨l, hl'⟩
     have : Acc (List.lex_chains r) l'
     · cases' l with b l
       · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
-      /- `l'` is accessible by induction hypothesis -/
+      /- l' is accessible by induction hypothesis -/
       · apply ih b (List.chain'_cons.1 hl).1
-    /- make `l'` a free variable and induct on `l'` -/
+    /- make l' a free variable and induct on l' -/
     revert hl
     rw [(by rfl : l = l'.1)]
     clear_value l'
