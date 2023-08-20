@@ -936,7 +936,7 @@ theorem uniformIntegrable_average (hp : 1 ≤ p) {f : ℕ → α → ℝ} (hf : 
       · rfl
     simp_rw [this, snorm_const_smul, ← Finset.mul_sum, nnnorm_inv, Real.nnnorm_coe_nat]
     by_cases hn : (↑(↑n : ℝ≥0)⁻¹ : ℝ≥0∞) = 0
-    · simp only [hn, MulZeroClass.zero_mul, zero_le]
+    · simp only [hn, zero_mul, zero_le]
     refine' le_trans _ (_ : ↑(↑n : ℝ≥0)⁻¹ * n • ENNReal.ofReal ε ≤ ENNReal.ofReal ε)
     · refine' (ENNReal.mul_le_mul_left hn ENNReal.coe_ne_top).2 _
       conv_rhs => rw [← Finset.card_range n]
@@ -954,7 +954,7 @@ theorem uniformIntegrable_average (hp : 1 ≤ p) {f : ℕ → α → ℝ} (hf : 
       simp only [mul_comm, Pi.smul_apply, Algebra.id.smul_eq_mul]
     simp_rw [this, snorm_const_smul, ← Finset.mul_sum, nnnorm_inv, Real.nnnorm_coe_nat]
     by_cases hn : (↑(↑n : ℝ≥0)⁻¹ : ℝ≥0∞) = 0
-    · simp only [hn, MulZeroClass.zero_mul, zero_le]
+    · simp only [hn, zero_mul, zero_le]
     refine' le_trans _ (_ : ↑(↑n : ℝ≥0)⁻¹ * (n • C : ℝ≥0∞) ≤ C)
     · refine' (ENNReal.mul_le_mul_left hn ENNReal.coe_ne_top).2 _
       conv_rhs => rw [← Finset.card_range n]

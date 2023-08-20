@@ -214,7 +214,6 @@ theorem zero : (0 : K_hat R K).IsFiniteAdele := by
     have h_zero : (Valued.v (0 : v.adicCompletion K) : WithZero (Multiplicative ℤ)) = 0 :=
       Valued.v.map_zero'
     rw [h_zero]; exact zero_le_one' _
-  simp_rw [Pi.zero_apply, h_empty]
   -- Porting note: was `exact`, but `OfNat` got in the way.
   convert finite_empty
 #align dedekind_domain.prod_adic_completions.is_finite_adele.zero DedekindDomain.ProdAdicCompletions.IsFiniteAdele.zero
@@ -262,7 +261,6 @@ theorem one : (1 : K_hat R K).IsFiniteAdele := by
     ext v; rw [mem_empty_iff_false, iff_false_iff]; intro hv
     rw [mem_setOf] at hv; apply hv; rw [mem_adicCompletionIntegers]
     exact le_of_eq Valued.v.map_one'
-  simp_rw [Pi.one_apply, h_empty]
   -- Porting note: was `exact`, but `OfNat` got in the way.
   convert finite_empty
 #align dedekind_domain.prod_adic_completions.is_finite_adele.one DedekindDomain.ProdAdicCompletions.IsFiniteAdele.one
