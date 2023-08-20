@@ -289,25 +289,25 @@ variable (f : InfinitePlace K → ℝ≥0)
 
 /-- The convex body defined by `f`: the set of points `x : E` such that `‖x w‖ < f w` for all
 infinite places `w`. -/
-def convex_body : Set (E K) :=
+abbrev convex_body_lt : Set (E K) :=
   (Set.pi Set.univ (fun w : { w : InfinitePlace K // IsReal w } => ball 0 (f w))) ×ˢ
   (Set.pi Set.univ (fun w : { w : InfinitePlace K // IsComplex w } => ball 0 (f w)))
 
-theorem convex_body_mem {x : K} :
-    mixedEmbedding K x ∈ (convex_body K f) ↔ ∀ w : InfinitePlace K, w x < f w := by
-  simp_rw [mixedEmbedding, RingHom.prod_apply, convex_body, Set.mem_prod, Set.mem_pi,
-    Set.mem_univ, forall_true_left, mem_ball_zero_iff, Pi.ringHom_apply, ← Complex.norm_real,
+theorem convex_body_lt_mem {x : K} :
+    mixedEmbedding K x ∈ (convex_body_lt K f) ↔ ∀ w : InfinitePlace K, w x < f w := by
+  simp_rw [mixedEmbedding, RingHom.prod_apply, Set.mem_prod, Set.mem_pi, Set.mem_univ,
+    forall_true_left, mem_ball_zero_iff, Pi.ringHom_apply, ← Complex.norm_real,
     embedding_of_isReal_apply, Subtype.forall, ← ball_or_left, ← not_isReal_iff_isComplex, em,
     forall_true_left, norm_embedding_eq]
 
-theorem convex_body_symmetric (x : E K) (hx : x ∈ (convex_body K f)) :
-    -x ∈ (convex_body K f) := by
-  simp only [convex_body, Set.mem_prod, Prod.fst_neg, Set.mem_pi, Set.mem_univ, Pi.neg_apply,
+theorem convex_body_lt_symmetric (x : E K) (hx : x ∈ (convex_body_lt K f)) :
+    -x ∈ (convex_body_lt K f) := by
+  simp only [Set.mem_prod, Prod.fst_neg, Set.mem_pi, Set.mem_univ, Pi.neg_apply,
     mem_ball_zero_iff, norm_neg, Real.norm_eq_abs, forall_true_left, Subtype.forall,
     Prod.snd_neg, Complex.norm_eq_abs, hx] at hx ⊢
   exact hx
 
-theorem convex_body_convex : Convex ℝ (convex_body K f) :=
+theorem convex_body_lt_convex : Convex ℝ (convex_body_lt K f) :=
   Convex.prod (convex_pi (fun _ _ => convex_ball _ _)) (convex_pi (fun _ _ => convex_ball _ _))
 
 open Classical Fintype MeasureTheory MeasureTheory.Measure BigOperators
@@ -317,7 +317,7 @@ local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y)
 
 variable [NumberField K]
 
-/-- The fudge factor that appears in the formula for the volume of `convex_body`. -/
+/-- The fudge factor that appears in the formula for the volume of `convex_body_lt`. -/
 noncomputable def constant_factor : ℝ≥0∞ :=
   (2 : ℝ≥0∞) ^ card {w : InfinitePlace K // IsReal w} *
     volume (ball (0 : ℂ) 1) ^ card {w : InfinitePlace K // IsComplex w}
@@ -334,11 +334,11 @@ theorem constant_factor_lt_top : (constant_factor K) < ⊤ := by
   · exact ne_of_lt (pow_lt_top measure_ball_lt_top _)
 
 set_option maxHeartbeats 400000 in
-/-- The volume of `(convex_body K f)` where `convex_body K f` is the set of points `x` such that
-`‖x w‖ < f w` for all infinite places `w`. -/
+/-- The volume of `(convex_body_lt K f)` where `convex_body_lt K f` is the set of points `x`
+such that `‖x w‖ < f w` for all infinite places `w`. -/
 theorem convex_body_volume :
-    volume (convex_body K f) = (constant_factor K) * ∏ w, (f w) ^ (mult w) := by
-  rw [volume_eq_prod, convex_body, prod_prod, volume_pi, volume_pi, pi_pi, pi_pi]
+    volume (convex_body_lt K f) = (constant_factor K) * ∏ w, (f w) ^ (mult w) := by
+  rw [volume_eq_prod, prod_prod, volume_pi, volume_pi, pi_pi, pi_pi]
   conv_lhs =>
     congr; congr; next => skip
     ext
@@ -402,11 +402,11 @@ theorem minkowski_bound_lt_top : minkowski_bound K < ⊤ := by
 variable {f : InfinitePlace K → ℝ≥0}
 
 /-- Assume that `f : InfinitePlace K → ℝ≥0` is such that
-`minkowski_bound K < volume (convex_body K f)` where `convex_body K f` is the set of points `x`
-such that `‖x w‖ < f w` for all infinite places `w` (see `convex_body_volume` for the computation
-of this volume), then there exists a nonzero algebraic integer `a` in `𝓞 K` such that
-`w a < f w` for all infinite places `w`. -/
-theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowski_bound K < volume (convex_body K f)) :
+`minkowski_bound K < volume (convex_body_lt K f)` where `convex_body_lt K f` is the set of
+points `x` such that `‖x w‖ < f w` for all infinite places `w` (see `convex_body_lt_volume` for
+the computation of this volume), then there exists a nonzero algebraic integer `a` in `𝓞 K` such
+that `w a < f w` for all infinite places `w`. -/
+theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowski_bound K < volume (convex_body_lt K f)) :
     ∃ (a : 𝓞 K), a ≠ 0 ∧ ∀ w : InfinitePlace K, w a < f w := by
   have : @IsAddHaarMeasure (E K) _ _ _ volume := prod.instIsAddHaarMeasure volume volume
   have h_fund := Zspan.isAddFundamentalDomain (latticeBasis K) volume
@@ -414,10 +414,10 @@ theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowski_bound K < volume (co
     change Countable (Submodule.span ℤ (Set.range (latticeBasis K)): Set (E K))
     infer_instance
   obtain ⟨⟨x, hx⟩, h_nzr, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
-    h_fund h (convex_body_symmetric K f) (convex_body_convex K f)
+    h_fund h (convex_body_lt_symmetric K f) (convex_body_lt_convex K f)
   rw [Submodule.mem_toAddSubgroup, mem_span_latticeBasis] at hx
   obtain ⟨a, ha, rfl⟩ := hx
-  refine ⟨⟨a, ha⟩, ?_, (convex_body_mem K f).mp h_mem⟩
+  refine ⟨⟨a, ha⟩, ?_, (convex_body_lt_mem K f).mp h_mem⟩
   rw [ne_eq, AddSubgroup.mk_eq_zero_iff, map_eq_zero, ← ne_eq] at h_nzr
   exact Subtype.ne_of_val_ne h_nzr
 
