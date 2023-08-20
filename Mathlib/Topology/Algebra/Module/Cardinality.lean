@@ -27,20 +27,21 @@ open scoped Cardinal Topology
 /-- A complete nontrivially normed field has cardinality at least continuum. -/
 theorem continuum_le_cardinal_of_nontriviallyNormedField
     (𝕜 : Type*) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] : 𝔠 ≤ #𝕜 := by
-  obtain ⟨f, -, -, f_inj⟩  : ∃ f : (ℕ → Bool) → 𝕜, range f ⊆ univ ∧ Continuous f ∧ Injective f := by
-    apply Perfect.exists_nat_bool_injection _ univ_nonempty
-    refine ⟨isClosed_univ, preperfect_iff_nhds.2 (fun x _ U hU ↦ ?_)⟩
-    rcases NormedField.exists_norm_lt_one 𝕜 with ⟨c, c_pos, hc⟩
-    have A : Tendsto (fun n ↦ x + c^n) atTop (𝓝 (x + 0)) :=
-      tendsto_const_nhds.add (tendsto_pow_atTop_nhds_0_of_norm_lt_1 hc)
-    rw [add_zero] at A
-    have B : ∀ᶠ n in atTop, x + c^n ∈ U := tendsto_def.1 A U hU
-    rcases B.exists with ⟨n, hn⟩
-    refine ⟨x + c^n, by simpa using hn, ?_⟩
-    simp only [ne_eq, add_right_eq_self]
-    apply pow_ne_zero
-    simpa using c_pos
-  simpa using lift_mk_le_lift_mk_of_injective f_inj
+  suffices ∃ f : (ℕ → Bool) → 𝕜, range f ⊆ univ ∧ Continuous f ∧ Injective f by
+    rcases this with ⟨f, -, -, f_inj⟩
+    simpa using lift_mk_le_lift_mk_of_injective f_inj
+  apply Perfect.exists_nat_bool_injection _ univ_nonempty
+  refine ⟨isClosed_univ, preperfect_iff_nhds.2 (fun x _ U hU ↦ ?_)⟩
+  rcases NormedField.exists_norm_lt_one 𝕜 with ⟨c, c_pos, hc⟩
+  have A : Tendsto (fun n ↦ x + c^n) atTop (𝓝 (x + 0)) :=
+    tendsto_const_nhds.add (tendsto_pow_atTop_nhds_0_of_norm_lt_1 hc)
+  rw [add_zero] at A
+  have B : ∀ᶠ n in atTop, x + c^n ∈ U := tendsto_def.1 A U hU
+  rcases B.exists with ⟨n, hn⟩
+  refine ⟨x + c^n, by simpa using hn, ?_⟩
+  simp only [ne_eq, add_right_eq_self]
+  apply pow_ne_zero
+  simpa using c_pos
 
 /-- A nontrivial module over a complete nontrivially normed field has cardinality at least
 continuum. -/
@@ -52,7 +53,9 @@ theorem continuum_le_cardinal_of_module
   simpa using A.trans (Cardinal.mk_le_of_module 𝕜 E)
 
 /-- In a topological vector space over a nontrivially normed field, any neighborhood of zero has
-the same cardinality as the whole space. -/
+the same cardinality as the whole space.
+
+See also `cardinal_eq_of_mem_nhds`. -/
 lemma cardinal_eq_of_mem_nhds_zero
     {E : Type*} (𝕜 : Type*) [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [TopologicalSpace E] [ContinuousSMul 𝕜 E] {s : Set E} (hs : s ∈ 𝓝 (0 : E)) : #s = #E := by

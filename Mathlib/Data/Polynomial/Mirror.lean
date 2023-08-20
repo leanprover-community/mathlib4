@@ -173,14 +173,14 @@ variable [NoZeroDivisors R]
 
 theorem natDegree_mul_mirror : (p * p.mirror).natDegree = 2 * p.natDegree := by
   by_cases hp : p = 0
-  · rw [hp, MulZeroClass.zero_mul, natDegree_zero, MulZeroClass.mul_zero]
+  · rw [hp, zero_mul, natDegree_zero, mul_zero]
   rw [natDegree_mul hp (mt mirror_eq_zero.mp hp), mirror_natDegree, two_mul]
 #align polynomial.nat_degree_mul_mirror Polynomial.natDegree_mul_mirror
 
 theorem natTrailingDegree_mul_mirror :
     (p * p.mirror).natTrailingDegree = 2 * p.natTrailingDegree := by
   by_cases hp : p = 0
-  · rw [hp, MulZeroClass.zero_mul, natTrailingDegree_zero, MulZeroClass.mul_zero]
+  · rw [hp, zero_mul, natTrailingDegree_zero, mul_zero]
   rw [natTrailingDegree_mul hp (mt mirror_eq_zero.mp hp), mirror_natTrailingDegree, two_mul]
 #align polynomial.nat_trailing_degree_mul_mirror Polynomial.natTrailingDegree_mul_mirror
 
@@ -198,9 +198,9 @@ variable [NoZeroDivisors R]
 
 theorem mirror_mul_of_domain : (p * q).mirror = p.mirror * q.mirror := by
   by_cases hp : p = 0
-  · rw [hp, MulZeroClass.zero_mul, mirror_zero, MulZeroClass.zero_mul]
+  · rw [hp, zero_mul, mirror_zero, zero_mul]
   by_cases hq : q = 0
-  · rw [hq, MulZeroClass.mul_zero, mirror_zero, MulZeroClass.mul_zero]
+  · rw [hq, mul_zero, mirror_zero, mul_zero]
   rw [mirror, mirror, mirror, reverse_mul_of_domain, natTrailingDegree_mul hp hq, pow_add]
   rw [mul_assoc, ← mul_assoc q.reverse, ← X_pow_mul (p := reverse q)]
   repeat' rw [mul_assoc]
