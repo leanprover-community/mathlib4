@@ -2425,7 +2425,7 @@ variable (G) [DecidableEq V]
 /-- Walks of length two from `u` to `v` correspond bijectively to common neighbours of `u` and `v`.
 Note that `u` and `v` may be the same. -/
 @[simps]
-def subtypeWalkLengthEqTwoEquivCommonNeighbors (u v : V) :
+def walkLengthTwoEquivCommonNeighbors (u v : V) :
     {p : G.Walk u v // p.length = 2} ≃ G.commonNeighbors u v where
   toFun p := ⟨p.val.getVert 1, match p with
     | ⟨.cons _ (.cons _ .nil), hp⟩ => ⟨‹G.Adj u _›, ‹G.Adj _ v›.symm⟩⟩

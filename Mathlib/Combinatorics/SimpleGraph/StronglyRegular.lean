@@ -214,17 +214,18 @@ theorem IsSRGWith.param_eq (h : G.IsSRGWith n k ℓ μ) (hn : 0 < n) :
 and its complement respectively and `I` be the identity matrix,
 then `A ^ 2 = k • I + ℓ • A + μ • C`. `C` is equivalent to the expression `J - I - A`
 more often found in the literature, where `J` is the all-ones matrix. -/
-theorem IsSRGWith.matrix_eq [Semiring α] (h : G.IsSRGWith n k ℓ μ) :
+theorem IsSRGWith.matrix_eq {α : Type*} [Semiring α] (h : G.IsSRGWith n k ℓ μ) :
     G.adjMatrix α ^ 2 = k • (1 : Matrix V V α) + ℓ • G.adjMatrix α + μ • Gᶜ.adjMatrix α := by
   ext v w
   simp only [adjMatrix_pow_apply_eq_card_walk, Set.coe_setOf, Matrix.add_apply, Matrix.smul_apply,
     adjMatrix_apply, compl_adj]
-  rw [Fintype.card_congr (G.subtypeWalkLengthEqTwoEquivCommonNeighbors v w)]
+  rw [Fintype.card_congr (G.walkLengthTwoEquivCommonNeighbors v w)]
   obtain rfl | hn := eq_or_ne v w
   · rw [← Set.toFinset_card]
     simp [commonNeighbors, ← neighborFinset_def, h.regular v]
   · simp only [Matrix.one_apply_ne' hn.symm, ne_eq, hn]
-    by_cases ha : G.Adj v w <;> conv_rhs => simp [ha]
+    by_cases ha : G.Adj v w <;> conv_rhs => simp only [smul_zero, ha, ite_true, ite_false, add_zero,
+      zero_add, nsmul_eq_mul, mul_one]
     · rw [h.of_adj v w ha]
     · rw [h.of_not_adj v w hn ha]
 
