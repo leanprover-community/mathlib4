@@ -218,6 +218,7 @@ theorem cons_fin_one (x : α) (u : Fin 0 → α) : vecCons x u = fun _ => x :=
 #align matrix.cons_fin_one Matrix.cons_fin_one
 
 open Qq in
+/-- Convert a tuple to an expression built from `vecCons` and `vecEmpty`. -/
 protected def _root_.PiFin.toExprQ [ToExprQ α] {n : Nat} (v : Fin n → α) :
     Q(Fin $n → $(toTypeExprQ α)) :=
   match n with

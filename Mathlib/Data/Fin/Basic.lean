@@ -1910,6 +1910,7 @@ protected theorem zero_mul' [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
 end Mul
 
 open Qq in
+/-- Convert an element of `Fin n` to an expression containing the appropriate `Nat` literal. -/
 protected def toExprQ (i : Fin n) : Q(Fin $n) :=
   have : Q(NeZero $n) := match n with | _ + 1 => q(NeZero.succ)
   have i : Q(Nat) := Lean.mkRawNatLit i -- raw literal to avoid ofNat-double-wrapping
