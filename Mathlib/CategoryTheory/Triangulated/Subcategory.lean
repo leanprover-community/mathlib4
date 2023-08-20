@@ -153,7 +153,7 @@ lemma stableUnderCompositionW [IsTriangulated C] : (W S).StableUnderComposition 
   refine' ⟨_, _, _, H₁₃, S.ext₂ _ (someOctahedron rfl H₁₂ H₂₃ H₁₃).mem mem₁₂ mem₂₃⟩
 
 instance multiplicativeW [IsTriangulated C] : S.W.IsMultiplicative where
-  comp' := S.stableUnderCompositionW
+  comp_mem' := S.stableUnderCompositionW
 
 lemma respectsIsoW : S.W.RespectsIso where
   left := by
@@ -280,7 +280,7 @@ instance [IsTriangulated C] : S.W.IsCompatibleWithTriangulation := ⟨by
   have H' := someOctahedron comm.symm mem₅ mem₃ mem₂
   let φ : T₁ ⟶ T₃ := H.triangleMorphism₁ ≫ H'.triangleMorphism₂
   exact ⟨φ.hom₃,
-    MorphismProperty.IsMultiplicative.comp S.W _ _ (W.mk H.mem mem₄') (W.mk' H'.mem mem₅'),
+    S.W.comp_mem _ _ (W.mk H.mem mem₄') (W.mk' H'.mem mem₅'),
     ⟨by simpa using φ.comm₂, by simpa using φ.comm₃⟩⟩⟩
 
 lemma ext₁ (T : Triangle C) (hT : T ∈ distTriang C) (h₂ : T.obj₂ ∈ S.set)

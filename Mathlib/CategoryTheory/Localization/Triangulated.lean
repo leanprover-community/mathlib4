@@ -145,8 +145,8 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
   let T₃ := Triangle.mk (f₂ ≫ s₂' ≫ s₂'') g h
   change T₃ ∈ distTriang C at hT₃
   have hf₂'' : T₂.mor₁ ≫ s₂ ≫ s₂' ≫ s₂'' = s₁ ≫ f₂ ≫ s₂' ≫ s₂'' := by rw [← reassoc_of% hf₂]
-  have hs₃ : W (s₂ ≫ s₂' ≫ s₂'') := MorphismProperty.IsMultiplicative.comp _ _ _ hs₂
-      (MorphismProperty.IsMultiplicative.comp _ _ _ hs₂' hs₂'')
+  have hs₃ : W (s₂ ≫ s₂' ≫ s₂'') := W.comp_mem _ _ hs₂
+      (W.comp_mem _ _ hs₂' hs₂'')
   obtain ⟨α, hα₀, hα₁, hα₂⟩ := MorphismProperty.IsCompatibleWithTriangulation.condition
     T₂ T₃ hT₂ hT₃ s₁ _ hs₁ hs₃ hf₂''
   have := Localization.inverts L W α hα₀

@@ -864,23 +864,23 @@ variable (W : MorphismProperty C)
 
 class IsMultiplicative extends W.ContainsIdentities : Prop :=
   --id : W.ContainsIdentities := by infer_instance
-  comp' : W.StableUnderComposition
+  comp_mem' : W.StableUnderComposition
 
-namespace IsMultiplicative
-
-lemma comp (W : MorphismProperty C) {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hf : W f) (hg : W g)
+lemma comp_mem (W : MorphismProperty C) {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hf : W f) (hg : W g)
     [IsMultiplicative W] :
     W (f ≫ g) :=
-  comp' f g hf hg
+  IsMultiplicative.comp_mem' f g hf hg
+
+namespace IsMultiplicative
 
 --attribute [instance] id
 
 instance op [IsMultiplicative W] : IsMultiplicative W.op where
-  comp' := fun _ _ _ f g hf hg => comp W g.unop f.unop hg hf
+  comp_mem' := fun _ _ _ f g hf hg => W.comp_mem g.unop f.unop hg hf
 
 lemma unop (W : MorphismProperty Cᵒᵖ) [IsMultiplicative W] : IsMultiplicative W.unop where
   id_mem' _ := W.id_mem _
-  comp' := fun _ _ _ f g hf hg => comp W g.op f.op hg hf
+  comp_mem' := fun _ _ _ f g hf hg => W.comp_mem g.op f.op hg hf
 
 end IsMultiplicative
 

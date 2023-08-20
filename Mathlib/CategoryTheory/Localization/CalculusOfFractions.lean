@@ -155,7 +155,7 @@ lemma trans {X Y : C} {z₁ z₂ z₃ : Roof W X Y} (h₁₂ : roofRel z₁ z₂
   . rw [reassoc_of% fac]
   . rw [reassoc_of% hft, ← fac', reassoc_of% hfu]
   . rw [← reassoc_of% fac, ← reassoc_of% hsu, ← Category.assoc]
-    exact IsMultiplicative.comp _ _ _ hu (IsMultiplicative.comp _ _ _ hv₅ hw)
+    exact W.comp_mem _ _ hu (W.comp_mem _ _ hv₅ hw)
 
 end roofRel
 
@@ -169,9 +169,8 @@ instance {X Y : C} : IsEquiv (Roof W X Y) (fun z₁ z₂ => roofRel z₁ z₂) w
 namespace Roof
 
 def comp₀ {X Y Z : C} (z : Roof W X Y) (z' : Roof W Y Z)
-    (sq : ToSq z.s z.hs z'.f) : Roof W X Z := by
-  refine' ⟨sq.obj, z.f ≫ sq.g, z'.s ≫ sq.s',
-    IsMultiplicative.comp _ _ _ z'.hs sq.hs'⟩
+    (sq : ToSq z.s z.hs z'.f) : Roof W X Z :=
+  ⟨sq.obj, z.f ≫ sq.g, z'.s ≫ sq.s', W.comp_mem _ _ z'.hs sq.hs'⟩
 
 lemma comp₀_rel {X Y Z : C} (z : Roof W X Y) (z' : Roof W Y Z)
     (sq sq' : ToSq z.s z.hs z'.f) : roofRel (z.comp₀ z' sq) (z.comp₀ z' sq') := by
@@ -187,9 +186,7 @@ lemma comp₀_rel {X Y Z : C} (z : Roof W X Y) (z' : Roof W Y Z)
     simp only [Category.assoc, ← fac]
   . dsimp [comp₀]
     simp only [Category.assoc, ← H.fac_assoc]
-    exact IsMultiplicative.comp _ _ _ z'.hs
-      (IsMultiplicative.comp _ _ _ sq'.hs'
-      (IsMultiplicative.comp _ _ _ H.hs' ht))
+    exact W.comp_mem _ _ z'.hs (W.comp_mem _ _ sq'.hs' (W.comp_mem _ _ H.hs' ht))
 
 end Roof
 
@@ -247,18 +244,18 @@ noncomputable def Hom.comp {X Y Z : C} :
     . simp only [Roof.comp₀, Category.assoc, fac]
     . simp only [Roof.comp₀, Category.assoc]
       rw [← H₀.fac_assoc, ← H₁.fac_assoc, ← Category.assoc]
-      exact IsMultiplicative.comp _ _ _ ht
-        (IsMultiplicative.comp _ _ _ H₀'.hs'
-        (IsMultiplicative.comp _ _ _ H₁.hs' hu))
+      exact W.comp_mem _ _ ht
+        (W.comp_mem _ _ H₀'.hs'
+        (W.comp_mem _ _ H₁.hs' hu))
   . rintro z₁₂ z₁₂' z₂₃ ⟨Y, t, t', hst, hft, ht⟩
     have sq := toSq z₁₂.s z₁₂.hs z₂₃.f
     have sq' := toSq z₁₂'.s z₁₂'.hs z₂₃.f
     have H := toSq (z₁₂.s ≫ t) ht (z₂₃.f ≫ sq.s')
     have H' := toSq (z₁₂'.s ≫ t') (show W _ by rw [← hst]; exact ht) (z₂₃.f ≫ sq'.s')
     let z : Roof W X Z := ⟨H.obj, z₁₂.f ≫ t ≫ H.g, z₂₃.s ≫ sq.s' ≫ H.s',
-      IsMultiplicative.comp _ _ _ z₂₃.hs (IsMultiplicative.comp _ _ _ sq.hs' H.hs')⟩
+      W.comp_mem _ _ z₂₃.hs (W.comp_mem _ _ sq.hs' H.hs')⟩
     let z' : Roof W X Z := ⟨H'.obj, z₁₂'.f ≫ t' ≫ H'.g, z₂₃.s ≫ sq'.s' ≫ H'.s',
-      IsMultiplicative.comp _ _ _ z₂₃.hs (IsMultiplicative.comp _ _ _ sq'.hs' H'.hs')⟩
+      W.comp_mem _ _ z₂₃.hs (W.comp_mem _ _ sq'.hs' H'.hs')⟩
     dsimp
     rw [Roof.comp_eq _ _ sq, Roof.comp_eq _ _ sq']
     apply Quot.sound
@@ -273,10 +270,10 @@ noncomputable def Hom.comp {X Y Z : C} :
       . simp only [Roof.comp₀, Category.assoc, Category.comp_id]
       . simp only [Roof.comp₀, Category.assoc, Category.comp_id, fac]
       . simp only [Roof.comp₀, Category.assoc]
-        refine' IsMultiplicative.comp _ _ _ z₂₃.hs
-          (IsMultiplicative.comp _ _ _ sq.hs'
-          (IsMultiplicative.comp _ _ _ H.hs' hu))
-    . have T := toSq (sq.s' ≫ H.s') (IsMultiplicative.comp _ _ _ sq.hs' H.hs') (sq'.s' ≫ H'.s')
+        exact W.comp_mem _ _ z₂₃.hs
+          (W.comp_mem _ _ sq.hs'
+          (W.comp_mem _ _ H.hs' hu))
+    . have T := toSq (sq.s' ≫ H.s') (W.comp_mem _ _ sq.hs' H.hs') (sq'.s' ≫ H'.s')
       have Tfac := T.fac
       have fac := H.fac
       have fac' := H'.fac
@@ -289,10 +286,10 @@ noncomputable def Hom.comp {X Y Z : C} :
       . simp only [Category.assoc, reassoc_of% Tfac]
       . rw [Category.assoc, Category.assoc, Category.assoc, Category.assoc, fac'', reassoc_of% hft]
       . simp only [Category.assoc, ← reassoc_of% Tfac]
-        exact IsMultiplicative.comp _ _ _ z₂₃.hs
-          (IsMultiplicative.comp _ _ _ sq'.hs'
-          (IsMultiplicative.comp _ _ _ H'.hs'
-          (IsMultiplicative.comp _ _ _ T.hs' hu)))
+        exact W.comp_mem _ _ z₂₃.hs
+          (W.comp_mem _ _ sq'.hs'
+          (W.comp_mem _ _ H'.hs'
+          (W.comp_mem _ _ T.hs' hu)))
     . have eq : z₁₂'.s ≫ sq'.g ≫ H'.s' = z₁₂'.s ≫ t' ≫ H'.g := by
         have h := H'.fac
         simp only [Category.assoc] at h
@@ -303,9 +300,9 @@ noncomputable def Hom.comp {X Y Z : C} :
       . simp only [Roof.comp₀, Category.assoc, Category.comp_id]
       . simp only [Roof.comp₀, Category.assoc, Category.comp_id, fac]
       . simp only [Roof.comp₀, Category.assoc]
-        refine' IsMultiplicative.comp _ _ _ z₂₃.hs
-          (IsMultiplicative.comp _ _ _ sq'.hs'
-          (IsMultiplicative.comp _ _ _ H'.hs' hu))
+        exact W.comp_mem _ _ z₂₃.hs
+          (W.comp_mem _ _ sq'.hs'
+          (W.comp_mem _ _ H'.hs' hu))
 
 lemma Hom.comp_eq {X Y Z : C} (z : Roof W X Y) (z' : Roof W Y Z)
     (sq : ToSq z.s z.hs z'.f) :
@@ -352,7 +349,7 @@ noncomputable instance : Category (Localization W) where
     change Hom.comp (Hom.comp _ _) _ = Hom.comp _ (Hom.comp _ _)
     rw [Hom.comp_eq f₁₂ f₂₃ sq₁₃, Hom.comp_eq f₂₃ f₃₄ sq₂₄,
       Hom.comp_eq (Roof.comp₀ f₁₂ f₂₃ sq₁₃) f₃₄
-      ⟨sq.obj, sq.g, sq₂₄.s' ≫ sq.s', IsMultiplicative.comp _ _ _ sq₂₄.hs' sq.hs', by
+      ⟨sq.obj, sq.g, sq₂₄.s' ≫ sq.s', W.comp_mem _ _ sq₂₄.hs' sq.hs', by
         simp only [Roof.comp₀, Category.assoc, sq₂₄.fac_assoc, sq.fac]⟩,
       Hom.comp_eq f₁₂ (Roof.comp₀ f₂₃ f₃₄ sq₂₄)
       ⟨sq.obj, sq₁₃.g ≫ sq.g, sq.s', sq.hs', by
