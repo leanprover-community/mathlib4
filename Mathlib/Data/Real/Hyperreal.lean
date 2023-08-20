@@ -5,6 +5,8 @@ Authors: Abhimanyu Pallavi Sudhir
 -/
 import Mathlib.Order.Filter.FilterProduct
 import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.ModelTheory.Ultraproducts
+import Mathlib.ModelTheory.Algebra.Ring.Basic
 
 #align_import data.real.hyperreal from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -896,6 +898,61 @@ theorem infinite_mul_of_not_infinitesimal_infinite {x y : ℝ*} :
 theorem Infinite.mul {x y : ℝ*} : Infinite x → Infinite y → Infinite (x * y) := fun hx hy =>
   infinite_mul_of_infinite_not_infinitesimal hx hy.not_infinitesimal
 #align hyperreal.infinite.mul Hyperreal.Infinite.mul
+
+
+open FirstOrder Language Ring Filter
+
+instance : CompatibleRing ℝ :=
+  compatibleRingOfRing ℝ
+
+instance : Language.ring.Structure ℝ* :=
+  Ultraproduct.structure
+
+instance : CompatibleRing ℝ* :=
+  { funMap_add := by
+      simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.cons_one,
+        Fin.forall_fin_zero_pi]
+      intro x y
+      refine Filter.Germ.inductionOn₂ x y (fun x y => ?_)
+      show Germ.ofFun _ = Germ.ofFun _
+      simp [productSetoid, Prestructure.toStructure,
+        instStructureRingHyperreal, Ultraproduct.structure,
+        quotientStructure]
+    funMap_mul := by
+      simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.cons_one,
+        Fin.forall_fin_zero_pi]
+      intro x y
+      refine Filter.Germ.inductionOn₂ x y (fun x y => ?_)
+      show Germ.ofFun _ = Germ.ofFun _
+      simp [productSetoid, Prestructure.toStructure,
+        instStructureRingHyperreal, Ultraproduct.structure,
+        quotientStructure]
+    funMap_zero := by
+      simp only [Fin.forall_fin_zero_pi]
+      show Germ.ofFun _ = Germ.ofFun _
+      simp [productSetoid, Prestructure.toStructure,
+        instStructureRingHyperreal, Ultraproduct.structure,
+        quotientStructure]
+    funMap_one := by
+      simp only [Fin.forall_fin_zero_pi]
+      show Germ.ofFun _ = Germ.ofFun _
+      simp [productSetoid, Prestructure.toStructure,
+        instStructureRingHyperreal, Ultraproduct.structure,
+        quotientStructure]
+    funMap_neg := by
+      simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.cons_one,
+        Fin.forall_fin_zero_pi]
+      intro x
+      refine Filter.Germ.inductionOn x (fun x => ?_)
+      show Germ.ofFun _ = Germ.ofFun _
+      simp [productSetoid, Prestructure.toStructure,
+        instStructureRingHyperreal, Ultraproduct.structure,
+        quotientStructure, Function.comp]  }
+
+theorem transfer_principle {φ : ring.Sentence} : ℝ ⊨ φ ↔ ℝ* ⊨ φ := by
+  show ℝ ⊨ φ ↔ Product _ _ ⊨ φ
+  rw [Ultraproduct.sentence_realize]
+  simp
 
 end Hyperreal
 
