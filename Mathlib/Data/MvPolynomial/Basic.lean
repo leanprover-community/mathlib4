@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
 import Mathlib.Algebra.Algebra.Tower
+import Mathlib.Algebra.Regular.Pow
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Order.SymmDiff
@@ -67,6 +68,8 @@ the polynomial being represented.
 polynomial, multivariate polynomial, multivariable polynomial
 
 -/
+
+set_option autoImplicit true
 
 
 noncomputable section
@@ -765,7 +768,7 @@ theorem coeff_mul_monomial' (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ
     coeff m (p * monomial s r) = if s ≤ m then coeff (m - s) p * r else 0 := by
   classical
   obtain rfl | hr := eq_or_ne r 0
-  · simp only [monomial_zero, coeff_zero, MulZeroClass.mul_zero, ite_self]
+  · simp only [monomial_zero, coeff_zero, mul_zero, ite_self]
   haveI : Nontrivial R := nontrivial_of_ne _ _ hr
   split_ifs with h
   · conv_rhs => rw [← coeff_mul_monomial _ s]
@@ -842,8 +845,21 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : MvPolynomial σ R) : C r ∣ φ ↔ �
       split_ifs with hi
       · rw [hc]
       · rw [not_mem_support_iff] at hi
-        rwa [MulZeroClass.mul_zero]
+        rwa [mul_zero]
 #align mv_polynomial.C_dvd_iff_dvd_coeff MvPolynomial.C_dvd_iff_dvd_coeff
+
+@[simp] lemma isRegular_X : IsRegular (X n : MvPolynomial σ R) := by
+  suffices : IsLeftRegular (X n : MvPolynomial σ R)
+  · exact ⟨this, this.right_of_commute $ Commute.all _⟩
+  intro P Q (hPQ : (X n) * P = (X n) * Q)
+  ext i
+  rw [← coeff_X_mul i n P, hPQ, coeff_X_mul i n Q]
+
+@[simp] lemma isRegular_X_pow (k : ℕ) : IsRegular (X n ^ k : MvPolynomial σ R) := isRegular_X.pow k
+
+@[simp] lemma isRegular_prod_X (s : Finset σ) :
+    IsRegular (∏ n in s, X n : MvPolynomial σ R) :=
+  IsRegular.prod fun _ _ ↦ isRegular_X
 
 end Coeff
 
@@ -1550,7 +1566,7 @@ theorem eval₂Hom_eq_zero (f : R →+* S₂) (g : σ → S₂) (φ : MvPolynomi
   rw [φ.as_sum, map_sum]
   refine Finset.sum_eq_zero fun d hd => ?_
   obtain ⟨i, hi, hgi⟩ : ∃ i ∈ d.support, g i = 0 := h d (Finsupp.mem_support_iff.mp hd)
-  rw [eval₂Hom_monomial, Finsupp.prod, Finset.prod_eq_zero hi, MulZeroClass.mul_zero]
+  rw [eval₂Hom_monomial, Finsupp.prod, Finset.prod_eq_zero hi, mul_zero]
   rw [hgi, zero_pow]
   rwa [pos_iff_ne_zero, ← Finsupp.mem_support_iff]
 #align mv_polynomial.eval₂_hom_eq_zero MvPolynomial.eval₂Hom_eq_zero

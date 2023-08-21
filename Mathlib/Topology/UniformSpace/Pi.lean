@@ -19,18 +19,21 @@ open Uniformity Topology
 
 section
 
-open Filter UniformSpace
+open Filter UniformSpace Function
 
 universe u
 
 variable {ι : Type*} (α : ι → Type u) [U : ∀ i, UniformSpace (α i)]
-
 
 instance Pi.uniformSpace : UniformSpace (∀ i, α i) :=
   UniformSpace.ofCoreEq (⨅ i, UniformSpace.comap (fun a : ∀ i, α i => a i) (U i)).toCore
       Pi.topologicalSpace <|
     Eq.symm toTopologicalSpace_iInf
 #align Pi.uniform_space Pi.uniformSpace
+
+lemma Pi.uniformSpace_eq :
+    Pi.uniformSpace α = ⨅ i, UniformSpace.comap (fun a : (∀ i, α i) ↦ a i) (U i) := by
+  ext : 1; rfl
 
 theorem Pi.uniformity :
     𝓤 (∀ i, α i) = ⨅ i : ι, (Filter.comap fun a => (a.1 i, a.2 i)) (𝓤 (α i)) :=
@@ -51,18 +54,26 @@ theorem Pi.uniformContinuous_proj (i : ι) : UniformContinuous fun a : ∀ i : �
   uniformContinuous_pi.1 uniformContinuous_id i
 #align Pi.uniform_continuous_proj Pi.uniformContinuous_proj
 
-instance Pi.complete [∀ i, CompleteSpace (α i)] : CompleteSpace (∀ i, α i) :=
-  ⟨by
-    intro f hf
-    haveI := hf.1
-    have : ∀ i, ∃ x : α i, Filter.map (fun a : ∀ i, α i => a i) f ≤ 𝓝 x := by
-      intro i
-      have key : Cauchy (map (fun a : ∀ i : ι, α i => a i) f) :=
-        hf.map (Pi.uniformContinuous_proj α i)
-      exact cauchy_iff_exists_le_nhds.1 key
-    choose x hx using this
+lemma cauchy_pi_iff [Nonempty ι] {l : Filter (∀ i, α i)} :
+    Cauchy l ↔ ∀ i, Cauchy (map (eval i) l) := by
+  simp_rw [Pi.uniformSpace_eq, cauchy_iInf_uniformSpace, cauchy_comap_uniformSpace]
+
+lemma cauchy_pi_iff' {l : Filter (∀ i, α i)} [l.NeBot] :
+    Cauchy l ↔ ∀ i, Cauchy (map (eval i) l) := by
+  simp_rw [Pi.uniformSpace_eq, cauchy_iInf_uniformSpace', cauchy_comap_uniformSpace]
+
+lemma Cauchy.pi [Nonempty ι] {l : ∀ i, Filter (α i)} (hl : ∀ i, Cauchy (l i)) :
+    Cauchy (Filter.pi l) := by
+  have := fun i ↦ (hl i).1
+  simpa [cauchy_pi_iff]
+
+instance Pi.complete [∀ i, CompleteSpace (α i)] : CompleteSpace (∀ i, α i) where
+  complete {f} hf := by
+    have := hf.1
+    simp_rw [cauchy_pi_iff', cauchy_iff_exists_le_nhds] at hf
+    choose x hx using hf
     use x
-    rwa [nhds_pi, le_pi]⟩
+    rwa [nhds_pi, le_pi]
 #align Pi.complete Pi.complete
 
 instance Pi.separated [∀ i, SeparatedSpace (α i)] : SeparatedSpace (∀ i, α i) :=

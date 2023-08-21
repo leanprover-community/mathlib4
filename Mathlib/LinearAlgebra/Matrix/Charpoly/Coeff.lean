@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark
 -/
 import Mathlib.Data.Polynomial.Expand
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 import Mathlib.Data.Polynomial.Laurent
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 import Mathlib.RingTheory.Polynomial.Nilpotent
 
 #align_import linear_algebra.matrix.charpoly.coeff from "leanprover-community/mathlib"@"9745b093210e9dac443af24da9dba0f9e2b6c912"
@@ -24,6 +24,7 @@ We give methods for computing coefficients of the characteristic polynomial.
 - `Matrix.trace_eq_neg_charpoly_coeff` proves that the trace is the negative of the (d-1)th
   coefficient of the characteristic polynomial, where d is the dimension of the matrix.
   For a nonzero ring, this is the second-highest coefficient.
+- `Matrix.reverse_charpoly` characterises the reverse of the characteristic polynomial.
 
 -/
 
@@ -169,7 +170,7 @@ theorem matPolyEquiv_eval (M : Matrix n n R[X]) (r : R) (i j : n) :
     simp only [sum_apply]
     dsimp
   · simp_rw [← RingHom.map_pow, ← (scalar.commute _ _).eq]
-    simp only [coe_scalar, Matrix.one_mul, RingHom.id_apply, Pi.smul_apply, smul_eq_mul, mul_eq_mul,
+    simp only [coe_scalar, Matrix.one_mul, RingHom.id_apply, Pi.smul_apply, smul_eq_mul,
       Algebra.smul_mul_assoc]
     -- porting note: the `have` was present and unused also in the original
     --have h : ∀ x : ℕ, (fun (e : ℕ) (a : R) => r ^ e * a) x 0 = 0 := by simp
@@ -178,7 +179,7 @@ theorem matPolyEquiv_eval (M : Matrix n n R[X]) (r : R) (i j : n) :
     apply (Finset.sum_subset (support_subset_support_matPolyEquiv _ _ _) _).symm
     intro n _hn h'n
     rw [not_mem_support_iff] at h'n
-    simp only [h'n, MulZeroClass.zero_mul]
+    simp only [h'n, zero_mul]
     simp only [mul_zero]  -- porting note: added
 #align matrix.mat_poly_equiv_eval Matrix.matPolyEquiv_eval
 
