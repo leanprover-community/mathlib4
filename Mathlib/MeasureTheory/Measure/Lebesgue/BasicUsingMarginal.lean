@@ -396,19 +396,7 @@ theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionS
   simp_rw [marginal_singleton]
   ext x
   cases t with | mk t_i t_j t_hij t_c =>
-  simp [transvection]
-  have := fun x' ↦ mulVec_stdBasisMatrix t_i t_j t_c (Function.update x t_i x')
-  simp_rw [this]
-
-  simp_rw [mulVec_stdBasisMatrix]
-  simp only [LinearEquiv.map_smul, dite_eq_ite, LinearMap.id_coe, ite_not,
-  Algebra.id.smul_eq_mul, one_mul, dotProduct, stdBasisMatrix,
-  MeasurableEquiv.piEquivPiSubtypeProd_symm_apply, id.def, transvection, Pi.add_apply,
-  MulZeroClass.zero_mul, LinearMap.smul_apply, Function.comp_apply,
-  MeasurableEquiv.piEquivPiSubtypeProd_apply, Matrix.TransvectionStruct.toMatrix_mk,
-  Matrix.mulVec, LinearEquiv.map_add, ite_mul, Matrix.toLin'_apply, Pi.smul_apply,
-  Subtype.coe_mk, LinearMap.add_apply, Finset.sum_congr, Matrix.toLin'_one]
-
+  simp [transvection, mulVec_stdBasisMatrix]
   sorry -- should follow from the translation invariance of lintegral.
 #align real.volume_preserving_transvection_struct Real.volume_preserving_transvectionStruct
 
