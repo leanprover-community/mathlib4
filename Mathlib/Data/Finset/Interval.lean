@@ -132,6 +132,9 @@ lemma covby_insert {i : α} (hi : i ∉ s) : s ⋖ insert i s :=
   Covby.of_image ⟨⟨((↑) : Finset α → Set α), coe_injective⟩, coe_subset⟩ <| by
     exact_mod_cast Set.covby_insert (show i ∉ (s : Set α) from hi)
 
+lemma covby_cons {i : α} (hi : i ∉ s) : s ⋖ cons i s hi := by
+  simpa using covby_insert hi
+
 lemma covby_iff : s ⋖ t ↔ ∃ i : α, i ∉ s ∧ t = insert i s := by
   constructor
   · intro hst
@@ -140,6 +143,9 @@ lemma covby_iff : s ⋖ t ↔ ∃ i : α, i ∉ s ∧ t = insert i s := by
   · rintro ⟨i, hi, rfl⟩
     exact covby_insert hi
 
+lemma covby_iff' : s ⋖ t ↔ ∃ i : α, ∃ hi : i ∉ s, t = cons i s hi := by
+  simp [covby_iff]
+
 /-- A function `f` from `Finset α` is moontone if and only if `f s ≤ f (insert i s)` for all
 `s` and `i ∉ s`. -/
 theorem monotone_iff {β : Type*} [Preorder β] (f : Finset α → β) :
@@ -147,11 +153,23 @@ theorem monotone_iff {β : Type*} [Preorder β] (f : Finset α → β) :
   simp only [monotone_iff_forall_covby, covby_iff, forall_exists_index, and_imp]
   aesop
 
+/-- A function `f` from `Finset α` is moontone if and only if `f s ≤ f (cons i s hi)` for all
+`s` and `i ∉ s`. -/
+theorem monotone_iff' {β : Type*} [Preorder β] (f : Finset α → β) :
+    Monotone f ↔ ∀ s : Finset α, ∀ {i} (_hi : i ∉ s), f s ≤ f (insert i s) := by
+  simp [monotone_iff]
+
 /-- A function `f` from `Finset α` is strictly moontone if and only if `f s < f (insert i s)` for
 all `s` and `i ∉ s`. -/
 theorem strictMono_iff {β : Type*} [Preorder β] (f : Finset α → β) :
     StrictMono f ↔ ∀ s : Finset α, ∀ {i} (_hi : i ∉ s), f s < f (insert i s) := by
   simp only [strictMono_iff_forall_covby, covby_iff, forall_exists_index, and_imp]
   aesop
+
+/-- A function `f` from `Finset α` is strictly moontone if and only if `f s < f (insert i s)` for
+all `s` and `i ∉ s`. -/
+theorem strictMono_iff' {β : Type*} [Preorder β] (f : Finset α → β) :
+    StrictMono f ↔ ∀ s : Finset α, ∀ {i} (_hi : i ∉ s), f s < f (insert i s) := by
+  simp [strictMono_iff]
 
 end Finset
