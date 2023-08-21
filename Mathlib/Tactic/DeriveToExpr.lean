@@ -101,7 +101,8 @@ def mkToTypeExpr (argNames : Array Name) (indVal : InductiveVal) : TermElabM Ter
         args := args.push <| ← `(toExpr $a)
     mkAppNTerm (← `((Expr.const $(quote indVal.name) [$levels,*]))) args
 
-/-- For mutually recursive inductive types, the strategy is to have local `ToExpr` instances in scope
+/--
+For mutually recursive inductive types, the strategy is to have local `ToExpr` instances in scope
 for each of the inductives when defining each instance.
 This way, each instance can freely use `toExpr` and `toTypeExpr` for each of the other types.
 
@@ -147,7 +148,8 @@ open TSyntax.Compat in
 The implementations of each `toExpr` function for a (mutual) inductive type
 are given as top-level private definitions.
 These end up being assembled into `ToExpr` instances in `mkInstanceCmds`.
-For mutual inductive types, then each of the other types' `ToExpr` instances are provided as local instances,
+For mutual inductive types,
+then each of the other types' `ToExpr` instances are provided as local instances,
 to wire together the recursion (this necessitates these auxiliary definitions being `partial`). -/
 def mkAuxFunction (ctx : Deriving.Context) (i : Nat) : TermElabM Command := do
   let auxFunName := ctx.auxFunNames[i]!
