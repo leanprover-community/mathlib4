@@ -54,7 +54,7 @@ theorem cauchy_iff {f : Filter α} : Cauchy f ↔ NeBot f ∧ ∀ s ∈ 𝓤 α,
     simp only [subset_def, Prod.forall, mem_prod_eq, and_imp, id, ball_mem_comm]
 #align cauchy_iff cauchy_iff
 
-lemma cauchy_of_neBot {l : Filter α} [hl : l.NeBot] :
+lemma cauchy_iff_le {l : Filter α} [hl : l.NeBot] :
     Cauchy l ↔ l ×ˢ l ≤ 𝓤 α := by
   simp only [Cauchy, hl, true_and]
 
@@ -121,7 +121,6 @@ lemma cauchy_comap_uniformSpace {α β : Type*} {u : UniformSpace β} {f : α �
     Cauchy (uniformSpace := comap f u) l ↔ Cauchy (map f l) := by
   simp only [Cauchy, map_neBot_iff, prod_map_map_eq, map_le_iff_le_comap]
   rfl
-
 lemma cauchy_prod_iff [UniformSpace β] {F : Filter (α × β)} :
     Cauchy F ↔ Cauchy (map Prod.fst F) ∧ Cauchy (map Prod.snd F) := by
   simp_rw [instUniformSpaceProd, ← cauchy_comap_uniformSpace, ← cauchy_inf_uniformSpace]
