@@ -187,12 +187,12 @@ def shiftl' (b : Bool) (m : ℕ) : ℕ → ℕ
 #align nat.shiftl' Nat.shiftl'
 
 @[simp]
-theorem shiftLeft_eq_shiftl'_false : ∀ n, shiftl' false m n = m <<< n
+theorem shiftl'_false : ∀ n, shiftl' false m n = m <<< n
   | 0 => rfl
   | n + 1 => by
     have : 2 * (m * 2^n) = 2^(n+1)*m := by
       rw [Nat.mul_comm, Nat.mul_assoc, ← pow_succ]; simp
-    simp [shiftl', bit_val, shiftLeft_eq_shiftl'_false, this]
+    simp [shiftl', bit_val, shiftl'_false, this]
 
 @[simp]
 lemma shiftLeft_eq' {m n : Nat} : shiftLeft m n = m <<< n := rfl
@@ -321,7 +321,7 @@ theorem shiftl'_add (b m n) : ∀ k, shiftl' b m (n + k) = shiftl' b (shiftl' b 
 #align nat.shiftl'_add Nat.shiftl'_add
 
 theorem shiftLeft_add (m n : Nat) : ∀ k, m <<< (n + k) = (m <<< n) <<< k := by
-  intro k; simp only [← shiftLeft_eq_shiftl'_false, shiftl'_add]
+  intro k; simp only [← shiftl'_false, shiftl'_add]
 
 theorem shiftRight_add (m n : Nat) : ∀ k, m >>> (n + k) = (m >>> n) >>> k
   | 0 => rfl
@@ -336,7 +336,7 @@ theorem shiftl'_sub (b m) : ∀ {n k}, k ≤ n → shiftl' b m (n - k) = (shiftl
 #align nat.shiftl'_sub Nat.shiftl'_sub
 
 theorem shiftLeft_sub : ∀ (m : Nat) {n k}, k ≤ n → m <<< (n - k) = (m <<< n) >>> k :=
-  fun _ _ _ hk => by simp only [← shiftLeft_eq_shiftl'_false, shiftl'_sub false _ hk]
+  fun _ _ _ hk => by simp only [← shiftl'_false, shiftl'_sub false _ hk]
 
 @[simp]
 theorem testBit_zero (b n) : testBit (bit b n) 0 = b :=

@@ -108,7 +108,7 @@ theorem size_shiftl' {b m n} (h : shiftl' b m n ≠ 0) : size (shiftl' b m n) = 
 
 @[simp]
 theorem size_shiftLeft {m} (h : m ≠ 0) (n) : size (m <<< n) = size m + n :=
-  by simp only [size_shiftl' (shiftl'_ne_zero_left _ h _), ← shiftLeft_eq_shiftl'_false]
+  by simp only [size_shiftl' (shiftl'_ne_zero_left _ h _), ← shiftl'_false]
 #align nat.size_shiftl Nat.size_shiftLeft
 
 theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
