@@ -683,7 +683,7 @@ theorem stronger_local_submodularity_right
 
 theorem ssubset_of_feasible_rank (hs : s ∈ G) (h : t ⊂ s) : G.rank t < G.rank s := by
   apply (le_iff_lt_or_eq.mp (G.rank_le_of_subset (subset_of_ssubset h))).elim <;>
-    simp only [imp_self]
+    try simp only [imp_self]
   intro h'
   exfalso
   have h₁ := bases_of_feasible_eq_singleton hs
@@ -710,7 +710,7 @@ set_option linter.unusedVariables false in
 def feasibleContinuations (G : Greedoid α) (s : Finset α) (hs : s ∈ G) :=
   univ.filter fun x => x ∉ s ∧ insert x s ∈ G
 
-theorem feasibleContinuations_eq (hs : s ∈ G):
+theorem feasibleContinuations_eq {s : Finset α} (hs : s ∈ G):
     G.feasibleContinuations s hs = univ \ G.closure s := by
   simp only [feasibleContinuations, mem_univ, closure]
   ext x
