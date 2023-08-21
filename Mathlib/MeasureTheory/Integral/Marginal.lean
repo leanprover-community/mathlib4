@@ -213,34 +213,38 @@ section Set
 
 open Set
 
+variable {α : Type*} [DecidableEq α] {s t : Finset α}
+
 -- @[simps apply symm_apply]
 /-- `s ∪ t` (using finset union) is equivalent to `s ∪ t` (using set union) -/
-def Equiv.finsetUnion {α} (s t : Finset α) : ((s ∪ t : Finset α) : Set α) ≃ (s ∪ t : Set α) :=
+def Equiv.finsetUnion (s t : Finset α) :
+    ((s ∪ t : Finset α) : Set α) ≃ (s ∪ t : Set α) :=
   subtypeEquivRight <| by simp
 
 /-- The disjoint union of finsets is a sum -/
-def finsetUnionEquivSum {α} (s t : Finset α) (h : Disjoint s t) : (s ∪ t : Finset α) ≃ s ⊕ t :=
+def finsetUnionEquivSum (s t : Finset α) (h : Disjoint s t) :
+    (s ∪ t : Finset α) ≃ s ⊕ t :=
   (Equiv.finsetUnion s t).trans <| Equiv.Set.union <| by
     rw [← Finset.coe_inter, ← Finset.coe_empty]
     exact h.le_bot
 
 @[simp]
-theorem finsetUnionEquivSum_symm_inl {α} {s t : Finset α} (h : Disjoint s t) (x : s) :
+theorem finsetUnionEquivSum_symm_inl (h : Disjoint s t) (x : s) :
     (finsetUnionEquivSum s t h).symm (Sum.inl x) = ⟨x, Finset.mem_union.mpr <| Or.inl x.2⟩ :=
   rfl
 
 @[simp]
-theorem finsetUnionEquivSum_symm_inr {α} {s t : Finset α} (h : Disjoint s t) (y : t) :
+theorem finsetUnionEquivSum_symm_inr (h : Disjoint s t) (y : t) :
     (finsetUnionEquivSum s t h).symm (Sum.inr y) = ⟨y, Finset.mem_union.mpr <| Or.inr y.2⟩ :=
   rfl
 
 @[simp]
-theorem finsetUnionEquivSum_symm_inl' {α} {s t : Finset α} (h : Disjoint s t) (x : α) (hx : x ∈ s)
+theorem finsetUnionEquivSum_symm_inl' (h : Disjoint s t) (x : α) (hx : x ∈ s)
     (h2x : x ∈ s ∪ t) : (finsetUnionEquivSum s t h).symm (Sum.inl ⟨x, hx⟩) = ⟨x, h2x⟩ :=
   rfl
 
 @[simp]
-theorem finsetUnionEquivSum_symm_inr' {α} {s t : Finset α} (h : Disjoint s t) (y : t) :
+theorem finsetUnionEquivSum_symm_inr' (h : Disjoint s t) (y : t) :
     (finsetUnionEquivSum s t h).symm (Sum.inr y) = ⟨y, Finset.mem_union.mpr <| Or.inr y.2⟩ :=
   rfl
 
@@ -249,12 +253,12 @@ theorem iUnion_univ_pi {ι ι₂} {α : ι → Type _} (t : ∀ i, ι₂ → Set
   ext
   simp [Classical.skolem]
 
-theorem eval_preimage {ι} {α : ι → Type _} {i : ι} {s : Set (α i)} :
+theorem eval_preimage {ι} [DecidableEq ι] {α : ι → Type _} {i : ι} {s : Set (α i)} :
     eval i ⁻¹' s = pi univ (update (fun i => univ) i s) := by
   ext x
   simp [@forall_update_iff _ (fun i => Set (α i)) _ _ _ _ fun i' y => x i' ∈ y]
 
-theorem eval_preimage' {ι} {α : ι → Type _} {i : ι} {s : Set (α i)} :
+theorem eval_preimage' {ι} [DecidableEq ι] {α : ι → Type _} {i : ι} {s : Set (α i)} :
     eval i ⁻¹' s = pi {i} (update (fun i => univ) i s) := by ext; simp
 
 theorem mem_pi_univ {ι : Type _} {α : ι → Type _} (t : ∀ i, Set (α i)) (x : ∀ i, α i) :
@@ -288,8 +292,8 @@ theorem uniqueElim_default {_ : Unique ι} (x : α (default : ι)) : uniqueElim 
 theorem uniqueElim_preimage [Unique ι] (t : ∀ i, Set (α i)) :
     uniqueElim ⁻¹' pi univ t = t (default : ι) := by ext; simp [Unique.forall_iff]
 
-theorem pred_update {α} {β : α → Type _} (P : ∀ ⦃a⦄, β a → Prop) (f : ∀ a, β a) (a' : α) (v : β a')
-    (a : α) : P (update f a' v a) ↔ a = a' ∧ P v ∨ a ≠ a' ∧ P (f a) := by
+theorem pred_update {α} [DecidableEq α] {β : α → Type _} (P : ∀ ⦃a⦄, β a → Prop) (f : ∀ a, β a)
+    (a' : α) (v : β a') (a : α) : P (update f a' v a) ↔ a = a' ∧ P v ∨ a ≠ a' ∧ P (f a) := by
   rw [update]
   split_ifs with h
   · subst h
@@ -325,7 +329,8 @@ instance : SetLike (Finset ι) ι where
 open Finset
 theorem updateSet_empty {y} : updateSet x ∅ y = x :=
   rfl
-theorem updateSet_singleton {i y} :
+
+theorem updateSet_singleton [DecidableEq ι] {i y} :
     updateSet x {i} y = Function.update x i (y ⟨i, mem_singleton_self i⟩) := by
   congr with j
   by_cases hj : j = i
@@ -333,7 +338,7 @@ theorem updateSet_singleton {i y} :
     simp only [dif_pos, Finset.mem_singleton, update_same, updateSet]
   · simp [hj, updateSet]
 
-theorem update_eq_updateSet {i y} :
+theorem update_eq_updateSet [DecidableEq ι] {i y} :
     Function.update x i y = updateSet x {i} (uniqueElim y) := by
   congr with j
   by_cases hj : j = i
@@ -342,7 +347,7 @@ theorem update_eq_updateSet {i y} :
     exact uniqueElim_default (α := fun j : ({i} : Finset ι) => π j) y
   · simp [hj, updateSet]
 
-theorem updateSet_updateSet {s t : Finset ι} (hst : Disjoint s t) {y z} :
+theorem updateSet_updateSet [DecidableEq ι] {s t : Finset ι} (hst : Disjoint s t) {y z} :
     updateSet (updateSet x s y) t z =
     updateSet x (s ∪ t)
       (Equiv.piCongrLeft (fun i : ↥(s ∪ t) ↦ π i) (finsetUnionEquivSum s t hst).symm <|
@@ -425,7 +430,8 @@ variable {α}
 theorem MeasurableEquiv.piCongrLeft_eq (f : ι' ≃ ι) :
   (MeasurableEquiv.piCongrLeft α f : _ → _) = f.piCongrLeft α := by rfl
 
-/-- The measurable equivalence between the pi type over a sum type and a product of pi-types. -/
+/-- The measurable equivalence between the pi type over a sum type and a product of pi-types.
+This is similar to `MeasurableEquiv.piEquivPiSubtypeProd`. -/
 def MeasurableEquiv.piSum (α : ι ⊕ ι' → Type _) [∀ i, MeasurableSpace (α i)] :
   ((∀ i, α (.inl i)) × ∀ i', α (.inr i')) ≃ᵐ ∀ i, α i := by
   refine' { Equiv.piSum α with .. }
@@ -596,14 +602,15 @@ theorem marginal_congr {x y : ∀ i, π i} (f : (∀ i, π i) → ℝ≥0∞)
     (∫⋯∫_s, f ∂μ) x = (∫⋯∫_s, f ∂μ) y := by
   dsimp [marginal, updateSet]; rcongr; exact h _ ‹_›
 
-theorem marginal_update {i : δ} (hi : i ∈ s) (x : ∀ i, π i) (f : (∀ i, π i) → ℝ≥0∞) (y : π i) :
+theorem marginal_update [DecidableEq δ] {i : δ} (hi : i ∈ s) (x : ∀ i, π i) (f : (∀ i, π i) → ℝ≥0∞)
+    (y : π i) :
     (∫⋯∫_s, f ∂μ) (Function.update x i y) = (∫⋯∫_s, f ∂μ) x := by
   gcongr with j hj
   have : j ≠ i := by rintro rfl; exact hj hi
   apply update_noteq this
 
-theorem marginal_union (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) (hst : Disjoint s t) :
-    ∫⋯∫_s ∪ t, f ∂μ = ∫⋯∫_s, ∫⋯∫_t, f ∂μ ∂μ := by
+theorem marginal_union [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f)
+    (hst : Disjoint s t) : ∫⋯∫_s ∪ t, f ∂μ = ∫⋯∫_s, ∫⋯∫_t, f ∂μ ∂μ := by
   ext1 x
   set e₁ := (finsetUnionEquivSum s t hst).symm
   set e₂ := MeasurableEquiv.piCongrLeft (fun i : ↥(s ∪ t) => π i) e₁
@@ -632,7 +639,7 @@ theorem marginal_union' (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {
 
 variable {μ}
 
-theorem marginal_singleton (f : (∀ i, π i) → ℝ≥0∞) (i : δ) :
+theorem marginal_singleton [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (i : δ) :
     ∫⋯∫_{i}, f ∂μ = fun x => ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by
   let α : Type _ := ({i} : Finset δ)
   let e := (MeasurableEquiv.piUnique fun j : α ↦ π j).symm
@@ -642,21 +649,23 @@ theorem marginal_singleton (f : (∀ i, π i) → ℝ≥0∞) (i : δ) :
         simp_rw [marginal, ← Measure.map_piUnique_symm, lintegral_map_equiv]
     _ = ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by simp [update_eq_updateSet]
 
-theorem integral_update (f : (∀ i, π i) → ℝ≥0∞) (i : δ) (x : ∀ i, π i) :
+theorem integral_update [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (i : δ) (x : ∀ i, π i) :
     ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i = (∫⋯∫_{i}, f ∂μ) x := by
   simp_rw [marginal_singleton f i]
 
 /-- Peel off a single integral from a `marginal` integral at the beginning (compare with
 `marginal_insert'`, which peels off an integral at the end). -/
-theorem marginal_insert (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {i : δ} (hi : i ∉ s)
-    (x : ∀ i, π i) :
+theorem marginal_insert (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {i : δ}
+    (hi : i ∉ s) (x : ∀ i, π i) :
     (∫⋯∫_insert i s, f ∂μ) x = ∫⁻ xᵢ, (∫⋯∫_s, f ∂μ) (Function.update x i xᵢ) ∂μ i := by
   rw [Finset.insert_eq, marginal_union μ f hf (Finset.disjoint_singleton_left.mpr hi),
     marginal_singleton]
 
 -- move next to `measurable_update` in `MeasureTheory.MeasurableSpace`
-theorem measurable_update' {δ : Type _} {π : δ → Type _} [∀ a : δ, MeasurableSpace (π a)]
-    {a : δ} [DecidableEq δ] : Measurable (fun p : (∀ i, π i) × π a ↦ update p.1 a p.2) := by
+-- unused
+theorem measurable_update' {δ : Type _} [DecidableEq δ] {π : δ → Type _}
+    [∀ a : δ, MeasurableSpace (π a)] {a : δ} :
+    Measurable (fun p : (∀ i, π i) × π a ↦ update p.1 a p.2) := by
   rw [measurable_pi_iff]; intro j
   dsimp [update]
   split_ifs with h
@@ -666,20 +675,12 @@ theorem measurable_update' {δ : Type _} {π : δ → Type _} [∀ a : δ, Measu
   · exact measurable_pi_iff.1 measurable_fst _
 
 /-- Peel off a single integral from a `marginal` integral at the end (compare with
-`marginal_insert`, which peels off an integral at the beginning).
-
-We prove this by induction from `marginal_insert` but it could also be proved directly. -/
-theorem marginal_insert' (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {i : δ} (hi : i ∉ s) :
+`marginal_insert`, which peels off an integral at the beginning). -/
+theorem marginal_insert' [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {i : δ}
+    (hi : i ∉ s) :
     ∫⋯∫_insert i s, f ∂μ = ∫⋯∫_s, (fun x ↦ ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ∂μ := by
-  induction' s using Finset.induction with j s hj ih <;> ext y
-  · rw [marginal_insert _ hf hi]
-    simp
-  · have H : j ∉ insert i s ∧ i ∉ s
-    · simp only [Finset.mem_insert] at hi ⊢
-      tauto
-    rw [Insert.comm, marginal_insert _ _ hj, marginal_insert _ hf H.1]
-    · simp_rw [ih H.2]
-    · exact Measurable.lintegral_prod_right (hf.comp measurable_update')
+  rw [Finset.insert_eq, Finset.union_comm,
+    marginal_union (s := s) μ f hf (Finset.disjoint_singleton_right.mpr hi), marginal_singleton]
 
 open Filter
 
@@ -694,6 +695,36 @@ theorem marginal_univ [Fintype δ] {f : (∀ i, π i) → ℝ≥0∞} :
   simp_rw [marginal, ← Measure.pi_map_left μ e, lintegral_map_equiv, updateSet]
   simp
   rfl
+
+theorem lintegral_eq_marginal_univ [Fintype δ] {f : (∀ i, π i) → ℝ≥0∞} (x : ∀ i, π i) :
+    ∫⁻ x, f x ∂Measure.pi μ = (∫⋯∫_univ, f ∂μ) x := by rw [marginal_univ]
+
+theorem marginal_eq_of_subset {f g : (∀ i, π i) → ℝ≥0∞} (hst : s ⊆ t)
+    (hf : Measurable f) (hg : Measurable g) (hfg : ∫⋯∫_s, f ∂μ = ∫⋯∫_s, g ∂μ) :
+    ∫⋯∫_t, f ∂μ = ∫⋯∫_t, g ∂μ := by
+  rw [← union_sdiff_of_subset hst, marginal_union' μ f hf disjoint_sdiff,
+    marginal_union' μ g hg disjoint_sdiff, hfg]
+
+theorem marginal_le_of_subset {f g : (∀ i, π i) → ℝ≥0∞} (hst : s ⊆ t)
+    (hf : Measurable f) (hg : Measurable g) (hfg : ∫⋯∫_s, f ∂μ ≤ ∫⋯∫_s, g ∂μ) :
+    ∫⋯∫_t, f ∂μ ≤ ∫⋯∫_t, g ∂μ := by
+  rw [← union_sdiff_of_subset hst, marginal_union' μ f hf disjoint_sdiff,
+    marginal_union' μ g hg disjoint_sdiff]
+  exact marginal_mono hfg
+
+theorem integral_eq_of_marginal_eq [Fintype δ] (s : Finset δ) {f g : (∀ i, π i) → ℝ≥0∞}
+    (hf : Measurable f) (hg : Measurable g) (hfg : ∫⋯∫_s, f ∂μ = ∫⋯∫_s, g ∂μ) :
+    ∫⁻ x, f x ∂Measure.pi μ = ∫⁻ x, g x ∂Measure.pi μ := by
+  rcases isEmpty_or_nonempty (∀ i, π i) with h|⟨⟨x⟩⟩
+  · simp_rw [lintegral_of_isEmpty]
+  simp_rw [lintegral_eq_marginal_univ x, marginal_eq_of_subset (Finset.subset_univ s) hf hg hfg]
+
+theorem integral_le_of_marginal_le [Fintype δ] (s : Finset δ) {f g : (∀ i, π i) → ℝ≥0∞}
+    (hf : Measurable f) (hg : Measurable g) (hfg : ∫⋯∫_s, f ∂μ ≤ ∫⋯∫_s, g ∂μ) :
+    ∫⁻ x, f x ∂Measure.pi μ ≤ ∫⁻ x, g x ∂Measure.pi μ := by
+  rcases isEmpty_or_nonempty (∀ i, π i) with h|⟨⟨x⟩⟩
+  · simp_rw [lintegral_of_isEmpty, le_rfl]
+  simp_rw [lintegral_eq_marginal_univ x, marginal_le_of_subset (Finset.subset_univ s) hf hg hfg x]
 
 end Marginal
 
