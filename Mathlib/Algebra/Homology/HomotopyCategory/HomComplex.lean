@@ -23,7 +23,7 @@ If `α : Cochain K L n`, we shall define `α.v p q hpq : F.X p ⟶ G.X q`.
 TODO:
 * Define the differential `Cochain K L n ⟶ Cochain K L m`, and develop the API.
 * Identify morphisms of complexes to `0`-cocycles.
-* Identify homotopies to `-1`-cochains satisfying certain relation.
+* Identify homotopies to `-1`-cochains satisfying certain relations.
 * Behaviour with respect to shifting the cochain complexes `K` and `L`.
 
 -/
