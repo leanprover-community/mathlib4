@@ -10,14 +10,11 @@ import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 A loose port of https://isabelle.in.tum.de/library/HOL/HOL-Analysis/Ball_Volume.html
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
-
 open Classical Real NNReal ENNReal BigOperators Finset Function MeasureTheory
 
 -- move to Data.Finset.Basic
 theorem Finset.constant_of_eq_insert {α β : Type _} (f : Finset α → β)
-    (H : ∀ s : Finset α, ∀ {i} (hi : i ∉ s), f s = f (insert i s)) (s t : Finset α) :
+    (H : ∀ s : Finset α, ∀ {i} (_hi : i ∉ s), f s = f (insert i s)) (s t : Finset α) :
     f s = f t := by
   suffices H : ∀ u v, u ∩ v = ∅ → f u = f (u ∪ v)
   · calc f s = f ((s ∩ t) ∪ (s \ t)) := by
@@ -49,8 +46,39 @@ theorem Real.Gamma_nonneg_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 0 ≤ Real.Gamma 
     · simp [Gamma_zero]
     · exact (Gamma_pos_of_pos hx).le
 
+@[simp, norm_cast]
+theorem Nat.cast_le_zero [OrderedSemiring R] [CharZero R] {n : ℕ} :
+  (n : R) ≤ 0 ↔ n = 0 := by rw [← cast_zero, cast_le, le_zero_iff]
+
+-- protect NNReal.inv_lt_one_iff
 @[simp]
-theorem Real.Gamma_half : Real.Gamma (1 / 2) = sqrt π := sorry
+theorem Nat.floor_one_div [LinearOrderedField α] [FloorRing α] (n : ℕ) :
+    ⌊1 / (n : α)⌋₊ = 0 ↔ n ≠ 1 := by
+  simp [_root_.inv_lt_one_iff, -ne_eq, ← lt_or_lt_iff_ne]
+
+@[simp]
+theorem Nat.floor_half [LinearOrderedField α] [FloorRing α] :
+    ⌊(1 / 2 : α)⌋₊ = 0 := by
+  simp_rw [floor_eq_zero, half_lt_self_iff, zero_lt_one]
+
+@[simp]
+theorem Real.Gamma_half : Real.Gamma (1 / 2) = sqrt π := by
+  calc Real.Gamma (1 / 2)
+      = (∫ x in Set.Ioi (0 : ℝ), (-x : ℂ).exp * x ^ (- (2 : ℝ)⁻¹)).re := by
+        simp [Real.Gamma, Complex.Gamma, Complex.normSq]
+        norm_num
+        simp [Complex.GammaAux, Complex.GammaIntegral]
+        norm_num
+    _ = (∫ y in Set.Ioi (0 : ℝ), (-y^2 : ℂ).exp * 2).re := by
+      sorry
+    _ = (∫ y in {(0 : ℝ)}ᶜ, (-y^2 : ℂ).exp).re := by
+      sorry
+    _ = (∫ y, (-y^2 : ℂ).exp).re := by
+      sorry
+    _ = ∫ y, (-y^2 : ℝ).exp := by
+      sorry
+    _ = sqrt π := by exact?
+
 
 def NNReal.Gamma (x : ℝ≥0) : ℝ≥0 := ⟨Real.Gamma x, Real.Gamma_nonneg_of_nonneg x.property⟩
 
@@ -63,6 +91,8 @@ theorem NNReal.Gamma_half : NNReal.Gamma (1 / 2) = sqrt NNReal.pi := sorry -- al
 theorem NNReal.Gamma_one : NNReal.Gamma 1 = 1 := Subtype.ext Real.Gamma_one
 
 def NNReal.Beta (a b : ℝ≥0) : ℝ≥0 := Gamma a * Gamma b / Gamma (a + b)
+
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 def I (n : ℕ) (t : ℝ) : ℝ≥0 := if ht : 0 ≤ t then (⟨t, ht⟩ ^ ((n:ℝ) / 2)) else 0
 
