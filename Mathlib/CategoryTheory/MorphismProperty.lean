@@ -695,6 +695,46 @@ theorem bijective_respectsIso : (MorphismProperty.bijective C).RespectsIso :=
 
 end Bijective
 
+/-- Typeclass expressing that a morphism property contain identities. -/
+class ContainsIdentities (W : MorphismProperty C) : Prop :=
+  /-- for all `X : C`, the identity of `X` satisfies the morphism property -/
+  id_mem' : ∀ (X : C), W (𝟙 X)
+
+lemma id_mem (W : MorphismProperty C) [W.ContainsIdentities] (X : C) :
+  W (𝟙 X) := ContainsIdentities.id_mem' X
+
+namespace ContainsIdentities
+
+instance op (W : MorphismProperty C) [W.ContainsIdentities] :
+    W.op.ContainsIdentities := ⟨fun X => W.id_mem X.unop⟩
+
+lemma unop (W : MorphismProperty Cᵒᵖ) [W.ContainsIdentities] :
+    W.unop.ContainsIdentities := ⟨fun X => W.id_mem (Opposite.op X)⟩
+
+end ContainsIdentities
+
+/-- A morphism property is multiplicative if it contains identities and is stable by
+composition. -/
+class IsMultiplicative (W : MorphismProperty C) extends W.ContainsIdentities : Prop :=
+  /-- compatibility of  -/
+  stableUnderComposition : W.StableUnderComposition
+
+lemma comp_mem (W : MorphismProperty C) {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hf : W f) (hg : W g)
+    [IsMultiplicative W] :
+    W (f ≫ g) :=
+  IsMultiplicative.stableUnderComposition f g hf hg
+
+namespace IsMultiplicative
+
+instance op (W : MorphismProperty C) [IsMultiplicative W] : IsMultiplicative W.op where
+  stableUnderComposition := fun _ _ _ f g hf hg => W.comp_mem g.unop f.unop hg hf
+
+lemma unop (W : MorphismProperty Cᵒᵖ) [IsMultiplicative W] : IsMultiplicative W.unop where
+  id_mem' _ := W.id_mem _
+  stableUnderComposition := fun _ _ _ f g hf hg => W.comp_mem g.op f.op hg hf
+
+end IsMultiplicative
+
 end MorphismProperty
 
 end CategoryTheory
