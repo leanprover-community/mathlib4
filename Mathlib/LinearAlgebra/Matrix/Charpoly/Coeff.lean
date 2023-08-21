@@ -23,6 +23,7 @@ We give methods for computing coefficients of the characteristic polynomial.
 - `Matrix.trace_eq_neg_charpoly_coeff` proves that the trace is the negative of the (d-1)th
   coefficient of the characteristic polynomial, where d is the dimension of the matrix.
   For a nonzero ring, this is the second-highest coefficient.
+- `Matrix.reverse_charpoly` characterises the reverse of the characteristic polynomial.
 
 -/
 
@@ -280,7 +281,7 @@ lemma Matrix.reverse_charpoly (M : Matrix n n R) :
   let q : R[T;T⁻¹] := det (1 - scalar n t * LaurentPolynomial.C.mapMatrix M)
   have ht : t_inv * t = 1 := by rw [← T_add, add_left_neg, T_zero]
   have hp : toLaurentAlg M.charpoly = p := by
-    simp [charpoly_def, AlgHom.map_det, map_sub, map_smul']
+    simp [charpoly, charmatrix, AlgHom.map_det, map_sub, map_smul']
   have hq : toLaurentAlg (det (1 - (X : R[X]) • C.mapMatrix M)) = q := by
     simp [AlgHom.map_det, map_sub, map_smul']
   suffices : t_inv ^ Fintype.card n * p = invert q
