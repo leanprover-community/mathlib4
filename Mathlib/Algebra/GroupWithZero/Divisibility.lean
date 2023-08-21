@@ -141,6 +141,21 @@ theorem eq_of_forall_dvd' (h : ∀ c, c ∣ a ↔ c ∣ b) : a = b :=
 
 end CancelCommMonoidWithZero
 
+noncomputable def Exists.chooseP {α} {p : α → Prop} (h : ∃ i, p i) (x : α) :=
+  by classical exact if p x then x else h.choose
+
+lemma Exists.chooseP_spec {α} {p : α → Prop} (h : ∃ i, p i) (x : α) : p (h.chooseP x) :=
+  by rw [chooseP]; split_ifs; assumption; exact h.choose_spec
+
+@[simp]
+lemma Exists.chooseP_true {α} {p : α → Prop} (h : ∃ i, p i) {x : α} (hx : p x) : h.chooseP x = x :=
+  by simp [chooseP, hx]
+
+@[simp]
+lemma Exists.chooseP_neg {α} {p : α → Prop} (h : ∃ i, p i) {x : α} (hx : ¬p x) :
+    h.chooseP x = h.choose :=
+  by simp [chooseP, hx]
+
 namespace Ring
 
 open Classical
@@ -154,9 +169,9 @@ ad hoc, but one needs a fully (rather than partially) defined division function 
 Note that while this is in the `Ring` namespace for brevity, it requires the weaker assumption
 `MonoidWithZero M₀` instead of `Ring M₀`. -/
 noncomputable def divide (x y : M₀) : M₀ :=
-  if h : y ≠ 0 ∧ y ∣ x then h.right.choose else 0
+  if h : y ≠ 0 ∧ y ∣ x then h.right.chooseP 0 else 0
 
-lemma divide_dvd {x y : M₀} (hy : y ≠ 0) (hx : y ∣ x) : divide x y = hx.choose := by
+lemma divide_dvd {x y : M₀} (hy : y ≠ 0) (hx : y ∣ x) : divide x y = hx.chooseP 0 := by
   rw [divide, dif_pos ⟨hy, hx⟩]
 
 lemma divide_not_dvd {x y : M₀} (hx : ¬y ∣ x) : divide x y = 0 := by
@@ -165,32 +180,45 @@ lemma divide_not_dvd {x y : M₀} (hx : ¬y ∣ x) : divide x y = 0 := by
 lemma divide_zero (x : M₀) : divide x 0 = 0 := by
   simp only [divide, dif_neg, ne_eq, false_and]
 
-lemma divide_one [Nontrivial M₀] (x : M₀) : divide x 1 = x := by
-  rw [divide_dvd one_ne_zero <| one_dvd x, ← one_mul <| Exists.choose _]
-  exact (one_dvd x).choose_spec.symm
+lemma divide_one (x : M₀) : divide x 1 = x := by
+  nontriviality
+  rw [divide_dvd one_ne_zero <| one_dvd x, ]
+  rcases eq_or_ne x 0 with rfl | hx
+  · rw [Exists.chooseP_true]; simp
+  rw [Exists.chooseP_neg, ← one_mul <| Exists.choose _]
+  · exact (one_dvd x).choose_spec.symm
+  · simpa
 
-lemma zero_divide [NoZeroDivisors M₀] (y : M₀) : divide 0 y = 0 := by
+lemma zero_divide (y : M₀) : divide 0 y = 0 := by
   by_cases hy : y = 0
   · rw [hy, divide_zero]
-  · rw [divide_dvd hy <| dvd_zero y]
-    exact (eq_zero_or_eq_zero_of_mul_eq_zero (dvd_zero y).choose_spec.symm).resolve_left hy
+  · rw [divide_dvd hy <| dvd_zero y, Exists.chooseP_true]
+    rw [mul_zero]
 
 lemma one_divide {M₀ : Type _} [CommMonoidWithZero M₀] (y : M₀) : divide 1 y = inverse y := by
+  nontriviality
   by_cases hy : y = 0
   · rw [hy, divide_zero, inverse_zero]
   · by_cases hy' : y ∣ 1
     · have hy'' : IsUnit y := isUnit_of_dvd_one hy'
-      rw [divide_dvd hy hy', ← (inverse_mul_eq_iff_eq_mul y 1 _ hy'').mpr hy'.choose_spec, mul_one]
+      rw [divide_dvd hy hy', Exists.chooseP_neg,
+          ← (inverse_mul_eq_iff_eq_mul y 1 _ hy'').mpr hy'.choose_spec, mul_one]
+      simp
     · rw [divide_not_dvd hy', inverse_non_unit]
       exact hy' ∘ isUnit_iff_dvd_one.mp
 
 lemma mul_divide_cancel {x y : M₀} (hy : y ≠ 0) (hx : y ∣ x) : y * divide x y = x := by
-  simp only [divide_dvd hy hx, hx.choose_spec.symm]
+  simp only [divide_dvd hy hx, (hx.chooseP_spec _).symm]
 
 lemma mul_divide_cancel_left [IsLeftCancelMulZero M₀] {x y : M₀} (hx : x ≠ 0) :
     divide (x * y) x = y := by
   rw [divide_dvd hx <| dvd_mul_right x y]
-  exact mul_left_cancel₀ hx (dvd_mul_right x y).choose_spec.symm
+  rcases eq_or_ne y 0 with rfl | hy
+  · simp
+  rw [Exists.chooseP_neg]
+  · exact mul_left_cancel₀ hx (dvd_mul_right x y).choose_spec.symm
+  · contrapose! hy
+    rw [mul_left_cancel₀ hx hy]
 
 variable {M₀ : Type _} [CommMonoidWithZero M₀]
 
@@ -200,11 +228,17 @@ lemma divide_mul_cancel {x y : M₀} (hy : y ≠ 0) (hx : y ∣ x) : divide x y 
 lemma mul_divide_cancel_right [IsRightCancelMulZero M₀] {x y : M₀} (hy : y ≠ 0) :
     divide (x * y) y = x := by
   rw [divide_dvd hy <| dvd_mul_left y x]
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
+  rw [Exists.chooseP_neg]
   exact mul_right_cancel₀ hy <| mul_comm _ y ▸ (dvd_mul_left y x).choose_spec.symm
+  contrapose! hx
+  rw [mul_zero, ←zero_mul y] at hx
+  rw [mul_right_cancel₀ hy hx]
 
 end Ring
 
 lemma IsUnit.divide_eq_mul_inverse {M₀ : Type _} [Nontrivial M₀] [CommMonoidWithZero M₀]
   {x y : M₀} (hy : IsUnit y) : Ring.divide x y = x * Ring.inverse y := by
-  rw [Ring.divide_dvd hy.ne_zero hy.dvd, ← hy.mul_right_inj, ← hy.dvd.choose_spec, mul_comm,
+  rw [Ring.divide_dvd hy.ne_zero hy.dvd, ← hy.mul_right_inj, ← hy.dvd.chooseP_spec, mul_comm,
     Ring.inverse_mul_cancel_right _ _ hy]
