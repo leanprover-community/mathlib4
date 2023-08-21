@@ -1040,9 +1040,9 @@ instance (priority := 100) ContinuousSub.measurableSub₂ [SecondCountableTopolo
 #align has_continuous_sub.has_measurable_sub₂ ContinuousSub.measurableSub₂
 
 instance (priority := 100) ContinuousSMul.measurableSMul₂ {M α} [TopologicalSpace M]
-    [SecondCountableTopology M] [MeasurableSpace M] [OpensMeasurableSpace M] [TopologicalSpace α]
-    [SecondCountableTopology α] [MeasurableSpace α] [BorelSpace α] [SMul M α] [ContinuousSMul M α] :
-    MeasurableSMul₂ M α :=
+    [MeasurableSpace M] [OpensMeasurableSpace M] [TopologicalSpace α]
+    [SecondCountableTopologyEither M α] [MeasurableSpace α] [BorelSpace α] [SMul M α]
+    [ContinuousSMul M α] : MeasurableSMul₂ M α :=
   ⟨continuous_smul.measurable⟩
 #align has_continuous_smul.has_measurable_smul₂ ContinuousSMul.measurableSMul₂
 
