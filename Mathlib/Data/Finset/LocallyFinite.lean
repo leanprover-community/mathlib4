@@ -3,6 +3,7 @@ Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Yaël Dillies
 -/
+import Mathlib.Order.Cover
 import Mathlib.Order.LocallyFinite
 import Mathlib.Data.Set.Intervals.Monoid
 
@@ -13,6 +14,15 @@ import Mathlib.Data.Set.Intervals.Monoid
 
 This file provides basic results about all the `Finset.Ixx`, which are defined in
 `Order.LocallyFinite`.
+
+In addition, it shows that in a locally finite order `≤` and `<` are the transitive closures of,
+respectively, `⩿` and `⋖`, which then leads to a characterization of monotone and strictly
+functions whose domain is a locally finite order. In particular, this file proves:
+
+* `le_iff_transGen_wcovby`: `≤` is the transitive closure of `⩿`
+* `lt_iff_transGen_covby`: `≤` is the transitive closure of `⩿`
+* `monotone_iff_forall_wcovby`: Characterization of monotone functions
+* `strictMono_iff_forall_covby`: Characterization of strictly monotone functions
 
 ## TODO
 
@@ -1151,3 +1161,124 @@ theorem prod_prod_Ioi_mul_eq_prod_prod_off_diag [Fintype ι] [LinearOrder ι]
 #align finset.sum_sum_Ioi_add_eq_sum_sum_off_diag Finset.sum_sum_Ioi_add_eq_sum_sum_off_diag
 
 end Finset
+
+/-! ### `⩿`, `⋖` and monotonicity -/
+
+section Cover
+
+open Finset Relation
+
+/-- In a locally finite preorder, `≤` is the transitive closure of `⩿`. -/
+lemma le_iff_transGen_wcovby [Preorder α] [LocallyFiniteOrder α] {x y : α} :
+    x ≤ y ↔ TransGen (· ⩿ ·) x y := by
+  refine ⟨fun hxy ↦ ?_, fun h ↦ ?_⟩
+  · suffices ∀ n : ℕ, (Icc x y).card = n → TransGen (· ⩿ ·) x y by
+      exact this (Icc x y).card rfl
+    -- It suffices to proceed by strong induction on the cardinality of `Icc x y`.
+    intro n
+    induction n using Nat.strong_induction_on generalizing x y with
+    | @h n hn =>
+      match n with
+      -- it's impossible for the cardinality to be zero since `x ≤ y`
+      | 0 => exact fun h ↦ (Icc_eq_empty_iff.mp (by simpa using h) hxy).elim
+      /- When the cardinality is positive, then `Ico x y` is a nonempty finset and so contains a
+      maximal element `z` and `Icc x z` has cardinality strictly less than the cardinality of
+      `Ico x y`. -/
+      | k + 1 =>
+        intro h
+        have : (Ico x y).card < k + 1 := h ▸ (card_lt_card <|
+          ⟨Ico_subset_Icc_self, not_subset.mpr ⟨y, ⟨right_mem_Icc.mpr hxy, right_not_mem_Ico⟩⟩⟩)
+        by_cases hxy' : y ≤ x
+        -- If `y ≤ x`, then `x ⩿ y`
+        · exact .single <| wcovby_of_le_of_le hxy hxy'
+        /- and if `¬ y ≤ x`, then `x < y`, not because it is a linear order, but because `x ≤ y`
+        already. In that case, since `z` is maximal in `Ico x y`, then `z ⩿ y` and we can use the
+        induction hypothesis to show that `Relation.TransGen (· ⩿ ·) x z`. -/
+        · have h_non : (Ico x y).Nonempty := ⟨x, mem_Ico.mpr ⟨le_rfl, lt_of_le_not_le hxy hxy'⟩⟩
+          obtain ⟨z, z_mem, hz⟩ := (Ico x y).exists_maximal h_non
+          have z_card : (Icc x z).card < k + 1 := calc
+            (Icc x z).card ≤ (Ico x y).card :=
+              card_le_of_subset <| Icc_subset_Ico_right (mem_Ico.mp z_mem).2
+            _              < k + 1 := this
+          have h₁ := hn (Icc x z).card z_card (mem_Ico.mp z_mem).1 rfl
+          have h₂ : z ⩿ y := by
+            refine ⟨(mem_Ico.mp z_mem).2.le, fun c hzc hcy ↦ hz c ?_ hzc⟩
+            exact mem_Ico.mpr <| ⟨(mem_Ico.mp z_mem).1.trans hzc.le, hcy⟩
+          exact .tail h₁ h₂
+  · induction h with
+    | single h => exact h.le
+    | tail _ h₁ h₂ => exact h₂.trans h₁.le
+
+/-- In a locally finite partial order, `≤` is the reflexive transitive closure of `⋖`. -/
+lemma le_iff_reflTransGen_covby [PartialOrder α] [LocallyFiniteOrder α] {x y : α} :
+    x ≤ y ↔ ReflTransGen (· ⋖ ·) x y := by
+  rw [le_iff_transGen_wcovby, wcovby_eq_reflGen_covby, transGen_comp_reflGen]
+
+/-- In a locally finite preorder, `<` is the transitive closure of `⋖`. -/
+lemma lt_iff_transGen_covby [Preorder α] [LocallyFiniteOrder α] {x y : α} :
+    x < y ↔ TransGen (· ⋖ ·) x y := by
+  refine ⟨fun hxy ↦ ?_, fun h ↦ ?_⟩
+  · suffices ∀ n : ℕ, (Ico x y).card = n → TransGen (· ⋖ ·) x y by
+      exact this (Ico x y).card rfl
+    -- It suffices to proceed by strong induction on the cardinality of `Ico x y`.
+    intro n
+    induction n using Nat.strong_induction_on generalizing x y with
+    | @h n hn =>
+      intro h
+      match n with
+      -- it's impossible for the cardinality to be zero since `x < y`
+      | 0 =>
+        simp only [card_eq_zero, Ico_eq_empty_iff] at h
+        exact (h hxy).elim
+      -- `Ico x y` is a nonempty finset and so contains a maximal element `z` and
+      -- `Ico x z` has cardinality strictly less than the cardinality of `Ico x y`
+      | k + 1 =>
+        have h_non : (Ico x y).Nonempty := ⟨x, mem_Ico.mpr ⟨le_rfl, hxy⟩⟩
+        obtain ⟨z, z_mem, hz⟩ := (Ico x y).exists_maximal h_non
+        have z_card : (Ico x z).card < k + 1 := h ▸(card_lt_card <|
+          (ssubset_iff_of_subset (Ico_subset_Ico le_rfl (mem_Ico.mp z_mem).2.le)).mpr
+            ⟨z, z_mem, right_not_mem_Ico⟩)
+        /- Since `z` is maximal in `Ico x y`, `z ⋖ y`. -/
+        have hzy : z ⋖ y := by
+            refine ⟨(mem_Ico.mp z_mem).2, fun c hc hcy ↦ ?_⟩
+            exact hz _ (mem_Ico.mpr ⟨((mem_Ico.mp z_mem).1.trans_lt hc).le, hcy⟩) hc
+        by_cases hxz : x < z
+        /- when `x < z`, then we may use the induction hypothesis to get a chain
+        `Relation.TransGen (· ⋖ ·) x z`, which we can extend with `Relation.TransGen.tail`. -/
+        · exact .tail (hn _ z_card hxz rfl) hzy
+        /- when `¬ x < z`, then actually `z ≤ x` (not because it's a linear order, but because
+        `x ≤ z`), and since `z ⋖ y` we conclude that `x ⋖ y` , then `Relation.TransGen.single`. -/
+        · simp only [lt_iff_le_not_le, not_and, not_not] at hxz
+          exact .single (hzy.of_le_of_lt (hxz (mem_Ico.mp z_mem).1) hxy)
+  · induction h with
+    | single hx => exact hx.1
+    | tail _ hb ih => exact ih.trans hb.1
+
+variable {β : Type*}
+
+/-- A function from a locally finite preorder is monotone if and only if it is monotone when
+restricted to pairs satisfying `a ⩿ b`. -/
+lemma monotone_iff_forall_wcovby [Preorder α] [LocallyFiniteOrder α] [Preorder β]
+    (f : α → β) : Monotone f ↔ ∀ a b : α, a ⩿ b → f a ≤ f b := by
+  refine ⟨fun hf _ _ h ↦ hf h.le, fun h a b hab ↦ ?_⟩
+  simpa [transGen_eq_self (r := ((· : β) ≤ ·)) transitive_le]
+    using TransGen.lift f h <| le_iff_transGen_wcovby.mp hab
+
+/-- A function from a locally finite partial order is monotone if and only if it is monotone when
+restricted to pairs satisfying `a ⋖ b`. -/
+lemma monotone_iff_forall_covby [PartialOrder α] [LocallyFiniteOrder α] [Preorder β]
+    (f : α → β) : Monotone f ↔ ∀ a b : α, a ⋖ b → f a ≤ f b := by
+  refine ⟨fun hf _ _ h ↦ hf h.le, fun h a b hab ↦ ?_⟩
+  simpa [reflTransGen_eq_self (r := ((· : β) ≤ ·)) IsRefl.reflexive transitive_le]
+    using ReflTransGen.lift f h <| le_iff_reflTransGen_covby.mp hab
+
+/-- A function from a locally finite preorder is strictly monotone if and only if it is strictly
+monotone when restricted to pairs satisfying `a ⋖ b`. -/
+lemma strictMono_iff_forall_covby [Preorder α] [LocallyFiniteOrder α] [Preorder β]
+    (f : α → β) : StrictMono f ↔ ∀ a b : α, a ⋖ b → f a < f b := by
+  refine ⟨fun hf _ _ h ↦ hf h.lt, fun h a b hab ↦ ?_⟩
+  have := Relation.TransGen.lift f h (a := a) (b := b)
+  rw [← lt_iff_transGen_covby, transGen_eq_self (@lt_trans β _)] at this
+  · exact this hab
+
+end Cover
