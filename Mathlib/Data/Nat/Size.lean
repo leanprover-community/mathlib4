@@ -106,7 +106,9 @@ theorem size_shiftl' {b m n} (h : shiftl' b m n ≠ 0) : size (shiftl' b m n) = 
   rfl
 #align nat.size_shiftl' Nat.size_shiftl'
 
-@[simp]
+-- TODO: decide whether `Nat.shiftLeft_eq` (which rewrites the LHS into a power) should be a simp
+-- lemma; it was not in mathlib3. Until then, tell the simpNF linter to ignore the issue.
+@[simp, nolint simpNF]
 theorem size_shiftLeft {m} (h : m ≠ 0) (n) : size (m <<< n) = size m + n :=
   by simp only [size_shiftl' (shiftl'_ne_zero_left _ h _), ← shiftl'_false]
 #align nat.size_shiftl Nat.size_shiftLeft
