@@ -1255,9 +1255,18 @@ section BasisRank
 
 variable {s : Finset α}
 
-theorem exists_feasible_satisfying_basisRank :
-    ∃ b ∈ G, G.basisRank s = (s ∩ b).card := by
+def basisRankSatisfier (G : Greedoid α) (s : Finset α) : Finset (Finset α) :=
+  G.feasibleSet.filter fun t => G.basisRank s = (s ∩ t).card
+
+theorem basisRankSatisfier_nonempty :
+    Nonempty (G.basisRankSatisfier s) := by
   sorry
+
+theorem exists_feasible_satisfying_basisRank :
+    ∃ t ∈ G, G.basisRank s = (s ∩ t).card := by
+  have ⟨t, ht⟩ : Nonempty (G.basisRankSatisfier s):= basisRankSatisfier_nonempty
+  simp only [basisRankSatisfier, system_feasible_set_mem_mem, Finset.mem_filter] at ht
+  exists t
 
 theorem rank_le_basisRank : G.rank s ≤ G.basisRank s := by
   simp only [rank, system_feasible_set_mem_mem, basisRank, WithBot.le_unbot_iff, WithBot.coe_unbot]
