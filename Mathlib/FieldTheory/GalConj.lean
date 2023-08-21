@@ -101,6 +101,7 @@ namespace Polynomial
 
 variable {T : Type _} [CommRing T]
 
+-- Compare `Polynomial.rootSet`
 noncomputable abbrev aroots (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] : Multiset S :=
   (p.map (algebraMap T S)).roots
 #align polynomial.aroots Polynomial.aroots
@@ -110,7 +111,7 @@ theorem aroots_def (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] :
   rfl
 #align polynomial.aroots_def Polynomial.aroots_def
 
-theorem aroots_map (p : T[X]) (S) (A) [CommRing S] [IsDomain S] [Algebra T S] [CommRing A]
+theorem aroots_map (p : T[X]) (S) (A) [CommRing S] [Algebra T S] [CommRing A]
     [IsDomain A] [Algebra S A] [Algebra T A] [IsScalarTower T S A] :
     (p.map (algebraMap T S)).aroots A = p.aroots A := by
   rw [aroots_def, map_map, ← IsScalarTower.algebraMap_eq T S A]
