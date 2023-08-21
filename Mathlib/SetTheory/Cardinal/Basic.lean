@@ -197,7 +197,7 @@ theorem mk_uLift (α) : #(ULift.{v, u} α) = lift.{v} #α :=
 
 -- Porting note : simpNF is not happy with universe levels, but this is needed as simp lemma
 -- further down in this file
-/-- `lift.{(max u v) u}` equals `lift.{v u}`. -/
+/-- `lift.{max u v, u}` equals `lift.{v, u}`. -/
 @[simp, nolint simpNF]
 theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
   funext fun a => inductionOn a fun _ => (Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
@@ -205,7 +205,7 @@ theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
 
 -- Porting note : simpNF is not happy with universe levels, but this is needed as simp lemma
 -- further down in this file
-/-- `lift.{(max v u) u}` equals `lift.{v u}`. -/
+/-- `lift.{max v u, u}` equals `lift.{v, u}`. -/
 @[simp, nolint simpNF]
 theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
   lift_umax

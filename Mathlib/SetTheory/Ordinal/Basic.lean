@@ -677,7 +677,7 @@ theorem type_lift_preimage_aux {α : Type u} {β : Type v} (r : α → α → Pr
       (inferInstanceAs (IsWellOrder β (f ⁻¹'o r)))) = lift.{v} (type r) :=
   (RelIso.preimage f r).ordinal_lift_type_eq
 
-/-- `lift.{(max u v) u}` equals `lift.{v u}`. -/
+/-- `lift.{max u v, u}` equals `lift.{v, u}`. -/
 -- @[simp] -- Porting note: simp lemma never applies, tested
 theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
   funext fun a =>
@@ -685,7 +685,7 @@ theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
       Quotient.sound ⟨(RelIso.preimage Equiv.ulift r).trans (RelIso.preimage Equiv.ulift r).symm⟩
 #align ordinal.lift_umax Ordinal.lift_umax
 
-/-- `lift.{(max v u) u}` equals `lift.{v u}`. -/
+/-- `lift.{max v u, u}` equals `lift.{v, u}`. -/
 -- @[simp] -- Porting note: simp lemma never applies, tested
 theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
   lift_umax
