@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Floris van Doorn
 -/
 import Mathlib.MeasureTheory.Integral.Marginal
-import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+import Mathlib.Analysis.SpecialFunctions.Gaussian
 
 /-!
 A loose port of https://isabelle.in.tum.de/library/HOL/HOL-Analysis/Ball_Volume.html
@@ -50,42 +50,34 @@ theorem Real.Gamma_nonneg_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 0 ≤ Real.Gamma 
 theorem Nat.cast_le_zero [OrderedSemiring R] [CharZero R] {n : ℕ} :
   (n : R) ≤ 0 ↔ n = 0 := by rw [← cast_zero, cast_le, le_zero_iff]
 
--- protect NNReal.inv_lt_one_iff
-@[simp]
-theorem Nat.floor_one_div [LinearOrderedField α] [FloorRing α] (n : ℕ) :
-    ⌊1 / (n : α)⌋₊ = 0 ↔ n ≠ 1 := by
-  simp [_root_.inv_lt_one_iff, -ne_eq, ← lt_or_lt_iff_ne]
+-- protect NNReal.inv_lt_one_iff and ENNReal.one_lt_two (also write linter for this)
 
+-- unused
 @[simp]
 theorem Nat.floor_half [LinearOrderedField α] [FloorRing α] :
-    ⌊(1 / 2 : α)⌋₊ = 0 := by
-  simp_rw [floor_eq_zero, half_lt_self_iff, zero_lt_one]
+    ⌊(2⁻¹ : α)⌋₊ = 0 := by
+  simp [floor_eq_zero, _root_.inv_lt_one_iff, _root_.one_lt_two]
+
+attribute [simp] Real.Gamma_one_half_eq
 
 @[simp]
-theorem Real.Gamma_half : Real.Gamma (1 / 2) = sqrt π := by
-  calc Real.Gamma (1 / 2)
-      = (∫ x in Set.Ioi (0 : ℝ), (-x : ℂ).exp * x ^ (- (2 : ℝ)⁻¹)).re := by
-        simp [Real.Gamma, Complex.Gamma, Complex.normSq]
-        norm_num
-        simp [Complex.GammaAux, Complex.GammaIntegral]
-        norm_num
-    _ = (∫ y in Set.Ioi (0 : ℝ), (-y^2 : ℂ).exp * 2).re := by
-      sorry
-    _ = (∫ y in {(0 : ℝ)}ᶜ, (-y^2 : ℂ).exp).re := by
-      sorry
-    _ = (∫ y, (-y^2 : ℂ).exp).re := by
-      sorry
-    _ = ∫ y, (-y^2 : ℝ).exp := by
-      sorry
-    _ = sqrt π := by exact?
-
+theorem Real.Gamma_two_inv : Real.Gamma 2⁻¹ = sqrt π := by
+  simp [← Real.Gamma_one_half_eq]
 
 def NNReal.Gamma (x : ℝ≥0) : ℝ≥0 := ⟨Real.Gamma x, Real.Gamma_nonneg_of_nonneg x.property⟩
 
-theorem NNReal.Gamma_pos_of_pos {x : ℝ≥0} (h : 0 < x) : 0 < Real.Gamma x := sorry -- algebra
+@[simp]
+theorem NNReal.Gamma_coe {x : ℝ≥0} : (NNReal.Gamma x : ℝ) = Real.Gamma x := rfl
+
+theorem NNReal.Gamma_pos {x : ℝ≥0} (hx : 0 < x) : 0 < NNReal.Gamma x := by
+  rw [← NNReal.coe_lt_coe]
+  simp
+  exact Real.Gamma_pos_of_pos hx
 
 @[simp]
-theorem NNReal.Gamma_half : NNReal.Gamma (1 / 2) = sqrt NNReal.pi := sorry -- algebra
+theorem NNReal.Gamma_half : NNReal.Gamma (1 / 2) = sqrt NNReal.pi := by
+  ext
+  simp
 
 @[simp]
 theorem NNReal.Gamma_one : NNReal.Gamma 1 = 1 := Subtype.ext Real.Gamma_one
@@ -124,8 +116,8 @@ theorem B_succ (n : ℕ) : B (n + 1) = B n * Beta (1 / 2) (n / 2 + 1) := by
   simp only [add_div]
   ring_nf
   simp only
-  have h₁ : 0 < NNReal.Gamma (1 + n / 2) := NNReal.Gamma_pos_of_pos (by positivity)
-  have h₂ : 0 < NNReal.Gamma (1 + n / 2 + 1 / 2) := NNReal.Gamma_pos_of_pos (by positivity)
+  have h₁ : 0 < NNReal.Gamma (1 + n / 2) := NNReal.Gamma_pos
+  have h₂ : 0 < NNReal.Gamma (1 + n / 2 + 1 / 2) := NNReal.Gamma_pos
   set X := NNReal.Gamma (1 + n / 2)
   set Y := NNReal.Gamma (1 + n / 2 + 1 / 2)
   clear_value X Y
