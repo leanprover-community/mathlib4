@@ -137,11 +137,8 @@ end Semiring
 
 end Finsupp
 
-
 namespace DFinsupp
-
 variable {ι : Type*} {R : Type*} {M : ι → Type*}
-
 variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
 /-- The direct sum of free modules is free.
@@ -154,7 +151,6 @@ noncomputable def basis {η : ι → Type*} (b : ∀ i, Basis (η i) R (M i)) :
 #align dfinsupp.basis DFinsupp.basis
 
 end DFinsupp
-
 
 /-! TODO: move this section to an earlier file. -/
 
