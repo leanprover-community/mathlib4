@@ -70,7 +70,6 @@ theorem mapRange_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] (p : MvP
   rw [p.as_sum, Finsupp.mapRange_finset_sum, (map f).map_sum]
   refine' Finset.sum_congr rfl fun n _ => _
   rw [map_monomial, ← single_eq_monomial, Finsupp.mapRange_single, single_eq_monomial]
-  simp_all only [AddMonoidHom.coe_coe]
 #align mv_polynomial.map_range_eq_map MvPolynomial.mapRange_eq_map
 
 end Homomorphism
