@@ -93,6 +93,8 @@ example : (X : Nat[X]) = X := by
 ```
 -/
 
+namespace Mathlib.Tactic
+
 open Lean Elab Tactic
 
 /--
@@ -108,7 +110,7 @@ By default it cleans up the local context. To use the full local context, use `e
 The tactic responds to pretty printing options.
 For example, `set_option pp.all true in extract_goal` gives the `pp.all` form.
 -/
-elab (name := Mathlib.Tactic.extractGoal) "extract_goal" full?:&"*"? name?:(colGt ppSpace ident)? : tactic => do
+elab (name := extractGoal) "extract_goal" full?:&"*"? name?:(colGt ppSpace ident)? : tactic => do
   let name ← if let some name := name?
              then pure name.getId
              else mkAuxName ((← getCurrNamespace) ++ `extracted) 1
