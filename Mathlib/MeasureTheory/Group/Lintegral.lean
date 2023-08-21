@@ -6,8 +6,6 @@ Authors: Floris van Doorn
 import Mathlib.MeasureTheory.Integral.Lebesgue
 import Mathlib.MeasureTheory.Group.Measure
 
-#align_import measure_theory.group.integration from "leanprover-community/mathlib"@"ec247d43814751ffceb33b758e8820df2372bf6f"
-
 /-!
 # Lebesgue Integration on Groups
 
@@ -29,10 +27,10 @@ section MeasurableMul
 
 variable [Group G] [MeasurableMul G]
 
-/-- Translating a function by left-multiplication does not change its `MeasureTheory.lintegral`
+/-- Translating a function by left-multiplication does not change its Lebesgue integral
 with respect to a left-invariant measure. -/
 @[to_additive
-      "Translating a function by left-addition does not change its `MeasureTheory.lintegral` with
+      "Translating a function by left-addition does not change its Lebesgue integral with
       respect to a left-invariant measure."]
 theorem lintegral_mul_left_eq_self [IsMulLeftInvariant μ] (f : G → ℝ≥0∞) (g : G) :
     (∫⁻ x, f (g * x) ∂μ) = ∫⁻ x, f x ∂μ := by
@@ -41,10 +39,10 @@ theorem lintegral_mul_left_eq_self [IsMulLeftInvariant μ] (f : G → ℝ≥0∞
 #align measure_theory.lintegral_mul_left_eq_self MeasureTheory.lintegral_mul_left_eq_self
 #align measure_theory.lintegral_add_left_eq_self MeasureTheory.lintegral_add_left_eq_self
 
-/-- Translating a function by right-multiplication does not change its `MeasureTheory.lintegral`
+/-- Translating a function by right-multiplication does not change its Lebesgue integral
 with respect to a right-invariant measure. -/
 @[to_additive
-      "Translating a function by right-addition does not change its `MeasureTheory.lintegral` with
+      "Translating a function by right-addition does not change its Lebesgue integral with
       respect to a right-invariant measure."]
 theorem lintegral_mul_right_eq_self [IsMulRightInvariant μ] (f : G → ℝ≥0∞) (g : G) :
     (∫⁻ x, f (x * g) ∂μ) = ∫⁻ x, f x ∂μ := by
@@ -56,9 +54,7 @@ theorem lintegral_mul_right_eq_self [IsMulRightInvariant μ] (f : G → ℝ≥0�
 @[to_additive] -- Porting note: was `@[simp]`
 theorem lintegral_div_right_eq_self [IsMulRightInvariant μ] (f : G → ℝ≥0∞) (g : G) :
     (∫⁻ x, f (x / g) ∂μ) = ∫⁻ x, f x ∂μ := by
-  simp_rw [div_eq_mul_inv]
-  -- Porting note: was `simp_rw`
-  rw [lintegral_mul_right_eq_self f g⁻¹]
+  simp_rw [div_eq_mul_inv, lintegral_mul_right_eq_self f g⁻¹]
 #align measure_theory.lintegral_div_right_eq_self MeasureTheory.lintegral_div_right_eq_self
 #align measure_theory.lintegral_sub_right_eq_self MeasureTheory.lintegral_sub_right_eq_self
 
