@@ -52,11 +52,11 @@ end prelim
 variable {ι X Y α β : Type*} [TopologicalSpace X] [UniformSpace α] [UniformSpace β]
 variable {F : ι → X → α} {G : ι → β → α}
 
-theorem Equicontinuous.comap_uniformFun_eq_comap_pi [CompactSpace X] (hF : Equicontinuous F) :
+theorem Equicontinuous.comap_uniformFun_eq [CompactSpace X] (hF : Equicontinuous F) :
     (UniformFun.uniformSpace X α).comap (UniformFun.ofFun ∘ F) =
-    (Pi.uniformSpace (fun _ ↦ α)).comap F := by
+    ⨅ x, ‹UniformSpace α›.comap (eval x ∘ F) := by
   let F' := UniformFun.ofFun ∘ F
-  refine le_antisymm (UniformSpace.comap_mono UniformFun.uniformContinuous_toFun) ?_
+  refine le_antisymm (le_iInf fun x ↦ UniformSpace.comap_mono (UniformFun.uniformContinuous_eval α x)) ?_
   change comap _ _ ≤ comap _ _
   simp_rw [Pi.uniformity, Filter.comap_iInf, comap_comap, Function.comp]
   refine ((UniformFun.hasBasis_uniformity X α).comap (Prod.map F' F')).ge_iff.mpr ?_
@@ -76,23 +76,10 @@ theorem Equicontinuous.comap_uniformFun_eq_comap_pi [CompactSpace X] (hF : Equic
 
 theorem Equicontinuous.uniformInducing_pi [UniformSpace ι] [CompactSpace X]
     (hF : Equicontinuous F) (F_ind : UniformInducing (UniformFun.ofFun ∘ F)) :
-    UniformInducing F where
+    UniformInducing F := by
+  rw [uniformInducing_iff']
 
-lemma theorem1' {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
-  (hF : ∀ K ∈ 𝔖, Equicontinuous ((K.restrict : (X → α) → (K → α)) ∘ F)) :
-  (UniformOnFun.uniformSpace X α 𝔖).comap F =
-    (⨅ K ∈ 𝔖, ⨅ x ∈ K, ‹UniformSpace α›.comap (eval x)).comap F := by
-  rw [UniformOnFun.uniformSpace]
-  simp_rw [UniformSpace.comap_iInf, ← UniformSpace.comap_comap]
-  refine infi_congr (λ K, infi_congr $ λ hK, _),
-  haveI : compact_space K := is_compact_iff_compact_space.mp (h𝔖 K hK),
-  simp_rw [theorem1 (hF K hK), @uniform_space.comap_comap _ _ _ _ F,
-            Pi.uniform_space, of_core_eq_to_core, uniform_space.comap_infi, infi_subtype],
-  refine infi_congr (λ x, infi_congr $ λ hx, congr_arg _ _),
-  rw ← uniform_space.comap_comap,
-  exact congr_fun (congr_arg _ rfl) _,
-
-lemma theorem1' {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
+lemma Equicontinuous.comap_uniformOnFun_eq_comap_pi {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
     (hF : ∀ K ∈ 𝔖, Equicontinuous ((K.restrict : (X → α) → (K → α)) ∘ F)) :
     (UniformOnFun.uniformSpace X α 𝔖).comap F =
       (⨅ K ∈ 𝔖, ⨅ x ∈ K, ‹UniformSpace α›.comap (eval x)).comap F := by
