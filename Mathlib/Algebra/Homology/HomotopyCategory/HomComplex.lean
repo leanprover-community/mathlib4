@@ -102,11 +102,11 @@ lemma zero_v {n : ℤ} (p q : ℤ) (hpq : p + n = q) :
 
 @[simp]
 lemma add_v {n : ℤ} (z₁ z₂ : Cochain F G n) (p q : ℤ) (hpq : p + n = q) :
-    (z₁+z₂).v p q hpq = z₁.v p q hpq + z₂.v p q hpq := rfl
+    (z₁ + z₂).v p q hpq = z₁.v p q hpq + z₂.v p q hpq := rfl
 
 @[simp]
 lemma sub_v {n : ℤ} (z₁ z₂ : Cochain F G n) (p q : ℤ) (hpq : p + n = q) :
-    (z₁-z₂).v p q hpq = z₁.v p q hpq - z₂.v p q hpq := rfl
+    (z₁ - z₂).v p q hpq = z₁.v p q hpq - z₂.v p q hpq := rfl
 
 @[simp]
 lemma neg_v {n : ℤ} (z : Cochain F G n) (p q : ℤ) (hpq : p + n = q) :
