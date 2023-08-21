@@ -28,12 +28,12 @@ universe u
 namespace SetTheory
 namespace PGame
 
-/-- `PGame.State S` describes how to interpret `s : S` as a state of a combinatorial game.
-Use `PGame.ofState s` or `Game.ofState s` to construct the game.
+/-- `SetTheory.PGame.State S` describes how to interpret `s : S` as a state of a combinatorial game.
+Use `SetTheory.PGame.ofState s` or `SetTheory.Game.ofState s` to construct the game.
 
-`PGame.State.l : S → Finset S` and `PGame.State.r : S → Finset S` describe the states reachable
-by a move by Left or Right. `PGame.State.turnBound : S → ℕ` gives an upper bound on the number of
-possible turns remaining from this state.
+`SetTheory.PGame.State.l : S → Finset S` and `SetTheory.PGame.State.r : S → Finset S` describe
+the states reachable by a move by Left or Right. `SetTheory.PGame.State.turnBound : S → ℕ`
+gives an upper bound on the number of possible turns remaining from this state.
 -/
 class State (S : Type u) where
   turnBound : S → ℕ

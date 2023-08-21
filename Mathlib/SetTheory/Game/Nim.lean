@@ -23,8 +23,9 @@ where `n` and `m` are natural numbers, then `G + H` has the Grundy value `n xor 
 
 The pen-and-paper definition of nim defines the possible moves of `nim o` to be `Set.Iio o`.
 However, this definition does not work for us because it would make the type of nim
-`ordinal.{u} → pgame.{u + 1}`, which would make it impossible for us to state the Sprague-Grundy
-theorem, since that requires the type of `nim` to be `ordinal.{u} → pgame.{u}`. For this reason, we
+`Ordinal.{u} → SetTheory.PGame.{u + 1}`, which would make it impossible for us to state the
+Sprague-Grundy theorem, since that requires the type of `nim` to be
+`Ordinal.{u} → SetTheory.PGame.{u}`. For this reason, we
 instead use `o.out.α` for the possible moves. You can use `to_left_moves_nim` and
 `to_right_moves_nim` to convert an ordinal less than `o` into a left or right move of `nim o`, and
 vice versa.

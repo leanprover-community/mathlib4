@@ -17,11 +17,11 @@ prove the basic properties about these.
 
 # Main declarations
 
-- `PGame.birthday`: The birthday of a pre-game.
+- `SetTheory.PGame.birthday`: The birthday of a pre-game.
 
 # Todo
 
-- Define the birthdays of `Game`s and `Surreal`s.
+- Define the birthdays of `SetTheory.Game`s and `SetTheory.Surreal`s.
 - Characterize the birthdays of basic arithmetical operations.
 -/
 
