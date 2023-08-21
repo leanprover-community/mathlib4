@@ -21,7 +21,7 @@ prove the basic properties about these.
 
 # Todo
 
-- Define the birthdays of `SetTheory.Game`s and `SetTheory.Surreal`s.
+- Define the birthdays of `SetTheory.Game`s and `Surreal`s.
 - Characterize the birthdays of basic arithmetical operations.
 -/
 
