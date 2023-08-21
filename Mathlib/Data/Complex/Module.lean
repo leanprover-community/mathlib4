@@ -485,10 +485,10 @@ lemma Real.rank_rat_real : Module.rank ℚ ℝ = continuum := by
 @[simp]
 lemma Complex.rank_rat_complex : Module.rank ℚ ℂ = continuum := by
   refine (Free.rank_eq_mk_of_infinite_lt ℚ ℂ ?_).trans mk_complex
-  simpa [mk_real] using aleph0_lt_continuum
+  simpa using aleph0_lt_continuum
 
 /-- `ℂ` and `ℝ` are isomorphic as vector spaces over `ℚ`, or equivalently,
-as additive grops. -/
+as additive groups. -/
 theorem Complex.nonempty_linearEquiv_real : Nonempty (ℂ ≃ₗ[ℚ] ℝ) :=
   LinearEquiv.nonempty_equiv_iff_rank_eq.mpr <| by simp
 
