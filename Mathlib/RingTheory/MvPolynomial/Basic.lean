@@ -26,8 +26,8 @@ that the monomials form a basis.
 
 ## Main statements
 
-* The multivariate polynomial ring over a commutative ring of positive characteristic has positive
-  characteristic.
+* The multivariate polynomial ring over a commutative semiring of characteristic `p` has
+  characteristic `p`, and similarly for `CharZero`.
 * `basisMonomials`: shows that the monomials form a basis of the vector space of multivariate
   polynomials.
 
@@ -45,7 +45,7 @@ open BigOperators Polynomial
 
 universe u v
 
-variable (σ : Type u) (R : Type v) [CommRing R] (p m : ℕ)
+variable (σ : Type u) (R : Type v) [CommSemiring R] (p m : ℕ)
 
 namespace MvPolynomial
 
@@ -58,7 +58,8 @@ end CharP
 
 section CharZero
 
-instance [CharZero R] : CharZero (MvPolynomial σ R) := CharP.charP_to_charZero (MvPolynomial σ R)
+instance [CharZero R] : CharZero (MvPolynomial σ R) where
+  cast_injective x y hxy := by rwa [← C_eq_coe_nat, ← C_eq_coe_nat, C_inj, Nat.cast_inj] at hxy
 
 end CharZero
 
