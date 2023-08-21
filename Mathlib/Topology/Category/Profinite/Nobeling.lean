@@ -295,11 +295,9 @@ def finsetsCone_isLimit [DecidableEq ι] : CategoryTheory.Limits.IsLimit (Finset
 end Profinite
 end Projections
 
-namespace LocallyConstant -- This section is PR #6520 and #6589
+namespace LocallyConstant -- This section is PR #6589
 
 variable {X Z : Type*} [TopologicalSpace X]
-
-section Piecewise
 
 def piecewise'' {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) (h : C₁ ∪ C₂ = Set.univ)
     (f : LocallyConstant C₁ Z) (g : LocallyConstant C₂ Z)
@@ -346,11 +344,6 @@ lemma piecewise'_apply {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) 
   simp only [piecewise', piecewise'', Set.mem_preimage, continuous_subtype_val.restrictPreimage,
     coe_comap, Function.comp_apply]
   rfl
-
-end Piecewise
-
-def eval (x : X) : (LocallyConstant X Z) → Z :=
-  fun f ↦ f x
 
 end LocallyConstant
 
@@ -464,13 +457,13 @@ lemma eval_eq (l : Products I) (x : C) :
   rw [eval, map_list_prod]
   split_ifs with h
   · simp only [List.map_map]
-    suffices : ∀ y, y ∈ List.map (LocallyConstant.eval x ∘ e C) l.val → y = 1
+    suffices : ∀ y, y ∈ List.map (LocallyConstant.evalMonoidHom x ∘ e C) l.val → y = 1
     · exact List.prod_eq_one this
     intro y hy
     simp only [List.mem_map, Function.comp_apply] at hy
     obtain ⟨i,hi⟩ := hy
     specialize h i hi.1
-    dsimp [LocallyConstant.eval, e, Int.ofBool] at hi
+    dsimp [e, Int.ofBool] at hi
     rw [← hi.2]
     simp only [ite_eq_left_iff]
     exact fun hx ↦ hx h
