@@ -113,6 +113,9 @@ theorem wcovby_iff_Ioo_eq : a ⩿ b ↔ a ≤ b ∧ Ioo a b = ∅ :=
 lemma Wcovby.of_le_of_le (hac : a ⩿ c) (hab : a ≤ b) (hbc : b ≤ c) : b ⩿ c :=
   ⟨hbc, fun _x hbx hxc ↦ hac.2 (hab.trans_lt hbx) hxc⟩
 
+lemma Wcovby.of_le_of_le' (hac : a ⩿ c) (hab : a ≤ b) (hbc : b ≤ c) : a ⩿ b :=
+  ⟨hab, fun _x hax hxb ↦ hac.2 hax <| hxb.trans_le hbc⟩
+
 theorem Wcovby.of_image (f : α ↪o β) (h : f a ⩿ f b) : a ⩿ b :=
   ⟨f.le_iff_le.mp h.le, fun _ hac hcb => h.2 (f.lt_iff_lt.mpr hac) (f.lt_iff_lt.mpr hcb)⟩
 #align wcovby.of_image Wcovby.of_image
@@ -295,6 +298,9 @@ theorem Wcovby.covby_of_lt (h : a ⩿ b) (h2 : a < b) : a ⋖ b :=
 
 lemma Covby.of_le_of_lt (hac : a ⋖ c) (hab : a ≤ b) (hbc : b < c) : b ⋖ c :=
   ⟨hbc, fun _x hbx hxc ↦ hac.2 (hab.trans_lt hbx) hxc⟩
+
+lemma Covby.of_lt_of_le (hac : a ⋖ c) (hab : a < b) (hbc : b ≤ c) : a ⋖ b :=
+  ⟨hab, fun _x hax hxb ↦ hac.2 hax <| hxb.trans_le hbc⟩
 
 theorem not_covby_of_lt_of_lt (h₁ : a < b) (h₂ : b < c) : ¬a ⋖ c :=
   (not_covby_iff (h₁.trans h₂)).2 ⟨b, h₁, h₂⟩
