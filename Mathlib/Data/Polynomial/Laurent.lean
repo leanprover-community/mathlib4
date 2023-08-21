@@ -161,7 +161,7 @@ theorem single_eq_C (r : R) : Finsupp.single 0 r = C r := rfl
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.single_eq_C LaurentPolynomial.single_eq_C
 
-@[simp] lemma C_apply {t : R} {n : ℤ} : C t n = if n = 0 then t else 0 := by
+@[simp] lemma C_apply (t : R) (n : ℤ) : C t n = if n = 0 then t else 0 := by
   rw [← single_eq_C, Finsupp.single_apply]; aesop
 
 /-- The function `n ↦ T ^ n`, implemented as a sequence `ℤ → R[T;T⁻¹]`.
@@ -174,7 +174,7 @@ def T (n : ℤ) : R[T;T⁻¹] :=
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.T LaurentPolynomial.T
 
-@[simp] lemma T_apply {m n : ℤ} : (T n : R[T;T⁻¹]) m = if n = m then 1 else 0 :=
+@[simp] lemma T_apply (m n : ℤ) : (T n : R[T;T⁻¹]) m = if n = m then 1 else 0 :=
   Finsupp.single_apply
 
 @[simp]
@@ -232,8 +232,8 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.to_laurent_C Polynomial.toLaurent_C
 
 @[simp]
-theorem _root_.Polynomial.toLaurent_comp_C : toLaurent (R := R) ∘ Polynomial.C = C := by
-  ext; simp
+theorem _root_.Polynomial.toLaurent_comp_C : toLaurent (R := R) ∘ Polynomial.C = C :=
+  funext Polynomial.toLaurent_C
 
 @[simp]
 theorem _root_.Polynomial.toLaurent_X : (toLaurent Polynomial.X : R[T;T⁻¹]) = T 1 := by
@@ -632,20 +632,20 @@ variable {R : Type*} [CommSemiring R]
 /-- The map which substitutes `T ↦ T⁻¹` into a Laurent polynomial. -/
 def invert : R[T;T⁻¹] ≃ₐ[R] R[T;T⁻¹] := AddMonoidAlgebra.domCongr R R <| AddEquiv.neg _
 
-@[simp] lemma invert_T {n : ℤ} : invert (T n : R[T;T⁻¹]) = T (-n) :=
+@[simp] lemma invert_T (n : ℤ) : invert (T n : R[T;T⁻¹]) = T (-n) :=
   AddMonoidAlgebra.domCongr_single _ _ _ _ _
 
-@[simp] lemma invert_apply {f : R[T;T⁻¹]} {n : ℤ} : invert f n = f (-n) := rfl
+@[simp] lemma invert_apply (f : R[T;T⁻¹]) (n : ℤ) : invert f n = f (-n) := rfl
 
 @[simp] lemma invert_comp_C : invert ∘ (@C R _) = C := by ext; simp
 
-@[simp] lemma invert_C {t : R} : invert (C t) = C t := by ext; simp
+@[simp] lemma invert_C (t : R) : invert (C t) = C t := by ext; simp
 
 lemma involutive_invert : Involutive (invert (R := R)) := fun _ ↦ by ext; simp
 
 @[simp] lemma invert_symm : (invert (R := R)).symm = invert := rfl
 
-lemma toLaurent_reverse {p : R[X]} :
+lemma toLaurent_reverse (p : R[X]) :
     toLaurent p.reverse = invert (toLaurent p) * (T p.natDegree) := by
   nontriviality R
   induction' p using Polynomial.recOnHorner with p t _ _ ih p hp ih
