@@ -3027,6 +3027,12 @@ theorem uniformEmbedding_bot_of_pairwise_le_dist {β : Type*} {ε : ℝ} (hε : 
   uniformEmbedding_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hf
 #align metric.uniform_embedding_bot_of_pairwise_le_dist Metric.uniformEmbedding_bot_of_pairwise_le_dist
 
+theorem Finite_bounded_inter_isClosed [ProperSpace α] {K s : Set α} [DiscreteTopology s]
+    (hK : Metric.Bounded K) (hs : IsClosed s) : Set.Finite (K ∩ s) := by
+  refine Set.Finite.subset (IsCompact.finite ?_ ?_) (Set.inter_subset_inter_left s subset_closure)
+  · exact IsCompact.inter_right (Metric.Bounded.isCompact_closure hK) hs
+  · exact DiscreteTopology.of_subset inferInstance (Set.inter_subset_right _ s)
+
 end Metric
 
 /-- Build a new metric space from an old one where the bundled uniform structure is provably

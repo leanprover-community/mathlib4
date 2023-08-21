@@ -124,9 +124,6 @@ namespace Dual
 
 instance : Inhabited (Dual R M) := ⟨0⟩
 
-instance : FunLike (Dual R M) M fun _ => R :=
-  inferInstanceAs (FunLike (M →ₗ[R] R) M fun _ => R)
-
 /-- Maps a module M to the dual of the dual of M. See `Module.erange_coe` and
 `Module.evalEquiv`. -/
 def eval : M →ₗ[R] Dual R (Dual R M) :=
@@ -581,7 +578,7 @@ section IsReflexive
 
 open Function
 
-variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+variable (R M N : Type*) [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
 /-- A reflexive module is one for which the natural map to its double dual is a bijection.
 
@@ -640,8 +637,7 @@ theorem mapEvalEquiv_symm_apply (W'' : Submodule R (Dual R (Dual R M))) :
   rfl
 #align module.map_eval_equiv_symm_apply Module.mapEvalEquiv_symm_apply
 
-instance _root_.Prod.instModuleIsReflexive
-    {N : Type*} [AddCommGroup N] [Module R N] [IsReflexive R N] :
+instance _root_.Prod.instModuleIsReflexive [IsReflexive R N] :
     IsReflexive R (M × N) where
   bijective_dual_eval' := by
     let e : Dual R (Dual R (M × N)) ≃ₗ[R] Dual R (Dual R M) × Dual R (Dual R N) :=
@@ -653,19 +649,22 @@ instance _root_.Prod.instModuleIsReflexive
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
     exact Bijective.Prod_map (bijective_dual_eval R M) (bijective_dual_eval R N)
 
-instance _root_.MulOpposite.instModuleIsReflexive : IsReflexive R (MulOpposite M) where
+variable {R M N} in
+lemma equiv [IsReflexive R M] (e : M ≃ₗ[R] N) : IsReflexive R N where
   bijective_dual_eval' := by
-    let e : Dual R (Dual R (MulOpposite M)) ≃ₗ[R] Dual R (Dual R M) :=
-      LinearEquiv.dualMap <| LinearEquiv.dualMap <| MulOpposite.opLinearEquiv _ |>.symm
-    have : Dual.eval R (MulOpposite M) = e.symm.comp ((Dual.eval R M).comp
-        <| MulOpposite.opLinearEquiv _ |>.symm.toLinearMap) := by
-      ext m f; rfl
+    let ed : Dual R (Dual R N) ≃ₗ[R] Dual R (Dual R M) := e.symm.dualMap.dualMap
+    have : Dual.eval R N = ed.symm.comp ((Dual.eval R M).comp e.symm.toLinearMap) := by
+      ext m f
+      exact FunLike.congr_arg f (e.apply_symm_apply m).symm
     simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
     refine Bijective.comp (bijective_dual_eval R M) (LinearEquiv.bijective _)
 
--- TODO: add `ULift.instModuleIsReflexive : IsReflexive R (ULift.{v} M)` once we have
--- `LinearEquiv.ulift`
+instance _root_.MulOpposite.instModuleIsReflexive : IsReflexive R (MulOpposite M) :=
+  equiv <| MulOpposite.opLinearEquiv _
+
+instance _root_.ULift.instModuleIsReflexive.{w} : IsReflexive R (ULift.{w} M) :=
+  equiv ULift.moduleEquiv.symm
 
 end IsReflexive
 

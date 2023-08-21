@@ -91,7 +91,7 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
               (Fin.succAbove 0 i)) := by
       simp_rw [det_succ_column_zero, Fin.sum_univ_succ, of_apply, Matrix.cons_val_zero, submatrix,
         of_apply, Matrix.cons_val_succ, Fin.val_zero, pow_zero, one_mul, sub_self,
-        MulZeroClass.mul_zero, MulZeroClass.zero_mul, Finset.sum_const_zero, add_zero]
+        mul_zero, zero_mul, Finset.sum_const_zero, add_zero]
     _ =
         det
           (of fun i j : Fin n =>
