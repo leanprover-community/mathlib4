@@ -25,7 +25,7 @@ this map to be injective it suffices that the range omits `1`. In this setting w
   where `s` is a non-unital subalgebra of a unital `R`-algebra `A`, this is the natural algebra
   homomorphism sending `(r, a)` to `r • 1 + a`. The range of this map is
   `Algebra.adjoin R (s : Set A)`.
-* `NonUnitalSubalgebra.unitizationAlgEquiv s : Unitization R s ≃ₐ[R] Algebra.adjoin R (s : Set A)`:
+* `NonUnitalSubalgebra.unitizationAlgEquiv s : Unitization R s ≃ₐ[R] Algebra.adjoin R (s : Set A)`
   when `R` is a field and `1 ∉ s`. This is `NonUnitalSubalgebra.unitization` upgraded to an
   `AlgEquiv` onto its range.
 * `NonUnitalSubsemiring.unitization : Unitization ℕ s →ₐ[ℕ] R`: the natural `ℕ`-algebra homomorphism
@@ -38,7 +38,7 @@ this map to be injective it suffices that the range omits `1`. In this setting w
   ring containing it. The range of this map is `subalgebraOfSubring (Subring.closure s)`.
   This is just `NonUnitalSubalgebra.unitization s` but we provide a separate declaration because
   there is an instance Lean can't find on its own due to `outParam`.
-* `NonUnitalStarSubalgebra s : Unitization R s →⋆ₐ[R] A`: A version of
+* `NonUnitalStarSubalgebra s : Unitization R s →⋆ₐ[R] A`: a version of
   `NonUnitalSubalgebra.unitization` for star algebras.
 * `NonUnitalStarSubalgebra.unitizationStarAlgEquiv s :`
   `Unitization R s ≃⋆ₐ[R] StarSubalgebra.adjoin R (s : Set A)`:
@@ -342,10 +342,6 @@ section Semiring
 variable {R S A : Type*} [CommSemiring R] [StarRing R] [Semiring A] [StarRing A] [Algebra R A]
   [StarModule R A] [SetLike S A] [hSA : NonUnitalSubsemiringClass S A] [hSRA : SMulMemClass S R A]
   [StarMemClass S A] (s : S)
-
-/- variable {R A : Type*} [CommSemiring R] [StarRing R] [Semiring A] [StarRing A]
-variable [Algebra R A] [StarModule R A] -/
-
 /-- The natural star `R`-algebra homomorphism from the unitization of a non-unital star subalgebra
 to its `StarSubalgebra.adjoin`. -/
 def unitization : Unitization R s →⋆ₐ[R] A :=
