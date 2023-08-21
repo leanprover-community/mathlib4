@@ -285,7 +285,7 @@ lemma reverse_charpoly (M : Matrix n n R) :
   let q : R[T;T⁻¹] := det (1 - scalar n t * M.map LaurentPolynomial.C)
   have ht : t_inv * t = 1 := by rw [← T_add, add_left_neg, T_zero]
   have hp : toLaurentAlg M.charpoly = p := by
-    simp [charpoly_def, AlgHom.map_det, map_sub, map_smul']
+    simp [charpoly, charmatrix, AlgHom.map_det, map_sub, map_smul']
   have hq : toLaurentAlg (det (1 - (X : R[X]) • M.map C)) = q := by
     simp [AlgHom.map_det, map_sub, map_smul']
   suffices : t_inv ^ Fintype.card n * p = invert q
