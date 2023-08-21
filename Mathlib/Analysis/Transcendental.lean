@@ -978,3 +978,8 @@ theorem Eval_toConjAlgEquiv_symm (x : GalConjClasses ℚ (K s) →₀ ℚ) :
 #align Eval_to_conj_alg_equiv_symm Eval_toConjAlgEquiv_symm
 
 end Eval
+
+instance instIsDomain1 : NoZeroDivisors (AddMonoidAlgebra (K s) (K s)) := sorry
+instance instIsDomain2 : IsDomain (AddMonoidAlgebra ℚ (K s)) := sorry
+instance instIsDomain3 : IsDomain (GalConjClasses ℚ (K s) →₀ ℚ) :=
+RingEquiv.isDomain (mapDomainFixed s ℚ) (toConjAlgEquiv s ℚ).symm
