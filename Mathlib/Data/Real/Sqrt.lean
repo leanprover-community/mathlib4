@@ -36,6 +36,8 @@ this sequence actually converges to `Real.sqrt (mk f)`.
 square root
 -/
 
+set_option autoImplicit true
+
 open Set Filter
 open scoped Filter NNReal Topology
 

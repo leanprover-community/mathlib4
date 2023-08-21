@@ -68,7 +68,7 @@ then `L` is the localization of the integral closure `C` of `A` in `L` at `A⁰`
 theorem IsIntegralClosure.isLocalization [IsSeparable K L] [NoZeroSMulDivisors A L] :
     IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L := by
   haveI : IsDomain C :=
-    (IsIntegralClosure.equiv A C L (integralClosure A L)).toRingEquiv.isDomain (integralClosure A L)
+    (IsIntegralClosure.equiv A C L (integralClosure A L)).toMulEquiv.isDomain (integralClosure A L)
   haveI : NoZeroSMulDivisors A C := IsIntegralClosure.noZeroSMulDivisors A L
   refine' ⟨_, fun z => _, fun {x y} => ⟨fun h => ⟨1, _⟩, _⟩⟩
   · rintro ⟨_, x, hx, rfl⟩
@@ -251,12 +251,13 @@ Can't be an instance since `A`, `K` or `L` can't be inferred. See also the insta
 `integralClosure.isDedekindDomain_fractionRing` where `K := FractionRing A`
 and `C := integralClosure A L`.
 -/
-theorem IsIntegralClosure.isDedekindDomain [h : IsDedekindDomain A] : IsDedekindDomain C :=
-  haveI : IsFractionRing C L := IsIntegralClosure.isFractionRing_of_finite_extension A K L C
-  ⟨IsIntegralClosure.isNoetherianRing A K L C, h.dimensionLEOne.isIntegralClosure L _,
+theorem IsIntegralClosure.isDedekindDomain [IsDedekindDomain A] : IsDedekindDomain C :=
+  have : IsFractionRing C L := IsIntegralClosure.isFractionRing_of_finite_extension A K L C
+  { IsIntegralClosure.isNoetherianRing A K L C,
+    Ring.DimensionLEOne.isIntegralClosure A L C,
     (isIntegrallyClosed_iff L).mpr fun {x} hx =>
       ⟨IsIntegralClosure.mk' C x (isIntegral_trans (IsIntegralClosure.isIntegral_algebra A L) _ hx),
-        IsIntegralClosure.algebraMap_mk' _ _ _⟩⟩
+        IsIntegralClosure.algebraMap_mk' _ _ _⟩ with : IsDedekindDomain C }
 #align is_integral_closure.is_dedekind_domain IsIntegralClosure.isDedekindDomain
 
 /- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is a Dedekind domain,

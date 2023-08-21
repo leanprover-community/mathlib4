@@ -3,7 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Util.Pickle
+import Std.Util.Pickle
 import Mathlib.Data.MLList.Heartbeats
 import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Tactic.Cache
@@ -25,6 +25,8 @@ Suggestions are printed as `rw [h]` or `rw [←h]`.
 We could try discharging side goals via `assumption` or `solve_by_elim`.
 
 -/
+
+set_option autoImplicit true
 
 namespace Mathlib.Tactic.Rewrites
 
