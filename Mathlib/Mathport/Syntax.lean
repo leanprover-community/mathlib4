@@ -35,6 +35,7 @@ import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
+import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
