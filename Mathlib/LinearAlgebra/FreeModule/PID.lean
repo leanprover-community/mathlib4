@@ -456,26 +456,25 @@ lemma le_ker_coord_of_nmem_range {i : ι} (hi : i ∉ Set.range snf.f) :
     N ≤ LinearMap.ker (snf.bM.coord i) :=
   fun m hm ↦ snf.repr_eq_zero_of_nmem_range ⟨m, hm⟩ hi
 
-@[simp] lemma repr_comp_embedding_eq_smul :
-    snf.bM.repr m ∘ snf.f = (snf.bN.repr m : Fin n → R) • snf.a := by
-  ext j
+@[simp] lemma repr_apply_embedding_eq_repr_smul {i : Fin n} :
+    snf.bM.repr m (snf.f i) = snf.bN.repr (snf.a i • m) i := by
   obtain ⟨m, hm⟩ := m
   obtain ⟨c, rfl⟩ := snf.bN.mem_submodule_iff.mp hm
   replace hm : (⟨Finsupp.sum c fun i t ↦ t • (↑(snf.bN i) : M), hm⟩ : N) =
       Finsupp.sum c fun i t ↦ t • ⟨snf.bN i, (snf.bN i).2⟩ := by ext; change _ = N.subtype _; simp
-  simp_rw [hm, LinearEquiv.map_finsupp_sum, map_smul, Subtype.coe_eta, repr_self,
-    Finsupp.smul_single, smul_eq_mul, mul_one, Finsupp.sum_single, Pi.mul_apply]
+  simp_rw [hm, map_smul, LinearEquiv.map_finsupp_sum, map_smul, Subtype.coe_eta, repr_self,
+    Finsupp.smul_single, smul_eq_mul, mul_one, Finsupp.sum_single, Finsupp.smul_apply]
   classical
   simp_rw [snf.snf, map_smul, repr_self, Finsupp.smul_single, smul_eq_mul, mul_one,
-    Function.comp_apply, Finsupp.sum_apply, Finsupp.single_apply, EmbeddingLike.apply_eq_iff_eq,
-    Finsupp.sum_ite_eq', Finsupp.mem_support_iff, ite_not, ite_eq_right_iff]
-  exact fun a ↦ (mul_eq_zero_of_left a _).symm
+    Finsupp.sum_apply, Finsupp.single_apply, EmbeddingLike.apply_eq_iff_eq, Finsupp.sum_ite_eq',
+    Finsupp.mem_support_iff, ite_not, mul_comm, ite_eq_right_iff]
+  exact fun a ↦ (mul_eq_zero_of_right _ a).symm
 
-@[simp] lemma repr_apply_embedding_eq_repr_smul {i : Fin n} :
-    snf.bM.repr m (snf.f i) = snf.bN.repr (snf.a i • m) i := by
-  change (snf.bM.repr m ∘ snf.f) i = _
-  rw [repr_comp_embedding_eq_smul, Pi.smul_apply', smul_eq_mul, mul_comm _ (snf.a i), map_smul,
-    Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul]
+@[simp] lemma repr_comp_embedding_eq_smul :
+    snf.bM.repr m ∘ snf.f = (snf.bN.repr m : Fin n → R) • snf.a := by
+  ext i
+  rw [Function.comp_apply, repr_apply_embedding_eq_repr_smul, map_smul, Finsupp.coe_smul,
+    Pi.smul_apply, Pi.smul_apply', smul_eq_mul, smul_eq_mul, mul_comm _ (snf.a _)]
 
 @[simp] lemma coord_apply_embedding_eq_smul_coord {i : Fin n} :
     snf.bM.coord (snf.f i) ∘ₗ N.subtype = snf.a i • snf.bN.coord i := by
