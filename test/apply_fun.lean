@@ -5,6 +5,8 @@ import Mathlib.Init.Function
 import Mathlib.Data.Fintype.Card
 -- import Mathlib.Data.Matrix.Basic
 
+
+set_option autoImplicit true
 open Function
 
 example (f : ℕ → ℕ) (h : f x = f y) : x = y := by

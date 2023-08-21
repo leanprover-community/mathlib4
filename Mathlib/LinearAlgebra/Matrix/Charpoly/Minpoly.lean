@@ -2,15 +2,12 @@
 Copyright (c) 2020 Aaron Anderson, Jalex Stark. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.charpoly.minpoly
-! leanprover-community/mathlib commit 7ae139f966795f684fc689186f9ccbaedd31bf31
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.RingTheory.PowerBasis
+
+#align_import linear_algebra.matrix.charpoly.minpoly from "leanprover-community/mathlib"@"7ae139f966795f684fc689186f9ccbaedd31bf31"
 
 /-!
 # The minimal polynomial divides the characteristic polynomial of a matrix.
@@ -54,7 +51,7 @@ theorem isIntegral : IsIntegral R M :=
   ⟨M.charpoly, ⟨charpoly_monic M, aeval_self_charpoly M⟩⟩
 #align matrix.is_integral Matrix.isIntegral
 
-theorem minpoly_dvd_charpoly {K : Type _} [Field K] (M : Matrix n n K) : minpoly K M ∣ M.charpoly :=
+theorem minpoly_dvd_charpoly {K : Type*} [Field K] (M : Matrix n n K) : minpoly K M ∣ M.charpoly :=
   minpoly.dvd _ _ (aeval_self_charpoly M)
 #align matrix.minpoly_dvd_charpoly Matrix.minpoly_dvd_charpoly
 
@@ -85,7 +82,7 @@ In combination with `det_eq_sign_charpoly_coeff` or `trace_eq_neg_charpoly_coeff
 and a bit of rewriting, this will allow us to conclude the
 field norm resp. trace of `x` is the product resp. sum of `x`'s conjugates.
 -/
-theorem charpoly_leftMulMatrix {S : Type _} [Ring S] [Algebra R S] (h : PowerBasis R S) :
+theorem charpoly_leftMulMatrix {S : Type*} [Ring S] [Algebra R S] (h : PowerBasis R S) :
     (leftMulMatrix h.basis h.gen).charpoly = minpoly R h.gen := by
   cases subsingleton_or_nontrivial R; · apply Subsingleton.elim
   apply minpoly.unique' R h.gen (charpoly_monic _)

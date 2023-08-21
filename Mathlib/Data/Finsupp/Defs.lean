@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
-
-! This file was ported from Lean 3 source module data.finsupp.defs
-! leanprover-community/mathlib commit 842328d9df7e96fd90fc424e115679c15fb23a71
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.GroupTheory.Submonoid.Basic
+
+#align_import data.finsupp.defs from "leanprover-community/mathlib"@"842328d9df7e96fd90fc424e115679c15fb23a71"
 
 /-!
 # Type of functions with finite support
@@ -90,11 +87,11 @@ open Finset Function
 
 open BigOperators
 
-variable {α β γ ι M M' N P G H R S : Type _}
+variable {α β γ ι M M' N P G H R S : Type*}
 
 /-- `Finsupp α M`, denoted `α →₀ M`, is the type of functions `f : α → M` such that
   `f x = 0` for all but finitely many `x`. -/
-structure Finsupp (α : Type _) (M : Type _) [Zero M] where
+structure Finsupp (α : Type*) (M : Type*) [Zero M] where
   /-- The support of a finitely supported function (aka `Finsupp`). -/
   support : Finset α
   /-- The underlying function of a bundled finitely supported function (aka `Finsupp`). -/
@@ -263,7 +260,7 @@ theorem equivFunOnFinite_symm_coe {α} [Finite α] (f : α →₀ M) : equivFunO
 If `α` has a unique term, the type of finitely supported functions `α →₀ β` is equivalent to `β`.
 -/
 @[simps!]
-noncomputable def _root_.Equiv.finsuppUnique {ι : Type _} [Unique ι] : (ι →₀ M) ≃ M :=
+noncomputable def _root_.Equiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃ M :=
   Finsupp.equivFunOnFinite.trans (Equiv.funUnique ι M)
 #align equiv.finsupp_unique Equiv.finsuppUnique
 #align equiv.finsupp_unique_symm_apply_support_val Equiv.finsuppUnique_symm_apply_support_val
@@ -547,7 +544,7 @@ def update (f : α →₀ M) (a : α) (b : M) : α →₀ M where
     classical
     simp [Function.update, Ne.def]
     split_ifs with hb ha ha <;>
-    simp only [*, not_false_iff, iff_true, not_true, iff_false]
+      try simp only [*, not_false_iff, iff_true, not_true, iff_false]
     · rw [Finset.mem_erase]
       simp
     · rw [Finset.mem_erase]

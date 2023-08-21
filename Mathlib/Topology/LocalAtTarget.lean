@@ -2,13 +2,10 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module topology.local_at_target
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sets.Opens
+
+#align_import topology.local_at_target from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Properties of maps that are local at the target.
@@ -26,9 +23,9 @@ open TopologicalSpace Set Filter
 
 open Topology Filter
 
-variable {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
 
-variable {s : Set β} {ι : Type _} {U : ι → Opens β} (hU : iSup U = ⊤)
+variable {s : Set β} {ι : Type*} {U : ι → Opens β} (hU : iSup U = ⊤)
 
 theorem Set.restrictPreimage_inducing (s : Set β) (h : Inducing f) :
     Inducing (s.restrictPreimage f) := by

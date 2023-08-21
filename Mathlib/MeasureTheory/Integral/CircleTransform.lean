@@ -2,14 +2,11 @@
 Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
-
-! This file was ported from Lean 3 source module measure_theory.integral.circle_transform
-! leanprover-community/mathlib commit d11893b411025250c8e61ff2f12ccbd7ee35ab15
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Complex.Basic
 import Mathlib.MeasureTheory.Integral.CircleIntegral
+
+#align_import measure_theory.integral.circle_transform from "leanprover-community/mathlib"@"d11893b411025250c8e61ff2f12ccbd7ee35ab15"
 
 /-!
 # Circle integral transform
@@ -28,11 +25,11 @@ open Set MeasureTheory Metric Filter Function
 
 open scoped Interval Real
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E] (R : ℝ) (z w : ℂ)
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] (R : ℝ) (z w : ℂ)
 
 namespace Complex
 
@@ -70,7 +67,7 @@ theorem circleTransformDeriv_eq (f : ℂ → E) : circleTransformDeriv R z w f =
   ring
 #align complex.circle_transform_deriv_eq Complex.circleTransformDeriv_eq
 
-theorem integral_circleTransform [CompleteSpace E] (f : ℂ → E) :
+theorem integral_circleTransform (f : ℂ → E) :
     (∫ θ : ℝ in (0)..2 * π, circleTransform R z w f θ) =
       (2 * ↑π * I)⁻¹ • ∮ z in C(z, R), (z - w)⁻¹ • f z := by
   simp_rw [circleTransform, circleIntegral, deriv_circleMap, circleMap]

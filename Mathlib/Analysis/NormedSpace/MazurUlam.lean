@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.normed_space.mazur_ulam
-! leanprover-community/mathlib commit 78261225eb5cedc61c5c74ecb44e5b385d13b733
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Instances.RealVectorSpace
 import Mathlib.Analysis.NormedSpace.AffineIsometry
+
+#align_import analysis.normed_space.mazur_ulam from "leanprover-community/mathlib"@"78261225eb5cedc61c5c74ecb44e5b385d13b733"
 
 /-!
 # Mazur-Ulam Theorem
@@ -32,7 +29,7 @@ isometry, affine map, linear map
 -/
 
 
-variable {E PE F PF : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [MetricSpace PE]
+variable {E PE F PF : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MetricSpace PE]
   [NormedAddTorsor E PE] [NormedAddCommGroup F] [NormedSpace ℝ F] [MetricSpace PF]
   [NormedAddTorsor F PF]
 
@@ -151,7 +148,7 @@ def toRealAffineIsometryEquiv (f : PE ≃ᵢ PF) : PE ≃ᵃⁱ[ℝ] PF :=
   AffineIsometryEquiv.mk' f
     ((vaddConst (Classical.arbitrary PE)).trans <|
         f.trans (vaddConst (f <| Classical.arbitrary PE)).symm).toRealLinearIsometryEquiv
-    (Classical.arbitrary PE) fun p => by simp; rw [vsub_vadd]
+    (Classical.arbitrary PE) fun p => by simp
 #align isometry_equiv.to_real_affine_isometry_equiv IsometryEquiv.toRealAffineIsometryEquiv
 
 @[simp]

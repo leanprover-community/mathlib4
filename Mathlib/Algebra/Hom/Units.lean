@@ -2,15 +2,11 @@
 Copyright (c) 2018 Johan Commelin All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes, Kevin Buzzard
-Ported by: Winston Yin
-
-! This file was ported from Lean 3 source module algebra.hom.units
-! leanprover-community/mathlib commit a07d750983b94c530ab69a726862c2ab6802b38c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Group.Units
+
+#align_import algebra.hom.units from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
 
 /-!
 # Monoid homomorphisms and units
@@ -69,7 +65,7 @@ end MonoidHomClass
 
 namespace Units
 
-variable {α : Type _} {M : Type u} {N : Type v} {P : Type w} [Monoid M] [Monoid N] [Monoid P]
+variable {α : Type*} {M : Type u} {N : Type v} {P : Type w} [Monoid M] [Monoid N] [Monoid P]
 
 /-- The group homomorphism on units induced by a `MonoidHom`. -/
 @[to_additive "The additive homomorphism on `AddUnit`s induced by an `AddMonoidHom`."]
@@ -146,7 +142,7 @@ theorem _root_.divp_eq_div (a : α) (u : αˣ) : a /ₚ u = a / u :=
 #align divp_eq_div divp_eq_div
 
 @[to_additive (attr := simp)]
-theorem _root_.map_units_inv {F : Type _} [MonoidHomClass F M α] (f : F) (u : Units M) :
+theorem _root_.map_units_inv {F : Type*} [MonoidHomClass F M α] (f : F) (u : Units M) :
   f ↑u⁻¹ = (f u)⁻¹ := ((f : M →* α).comp (Units.coeHom M)).map_inv u
 #align map_units_inv map_units_inv
 #align map_add_units_neg map_addUnits_neg
@@ -196,7 +192,7 @@ and `f.toHomUnits` is the corresponding monoid homomorphism from `G` to `Mˣ`. -
   "If `f` is a homomorphism from an additive group `G` to an additive monoid `M`,
   then its image lies in the `AddUnits` of `M`,
   and `f.toHomUnits` is the corresponding homomorphism from `G` to `AddUnits M`."]
-def toHomUnits {G M : Type _} [Group G] [Monoid M] (f : G →* M) : G →* Mˣ :=
+def toHomUnits {G M : Type*} [Group G] [Monoid M] (f : G →* M) : G →* Mˣ :=
   Units.liftRight f (fun g => ⟨f g, f g⁻¹, map_mul_eq_one f (mul_inv_self _),
     map_mul_eq_one f (inv_mul_self _)⟩)
     fun _ => rfl
@@ -204,7 +200,7 @@ def toHomUnits {G M : Type _} [Group G] [Monoid M] (f : G →* M) : G →* Mˣ :
 #align add_monoid_hom.to_hom_add_units AddMonoidHom.toHomAddUnits
 
 @[to_additive (attr := simp)]
-theorem coe_toHomUnits {G M : Type _} [Group G] [Monoid M] (f : G →* M) (g : G) :
+theorem coe_toHomUnits {G M : Type*} [Group G] [Monoid M] (f : G →* M) (g : G) :
   (f.toHomUnits g : M) = f g := rfl
 #align monoid_hom.coe_to_hom_units MonoidHom.coe_toHomUnits
 #align add_monoid_hom.coe_to_hom_add_units AddMonoidHom.coe_toHomAddUnits
@@ -213,7 +209,7 @@ end MonoidHom
 
 namespace IsUnit
 
-variable {F G α M N : Type _}
+variable {F G α M N : Type*}
 
 section Monoid
 

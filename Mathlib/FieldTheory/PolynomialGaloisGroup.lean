@@ -2,15 +2,12 @@
 Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
-
-! This file was ported from Lean 3 source module field_theory.polynomial_galois_group
-! leanprover-community/mathlib commit e3f4be1fcb5376c4948d7f095bec45350bfb9d1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.Polynomial
 import Mathlib.FieldTheory.Galois
 import Mathlib.GroupTheory.Perm.Cycle.Type
+
+#align_import field_theory.polynomial_galois_group from "leanprover-community/mathlib"@"e3f4be1fcb5376c4948d7f095bec45350bfb9d1a"
 
 /-!
 # Galois Groups of Polynomials
@@ -52,7 +49,7 @@ open FiniteDimensional
 
 namespace Polynomial
 
-variable {F : Type _} [Field F] (p q : F[X]) (E : Type _) [Field E] [Algebra F E]
+variable {F : Type*} [Field F] (p q : F[X]) (E : Type*) [Field E] [Algebra F E]
 
 /-- The Galois group of a polynomial. -/
 def Gal :=
@@ -359,12 +356,12 @@ theorem splits_in_splittingField_of_comp (hq : q.natDegree ≠ 0) :
     intro p₁ p₂ hp₁ hp₂
     by_cases h₁ : p₁.comp q = 0
     · cases' comp_eq_zero_iff.mp h₁ with h h
-      · rw [h, MulZeroClass.zero_mul]
+      · rw [h, zero_mul]
         exact splits_zero _
       · exact False.elim (hq (by rw [h.2, natDegree_C]))
     by_cases h₂ : p₂.comp q = 0
     · cases' comp_eq_zero_iff.mp h₂ with h h
-      · rw [h, MulZeroClass.mul_zero]
+      · rw [h, mul_zero]
         exact splits_zero _
       · exact False.elim (hq (by rw [h.2, natDegree_C]))
     have key := mul_splits_in_splittingField_of_mul h₁ h₂ hp₁ hp₂
@@ -376,7 +373,7 @@ theorem splits_in_splittingField_of_comp (hq : q.natDegree ≠ 0) :
   --    fun _ _ _ h => key2 (key1 h)
   induction p using WfDvdMonoid.induction_on_irreducible with
   | h0 => exact splits_zero _
-  | hu u hu =>  exact splits_of_isUnit (algebraMap F (SplittingField (comp u q))) hu
+  | hu u hu => exact splits_of_isUnit (algebraMap F (SplittingField (comp u q))) hu
   -- Porting note: using `exact` instead of `apply` times out
   | hi p₁ p₂ _ hp₂ hp₁ => apply key2 (key1 hp₂) hp₁
 #align polynomial.gal.splits_in_splitting_field_of_comp Polynomial.Gal.splits_in_splittingField_of_comp
@@ -460,7 +457,7 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
     intro z; rw [Set.mem_toFinset, mem_rootSet_of_ne hp]
   have hb : ∀ z : ℂ, z ∈ b ↔ aeval z p = 0 ∧ z.im = 0 := by
     intro z
-    simp_rw [Finset.mem_image, exists_prop, Set.mem_toFinset, mem_rootSet_of_ne hp]
+    simp_rw [Finset.mem_image, Set.mem_toFinset, mem_rootSet_of_ne hp]
     constructor
     · rintro ⟨w, hw, rfl⟩
       exact ⟨by rw [aeval_algHom_apply, hw, AlgHom.map_zero], rfl⟩
@@ -475,7 +472,7 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
     exact Complex.conj_eq_iff_im
   have hc : ∀ z : ℂ, z ∈ c ↔ aeval z p = 0 ∧ z.im ≠ 0 := by
     intro z
-    simp_rw [Finset.mem_image, exists_prop]
+    simp_rw [Finset.mem_image]
     constructor
     · rintro ⟨w, hw, rfl⟩
       exact ⟨(mem_rootSet.mp w.2).2, mt (hc0 w).mpr (Equiv.Perm.mem_support.mp hw)⟩

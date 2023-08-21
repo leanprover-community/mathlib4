@@ -2,13 +2,10 @@
 Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
-
-! This file was ported from Lean 3 source module number_theory.modular_forms.slash_invariant_forms
-! leanprover-community/mathlib commit 738054fa93d43512da144ec45ce799d18fd44248
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.ModularForms.SlashActions
+
+#align_import number_theory.modular_forms.slash_invariant_forms from "leanprover-community/mathlib"@"738054fa93d43512da144ec45ce799d18fd44248"
 
 /-!
 # Slash invariant forms
@@ -39,7 +36,7 @@ section SlashInvariantForms
 
 open ModularForm
 
-variable (F : Type _) (Γ : outParam <| Subgroup SL(2, ℤ)) (k : outParam ℤ)
+variable (F : Type*) (Γ : outParam <| Subgroup SL(2, ℤ)) (k : outParam ℤ)
 
 /-- Functions `ℍ → ℂ` that are invariant under the `SlashAction`. -/
 structure SlashInvariantForm where
@@ -92,7 +89,7 @@ namespace SlashInvariantForm
 
 open SlashInvariantForm
 
-variable {F : Type _} {Γ : outParam <| Subgroup SL(2, ℤ)} {k : outParam ℤ}
+variable {F : Type*} {Γ : outParam <| Subgroup SL(2, ℤ)} {k : outParam ℤ}
 
 instance (priority := 100) SlashInvariantFormClass.coeToFun [SlashInvariantFormClass F Γ k] :
     CoeFun F fun _ => ℍ → ℂ :=
@@ -149,7 +146,7 @@ theorem coe_zero : ⇑(0 : SlashInvariantForm Γ k) = (0 : ℍ → ℂ) :=
 
 section
 
-variable {α : Type _} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
+variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
 
 instance instSMul : SMul α (SlashInvariantForm Γ k) :=
   ⟨fun c f =>

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module order.category.PartOrd
-! leanprover-community/mathlib commit e8ac6315bcfcbaf2d19a046719c3b553206dac75
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Antisymmetrization
 import Mathlib.Order.Category.PreordCat
+
+#align_import order.category.PartOrd from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
 /-!
 # Category of partial orders
@@ -39,17 +36,17 @@ deriving instance LargeCategory for PartOrdCat
 instance : ConcreteCategory PartOrdCat :=
   BundledHom.concreteCategory _
 
-instance : CoeSort PartOrdCat (Type _) :=
+instance : CoeSort PartOrdCat (Type*) :=
   Bundled.coeSort
 
 /-- Construct a bundled PartOrd from the underlying type and typeclass. -/
-def of (α : Type _) [PartialOrder α] : PartOrdCat :=
+def of (α : Type*) [PartialOrder α] : PartOrdCat :=
   Bundled.of α
 set_option linter.uppercaseLean3 false in
 #align PartOrd.of PartOrdCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [PartialOrder α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [PartialOrder α] : ↥(of α) = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align PartOrd.coe_of PartOrdCat.coe_of
@@ -139,8 +136,10 @@ def preordCatToPartOrdCatForgetAdjunction :
 set_option linter.uppercaseLean3 false in
 #align Preord_to_PartOrd_forget_adjunction preordCatToPartOrdCatForgetAdjunction
 
+-- The `simpNF` linter would complain as `Functor.comp_obj`, `PreordCat.dual_obj` both apply to LHS
+-- of `preordCatToPartOrdCatCompToDualIsoToDualCompPreordCatToPartOrdCat_hom_app_coe`
 /-- `PreordCatToPartOrdCat` and `OrderDual` commute. -/
-@[simps!]
+@[simps! inv_app_coe, simps! (config := .lemmasOnly) hom_app_coe]
 def preordCatToPartOrdCatCompToDualIsoToDualCompPreordCatToPartOrdCat :
     preordCatToPartOrdCat.{u} ⋙ PartOrdCat.dual ≅ PreordCat.dual ⋙ preordCatToPartOrdCat :=
   NatIso.ofComponents (fun _ => PartOrdCat.Iso.mk <| OrderIso.dualAntisymmetrization _)

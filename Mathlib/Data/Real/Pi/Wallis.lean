@@ -2,13 +2,10 @@
 Copyright (c) 2021 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang
-
-! This file was ported from Lean 3 source module data.real.pi.wallis
-! leanprover-community/mathlib commit 980755c33b9168bc82f774f665eaa27878140fac
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Integrals
+
+#align_import data.real.pi.wallis from "leanprover-community/mathlib"@"980755c33b9168bc82f774f665eaa27878140fac"
 
 /-! # The Wallis formula for Pi
 
@@ -43,7 +40,7 @@ namespace Real
 
 namespace Wallis
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 set_option linter.uppercaseLean3 false
 
@@ -67,7 +64,7 @@ theorem W_pos (k : ℕ) : 0 < W k := by
 theorem W_eq_factorial_ratio (n : ℕ) :
     W n = 2 ^ (4 * n) * n ! ^ 4 / ((2 * n)! ^ 2 * (2 * n + 1)) := by
   induction' n with n IH
-  · simp only [W, prod_range_zero, Nat.factorial_zero, MulZeroClass.mul_zero, pow_zero,
+  · simp only [W, prod_range_zero, Nat.factorial_zero, mul_zero, pow_zero,
       algebraMap.coe_one, one_pow, mul_one, algebraMap.coe_zero, zero_add, div_self, Ne.def,
       one_ne_zero, not_false_iff]
     norm_num

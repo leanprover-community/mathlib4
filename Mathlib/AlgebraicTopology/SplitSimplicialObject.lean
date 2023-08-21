@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.split_simplicial_object
-! leanprover-community/mathlib commit dd1f8496baa505636a82748e6b652165ea888733
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.SimplicialObject
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+
+#align_import algebraic_topology.split_simplicial_object from "leanprover-community/mathlib"@"dd1f8496baa505636a82748e6b652165ea888733"
 
 /-!
 
@@ -45,7 +42,7 @@ open Simplicial
 
 universe u
 
-variable {C : Type _} [Category C]
+variable {C : Type*} [Category C]
 
 namespace SimplicialObject
 
@@ -100,7 +97,6 @@ instance : Fintype (IndexSet Δ) :=
       simp only [unop_op, Sigma.mk.inj_iff, Fin.mk.injEq] at h₁
       have h₂ : Δ₁ = Δ₂ := by
         ext1
-        simp at h₁
         simpa only [Fin.mk_eq_mk] using h₁.1
       subst h₂
       refine' ext _ _ rfl _
@@ -257,11 +253,21 @@ variable {X Y : SimplicialObject C} (s : Splitting X)
 attribute [instance] Splitting.map_isIso
 #align simplicial_object.splitting.map_is_iso SimplicialObject.Splitting.map_isIso
 
+-- Porting note:
+-- This used to be `@[simps]`, but now `Splitting.map` is unfolded in the generated lemmas. Why?
+-- Instead we write these lemmas by hand.
 /-- The isomorphism on simplices given by the axiom `Splitting.map_isIso` -/
-@[simps!]
 def iso (Δ : SimplexCategoryᵒᵖ) : coprod s.N Δ ≅ X.obj Δ :=
   asIso (Splitting.map X s.ι Δ)
 #align simplicial_object.splitting.iso SimplicialObject.Splitting.iso
+
+@[simp]
+theorem iso_hom (Δ : SimplexCategoryᵒᵖ) : (iso s Δ).hom = Splitting.map X s.ι Δ :=
+  rfl
+
+@[simp]
+theorem iso_inv (Δ : SimplexCategoryᵒᵖ) : (iso s Δ).inv = inv (Splitting.map X s.ι Δ) :=
+  rfl
 
 /-- Via the isomorphism `s.iso Δ`, this is the inclusion of a summand
 in the direct sum decomposition given by the splitting `s : Splitting X`. -/

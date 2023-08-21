@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module ring_theory.polynomial.pochhammer
-! leanprover-community/mathlib commit 53b216bcc1146df1c4a0a86877890ea9f1f01589
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Abel
 import Mathlib.Data.Polynomial.Eval
+
+#align_import ring_theory.polynomial.pochhammer from "leanprover-community/mathlib"@"53b216bcc1146df1c4a0a86877890ea9f1f01589"
 
 /-!
 # The Pochhammer polynomials
@@ -109,7 +106,7 @@ theorem pochhammer_succ_right (n : ℕ) :
         nat_cast_comp, add_assoc, add_comm (1 : ℕ[X]), ← Nat.cast_succ]
 #align pochhammer_succ_right pochhammer_succ_right
 
-theorem pochhammer_succ_eval {S : Type _} [Semiring S] (n : ℕ) (k : S) :
+theorem pochhammer_succ_eval {S : Type*} [Semiring S] (n : ℕ) (k : S) :
     (pochhammer S (n + 1)).eval k = (pochhammer S n).eval k * (k + n) := by
   rw [pochhammer_succ_right, mul_add, eval_add, eval_mul_X, ← Nat.cast_comm, ← C_eq_nat_cast,
     eval_C_mul, Nat.cast_comm, ← mul_add]
@@ -122,7 +119,6 @@ theorem pochhammer_succ_comp_X_add_one (n : ℕ) :
       pochhammer ℕ (n + 1) + (n + 1) * (pochhammer ℕ n).comp (X + 1)
     by simpa [map_comp] using congr_arg (Polynomial.map (Nat.castRingHom S)) this
   nth_rw 2 [pochhammer_succ_left]
-  simp only
   rw [← add_mul, pochhammer_succ_right ℕ n, mul_comp, mul_comm, add_comp, X_comp, nat_cast_comp,
     add_comm, ← add_assoc]
   ring
@@ -168,7 +164,7 @@ end Semiring
 
 section StrictOrderedSemiring
 
-variable {S : Type _} [StrictOrderedSemiring S]
+variable {S : Type*} [StrictOrderedSemiring S]
 
 theorem pochhammer_pos (n : ℕ) (s : S) (h : 0 < s) : 0 < (pochhammer S n).eval s := by
   induction' n with n ih
@@ -185,15 +181,15 @@ section Factorial
 
 open Nat
 
-variable (S : Type _) [Semiring S] (r n : ℕ)
+variable (S : Type*) [Semiring S] (r n : ℕ)
 
 @[simp]
-theorem pochhammer_eval_one (S : Type _) [Semiring S] (n : ℕ) :
+theorem pochhammer_eval_one (S : Type*) [Semiring S] (n : ℕ) :
     (pochhammer S n).eval (1 : S) = (n ! : S) := by
   rw_mod_cast [pochhammer_nat_eq_ascFactorial, Nat.zero_ascFactorial]
 #align pochhammer_eval_one pochhammer_eval_one
 
-theorem factorial_mul_pochhammer (S : Type _) [Semiring S] (r n : ℕ) :
+theorem factorial_mul_pochhammer (S : Type*) [Semiring S] (r n : ℕ) :
     (r ! : S) * (pochhammer S n).eval (r + 1 : S) = (r + n)! := by
   rw_mod_cast [pochhammer_nat_eq_ascFactorial, Nat.factorial_mul_ascFactorial]
 #align factorial_mul_pochhammer factorial_mul_pochhammer

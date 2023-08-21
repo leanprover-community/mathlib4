@@ -2,14 +2,11 @@
 Copyright (c) 2020 Aaron Anderson, Jalex Stark. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.charpoly.coeff
-! leanprover-community/mathlib commit 9745b093210e9dac443af24da9dba0f9e2b6c912
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Expand
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
+
+#align_import linear_algebra.matrix.charpoly.coeff from "leanprover-community/mathlib"@"9745b093210e9dac443af24da9dba0f9e2b6c912"
 
 /-!
 # Characteristic polynomials
@@ -169,7 +166,7 @@ theorem matPolyEquiv_eval (M : Matrix n n R[X]) (r : R) (i j : n) :
     simp only [sum_apply]
     dsimp
   · simp_rw [← RingHom.map_pow, ← (scalar.commute _ _).eq]
-    simp only [coe_scalar, Matrix.one_mul, RingHom.id_apply, Pi.smul_apply, smul_eq_mul, mul_eq_mul,
+    simp only [coe_scalar, Matrix.one_mul, RingHom.id_apply, Pi.smul_apply, smul_eq_mul,
       Algebra.smul_mul_assoc]
     -- porting note: the `have` was present and unused also in the original
     --have h : ∀ x : ℕ, (fun (e : ℕ) (a : R) => r ^ e * a) x 0 = 0 := by simp
@@ -178,7 +175,7 @@ theorem matPolyEquiv_eval (M : Matrix n n R[X]) (r : R) (i j : n) :
     apply (Finset.sum_subset (support_subset_support_matPolyEquiv _ _ _) _).symm
     intro n _hn h'n
     rw [not_mem_support_iff] at h'n
-    simp only [h'n, MulZeroClass.zero_mul]
+    simp only [h'n, zero_mul]
     simp only [mul_zero]  -- porting note: added
 #align matrix.mat_poly_equiv_eval Matrix.matPolyEquiv_eval
 
@@ -202,7 +199,7 @@ end Matrix
 
 variable {p : ℕ} [Fact p.Prime]
 
-theorem matPolyEquiv_eq_x_pow_sub_c {K : Type _} (k : ℕ) [Field K] (M : Matrix n n K) :
+theorem matPolyEquiv_eq_x_pow_sub_c {K : Type*} (k : ℕ) [Field K] (M : Matrix n n K) :
     matPolyEquiv ((expand K k : K[X] →+* K[X]).mapMatrix (charmatrix (M ^ k))) =
       X ^ k - C (M ^ k) := by
   -- porting note: `i` and `j` are used later on, but were not mentioned in mathlib3

@@ -2,6 +2,8 @@ import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Char
 import Mathlib.Data.UInt
 
+set_option autoImplicit true
+
 namespace Nat
 
 /- Up -/
@@ -12,7 +14,7 @@ def Up (ub a i : ℕ) := i < a ∧ i < ub
 lemma Up.next {ub i} (h : i < ub) : Up ub (i+1) i := ⟨Nat.lt_succ_self _, h⟩
 
 lemma Up.WF (ub) : WellFounded (Up ub) :=
-  Subrelation.wf (h₂ := (measure (ub - .)).wf) fun ⟨ia, iu⟩ ↦ Nat.sub_lt_sub_left iu ia
+  Subrelation.wf (h₂ := (measure (ub - ·)).wf) fun ⟨ia, iu⟩ ↦ Nat.sub_lt_sub_left iu ia
 
 /-- A well-ordered relation for "upwards" induction on the natural numbers up to some bound `ub`. -/
 def upRel (ub : ℕ) : WellFoundedRelation Nat := ⟨Up ub, Up.WF ub⟩

@@ -2,16 +2,13 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.clifford_algebra.even_equiv
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 import Mathlib.LinearAlgebra.CliffordAlgebra.Even
 import Mathlib.LinearAlgebra.QuadraticForm.Prod
 import Mathlib.Tactic.LiftLets
+
+#align_import linear_algebra.clifford_algebra.even_equiv from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
 # Isomorphisms with the even subalgebra of a Clifford algebra
@@ -40,7 +37,7 @@ This file provides some notable isomorphisms regarding the even subalgebra, `Cli
 
 namespace CliffordAlgebra
 
-variable {R M : Type _} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 variable (Q : QuadraticForm R M)
 
@@ -87,7 +84,7 @@ theorem v_sq_scalar (m : M) : v Q m * v Q m = algebraMap _ _ (Q m) :=
 theorem neg_e0_mul_v (m : M) : -(e0 Q * v Q m) = v Q m * e0 Q := by
   refine' neg_eq_of_add_eq_zero_right ((ι_mul_ι_add_swap _ _).trans _)
   dsimp [QuadraticForm.polar]
-  simp only [add_zero, MulZeroClass.mul_zero, mul_one, zero_add, neg_zero, QuadraticForm.map_zero,
+  simp only [add_zero, mul_zero, mul_one, zero_add, neg_zero, QuadraticForm.map_zero,
     add_sub_cancel, sub_self, map_zero, zero_sub]
 #align clifford_algebra.equiv_even.neg_e0_mul_v CliffordAlgebra.EquivEven.neg_e0_mul_v
 
@@ -182,12 +179,8 @@ theorem ofEven_ι (x y : M × R) :
       (ι Q x.1 + algebraMap R _ x.2) * (ι Q y.1 - algebraMap R _ y.2) := by
   -- porting note: entire proof was the term-mode `even.lift_ι (Q' Q) _ x y`
   unfold ofEven
-  -- TODO: `lift_lets` gives a deep recursion error if we try to use it here
-  let f : M × R →ₗ[R] M × R →ₗ[R] CliffordAlgebra Q :=
-    ((Algebra.lmul R (CliffordAlgebra Q)).toLinearMap.comp <|
-          (ι Q).comp (LinearMap.fst _ _ _) +
-            (Algebra.linearMap R _).comp (LinearMap.snd _ _ _)).compl₂
-      ((ι Q).comp (LinearMap.fst _ _ _) - (Algebra.linearMap R _).comp (LinearMap.snd _ _ _))
+  lift_lets
+  intro f
   -- TODO: replacing `?_` with `_` takes way longer?
   refine @even.lift_ι R (M × R) _ _ _ (Q' Q) _ _ _ ⟨f, ?_, ?_⟩ x y
 #align clifford_algebra.of_even_ι CliffordAlgebra.ofEven_ι

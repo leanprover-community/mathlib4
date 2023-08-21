@@ -2,14 +2,11 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.bicategory.single_obj
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Bicategory.End
 import Mathlib.CategoryTheory.Monoidal.Functor
+
+#align_import category_theory.bicategory.single_obj from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Promoting a monoidal category to a single object bicategory.
@@ -33,7 +30,7 @@ is equivalent to the bicategory consisting of
 
 namespace CategoryTheory
 
-variable (C : Type _) [Category C] [MonoidalCategory C]
+variable (C : Type*) [Category C] [MonoidalCategory C]
 
 /-- Promote a monoidal category to a bicategory with a single object.
 (The objects of the monoidal category become the 1-morphisms,
@@ -41,7 +38,7 @@ with composition given by tensor product,
 and the morphisms of the monoidal category become the 2-morphisms.)
 -/
 @[nolint unusedArguments]
-def MonoidalSingleObj (C : Type _) [Category C] [MonoidalCategory C] :=
+def MonoidalSingleObj (C : Type*) [Category C] [MonoidalCategory C] :=
   PUnit --deriving Inhabited
 #align category_theory.monoidal_single_obj CategoryTheory.MonoidalSingleObj
 

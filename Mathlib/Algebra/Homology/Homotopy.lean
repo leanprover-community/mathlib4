@@ -2,14 +2,11 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.homology.homotopy
-! leanprover-community/mathlib commit 618ea3d5c99240cd7000d8376924906a148bf9ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.Tactic.Abel
+
+#align_import algebra.homology.homotopy from "leanprover-community/mathlib"@"618ea3d5c99240cd7000d8376924906a148bf9ff"
 
 /-!
 # Chain homotopies
@@ -26,7 +23,7 @@ noncomputable section
 
 open CategoryTheory CategoryTheory.Limits HomologicalComplex
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 variable {V : Type u} [Category.{v} V] [Preadditive V]
 
@@ -311,7 +308,7 @@ theorem comp_nullHomotopicMap' (f : C ⟶ D) (hom : ∀ i j, c.Rel j i → (D.X 
 #align homotopy.comp_null_homotopic_map' Homotopy.comp_nullHomotopicMap'
 
 /-- Compatibility of `nullHomotopicMap` with the application of additive functors -/
-theorem map_nullHomotopicMap {W : Type _} [Category W] [Preadditive W] (G : V ⥤ W) [G.Additive]
+theorem map_nullHomotopicMap {W : Type*} [Category W] [Preadditive W] (G : V ⥤ W) [G.Additive]
     (hom : ∀ i j, C.X i ⟶ D.X j) :
     (G.mapHomologicalComplex c).map (nullHomotopicMap hom) =
       nullHomotopicMap (fun i j => by exact G.map (hom i j)) := by
@@ -321,7 +318,7 @@ theorem map_nullHomotopicMap {W : Type _} [Category W] [Preadditive W] (G : V �
 #align homotopy.map_null_homotopic_map Homotopy.map_nullHomotopicMap
 
 /-- Compatibility of `nullHomotopicMap'` with the application of additive functors -/
-theorem map_nullHomotopicMap' {W : Type _} [Category W] [Preadditive W] (G : V ⥤ W) [G.Additive]
+theorem map_nullHomotopicMap' {W : Type*} [Category W] [Preadditive W] (G : V ⥤ W) [G.Additive]
     (hom : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) :
     (G.mapHomologicalComplex c).map (nullHomotopicMap' hom) =
       nullHomotopicMap' fun i j hij => by exact G.map (hom i j hij) := by
@@ -352,7 +349,6 @@ def nullHomotopy (hom : ∀ i j, C.X i ⟶ D.X j) (zero : ∀ i j, ¬c.Rel j i �
 def nullHomotopy' (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) : Homotopy (nullHomotopicMap' h) 0 := by
   apply nullHomotopy fun i j => dite (c.Rel j i) (h i j) fun _ => 0
   intro i j hij
-  dsimp
   rw [dite_eq_right_iff]
   intro hij'
   exfalso
@@ -378,7 +374,6 @@ theorem nullHomotopicMap'_f {k₂ k₁ k₀ : ι} (r₂₁ : c.Rel k₂ k₁) (r
     (nullHomotopicMap' h).f k₁ = C.d k₁ k₀ ≫ h k₀ k₁ r₁₀ + h k₁ k₂ r₂₁ ≫ D.d k₂ k₁ := by
   simp only [nullHomotopicMap']
   rw [nullHomotopicMap_f r₂₁ r₁₀]
-  dsimp
   split_ifs
   rfl
 #align homotopy.null_homotopic_map'_f Homotopy.nullHomotopicMap'_f
@@ -398,7 +393,6 @@ theorem nullHomotopicMap'_f_of_not_rel_left {k₁ k₀ : ι} (r₁₀ : c.Rel k�
     (nullHomotopicMap' h).f k₀ = h k₀ k₁ r₁₀ ≫ D.d k₁ k₀ := by
   simp only [nullHomotopicMap']
   rw [nullHomotopicMap_f_of_not_rel_left r₁₀ hk₀]
-  dsimp
   split_ifs
   rfl
 #align homotopy.null_homotopic_map'_f_of_not_rel_left Homotopy.nullHomotopicMap'_f_of_not_rel_left
@@ -418,7 +412,6 @@ theorem nullHomotopicMap'_f_of_not_rel_right {k₁ k₀ : ι} (r₁₀ : c.Rel k
     (nullHomotopicMap' h).f k₁ = C.d k₁ k₀ ≫ h k₀ k₁ r₁₀ := by
   simp only [nullHomotopicMap']
   rw [nullHomotopicMap_f_of_not_rel_right r₁₀ hk₁]
-  dsimp
   split_ifs
   rfl
 #align homotopy.null_homotopic_map'_f_of_not_rel_right Homotopy.nullHomotopicMap'_f_of_not_rel_right
@@ -518,7 +511,6 @@ section
 
 /-- An auxiliary construction for `mkInductive`.
 -/
-@[simp]
 def mkInductiveAux₂ :
     ∀ n, Σ' (f : P.xNext n ⟶ Q.X n) (f' : P.X n ⟶ Q.xPrev n), e.f n = P.dFrom n ≫ f + f' ≫ Q.dTo n
   | 0 => ⟨0, zero ≫ (Q.xPrevIso rfl).inv, by simpa using comm_zero⟩
@@ -527,6 +519,21 @@ def mkInductiveAux₂ :
       one comm_one succ n
     ⟨(P.xNextIso rfl).hom ≫ I.1, I.2.1 ≫ (Q.xPrevIso rfl).inv, by simpa using I.2.2⟩
 #align homotopy.mk_inductive_aux₂ Homotopy.mkInductiveAux₂
+
+theorem mkInductiveAux₂_zero :
+    mkInductiveAux₂ e zero comm_zero one comm_one succ 0 =
+      ⟨0, zero ≫ (Q.xPrevIso rfl).inv, mkInductiveAux₂.proof_2 e zero comm_zero⟩ :=
+  rfl
+
+theorem mkInductiveAux₂_add_one (n) :
+    mkInductiveAux₂ e zero comm_zero one comm_one succ (n + 1) =
+      let I := mkInductiveAux₁ e zero one comm_one succ n
+      ⟨(P.xNextIso rfl).hom ≫ I.1, I.2.1 ≫ (Q.xPrevIso rfl).inv,
+        mkInductiveAux₂.proof_5 e zero one comm_one succ n⟩ :=
+  rfl
+
+attribute [eqns mkInductiveAux₂_zero mkInductiveAux₂_add_one] mkInductiveAux₂
+attribute [simp] mkInductiveAux₂
 
 theorem mkInductiveAux₃ (i j : ℕ) (h : i + 1 = j) :
     (mkInductiveAux₂ e zero comm_zero one comm_one succ i).2.1 ≫ (Q.xPrevIso h).hom =
@@ -643,7 +650,6 @@ section
 
 /-- An auxiliary construction for `mkInductive`.
 -/
-@[simp]
 def mkCoinductiveAux₂ :
     ∀ n, Σ' (f : P.X n ⟶ Q.xPrev n) (f' : P.xNext n ⟶ Q.X n), e.f n = f ≫ Q.dTo n + P.dFrom n ≫ f'
   | 0 => ⟨0, (P.xNextIso rfl).hom ≫ zero, by simpa using comm_zero⟩
@@ -651,6 +657,21 @@ def mkCoinductiveAux₂ :
     let I := mkCoinductiveAux₁ e zero one comm_one succ n
     ⟨I.1 ≫ (Q.xPrevIso rfl).inv, (P.xNextIso rfl).hom ≫ I.2.1, by simpa using I.2.2⟩
 #align homotopy.mk_coinductive_aux₂ Homotopy.mkCoinductiveAux₂
+
+theorem mkCoinductiveAux₂_zero :
+    mkCoinductiveAux₂ e zero comm_zero one comm_one succ 0 =
+      ⟨0, (P.xNextIso rfl).hom ≫ zero, mkCoinductiveAux₂.proof_2 e zero comm_zero⟩ :=
+  rfl
+
+theorem mkCoinductiveAux₂_add_one (n) :
+    mkCoinductiveAux₂ e zero comm_zero one comm_one succ (n + 1) =
+      let I := mkCoinductiveAux₁ e zero one comm_one succ n
+      ⟨I.1 ≫ (Q.xPrevIso rfl).inv, (P.xNextIso rfl).hom ≫ I.2.1,
+        mkCoinductiveAux₂.proof_5 e zero one comm_one succ n⟩ :=
+  rfl
+
+attribute [eqns mkCoinductiveAux₂_zero mkCoinductiveAux₂_add_one] mkCoinductiveAux₂
+attribute [simp] mkCoinductiveAux₂
 
 theorem mkCoinductiveAux₃ (i j : ℕ) (h : i + 1 = j) :
     (P.xNextIso h).inv ≫ (mkCoinductiveAux₂ e zero comm_zero one comm_one succ i).2.1 =
@@ -749,7 +770,7 @@ def trans {C D E : HomologicalComplex V c} (f : HomotopyEquiv C D) (g : Homotopy
 #align homotopy_equiv.trans HomotopyEquiv.trans
 
 /-- An isomorphism of complexes induces a homotopy equivalence. -/
-def ofIso {ι : Type _} {V : Type u} [Category.{v} V] [Preadditive V] {c : ComplexShape ι}
+def ofIso {ι : Type*} {V : Type u} [Category.{v} V] [Preadditive V] {c : ComplexShape ι}
     {C D : HomologicalComplex V c} (f : C ≅ D) : HomotopyEquiv C D :=
   ⟨f.hom, f.inv, Homotopy.ofEq f.3, Homotopy.ofEq f.4⟩
 #align homotopy_equiv.of_iso HomotopyEquiv.ofIso
@@ -795,7 +816,7 @@ end
 
 namespace CategoryTheory
 
-variable {W : Type _} [Category W] [Preadditive W]
+variable {W : Type*} [Category W] [Preadditive W]
 
 /-- An additive functor takes homotopies to homotopies. -/
 @[simps]
