@@ -151,7 +151,7 @@ theorem op_norm_le_bound' (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M)
     (hM : ∀ x, ‖x‖ ≠ 0 → ‖f x‖ ≤ M * ‖x‖) : ‖f‖ ≤ M :=
   op_norm_le_bound f hMp fun x =>
     (ne_or_eq ‖x‖ 0).elim (hM x) fun h => by
-      simp only [h, MulZeroClass.mul_zero, norm_image_of_norm_zero f f.2 h, le_refl]
+      simp only [h, mul_zero, norm_image_of_norm_zero f f.2 h, le_refl]
 #align continuous_linear_map.op_norm_le_bound' ContinuousLinearMap.op_norm_le_bound'
 
 theorem op_norm_le_of_lipschitz {f : E →SL[σ₁₂] F} {K : ℝ≥0} (hf : LipschitzWith K f) : ‖f‖ ≤ K :=
@@ -184,7 +184,7 @@ theorem le_op_norm : ‖f x‖ ≤ ‖f‖ * ‖x‖ := by
   obtain ⟨C, _, hC⟩ := f.bound
   replace hC := hC x
   by_cases h : ‖x‖ = 0
-  · rwa [h, MulZeroClass.mul_zero] at hC ⊢
+  · rwa [h, mul_zero] at hC ⊢
   have hlt : 0 < ‖x‖ := lt_of_le_of_ne (norm_nonneg x) (Ne.symm h)
   exact (div_le_iff hlt).mp
     (le_csInf bounds_nonempty fun c ⟨_, hc⟩ => (div_le_iff hlt).mpr <| by apply hc)
@@ -268,7 +268,7 @@ theorem op_norm_add_le : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
 /-- The norm of the `0` operator is `0`. -/
 theorem op_norm_zero : ‖(0 : E →SL[σ₁₂] F)‖ = 0 :=
   le_antisymm (csInf_le bounds_bddBelow ⟨le_rfl, fun _ => le_of_eq (by
-    rw [MulZeroClass.zero_mul]
+    rw [zero_mul]
     exact norm_zero)⟩) (op_norm_nonneg _)
 #align continuous_linear_map.op_norm_zero ContinuousLinearMap.op_norm_zero
 
@@ -1498,7 +1498,7 @@ theorem op_norm_zero_iff [RingHomIsometric σ₁₂] : ‖f‖ = 0 ↔ f = 0 :=
     (fun hn => ContinuousLinearMap.ext fun x => norm_le_zero_iff.1
       (calc
         _ ≤ ‖f‖ * ‖x‖ := le_op_norm _ _
-        _ = _ := by rw [hn, MulZeroClass.zero_mul]))
+        _ = _ := by rw [hn, zero_mul]))
     (by
       rintro rfl
       exact op_norm_zero)

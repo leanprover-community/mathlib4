@@ -424,8 +424,8 @@ theorem preVal_zero : preVal K v O hv p 0 = 0 :=
 
 theorem preVal_mul {x y : ModP K v O hv p} (hxy0 : x * y ≠ 0) :
     preVal K v O hv p (x * y) = preVal K v O hv p x * preVal K v O hv p y := by
-  have hx0 : x ≠ 0 := mt (by rintro rfl; rw [MulZeroClass.zero_mul]) hxy0
-  have hy0 : y ≠ 0 := mt (by rintro rfl; rw [MulZeroClass.mul_zero]) hxy0
+  have hx0 : x ≠ 0 := mt (by rintro rfl; rw [zero_mul]) hxy0
+  have hy0 : y ≠ 0 := mt (by rintro rfl; rw [mul_zero]) hxy0
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
   obtain ⟨s, rfl⟩ := Ideal.Quotient.mk_surjective y
   rw [← RingHom.map_mul] at hxy0 ⊢
@@ -566,9 +566,9 @@ theorem valAux_one : valAux K v O hv p 1 = 1 :=
 theorem valAux_mul (f g : PreTilt K v O hv p) :
     valAux K v O hv p (f * g) = valAux K v O hv p f * valAux K v O hv p g := by
   by_cases hf : f = 0
-  · rw [hf, MulZeroClass.zero_mul, valAux_zero, MulZeroClass.zero_mul]
+  · rw [hf, zero_mul, valAux_zero, zero_mul]
   by_cases hg : g = 0
-  · rw [hg, MulZeroClass.mul_zero, valAux_zero, MulZeroClass.mul_zero]
+  · rw [hg, mul_zero, valAux_zero, mul_zero]
   obtain ⟨m, hm⟩ : ∃ n, coeff _ _ n f ≠ 0 := not_forall.1 fun h => hf <| Perfection.ext h
   obtain ⟨n, hn⟩ : ∃ n, coeff _ _ n g ≠ 0 := not_forall.1 fun h => hg <| Perfection.ext h
   replace hm := coeff_ne_zero_of_le hm (le_max_left m n)

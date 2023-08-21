@@ -109,7 +109,7 @@ theorem integerNormalization_eval₂_eq_zero (g : S →+* R') (p : S[X]) {x : R'
     (hx : eval₂ g x p = 0) : eval₂ (g.comp (algebraMap R S)) x (integerNormalization M p) = 0 :=
   let ⟨b, hb⟩ := integerNormalization_map_to_map M p
   _root_.trans (eval₂_map (algebraMap R S) g x).symm
-    (by rw [hb, ← IsScalarTower.algebraMap_smul S (b : R) p, eval₂_smul, hx, MulZeroClass.mul_zero])
+    (by rw [hb, ← IsScalarTower.algebraMap_smul S (b : R) p, eval₂_smul, hx, mul_zero])
 #align is_localization.integer_normalization_eval₂_eq_zero IsLocalization.integerNormalization_eval₂_eq_zero
 
 theorem integerNormalization_aeval_eq_zero [Algebra R R'] [Algebra S R'] [IsScalarTower R S R']
@@ -200,7 +200,7 @@ theorem RingHom.isIntegralElem_localization_at_leadingCoeff {R S : Type*} [CommR
   · refine' monic_mul_C_of_leadingCoeff_mul_eq_one _
     rwa [leadingCoeff_map_of_leadingCoeff_ne_zero (algebraMap R Rₘ)]
     refine' fun hfp => zero_ne_one
-      (_root_.trans (MulZeroClass.zero_mul b).symm (hfp ▸ hb) : (0 : Rₘ) = 1)
+      (_root_.trans (zero_mul b).symm (hfp ▸ hb) : (0 : Rₘ) = 1)
   · refine' eval₂_mul_eq_zero_of_left _ _ _ _
     erw [eval₂_map, IsLocalization.map_comp, ← hom_eval₂ _ f (algebraMap S Sₘ) x]
     exact _root_.trans (congr_arg (algebraMap S Sₘ) hf) (RingHom.map_zero _)
@@ -279,7 +279,7 @@ theorem IsLocalization.scaleRoots_commonDenom_mem_lifts (p : Rₘ[X])
     · rw [← Algebra.smul_def]
       exact ⟨_, IsLocalization.map_integerMultiple M p.support p.coeff ⟨n, h₁⟩⟩
   · rw [Polynomial.not_mem_support_iff] at h₁
-    rw [h₁, MulZeroClass.zero_mul]
+    rw [h₁, zero_mul]
     exact zero_mem (algebraMap R Rₘ).range
 #align is_localization.scale_roots_common_denom_mem_lifts IsLocalization.scaleRoots_commonDenom_mem_lifts
 

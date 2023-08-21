@@ -165,9 +165,9 @@ theorem IntValuation.map_mul' (x y : R) :
     v.intValuationDef (x * y) = v.intValuationDef x * v.intValuationDef y := by
   simp only [intValuationDef]
   by_cases hx : x = 0
-  · rw [hx, MulZeroClass.zero_mul, if_pos (Eq.refl _), MulZeroClass.zero_mul]
+  · rw [hx, zero_mul, if_pos (Eq.refl _), zero_mul]
   · by_cases hy : y = 0
-    · rw [hy, MulZeroClass.mul_zero, if_pos (Eq.refl _), MulZeroClass.mul_zero]
+    · rw [hy, mul_zero, if_pos (Eq.refl _), mul_zero]
     · rw [if_neg hx, if_neg hy, if_neg (mul_ne_zero hx hy), ← WithZero.coe_mul, WithZero.coe_inj, ←
         ofAdd_add, ← Ideal.span_singleton_mul_span_singleton, ← Associates.mk_mul_mk, ← neg_add,
         Associates.count_mul (by apply Associates.mk_ne_zero'.mpr hx)
