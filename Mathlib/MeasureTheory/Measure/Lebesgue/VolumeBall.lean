@@ -69,7 +69,7 @@ def NNReal.Gamma (x : ℝ≥0) : ℝ≥0 := ⟨Real.Gamma x, Real.Gamma_nonneg_o
 @[simp]
 theorem NNReal.Gamma_coe {x : ℝ≥0} : (NNReal.Gamma x : ℝ) = Real.Gamma x := rfl
 
-theorem NNReal.Gamma_pos {x : ℝ≥0} (hx : 0 < x) : 0 < NNReal.Gamma x := by
+theorem NNReal.Gamma_pos_of_pos {x : ℝ≥0} (hx : 0 < x) : 0 < NNReal.Gamma x := by
   rw [← NNReal.coe_lt_coe]
   simp
   exact Real.Gamma_pos_of_pos hx
@@ -88,7 +88,8 @@ local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue 
 
 def I (n : ℕ) (t : ℝ) : ℝ≥0 := if ht : 0 ≤ t then (⟨t, ht⟩ ^ ((n:ℝ) / 2)) else 0
 
-@[simp] theorem I_zero (t : ℝ) : I 0 t = if 0 ≤ t then 1 else 0 := sorry
+@[simp] theorem I_zero (t : ℝ) : I 0 t = if 0 ≤ t then 1 else 0 := by
+  simp [I]
 
 theorem I_apply_nonneg (n : ℕ) {t : ℝ} (ht : 0 ≤ t) : I n t = (⟨t, ht⟩ ^ ((n:ℝ) / 2)) := by
   rw [I, dif_pos]
@@ -97,7 +98,12 @@ theorem I_apply_nnreal (n : ℕ) (t : ℝ≥0) : I n t = t ^ ((n:ℝ)/2) := by
   rw [I_apply_nonneg]
   rfl
 
-@[simp] theorem I_apply_sq_nnreal (n : ℕ) (t : ℝ≥0) : I n ((t:ℝ) ^ 2) = t ^ n := sorry
+@[simp] theorem I_apply_sq_nnreal (n : ℕ) (t : ℝ≥0) : I n ((t:ℝ) ^ 2) = t ^ n := by
+  ext
+  simp [I]
+  rw [← Real.rpow_two, ← Real.rpow_mul]
+  · simp [mul_div_cancel']
+  · exact NNReal.zero_le_coe
 
 @[measurability]
 theorem measurable_I {n : ℕ} : Measurable (I n) := by
@@ -116,8 +122,8 @@ theorem B_succ (n : ℕ) : B (n + 1) = B n * Beta (1 / 2) (n / 2 + 1) := by
   simp only [add_div]
   ring_nf
   simp only
-  have h₁ : 0 < NNReal.Gamma (1 + n / 2) := NNReal.Gamma_pos
-  have h₂ : 0 < NNReal.Gamma (1 + n / 2 + 1 / 2) := NNReal.Gamma_pos
+  have h₁ : 0 < NNReal.Gamma (1 + n / 2) := NNReal.Gamma_pos_of_pos (by positivity)
+  have h₂ : 0 < NNReal.Gamma (1 + n / 2 + 1 / 2) := NNReal.Gamma_pos_of_pos (by positivity)
   set X := NNReal.Gamma (1 + n / 2)
   set Y := NNReal.Gamma (1 + n / 2 + 1 / 2)
   clear_value X Y
@@ -131,9 +137,13 @@ theorem B_succ (n : ℕ) : B (n + 1) = B n * Beta (1 / 2) (n / 2 + 1) := by
 /-- auxiliary one-variable integral -/
 theorem lintegral_I_sub_sq_nnreal (n : ℕ) (R : ℝ≥0) :
     ∫⁻ x : ℝ, I n (R ^ 2 - x ^ 2) = Beta (1 / 2) (n / 2 + 1) * (R:ℝ≥0∞) ^ (n + 1) :=
-  sorry
+  calc ∫⁻ x : ℝ, I n (R ^ 2 - x ^ 2)
+      = sorry := sorry
+    _ = Beta (1 / 2) (n / 2 + 1) * (R:ℝ≥0∞) ^ (n + 1) := sorry
+
 
 -- some automation broken here, track it down
+set_option linter.unreachableTactic false in
 theorem lintegral_I_sub_sq (n : ℕ) (c : ℝ) :
     ∫⁻ x : ℝ, I n (c - x ^ 2) = Beta (1 / 2) (n / 2 + 1) * I (n + 1) c := by
   by_cases h : (0:ℝ) ≤ c
@@ -144,7 +154,8 @@ theorem lintegral_I_sub_sq (n : ℕ) (c : ℝ) :
     norm_cast
     push_cast
     have : (r ^ 2) ^ ((((n : ℝ) + 1) / 2)) = r ^ n * r
-    · sorry -- algebra
+    · rw [← NNReal.rpow_two, ← NNReal.rpow_mul]
+      simp (discharger := positivity) [mul_div_cancel', NNReal.rpow_add']
     rw [this]
     ring
   · have h₁ : (fun t ↦ ↑(I n (c - t ^ 2))) = (fun _ ↦ 0 : ℝ → ℝ≥0∞)
