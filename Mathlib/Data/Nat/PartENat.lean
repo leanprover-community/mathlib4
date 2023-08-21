@@ -149,10 +149,12 @@ protected theorem casesOn {P : PartENat → Prop} : ∀ a : PartENat, P ⊤ → 
   exact PartENat.casesOn'
 #align part_enat.cases_on PartENat.casesOn
 
+-- not a simp lemma as we will provide a `LinearOrderedAddCommMonoidWithTop` instance later
 theorem top_add (x : PartENat) : ⊤ + x = ⊤ :=
   Part.ext' (false_and_iff _) fun h => h.left.elim
 #align part_enat.top_add PartENat.top_add
 
+-- not a simp lemma as we will provide a `LinearOrderedAddCommMonoidWithTop` instance later
 theorem add_top (x : PartENat) : x + ⊤ = ⊤ := by rw [add_comm, top_add]
 #align part_enat.add_top PartENat.add_top
 
