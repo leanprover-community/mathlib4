@@ -116,7 +116,7 @@ theorem sphere_subset_preimage_metric_sphere : (sphere n d k : Set (Fin n → �
 @[simps]
 def map (d : ℕ) : (Fin n → ℕ) →+ ℕ where
   toFun a := ∑ i, a i * d ^ (i : ℕ)
-  map_zero' := by simp_rw [Pi.zero_apply, MulZeroClass.zero_mul, sum_const_zero]
+  map_zero' := by simp_rw [Pi.zero_apply, zero_mul, sum_const_zero]
   map_add' a b := by simp_rw [Pi.add_apply, add_mul, sum_add_distrib]
 #align behrend.map Behrend.map
 
@@ -465,7 +465,6 @@ theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (1 / nValue N : ℝ) / exp 1 < dVa
       rw [cast_pos]
       exact hN.trans_lt' (by norm_num1)
     refine' le_trans _ this
-    simp only [cast_one]
     rw [← div_le_iff']
     · exact log_two_gt_d9.le.trans' (by norm_num1)
     · norm_num1
