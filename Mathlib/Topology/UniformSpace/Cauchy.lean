@@ -115,7 +115,7 @@ lemma cauchy_iInf_uniformSpace {ι : Sort*} [Nonempty ι] {u : ι → UniformSpa
 lemma cauchy_iInf_uniformSpace' {ι : Sort*} {u : ι → UniformSpace β}
     {l : Filter β} [l.NeBot] :
     Cauchy (uniformSpace := ⨅ i, u i) l ↔ ∀ i, Cauchy (uniformSpace := u i) l := by
-  simp_rw [cauchy_of_neBot (uniformSpace := _), iInf_uniformity, le_iInf_iff]
+  simp_rw [cauchy_iff_le (uniformSpace := _), iInf_uniformity, le_iInf_iff]
 
 lemma cauchy_comap_uniformSpace {α β : Type*} {u : UniformSpace β} {f : α → β} {l : Filter α} :
     Cauchy (uniformSpace := comap f u) l ↔ Cauchy (map f l) := by

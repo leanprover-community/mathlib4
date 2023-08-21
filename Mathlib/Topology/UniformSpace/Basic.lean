@@ -361,16 +361,16 @@ def uniformity (α : Type u) [UniformSpace α] : Filter (α × α) :=
 scoped[Uniformity] notation "𝓤[" u "]" => @uniformity _ u
 
 @[ext]
-theorem uniformSpace_eq : ∀ {u₁ u₂ : UniformSpace α}, 𝓤[u₁] = 𝓤[u₂] → u₁ = u₂
+theorem UniformSpace.ext : ∀ {u₁ u₂ : UniformSpace α}, 𝓤[u₁] = 𝓤[u₂] → u₁ = u₂
   | .mk' t₁ u₁ o₁, .mk' t₂ u₂ o₂, h => by
     obtain rfl : u₁ = u₂ := UniformSpace.core_eq h
     obtain rfl : t₁ = t₂ := topologicalSpace_eq <| funext fun s => by rw [o₁, o₂]
     rfl
-#align uniform_space_eq uniformSpace_eq
+#align uniform_space_eq UniformSpace.ext
 
 theorem UniformSpace.ofCoreEq_toCore (u : UniformSpace α) (t : TopologicalSpace α)
     (h : t = u.toCore.toTopologicalSpace) : UniformSpace.ofCoreEq u.toCore t h = u :=
-  uniformSpace_eq rfl
+  UniformSpace.ext rfl
 #align uniform_space.of_core_eq_to_core UniformSpace.ofCoreEq_toCore
 
 /-- Replace topology in a `UniformSpace` instance with a propositionally (but possibly not
@@ -1302,8 +1302,8 @@ theorem uniformContinuous_iff {α β} {uα : UniformSpace α} {uβ : UniformSpac
 #align uniform_continuous_iff uniformContinuous_iff
 
 theorem le_iff_uniformContinuous_id {u v : UniformSpace α} :
-    u ≤ v ↔ @UniformContinuous _ _ u v id := by
-  rw [uniformContinuous_iff, uniformSpace_comap_id, id]
+    u ≤ v ↔ @UniformContinuous _ _ u v id :=
+  Iff.rfl
 #align le_iff_uniform_continuous_id le_iff_uniformContinuous_id
 
 theorem uniformContinuous_comap {f : α → β} [u : UniformSpace β] :

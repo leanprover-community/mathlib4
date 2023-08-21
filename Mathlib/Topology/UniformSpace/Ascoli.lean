@@ -22,66 +22,92 @@ section prelim
 
 variable {α β : Type*}
 
-lemma supr_sUnion [CompleteLattice β] {S : Set (Set α)} {p : α → β} :
-    (⨆ x ∈ ⋃₀ S, p x) = ⨆ (s ∈ S) (x ∈ s), p x := by
-  rw [sUnion_eq_iUnion, iSup_iUnion, ← iSup_subtype'']
+-- lemma totally_bounded_pi {ι : Type*} {α : ι → Type*} [Π i, uniform_space (α i)]
+--   {t : set ι} {s : Π i, set (α i)} (hs : ∀ i ∈ t, totally_bounded (s i)) :
+--   totally_bounded (t.pi s) :=
+-- sorry
 
-lemma infi_sUnion [CompleteLattice β] {p : α → β} :
-    (⨅ x ∈ ⋃₀ S, p x) = ⨅ (s ∈ S) (x ∈ s), p x := by
-  rw [sUnion_eq_iUnion, iInf_iUnion, ← iInf_subtype'']
-
-lemma forall_sUnion {p : α → Prop} :
-    (∀ x ∈ ⋃₀ S, p x) ↔ ∀ s ∈ S, ∀ x ∈ s, p x := by
-  simp_rw [← iInf_Prop_eq, infi_sUnion]
-
-lemma totally_bounded_pi {ι : Type*} {α : ι → Type*} [Π i, uniform_space (α i)]
-  {t : set ι} {s : Π i, set (α i)} (hs : ∀ i ∈ t, totally_bounded (s i)) :
-  totally_bounded (t.pi s) :=
-sorry
-
-lemma cauchy_of_ne_bot {α : Type*} [uniform_space α] {l : filter α} [hl : l.ne_bot] :
-  cauchy l ↔ l ×ᶠ l ≤ 𝓤 α :=
-by simp only [cauchy, hl, true_and]
-
-lemma cauchy_pi {ι : Type*} {α : ι → Type*} [Π i, uniform_space (α i)]
-  {l : filter (Π i, α i)} [l.ne_bot] : cauchy l ↔ ∀ i, cauchy (map (eval i) l) :=
-by simp_rw [cauchy_of_ne_bot, prod_map_map_eq, map_le_iff_le_comap, Pi.uniformity, le_infi_iff]
-
-lemma cauchy_infi {ι : Sort*} {α : Type*} {u : ι → uniform_space α}
-  {l : filter α} [l.ne_bot] : @@cauchy (⨅ i, u i) l ↔ ∀ i, @@cauchy (u i) l :=
-by simp_rw [cauchy_of_ne_bot, infi_uniformity', le_infi_iff]
-
-lemma cauchy_map_iff_comap {α β : Type*} {u : uniform_space β} {f : α → β} {l : filter α} :
-  cauchy (map f l) ↔ @@cauchy (comap f u) l :=
-begin
-  simp only [cauchy, map_ne_bot_iff, prod_map_map_eq, map_le_iff_le_comap, uniformity_comap rfl],
-  refl
-end
-
-lemma Pi.continuous_restrict {ι : Type*} (α : ι → Type*) [Π i, topological_space (α i)]
-  (s : set ι) : continuous (s.restrict : (Π i : ι, α i) → Π i : s, α i) :=
-continuous_pi (λ i, continuous_apply i)
-
-lemma Pi.continuous_restrict_iff {ι α : Type*} (β : ι → Type*) [topological_space α]
-  [Π i, topological_space (β i)] (s : set ι) {f : α → Π i, β i} :
-  continuous ((s.restrict : (Π i : ι, β i) → Π i : s, β i) ∘ f) ↔
-  ∀ i ∈ s, continuous (eval i ∘ f) :=
-by rw [set_coe.forall', continuous_pi_iff]; refl
-
-lemma Pi.uniform_continuous_restrict {ι : Type*} (α : ι → Type*) [Π i, uniform_space (α i)]
-  (s : set ι) : uniform_continuous (s.restrict : (Π i : ι, α i) → Π i : s, α i) :=
-uniform_continuous_pi.mpr (λ i, Pi.uniform_continuous_proj α i)
-
-lemma Pi.uniform_continuous_restrict_iff {ι α : Type*} (β : ι → Type*) [uniform_space α]
-  [Π i, uniform_space (β i)] (s : set ι) {f : α → Π i, β i} :
-  uniform_continuous ((s.restrict : (Π i : ι, β i) → Π i : s, β i) ∘ f) ↔
-  ∀ i ∈ s, uniform_continuous (eval i ∘ f) :=
-by rw [set_coe.forall', uniform_continuous_pi]; refl
+--lemma Pi.continuous_restrict {ι : Type*} (α : ι → Type*) [Π i, topological_space (α i)]
+--  (s : set ι) : continuous (s.restrict : (Π i : ι, α i) → Π i : s, α i) :=
+--continuous_pi (λ i, continuous_apply i)
+--
+--lemma Pi.continuous_restrict_iff {ι α : Type*} (β : ι → Type*) [topological_space α]
+--  [Π i, topological_space (β i)] (s : set ι) {f : α → Π i, β i} :
+--  continuous ((s.restrict : (Π i : ι, β i) → Π i : s, β i) ∘ f) ↔
+--  ∀ i ∈ s, continuous (eval i ∘ f) :=
+--by rw [set_coe.forall', continuous_pi_iff]; refl
+--
+--lemma Pi.uniform_continuous_restrict {ι : Type*} (α : ι → Type*) [Π i, uniform_space (α i)]
+--  (s : set ι) : uniform_continuous (s.restrict : (Π i : ι, α i) → Π i : s, α i) :=
+--uniform_continuous_pi.mpr (λ i, Pi.uniform_continuous_proj α i)
+--
+--lemma Pi.uniform_continuous_restrict_iff {ι α : Type*} (β : ι → Type*) [uniform_space α]
+--  [Π i, uniform_space (β i)] (s : set ι) {f : α → Π i, β i} :
+--  uniform_continuous ((s.restrict : (Π i : ι, β i) → Π i : s, β i) ∘ f) ↔
+--  ∀ i ∈ s, uniform_continuous (eval i ∘ f) :=
+--by rw [set_coe.forall', uniform_continuous_pi]; refl
 
 end prelim
 
-variables {ι X Y α β : Type*} [topological_space X] [topological_space Y] [uniform_space α]
-  [uniform_space β] {F : ι → X → α} {G : ι → β → α}
+variable {ι X Y α β : Type*} [TopologicalSpace X] [UniformSpace α] [UniformSpace β]
+variable {F : ι → X → α} {G : ι → β → α}
+
+theorem Equicontinuous.comap_uniformFun_eq_comap_pi [CompactSpace X] (hF : Equicontinuous F) :
+    (UniformFun.uniformSpace X α).comap (UniformFun.ofFun ∘ F) =
+    (Pi.uniformSpace (fun _ ↦ α)).comap F := by
+  let F' := UniformFun.ofFun ∘ F
+  refine le_antisymm (UniformSpace.comap_mono UniformFun.uniformContinuous_toFun) ?_
+  change comap _ _ ≤ comap _ _
+  simp_rw [Pi.uniformity, Filter.comap_iInf, comap_comap, Function.comp]
+  refine ((UniformFun.hasBasis_uniformity X α).comap (Prod.map F' F')).ge_iff.mpr ?_
+  intro U hU
+  rcases comp_comp_symm_mem_uniformity_sets hU with ⟨V, hV, Vsymm, hVU⟩
+  let Ω : X → Set X := λ x => {y | ∀ i, (F i x, F i y) ∈ V}
+  rcases CompactSpace.elim_nhds_subcover Ω (λ x => hF x V hV) with ⟨S, Scover⟩
+  have : (⋂ s ∈ S, {ij : ι × ι | (F ij.1 s, F ij.2 s) ∈ V}) ⊆
+      (Prod.map F' F') ⁻¹' UniformFun.gen X α U := by
+    rintro ⟨i, j⟩ hij x
+    rw [mem_iInter₂] at hij
+    rcases mem_iUnion₂.mp (Scover.symm.subset <| mem_univ x) with ⟨s, hs, hsx⟩
+    exact hVU (prod_mk_mem_compRel (prod_mk_mem_compRel
+      (Vsymm.mk_mem_comm.mp (hsx i)) (hij s hs)) (hsx j))
+  exact mem_of_superset
+    (S.iInter_mem_sets.mpr fun x _ ↦ mem_iInf_of_mem x <| preimage_mem_comap hV) this
+
+theorem Equicontinuous.uniformInducing_pi [UniformSpace ι] [CompactSpace X]
+    (hF : Equicontinuous F) (F_ind : UniformInducing (UniformFun.ofFun ∘ F)) :
+    UniformInducing F where
+
+lemma theorem1' {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
+  (hF : ∀ K ∈ 𝔖, Equicontinuous ((K.restrict : (X → α) → (K → α)) ∘ F)) :
+  (UniformOnFun.uniformSpace X α 𝔖).comap F =
+    (⨅ K ∈ 𝔖, ⨅ x ∈ K, ‹UniformSpace α›.comap (eval x)).comap F := by
+  rw [UniformOnFun.uniformSpace]
+  simp_rw [UniformSpace.comap_iInf, ← UniformSpace.comap_comap]
+  refine infi_congr (λ K, infi_congr $ λ hK, _),
+  haveI : compact_space K := is_compact_iff_compact_space.mp (h𝔖 K hK),
+  simp_rw [theorem1 (hF K hK), @uniform_space.comap_comap _ _ _ _ F,
+            Pi.uniform_space, of_core_eq_to_core, uniform_space.comap_infi, infi_subtype],
+  refine infi_congr (λ x, infi_congr $ λ hx, congr_arg _ _),
+  rw ← uniform_space.comap_comap,
+  exact congr_fun (congr_arg _ rfl) _,
+
+lemma theorem1' {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
+    (hF : ∀ K ∈ 𝔖, Equicontinuous ((K.restrict : (X → α) → (K → α)) ∘ F)) :
+    (UniformOnFun.uniformSpace X α 𝔖).comap F =
+      (⨅ K ∈ 𝔖, ⨅ x ∈ K, ‹UniformSpace α›.comap (eval x)).comap F := by
+  rw [UniformOnFun.uniformSpace]
+  simp_rw [UniformSpace.comap_iInf, ← UniformSpace.comap_comap]
+  refine iInf_congr (λ K => iInf_congr $ λ hK => ?_)
+  haveI : CompactSpace K := isCompact_iff_compactSpace.mp (h𝔖 K hK)
+  simp_rw [theorem1 (hF K hK), UniformSpace.comap_comap,
+            Pi.uniformSpace, UniformSpace.ofCoreEq_toCore, UniformSpace.comap_iInf, iInf_subtype]
+  refine iInf_congr (λ x => iInf_congr $ λ hx => congr_arg _ ?_)
+  rw [← UniformSpace.comap_comap]
+  exact congr_fun (congr_arg _ rfl) _
+
+
+#exit
 
 lemma theorem1 [compact_space X] (hF : equicontinuous F) :
   (uniform_fun.uniform_space X α).comap F =
