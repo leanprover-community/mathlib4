@@ -378,9 +378,9 @@ noncomputable def unitizationStarAlgEquiv (h1 : (1 : A) ∉ s) :
       fun x ↦ (unitization_range s).le <| Set.mem_range_self x)
   StarAlgEquiv.ofBijective starAlgHom <| by
     refine ⟨?_, fun x ↦ ?_⟩
-    · have h_eq : unitization s = (StarSubalgebra.subtype _).comp starAlgHom := rfl
-      have this := unitization_injective s h1
-      rw [h_eq, StarAlgHom.coe_comp] at this
+    · have := AlgHomClass.unitization_injective s h1 ((StarSubalgebra.subtype _).comp starAlgHom)
+        fun _ ↦ by simp
+      rw [StarAlgHom.coe_comp] at this
       exact this.of_comp
     · obtain (⟨a, ha⟩ : (x : A) ∈ (unitization s).range) :=
         (unitization_range s).ge x.property
