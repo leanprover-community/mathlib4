@@ -86,6 +86,7 @@ abbrev LaurentPolynomial (R : Type*) [Semiring R] :=
   AddMonoidAlgebra R ℤ
 #align laurent_polynomial LaurentPolynomial
 
+@[nolint docBlame]
 scoped[LaurentPolynomial] notation:9000 R "[T;T⁻¹]" => LaurentPolynomial R
 
 open LaurentPolynomial
