@@ -17,7 +17,8 @@ import Mathlib.Init.Control.Lawful
 
 Monad encapsulating continuation passing programming style, similar to
 Haskell's `Cont`, `ContT` and `MonadCont`:
-<http://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-Cont.html>
+<https://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-Cont.html>
+<https://hub.darcs.net/ross/transformers/browse/Control/Monad/Trans/Cont.hs>
 -/
 
 universe u v w u₀ u₁ v₀ v₁
