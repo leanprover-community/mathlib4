@@ -49,9 +49,9 @@ theorem triangleThick_iff : G.TriangleThick ε ↔ ∀ ⦃H⦄, H ≤ G → H.Cl
 alias triangleThick_iff ↔ triangleThick.le_card_sub_card _
 #align simple_graph.far_from_triangle_free.le_card_sub_card SimpleGraph.triangleThick.le_card_sub_card
 
-theorem triangleThick.mono (hε : G.TriangleThick ε) (h : δ ≤ ε) :
+nonrec theorem TriangleThick.mono (hε : G.TriangleThick ε) (h : δ ≤ ε) :
     G.TriangleThick δ := hε.mono <| by gcongr
-#align simple_graph.far_from_triangle_free.mono SimpleGraph.triangleThick.mono
+#align simple_graph.far_from_triangle_free.mono SimpleGraph.TriangleThick.mono
 
 theorem TriangleThick.cliqueFinset_nonempty' (hH : H ≤ G) (hG : G.TriangleThick ε)
     (hcard : (G.edgeFinset.card - H.edgeFinset.card : 𝕜) < ε * (card α ^ 2 : ℕ)) :
