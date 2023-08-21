@@ -500,15 +500,6 @@ def subInduction {P : ℕ → ℕ → Sort u} (H1 : ∀ m, P 0 m) (H2 : ∀ n, P
   | succ n, succ m => H3 _ _ (subInduction H1 H2 H3 n m)
 #align nat.sub_induction Nat.subInduction
 
-protected def strongRecOn {p : Nat → Sort u} (n : Nat) (h : ∀ n, (∀ m, m < n → p m) → p n) :
-    p n := by
-  suffices ∀ n m, m < n → p m from this (succ n) n (lt_succ_self _)
-  intro n; induction' n with n ih
-  · intro m h₁; exact absurd h₁ m.not_lt_zero
-  · intro m h₁
-    apply Or.by_cases (Decidable.lt_or_eq_of_le (le_of_lt_succ h₁))
-    · intros; apply ih; assumption
-    · intros; subst m; apply h _ ih
 #align nat.strong_rec_on Nat.strongRecOn
 
 -- porting note: added `elab_as_elim`
@@ -828,9 +819,7 @@ lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length <= 
   | succ n =>
     by_cases hterm : n.succ / 10 = 0
     case pos => simp only [hterm, Nat.toDigitsCore]; assumption
-    case neg =>
-      simp only [hterm]
-      exact to_digits_core_length 10 (by decide) (Nat.succ n + 1) (Nat.succ n) e he e0
+    case neg => exact to_digits_core_length 10 (by decide) (Nat.succ n + 1) (Nat.succ n) e he e0
 
 end Find
 

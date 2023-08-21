@@ -23,7 +23,7 @@ This file concerns the canonical homomorphism `ℕ → F`, where `F` is a field.
 
 namespace Nat
 
-variable {α : Type _}
+variable {α : Type*}
 
 @[simp]
 theorem cast_div [DivisionSemiring α] {m n : ℕ} (n_dvd : n ∣ m) (n_nonzero : (n : α) ≠ 0) :

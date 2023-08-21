@@ -95,6 +95,8 @@ An interested reader may like to formalise some of the material from
 * [André Joyal, *Remarques sur la théorie des jeux à deux personnes*][joyal1997]
 -/
 
+set_option autoImplicit true
+
 namespace SetTheory
 
 open Function Relation
@@ -213,7 +215,7 @@ theorem ofLists_moveRight' {L R : List PGame} (i : (ofLists L R).RightMoves) :
 
 Both this and `PGame.recOn` describe Conway induction on games. -/
 @[elab_as_elim]
-def moveRecOn {C : PGame → Sort _} (x : PGame)
+def moveRecOn {C : PGame → Sort*} (x : PGame)
     (IH : ∀ y : PGame, (∀ i, C (y.moveLeft i)) → (∀ j, C (y.moveRight j)) → C y) : C x :=
   x.recOn <| fun yl yr yL yR => IH (mk yl yr yL yR)
 #align pgame.move_rec_on SetTheory.PGame.moveRecOn
@@ -251,7 +253,7 @@ def Subsequent : PGame → PGame → Prop :=
 #align pgame.subsequent SetTheory.PGame.Subsequent
 
 instance : IsTrans _ Subsequent :=
-  Relation.instIsTransTransGen
+  inferInstanceAs <| IsTrans _ (TransGen _)
 
 @[trans]
 theorem Subsequent.trans {x y z} : Subsequent x y → Subsequent y z → Subsequent x z :=
@@ -356,7 +358,7 @@ instance : Inhabited PGame :=
   ⟨0⟩
 
 /-- The pre-game `One` is defined by `1 = { 0 | }`. -/
-instance : One PGame :=
+instance instOnePGame : One PGame :=
   ⟨⟨PUnit, PEmpty, fun _ => 0, PEmpty.elim⟩⟩
 
 @[simp]

@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Variables
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
 
@@ -25,8 +26,8 @@ that the monomials form a basis.
 
 ## Main statements
 
-* The multivariate polynomial ring over a commutative ring of positive characteristic has positive
-  characteristic.
+* The multivariate polynomial ring over a commutative semiring of characteristic `p` has
+  characteristic `p`, and similarly for `CharZero`.
 * `basisMonomials`: shows that the monomials form a basis of the vector space of multivariate
   polynomials.
 
@@ -44,7 +45,7 @@ open BigOperators Polynomial
 
 universe u v
 
-variable (σ : Type u) (R : Type v) [CommRing R] (p m : ℕ)
+variable (σ : Type u) (R : Type v) [CommSemiring R] (p m : ℕ)
 
 namespace MvPolynomial
 
@@ -55,9 +56,16 @@ instance [CharP R p] : CharP (MvPolynomial σ R) p where
 
 end CharP
 
+section CharZero
+
+instance [CharZero R] : CharZero (MvPolynomial σ R) where
+  cast_injective x y hxy := by rwa [← C_eq_coe_nat, ← C_eq_coe_nat, C_inj, Nat.cast_inj] at hxy
+
+end CharZero
+
 section Homomorphism
 
-theorem mapRange_eq_map {R S : Type _} [CommRing R] [CommRing S] (p : MvPolynomial σ R)
+theorem mapRange_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] (p : MvPolynomial σ R)
     (f : R →+* S) : Finsupp.mapRange f f.map_zero p = map f p := by
   -- `Finsupp.mapRange_finset_sum` expects `f : R →+ S`
   change Finsupp.mapRange (f : R →+ S) (f : R →+ S).map_zero p = map f p

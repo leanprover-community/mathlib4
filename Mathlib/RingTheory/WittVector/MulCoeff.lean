@@ -30,13 +30,13 @@ that needs to happen in characteristic 0.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 namespace WittVector
 
 variable (p : ℕ) [hp : Fact p.Prime]
 
-variable {k : Type _} [CommRing k]
+variable {k : Type*} [CommRing k]
 
 local notation "𝕎" => WittVector p
 
@@ -281,7 +281,6 @@ theorem nth_mul_coeff' (n : ℕ) :
   intro x y
   dsimp [peval]
   rw [← hf₀]
-  simp only [Function.uncurry_apply_pair]
   congr
   ext a
   cases' a with a ha

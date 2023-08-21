@@ -28,7 +28,7 @@ measure preserving map, measure
 -/
 
 
-variable {α β γ δ : Type _} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
+variable {α β γ δ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
   [MeasurableSpace δ]
 
 namespace MeasureTheory

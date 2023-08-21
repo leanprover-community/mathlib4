@@ -283,7 +283,7 @@ open SetTheory PGame
 by the equivalence relation `x ≈ y ↔ x ≤ y ∧ y ≤ x`. In the quotient,
 the order becomes a total order. -/
 def Surreal :=
-  Quotient (Subtype.instSetoidSubtype Numeric)
+  Quotient (inferInstanceAs <| Setoid (Subtype Numeric))
 #align surreal Surreal
 
 namespace Surreal

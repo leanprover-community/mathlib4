@@ -89,7 +89,7 @@ theorem X_sub_C_mul_removeFactor (f : K[X]) (hf : f.natDegree ≠ 0) :
   let ⟨g, hg⟩ := factor_dvd_of_natDegree_ne_zero hf
   apply (mul_divByMonic_eq_iff_isRoot
     (R := AdjoinRoot f.factor) (a := AdjoinRoot.root f.factor)).mpr
-  rw [IsRoot.def, eval_map, hg, eval₂_mul, ← hg, AdjoinRoot.eval₂_root, MulZeroClass.zero_mul]
+  rw [IsRoot.def, eval_map, hg, eval₂_mul, ← hg, AdjoinRoot.eval₂_root, zero_mul]
 set_option linter.uppercaseLean3 false in
 #align polynomial.X_sub_C_mul_remove_factor Polynomial.X_sub_C_mul_removeFactor
 
@@ -271,18 +271,18 @@ instance inhabited : Inhabited (SplittingField f) :=
   ⟨37⟩
 #align polynomial.splitting_field.inhabited Polynomial.SplittingField.inhabited
 
-instance {S : Type _} [DistribSMul S K] [IsScalarTower S K K] : SMul S (SplittingField f) :=
+instance {S : Type*} [DistribSMul S K] [IsScalarTower S K K] : SMul S (SplittingField f) :=
   Submodule.Quotient.instSMul' _
 
 instance algebra : Algebra K (SplittingField f) :=
   Ideal.Quotient.algebra _
 #align polynomial.splitting_field.algebra Polynomial.SplittingField.algebra
 
-instance algebra' {R : Type _} [CommSemiring R] [Algebra R K] : Algebra R (SplittingField f) :=
+instance algebra' {R : Type*} [CommSemiring R] [Algebra R K] : Algebra R (SplittingField f) :=
   Ideal.Quotient.algebra _
 #align polynomial.splitting_field.algebra' Polynomial.SplittingField.algebra'
 
-instance isScalarTower {R : Type _} [CommSemiring R] [Algebra R K] :
+instance isScalarTower {R : Type*} [CommSemiring R] [Algebra R K] :
     IsScalarTower R K (SplittingField f) :=
   Ideal.Quotient.isScalarTower _ _ _
 #align polynomial.splitting_field.is_scalar_tower Polynomial.SplittingField.isScalarTower
@@ -321,8 +321,11 @@ instance : Field (SplittingField f) :=
       assumption
     inv_zero := by simp }
 
-instance [CharZero K] : CharZero (SplittingField f) :=
+instance instCharZero [CharZero K] : CharZero (SplittingField f) :=
   charZero_of_injective_algebraMap (algebraMap K _).injective
+
+instance instCharP (p : ℕ) [CharP K p] : CharP (SplittingField f) p :=
+  charP_of_injective_algebraMap (algebraMap K _).injective p
 
 -- The algebra instance deriving from `K` should be definitionally equal to that
 -- deriving from the field structure on `SplittingField f`.
