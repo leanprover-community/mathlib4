@@ -146,30 +146,55 @@ lemma covby_iff : s ⋖ t ↔ ∃ i : α, i ∉ s ∧ t = insert i s := by
 lemma covby_iff' : s ⋖ t ↔ ∃ i : α, ∃ hi : i ∉ s, t = cons i s hi := by
   simp [covby_iff]
 
-/-- A function `f` from `Finset α` is moontone if and only if `f s ≤ f (insert i s)` for all
+/-- A function `f` from `Finset α` is monotone if and only if `f s ≤ f (insert i s)` for all
 `s` and `i ∉ s`. -/
 theorem monotone_iff {β : Type*} [Preorder β] (f : Finset α → β) :
     Monotone f ↔ ∀ s : Finset α, ∀ {i} (_hi : i ∉ s), f s ≤ f (insert i s) := by
   simp only [monotone_iff_forall_covby, covby_iff, forall_exists_index, and_imp]
   aesop
 
-/-- A function `f` from `Finset α` is moontone if and only if `f s ≤ f (cons i s hi)` for all
+/-- A function `f` from `Finset α` is monotone if and only if `f s ≤ f (cons i s hi)` for all
 `s` and `i ∉ s`. -/
 theorem monotone_iff' {β : Type*} [Preorder β] (f : Finset α → β) :
-    Monotone f ↔ ∀ s : Finset α, ∀ {i} (_hi : i ∉ s), f s ≤ f (insert i s) := by
+    Monotone f ↔ ∀ s : Finset α, ∀ {i} (hi : i ∉ s), f s ≤ f (cons i s hi) := by
   simp [monotone_iff]
 
-/-- A function `f` from `Finset α` is strictly moontone if and only if `f s < f (insert i s)` for
+/-- A function `f` from `Finset α` is strictly monotone if and only if `f s < f (insert i s)` for
 all `s` and `i ∉ s`. -/
 theorem strictMono_iff {β : Type*} [Preorder β] (f : Finset α → β) :
     StrictMono f ↔ ∀ s : Finset α, ∀ {i} (_hi : i ∉ s), f s < f (insert i s) := by
   simp only [strictMono_iff_forall_covby, covby_iff, forall_exists_index, and_imp]
   aesop
 
-/-- A function `f` from `Finset α` is strictly moontone if and only if `f s < f (insert i s)` for
+/-- A function `f` from `Finset α` is strictly monotone if and only if `f s < f (insert i s)` for
 all `s` and `i ∉ s`. -/
 theorem strictMono_iff' {β : Type*} [Preorder β] (f : Finset α → β) :
-    StrictMono f ↔ ∀ s : Finset α, ∀ {i} (_hi : i ∉ s), f s < f (insert i s) := by
+    StrictMono f ↔ ∀ s : Finset α, ∀ {i} (hi : i ∉ s), f s < f (cons i s hi) := by
   simp [strictMono_iff]
+
+/-- A function `f` from `Finset α` is antitone if and only if `f (insert i s) ≤ f s` for all
+`s` and `i ∉ s`. -/
+theorem antitone_iff {β : Type*} [Preorder β] (f : Finset α → β) :
+    Antitone f ↔ ∀ s : Finset α, ∀ {i} (_hi : i ∉ s), f (insert i s) ≤ f s :=
+  monotone_iff (β := βᵒᵈ) f
+
+/-- A function `f` from `Finset α` is antitone if and only if `f (cons i s hi) ≤ f s` for all
+`s` and `i ∉ s`. -/
+theorem antitone_iff' {β : Type*} [Preorder β] (f : Finset α → β) :
+    Antitone f ↔ ∀ s : Finset α, ∀ {i} (hi : i ∉ s), f (cons i s hi) ≤ f s :=
+  monotone_iff' (β := βᵒᵈ) f
+
+/-- A function `f` from `Finset α` is strictly antitone if and only if `f (insert i s) < f s` for
+all `s` and `i ∉ s`. -/
+theorem strictAnti_iff {β : Type*} [Preorder β] (f : Finset α → β) :
+    StrictAnti f ↔ ∀ s : Finset α, ∀ {i} (_hi : i ∉ s), f (insert i s) < f s :=
+  strictMono_iff (β := βᵒᵈ) f
+
+/-- A function `f` from `Finset α` is strictly antitone if and only if `f (cons i s hi) < f s` for
+all `s` and `i ∉ s`. -/
+theorem strictAnti_iff' {β : Type*} [Preorder β] (f : Finset α → β) :
+    StrictAnti f ↔ ∀ s : Finset α, ∀ {i} (hi : i ∉ s), f (cons i s hi) < f s :=
+  strictMono_iff' (β := βᵒᵈ) f
+
 
 end Finset

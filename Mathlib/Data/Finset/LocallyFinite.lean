@@ -1281,4 +1281,22 @@ lemma strictMono_iff_forall_covby [Preorder α] [LocallyFiniteOrder α] [Preorde
   rw [← lt_iff_transGen_covby, transGen_eq_self (@lt_trans β _)] at this
   · exact this hab
 
+/-- A function from a locally finite preorder is antitone if and only if it is antitone when
+restricted to pairs satisfying `a ⩿ b`. -/
+lemma antitone_iff_forall_wcovby [Preorder α] [LocallyFiniteOrder α] [Preorder β]
+    (f : α → β) : Antitone f ↔ ∀ a b : α, a ⩿ b → f b ≤ f a :=
+  monotone_iff_forall_wcovby (β := βᵒᵈ) f
+
+/-- A function from a locally finite partial order is antitone if and only if it is antitone when
+restricted to pairs satisfying `a ⋖ b`. -/
+lemma antitone_iff_forall_covby [PartialOrder α] [LocallyFiniteOrder α] [Preorder β]
+    (f : α → β) : Antitone f ↔ ∀ a b : α, a ⋖ b → f b ≤ f a :=
+  monotone_iff_forall_covby (β := βᵒᵈ) f
+
+/-- A function from a locally finite preorder is strictly antitone if and only if it is strictly
+antitone when restricted to pairs satisfying `a ⋖ b`. -/
+lemma strictAnti_iff_forall_covby [Preorder α] [LocallyFiniteOrder α] [Preorder β]
+    (f : α → β) : StrictAnti f ↔ ∀ a b : α, a ⋖ b → f b < f a :=
+  strictMono_iff_forall_covby (β := βᵒᵈ) f
+
 end Cover
