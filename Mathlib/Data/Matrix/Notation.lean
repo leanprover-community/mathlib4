@@ -56,15 +56,15 @@ open Qq
 prevent immediate decay to a function. -/
 protected instance instToExprQ
     [ToExprQ α] [ToExprQ m'] [ToExprQ n'] [ToExprQ (m' → n' → α)] :
-  ToExprQ (Matrix m' n' α) :=
-    have em' := toTypeExprQ m'
-    have en' := toTypeExprQ n'
-    have eα := toTypeExprQ α
-    { level := _
-      toTypeExprQ := q(Matrix $em' $en' $eα)
-      toExprQ := fun M =>
-        have eM : Q($em' → $en' → $eα) := toExprQ (show m' → n' → α from M)
-        q(Matrix.of $eM) }
+    ToExprQ (Matrix m' n' α) :=
+  have em' := toTypeExprQ m'
+  have en' := toTypeExprQ n'
+  have eα := toTypeExprQ α
+  { level := _
+    toTypeExprQ := q(Matrix $em' $en' $eα)
+    toExprQ := fun M =>
+      have eM : Q($em' → $en' → $eα) := toExprQ (show m' → n' → α from M)
+      q(Matrix.of $eM) }
 #align matrix.matrix.reflect Matrix.instToExprQₓ
 
 end toExpr
