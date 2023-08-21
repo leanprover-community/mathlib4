@@ -67,9 +67,15 @@ def main (args : List String) : IO Unit := do
   let hashMap := hashMemo.hashMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
   if leanTarArgs.contains (args.headD "") then validateLeanTar
+  -- An optional argument `--no-lock-file` disables use of Lake's lock file mechanism.
+  -- This is required if `lake` is calling `cache` itself.
+  let (args, noLockFile) := if "--no-lock-file" ∈ args then
+    (args.erase "--no-lock-file", true)
+  else
+    (args, false)
   -- For now we hard code the build directory, to avoid having to process the lakefile.
   -- Perhaps if https://github.com/leanprover/lake/issues/176 is addressed this can be revisited.
-  Lake.withLockFile (FilePath.mk "build" / "lake.lock") do
+  (if noLockFile then id else Lake.withLockFile (FilePath.mk "build" / "lake.lock")) do
   match args with
   | ["get"] => getFiles hashMap false false goodCurl true
   | ["get!"] => getFiles hashMap true true goodCurl true
