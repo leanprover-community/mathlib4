@@ -229,7 +229,7 @@ lemma comp_v {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain
     (p₁ p₂ p₃ : ℤ) (h₁ : p₁ + n₁ = p₂) (h₂ : p₂ + n₂ = p₃) :
     (z₁.comp z₂ h).v p₁ p₃ (by rw [← h₂, ← h₁, ← h, add_assoc]) =
       z₁.v p₁ p₂ h₁ ≫ z₂.v p₂ p₃ h₂ := by
-  subst h₁ ; rfl
+  subst h₁; rfl
 
 
 @[simp]
