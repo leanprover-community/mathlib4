@@ -653,15 +653,27 @@ noncomputable def piecewise' {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ 
       exact hf x ⟨hx₁, hx₂⟩
 
 @[simp]
-lemma piecewise'_apply {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : IsClosed C₁)
+lemma piecewise'_apply_left {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : IsClosed C₁)
     (h₂ : IsClosed C₂) (f₁ : LocallyConstant C₁ Z) (f₂ : LocallyConstant C₂ Z)
-    [DecidablePred (· ∈ C₁)] (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩ = f₂ ⟨x, hx.2⟩) (x : C₀) :
-    piecewise' h₀ h₁ h₂ f₁ f₂ hf x = if hx : x.val ∈ C₁ then f₁ ⟨x.val, hx⟩ else
-      f₂ ⟨x.val, (or_iff_not_imp_left.mp (h₀ x.prop)) hx⟩ := by
+    [DecidablePred (· ∈ C₁)] (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩ = f₂ ⟨x, hx.2⟩)
+    (x : C₀) (hx : x.val ∈ C₁) :
+    piecewise' h₀ h₁ h₂ f₁ f₂ hf x = f₁ ⟨x.val, hx⟩ := by
   simp only [piecewise', piecewise, Set.mem_preimage, continuous_subtype_val.restrictPreimage,
-    coe_comap, Function.comp_apply]
+    coe_comap, Function.comp_apply, coe_mk]
+  rw [dif_pos hx]
   rfl
 
+@[simp]
+lemma piecewise'_apply_right {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : IsClosed C₁)
+    (h₂ : IsClosed C₂) (f₁ : LocallyConstant C₁ Z) (f₂ : LocallyConstant C₂ Z)
+    [DecidablePred (· ∈ C₁)] (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩ = f₂ ⟨x, hx.2⟩)
+    (x : C₀) (hx : x.val ∈ C₂) :
+    piecewise' h₀ h₁ h₂ f₁ f₂ hf x = f₂ ⟨x.val, hx⟩ := by
+  simp only [piecewise', piecewise, Set.mem_preimage, continuous_subtype_val.restrictPreimage,
+    coe_comap, Function.comp_apply, coe_mk]
+  split_ifs with h
+  · exact hf x.val ⟨h, hx⟩
+  · rfl
 end Piecewise
 
 end LocallyConstant
