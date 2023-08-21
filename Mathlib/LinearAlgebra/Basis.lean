@@ -5,8 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.BigOperators.Finprod
+import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.LinearAlgebra.Projection
@@ -85,7 +87,7 @@ variable (ι R M)
 
 The basis vectors are available as `FunLike.coe (b : Basis ι R M) : ι → M`.
 To turn a linear independent family of vectors spanning `M` into a basis, use `Basis.mk`.
-They are internally represented as linear equivs `M ≃ₗ[R] (ι →₀ R)`,
+They are internally represented as linear equivs `M ≃ₗ[R] (Π₀ i, R)`,
 available as `Basis.repr`.
 -/
 structure Basis where
@@ -93,7 +95,7 @@ structure Basis where
   ofRepr ::
     /-- `repr` is the linear equivalence sending a vector `x` to its coordinates:
     the `c`s such that `x = ∑ i, c i`. -/
-    repr : M ≃ₗ[R] ι →₀ R
+    repr : M ≃ₗ[R] Π₀ _ : ι, R
 #align basis Basis
 #align basis.repr Basis.repr
 #align basis.of_repr Basis.ofRepr
@@ -106,26 +108,31 @@ instance uniqueBasis [Subsingleton R] : Unique (Basis ι R M) :=
 
 namespace Basis
 
+instance : Inhabited (Basis ι R (Π₀ _ : ι, R)) :=
+  ⟨.ofRepr <| LinearEquiv.refl _ _⟩
+
 instance : Inhabited (Basis ι R (ι →₀ R)) :=
-  ⟨.ofRepr (LinearEquiv.refl _ _)⟩
+  ⟨.ofRepr <| by classical exact finsuppLequivDFinsupp _⟩
 
 variable (b b₁ : Basis ι R M) (i : ι) (c : R) (x : M)
 
 section repr
 
-theorem repr_injective : Injective (repr : Basis ι R M → M ≃ₗ[R] ι →₀ R) := fun f g h => by
+theorem repr_injective : Injective (repr : Basis ι R M → M ≃ₗ[R] Π₀ _ : ι, R) := fun f g h => by
   cases f; cases g; congr
 #align basis.repr_injective Basis.repr_injective
 
+#check DFinsupp.lhom_ext
+
 /-- `b i` is the `i`th basis vector. -/
-instance funLike : FunLike (Basis ι R M) ι fun _ => M where
-  coe b i := b.repr.symm (Finsupp.single i 1)
+instance funLike [DecidableEq ι] : FunLike (Basis ι R M) ι fun _ => M where
+  coe b i := b.repr.symm (DFinsupp.single i 1)
   coe_injective' f g h := repr_injective <| LinearEquiv.symm_bijective.injective <|
-    LinearEquiv.toLinearMap_injective <| by ext; exact congr_fun h _
+    LinearEquiv.toLinearMap_injective <| by ext; dsimp at h; exact congr_fun h _
 #align basis.fun_like Basis.funLike
 
 @[simp]
-theorem coe_ofRepr (e : M ≃ₗ[R] ι →₀ R) : ⇑(ofRepr e) = fun i => e.symm (Finsupp.single i 1) :=
+theorem coe_ofRepr (e : M ≃ₗ[R] ι →₀ R) : ⇑(ofRepr e) = fun i => e.symm (DFinsupp.single i 1) :=
   rfl
 #align basis.coe_of_repr Basis.coe_ofRepr
 

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
 import Mathlib.Data.Finsupp.ToDFinsupp
-import Mathlib.LinearAlgebra.Basis
 
 #align_import linear_algebra.dfinsupp from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
