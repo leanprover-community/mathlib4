@@ -8,7 +8,6 @@ import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.Transvection
 import Mathlib.MeasureTheory.Constructions.Pi
-import Mathlib.MeasureTheory.Group.Prod
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
