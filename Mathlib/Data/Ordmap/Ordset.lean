@@ -187,6 +187,7 @@ instance Balanced.dec : DecidablePred (@Balanced α)
     infer_instance
 #align ordnode.balanced.dec Ordnode.Balanced.dec
 
+@[symm]
 theorem BalancedSz.symm {l r : ℕ} : BalancedSz l r → BalancedSz r l :=
   Or.imp (by rw [add_comm]; exact id) And.symm
 #align ordnode.balanced_sz.symm Ordnode.BalancedSz.symm
