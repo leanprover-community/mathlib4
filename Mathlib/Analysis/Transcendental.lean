@@ -18,6 +18,10 @@ import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Data.Polynomial.Derivative2
 import Mathlib.FieldTheory.GalConj
 import Mathlib.Data.Complex.Exponential
+import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
+import Mathlib.Order.Extension.Linear
+import Mathlib.Data.Finsupp.Lex
+import Mathlib.Algebra.Group.UniqueProds
 
 -- assert_not_exists Module.Dual
 -- attribute [-reducible] Module.Dual
@@ -979,7 +983,33 @@ theorem Eval_toConjAlgEquiv_symm (x : GalConjClasses ℚ (K s) →₀ ℚ) :
 
 end Eval
 
-instance instIsDomain1 : NoZeroDivisors (AddMonoidAlgebra (K s) (K s)) := sorry
+-- TODO move
+open Finsupp in
+instance wanted {R A : Type*} [Semiring R] [NoZeroDivisors R] [AddMonoid A] [UniqueSums A] :
+    NoZeroDivisors (AddMonoidAlgebra R A) where
+  eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} c => by
+    rcases eq_or_ne a 0 with (rfl | ha)
+    · simp
+    rcases eq_or_ne b 0 with (rfl | hb)
+    · simp
+    contrapose! c
+    obtain ⟨da, a0, db, b0, h⟩ := UniqueSums.uniqueAdd_of_nonempty
+      (support_nonempty_iff.mpr ha) (support_nonempty_iff.mpr hb)
+    apply support_nonempty_iff.mp
+    apply Set.nonempty_of_mem (x := da + db)
+    apply Finsupp.mem_support_iff.mpr
+    convert_to a da * b db ≠ 0
+    · rw [AddMonoidAlgebra.mul_apply_add_eq_mul_of_forall_ne]
+      intros m n ma nb H
+      contrapose! H
+      apply h ma nb H
+    · apply mul_eq_zero.not.mpr ?_
+      simp [not_or, Finsupp.mem_support_iff.mp a0, Finsupp.mem_support_iff.mp b0]
+
+
+instance : UniqueSums (K s) := sorry
+
+instance instIsDomain1 : NoZeroDivisors (AddMonoidAlgebra (K s) (K s)) := inferInstance
 instance instIsDomain2 : IsDomain (AddMonoidAlgebra ℚ (K s)) := sorry
 instance instIsDomain3 : IsDomain (GalConjClasses ℚ (K s) →₀ ℚ) :=
 RingEquiv.isDomain (mapDomainFixed s ℚ) (toConjAlgEquiv s ℚ).symm
