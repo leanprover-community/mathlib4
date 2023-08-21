@@ -31,6 +31,8 @@ Relations are also known as set-valued functions, or partial multifunctions.
 * `Function.graph`: Graph of a function as a relation.
 -/
 
+set_option autoImplicit true
+
 
 variable {α β γ : Type*}
 
