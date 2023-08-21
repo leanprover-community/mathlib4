@@ -255,7 +255,7 @@ theorem wittOne_pos_eq_zero (n : ℕ) (hn : 0 < n) : wittOne p n = 0 := by
     simp only [one_pow, one_mul, xInTermsOfW_zero, sub_self, bind₁_X_right]
   · intro i hin hi0
     rw [Finset.mem_range] at hin
-    rw [IH _ hin (Nat.pos_of_ne_zero hi0), zero_pow (pow_pos hp.1.pos _), MulZeroClass.mul_zero]
+    rw [IH _ hin (Nat.pos_of_ne_zero hi0), zero_pow (pow_pos hp.1.pos _), mul_zero]
   · rw [Finset.mem_range]; intro; contradiction
 #align witt_vector.witt_one_pos_eq_zero WittVector.wittOne_pos_eq_zero
 
@@ -302,7 +302,7 @@ theorem constantCoeff_wittSub (n : ℕ) : constantCoeff (wittSub p n) = 0 := by
 @[simp]
 theorem constantCoeff_wittMul (n : ℕ) : constantCoeff (wittMul p n) = 0 := by
   apply constantCoeff_wittStructureInt p _ _ n
-  simp only [MulZeroClass.mul_zero, RingHom.map_mul, constantCoeff_X]
+  simp only [mul_zero, RingHom.map_mul, constantCoeff_X]
 #align witt_vector.constant_coeff_witt_mul WittVector.constantCoeff_wittMul
 
 @[simp]

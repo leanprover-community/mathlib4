@@ -137,7 +137,7 @@ theorem bernoulliFourierCoeff_zero {k : ℕ} (hk : k ≠ 0) : bernoulliFourierCo
 theorem bernoulliFourierCoeff_eq {k : ℕ} (hk : k ≠ 0) (n : ℤ) :
     bernoulliFourierCoeff k n = -k ! / (2 * π * I * n) ^ k := by
   rcases eq_or_ne n 0 with (rfl | hn)
-  · rw [bernoulliFourierCoeff_zero hk, Int.cast_zero, MulZeroClass.mul_zero, zero_pow' _ hk,
+  · rw [bernoulliFourierCoeff_zero hk, Int.cast_zero, mul_zero, zero_pow' _ hk,
       div_zero]
   refine' Nat.le_induction _ (fun k hk h'k => _) k (Nat.one_le_iff_ne_zero.mpr hk)
   · rw [bernoulliFourierCoeff_recurrence 1 hn]
@@ -252,7 +252,7 @@ theorem hasSum_one_div_nat_pow_mul_fourier {k : ℕ} (hk : 2 ≤ k) {x : ℝ} (h
     congr 1
     rw [eq_div_iff, ← mul_pow, ← neg_eq_neg_one_mul, neg_neg, one_pow]
     apply pow_ne_zero; rw [neg_ne_zero]; exact one_ne_zero
-  · rw [Int.cast_zero, zero_pow (by linarith : 0 < k), div_zero, MulZeroClass.zero_mul, add_zero]
+  · rw [Int.cast_zero, zero_pow (by linarith : 0 < k), div_zero, zero_mul, add_zero]
 #align has_sum_one_div_nat_pow_mul_fourier hasSum_one_div_nat_pow_mul_fourier
 
 theorem hasSum_one_div_nat_pow_mul_cos {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : x ∈ Icc (0 : ℝ) 1) :
@@ -341,7 +341,7 @@ theorem hasSum_zeta_nat {k : ℕ} (hk : k ≠ 0) :
       ((-1 : ℝ) ^ (k + 1) * (2 : ℝ) ^ (2 * k - 1) * π ^ (2 * k) *
         bernoulli (2 * k) / (2 * k)!) := by
   convert hasSum_one_div_nat_pow_mul_cos hk (left_mem_Icc.mpr zero_le_one) using 1
-  · ext1 n; rw [MulZeroClass.mul_zero, Real.cos_zero, mul_one]
+  · ext1 n; rw [mul_zero, Real.cos_zero, mul_one]
   rw [Polynomial.eval_zero_map, Polynomial.bernoulli_eval_zero, eq_ratCast]
   have : (2 : ℝ) ^ (2 * k - 1) = (2 : ℝ) ^ (2 * k) / 2 := by
     rw [eq_div_iff (two_ne_zero' ℝ)]

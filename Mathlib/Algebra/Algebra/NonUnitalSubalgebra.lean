@@ -502,10 +502,10 @@ def adjoin (s : Set A) : NonUnitalSubalgebra R A :=
         · refine' Submodule.span_induction hb _ _ _ _
           · exact fun x (hx : x ∈ NonUnitalSubsemiring.closure s) y
               (hy : y ∈ NonUnitalSubsemiring.closure s) => Submodule.subset_span (mul_mem hy hx)
-          · exact fun x _hx => (MulZeroClass.mul_zero x).symm ▸ Submodule.zero_mem _
+          · exact fun x _hx => (mul_zero x).symm ▸ Submodule.zero_mem _
           · exact fun x y hx hy z hz => (mul_add z x y).symm ▸ add_mem (hx z hz) (hy z hz)
           · exact fun r x hx y hy => (mul_smul_comm r y x).symm ▸ SMulMemClass.smul_mem r (hx y hy)
-        · exact (MulZeroClass.zero_mul b).symm ▸ Submodule.zero_mem _
+        · exact (zero_mul b).symm ▸ Submodule.zero_mem _
         · exact fun x y => (add_mul x y b).symm ▸ add_mem
         · exact fun r x hx => (smul_mul_assoc r x b).symm ▸ SMulMemClass.smul_mem r hx }
 
