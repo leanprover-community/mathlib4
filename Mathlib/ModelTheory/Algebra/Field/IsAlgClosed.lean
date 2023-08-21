@@ -190,9 +190,33 @@ theorem ACF_isSatisfiable {p : ℕ} (hp : p.Prime ∨ p = 0) :
 
 open Cardinal
 
+/-- The Theory `Theory.ACF p` is `κ` Categorical whenever `κ` is an uncountable cardinal.
+At the moment this is not as universe polymorphic as it could be,
+it currently requires `κ : Cardinal.{0}`, but it is true for any universe.    -/
+theorem ACF_categorical {p : ℕ} (κ : Cardinal.{0}) (hκ : ℵ₀ < κ) :
+    Categorical κ (Theory.ACF p) := by
+  rintro ⟨M⟩ ⟨N⟩ hM hN
+  let _ := fieldOfModelACF p M
+  have := modelField_of_modelACF p M
+  let _ := compatibleRingOfModelField M
+  have := isAlgClosed_of_model_ACF p M
+  have := charP_of_model_fieldOfChar p M
+  let _ := fieldOfModelACF p N
+  have := modelField_of_modelACF p N
+  let _ := compatibleRingOfModelField N
+  have := isAlgClosed_of_model_ACF p N
+  have := charP_of_model_fieldOfChar p N
+  constructor
+  refine languageEquivEquivRingEquiv ?_
+  apply Classical.choice
+  refine IsAlgClosed.ringEquivOfCardinalEqOfCharEq p ?_ ?_
+  · rw [hM]; exact hκ
+  · rw [hM, hN]
+
 theorem ACF_isComplete {p : ℕ} (hp : p.Prime ∨ p = 0) :
     (Theory.ACF p).IsComplete := by
-  apply Categorical.isComplete.{0, 0, 0} (Order.succ ℵ₀) _ _
+  apply Categorical.isComplete.{0, 0, 0} (Order.succ ℵ₀) _
+    (ACF_categorical _ (Order.lt_succ _))
     (Order.le_succ ℵ₀)
   · simp only [card_ring, lift_id']
     exact le_trans (le_of_lt (lt_aleph0_of_finite _)) (Order.le_succ _)
@@ -203,23 +227,6 @@ theorem ACF_isComplete {p : ℕ} (hp : p.Prime ∨ p = 0) :
     let _ := compatibleRingOfModelField M
     have := isAlgClosed_of_model_ACF p M
     infer_instance
-  · rintro ⟨M⟩ ⟨N⟩ hM hN
-    let _ := fieldOfModelACF p M
-    have := modelField_of_modelACF p M
-    let _ := compatibleRingOfModelField M
-    have := isAlgClosed_of_model_ACF p M
-    have := charP_of_model_fieldOfChar p M
-    let _ := fieldOfModelACF p N
-    have := modelField_of_modelACF p N
-    let _ := compatibleRingOfModelField N
-    have := isAlgClosed_of_model_ACF p N
-    have := charP_of_model_fieldOfChar p N
-    constructor
-    refine languageEquivEquivRingEquiv ?_
-    apply Classical.choice
-    refine IsAlgClosed.ringEquivOfCardinalEqOfCharEq p ?_ ?_
-    · rw [hM]; exact Order.lt_succ _
-    · rw [hM, hN]
 
 theorem finite_ACF_prime_not_realize_of_ACF0_realize
     (φ : Language.ring.Sentence) (h : Theory.ACF 0 ⊨ᵇ φ) :
