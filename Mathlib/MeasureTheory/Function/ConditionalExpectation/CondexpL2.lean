@@ -460,7 +460,7 @@ theorem integrable_condexpIndSMul (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hs
 
 theorem condexpIndSMul_empty {x : G} : condexpIndSMul hm MeasurableSet.empty
     ((@measure_empty _ _ μ).le.trans_lt ENNReal.coe_lt_top).ne x = 0 := by
-  rw [condexpIndSMul, indicatorConst_empty]
+  rw [condexpIndSMul, indicatorConstLp_empty]
   simp only [Submodule.coe_zero, ContinuousLinearMap.map_zero]
 #align measure_theory.condexp_ind_smul_empty MeasureTheory.condexpIndSMul_empty
 

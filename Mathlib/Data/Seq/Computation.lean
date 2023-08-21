@@ -17,6 +17,8 @@ This file provides a `Computation` type where `Computation α` is the type of
 unbounded computations returning `α`.
 -/
 
+set_option autoImplicit true
+
 
 open Function
 

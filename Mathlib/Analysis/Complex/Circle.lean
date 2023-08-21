@@ -125,7 +125,7 @@ theorem expMapCircle_apply (t : ℝ) : ↑(expMapCircle t) = Complex.exp (t * Co
 @[simp]
 theorem expMapCircle_zero : expMapCircle 0 = 1 :=
   Subtype.ext <| by
-    rw [expMapCircle_apply, ofReal_zero, MulZeroClass.zero_mul, exp_zero, Submonoid.coe_one]
+    rw [expMapCircle_apply, ofReal_zero, zero_mul, exp_zero, Submonoid.coe_one]
 #align exp_map_circle_zero expMapCircle_zero
 
 @[simp]

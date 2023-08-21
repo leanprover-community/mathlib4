@@ -46,6 +46,8 @@ Similarly, I attempted to just define
 `Multiplicative G = G` leaks through everywhere, and seems impossible to use.
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 
@@ -560,7 +562,7 @@ theorem mul_single_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : Monoi
   classical
     rw [mul_apply, Finsupp.sum_comm, Finsupp.sum_single_index]
     swap
-    · simp_rw [Finsupp.sum, MulZeroClass.mul_zero, ite_self, Finset.sum_const_zero]
+    · simp_rw [Finsupp.sum, mul_zero, ite_self, Finset.sum_const_zero]
     · apply Finset.sum_eq_zero
       simp_rw [ite_eq_right_iff]
       rintro g'' _hg'' rfl
@@ -591,7 +593,7 @@ theorem single_mul_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : Monoi
   classical
     rw [mul_apply, Finsupp.sum_single_index]
     swap
-    · simp_rw [Finsupp.sum, MulZeroClass.zero_mul, ite_self, Finset.sum_const_zero]
+    · simp_rw [Finsupp.sum, zero_mul, ite_self, Finset.sum_const_zero]
     · apply Finset.sum_eq_zero
       simp_rw [ite_eq_right_iff]
       rintro g'' _hg'' rfl
