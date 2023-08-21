@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.MeasureTheory.Constructions.Pi
-import Mathlib.MeasureTheory.Constructions.Prod.Integral
-import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-!
 # Marginals of multivariate functions
@@ -460,7 +458,7 @@ lintegral_mono' h2 hfg
 -- lintegral_congr hfg
 
 alias ENNReal.coe_le_coe ↔ _ ENNReal.monotone2
-attribute [gcongr] ENNReal.monotone2 ENNReal.rpow_le_rpow
+attribute [gcongr] ENNReal.monotone2
 
 
 theorem Subsingleton.measurableSingletonClass {α} [MeasurableSpace α] [Subsingleton α] :
@@ -541,27 +539,6 @@ theorem Measure.map_piUnique_symm [Unique ι] :
 
 end Measure
 
-section
-
-variable {α E : Type _} [MeasurableSpace α] [NormedAddCommGroup E]
-
-theorem _root_.Measurable.hasFiniteIntegral_dirac {f : α → E}
-    (hf : Measurable (fun x => ‖f x‖₊ : α → ℝ≥0∞)) {x : α} :
-    HasFiniteIntegral f (Measure.dirac x) := by
-  rw [HasFiniteIntegral, lintegral_dirac' _ hf]
-  exact ENNReal.coe_lt_top
-
-theorem hasFiniteIntegral_dirac [MeasurableSingletonClass α] {f : α → E} {x : α} :
-    HasFiniteIntegral f (Measure.dirac x) := by
-  rw [HasFiniteIntegral, lintegral_dirac]
-  exact ENNReal.coe_lt_top
-
-theorem StronglyMeasurable.integrable_dirac [MeasurableSpace E] [BorelSpace E] {f : α → E}
-    (hf : StronglyMeasurable f) {x : α} : Integrable f (Measure.dirac x) :=
-  ⟨hf.aestronglyMeasurable, hf.measurable.ennnorm.hasFiniteIntegral_dirac⟩
-
-
-end
 
 section Marginal
 

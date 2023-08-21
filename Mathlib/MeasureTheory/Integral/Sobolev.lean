@@ -249,6 +249,8 @@ theorem ENNReal.lintegral_mul_norm_pow_le {α} [MeasurableSpace α] {μ : Measur
 theorem prod_insert_div [CommGroup β] [DecidableEq α] (ha : a ∉ s) {f : α → β} :
     (∏ x in insert a s, f x) / f a = ∏ x in s, f x := by simp [ha]
 
+attribute [gcongr] ENNReal.rpow_le_rpow
+
 /-- A version of Hölder with multiple arguments -/
 theorem ENNReal.lintegral_prod_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α} (s : Finset ι)
     (hs : s.Nonempty)

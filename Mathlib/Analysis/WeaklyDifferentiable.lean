@@ -2,6 +2,7 @@ import Mathlib.Analysis.Calculus.ContDiff
 import Mathlib.Analysis.InnerProductSpace.LaxMilgram
 import Mathlib.MeasureTheory.Function.L2Space
 import Mathlib.MeasureTheory.Integral.Marginal
+import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 
 open scoped Classical BigOperators Topology ENNReal
 open Filter MeasureTheory NormedSpace
