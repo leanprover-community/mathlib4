@@ -1476,10 +1476,6 @@ lemma proj_eq_self {x : (i : ι) → π i} (h : ∀ i, x i ≠ default → J i) 
   rw [← not_imp_not, not_not, eq_comm, ← ne_eq]
   exact h i
 
-lemma projRestrict_eq_self {x : C} {i : ι} (h : J i) : (ProjRestrict C J x).val i = x.val i := by
-  simp only [ProjRestrict, Proj, MapsTo.val_restrict_apply, ite_eq_left_iff]
-  exact fun hJ ↦ (by exfalso; exact hJ h)
-
 lemma proj_prop_eq_self (hh : ∀ i x, x ∈ C → x i ≠ default → J i) : C.proj J = C := by
   ext x
   refine ⟨fun ⟨y, hy⟩ ↦ ?_, fun h ↦ ?_⟩

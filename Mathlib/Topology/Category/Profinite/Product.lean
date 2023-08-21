@@ -41,21 +41,6 @@ variable {J K L : ι → Prop} [∀ i, Decidable (J i)] [∀ i, Decidable (K i)]
 def ProjRestricts (h : ∀ i, J i → K i) : C.proj K → C.proj J :=
   Homeomorph.setCongr (proj_eq_of_subset C J K h) ∘ ProjRestrict (C.proj K) J
 
-lemma projRestricts_eq_self (x : C.proj K) (i : ι) (hJK : ∀ i, J i → K i) (h : J i) :
-    (ProjRestricts C hJK x).val i = x.val i := by
-  simp only [Set.proj, Proj, ProjRestricts_coe, ite_eq_left_iff]
-  exact fun hJ ↦ (by exfalso; exact hJ h)
-
-lemma projRestricts_ne_default_iff (x : C.proj K) (i : ι) (hJK : ∀ i, J i → K i) :
-    (ProjRestricts C hJK x).val i ≠ default ↔ J i ∧ x.val i ≠ default := by
-  simp only [Set.proj, Proj, ProjRestricts_coe, ne_eq, ite_eq_right_iff, not_forall, exists_prop]
-
-lemma projRestricts_eq_default_iff (x : C.proj K) (i : ι) (hJK : ∀ i, J i → K i) :
-    (ProjRestricts C hJK x).val i = default ↔ ¬ J i ∨ x.val i = default := by
-  rw [← not_iff_not]
-  simp only [projRestricts_ne_default_iff, ne_eq]
-  rw [not_or, not_not]
-
 @[simp]
 lemma continuous_projRestricts (h : ∀ i, J i → K i) : Continuous (ProjRestricts C h) :=
   Continuous.comp (Homeomorph.continuous _) (continuous_projRestrict _ _)
@@ -69,13 +54,8 @@ lemma projRestricts_eq_id  :
   ext x i
   simp only [Set.proj, Proj, ProjRestricts_coe, id_eq, ite_eq_left_iff]
   obtain ⟨y, hy⟩ := x.prop
-  rw [← hy.2]
-  intro hijn
-  apply Eq.symm
-  simp only [Proj, Bool.default_bool, ite_eq_right_iff]
-  intro hij
-  exfalso
-  exact hijn hij
+  intro h
+  rw [← hy.2, Proj, if_neg h]
 
 lemma projRestricts_eq_comp (hJK : ∀ i, J i → K i) (hKL : ∀ i, K i → L i) :
     ProjRestricts C hJK ∘ ProjRestricts C hKL = ProjRestricts C (fun i ↦ hKL i ∘ hJK i) := by
@@ -83,7 +63,7 @@ lemma projRestricts_eq_comp (hJK : ∀ i, J i → K i) (hKL : ∀ i, K i → L i
   simp only [Set.proj, Proj, Function.comp_apply, ProjRestricts_coe]
   split_ifs with h hh
   · rfl
-  · exfalso; exact hh (hJK i h)
+  · simp only [hJK i h, not_true] at hh
   · rfl
 
 lemma projRestricts_comp_projRestrict (h : ∀ i, J i → K i) :
@@ -92,9 +72,8 @@ lemma projRestricts_comp_projRestrict (h : ∀ i, J i → K i) :
   simp only [Set.proj, Proj, Function.comp_apply, ProjRestricts_coe, ProjRestrict_coe]
   split_ifs with hh hh'
   · rfl
-  · exfalso; exact hh' (h i hh)
+  · simp only [h i hh, not_true] at hh'
   · rfl
-
 
 end General
 
@@ -112,11 +91,7 @@ lemma mem_projRestrict (h : J ⊆ K) (x : C.proj (· ∈ K)) :
   refine ⟨y, ⟨hy.1, ?_⟩⟩
   dsimp [Proj]
   ext i
-  split_ifs with hh
-  · rw [← hy.2, eq_comm]
-    simp only [Proj, ite_eq_left_iff]
-    exact fun hK ↦ by simp only [h hh, not_true] at hK
-  · rfl
+  split_ifs with hh<;> [rw [← hy.2, Proj, if_pos (h hh)]; rfl]
 
 /-- The functor from the poset of finsets of `ι` to  `Profinite`, indexing the limit. -/
 noncomputable
