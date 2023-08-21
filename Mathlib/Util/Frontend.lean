@@ -5,6 +5,36 @@ Authors: Scott Morrison
 -/
 import Lean.Elab.Frontend
 import Std.Util.TermUnsafe
+import Std.Data.MLList.Basic
+
+/-!
+# Compiling Lean sources to obtain `Environment`, `Message`s and `InfoTree`s.
+
+The main entry point is
+
+```
+def processInput (input : String) (env? : Option Environment := none)
+    (opts : Options := {}) (fileName : Option String := none) (info : Bool := true) :
+    IO (Environment × List Message × List InfoTree) :=
+  ...
+```
+
+which attempts to compile Lean source code, returning an `Environment`,
+along with any generated `Message`s and `InfoTree`s.
+
+The optional argument `env?` allows specifying an existing `Environment`, for partial compilation.
+If this is non-empty, then the source code may not contain any `import` statements.
+
+You may suppress the generation of `InfoTree`s using `info := false`.
+
+For finer-grained control of compilation, we define a `CompilationStep` structure
+which contains information about the results of each command.
+
+You can use `processInput'` to obtain a monadic lazy list of `CompilationStep`s.
+
+The functions `compileModule : Name → IO (List CompilationStep)` and
+`moduleInfoTrees : Name → IO (List InfoTree)` are useful for compiling single modules from source.
+-/
 
 set_option autoImplicit true
 
@@ -12,10 +42,34 @@ open Lean Elab Frontend
 
 namespace Lean.PersistentArray
 
+/--
+Drop the first `n` elements of a `PersistentArray`, returning the results as a `List`.
+-/
+-- We can't remove the `[Inhabited α]` hypotheses here until
+-- `PersistentArray`'s `GetElem` instance also does.
 def drop [Inhabited α] (t : PersistentArray α) (n : Nat) : List α :=
   List.range (t.size - n) |>.map fun i => t.get! (n + i)
 
 end Lean.PersistentArray
+
+namespace MLList
+
+/-- Run a lazy list in a `ReaderT` monad on some fixed state. -/
+partial def runReaderT [Monad m] (L : MLList (ReaderT ρ m) α) (r : ρ) : MLList m α :=
+  squash fun _ =>
+    return match ← (uncons L).run r with
+    | none => nil
+    | some (a, L') => cons a (L'.runReaderT r)
+
+/-- Run a lazy list in a `StateRefT'` monad on some initial state. -/
+partial def runStateRefT [Monad m] [MonadLiftT (ST ω) m] (L : MLList (StateRefT' ω σ m) α) (s : σ) :
+    MLList m α :=
+  squash fun _ =>
+    return match ← (uncons L).run s with
+    | (none, _) => nil
+    | (some (a, L'), s') => cons a (L'.runStateRefT s')
+
+end MLList
 
 namespace Lean.Elab.IO
 
@@ -69,13 +123,25 @@ def diff (cmd : CompilationStep) : List ConstantInfo :=
 end CompilationStep
 
 /--
-Variant of `processCommands` that returns information for each command in the input.
+Returns a monadic lazy list of `CompilationStep`s.
+This needs to be provided with initial state, see `compilationSteps`.
 -/
-def processCommands' (inputCtx : Parser.InputContext) (parserState : Parser.ModuleParserState)
-    (commandState : Command.State) : IO (List CompilationStep) := do
-  let commandState := { commandState with infoState.enabled := true }
-  (CompilationStep.all.run { inputCtx := inputCtx }).run'
-    { commandState := commandState, parserState := parserState, cmdPos := parserState.pos }
+partial def compilationSteps_aux :  MLList FrontendM CompilationStep :=
+  .squash fun _ => aux
+where
+  /-- Implementation of `compilationSteps_aux`.  -/
+  aux := do
+    let (cmd, done) ← CompilationStep.one
+    if done then
+      return .ofList [cmd]
+    else
+      return .cons cmd (← aux)
+
+/-- Return the the `CompilationStep`s, as a monadic lazy list in `IO`. -/
+def compilationSteps (inputCtx : Parser.InputContext) (parserState : Parser.ModuleParserState)
+    (commandState : Command.State) : MLList IO CompilationStep :=
+  compilationSteps_aux.runReaderT { inputCtx }
+    |>.runStateRefT { commandState, parserState, cmdPos := parserState.pos }
 
 /--
 Process some text input, with or without an existing environment.
@@ -84,11 +150,13 @@ and create a new environment.
 Otherwise, we add to the existing environment.
 Returns a list containing data about each processed command.
 
-Be aware of https://github.com/leanprover/lean4/issues/2408 when using the frontend.
+Be aware that Lean does not support compiling multiple files in the same sessions.
+Often it works, but if the compiled files do anything complicated with initializers then
+nothing is gauranteed.
 -/
-def processInput' (input : String) (env? : Option Environment)
-    (opts : Options) (fileName : Option String := none) :
-    IO (List CompilationStep) := unsafe do
+def processInput' (input : String) (env? : Option Environment := none)
+    (opts : Options := {}) (fileName : Option String := none) (info : Bool := true) :
+    MLList IO CompilationStep := unsafe do
   let fileName   := fileName.getD "<input>"
   let inputCtx   := Parser.mkInputContext input fileName
   let (parserState, commandState) ← match env? with
@@ -99,31 +167,7 @@ def processInput' (input : String) (env? : Option Environment)
     pure (parserState, (Command.mkState env messages opts))
   | some env => do
     pure ({ : Parser.ModuleParserState }, Command.mkState env {} opts)
-  processCommands' inputCtx parserState commandState
-
-/--
-Wrapper for `IO.processCommands` that returns
-* the new environment
-* messages
--/
-def processCommandsWithMessages
-    (inputCtx : Parser.InputContext) (parserState : Parser.ModuleParserState)
-    (commandState : Command.State) : IO (Environment × List Message) := do
-  let s ← IO.processCommands inputCtx parserState commandState <&> Frontend.State.commandState
-  pure (s.env, s.messages.msgs.toList)
-
-/--
-Wrapper for `IO.processCommands` that enables info states, and returns
-* the new environment
-* messages
-* info trees
--/
-def processCommandsWithInfoTrees
-    (inputCtx : Parser.InputContext) (parserState : Parser.ModuleParserState)
-    (commandState : Command.State) : IO (Environment × List Message × List InfoTree) := do
-  let commandState := { commandState with infoState.enabled := true }
-  let s ← IO.processCommands inputCtx parserState commandState <&> Frontend.State.commandState
-  pure (s.env, s.messages.msgs.toList, s.infoState.trees.toList)
+  compilationSteps inputCtx parserState { commandState with infoState.enabled := info }
 
 /--
 Process some text input, with or without an existing environment.
@@ -132,20 +176,14 @@ and create a new environment.
 Otherwise, we add to the existing environment.
 Returns the resulting environment, along with a list of messages and info trees.
 -/
-def processInput (input : String) (env? : Option Environment)
-    (opts : Options) (fileName : Option String := none) :
-    IO (Environment × List Message × List InfoTree) := unsafe do
-  let fileName   := fileName.getD "<input>"
-  let inputCtx   := Parser.mkInputContext input fileName
-  let (parserState, commandState) ← match env? with
-  | none => do
-    enableInitializersExecution
-    let (header, parserState, messages) ← Parser.parseHeader inputCtx
-    let (env, messages) ← processHeader header opts messages inputCtx
-    pure (parserState, (Command.mkState env messages opts))
-  | some env => do
-    pure ({ : Parser.ModuleParserState }, Command.mkState env {} opts)
-  processCommandsWithInfoTrees inputCtx parserState commandState
+def processInput (input : String) (env? : Option Environment := none)
+    (opts : Options := {}) (fileName : Option String := none) (info : Bool := true) :
+    IO (Environment × List Message × List InfoTree) := do
+  let steps ← processInput' input env? opts fileName info |>.force
+  match steps.getLast? with
+  | none => throw <| IO.userError "No commands found in input."
+  | some { after, .. } =>
+    return (after, steps.bind CompilationStep.msgs, steps.bind CompilationStep.trees)
 
 open System
 
@@ -171,7 +209,7 @@ def moduleSource (mod : Name) : IO String := do
     return v
 
 /-- Implementation of `compileModule`, which is the cached version of this function. -/
-def compileModule' (mod : Name) : IO (List CompilationStep) := do
+def compileModule' (mod : Name) : MLList IO CompilationStep := do
   Lean.Elab.IO.processInput' (← moduleSource mod) none {} (← findLean mod).toString
 
 initialize compilationCache : IO.Ref <| HashMap Name (List CompilationStep) ←
@@ -190,7 +228,7 @@ def compileModule (mod : Name) : IO (List CompilationStep) := do
   match m.find? mod with
   | some r => return r
   | none => do
-    let v ← compileModule' mod
+    let v ← compileModule' mod |>.force
     compilationCache.set (m.insert mod v)
     return v
 
