@@ -490,11 +490,11 @@ lemma wcovby_eq_reflGen_covby [PartialOrder α] : ((· : α) ⩿ ·) = ReflGen (
 
 lemma transGen_wcovby_eq_reflTransGen_covby [PartialOrder α] :
     TransGen ((· : α) ⩿ ·) = ReflTransGen (· ⋖ ·) := by
-  rw [wcovby_eq_reflGen_covby, transGen_comp_reflGen]
+  rw [wcovby_eq_reflGen_covby, transGen_reflGen]
 
 lemma reflTransGen_wcovby_eq_reflTransGen_covby [PartialOrder α] :
     ReflTransGen ((· : α) ⩿ ·) = ReflTransGen (· ⋖ ·) := by
-  rw [wcovby_eq_reflGen_covby, reflTransGen_comp_reflGen]
+  rw [wcovby_eq_reflGen_covby, reflTransGen_reflGen]
 
 end Relation
 
