@@ -234,3 +234,8 @@ example (f : α ≃ β) (x y : α) (h : f x = f y) : x = y := by
 example (f : α ≃ β) (x y : α) (h : f x = f y) : (fun s => s) (x = y) := by
   apply_fun f
   exact h
+
+-- check that `apply_fun` uses the function provided to help elaborate the injectivity lemma
+example (x : ℕ) : x = x := by
+  apply_fun (Nat.cast : ℕ → ℚ) using Nat.cast_injective
+  rfl
