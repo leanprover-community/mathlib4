@@ -2544,7 +2544,6 @@ import Mathlib.NumberTheory.SumTwoSquares
 import Mathlib.NumberTheory.VonMangoldt
 import Mathlib.NumberTheory.WellApproximable
 import Mathlib.NumberTheory.Wilson
-import Mathlib.NumberTheory.Zagier
 import Mathlib.NumberTheory.ZetaFunction
 import Mathlib.NumberTheory.ZetaValues
 import Mathlib.NumberTheory.Zsqrtd.Basic
