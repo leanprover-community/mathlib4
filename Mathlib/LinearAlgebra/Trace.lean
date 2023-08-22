@@ -308,23 +308,6 @@ theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [M
   rw [h.eq_conj_prodMap, trace_conj', trace_prodMap', trace_id, map_zero, add_zero]
 #align linear_map.is_proj.trace LinearMap.IsProj.trace
 
-/-- If a linear endomorphism of a (finite, free) module `M` takes values in a submodule `p ⊆ M`,
-then the trace of its restriction to `p` is equal to its trace on `M`. -/
-lemma trace_restrict_eq_of_forall_mem [IsDomain R] [IsPrincipalIdealRing R]
-    (p : Submodule R M) (f : M →ₗ[R] M)
-    (hf : ∀ x, f x ∈ p) (hf' : ∀ x ∈ p, f x ∈ p := fun x _ ↦ hf x) :
-    trace R p (f.restrict hf') = trace R M f := by
-  let ι := Module.Free.ChooseBasisIndex R M
-  obtain ⟨n, snf : Basis.SmithNormalForm p ι n⟩ := p.smithNormalForm (Module.Free.chooseBasis R M)
-  rw [trace_eq_matrix_trace R snf.bM, trace_eq_matrix_trace R snf.bN]
-  set A : Matrix (Fin n) (Fin n) R := toMatrix snf.bN snf.bN (f.restrict hf')
-  set B : Matrix ι ι R := toMatrix snf.bM snf.bM f
-  have aux : ∀ i, B i i ≠ 0 → i ∈ Set.range snf.f := fun i hi ↦ by
-    contrapose! hi; exact snf.repr_eq_zero_of_nmem_range ⟨_, (hf _)⟩ hi
-  change ∑ i, A i i = ∑ i, B i i
-  rw [← Finset.sum_filter_of_ne (p := fun j ↦ j ∈ Set.range snf.f) (by simpa using aux)]
-  simp
-
 end
 
 end LinearMap
