@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Boris Bolvig Kjær, Jon Eugster, Sina Hazratpour
 -/
 import Mathlib.CategoryTheory.Sites.Coherent
-import Mathlib.Topology.Category.Profinite.ExplicitLimits
+import Mathlib.Topology.Category.Profinite.Limits
 
 /-!
 # Effective epimorphic families in `Profinite`
