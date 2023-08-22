@@ -29,88 +29,6 @@ universe u
 
 open CategoryTheory Limits
 
-section projective -- this is stuff from PR #5808
-
-namespace Stonean
-
-/-- Every Stonean space is projective in `CompHaus` -/
-instance (X : Stonean) : Projective X.compHaus where
-  factors := by
-    intro B C φ f _
-    haveI : ExtremallyDisconnected X.compHaus.toTop := X.extrDisc
-    have hf : f.1.Surjective
-    · rwa [CompHaus.epi_iff_surjective] at *
-    obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.continuous f.continuous hf
-    use ⟨f', h.left⟩
-    ext
-    exact congr_fun h.right _
-
-end Stonean
-
-namespace CompHaus
-
-/-- If `X` is compact Hausdorff, `presentation X` is an extremally disconnected space
-  equipped with an epimorphism down to `X`. It is a "constructive" witness to the
-  fact that `CompHaus` has enough projectives.  -/
-noncomputable
-def presentation (X : CompHaus) : Stonean where
-  compHaus := (projectivePresentation X).p
-  extrDisc := by
-    refine' CompactT2.Projective.extremallyDisconnected
-      (@fun Y Z _ _ _ _ _ _ f g hfcont hgcont hgsurj => _)
-    let g₁ : (CompHaus.of Y) ⟶ (CompHaus.of Z) := ⟨g, hgcont⟩
-    let f₁ : (projectivePresentation X).p ⟶ (CompHaus.of Z) := ⟨f, hfcont⟩
-    have hg₁ : Epi g₁ := (epi_iff_surjective _).2 hgsurj
-    refine' ⟨Projective.factorThru f₁ g₁, (Projective.factorThru f₁ g₁).2, funext (fun _ => _)⟩
-    change (Projective.factorThru f₁ g₁ ≫ g₁) _ = f _
-    rw [Projective.factorThru_comp]
-    rfl
-
-/-- The morphism from `presentation X` to `X`. -/
-noncomputable
-def presentationπ (X : CompHaus) : X.presentation.compHaus ⟶ X :=
-  (projectivePresentation X).f
-
-/-- The morphism from `presentation X` to `X` is an epimorphism. -/
-noncomputable
-instance epiPresentπ (X : CompHaus) : Epi X.presentationπ :=
-  (projectivePresentation X).epi
-
-/--
-               X
-               |
-              (f)
-               |
-               \/
-  Z ---(e)---> Y
-If `Z` is extremally disconnected, X, Y are compact Hausdorff, if `f : X ⟶ Y` is an epi and
-`e : Z ⟶ Y` is arbitrary, then `lift e f` is a fixed (but arbitrary) lift of `e` to a morphism
-`Z ⟶ X`. It exists because `Z` is a projective object in `CompHaus`.
--/
-noncomputable
-def lift {X Y : CompHaus} {Z : Stonean} (e : Z.compHaus ⟶ Y) (f : X ⟶ Y) [Epi f] :
-    Z.compHaus ⟶ X :=
-  Projective.factorThru e f
-
-@[simp, reassoc]
-lemma lift_lifts {X Y : CompHaus} {Z : Stonean} (e : Z.compHaus ⟶ Y) (f : X ⟶ Y) [Epi f] :
-    lift e f ≫ f = e := by simp [lift]
-
-lemma Gleason (X : CompHaus.{u}) :
-    Projective X ↔ ExtremallyDisconnected X := by
-  constructor
-  · intro h
-    show ExtremallyDisconnected X.toStonean
-    infer_instance
-  · intro h
-    let X' : Stonean := ⟨X⟩
-    show Projective X'.compHaus
-    apply Stonean.instProjectiveCompHausCategoryCompHaus
-
-end CompHaus
-
-end projective
-
 namespace Stonean
 
 /- Assume we have a family `X a → B` which is jointly surjective. -/
@@ -188,6 +106,7 @@ namespace EffectiveEpiFamily
 /-- Implementation: Abbreviation for the fully faithful functor `Stonean ⥤ CompHaus`. -/
 abbrev F := Stonean.toCompHaus
 
+open CompHaus in
 /-- Implementation: A helper lemma lifting the condition
 
 ```
@@ -213,15 +132,15 @@ lemma lift_desc_condition {W : Stonean} {e : (a : α) → X a ⟶ W}
   intro Z a₁ a₂ g₁ g₂ hg
   -- The Stone-Cech-compactification `βZ` of `Z : CompHaus` is in `Stonean`
   let βZ := Z.presentation
-  let g₁' := F.preimage (Z.presentationπ ≫ g₁ : F.obj βZ ⟶ F.obj (X a₁))
-  let g₂' := F.preimage (Z.presentationπ ≫ g₂ : F.obj βZ ⟶ F.obj (X a₂))
+  let g₁' := F.preimage (presentation.π Z ≫ g₁ : F.obj βZ ⟶ F.obj (X a₁))
+  let g₂' := F.preimage (presentation.π Z ≫ g₂ : F.obj βZ ⟶ F.obj (X a₂))
   -- Use that `βZ → Z` is an epi
-  apply Epi.left_cancellation (f := Z.presentationπ)
+  apply Epi.left_cancellation (f := presentation.π Z)
   -- By definition `g₁' = presentationπ ≫ g₁` and `g₂' = presentationπ ≫ g₂`
   change g₁' ≫ e a₁ = g₂' ≫ e a₂
   -- use the condition in `Stonean`
   apply h
-  change CompHaus.presentationπ Z ≫ g₁ ≫ π a₁ = CompHaus.presentationπ Z ≫ g₂ ≫ π a₂
+  change presentation.π Z ≫ g₁ ≫ π a₁ = presentation.π Z ≫ g₂ ≫ π a₂
   simp [hg]
 
 /-- Implementation: The structure for the `EffectiveEpiFamily X π`. -/
@@ -326,13 +245,13 @@ instance instPrecoherent: Precoherent Stonean.{u} := by
   constructor
   intro B₁ B₂ f α _ X₁ π₁ h₁
   refine ⟨α, inferInstance, fun a => (pullback f (π₁ a)).presentation, fun a =>
-    toCompHaus.preimage (presentationπ _ ≫ (pullback.fst _ _)), ?_, id, fun a =>
-    toCompHaus.preimage (presentationπ _ ≫ (pullback.snd _ _ )), fun a => ?_⟩
+    toCompHaus.preimage (presentation.π _ ≫ (pullback.fst _ _)), ?_, id, fun a =>
+    toCompHaus.preimage (presentation.π _ ≫ (pullback.snd _ _ )), fun a => ?_⟩
   · refine ((effectiveEpiFamily_tfae _ _).out 0 2).2 (fun b => ?_)
     have h₁' := ((CompHaus.effectiveEpiFamily_tfae _ _).out 0 2).1 h₁.toCompHaus
     obtain ⟨a, x, h⟩ := h₁' (f b)
     obtain ⟨c, hc⟩ := (CompHaus.epi_iff_surjective _).1
-      (epiPresentπ (CompHaus.pullback f (π₁ a))) ⟨⟨b, x⟩, h.symm⟩
+      (presentation.epi_π (CompHaus.pullback f (π₁ a))) ⟨⟨b, x⟩, h.symm⟩
     refine ⟨a, c, ?_⟩
     change toCompHaus.map (toCompHaus.preimage _) _ = _
     simp only [image_preimage, toCompHaus_obj, comp_apply, hc]
