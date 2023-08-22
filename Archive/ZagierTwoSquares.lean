@@ -178,31 +178,36 @@ theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (comple
       simp only [h, true_and]
       linarith [e]
 
-/-- From `eq_of_mem_fixedPoints`, deduce that `complexInvo k` has exactly one fixed point. -/
-theorem fixedPoints_eq_singleton : fixedPoints (complexInvo k) =
-    {⟨(1, 1, k), (by simp only [zagierSet, Set.mem_setOf_eq]; linarith)⟩} := by
-  rw [Set.eq_singleton_iff_unique_mem, mem_fixedPoints_iff]
+/-- The singleton containing `(1, 1, k)`. -/
+def singletonFixedPoint : Set (zagierSet k) :=
+  {⟨(1, 1, k), (by simp only [zagierSet, Set.mem_setOf_eq]; linarith)⟩}
+
+/-- `complexInvo k` has exactly one fixed point. -/
+theorem fixedPoints_eq_singleton : fixedPoints (complexInvo k) = singletonFixedPoint k := by
+  rw [singletonFixedPoint, Set.eq_singleton_iff_unique_mem, mem_fixedPoints_iff]
   constructor
   · simp [complexInvo]
   · intro t mem
     replace mem := eq_of_mem_fixedPoints k mem
     congr!
 
-theorem exists_sq_add_sq : ∃ a b : ℕ, a ^ 2 + b ^ 2 = 4 * k + 1 := by
-  apply sq_add_sq_of_nonempty_fixedPoints
-  have := (card_modEq_card_fixedPoints_of_sq (obvInvo k) (obvInvo_sq k)).symm.trans
-    (card_modEq_card_fixedPoints_of_sq (complexInvo k) (complexInvo_sq k))
-  contrapose this
-  rw [Set.not_nonempty_iff_eq_empty] at this
-  simp_rw [this, Fintype.card_of_isEmpty, fixedPoints_eq_singleton, Fintype.card_ofSubsingleton]
-
 end Involutions
 
 end Zagier
+
+open Zagier
 
 /-- **Fermat's theorem on sums of two squares** (Wiedijk #20).
 Every prime congruent to 1 mod 4 is the sum of two squares, proved using Zagier's involutions. -/
 theorem Nat.Prime.sq_add_sq' {p : ℕ} [h : Fact p.Prime] (hp : p % 4 = 1) :
     ∃ a b : ℕ, a ^ 2 + b ^ 2 = p := by
   rw [← div_add_mod p 4, hp] at h ⊢
-  apply Zagier.exists_sq_add_sq
+  let k := p / 4
+  apply sq_add_sq_of_nonempty_fixedPoints
+  have key := (card_modEq_card_fixedPoints_of_sq (obvInvo k) (obvInvo_sq k)).symm.trans
+    (card_modEq_card_fixedPoints_of_sq (complexInvo k) (complexInvo_sq k))
+  contrapose key
+  rw [Set.not_nonempty_iff_eq_empty] at key
+  have := fixedPoints_eq_singleton k
+  unfold singletonFixedPoint at this
+  simp_rw [key, Fintype.card_of_isEmpty, this, Fintype.card_ofSubsingleton]
