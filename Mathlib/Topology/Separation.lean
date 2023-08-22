@@ -1433,22 +1433,22 @@ instance (priority := 100) locally_compact_of_compact [T2Space α] [CompactSpace
   locally_compact_of_compact_nhds fun _ => ⟨univ, isOpen_univ.mem_nhds trivial, isCompact_univ⟩
 #align locally_compact_of_compact locally_compact_of_compact
 
-/-- In a locally compact T₂ space, every point has an open neighborhood with compact closure -/
-theorem exists_open_with_compact_closure [LocallyCompactSpace α] [T2Space α] (x : α) :
-    ∃ U : Set α, IsOpen U ∧ x ∈ U ∧ IsCompact (closure U) := by
-  rcases exists_compact_mem_nhds x with ⟨K, hKc, hxK⟩
-  rcases mem_nhds_iff.1 hxK with ⟨t, h1t, h2t, h3t⟩
-  exact ⟨t, h2t, h3t, isCompact_closure_of_subset_compact hKc h1t⟩
-#align exists_open_with_compact_closure exists_open_with_compact_closure
-
-/-- In a locally compact T₂ space, every compact set has an open neighborhood with compact closure.
--/
-theorem exists_open_superset_and_isCompact_closure [LocallyCompactSpace α] [T2Space α] {K : Set α}
-    (hK : IsCompact K) : ∃ V, IsOpen V ∧ K ⊆ V ∧ IsCompact (closure V) := by
+/-- In a weakly locally compact T₂ space,
+every compact set has an open neighborhood with compact closure. -/
+theorem exists_open_superset_and_isCompact_closure [WeaklyLocallyCompactSpace α] [T2Space α]
+    {K : Set α} (hK : IsCompact K) : ∃ V, IsOpen V ∧ K ⊆ V ∧ IsCompact (closure V) := by
   rcases exists_compact_superset hK with ⟨K', hK', hKK'⟩
-  refine'
-    ⟨interior K', isOpen_interior, hKK', isCompact_closure_of_subset_compact hK' interior_subset⟩
+  refine' ⟨interior K', isOpen_interior, hKK',
+    isCompact_closure_of_subset_compact hK' interior_subset⟩
 #align exists_open_superset_and_is_compact_closure exists_open_superset_and_isCompact_closure
+
+/-- In a weakly locally compact T₂ space,
+every point has an open neighborhood with compact closure. -/
+theorem exists_open_with_compact_closure [WeaklyLocallyCompactSpace α] [T2Space α] (x : α) :
+    ∃ U : Set α, IsOpen U ∧ x ∈ U ∧ IsCompact (closure U) := by
+  simpa only [singleton_subset_iff]
+    using exists_open_superset_and_isCompact_closure isCompact_singleton
+#align exists_open_with_compact_closure exists_open_with_compact_closure
 
 /-- In a locally compact T₂ space, given a compact set `K` inside an open set `U`, we can find an
 open set `V` between these sets with compact closure: `K ⊆ V` and the closure of `V` is inside `U`.

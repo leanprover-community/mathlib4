@@ -398,11 +398,10 @@ theorem tendsto_of_tendstoLocallyUniformly (h : TendstoLocallyUniformly (fun i a
 implies locally uniform convergence.
 
 See also `ContinuousMap.tendsto_iff_tendstoLocallyUniformly`, especially for T2 spaces. -/
-theorem tendstoLocallyUniformly_of_tendsto (hα : ∀ x : α, ∃ n, IsCompact n ∧ n ∈ 𝓝 x)
-    (h : Tendsto F p (𝓝 f)) : TendstoLocallyUniformly (fun i a => F i a) f p := by
+theorem tendstoLocallyUniformly_of_tendsto [WeaklyLocallyCompactSpace α] (h : Tendsto F p (𝓝 f)) :
+    TendstoLocallyUniformly (fun i a => F i a) f p := fun V hV x ↦ by
   rw [tendsto_iff_forall_compact_tendstoUniformlyOn] at h
-  intro V hV x
-  obtain ⟨n, hn₁, hn₂⟩ := hα x
+  obtain ⟨n, hn₁, hn₂⟩ := exists_compact_mem_nhds x
   exact ⟨n, hn₂, h n hn₁ V hV⟩
 #align continuous_map.tendsto_locally_uniformly_of_tendsto ContinuousMap.tendstoLocallyUniformly_of_tendsto
 
@@ -412,9 +411,9 @@ compact space.
 For non-T2 spaces, the assumption `LocallyCompactSpace α` is stronger than we need and in fact
 the `←` direction is true unconditionally. See `ContinuousMap.tendstoLocallyUniformly_of_tendsto`
 and `ContinuousMap.tendsto_of_tendstoLocallyUniformly` for versions requiring weaker hypotheses. -/
-theorem tendsto_iff_tendstoLocallyUniformly [LocallyCompactSpace α] :
+theorem tendsto_iff_tendstoLocallyUniformly [WeaklyLocallyCompactSpace α] :
     Tendsto F p (𝓝 f) ↔ TendstoLocallyUniformly (fun i a => F i a) f p :=
-  ⟨tendstoLocallyUniformly_of_tendsto exists_compact_mem_nhds, tendsto_of_tendstoLocallyUniformly⟩
+  ⟨tendstoLocallyUniformly_of_tendsto, tendsto_of_tendstoLocallyUniformly⟩
 #align continuous_map.tendsto_iff_tendsto_locally_uniformly ContinuousMap.tendsto_iff_tendstoLocallyUniformly
 
 section CompactDomain

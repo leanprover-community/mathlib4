@@ -1652,14 +1652,13 @@ theorem compact_covered_by_mul_left_translates {K V : Set G} (hK : IsCompact K)
 #align compact_covered_by_mul_left_translates compact_covered_by_mul_left_translates
 #align compact_covered_by_add_left_translates compact_covered_by_add_left_translates
 
-/-- Every locally compact separable topological group is σ-compact.
+/-- Every weakly locally compact separable topological group is σ-compact.
   Note: this is not true if we drop the topological group hypothesis. -/
-@[to_additive SeparableLocallyCompactAddGroup.sigmaCompactSpace
-  "Every locally
-  compact separable topological group is σ-compact.
+@[to_additive SeparableWeaklyLocallyCompactAddGroup.sigmaCompactSpace
+  "Every weakly locally compact separable topological additive group is σ-compact.
   Note: this is not true if we drop the topological group hypothesis."]
-instance (priority := 100) SeparableLocallyCompactGroup.sigmaCompactSpace [SeparableSpace G]
-    [LocallyCompactSpace G] : SigmaCompactSpace G := by
+instance (priority := 100) SeparableWeaklyLocallyCompactGroup.sigmaCompactSpace [SeparableSpace G]
+    [WeaklyLocallyCompactSpace G] : SigmaCompactSpace G := by
   obtain ⟨L, hLc, hL1⟩ := exists_compact_mem_nhds (1 : G)
   refine' ⟨⟨fun n => (fun x => x * denseSeq G n) ⁻¹' L, _, _⟩⟩
   · intro n
@@ -1670,8 +1669,8 @@ instance (priority := 100) SeparableLocallyCompactGroup.sigmaCompactSpace [Separ
       exact (denseRange_denseSeq G).inter_nhds_nonempty
           ((Homeomorph.mulLeft x).continuous.continuousAt <| hL1)
     exact ⟨n, hn⟩
-#align separable_locally_compact_group.sigma_compact_space SeparableLocallyCompactGroup.sigmaCompactSpace
-#align separable_locally_compact_add_group.sigma_compact_space SeparableLocallyCompactAddGroup.sigmaCompactSpace
+#align separable_locally_compact_group.sigma_compact_space SeparableWeaklyLocallyCompactGroup.sigmaCompactSpace
+#align separable_locally_compact_add_group.sigma_compact_space SeparableWeaklyLocallyCompactAddGroup.sigmaCompactSpace
 
 /-- Given two compact sets in a noncompact topological group, there is a translate of the second
 one that is disjoint from the first one. -/
