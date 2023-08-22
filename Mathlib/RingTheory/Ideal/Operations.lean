@@ -1134,7 +1134,6 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
         exact h
       specialize ih hp' hn' h'
       refine' ih.imp id (Or.imp id (Exists.imp fun k => _))
-      simp only [exists_prop]
       exact And.imp (fun hk => Finset.insert_subset_insert i (Finset.subset_insert j u) hk) id
     by_cases Ha : f a ≤ f i
     · have h' : (I : Set R) ⊆ f i ∪ f b ∪ ⋃ j ∈ (↑t : Set ι), f j := by

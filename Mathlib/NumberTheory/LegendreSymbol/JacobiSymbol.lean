@@ -467,7 +467,7 @@ theorem quadratic_reciprocity_three_mod_four {a b : ℕ} (ha : a % 4 = 3) (hb : 
 /-- The Jacobi symbol `J(a | b)` depends only on `b` mod `4*a` (version for `a : ℕ`). -/
 theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * a)) := by
   rcases eq_or_ne a 0 with (rfl | ha₀)
-  · rw [MulZeroClass.mul_zero, mod_zero]
+  · rw [mul_zero, mod_zero]
   have hb' : Odd (b % (4 * a)) := hb.mod_even (Even.mul_right (by norm_num) _)
   rcases exists_eq_pow_mul_and_not_dvd ha₀ 2 (by norm_num) with ⟨e, a', ha₁', ha₂⟩
   have ha₁ := odd_iff.mpr (two_dvd_ne_zero.mp ha₁')

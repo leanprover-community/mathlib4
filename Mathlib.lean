@@ -221,6 +221,7 @@ import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.Algebra.Homology.Homology
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Homology.HomotopyCategory
+import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.LocalCohomology
 import Mathlib.Algebra.Homology.ModuleCat
@@ -686,6 +687,7 @@ import Mathlib.Analysis.InnerProductSpace.TwoDim
 import Mathlib.Analysis.InnerProductSpace.l2Space
 import Mathlib.Analysis.LocallyConvex.AbsConvex
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
+import Mathlib.Analysis.LocallyConvex.Barrelled
 import Mathlib.Analysis.LocallyConvex.Basic
 import Mathlib.Analysis.LocallyConvex.Bounded
 import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
@@ -771,6 +773,7 @@ import Mathlib.Analysis.NormedSpace.Star.Multiplier
 import Mathlib.Analysis.NormedSpace.Star.Spectrum
 import Mathlib.Analysis.NormedSpace.Star.Unitization
 import Mathlib.Analysis.NormedSpace.TrivSqZeroExt
+import Mathlib.Analysis.NormedSpace.Unitization
 import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Analysis.NormedSpace.WeakDual
 import Mathlib.Analysis.NormedSpace.WithLp
@@ -868,6 +871,7 @@ import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Whiskering
 import Mathlib.CategoryTheory.Arrow
 import Mathlib.CategoryTheory.Balanced
+import Mathlib.CategoryTheory.Bicategory.Adjunction
 import Mathlib.CategoryTheory.Bicategory.Basic
 import Mathlib.CategoryTheory.Bicategory.Coherence
 import Mathlib.CategoryTheory.Bicategory.End
@@ -2246,6 +2250,7 @@ import Mathlib.LinearAlgebra.Multilinear.Basis
 import Mathlib.LinearAlgebra.Multilinear.FiniteDimensional
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 import Mathlib.LinearAlgebra.Orientation
+import Mathlib.LinearAlgebra.PID
 import Mathlib.LinearAlgebra.PerfectPairing
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.PiTensorProduct
@@ -2618,6 +2623,7 @@ import Mathlib.Order.Filter.Pi
 import Mathlib.Order.Filter.Pointwise
 import Mathlib.Order.Filter.Prod
 import Mathlib.Order.Filter.SmallSets
+import Mathlib.Order.Filter.Subsingleton
 import Mathlib.Order.Filter.Ultrafilter
 import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 import Mathlib.Order.FixedPoints
@@ -3142,6 +3148,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Ring
 import Mathlib.Topology.Algebra.Localization
 import Mathlib.Topology.Algebra.Module.Alternating
 import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.Cardinality
 import Mathlib.Topology.Algebra.Module.CharacterSpace
 import Mathlib.Topology.Algebra.Module.Determinant
 import Mathlib.Topology.Algebra.Module.FiniteDimension
@@ -3206,6 +3213,7 @@ import Mathlib.Topology.Category.Locale
 import Mathlib.Topology.Category.Profinite.AsLimit
 import Mathlib.Topology.Category.Profinite.Basic
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
+import Mathlib.Topology.Category.Profinite.EffectiveEpi
 import Mathlib.Topology.Category.Profinite.Limits
 import Mathlib.Topology.Category.Profinite.Projective
 import Mathlib.Topology.Category.Stonean.Basic
@@ -3416,7 +3424,6 @@ import Mathlib.Util.IncludeStr
 import Mathlib.Util.LongNames
 import Mathlib.Util.MemoFix
 import Mathlib.Util.PiNotation
-import Mathlib.Util.Pickle
 import Mathlib.Util.Qq
 import Mathlib.Util.SleepHeartbeats
 import Mathlib.Util.Superscript

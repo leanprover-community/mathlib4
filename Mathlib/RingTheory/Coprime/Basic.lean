@@ -41,6 +41,7 @@ def IsCoprime : Prop :=
 
 variable {x y z}
 
+@[symm]
 theorem IsCoprime.symm (H : IsCoprime x y) : IsCoprime y x :=
   let ⟨a, b, H⟩ := H
   ⟨b, a, by rw [add_comm, H]⟩

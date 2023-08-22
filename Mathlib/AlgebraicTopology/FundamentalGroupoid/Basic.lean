@@ -264,8 +264,7 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
     linarith
   · exfalso
     linarith
-  · simp only [h₁, if_false, dif_neg (show ¬False from id)]
-    congr
+  · congr
     ring
 #align path.homotopy.trans_assoc_reparam Path.Homotopy.trans_assoc_reparam
 

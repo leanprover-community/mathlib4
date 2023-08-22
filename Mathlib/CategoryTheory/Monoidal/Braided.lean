@@ -17,9 +17,8 @@ as well as braided functors.
 
 ## Implementation note
 
-We make `BraidedMonoidalCategory` another typeclass, but then have `SymmetricMonoidalCategory`
-extend this. The rationale is that we are not carrying any additional data,
-just requiring a property.
+We make `BraidedCategory` another typeclass, but then have `SymmetricCategory` extend this.
+The rationale is that we are not carrying any additional data, just requiring a property.
 
 ## Future work
 

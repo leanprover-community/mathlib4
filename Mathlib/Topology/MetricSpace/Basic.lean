@@ -143,7 +143,7 @@ theorem PseudoMetricSpace.ext {α : Type*} {m m' : PseudoMetricSpace α}
   congr
   · ext x y : 2
     rw [hed, hed']
-  · exact uniformSpace_eq (hU.trans hU'.symm)
+  · exact UniformSpace.ext (hU.trans hU'.symm)
   · ext : 2
     rw [← Filter.mem_sets, ← Filter.mem_sets, hB, hB']
 #align pseudo_metric_space.ext PseudoMetricSpace.ext
@@ -726,7 +726,7 @@ theorem isBounded_iff_nndist {s : Set α} :
 
 theorem toUniformSpace_eq :
     ‹PseudoMetricSpace α›.toUniformSpace = .ofDist dist dist_self dist_comm dist_triangle :=
-  uniformSpace_eq PseudoMetricSpace.uniformity_dist
+  UniformSpace.ext PseudoMetricSpace.uniformity_dist
 #align metric.to_uniform_space_eq Metric.toUniformSpace_eq
 
 theorem uniformity_basis_dist :
@@ -3026,6 +3026,12 @@ theorem uniformEmbedding_bot_of_pairwise_le_dist {β : Type*} {ε : ℝ} (hε : 
     @UniformEmbedding _ _ ⊥ (by infer_instance) f :=
   uniformEmbedding_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hf
 #align metric.uniform_embedding_bot_of_pairwise_le_dist Metric.uniformEmbedding_bot_of_pairwise_le_dist
+
+theorem Finite_bounded_inter_isClosed [ProperSpace α] {K s : Set α} [DiscreteTopology s]
+    (hK : Metric.Bounded K) (hs : IsClosed s) : Set.Finite (K ∩ s) := by
+  refine Set.Finite.subset (IsCompact.finite ?_ ?_) (Set.inter_subset_inter_left s subset_closure)
+  · exact IsCompact.inter_right (Metric.Bounded.isCompact_closure hK) hs
+  · exact DiscreteTopology.of_subset inferInstance (Set.inter_subset_right _ s)
 
 end Metric
 
