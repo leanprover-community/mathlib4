@@ -63,41 +63,28 @@ variable {R A : Type*} [Semiring R]
 
 /-- The coefficient of a monomial in a product `f * g` that can be reached in at most one way
 as a product of monomials in the supports of `f` and `g` is a product. -/
-theorem mul_apply_add_eq_mul_of_forall_ne [Add A] {f g : AddMonoidAlgebra R A} {a0 b0 : A}
-    (h : ∀ {a b : A}, a ∈ f.support → b ∈ g.support → a ≠ a0 ∨ b ≠ b0 → a + b ≠ a0 + b0) :
+theorem mul_apply_add_eq_mul_of_uniqueAdd [Add A] {f g : AddMonoidAlgebra R A} {a0 b0 : A}
+    (h : UniqueAdd f.support g.support a0 b0) :
     (f * g) (a0 + b0) = f a0 * g b0 := by
   classical
-    rw [mul_apply]
-    refine' (Finset.sum_eq_single a0 _ _).trans _
-    · exact fun b H hb => Finset.sum_eq_zero fun x H1 => if_neg (h H H1 (Or.inl hb))
-    · exact fun af0 => by simp [not_mem_support_iff.mp af0]
-    · refine' (Finset.sum_eq_single b0 (fun b bg b0 => _) _).trans (if_pos rfl)
-      · by_cases af : a0 ∈ f.support
-        · exact if_neg (h af bg (Or.inr b0))
-        · simp only [not_mem_support_iff.mp af, zero_mul, ite_self]
-      · exact fun bf0 => by simp [not_mem_support_iff.mp bf0]
-#align add_monoid_algebra.mul_apply_add_eq_mul_of_forall_ne AddMonoidAlgebra.mul_apply_add_eq_mul_of_forall_ne
+  simp_rw [mul_apply, sum, ← Finset.sum_product']
+  refine' (Finset.sum_eq_single (a0, b0) _ _).trans (if_pos rfl) <;> simp_rw [Finset.mem_product]
+  · refine fun ab hab hne => if_neg (fun he => hne <| Prod.ext ?_ ?_)
+    exacts [(h hab.1 hab.2 he).1, (h hab.1 hab.2 he).2]
+  · refine fun hnmem => ite_eq_right_iff.mpr (fun _ => ?_)
+    rcases not_and_or.mp hnmem with af | bg
+    · rw [not_mem_support_iff.mp af, zero_mul]
+    · rw [not_mem_support_iff.mp bg, mul_zero]
 
-instance {A : Type*} [NoZeroDivisors R] [AddSemigroup A] [UniqueSums A] :
+instance {A : Type*} [NoZeroDivisors R] [Add A] [UniqueSums A] :
     NoZeroDivisors (AddMonoidAlgebra R A) where
-  eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} c => by
-    rcases eq_or_ne a 0 with (rfl | ha)
-    · simp
-    rcases eq_or_ne b 0 with (rfl | hb)
-    · simp
-    contrapose! c
+  eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} ab => by
+    contrapose! ab
     obtain ⟨da, a0, db, b0, h⟩ := UniqueSums.uniqueAdd_of_nonempty
-      (support_nonempty_iff.mpr ha) (support_nonempty_iff.mpr hb)
-    apply support_nonempty_iff.mp
-    apply Set.nonempty_of_mem (x := da + db)
-    apply mem_support_iff.mpr
-    convert_to a da * b db ≠ 0
-    · rw [AddMonoidAlgebra.mul_apply_add_eq_mul_of_forall_ne]
-      intros m n ma nb H
-      contrapose! H
-      apply h ma nb H
-    · apply mul_eq_zero.not.mpr ?_
-      simp [not_or, mem_support_iff.mp a0, mem_support_iff.mp b0]
+      (support_nonempty_iff.mpr ab.1) (support_nonempty_iff.mpr ab.2)
+    refine support_nonempty_iff.mp ⟨da + db, ?_⟩
+    rw [mem_support_iff] at a0 b0 ⊢
+    exact mul_apply_add_eq_mul_of_uniqueAdd h ▸ mul_ne_zero a0 b0
 
 /-- The proof goes via the equivalence `R ≃ₗ[ℚ] (Basis.ofVectorSpaceIndex ℚ R) →₀ ℚ`,
 i.e. choosing a basis.
@@ -105,114 +92,18 @@ Once we have a basis, we use the Lexicographic order on the coordinates and all 
 that `ℚ` already has.
 -/
 instance {R : Type*} [AddCommGroup R] [Module ℚ R] : UniqueSums R :=
--- We first setup the relevant instances on (Basis.ofVectorSpaceIndex ℚ R) →₀ ℚ
--- Endow it with the "trivial" PartialOrder `(· = ·)`
-let _ : PartialOrder (Basis.ofVectorSpaceIndex ℚ R) :=
-{ le := (· = ·)
-  le_refl := fun a ↦ rfl
-  le_trans := fun _ _ _ => Eq.trans
-  le_antisymm := fun a b ab _ => ab }
--- Extend arbitrarily the trivial order to a `LinearOrder`
-let _ : LinearOrder ((Basis.ofVectorSpaceIndex ℚ R)) :=
-  show LinearOrder (LinearExtension (Basis.ofVectorSpaceIndex ℚ R)) from inferInstance
--- `r` is the equivalence of `R` with its "coordinates"
-let r := (Basis.ofVectorSpace ℚ R).repr
-UniqueSums.addHom_image_of_injective r r.injective inferInstance
-
-section LeftOrRightOrderability
-
-theorem Left.exists_add_of_mem_support_single_mul [AddLeftCancelSemigroup A]
-    {g : AddMonoidAlgebra R A} (a x : A)
-    (hx : x ∈ (single a 1 * g : AddMonoidAlgebra R A).support) : ∃ b ∈ g.support, a + b = x := by
-  rwa [support_single_mul _ _ (fun y => by rw [one_mul] : ∀ y : R, 1 * y = 0 ↔ _),
-    Finset.mem_map] at hx
-#align add_monoid_algebra.left.exists_add_of_mem_support_single_mul AddMonoidAlgebra.Left.exists_add_of_mem_support_single_mul
-
-theorem Right.exists_add_of_mem_support_single_mul [AddRightCancelSemigroup A]
-    {f : AddMonoidAlgebra R A} (b x : A)
-    (hx : x ∈ (f * single b 1 : AddMonoidAlgebra R A).support) : ∃ a ∈ f.support, a + b = x := by
-  rwa [support_mul_single _ _ (fun y => by rw [mul_one] : ∀ y : R, y * 1 = 0 ↔ _),
-    Finset.mem_map] at hx
-#align add_monoid_algebra.right.exists_add_of_mem_support_single_mul AddMonoidAlgebra.Right.exists_add_of_mem_support_single_mul
-
-/-- If `R` is a semiring with no non-trivial zero-divisors and `A` is a left-ordered add right
-cancel semigroup, then `AddMonoidAlgebra R A` also contains no non-zero zero-divisors. -/
-theorem NoZeroDivisors.of_left_ordered [NoZeroDivisors R] [AddRightCancelSemigroup A]
-    [LinearOrder A] [CovariantClass A A (· + ·) (· < ·)] : NoZeroDivisors (AddMonoidAlgebra R A) :=
-  ⟨@fun f g fg => by
-    contrapose! fg
-    let gmin : A := g.support.min' (support_nonempty_iff.mpr fg.2)
-    refine' support_nonempty_iff.mp _
-    obtain ⟨a, ha, H⟩ :=
-      Right.exists_add_of_mem_support_single_mul gmin
-        ((f * single gmin 1 : AddMonoidAlgebra R A).support.min'
-          (by rw [support_mul_single] <;> simp [support_nonempty_iff.mpr fg.1]))
-        (Finset.min'_mem _ _)
-    refine' ⟨a + gmin, mem_support_iff.mpr _⟩
-    rw [mul_apply_add_eq_mul_of_forall_ne _]
-    · refine' mul_ne_zero _ _
-      exacts [mem_support_iff.mp ha, mem_support_iff.mp (Finset.min'_mem _ _)]
-    · rw [H]
-      rintro b c bf cg (hb | hc) <;> refine' ne_of_gt _
-      · refine' lt_of_lt_of_le (_ : _ < b + gmin) _
-        · apply Finset.min'_lt_of_mem_erase_min'
-          rw [← H]
-          apply Finset.mem_erase_of_ne_of_mem
-          · simpa only [Ne.def, add_left_inj]
-          · rw [support_mul_single _ _ (fun y => by rw [mul_one] : ∀ y : R, y * 1 = 0 ↔ _)]
-            simpa only [Finset.mem_map, addRightEmbedding_apply, add_left_inj, exists_prop,
-              exists_eq_right]
-        · haveI : CovariantClass A A (· + ·) (· ≤ ·) := Add.to_covariantClass_left A
-          exact add_le_add_left (Finset.min'_le _ _ cg) _
-      · refine' lt_of_le_of_lt (_ : _ ≤ b + gmin) _
-        · apply Finset.min'_le
-          rw [support_mul_single _ _ (fun y => by rw [mul_one] : ∀ y : R, y * 1 = 0 ↔ _)]
-          simp only [bf, Finset.mem_map, addRightEmbedding_apply, add_left_inj, exists_prop,
-            exists_eq_right]
-        · refine' add_lt_add_left _ _
-          exact Finset.min'_lt_of_mem_erase_min' _ _ (Finset.mem_erase.mpr ⟨hc, cg⟩)⟩
-#align add_monoid_algebra.no_zero_divisors.of_left_ordered AddMonoidAlgebra.NoZeroDivisors.of_left_ordered
-
-/-- If `R` is a semiring with no non-trivial zero-divisors and `A` is a right-ordered add left
-cancel semigroup, then `AddMonoidAlgebra R A` also contains no non-zero zero-divisors. -/
-theorem NoZeroDivisors.of_right_ordered [NoZeroDivisors R] [AddLeftCancelSemigroup A]
-    [LinearOrder A] [CovariantClass A A (Function.swap (· + ·)) (· < ·)] :
-    NoZeroDivisors (AddMonoidAlgebra R A) :=
-  ⟨@fun f g fg => by
-    contrapose! fg
-    let fmin : A := f.support.min' (support_nonempty_iff.mpr fg.1)
-    refine' support_nonempty_iff.mp _
-    obtain ⟨a, ha, H⟩ :=
-      Left.exists_add_of_mem_support_single_mul fmin
-        ((single fmin 1 * g : AddMonoidAlgebra R A).support.min'
-          (by rw [support_single_mul] <;> simp [support_nonempty_iff.mpr fg.2]))
-        (Finset.min'_mem _ _)
-    refine' ⟨fmin + a, mem_support_iff.mpr _⟩
-    rw [mul_apply_add_eq_mul_of_forall_ne _]
-    · refine' mul_ne_zero _ _
-      exacts [mem_support_iff.mp (Finset.min'_mem _ _), mem_support_iff.mp ha]
-    · rw [H]
-      rintro b c bf cg (hb | hc) <;> refine' ne_of_gt _
-      · refine' lt_of_le_of_lt (_ : _ ≤ fmin + c) _
-        · apply Finset.min'_le
-          rw [support_single_mul _ _ (fun y => by rw [one_mul] : ∀ y : R, 1 * y = 0 ↔ _)]
-          simp only [cg, Finset.mem_map, addLeftEmbedding_apply, add_right_inj, exists_prop,
-            exists_eq_right]
-        · refine' add_lt_add_right _ _
-          exact Finset.min'_lt_of_mem_erase_min' _ _ (Finset.mem_erase.mpr ⟨hb, bf⟩)
-      · refine' lt_of_lt_of_le (_ : _ < fmin + c) _
-        · apply Finset.min'_lt_of_mem_erase_min'
-          rw [← H]
-          apply Finset.mem_erase_of_ne_of_mem
-          · simpa only [Ne.def, add_right_inj]
-          · rw [support_single_mul _ _ (fun y => by rw [one_mul] : ∀ y : R, 1 * y = 0 ↔ _)]
-            simpa only [Finset.mem_map, addLeftEmbedding_apply, add_right_inj, exists_prop,
-              exists_eq_right]
-        · haveI : CovariantClass A A (Function.swap (· + ·)) (· ≤ ·) :=
-            Add.to_covariantClass_right A
-          exact add_le_add_right (Finset.min'_le _ _ bf) _⟩
-#align add_monoid_algebra.no_zero_divisors.of_right_ordered AddMonoidAlgebra.NoZeroDivisors.of_right_ordered
-
-end LeftOrRightOrderability
+  -- We first setup the relevant instances on (Basis.ofVectorSpaceIndex ℚ R) →₀ ℚ
+  -- Endow it with the "trivial" PartialOrder `(· = ·)`
+  let _ : PartialOrder (Basis.ofVectorSpaceIndex ℚ R) :=
+  { le := (· = ·)
+    le_refl := fun a ↦ rfl
+    le_trans := fun _ _ _ => Eq.trans
+    le_antisymm := fun a b ab _ => ab }
+  -- Extend arbitrarily the trivial order to a `LinearOrder`
+  let _ : LinearOrder ((Basis.ofVectorSpaceIndex ℚ R)) :=
+    show LinearOrder (LinearExtension (Basis.ofVectorSpaceIndex ℚ R)) from inferInstance
+  -- `r` is the equivalence of `R` with its "coordinates"
+  let r := (Basis.ofVectorSpace ℚ R).repr
+  UniqueSums.addHom_image_of_injective r r.injective inferInstance
 
 end AddMonoidAlgebra
