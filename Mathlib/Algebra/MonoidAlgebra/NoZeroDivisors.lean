@@ -116,7 +116,8 @@ instance [AddRightCancelSemigroup A] [LinearOrder A] [CovariantClass A A (· + �
 /-- If `R` is a semiring with no non-trivial zero-divisors and `A` is a left-ordered add right
 cancel semigroup, then `AddMonoidAlgebra R A` also contains no non-zero zero-divisors. -/
 theorem NoZeroDivisors.of_left_ordered [NoZeroDivisors R] [AddRightCancelSemigroup A]
-    [LinearOrder A] [CovariantClass A A (· + ·) (· < ·)] : NoZeroDivisors (AddMonoidAlgebra R A) := inferInstance
+    [LinearOrder A] [CovariantClass A A (· + ·) (· < ·)] : NoZeroDivisors (AddMonoidAlgebra R A) :=
+inferInstance
 
 /-- If `R` is a semiring with no non-trivial zero-divisors and `A` is a right-ordered add left
 cancel semigroup, then `AddMonoidAlgebra R A` also contains no non-zero zero-divisors. -/
