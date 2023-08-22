@@ -73,7 +73,7 @@ theorem radon_partition {ι : Type*} {f : ι → E}
     exact sum_congr rfl (by simp)
 
   have h5_J : ∑ i in J, w' i = 1 := by
-    rw [← sum_div, div_eq_one_iff_eq h_I_pos.ne.symm, eq_neg_of_add_eq_zero_left h3, 
+    rw [← sum_div, div_eq_one_iff_eq h_I_pos.ne.symm, eq_neg_of_add_eq_zero_left h3,
       ← sum_neg_distrib]
     refine sum_congr rfl ?_
     intro i hi
@@ -88,7 +88,7 @@ theorem radon_partition {ι : Type*} {f : ι → E}
   · apply (convex_convexHull 𝕜 _).sum_mem (fun i _ ↦ h6 i) h5_I
     exact fun i hi ↦ subset_convexHull _ _ (Set.mem_image_of_mem _ hi)
 
-  . rw [h4]
+  · rw [h4]
     apply (convex_convexHull 𝕜 _).sum_mem (fun i _ ↦ h6 i) h5_J
     intro i hi1
     apply subset_convexHull _ _ (Set.mem_image_of_mem _ _)
@@ -107,21 +107,21 @@ theorem radon_set_partition (s : Set E)
   have h2 : Subtype.val '' I = Lean.Internal.coeM I := by
     apply Set.ext
     intro x; rw [Set.mem_image]; constructor
-    . intro ⟨x1, hx1, hx2⟩
+    · intro ⟨x1, hx1, hx2⟩
       rw [← hx2]
       simp [Set.mem_coe_of_mem, hx1]
-    . intro hx
+    · intro hx
       repeat constructor
       exact Set.mem_of_mem_coe hx; rfl
 
   have h3 : Subtype.val '' Iᶜ = s \ Lean.Internal.coeM I := by
     apply Set.ext
     intro x; rw [Set.mem_image]; constructor
-    . intro ⟨x1, hx1, hx2⟩
+    · intro ⟨x1, hx1, hx2⟩
       rw [← hx2, Set.mem_diff]; simp only [Subtype.coe_prop, true_and]
       intro hx3
       exact hx1 (Set.mem_of_mem_coe hx3)
-    . intro hx
+    · intro hx
       rw [Set.mem_diff] at hx; rcases hx with ⟨hx1, hx2⟩
       use {val := x, property := hx1}; simp only [mem_compl_iff, and_true]
       intro hx3
