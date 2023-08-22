@@ -521,11 +521,11 @@ def piOptionEquivProd {β : Option α → Type*} :
 `β` to be types from the same universe, so it cannot be used directly to transfer theorems about
 sigma types to theorems about sum types. In many cases one can use `ULift` to work around this
 difficulty. -/
-def sumEquivSigmaBool (α β : Type u) : Sum α β ≃ Σ b : Bool, cond b α β :=
-  ⟨fun s => s.elim (fun x => ⟨true, x⟩) fun x => ⟨false, x⟩, fun s =>
+def sumEquivSigmaBool (α β : Type u) : Sum α β ≃ Σ b : Bool, cond b β α :=
+  ⟨fun s => s.elim (fun x => ⟨false, x⟩) fun x => ⟨true, x⟩, fun s =>
     match s with
-    | ⟨true, a⟩ => inl a
-    | ⟨false, b⟩ => inr b,
+    | ⟨false, a⟩ => inl a
+    | ⟨true, b⟩ => inr b,
     fun s => by cases s <;> rfl, fun s => by rcases s with ⟨_ | _, _⟩ <;> rfl⟩
 #align equiv.sum_equiv_sigma_bool Equiv.sumEquivSigmaBool
 
@@ -1054,8 +1054,8 @@ def boolProdEquivSum (α) : Bool × α ≃ Sum α α where
 /-- The function type `Bool → α` is equivalent to `α × α`. -/
 @[simps]
 def boolArrowEquivProd (α) : (Bool → α) ≃ α × α where
-  toFun f := (f true, f false)
-  invFun p b := cond b p.1 p.2
+  toFun f := (f false, f true)
+  invFun p b := cond b p.2 p.1
   left_inv _ := funext <| Bool.forall_bool.2 ⟨rfl, rfl⟩
   right_inv := fun _ => rfl
 #align equiv.bool_arrow_equiv_prod Equiv.boolArrowEquivProd
