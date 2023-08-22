@@ -1,6 +1,7 @@
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.RunCmd
 import Std.Tactic.GuardExpr
+import Std.Tactic.GuardMsgs
 
 open Lean Meta
 namespace Alias
@@ -24,6 +25,10 @@ example : bar2 = 5 := rfl
 theorem baz (x : Nat) : x = x := rfl
 alias baz ← baz1
 example : 3 = 3 := baz1 3
+-- check that we error gracefully
+/-- error: 'Alias.A.baz1' has already been declared -/
+#guard_msgs in
+alias baz ← baz1
 
 theorem ab_iff_ba {t : Type} {a b : t} : a = b ↔ b = a := Iff.intro Eq.symm Eq.symm
 alias ab_iff_ba ↔ ba_of_ab ab_of_ba
@@ -56,6 +61,10 @@ example : True ∧ True → True := A.backward True
 namespace C
 
 alias A.a_iff_a_and_a ↔ _root_.B.forward2 _
+alias A.a_iff_a_and_a ↔ _ _root_.B.backward2
+-- check that we error gracefully in the bidirectional case
+/-- error: 'B.backward2' has already been declared -/
+#guard_msgs in
 alias A.a_iff_a_and_a ↔ _ _root_.B.backward2
 
 end C

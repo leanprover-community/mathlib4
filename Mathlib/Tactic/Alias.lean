@@ -151,6 +151,7 @@ def aliasIff (doc : Option (TSyntax `Lean.Parser.Command.docComment)) (ci : Cons
   let v ← mkIffMpApp isForward ci.type ci.value!
   let t' ← Meta.inferType v
   -- TODO add @alias attribute
+  checkNotAlreadyDeclared al
   addDeclarationRanges al {
     range := ← getDeclarationRange (← getRef)
     selectionRange := ← getDeclarationRange ref
