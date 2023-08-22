@@ -44,7 +44,7 @@ noncomputable def inv : mappingCone (mappingConeCompTriangle f g).mor₁ ⟶ map
       ext p
       dsimp [map']
       rw [from_ext_iff _ _ _ (p+1) rfl, to_ext_iff _ _ _ (p+1) rfl]
-      simp [δ_zero_cochain_comp, ε_neg,
+      simp [δ_zero_cochain_comp, Int.negOnePow_neg,
         Cochain.comp_v _ _ (add_neg_self 1) p (p+1) p (by linarith) (by linarith)])
 
 
@@ -61,10 +61,10 @@ noncomputable def homotopyInvHomId : Homotopy (inv f g ≫ hom f g) (𝟙 _) :=
   (Cochain.equivHomotopy _ _).symm (by
     refine' ⟨-((snd _).comp ((fst (f ≫ g)).1.comp ((inl f).comp (inl _) (by linarith))
       (show 1 + (-2) = -1 by linarith)) (zero_add (-1))), _⟩
-    simp only [δ_neg, δ_zero_cochain_comp, ε_neg, ε_1, one_smul, neg_smul,
+    simp only [δ_neg, δ_zero_cochain_comp, Int.negOnePow_neg, Int.negOnePow_one, one_smul, neg_smul,
       δ_comp _ _ (show 1+(-2) = -1 by linarith) 2 (-1) 0 (by linarith) (by linarith) (by linarith),
       δ_comp _ _ (show (-1)+(-1) = -2 by linarith) 0 0 (-1) (by linarith)
-        (by linarith) (by linarith), ε_even 2 ⟨1, by linarith⟩, δ_inl, δ_snd,
+        (by linarith) (by linarith), Int.negOnePow_even 2 ⟨1, by linarith⟩, δ_inl, δ_snd,
       Cocycle.δ_eq_zero, Cochain.zero_comp, add_zero, Cochain.neg_comp, neg_neg]
     ext n
     rw [from_ext_iff _ _ _ (n+1) rfl, from_ext_iff _ _ _ (n+1) rfl,
@@ -73,9 +73,9 @@ noncomputable def homotopyInvHomId : Homotopy (inv f g ≫ hom f g) (𝟙 _) :=
     dsimp [map']
     simp only [Cochain.ofHom_comp, ofHom_desc, ofHom_lift, descCocycle_coe,
       ZeroMemClass.coe_zero, Cochain.zero_cochain_comp_v, inl_v_descCochain_v_assoc, assoc,
-      inl_v_snd_v_assoc, zero_comp, Cochain.id_comp, γhmul_assoc_of_first_degree_eq_zero,
+      inl_v_snd_v_assoc, zero_comp, Cochain.id_comp, Cochain.comp_assoc_of_first_is_zero_cochain,
       Cochain.comp_add, Cochain.comp_neg, Cochain.add_v, Cochain.neg_v,
-      γhmul_assoc_of_second_degree_eq_zero, neg_add_rev, neg_neg, Cochain.ofHom_v,
+      Cochain.comp_assoc_of_second_is_zero_cochain, neg_add_rev, neg_neg, Cochain.ofHom_v,
       HomologicalComplex.id_f, Preadditive.comp_add, Preadditive.comp_neg, neg_zero,
       add_zero, comp_id, Preadditive.add_comp, Preadditive.neg_comp,
       inl_v_fst_v, inl_v_fst_v_assoc, inl_v_descCochain_v_assoc,

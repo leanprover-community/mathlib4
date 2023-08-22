@@ -6,80 +6,79 @@ Authors: Joël Riou
 
 import Mathlib.Data.Int.Parity
 
-namespace CochainComplex
+-- name from the LTE
+namespace Int
 
-abbrev ε (n : ℤ) : ℤ := (-1 : Units ℤ) ^ n
+@[pp_dot]
+def negOnePow (n : ℤ) : ℤ := (-1 : Units ℤ) ^ n
 
---lemma ε_def (n : ℤ) : ε n = (-1 : Units ℤ) ^ n := rfl
---lemma ε_def' (n : ℤ) : ((-1 : Units ℤ) ^ n : ℤ)  = ε n := rfl
+lemma negOnePow_def (n : ℤ) : n.negOnePow = (-1 : Units ℤ) ^ n := rfl
 
-lemma ε_add (n₁ n₂ : ℤ) : ε (n₁ + n₂) = ε n₁ * ε n₂ := by
-  simp only [ε, ← Units.val_mul, ← Units.ext_iff, zpow_add]
+lemma negOnePow_add (n₁ n₂ : ℤ) :
+    (n₁ + n₂).negOnePow =  n₁.negOnePow * n₂.negOnePow := by
+  dsimp [negOnePow]
+  rw [zpow_add, Units.val_mul]
 
 @[simp]
-lemma ε_0 : ε 0 = 1 := rfl
+lemma negOnePow_zero : negOnePow 0 = 1 := rfl
 
 @[simp]
-lemma ε_1 : ε 1 = -1 := rfl
+lemma negOnePow_one :  negOnePow 1 = -1 := rfl
 
-lemma ε_succ (n : ℤ) : ε (n + 1) = - ε n := by
-  simp only [ε_add, ε_1, mul_neg, mul_one]
+lemma negOnePow_succ (n : ℤ) : (n + 1).negOnePow = - n.negOnePow := by
+  rw [negOnePow_add, negOnePow_one, mul_neg, mul_one]
 
-lemma ε_even (n : ℤ) (hn : Even n) : ε n = 1 := by
+lemma negOnePow_even (n : ℤ) (hn : Even n) : n.negOnePow = 1 := by
   obtain ⟨k, rfl⟩ := hn
-  simp only [ε, ← Units.ext_iff, zpow_add, ← mul_zpow, mul_neg, mul_one, neg_neg, one_zpow]
+  dsimp [negOnePow]
+  rw [zpow_add, ← mul_zpow, mul_neg, mul_one, neg_neg, one_zpow, Units.val_one]
 
-lemma ε_odd (n : ℤ) (hn : Odd n) : ε n = -1 := by
+@[simp]
+lemma negOnePow_two_mul (n : ℤ) : (2 * n).negOnePow = 1 :=
+  negOnePow_even _ ⟨n, two_mul n⟩
+
+lemma negOnePow_odd (n : ℤ) (hn : Odd n) : n.negOnePow = -1 := by
   obtain ⟨k, rfl⟩ := hn
-  rw [ε_add, ε_even (2 * k) ⟨k, two_mul k⟩, one_mul, ε_1]
+  simp only [negOnePow_add, negOnePow_two_mul, negOnePow_one, mul_neg, mul_one]
 
-lemma ε_eq_one_iff (n : ℤ) : ε n = 1 ↔ Even n := by
+lemma negOnePow_eq_one_iff (n : ℤ) : n.negOnePow = 1 ↔ Even n := by
   constructor
   . intro h
     rw [Int.even_iff_not_odd]
     intro h'
-    rw [ε_odd _ h'] at h
-    simp only at h
-  . exact ε_even n
+    simp only [negOnePow_odd _ h'] at h
+  . exact negOnePow_even n
 
-lemma ε_eq_neg_one_iff (n : ℤ) : ε n = -1 ↔ Odd n := by
+lemma negOnePow_eq_neg_one_iff (n : ℤ) : n.negOnePow = -1 ↔ Odd n := by
   constructor
   . intro h
     rw [Int.odd_iff_not_even]
     intro h'
-    rw [ε_even _ h'] at h
+    rw [negOnePow_even _ h'] at h
     simp only at h
-  . exact ε_odd n
+  . exact negOnePow_odd n
 
-lemma ε_neg (n : ℤ) : ε (-n) = ε n := by
-  dsimp [ε]
+@[simp]
+lemma negOnePow_neg (n : ℤ) : (-n).negOnePow = n.negOnePow := by
+  dsimp [negOnePow]
   simp only [zpow_neg, ← inv_zpow, inv_neg, inv_one]
 
-lemma ε_sub (n₁ n₂ : ℤ) : ε (n₁ - n₂) = ε n₁ * ε n₂ := by
-  simp only [sub_eq_add_neg, ε_add, ε_neg]
+lemma negOnePow_sub (n₁ n₂ : ℤ) :
+    (n₁ - n₂).negOnePow =  n₁.negOnePow * n₂.negOnePow := by
+  simp only [sub_eq_add_neg, negOnePow_add, negOnePow_neg]
 
-lemma ε_eq_iff (n₁ n₂ : ℤ) : ε n₁ = ε n₂ ↔ Even (n₁ - n₂) := by
+lemma negOnePow_eq_iff (n₁ n₂ : ℤ) :
+    n₁.negOnePow = n₂.negOnePow ↔ Even (n₁ - n₂) := by
   by_cases h₂ : Even n₂
-  . rw [ε_even _ h₂, Int.even_sub, ε_eq_one_iff]
+  . rw [negOnePow_even _ h₂, Int.even_sub, negOnePow_eq_one_iff]
     tauto
   . rw [← Int.odd_iff_not_even] at h₂
-    rw [ε_odd _ h₂, Int.even_sub, ε_eq_neg_one_iff,
+    rw [negOnePow_odd _ h₂, Int.even_sub, negOnePow_eq_neg_one_iff,
       Int.even_iff_not_odd, Int.even_iff_not_odd]
     tauto
 
 @[simp]
-lemma mul_ε_self (n : ℤ) : ε n * ε n = 1 := by
-  simpa only [← ε_add] using ε_even _ (even_add_self n)
+lemma negOnePow_mul_self (n : ℤ) : n.negOnePow * n.negOnePow = 1 := by
+  simpa only [← negOnePow_add] using negOnePow_even _ (even_add_self n)
 
-@[simp]
-lemma ε_mul_self (n : ℤ) : ε (n * n) = ε n := by
-  by_cases hn : Even n
-  . rw [ε_even _ hn, ε_even]
-    rw [Int.even_mul]
-    tauto
-  . rw [← Int.odd_iff_not_even] at hn
-    rw [ε_odd _ hn, ε_odd]
-    rw [Int.odd_mul]
-    tauto
-
-end CochainComplex
+end Int

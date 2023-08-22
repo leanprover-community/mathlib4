@@ -2894,6 +2894,7 @@ theorem coe_disjoint (l₁ l₂ : List α) : @Disjoint α l₁ l₂ ↔ l₁.Dis
   Iff.rfl
 #align multiset.coe_disjoint Multiset.coe_disjoint
 
+@[symm]
 theorem Disjoint.symm {s t : Multiset α} (d : Disjoint s t) : Disjoint t s
   | _a, i₂, i₁ => d i₁ i₂
 #align multiset.disjoint.symm Multiset.Disjoint.symm

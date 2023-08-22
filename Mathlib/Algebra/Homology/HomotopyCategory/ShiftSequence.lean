@@ -32,11 +32,11 @@ def shiftShortComplexFunctor' (n i j k i' j' k' : ℤ)
     ((shiftEval C n j j' hj).app K) (mulIso ((-1 : Units ℤ)^n) ((shiftEval C n k k' hk).app K))
     (by
       dsimp
-      simp only [zsmul_comp, XIsoOfEq_hom_comp_d, d_comp_XIsoOfEq_hom])
+      simp only [zsmul_comp, XIsoOfEq_hom_comp_d, d_comp_XIsoOfEq_hom, n.negOnePow_def])
     (by
       dsimp
       simp only [XIsoOfEq_hom_comp_d, comp_zsmul, zsmul_comp,
-        d_comp_XIsoOfEq_hom, smul_smul, mul_ε_self, one_smul]))
+        d_comp_XIsoOfEq_hom, smul_smul, ← Int.negOnePow_def, Int.negOnePow_mul_self, one_smul]))
       (fun _ => by
         ext <;> dsimp <;> simp only [comp_zsmul, XIsoOfEq_hom_naturality, zsmul_comp])
 
@@ -62,7 +62,7 @@ lemma shiftShortComplexFunctorIso_add'_hom_app
         (shiftShortComplexFunctorIso C m a' a'' ha'' ).hom.app K := by
   ext <;> dsimp <;>
     simp only [comp_zsmul, zsmul_comp, smul_smul,
-      shiftFunctorAdd'_hom_app_f', ← hmn, ε_add,
+      shiftFunctorAdd'_hom_app_f', ← hmn, ← Int.negOnePow_def, Int.negOnePow_add,
       XIsoOfEq_shift, XIsoOfEq_hom_comp_XIsoOfEq_hom]
 
 variable [CategoryWithHomology C]

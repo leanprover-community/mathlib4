@@ -211,9 +211,9 @@ lemma homology_sequence_exact₂ :
     (mulIso ((-1 : Units ℤ)^n₀) ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _) _ _
   . dsimp
     simp only [comp_zsmul, zsmul_comp, Functor.map_zsmul, smul_smul,
-      CochainComplex.mul_ε_self, one_smul, isoShift_hom_naturality]
+      ← Int.negOnePow_def, Int.negOnePow_mul_self, one_smul, isoShift_hom_naturality]
   . dsimp
-    simp only [zsmul_comp, map_zsmul, isoShift_hom_naturality]
+    simp only [zsmul_comp, map_zsmul, isoShift_hom_naturality, ← Int.negOnePow_def]
 
 lemma homology_sequence_exact₃ :
     (ShortComplex.mk _ _ (F.comp_homology_sequence_δ T hT _ _ h)).Exact := by

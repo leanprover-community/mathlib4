@@ -12,8 +12,8 @@ namespace Pretriangulated
 
 @[simps]
 noncomputable def Triangle.shiftFunctor (n : ℤ) : Triangle C ⥤ Triangle C where
-  obj T := Triangle.mk (CochainComplex.ε n • T.mor₁⟦n⟧') (CochainComplex.ε n • T.mor₂⟦n⟧')
-    (CochainComplex.ε n • T.mor₃⟦n⟧' ≫ (shiftFunctorComm C 1 n).hom.app T.obj₁)
+  obj T := Triangle.mk (n.negOnePow • T.mor₁⟦n⟧') (n.negOnePow • T.mor₂⟦n⟧')
+    (n.negOnePow • T.mor₃⟦n⟧' ≫ (shiftFunctorComm C 1 n).hom.app T.obj₁)
   map f :=
     { hom₁ := f.hom₁⟦n⟧'
       hom₂ := f.hom₂⟦n⟧'
@@ -54,12 +54,12 @@ noncomputable def Triangle.shiftFunctorAdd' (a b n : ℤ) (h : a + b = n) :
         subst n
         dsimp
         rw [zsmul_comp, NatTrans.naturality, comp_zsmul, Functor.comp_map, Functor.map_zsmul,
-          comp_zsmul, smul_smul, CochainComplex.ε_add, mul_comm (CochainComplex.ε a)])
+          comp_zsmul, smul_smul, Int.negOnePow_add, mul_comm a.negOnePow])
       (by
         subst n
         dsimp
         rw [zsmul_comp, NatTrans.naturality, comp_zsmul, Functor.comp_map, Functor.map_zsmul,
-          comp_zsmul, smul_smul, CochainComplex.ε_add, mul_comm (CochainComplex.ε a)])
+          comp_zsmul, smul_smul, Int.negOnePow_add, mul_comm a.negOnePow])
       (by
         subst h
         dsimp
@@ -68,7 +68,7 @@ noncomputable def Triangle.shiftFunctorAdd' (a b n : ℤ) (h : a + b = n) :
         erw [← NatTrans.naturality_assoc]
         simp only [shiftFunctorAdd'_eq_shiftFunctorAdd,
           shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app,
-          add_comm a, CochainComplex.ε_add]))
+          add_comm a, Int.negOnePow_add]))
     (by aesop_cat)
 
 noncomputable def rotateRotateRotateIso :
@@ -85,7 +85,7 @@ noncomputable def invRotateIsoRotateRotateShiftFunctorNegOne :
       isoWhiskerRight (rotateRotateRotateIso C).symm _) ≪≫ (by exact Iso.refl _) ≪≫
     isoWhiskerRight ((triangleRotation C).counitIso) _ ≪≫ Functor.leftUnitor _
 
-attribute [local simp] shift_shiftFunctorCompIsoId_inv_app CochainComplex.ε_neg
+attribute [local simp] shift_shiftFunctorCompIsoId_inv_app
 
 noncomputable def invRotateInvRotateInvRotateIso :
   invRotate C ⋙ invRotate C ⋙ invRotate C ≅ Triangle.shiftFunctor C (-1) :=

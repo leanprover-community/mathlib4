@@ -147,7 +147,7 @@ noncomputable def rotateHomotopyEquiv :
   hom := lift (inr φ) (-(Cocycle.ofHom φ).leftShift 1 1 (zero_add 1))
     (-(inl φ).leftShift 1 0 (neg_add_self 1)) (by
       simp only [δ_neg, Cocycle.coe_neg, Cocycle.leftShift_coe, Cochain.neg_comp,
-        Cochain.δ_leftShift _ 1 0 1 (neg_add_self 1) 0 (zero_add 1), ε_1, neg_smul, one_smul,
+        Cochain.δ_leftShift _ 1 0 1 (neg_add_self 1) 0 (zero_add 1), Int.negOnePow_one, neg_smul, one_smul,
         neg_neg, δ_inl, Cochain.leftShift_comp_zero_cochain, Cocycle.ofHom_coe,
         Cochain.ofHom_comp, add_right_neg])
   inv := desc (inr φ) 0 (triangleδ φ) (by simp)
@@ -156,7 +156,7 @@ noncomputable def rotateHomotopyEquiv :
     simp only [HomologicalComplex.comp_f, HomologicalComplex.id_f,
       lift_desc_f _ _ _ _ _ _ _ _ _ rfl, Cochain.zero_v, comp_zero, zero_add,
       (inl φ).leftShift_v 1 0 (neg_add_self 1) p p (add_zero p) (p+1) (by linarith),
-      mul_zero, sub_self, EuclideanDomain.zero_div, ε_0, one_smul, triangleδ,
+      mul_zero, sub_self, EuclideanDomain.zero_div, Int.negOnePow_zero, one_smul, triangleδ,
       Cocycle.homOf_f, Cocycle.rightShift_coe, Cocycle.coe_neg, Cochain.rightShift_neg,
       Cochain.neg_v, Cochain.rightShift_v _ 1 0 (zero_add 1) p p (add_zero p) (p+1) rfl,
       comp_neg, neg_comp, neg_neg, assoc, inl_v_fst_v_assoc, Iso.hom_inv_id])
@@ -172,7 +172,8 @@ noncomputable def rotateHomotopyEquiv :
         Cochain.leftShift_v _ 1 1 (zero_add 1) p (p+1) rfl (p+1) (add_zero _),
         Cochain.leftShift_v _ 1 0 (neg_add_self 1) p p (add_zero p) (p+1) (by linarith),
         liftCochain_v_fst_v, comp_neg, inl_v_descCochain_v_assoc, Cochain.zero_v,
-        zero_comp, neg_zero, δ_inl, Cochain.ofHom_comp, ε_neg, ε_1, ε_0, δ_snd,
+        zero_comp, neg_zero, δ_inl, Cochain.ofHom_comp, Int.negOnePow_neg,
+        Int.negOnePow_one, Int.negOnePow_zero, δ_snd,
         Cochain.neg_comp, Cochain.comp_assoc_of_second_is_zero_cochain, smul_neg, neg_smul,
         one_smul, neg_neg, Cochain.comp_add, inr_snd_assoc,
         Cochain.zero_cochain_comp_v, neg_add_rev, add_comp, neg_comp,
@@ -198,10 +199,10 @@ noncomputable def rotateHomotopyEquivComm₂Homotopy :
           δ_comp _ _ (zero_add (-1)) 1 0 0 (neg_add_self 1) (zero_add 1) (neg_add_self 1),
           Cochain.comp_v _ _ (add_neg_self 1) p (p + 1) p rfl (by linarith),
           from_ext_iff _ _ _ _ rfl, shiftFunctor_obj_X, mul_one, sub_self,
-          mul_zero, EuclideanDomain.zero_div, add_zero, ε_1, shiftFunctorObjXIso,
+          mul_zero, EuclideanDomain.zero_div, add_zero, Int.negOnePow_one, shiftFunctorObjXIso,
           HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, id_comp, neg_smul,
-          one_smul, neg_neg, ε_0, neg_comp, comp_add, comp_neg, δ_neg, δ_inl,
-          ε_neg, δ_snd, Cochain.neg_comp, inl_v_triangleδ_f_assoc, Iso.refl_inv,
+          one_smul, neg_neg, Int.negOnePow_zero, neg_comp, comp_add, comp_neg, δ_neg, δ_inl,
+          Int.negOnePow_neg, δ_snd, Cochain.neg_comp, inl_v_triangleδ_f_assoc, Iso.refl_inv,
           Cochain.comp_assoc_of_second_is_zero_cochain, smul_neg, neg_add_rev, Cochain.add_v,
           inl_v_fst_v_assoc, inl_v_snd_v_assoc, zero_comp, neg_zero, inr_f_triangleδ_f_assoc,
           inr_f_fst_v_assoc, inr_f_snd_v_assoc, zero_add, add_left_neg, and_self]⟩
@@ -225,7 +226,7 @@ lemma rotateHomotopyEquiv_comm₃ :
     HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, comp_neg, comp_id, neg_neg,
     inr_f_triangleδ_f, comp_zero, neg_zero, add_zero,
     Cochain.leftShift_v _ 1 1 (zero_add 1) p (p+1) rfl (p+1) (by linarith), mul_one,
-    sub_self, EuclideanDomain.zero_div, one_mul, ε_1, neg_smul, one_smul, Iso.refl_hom,
+    sub_self, EuclideanDomain.zero_div, one_mul, Int.negOnePow_one, neg_smul, one_smul, Iso.refl_hom,
     id_comp, Cochain.ofHom_v]
 
 @[reassoc (attr := simp)]
@@ -240,17 +241,17 @@ end rotate
 section shift
 
 noncomputable def shiftIso (n : ℤ) : (mappingCone φ)⟦n⟧ ≅ mappingCone (φ⟦n⟧') where
-  hom := lift _ (ε n • (fst φ).shift n) ((snd φ).shift n) (by
+  hom := lift _ (n.negOnePow • (fst φ).shift n) ((snd φ).shift n) (by
     ext ⟨p, q, hpq⟩
     dsimp
     simp only [Cochain.δ_shift, δ_snd, Cochain.shift_neg, smul_neg,
       Cochain.neg_v, Cochain.zsmul_v, Cochain.shift_v, Cochain.comp_zero_cochain_v,
       Cochain.ofHom_v, shiftFunctor_map_f', zsmul_comp, neg_add_self])
-  inv := desc _ (ε n • (inl φ).shift n) ((inr φ)⟦n⟧') (by
+  inv := desc _ (n.negOnePow • (inl φ).shift n) ((inr φ)⟦n⟧') (by
     ext p
     dsimp
     simp only [δ_zsmul, Cochain.δ_shift, δ_inl, Cochain.ofHom_comp, smul_smul,
-      mul_ε_self, one_smul, Cochain.shift_v, Cochain.zero_cochain_comp_v, Cochain.ofHom_v,
+      Int.negOnePow_mul_self, one_smul, Cochain.shift_v, Cochain.zero_cochain_comp_v, Cochain.ofHom_v,
       shiftFunctor_map_f'])
   hom_inv_id := by
     ext p
@@ -259,7 +260,7 @@ noncomputable def shiftIso (n : ℤ) : (mappingCone φ)⟦n⟧ ≅ mappingCone (
       Cocycle.coe_zsmul, Cocycle.shift_coe, Cochain.zsmul_v, Cochain.shift_v,
       shiftFunctor_map_f', comp_add, add_comp, assoc, inl_v_fst_v_assoc, inr_f_fst_v_assoc,
       zero_comp, comp_zero, add_zero, inl_v_snd_v_assoc, inr_f_snd_v_assoc, zero_add,
-      comp_zsmul, zsmul_comp, smul_smul, mul_ε_self, one_smul, smul_zero]
+      comp_zsmul, zsmul_comp, smul_smul, Int.negOnePow_mul_self, one_smul, smul_zero]
     exact (id φ (p+n) (p+1+n) (by linarith)).symm
   inv_hom_id := by
     ext p
@@ -268,7 +269,7 @@ noncomputable def shiftIso (n : ℤ) : (mappingCone φ)⟦n⟧ ≅ mappingCone (
       Cochain.zsmul_v, Cochain.shift_v, comp_zsmul, shiftFunctor_map_f',
       Cocycle.coe_zsmul, Cocycle.shift_coe, zsmul_comp, comp_add, add_comp, assoc,
       inl_v_fst_v_assoc, inr_f_fst_v_assoc, zero_comp, comp_zero, add_zero, smul_smul,
-      mul_ε_self, one_smul, inl_v_snd_v_assoc, smul_zero, inr_f_snd_v_assoc, zero_add]
+      Int.negOnePow_mul_self, one_smul, inl_v_snd_v_assoc, smul_zero, inr_f_snd_v_assoc, zero_add]
     exact (id (φ⟦n⟧') p (p+1) (by linarith)).symm
 
 set_option maxHeartbeats 400000 in
@@ -278,14 +279,14 @@ noncomputable def shiftTriangleIso (n : ℤ) :
     (by
       dsimp
       simp only [zsmul_comp, comp_zsmul, smul_smul, id_comp, comp_id]
-      erw [mul_ε_self, one_smul])
+      erw [Int.negOnePow_mul_self, one_smul])
     (by
       ext p
       dsimp [shiftIso]
       rw [lift_f _ _ _ _ p (p+1) rfl]
       simp only [Cocycle.coe_zsmul, Cocycle.shift_coe, Cochain.zsmul_v,
         Cochain.shift_v, zsmul_comp, comp_add, comp_zsmul, inr_f_fst_v_assoc, zero_comp,
-        inr_f_snd_v_assoc, id_comp, smul_smul, mul_ε_self, one_smul, zero_add])
+        inr_f_snd_v_assoc, id_comp, smul_smul, Int.negOnePow_mul_self, ← Int.negOnePow_def, one_smul, zero_add])
     (by
       ext p
       dsimp [shiftIso]
