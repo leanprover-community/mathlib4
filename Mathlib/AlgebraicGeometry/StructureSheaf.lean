@@ -214,6 +214,9 @@ def sectionsSubring (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
       simp only [mul_left_comm, mul_assoc, mul_comm]
 #align algebraic_geometry.structure_sheaf.sections_subring AlgebraicGeometry.StructureSheaf.sectionsSubring
 
+#check Subring.toRing
+#synth Ring <| sectionsSubring R _
+
 end StructureSheaf
 
 open StructureSheaf

@@ -356,6 +356,8 @@ end BasicOpen
 
 end Scheme
 
+set_option profiler true in
+set_option trace.Meta.isDefEq true in
 set_option maxHeartbeats 400000 in
 theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
     (Scheme.Spec.obj <| op R).basicOpen ((SpecΓIdentity.app R).inv f) =
@@ -367,8 +369,7 @@ theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
     StructureSheaf.stalkToFiberRingHom_toStalk]
   exact
     (IsLocalization.AtPrime.isUnit_to_map_iff (Localization.AtPrime (PrimeSpectrum.asIdeal x))
-        (PrimeSpectrum.asIdeal x) f :
-      _)
+        (PrimeSpectrum.asIdeal x) f : _)
 #align algebraic_geometry.basic_open_eq_of_affine AlgebraicGeometry.basicOpen_eq_of_affine
 
 @[simp]
