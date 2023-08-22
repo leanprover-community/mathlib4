@@ -454,22 +454,6 @@ instance : Field (AlgebraicClosure k) :=
       assumption
     inv_zero := by simp }
 
-example :
-    (AddCommMonoid.natModule : Module ℕ (AlgebraicClosure k)) =
-      @Algebra.toModule _ _ _ _ (AlgebraicClosure.algebra' k) :=
-  rfl
-
-example :
-    (AddCommGroup.intModule _ : Module ℤ (AlgebraicClosure k)) =
-      @Algebra.toModule _ _ _ _ (AlgebraicClosure.algebra' k) :=
-  rfl
-
-example : algebraInt (AlgebraicClosure ℚ) = AlgebraicClosure.algebra' ℚ :=
-  rfl
-
-example : algebraInt (AlgebraicClosure ℚ) = AlgebraicClosure.algebra' ℚ :=
-  rfl
-
 instance isAlgClosed : IsAlgClosed (AlgebraicClosure k) :=
   IsAlgClosed.of_ringEquiv _ _ (algEquivAlgebraicClosureAux k).symm.toRingEquiv
 #align algebraic_closure.is_alg_closed AlgebraicClosure.isAlgClosed
@@ -482,5 +466,27 @@ instance : IsAlgClosure k (AlgebraicClosure k) := by
 theorem isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
   IsAlgClosure.algebraic
 #align algebraic_closure.is_algebraic AlgebraicClosure.isAlgebraic
+
+instance [CharZero k] : CharZero (AlgebraicClosure k) :=
+  charZero_of_injective_algebraMap (RingHom.injective (algebraMap k (AlgebraicClosure k)))
+
+instance {p : ℕ} [CharP k p] : CharP (AlgebraicClosure k) p :=
+  charP_of_injective_algebraMap (RingHom.injective (algebraMap k (AlgebraicClosure k))) p
+
+example :
+    (AddCommMonoid.natModule : Module ℕ (AlgebraicClosure k)) =
+      @Algebra.toModule _ _ _ _ (AlgebraicClosure.instAlgebra k) :=
+  rfl
+
+example :
+    (AddCommGroup.intModule _ : Module ℤ (AlgebraicClosure k)) =
+      @Algebra.toModule _ _ _ _ (AlgebraicClosure.instAlgebra k) :=
+  rfl
+
+example [CharZero k] : AlgebraicClosure.instAlgebra k = algebraRat :=
+  rfl
+
+example : algebraInt (AlgebraicClosure ℚ) = AlgebraicClosure.instAlgebra ℚ :=
+  rfl
 
 end AlgebraicClosure
