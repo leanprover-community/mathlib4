@@ -3,7 +3,9 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+import Mathlib.Algebra.Group.UniqueProds
 import Mathlib.Algebra.MonoidAlgebra.Support
+import Mathlib.Data.Finset.Pointwise
 
 #align_import algebra.monoid_algebra.no_zero_divisors from "leanprover-community/mathlib"@"3e067975886cf5801e597925328c335609511b1a"
 
@@ -81,43 +83,40 @@ theorem Right.exists_add_of_mem_support_single_mul [AddRightCancelSemigroup A]
     Finset.mem_map] at hx
 #align add_monoid_algebra.right.exists_add_of_mem_support_single_mul AddMonoidAlgebra.Right.exists_add_of_mem_support_single_mul
 
+open Pointwise Finset in
+instance [AddRightCancelSemigroup A] [LinearOrder A] [CovariantClass A A (· + ·) (· < ·)] :
+    UniqueSums A :=
+⟨fun {f g} hf hg => by
+  let gmin : A := g.min' hg
+  let fgmin : A := Finset.min' (f + {gmin}) (by simpa)
+  have : fgmin ∈ f +ᵥ ({gmin} : Finset A) := min'_mem ..
+  have := mem_add.mp (min'_mem ?_ (by apply Set.nonempty_of_mem; exact this))
+  rcases this with ⟨a, gmin', ha, h, H⟩
+  rw [mem_singleton] at h
+  subst h
+  refine ⟨a, ha, gmin, g.min'_mem hg, ?_⟩
+  intros b c bf cg bc
+  rw [H] at bc
+  contrapose bc
+  rw [not_and_or] at bc
+  rcases bc with (hb | hc) <;> refine ne_of_gt ?_
+  · refine lt_of_lt_of_le (?_ : _ < b + gmin) ?_
+    · apply Finset.min'_lt_of_mem_erase_min'
+      apply Finset.mem_erase_of_ne_of_mem
+      · simpa only [← H,  Ne.def, add_left_inj]
+      · exact add_mem_add bf (mem_singleton.mpr rfl)
+    · let _ : CovariantClass A A (· + ·) (· ≤ ·) := Add.to_covariantClass_left A
+      exact add_le_add_left (Finset.min'_le _ _ cg) _
+  · refine lt_of_le_of_lt (?_ : _ ≤ b + gmin) ?_
+    · apply Finset.min'_le
+      exact add_mem_add bf (mem_singleton.mpr rfl)
+    · refine add_lt_add_left ?_ _
+      exact Finset.min'_lt_of_mem_erase_min' _ _ (Finset.mem_erase.mpr ⟨hc, cg⟩)⟩
+
 /-- If `R` is a semiring with no non-trivial zero-divisors and `A` is a left-ordered add right
 cancel semigroup, then `AddMonoidAlgebra R A` also contains no non-zero zero-divisors. -/
 theorem NoZeroDivisors.of_left_ordered [NoZeroDivisors R] [AddRightCancelSemigroup A]
-    [LinearOrder A] [CovariantClass A A (· + ·) (· < ·)] : NoZeroDivisors (AddMonoidAlgebra R A) :=
-  ⟨@fun f g fg => by
-    contrapose! fg
-    let gmin : A := g.support.min' (support_nonempty_iff.mpr fg.2)
-    refine' support_nonempty_iff.mp _
-    obtain ⟨a, ha, H⟩ :=
-      Right.exists_add_of_mem_support_single_mul gmin
-        ((f * single gmin 1 : AddMonoidAlgebra R A).support.min'
-          (by rw [support_mul_single] <;> simp [support_nonempty_iff.mpr fg.1]))
-        (Finset.min'_mem _ _)
-    refine' ⟨a + gmin, mem_support_iff.mpr _⟩
-    rw [mul_apply_add_eq_mul_of_forall_ne _]
-    · refine' mul_ne_zero _ _
-      exacts [mem_support_iff.mp ha, mem_support_iff.mp (Finset.min'_mem _ _)]
-    · rw [H]
-      rintro b c bf cg (hb | hc) <;> refine' ne_of_gt _
-      · refine' lt_of_lt_of_le (_ : _ < b + gmin) _
-        · apply Finset.min'_lt_of_mem_erase_min'
-          rw [← H]
-          apply Finset.mem_erase_of_ne_of_mem
-          · simpa only [Ne.def, add_left_inj]
-          · rw [support_mul_single _ _ (fun y => by rw [mul_one] : ∀ y : R, y * 1 = 0 ↔ _)]
-            simpa only [Finset.mem_map, addRightEmbedding_apply, add_left_inj, exists_prop,
-              exists_eq_right]
-        · haveI : CovariantClass A A (· + ·) (· ≤ ·) := Add.to_covariantClass_left A
-          exact add_le_add_left (Finset.min'_le _ _ cg) _
-      · refine' lt_of_le_of_lt (_ : _ ≤ b + gmin) _
-        · apply Finset.min'_le
-          rw [support_mul_single _ _ (fun y => by rw [mul_one] : ∀ y : R, y * 1 = 0 ↔ _)]
-          simp only [bf, Finset.mem_map, addRightEmbedding_apply, add_left_inj, exists_prop,
-            exists_eq_right]
-        · refine' add_lt_add_left _ _
-          exact Finset.min'_lt_of_mem_erase_min' _ _ (Finset.mem_erase.mpr ⟨hc, cg⟩)⟩
-#align add_monoid_algebra.no_zero_divisors.of_left_ordered AddMonoidAlgebra.NoZeroDivisors.of_left_ordered
+    [LinearOrder A] [CovariantClass A A (· + ·) (· < ·)] : NoZeroDivisors (AddMonoidAlgebra R A) := inferInstance
 
 /-- If `R` is a semiring with no non-trivial zero-divisors and `A` is a right-ordered add left
 cancel semigroup, then `AddMonoidAlgebra R A` also contains no non-zero zero-divisors. -/
