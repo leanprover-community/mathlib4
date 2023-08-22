@@ -473,14 +473,12 @@ lemma le_ker_coord_of_nmem_range {i : ι} (hi : i ∉ Set.range snf.f) :
 @[simp] lemma repr_comp_embedding_eq_smul :
     snf.bM.repr m ∘ snf.f = (snf.bN.repr m : Fin n → R) • snf.a := by
   ext i
-  rw [Function.comp_apply, repr_apply_embedding_eq_repr_smul, map_smul, Finsupp.coe_smul,
-    Pi.smul_apply, Pi.smul_apply', smul_eq_mul, smul_eq_mul, mul_comm _ (snf.a _)]
+  simp [Pi.smul_apply (snf.a i), mul_comm _ (snf.a _)]
 
 @[simp] lemma coord_apply_embedding_eq_smul_coord {i : Fin n} :
     snf.bM.coord (snf.f i) ∘ₗ N.subtype = snf.a i • snf.bN.coord i := by
   ext m
-  rw [LinearMap.smul_apply, LinearMap.coe_comp, coeSubtype, Function.comp_apply, coord_apply,
-    coord_apply, repr_apply_embedding_eq_repr_smul, map_smul, Finsupp.coe_smul, Pi.smul_apply]
+  simp [Pi.smul_apply (snf.a i)]
 
 /-- Given a Smith-normal-form pair of bases for `N ⊆ M`, and a linear endomorphism `f` of `M`
 that preserves `N`, the diagonal of the matrix of the restriction `f` to `N` does not depend on
