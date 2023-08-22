@@ -80,6 +80,8 @@ theorem isIntegrallyClosed_dvd [Nontrivial R] {s : S} (hs : IsIntegral R s) {p :
     (hp : Polynomial.aeval s p = 0) : minpoly R s ∣ p := by
   let K := FractionRing R
   let L := FractionRing S
+  let _ : Algebra K L := FractionRing.liftAlgebra R L
+  have := FractionRing.isScalarTower_liftAlgebra R L
   have : minpoly K (algebraMap S L s) ∣ map (algebraMap R K) (p %ₘ minpoly R s) := by
     rw [map_modByMonic _ (minpoly.monic hs), modByMonic_eq_sub_mul_div]
     refine' dvd_sub (minpoly.dvd K (algebraMap S L s) _) _
