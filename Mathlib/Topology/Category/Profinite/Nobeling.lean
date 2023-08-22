@@ -1963,7 +1963,9 @@ instance (α : Type*) [TopologicalSpace α] [CompactSpace α] [TotallyDisconnect
     [T2Space α] : TotallySeparatedSpace α := by
   rwa [← compact_t2_tot_disc_iff_tot_sep]
 
-open Classical Nobeling in
+end Profinite
+
+open Classical in
 theorem Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
   apply Continuous.closedEmbedding
   · dsimp [ι]
@@ -1993,5 +1995,3 @@ theorem Nobeling : Module.Free ℤ (LocallyConstant S ℤ) :=
   @NobelingProof.Nobeling {C : Set S // IsClopen C} ⟨⟨∅, isClopen_empty⟩⟩
     (IsWellOrder.linearOrder WellOrderingRel)
     WellOrderingRel.isWellOrder S (Nobeling.ι S) (Nobeling.embedding S)
-
-end Profinite
