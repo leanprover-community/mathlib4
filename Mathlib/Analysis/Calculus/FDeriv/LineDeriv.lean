@@ -3,7 +3,9 @@ Copyright (c) 2019 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.Analysis.Calculus.Deriv.Comp
+import Mathlib.Analysis.Calculus.Deriv.Add
+import Mathlib.Analysis.Calculus.Deriv.Mul
 
 #align_import analysis.calculus.deriv.basic from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
@@ -24,52 +26,95 @@ open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+
+section Module
+
+variable (𝕜)
 variable {E : Type w} [AddCommGroup E] [Module 𝕜 E]
 
 /-- `f` has the derivative `f'` at the point `x` along the direction `v` in the set `s`.
 That is, `f (x + t v) = f x + t • f' + o (t)` when `t` tends to `0` and `x + t v ∈ s`.
-Note that this definition is less well behaved that the total Fréchet derivative `fderiv`, which
-should generally be favored over this one.
--/
+Note that this definition is less well behaved that the total Fréchet derivative, which
+should generally be favored over this one. -/
 def HasLineDerivWithinAt (f : E → F) (f' : F) (s : Set E) (x : E) (v : E) :=
   HasDerivWithinAt (fun t ↦ f (x + t • v)) f' ((fun t ↦ x + t • v) ⁻¹' s) (0 : 𝕜)
 
 /-- `f` has the derivative `f'` at the point `x` along the direction `v`.
-That is, `f (x + t v) = f x + t • f' + o (t)` when `t` tends to `0`. -/
+That is, `f (x + t v) = f x + t • f' + o (t)` when `t` tends to `0`.
+Note that this definition is less well behaved that the total Fréchet derivative, which
+should generally be favored over this one. -/
 def HasLineDerivAt (f : E → F) (f' : F) (x : E) (v : E) :=
   HasDerivAt (fun t ↦ f (x + t • v)) f' (0 : 𝕜)
 
 /-- Line derivative of `f` at the point `x` in the direction `v` within the set `s`, if it exists.
 Zero otherwise.
 
-If the derivative exists (i.e., `∃ f', HasDerivWithinAt f f' s x`), then
-`f (x + t v) = f x + t lineDerivWithin f s x v + o (t)` when `t` tends to `0` and `x + t v ∈ s`.
+If the line derivative exists (i.e., `∃ f', HasLineDerivWithinAt 𝕜 f f' s x v`), then
+`f (x + t v) = f x + t lineDerivWithin 𝕜 f s x v + o (t)` when `t` tends to `0` and `x + t v ∈ s`.
 -/
 def lineDerivWithin (f : E → F) (s : Set E) (x : E) (v : E) : F :=
   derivWithin (fun t ↦ f (x + t • v)) ((fun t ↦ x + t • v) ⁻¹' s) (0 : 𝕜)
 
-
 /-- Line derivative of `f` at the point `x` in the direction `v`, if it exists.  Zero otherwise.
 
-If the derivative exists (i.e., `∃ f', HasDerivWithinAt f f' s x`), then
-`f (x + t v) = f x + t lineDerivWithin f s x v + o (t)` when `t` tends to `0` and `x + t v ∈ s`.
+If the derivative exists (i.e., `∃ f', HasLineDerivAt 𝕜 f f' x v`), then
+`f (x + t v) = f x + t lineDerivWithin 𝕜 f x v + o (t)` when `t` tends to `0` and `x + t v ∈ s`.
 -/
 def lineDeriv (f : E → F) (x : E) (v : E) : F :=
   deriv (fun t ↦ f (x + t • v)) (0 : 𝕜)
 
+variable {𝕜}
+variable {f f₁ : E → F} {f' : F} {s t : Set E} {x v : E}
+
+lemma HasLineDerivWithinAt.mono (hf : HasLineDerivWithinAt 𝕜 f f' s x v) (hst : t ⊆ s) :
+    HasLineDerivWithinAt 𝕜 f f' t x v :=
+  HasDerivWithinAt.mono hf (preimage_mono hst)
+
+lemma HasLineDerivAt.hasLineDerivMithinAt (hf : HasLineDerivAt 𝕜 f f' x v) (s : Set E) :
+    HasLineDerivWithinAt 𝕜 f f' s x v :=
+  HasDerivAt.hasDerivWithinAt hf
+
+@[simp] lemma hasLineDerivWithinAt_univ :
+    HasLineDerivWithinAt 𝕜 f f' univ x v ↔ HasLineDerivAt 𝕜 f f' x v := by
+  simp only [HasLineDerivWithinAt, HasLineDerivAt, preimage_univ, hasDerivWithinAt_univ]
+
+end Module
+
+section NormedSpace
+
+variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {f f₁ : E → F} {f' : F} {s t : Set E} {x v : E} {L : E →L[𝕜] F}
+
+lemma HasLineDerivWithinAt.congr_of_eventuallyEq (hf : HasLineDerivWithinAt 𝕜 f f' s x v)
+    (h'f : f =ᶠ[𝓝[s] x] f₁) (hx : f x = f₁ x) : HasLineDerivWithinAt 𝕜 f₁ f' s x v := by
+  apply HasDerivWithinAt.congr_of_eventuallyEq hf _ (by simp [hx])
+  let F := fun (t : 𝕜) ↦ x + t • v
+  have A : Continuous F := by continuity
+  have B : f =ᶠ[𝓝[F '' (F ⁻¹' s)] (F 0)] f₁ := by
+    have : 𝓝[F '' (F ⁻¹' s)] (F 0) ≤ 𝓝[s] x := by
+      convert nhdsWithin_mono _ (image_preimage_subset F s); simp
+    exact this h'f
+  filter_upwards [A.continuousWithinAt.preimage_mem_nhdsWithin' B] with t ht using Eq.symm ht
+
+lemma HasFDerivWithinAt.hasLineDerivMithinAt (hf : HasFDerivWithinAt f L s x) :
+    HasLineDerivWithinAt 𝕜 f (L v) s x v := by
+  let F := fun (t : 𝕜) ↦ x + t • v
+  rw [show x = F (0 : 𝕜) by simp] at hf
+  have A : HasDerivWithinAt F (0 + (1 : 𝕜) • v) (F ⁻¹' s) 0 :=
+    ((hasDerivAt_const (0 : 𝕜) x).add ((hasDerivAt_id' (0 : 𝕜)).smul_const v)).hasDerivWithinAt
+  simp only [one_smul, zero_add] at A
+  exact hf.comp_hasDerivWithinAt (x := (0 : 𝕜)) A (mapsTo_preimage F s)
+
+lemma HasFDerivAt.hasLineDerivAt (hf : HasFDerivAt f L x) :
+    HasLineDerivAt 𝕜 f (L v) x v := by
+  rw [← hasLineDerivWithinAt_univ]
+  exact hf.hasFDerivWithinAt.hasLineDerivMithinAt
+
+
 
 #exit
 
-/-- Derivative of `f` at the point `x`, if it exists.  Zero otherwise.
-
-If the derivative exists (i.e., `∃ f', HasDerivAt f f' x`), then
-`f x' = f x + (x' - x) • deriv f x + o(x' - x)` where `x'` converges to `x`.
--/
-def deriv (f : 𝕜 → F) (x : 𝕜) :=
-  fderiv 𝕜 f x 1
-#align deriv deriv
-
-variable {f f₀ f₁ g : 𝕜 → F}
+variable {f f₀ f₁ g : E → F}
 
 variable {f' f₀' f₁' g' : F}
 
