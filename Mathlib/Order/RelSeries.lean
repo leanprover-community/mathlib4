@@ -38,20 +38,10 @@ namespace RelSeries
 instance : CoeFun (RelSeries r) (fun x ↦ Fin (x.length + 1) → α) :=
 { coe := RelSeries.toFun }
 
-
 instance membership : Membership α (RelSeries r) :=
   ⟨fun x s => x ∈ Set.range s⟩
 
 theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=
-  Iff.rfl
-
-instance : Preorder (RelSeries r) :=
-  Preorder.lift fun x => x.length
-
-lemma le_def (x y : RelSeries r) : x ≤ y ↔ x.length ≤ y.length :=
-  Iff.rfl
-
-lemma lt_def (x y : RelSeries r) : x < y ↔ x.length < y.length :=
   Iff.rfl
 
 /-- start of a series -/
@@ -77,6 +67,46 @@ instance [Inhabited α] : Inhabited (RelSeries r) where
 
 instance [Nonempty α] : Nonempty (RelSeries r) :=
   Nonempty.map (singleton r) inferInstance
+
+end RelSeries
+
+namespace Rel
+
+/-- a relation `r` is said to be finite dimensional iff there is a relation series of `r` with the
+  maximum length. -/
+class FiniteDimensional where
+  /-- the longest relation series-/
+  longestRelSeries : RelSeries r
+  /-- the longest relation series is longer than any other series -/
+  is_longest : ∀ (y : RelSeries r), y.length ≤ longestRelSeries.length
+
+/-- the longest relational series when a relation is finite dimensional -/
+def longestRelSeries [r.FiniteDimensional] : RelSeries r := FiniteDimensional.longestRelSeries
+
+lemma longestRelSeries_is_longest [r.FiniteDimensional] (x : RelSeries r) :
+  x.length ≤ r.longestRelSeries.length := FiniteDimensional.is_longest _
+
+/-- a relation `r` is said to be infinite dimensional iff there exists relation series of arbitrary
+  length. -/
+class InfiniteDimensional : Prop where
+  /-- a relation `r` is said to be infinite dimensional iff there exists relation series of arbitrary
+    length. -/
+  infinite : ∀ (n : ℕ), ∃ (x : RelSeries r), n ≤ x.length
+
+/-- a relation series with length at least `n` if the relation is infinite dimensional -/
+noncomputable def relSeriesOfInfiniteDimensional [InfiniteDimensional r] (n : ℕ) : RelSeries r :=
+  (InfiniteDimensional.infinite n).choose
+
+lemma le_relSeriesOfInfiniteDimensional_length [InfiniteDimensional r] (n : ℕ) :
+  n ≤ (r.relSeriesOfInfiniteDimensional n).length := (InfiniteDimensional.infinite n).choose_spec
+
+/-- if a relation on `α` is infinite dimensional, then `α` is inhabited -/
+noncomputable def inhabited_of_infiniteDimensional [r.InfiniteDimensional] : Inhabited α :=
+  ⟨(r.relSeriesOfInfiniteDimensional 0) 0⟩
+
+end Rel
+
+namespace RelSeries
 
 variable {r}
 
@@ -153,8 +183,7 @@ lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
 lemma toList_ne_empty (x : RelSeries r) : x.toList ≠ ∅ := fun m =>
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| (List.mem_ofFn _ _).mpr ⟨_, rfl⟩
 
-@[simp]
-theorem mem_toList {s : RelSeries r} {x : α} : x ∈ s.toList ↔ x ∈ s := by
+lemma mem_toList {s : RelSeries r} {x : α} : x ∈ s.toList ↔ x ∈ s := by
   rw [toList, List.mem_ofFn, mem_def]
 
 theorem length_pos_of_mem_ne {s : RelSeries r} {x y : α} (hx : x ∈ s) (hy : y ∈ s)
@@ -415,16 +444,14 @@ lemma snoc_last (p : RelSeries r) (a : α) (rel : r (p (Fin.last _)) a) :
   rw [snoc_toFun]
   exact Fin.append_right _ _ 0
 
-@[simp]
-theorem snoc_castSucc (s : RelSeries r) (a : α) (connect : r s.last a)
+lemma snoc_castSucc (s : RelSeries r) (a : α) (connect : r s.last a)
     (i : Fin (s.length + 1)) : snoc s a connect (Fin.castSucc i) = s i := by
   unfold snoc
   simp only [append_length, singleton_length, Nat.add_zero, append_toFun, Fin.cast_refl,
     Function.comp_apply, id_eq]
   exact Fin.append_left _ _ i
 
-@[simp]
-theorem head_snoc (s : RelSeries r) (a : α) (connect : r s.last a) :
+lemma head_snoc (s : RelSeries r) (a : α) (connect : r s.last a) :
     (snoc s a connect).head = s.head := by
   unfold snoc head
   simp only [append_toFun, singleton_length, Nat.add_zero, Fin.cast_refl,
@@ -582,8 +609,7 @@ lemma combine_castAdd {p q : RelSeries r} (connect : p.last = q.head) (i : Fin p
   rw [dif_pos i.2]
   rfl
 
-@[simp]
-theorem combine_succ_castAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head)
+lemma combine_succ_castAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head)
     (i : Fin s₁.length) : combine s₁ s₂ h (Fin.castAdd s₂.length i).succ = s₁ i.succ := by
   rw [combine_toFun]
   split_ifs with H
@@ -598,8 +624,7 @@ theorem combine_succ_castAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.hea
       change i.1 + 1 = s₁.length
       linarith [i.2]
 
-@[simp]
-theorem combine_natAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head) (i : Fin s₂.length) :
+lemma combine_natAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head) (i : Fin s₂.length) :
     combine s₁ s₂ h (Fin.castSucc <| Fin.natAdd s₁.length i) = s₂ (Fin.castSucc i) := by
   rw [combine_toFun]
   split_ifs with H
@@ -611,8 +636,7 @@ theorem combine_natAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head) (i 
     change (_ + i.1) - _ = _
     exact Nat.add_sub_self_left _ _
 
-@[simp]
-theorem combine_succ_natAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head) (i : Fin s₂.length) :
+lemma combine_succ_natAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head) (i : Fin s₂.length) :
     combine s₁ s₂ h (Fin.natAdd s₁.length i).succ = s₂ i.succ := by
   rw [combine_toFun]
   split_ifs with H
@@ -626,25 +650,9 @@ theorem combine_succ_natAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head
     rw [add_assoc, Nat.add_sub_cancel_left]
 
 variable (r)
-lemma exists_len_gt_of_noTopOrder [NoTopOrder (RelSeries r)] [Nonempty α] (n : ℕ) :
-  ∃ (p : RelSeries r), n < p.length := by
-haveI : Inhabited α := Classical.inhabited_of_nonempty inferInstance
-induction n with
-| zero =>
-  obtain ⟨p, hp⟩ := NoTopOrder.exists_not_le (default : RelSeries r)
-  exact ⟨p, lt_of_not_le hp⟩
-| succ n ih =>
-  rcases ih with ⟨p, hp⟩
-  rcases NoTopOrder.exists_not_le p with ⟨q, hq⟩
-  simp only [RelSeries.le_def, not_le, Nat.succ_eq_add_one] at *
-  exact ⟨q, by linarith⟩
-
-lemma top_len_unique [OrderTop (RelSeries r)] (p : RelSeries r) (hp : IsTop p) :
-    p.length = (⊤ : RelSeries r).length :=
-  le_antisymm (@le_top (RelSeries r) _ _ _) (hp ⊤)
-
-lemma top_len_unique' (H1 H2 : OrderTop (RelSeries r)) : H1.top.length = H2.top.length :=
-  le_antisymm (H2.le_top H1.top) (H1.le_top H2.top)
+lemma exists_len_gt_of_infiniteDimensional [r.InfiniteDimensional] (n : ℕ) :
+  ∃ (p : RelSeries r), n < p.length :=
+  ⟨r.relSeriesOfInfiniteDimensional (n + 1), r.le_relSeriesOfInfiniteDimensional_length (n + 1)⟩
 
 end RelSeries
 
@@ -657,9 +665,37 @@ relation.
 -/
 abbrev LTSeries := RelSeries ((. < .) : Rel α α)
 
+/-- A preordered type is finite dimensional, if its preorder is a finite dimensional relation -/
+class FiniteDimensionalType extends Rel.FiniteDimensional ((. < .) : α → α → Prop)
+/-- A preordered type is infinite dimensional, if its preorder is a infinite dimensional relation -/
+class InfiniteDimensionalType extends Rel.InfiniteDimensional ((. < .) : α → α → Prop)
+
+/-- if a preordered set is finite dimensional, then it has a longest series of `(. < .)`. -/
+noncomputable def longestLTSeries [FiniteDimensionalType α] : LTSeries α :=
+  FiniteDimensionalType.toFiniteDimensional.longestRelSeries
+
+variable {α}
+lemma longestLTSeries_is_longest [FiniteDimensionalType α] (x : LTSeries α) :
+  x.length ≤ (longestLTSeries α).length :=
+  FiniteDimensionalType.toFiniteDimensional.is_longest _
+
 namespace LTSeries
 
-variable {α β}
+variable {β}
+
+instance [Unique β] : Unique (LTSeries β) where
+  default := RelSeries.singleton _ default
+  uniq := λ x ↦ by
+    have h : x.length = 0
+    · rcases (lt_trichotomy x.length 0) with (h|h|h)
+      · linarith
+      · exact h
+      · exact (ne_of_lt (x.step ⟨0, h⟩) <| Subsingleton.allEq _ _).elim
+    exact RelSeries.ext h <| funext λ b ↦ Subsingleton.allEq _ _
+
+instance [Unique β] : FiniteDimensionalType β where
+  longestRelSeries := default
+  is_longest := λ y ↦ Unique.uniq _ y ▸ le_refl _
 
 /-- an alternative constructor of `LTSeries` using `StrictMono` functions. -/
 def mk (length : ℕ) (toFun : Fin (length + 1) → α) (strictMono : StrictMono toFun) : LTSeries α :=
@@ -691,9 +727,9 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
   LTSeries α := mk p.length (fun i ↦ (hf2 (p i)).choose)
     (fun i j h ↦ hf1 (by simpa only [(hf2 _).choose_spec] using p.strictMono h))
 
-lemma exists_len_gt_of_noTopOrder [NoTopOrder (LTSeries α)] [Nonempty α] (n : ℕ) :
+lemma exists_len_gt_of_noTopOrder [InfiniteDimensionalType α] (n : ℕ) :
   ∃ (p : LTSeries α), n < p.length :=
-RelSeries.exists_len_gt_of_noTopOrder (fun x x_1 ↦ x < x_1) n
+RelSeries.exists_len_gt_of_infiniteDimensional _ n
 
 section PartialOrder
 

@@ -27,7 +27,7 @@ inclusion.
 /--
 The ring theoretic Krull dimension is the Krull dimension of prime spectrum ordered by inclusion.
 -/
-noncomputable def ringKrullDim (R : Type _) [CommRing R] : WithBot (WithTop ℕ) :=
+noncomputable abbrev ringKrullDim (R : Type _) [CommRing R] : WithBot (WithTop ℕ) :=
   krullDim (PrimeSpectrum R)
 
 namespace ringKrullDim
@@ -78,19 +78,17 @@ theorem eq_of_ringEquiv (R S : Type _) [CommRing R] [CommRing S] (e : R ≃+* S)
 le_antisymm (le_of_surj S R (RingEquiv.symm e) (EquivLike.surjective (RingEquiv.symm e)))
   (le_of_surj R S e (EquivLike.surjective e))
 
-instance (F : Type _) [Field F] : Unique (PrimeSpectrum F) where
+instance primeSpectrum_unique_of_field (F : Type _) [Field F] : Unique (PrimeSpectrum F) where
   default := ⟨⊥, Ideal.bot_prime⟩
   uniq := λ p ↦ PrimeSpectrum.ext _ _ $ Ideal.ext $ λ x ↦ by
     refine ⟨λ h ↦ ?_, λ h ↦ h.symm ▸ Submodule.zero_mem _⟩
     rwa [p.asIdeal.eq_bot_of_prime] at h
 
-instance (F : Type _) [Field F] : OrderTop (LTSeries (PrimeSpectrum F)) where
-  top := default
-  le_top := λ ⟨_, _, h⟩ ↦ Decidable.by_contradiction $ λ rid ↦
-    ne_of_gt (@h ⟨0, Iff.mp Nat.not_le rid⟩) (Subsingleton.elim _ _)
+instance finiteDimensionalType_of_field (F : Type _) [Field F] :
+  FiniteDimensionalType (PrimeSpectrum F) := inferInstance
 
 lemma eq_zero_of_Field (F : Type _) [Field F] : ringKrullDim F = 0 :=
-  krullDim.eq_len_of_orderTop
+  krullDim.eq_zero_of_unique
 
 lemma eq_zero_of_isArtinianRing (R : Type _) [CommRing R] [Nontrivial R] [IsArtinianRing R] :
   ringKrullDim R = 0 := by
@@ -120,52 +118,51 @@ Any PID that is not a field is finite dimensional with dimension 1.
 -/
 @[simps]
 noncomputable def PID_finiteDimensional (R : Type _) [CommRing R] [IsPrincipalIdealRing R]
-  [IsDomain R] (hR : ¬ IsField R) : OrderTop (LTSeries (PrimeSpectrum R)) where
-    top := {
-      length := 1
-      toFun := (finTwoArrowEquiv $ PrimeSpectrum R).symm ⟨⟨⊥, Ideal.bot_prime⟩,
-        ⟨(Ideal.exists_maximal R).choose, (Ideal.exists_maximal R).choose_spec.isPrime⟩⟩
-      step := λ i ↦ by
-        fin_cases i
-        rw [show ⟨⊥, _⟩ = (⊥ : PrimeSpectrum R) by rfl]
-        exact @Ideal.bot_lt_of_maximal R _ _ (Ideal.exists_maximal R).choose
-          (Ideal.exists_maximal R).choose_spec hR }
-    le_top := λ ⟨l, f, m⟩ ↦
-      show l ≤ 1 from Decidable.by_contradiction $ λ rid ↦ by
-      · rw [not_le] at rid
-        let a := Submodule.IsPrincipal.generator (f 1).asIdeal
-        let b := Submodule.IsPrincipal.generator (f 2).asIdeal
-        have hf1 : (f 1).asIdeal ≠ ⊥ := λ h ↦ by
-          have : (f 0).asIdeal < (f 1).asIdeal := by
-            rw [←(show Fin.castSucc ⟨0, Nat.lt_of_succ_lt rid⟩ = 0 by rfl), ←(show Fin.succ
-              ⟨0, Nat.lt_of_succ_lt rid⟩ = 1 by exact Iff.mpr Fin.mk_eq_mk (id (Eq.symm (show
-              @Fin.val (l + 1) 1 = 1 by simp [OfNat.ofNat]; exact Nat.lt.step rid))))]
-            exact m ⟨0, Nat.lt_of_succ_lt rid⟩
-          rw [h] at this
-          exact (not_le_of_lt this bot_le).elim
-        have hf12 : (f 1).asIdeal < (f 2).asIdeal := by
-          rw [←(show Fin.castSucc ⟨1, rid⟩ = 1 by exact Iff.mpr Fin.mk_eq_mk (id (Eq.symm
-            (show @Fin.val (l + 1) 1 = 1 by simp [OfNat.ofNat]; exact Nat.lt.step rid)))),
-            ←(show Fin.succ ⟨1, rid⟩ = 2 by rw [show Fin.succ ⟨1, rid⟩ = 1 + 1 by
-            refine Eq.symm (Fin.ext ?_); simp [HAdd.hAdd, Add.add, Fin.add];
-            exact Nat.add_lt_of_lt_sub rid]; exact one_add_one_eq_two)]
-          exact m ⟨1, rid⟩
-        have lt1 : Ideal.span {a} < Ideal.span {b} := by
-          rw [Ideal.span_singleton_generator, Ideal.span_singleton_generator]
-          exact hf12
-        rw [Ideal.span_singleton_lt_span_singleton] at lt1
-        rcases lt1 with ⟨h, ⟨r, hr1, hr2⟩⟩
-        have ha : Prime a := Submodule.IsPrincipal.prime_generator_of_isPrime (f 1).asIdeal hf1
-        have hb : Prime b := Submodule.IsPrincipal.prime_generator_of_isPrime (f 2).asIdeal $
-          Iff.mp bot_lt_iff_ne_bot (lt_trans (Ne.bot_lt hf1) hf12)
-        · obtain ⟨x, hx⟩ := (hb.dvd_prime_iff_associated ha).mp ⟨r, hr2⟩
-          rw [←hx] at hr2
-          rw [←mul_left_cancel₀ h hr2] at hr1
-          exact (hr1 x.isUnit).elim
+    [IsDomain R] (hR : ¬ IsField R) :
+    FiniteDimensionalType (PrimeSpectrum R) where
+  longestRelSeries := {
+    toFun := (finTwoArrowEquiv $ PrimeSpectrum R).symm ⟨⟨⊥, Ideal.bot_prime⟩,
+      ⟨(Ideal.exists_maximal R).choose, (Ideal.exists_maximal R).choose_spec.isPrime⟩⟩
+    step := λ i ↦ by
+      fin_cases i
+      rw [show ⟨⊥, _⟩ = (⊥ : PrimeSpectrum R) by rfl]
+      exact @Ideal.bot_lt_of_maximal R _ _ (Ideal.exists_maximal R).choose
+        (Ideal.exists_maximal R).choose_spec hR }
+  is_longest := λ x ↦ show x.length ≤ 1 from Decidable.by_contradiction $ λ rid ↦ by
+    have m := LTSeries.strictMono x
+    rcases x with ⟨l, f, s⟩
+    rw [not_le] at rid
+    let a := Submodule.IsPrincipal.generator (f 1).asIdeal
+    let b := Submodule.IsPrincipal.generator (f 2).asIdeal
+    have hf1 : (f 1).asIdeal ≠ ⊥ := λ h ↦ by
+      have : (f 0).asIdeal < (f 1).asIdeal
+      · rw [show 0 = Fin.castSucc ⟨0, Nat.lt_of_succ_lt rid⟩ by rfl, show 1 = Fin.succ
+          ⟨0, Nat.lt_of_succ_lt rid⟩ from ?_]
+        · exact s ⟨0, Nat.lt_of_succ_lt rid⟩
+        · ext; change 1 % (l + 1) = 1; rw [Nat.mod_eq_of_lt]; linarith
+      rw [h] at this
+      exact (not_le_of_lt this bot_le).elim
+    have hf12 : (f 1).asIdeal < (f 2).asIdeal := by
+      rw [show 1 = Fin.castSucc ⟨1, rid⟩ from ?_, show 2 = Fin.succ ⟨1, rid⟩ from ?_]
+      · exact s ⟨1, rid⟩
+      · ext; change 2 % (l + 1) = 2; rw [Nat.mod_eq_of_lt]; linarith
+      · ext; change 1 % (l + 1) = 1; rw [Nat.mod_eq_of_lt]; linarith
+    have lt1 : Ideal.span {a} < Ideal.span {b} := by
+      rw [Ideal.span_singleton_generator, Ideal.span_singleton_generator]
+      exact hf12
+    rw [Ideal.span_singleton_lt_span_singleton] at lt1
+    rcases lt1 with ⟨h, ⟨r, hr1, hr2⟩⟩
+    have ha : Prime a := Submodule.IsPrincipal.prime_generator_of_isPrime (f 1).asIdeal hf1
+    have hb : Prime b := Submodule.IsPrincipal.prime_generator_of_isPrime (f 2).asIdeal $
+      Iff.mp bot_lt_iff_ne_bot (lt_trans (Ne.bot_lt hf1) hf12)
+    · obtain ⟨x, hx⟩ := (hb.dvd_prime_iff_associated ha).mp ⟨r, hr2⟩
+      rw [←hx] at hr2
+      rw [←mul_left_cancel₀ h hr2] at hr1
+      exact (hr1 x.isUnit).elim
 
 lemma PID_eq_one_of_not_isField (R : Type _) [CommRing R] [IsPrincipalIdealRing R] [IsDomain R]
-  (hR : ¬ IsField R) : ringKrullDim R = 1 := by
-{ rw [ringKrullDim, @krullDim.eq_len_of_orderTop _ _ (PID_finiteDimensional _ hR)]; rfl }
+    (hR : ¬ IsField R) : ringKrullDim R = 1 := by
+  rw [ringKrullDim, @krullDim.eq_len_of_finiteDimensionalType _ _ (PID_finiteDimensional _ hR)]; rfl
 
 /--
 https://stacks.math.columbia.edu/tag/00KG

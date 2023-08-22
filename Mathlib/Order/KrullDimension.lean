@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang, Fangming Li
+Authors: Fangming Li, Jujian Zhang
 -/
 
 import Mathlib.Data.Nat.Lattice
@@ -85,30 +85,26 @@ lemma eq_of_relIso (f : r ≃r s) : krullDimOfRel r = krullDimOfRel s :=
     convert h <;> exact f.toEquiv.eq_symm_apply.mp rfl
 
 variable (r)
-lemma eq_top_of_noTopOrder [Nonempty α] [NoTopOrder (RelSeries r)] :
+lemma eq_top_of_infiniteDimensional [r.InfiniteDimensional] :
   krullDimOfRel r = ⊤ :=
 le_antisymm le_top $ le_iSup_iff.mpr $ fun m hm => match m, hm with
 | ⊥, hm => False.elim $ by
-  haveI : Inhabited α := Classical.inhabited_of_nonempty inferInstance
+  haveI : Inhabited α := r.inhabited_of_infiniteDimensional
   exact not_le_of_lt (WithBot.bot_lt_coe _ : ⊥ < (0 : WithBot (WithTop ℕ))) $ hm default
 | some ⊤, _ => le_refl _
 | some (some m), hm => by
-  obtain ⟨p, hp⟩ := RelSeries.exists_len_gt_of_noTopOrder r m
+  obtain ⟨p, hp⟩ := RelSeries.exists_len_gt_of_infiniteDimensional r m
   specialize hm p
   refine (not_lt_of_le hm ?_).elim
   erw [WithBot.some_eq_coe, WithBot.coe_lt_coe, WithTop.some_eq_coe, WithTop.coe_lt_coe]
   assumption
 
-lemma eq_len_of_orderTop [OrderTop (RelSeries r)] :
-  krullDimOfRel r = (⊤ : RelSeries r).length :=
+lemma eq_len_of_finiteDimensional [r.FiniteDimensional] :
+  krullDimOfRel r = r.longestRelSeries.length :=
 le_antisymm
-  (iSup_le $ fun i => WithBot.coe_le_coe.mpr $ WithTop.coe_le_coe.mpr $ OrderTop.le_top i) $
-  le_iSup (fun (i : RelSeries r) => (i.length : WithBot (WithTop ℕ  ))) (⊤ : RelSeries r)
-
-variable {r}
-lemma eq_len_of_orderTop' [OrderTop (RelSeries r)]
-  (q : RelSeries r) (h : IsTop q) : krullDimOfRel r = q.length :=
-(eq_len_of_orderTop r).trans $ RelSeries.top_len_unique r _ h ▸ rfl
+  (iSup_le $ fun _ => WithBot.coe_le_coe.mpr $ WithTop.coe_le_coe.mpr $
+    r.longestRelSeries_is_longest _) $
+  le_iSup (fun (i : RelSeries r) => (i.length : WithBot (WithTop ℕ))) r.longestRelSeries
 
 end krullDimOfRel
 
@@ -123,22 +119,23 @@ lemma nonneg_of_Nonempty [Nonempty α] : 0 ≤ krullDim α :=
 
 lemma eq_bot_of_isEmpty [IsEmpty α] : krullDim α = ⊥ := krullDimOfRel.eq_bot_of_isEmpty _
 
-lemma eq_top_of_noTopOrder [Nonempty α] [NoTopOrder (LTSeries α)] :
-  krullDim α = ⊤ := krullDimOfRel.eq_top_of_noTopOrder _
+lemma eq_top_of_infiniteDimensionalType [InfiniteDimensionalType α] :
+  krullDim α = ⊤ := krullDimOfRel.eq_top_of_infiniteDimensional _
 
-lemma eq_len_of_orderTop [OrderTop (LTSeries α)] :
-  krullDim α = (⊤ : LTSeries α).length := krullDimOfRel.eq_len_of_orderTop _
+lemma eq_len_of_finiteDimensionalType [FiniteDimensionalType α] :
+  krullDim α = (longestLTSeries α).length := krullDimOfRel.eq_len_of_finiteDimensional _
 
-lemma eq_len_of_orderTop' [OrderTop (LTSeries α)]
-  (q : LTSeries α) (h : IsTop q) : krullDim α = q.length :=
-krullDimOfRel.eq_len_of_orderTop' _ h
+lemma infiniteDimensional_of_strictMono (f : α → β) (hf : StrictMono f) [InfiniteDimensionalType α] :
+  InfiniteDimensionalType β where
+    infinite := λ n ↦ by
+      obtain ⟨x, h⟩ := RelSeries.exists_len_gt_of_infiniteDimensional ((. < .) : Rel α α) (n + 1)
+      refine' ⟨LTSeries.map x f hf, _⟩
+      simp only [LTSeries.map_length]
+      linarith
 
-lemma NoTopOrder_of_strictMono (f : α → β) (hf : StrictMono f) [NoTopOrder (LTSeries α)]
-  [Nonempty α]: (NoTopOrder (LTSeries β)) where
-    exists_not_le := by
-      intro smb
-      rcases (RelSeries.exists_len_gt_of_noTopOrder ((. < .) : Rel α α) smb.length) with ⟨p, hp⟩
-      exact ⟨LTSeries.map p f hf, not_le_of_lt hp⟩
+lemma eq_zero_of_unique [Unique α] : krullDim α = 0 := by
+  rw [eq_len_of_finiteDimensionalType]
+  rfl
 
 lemma le_of_strictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
   krullDimOfRel.le_of_map f hf

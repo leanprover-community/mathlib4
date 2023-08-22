@@ -7,6 +7,7 @@ Authors: Jujian Zhang
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Sort
+import Mathlib.Order.Cover
 
 /-!
 This file mainly contains some lemmas about lists of type with partial orders
