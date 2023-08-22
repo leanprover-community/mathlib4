@@ -17,15 +17,6 @@ TODO: move these results elsewhere
 open scoped BigOperators Polynomial Nat
 open Finset
 
-namespace Nat
-
-theorem descFactorial_eq_prod_range (n : ℕ) : ∀ k, n.descFactorial k = ∏ i in range k, (n - i)
-  | 0 => rfl
-  | k + 1 => by rw [descFactorial, prod_range_succ, mul_comm, descFactorial_eq_prod_range n k]
-#align nat.desc_factorial_eq_prod_range Nat.descFactorial_eq_prod_range
-
-end Nat
-
 namespace Polynomial
 
 variable {R : Type _}
