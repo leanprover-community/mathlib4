@@ -143,7 +143,7 @@ theorem PseudoMetricSpace.ext {α : Type*} {m m' : PseudoMetricSpace α}
   congr
   · ext x y : 2
     rw [hed, hed']
-  · exact uniformSpace_eq (hU.trans hU'.symm)
+  · exact UniformSpace.ext (hU.trans hU'.symm)
   · ext : 2
     rw [← Filter.mem_sets, ← Filter.mem_sets, hB, hB']
 #align pseudo_metric_space.ext PseudoMetricSpace.ext
@@ -726,7 +726,7 @@ theorem isBounded_iff_nndist {s : Set α} :
 
 theorem toUniformSpace_eq :
     ‹PseudoMetricSpace α›.toUniformSpace = .ofDist dist dist_self dist_comm dist_triangle :=
-  uniformSpace_eq PseudoMetricSpace.uniformity_dist
+  UniformSpace.ext PseudoMetricSpace.uniformity_dist
 #align metric.to_uniform_space_eq Metric.toUniformSpace_eq
 
 theorem uniformity_basis_dist :

@@ -110,9 +110,10 @@ lemma isOpen_mk {p h₁ h₂ h₃} {s : Set α} : IsOpen[⟨p, h₁, h₂, h₃�
 #align is_open_mk isOpen_mk
 
 @[ext]
-theorem topologicalSpace_eq : ∀ {f g : TopologicalSpace α}, IsOpen[f] = IsOpen[g] → f = g
+protected theorem TopologicalSpace.ext :
+    ∀ {f g : TopologicalSpace α}, IsOpen[f] = IsOpen[g] → f = g
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
-#align topological_space_eq topologicalSpace_eq
+#align topological_space_eq TopologicalSpace.ext
 
 section
 
@@ -131,10 +132,10 @@ theorem isOpen_sUnion {s : Set (Set α)} (h : ∀ t ∈ s, IsOpen t) : IsOpen (�
 
 end
 
-theorem topologicalSpace_eq_iff {t t' : TopologicalSpace α} :
+protected theorem TopologicalSpace.ext_iff {t t' : TopologicalSpace α} :
     t = t' ↔ ∀ s, IsOpen[t] s ↔ IsOpen[t'] s :=
   ⟨fun h s => h ▸ Iff.rfl, fun h => by ext; exact h _⟩
-#align topological_space_eq_iff topologicalSpace_eq_iff
+#align topological_space_eq_iff TopologicalSpace.ext_iff
 
 theorem isOpen_fold {s : Set α} {t : TopologicalSpace α} : t.IsOpen s = IsOpen[t] s :=
   rfl
