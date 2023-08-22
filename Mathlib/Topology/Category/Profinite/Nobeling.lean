@@ -1245,8 +1245,9 @@ end Smaller
 
 section Limit
 
-theorem Products.limitOrdinal {o : Ordinal} (ho : o.IsLimit) (l : Products I) :
-    l.isGood (C.proj (ord I · < o)) ↔
+variable {o : Ordinal} (ho : o.IsLimit) (hsC : contained C o)
+
+theorem Products.limitOrdinal (l : Products I) : l.isGood (C.proj (ord I · < o)) ↔
     ∃ (o' : Ordinal), o' < o ∧ l.isGood (C.proj (ord I · < o')) := by
   refine ⟨fun h ↦ ?_, fun h ↦ by obtain ⟨o',⟨ho',hl⟩⟩ := h; exact isGood_mono C (le_of_lt ho') hl⟩
   use Finset.sup l.val.toFinset (fun a ↦ Order.succ (ord I a))
@@ -1263,8 +1264,7 @@ theorem Products.limitOrdinal {o : Ordinal} (ho : o.IsLimit) (l : Products I) :
   rwa [eval_πs_image' C (le_of_lt hslt) hlt, ← eval_πs' C (le_of_lt hslt) hlt,
     Submodule.apply_mem_span_image_iff_mem_span (injective_πs' C _)]
 
-theorem GoodProducts.union {o : Ordinal} (ho : o.IsLimit) (hsC : contained C o) :
-    range C = ⋃ (e : {o' // o' < o}), (smaller C e.val) := by
+theorem GoodProducts.union : range C = ⋃ (e : {o' // o' < o}), (smaller C e.val) := by
   ext p
   refine ⟨fun hp ↦ ?_, fun hp ↦ ?_⟩
   · simp only [smaller, range, Set.mem_iUnion, Set.mem_image, Set.mem_range, Subtype.exists]
@@ -1284,10 +1284,10 @@ theorem GoodProducts.union {o : Ordinal} (ho : o.IsLimit) (hsC : contained C o) 
 
 /-- The image of the `GoodProducts` in `C` is equivalent to the union of `smaller C o'` over all
     ordinals `o' < o`. -/
-def GoodProducts.range_equiv {o : Ordinal} (ho : o.IsLimit) (hsC : contained C o) :
-    range C ≃ ⋃ (e : {o' // o' < o}), (smaller C e.val) := Equiv.Set.ofEq (union C ho hsC)
+def GoodProducts.range_equiv : range C ≃ ⋃ (e : {o' // o' < o}), (smaller C e.val) :=
+  Equiv.Set.ofEq (union C ho hsC)
 
-theorem GoodProducts.range_equiv_factorization {o : Ordinal} (ho : o.IsLimit) (hsC : contained C o) :
+theorem GoodProducts.range_equiv_factorization :
     (fun (p : ⋃ (e : {o' // o' < o}), (smaller C e.val)) ↦ p.1) ∘ (range_equiv C ho hsC).toFun =
     (fun (p : range C) ↦ (p.1 : LocallyConstant C ℤ)) := rfl
 
@@ -1539,12 +1539,12 @@ section GoodProducts
 namespace GoodProducts
 
 /-- The `GoodProducts` in `C` that contain `o` (they necessarily start with `o`, see
-    `GoodProducts.head!_eq_o_of_startingWithMax`) -/
-def StartingWithMax : Set (Products I) := {l | l.isGood C ∧ term I ho ∈ l.val}
+    `GoodProducts.head!_eq_o_of_maxProducts`) -/
+def MaxProducts : Set (Products I) := {l | l.isGood C ∧ term I ho ∈ l.val}
 
-theorem union_succ : GoodProducts C = GoodProducts (C.proj (ord I · < o)) ∪ StartingWithMax C ho := by
+theorem union_succ : GoodProducts C = GoodProducts (C.proj (ord I · < o)) ∪ MaxProducts C ho := by
   ext l
-  dsimp [GoodProducts, StartingWithMax]
+  dsimp [GoodProducts, MaxProducts]
   simp only [Set.mem_union, Set.mem_setOf_eq]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · by_cases hh : term I ho ∈ l.val
@@ -1570,8 +1570,8 @@ theorem union_succ : GoodProducts C = GoodProducts (C.proj (ord I · < o)) ∪ S
     · exact hh.1
 
 /-- The inclusion map from the sum of `GoodProducts (C.proj (ord I · < o))` and
-    `(StartingWithMax C ho)` to `Products I`. -/
-def sum_to : (GoodProducts (C.proj (ord I · < o))) ⊕ (StartingWithMax C ho) → Products I :=
+    `(MaxProducts C ho)` to `Products I`. -/
+def sum_to : (GoodProducts (C.proj (ord I · < o))) ⊕ (MaxProducts C ho) → Products I :=
   Sum.elim Subtype.val Subtype.val
 
 theorem injective_sum_to : Function.Injective (sum_to C ho) := by
@@ -1582,22 +1582,22 @@ theorem injective_sum_to : Function.Injective (sum_to C ho) := by
   simp only [ord_term_aux, lt_self_iff_false] at ha'
 
 theorem sum_to_range :
-    Set.range (sum_to C ho) = GoodProducts (C.proj (ord I · < o)) ∪ StartingWithMax C ho := by
+    Set.range (sum_to C ho) = GoodProducts (C.proj (ord I · < o)) ∪ MaxProducts C ho := by
   have h : Set.range (sum_to C ho) = _ ∪ _ := Set.Sum.elim_range _ _; rw [h]; congr<;> ext l
   · exact ⟨fun ⟨m,hm⟩ ↦ by rw [← hm]; exact m.prop, fun hl ↦ ⟨⟨l,hl⟩, rfl⟩⟩
   · exact ⟨fun ⟨m,hm⟩ ↦ by rw [← hm]; exact m.prop, fun hl ↦ ⟨⟨l,hl⟩, rfl⟩⟩
 
 /-- The equivalence from the sum of `GoodProducts (C.proj (ord I · < o))` and
-    `(StartingWithMax C ho)` to `GoodProducts C`. -/
+    `(MaxProducts C ho)` to `GoodProducts C`. -/
 noncomputable
-def sum_equiv : GoodProducts (C.proj (ord I · < o)) ⊕ (StartingWithMax C ho) ≃ GoodProducts C :=
+def sum_equiv : GoodProducts (C.proj (ord I · < o)) ⊕ (MaxProducts C ho) ≃ GoodProducts C :=
   Equiv.trans (Equiv.trans (Equiv.ofInjective (sum_to C ho) (injective_sum_to C ho))
     (Equiv.Set.ofEq (sum_to_range C ho)))
     (Equiv.Set.ofEq (union_succ C hsC ho).symm)
 
 theorem sum_equiv_comp_eval_eq_elim : eval C ∘ (sum_equiv C hsC ho).toFun =
     (Sum.elim (fun (l : GoodProducts (C.proj (ord I · < o))) ↦ Products.eval C l.1)
-    (fun (l : StartingWithMax C ho) ↦ Products.eval C l.1)) := by
+    (fun (l : MaxProducts C ho) ↦ Products.eval C l.1)) := by
   ext ⟨_,_⟩ <;> [rfl; rfl]
 
 /-- Let
@@ -1624,7 +1624,7 @@ by `succ_exact` and `succ_mono`. The left square commutes by `GoodProducts.squa
       ι → ι ⊕ ι' ← ι'
 ```
 -/
-def SumEval : GoodProducts (C.proj (ord I · < o)) ⊕ StartingWithMax C ho →
+def SumEval : GoodProducts (C.proj (ord I · < o)) ⊕ MaxProducts C ho →
     LocallyConstant C ℤ :=
   Sum.elim (fun l ↦ l.1.eval C) (fun l ↦ l.1.eval C)
 
@@ -1636,7 +1636,7 @@ theorem linearIndependent_iff_sum :
 
 theorem span_sum : Set.range (eval C) = Set.range (Sum.elim
     (fun (l : GoodProducts (C.proj (ord I · < o))) ↦ Products.eval C l.1)
-    (fun (l : StartingWithMax C ho) ↦ Products.eval C l.1)) := by
+    (fun (l : MaxProducts C ho) ↦ Products.eval C l.1)) := by
   rw [← sum_equiv_comp_eval_eq_elim C hsC ho]
   simp only [Equiv.toFun_as_coe, EquivLike.range_comp]
 
@@ -1680,7 +1680,7 @@ theorem Products.max_eq_o_cons_tail' (l : Products I) (hl : l.val ≠ [])
   simp_rw [← max_eq_o_cons_tail ho l hl hlh]
   rfl
 
-theorem GoodProducts.head!_eq_o_of_startingWithMax (l : ↑(StartingWithMax C ho)) :
+theorem GoodProducts.head!_eq_o_of_maxProducts (l : ↑(MaxProducts C ho)) :
     l.val.val.head! = term I ho := by
   rw [eq_comm, ← ord_term ho]
   have hm := l.prop.2
@@ -1693,10 +1693,10 @@ theorem GoodProducts.head!_eq_o_of_startingWithMax (l : ↑(StartingWithMax C ho
     exact Products.rel_head!_of_mem hm
   rwa [ord_term_aux] at h
 
-theorem GoodProducts.max_eq_o_cons_tail (l : StartingWithMax C ho) :
+theorem GoodProducts.max_eq_o_cons_tail (l : MaxProducts C ho) :
     l.val.val = (term I ho) :: l.val.Tail.val :=
   Products.max_eq_o_cons_tail ho l.val (List.ne_nil_of_mem l.prop.2)
-    (head!_eq_o_of_startingWithMax _ hsC ho l)
+    (head!_eq_o_of_maxProducts _ hsC ho l)
 
 theorem Products.evalCons {l : List I} {a : I}
     (hla : (a::l).Chain' (·>·)) : Products.eval C ⟨a::l,hla⟩ =
@@ -1743,18 +1743,18 @@ theorem Products.max_eq_eval (l : Products I) (hl : l.val ≠ [])
 
 namespace GoodProducts
 
-theorem max_eq_eval (l : StartingWithMax C ho) :
+theorem max_eq_eval (l : MaxProducts C ho) :
     Linear_CC' C hsC ho (l.val.eval C) = l.val.Tail.eval (C' C ho) :=
   Products.max_eq_eval _ _ _ _ (List.ne_nil_of_mem l.prop.2)
-    (head!_eq_o_of_startingWithMax _ hsC ho l)
+    (head!_eq_o_of_maxProducts _ hsC ho l)
 
 theorem max_eq_eval_unapply :
-    (Linear_CC' C hsC ho) ∘ (fun (l : StartingWithMax C ho) ↦ Products.eval C l.val) =
+    (Linear_CC' C hsC ho) ∘ (fun (l : MaxProducts C ho) ↦ Products.eval C l.val) =
     (fun l ↦ l.val.Tail.eval (C' C ho)) := by
   ext1 l
   exact max_eq_eval _ _ _ _
 
-theorem chain'_cons_of_lt (l : StartingWithMax C ho)
+theorem chain'_cons_of_lt (l : MaxProducts C ho)
     (q : Products I) (hq : q < l.val.Tail) :
     List.Chain' (fun x x_1 ↦ x > x_1) (term I ho :: q.val) := by
   rw [List.chain'_iff_pairwise]
@@ -1769,8 +1769,8 @@ theorem chain'_cons_of_lt (l : StartingWithMax C ho)
     rw [max_eq_o_cons_tail C hsC ho l, List.chain'_iff_pairwise] at this
     exact List.rel_of_pairwise_cons this (List.head!_mem_self hM)
 
-theorem good_lt_startingWithMax (q : GoodProducts (C.proj (ord I · < o)))
-    (l : StartingWithMax C ho) : List.Lex (·<·) q.val.val l.val.val := by
+theorem good_lt_maxProducts (q : GoodProducts (C.proj (ord I · < o)))
+    (l : MaxProducts C ho) : List.Lex (·<·) q.val.val l.val.val := by
   by_cases h : q.val.val = []
   · rw [h, max_eq_o_cons_tail C hsC ho l]
     exact List.Lex.nil
@@ -1780,7 +1780,7 @@ theorem good_lt_startingWithMax (q : GoodProducts (C.proj (ord I · < o)))
     simp only [term, Ordinal.typein_enum]
     exact Products.prop_of_isGood C _ q.prop q.val.val.head! (List.head!_mem_self h)
 
-theorem maxTail_isGood (l : StartingWithMax C ho)
+theorem maxTail_isGood (l : MaxProducts C ho)
     (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.proj (ord I · < o))))) :
     l.val.Tail.isGood (C' C ho) := by
   intro h
@@ -1827,7 +1827,7 @@ theorem maxTail_isGood (l : StartingWithMax C ho)
     rw [Products.eval_πs C (Products.prop_of_isGood _ _ q.prop)]
     refine ⟨q.val, ⟨?_, rfl⟩⟩
     simp only [Products.lt_iff_lex_lt, Set.mem_setOf_eq]
-    exact good_lt_startingWithMax C hsC ho q l
+    exact good_lt_maxProducts C hsC ho q l
   · apply Submodule.finsupp_sum_mem
     intro q hq
     apply Submodule.smul_mem
@@ -1839,11 +1839,11 @@ theorem maxTail_isGood (l : StartingWithMax C ho)
     rw [max_eq_o_cons_tail C hsC ho l]
     exact List.Lex.cons ((Products.lt_iff_lex_lt q l.val.Tail).mp (hmmem hq))
 
-/-- Given `l : StartingWithMax C ho`, its `l.val.Tail` is a `GoodProducts (C' C ho)`. -/
+/-- Given `l : MaxProducts C ho`, its `Tail` is a `GoodProducts (C' C ho)`. -/
 noncomputable
 def MaxToGood
     (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.proj (ord I · < o))))) :
-    StartingWithMax C ho → GoodProducts (C' C ho) :=
+    MaxProducts C ho → GoodProducts (C' C ho) :=
   fun l ↦ ⟨l.val.Tail, maxTail_isGood C hC hsC ho l h₁⟩
 
 theorem maxToGood_injective
