@@ -37,17 +37,25 @@ variable (k : ℕ) [hk : Fact (4 * k + 1).Prime]
 def zagierSet : Set (ℕ × ℕ × ℕ) := {t | t.1 * t.1 + 4 * t.2.1 * t.2.2 = 4 * k + 1}
 
 lemma zagierSet_lower_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) : 0 < x ∧ 0 < y ∧ 0 < z := by
-  simp_rw [zagierSet, mem_setOf_eq] at h
-  refine' ⟨_, _, _⟩ <;> (by_contra q; push_neg at q; rw [le_zero_iff] at q; subst q; simp at h)
+  rw [zagierSet, mem_setOf_eq] at h
+  refine' ⟨_, _, _⟩
+  all_goals
+    by_contra q
+    rw [not_lt, nonpos_iff_eq_zero] at q
+    simp only [q, mul_zero, zero_mul, zero_add, add_zero] at h
   · apply_fun (· % 4) at h
     simp [mul_assoc, Nat.add_mod] at h
-  all_goals cases' (Nat.dvd_prime hk.out).1 (dvd_of_mul_left_eq _ h) with e e <;>
-    (subst e; simp at h; subst h; simp at hk; exact hk.out)
+  all_goals
+    cases' (Nat.dvd_prime hk.out).1 (dvd_of_mul_left_eq _ h) with e e
+    all_goals
+      simp only [e, self_eq_add_left, ne_eq, add_eq_zero, and_false, mul_eq_left₀] at h
+      simp only [h, zero_add] at hk
+      exact hk.out
 
 lemma zagierSet_upper_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) :
     x ≤ k + 1 ∧ y ≤ k ∧ z ≤ k := by
   obtain ⟨_, _, _⟩ := zagierSet_lower_bound k h
-  simp_rw [zagierSet, mem_setOf_eq] at h
+  rw [zagierSet, mem_setOf_eq] at h
   refine' ⟨_, _, _⟩ <;> nlinarith
 
 lemma zagierSet_subset : zagierSet k ⊆ Ioc 0 (k + 1) ×ˢ Ioc 0 k ×ˢ Ioc 0 k := by
@@ -70,6 +78,9 @@ variable {α : Type*} [Fintype α] [DecidableEq α] (f : Function.End α)
 
 noncomputable instance : Fintype (fixedPoints f) := Fintype.ofFinite _
 
+/-- The number of fixed points of an involution over a finite set and that set's cardinality
+have the same parity. This is the `p = 2` case of `card_modEq_card_fixedPoints` in
+`Mathlib.GroupTheory.PGroup`, but proved independently. -/
 theorem card_modEq_card_fixedPoints_of_sq (hf : f ^ 2 = 1) :
     Fintype.card α ≡ Fintype.card (fixedPoints f) [MOD 2] := by
   let σ : α ≃ α := ⟨f, f, congrFun hf, congrFun hf⟩
@@ -83,84 +94,98 @@ theorem card_modEq_card_fixedPoints_of_sq (hf : f ^ 2 = 1) :
 
 variable (k : ℕ) [hk : Fact (4 * k + 1).Prime]
 
-/-- The obvious involution `(x, y, z) ↦ (x, z, y)`. Its fixed points correspond to representations
-of `4 * k + 1` as a sum of two squares. -/
+/-- The obvious involution `(x, y, z) ↦ (x, z, y)`. -/
 def obvInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ => ⟨⟨x, z, y⟩, by
-  unfold zagierSet at h ⊢; simp_all; linarith [h]⟩
+  simp only [zagierSet, Set.mem_setOf_eq] at h ⊢
+  linarith [h]⟩
 
 theorem obvInvo_sq : obvInvo k ^ 2 = 1 := rfl
 
+/-- If `obvInvo k` has a fixed point, a representation of `4 * k + 1` as a sum of two squares
+can be extracted from it. -/
 theorem sq_add_sq_of_nonempty_fixedPoints (hn : (fixedPoints (obvInvo k)).Nonempty) :
     ∃ a b : ℕ, a ^ 2 + b ^ 2 = 4 * k + 1 := by
-  simp_rw [sq]
+  simp only [sq]
   obtain ⟨⟨⟨x, y, z⟩, he⟩, hf⟩ := hn
   have := mem_fixedPoints_iff.mp hf
-  unfold obvInvo at this; simp at this
-  unfold zagierSet at he; simp at he
+  simp only [obvInvo, Subtype.mk.injEq, Prod.mk.injEq, true_and] at this
+  simp only [zagierSet, Set.mem_setOf_eq] at he
   use x, (2 * y)
   rw [show 2 * y * (2 * y) = 4 * y * y by linarith, ← he, this.1]
 
-/-- The complicated involution, which is shown to have exactly one fixed point `(1, 1, k)`. -/
+/-- The complicated involution, defined piecewise according to how `x` compares with
+`y - z` and `2 * y`. -/
 def complexInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ =>
   ⟨if x + z < y then ⟨x + 2 * z, z, y - x - z⟩ else
    if 2 * y < x then ⟨x - 2 * y, x + z - y, y⟩ else
                      ⟨2 * y - x, y, x + z - y⟩, by
-  unfold zagierSet at h ⊢; simp at h
-  split_ifs with less more <;> simp
-  · rw [Nat.sub_sub]; zify [less.le] at h ⊢; linarith [h]
-  · push_neg at less; zify [less, more.le] at h ⊢; linarith [h]
-  · push_neg at less more; zify [less, more] at h ⊢; linarith [h]⟩
+  split_ifs with less more <;> simp only [zagierSet, Set.mem_setOf_eq] at h ⊢
+  · -- less: `x + z < y` (`x < y - z` as stated by Zagier)
+    rw [Nat.sub_sub]; zify [less.le] at h ⊢; linarith [h]
+  · -- more: `2 * y < x`
+    push_neg at less; zify [less, more.le] at h ⊢; linarith [h]
+  · -- middle: `x` is neither less than `y - z` or more than `2 * y`
+    push_neg at less more; zify [less, more] at h ⊢; linarith [h]⟩
 
+/-- `complexInvo k` is indeed an involution. -/
 theorem complexInvo_sq : complexInvo k ^ 2 = 1 := by
   change complexInvo k ∘ complexInvo k = id
   funext ⟨⟨x, y, z⟩, h⟩
   rw [comp_apply]
   obtain ⟨xb, _, _⟩ := zagierSet_lower_bound k h
-  conv_lhs => arg 2; tactic => unfold complexInvo; dsimp
-  split_ifs with less more <;> (unfold complexInvo; dsimp)
-  · simp [show ¬(x + 2 * z + (y - x - z) < z) by linarith [less], xb]
+  conv_lhs => arg 2; simp only [complexInvo]
+  split_ifs with less more <;> rw [complexInvo, Subtype.mk.injEq, id_eq]
+  · -- less
+    simp only [show ¬(x + 2 * z + (y - x - z) < z) by linarith [less], ite_false,
+      lt_add_iff_pos_left, xb, add_tsub_cancel_right, ite_true]
     rw [Nat.sub_sub, two_mul, ← tsub_add_eq_add_tsub (by linarith), ← add_assoc,
-      Nat.add_sub_cancel, add_comm (x + z), Nat.sub_add_cancel (less.le)]
-  · push_neg at less
-    simp [(show x - 2 * y + y < x + z - y by zify [more.le, less]; linarith)]
-    constructor
-    · rw [Nat.sub_add_cancel more.le]
-    · rw [Nat.sub_right_comm, Nat.sub_sub _ _ y, ← two_mul, add_comm, Nat.add_sub_assoc more.le,
-        Nat.add_sub_cancel]
-  · push_neg at less more
-    simp [(show ¬(2 * y - x + (x + z - y) < y) by push_neg; zify [less, more]; linarith),
-      (show ¬(2 * y < 2 * y - x) by push_neg; zify [more]; linarith)]
-    constructor
-    · rw [tsub_tsub_assoc (by rfl) more, tsub_self, zero_add]
-    · rw [← Nat.add_sub_assoc less (2 * y - x), ← add_assoc, Nat.sub_add_cancel more,
-        Nat.sub_sub _ _ y, ← two_mul, add_comm, Nat.add_sub_cancel]
+      Nat.add_sub_cancel, add_comm (x + z), Nat.sub_add_cancel less.le]
+  · -- more
+    push_neg at less
+    simp only [show x - 2 * y + y < x + z - y by zify [less, more.le]; linarith, ite_true]
+    rw [Nat.sub_add_cancel more.le, Nat.sub_right_comm, Nat.sub_sub _ _ y, ← two_mul, add_comm,
+      Nat.add_sub_assoc more.le, Nat.add_sub_cancel]
+  · -- middle
+    push_neg at less more
+    simp only [show ¬(2 * y - x + (x + z - y) < y) by zify [less, more]; linarith,
+      show ¬(2 * y < 2 * y - x) by zify [more]; linarith, ite_false]
+    rw [tsub_tsub_assoc (2 * y).le_refl more, tsub_self, zero_add,
+      ← Nat.add_sub_assoc less, ← add_assoc, Nat.sub_add_cancel more, Nat.sub_sub _ _ y,
+      ← two_mul, add_comm, Nat.add_sub_cancel]
 
-theorem unique_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (complexInvo k)) :
+/-- Any fixed point of `complexInvo k` must be `(1, 1, k)`. -/
+theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (complexInvo k)) :
     t.val = (1, 1, k) := by
-  rw [mem_fixedPoints_iff] at mem
-  unfold complexInvo at mem
   obtain ⟨⟨x, y, z⟩, h⟩ := t
   obtain ⟨xb, yb, zb⟩ := zagierSet_lower_bound k h
-  simp at mem
-  split_ifs at mem with less more <;> simp_all
-  · obtain ⟨_, _, _⟩ := mem; simp_all
-  · unfold zagierSet at h; simp at h
+  rw [mem_fixedPoints_iff, complexInvo, Subtype.mk.injEq] at mem
+  split_ifs at mem with less more <;>
+    -- less (completely handled by the pre-applied `simp_all only`)
+    simp_all only [not_lt, Prod.mk.injEq, add_right_eq_self, mul_eq_zero, false_or]
+  · -- more
+    obtain ⟨_, _, _⟩ := mem; simp_all
+  · -- middle (the one fixed point falls under this case)
+    simp only [zagierSet, Set.mem_setOf_eq] at h
     replace mem := mem.1
     rw [tsub_eq_iff_eq_add_of_le more, ← two_mul] at mem
     replace mem := (mul_left_cancel₀ two_ne_zero mem).symm
     subst mem
     rw [show x * x + 4 * x * z = x * (x + 4 * z) by linarith] at h
     cases' (Nat.dvd_prime hk.out).1 (dvd_of_mul_left_eq _ h) with e e
-    · rw [e, mul_one] at h; subst h; simp_all [show z = 0 by linarith [e]]
-    · rw [e, mul_left_eq_self₀] at h; simp_all; linarith [e]
+    · rw [e, mul_one] at h
+      simp_all [h, show z = 0 by linarith [e]]
+    · simp only [e, mul_left_eq_self₀, add_eq_zero, and_false, or_false] at h
+      simp only [h, true_and]
+      linarith [e]
 
-theorem fixedPoints_eq_singleton :
-    fixedPoints (complexInvo k) = {⟨(1, 1, k), (by unfold zagierSet; simp; linarith)⟩} := by
+/-- From `eq_of_mem_fixedPoints`, deduce that `complexInvo k` has exactly one fixed point. -/
+theorem fixedPoints_eq_singleton : fixedPoints (complexInvo k) =
+    {⟨(1, 1, k), (by simp only [zagierSet, Set.mem_setOf_eq]; linarith)⟩} := by
   rw [Set.eq_singleton_iff_unique_mem, mem_fixedPoints_iff]
   constructor
-  · unfold complexInvo; simp
+  · simp [complexInvo]
   · intro t mem
-    replace mem := unique_of_mem_fixedPoints k mem
+    replace mem := eq_of_mem_fixedPoints k mem
     congr!
 
 theorem exists_sq_add_sq : ∃ a b : ℕ, a ^ 2 + b ^ 2 = 4 * k + 1 := by
