@@ -645,7 +645,7 @@ theorem nodalWeight_ne_zero (hvs : Set.InjOn v s) (hi : i ∈ s) : nodalWeight s
 
 end NodalWeight
 
-section LagrangeInterpolant
+section LagrangeBarycentric
 
 variable {F : Type*} [Field F] {ι : Type*} [DecidableEq ι]
 variable {s : Finset ι} {v : ι → F} (r : ι → F) {i : ι} {x : F}
@@ -698,6 +698,6 @@ theorem eval_interpolate_not_at_node' (hvs : Set.InjOn v s) (hs : s.Nonempty)
   simp only [mul_div_mul_left _ _ (eval_nodal_not_at_node hx), Pi.one_apply, mul_one]
 #align lagrange.eval_interpolate_not_at_node' Lagrange.eval_interpolate_not_at_node'
 
-end LagrangeInterpolant
+end LagrangeBarycentric
 
 end Lagrange
