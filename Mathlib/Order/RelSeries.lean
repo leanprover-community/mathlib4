@@ -668,7 +668,7 @@ abbrev LTSeries := RelSeries ((. < .) : Rel α α)
 /-- A preordered type is finite dimensional, if its preorder is a finite dimensional relation -/
 class FiniteDimensionalType extends Rel.FiniteDimensional ((. < .) : α → α → Prop)
 /-- A preordered type is infinite dimensional, if its preorder is a infinite dimensional relation -/
-class InfiniteDimensionalType extends Rel.InfiniteDimensional ((. < .) : α → α → Prop)
+class InfiniteDimensionalType extends Rel.InfiniteDimensional ((. < .) : α → α → Prop) : Prop
 
 /-- if a preordered set is finite dimensional, then it has a longest series of `(. < .)`. -/
 noncomputable def longestLTSeries [FiniteDimensionalType α] : LTSeries α :=

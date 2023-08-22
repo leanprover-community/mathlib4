@@ -125,7 +125,9 @@ lemma eq_top_of_infiniteDimensionalType [InfiniteDimensionalType α] :
 lemma eq_len_of_finiteDimensionalType [FiniteDimensionalType α] :
   krullDim α = (longestLTSeries α).length := krullDimOfRel.eq_len_of_finiteDimensional _
 
-lemma infiniteDimensional_of_strictMono
+/-- If `f : α → β` is a strictly monotonic function and `α` is an infinite dimensional type then so
+  is `β`. -/
+def infiniteDimensional_of_strictMono
     (f : α → β) (hf : StrictMono f) [InfiniteDimensionalType α] :
   InfiniteDimensionalType β where
     infinite := λ n ↦ by
