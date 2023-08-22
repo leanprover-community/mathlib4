@@ -4,6 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.MonoidAlgebra.Support
+import Mathlib.Algebra.Group.UniqueProds
+import Mathlib.Data.Finsupp.Lex
+import Mathlib.Order.Extension.Linear
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 #align_import algebra.monoid_algebra.no_zero_divisors from "leanprover-community/mathlib"@"3e067975886cf5801e597925328c335609511b1a"
 
@@ -75,6 +79,15 @@ namespace AddMonoidAlgebra
 
 open Finsupp
 
+instance {L σ : Type*} [LinearOrder σ] [LinearOrder L] [AddGroup L]
+    [ContravariantClass L L (· + ·) (· ≤ ·)]
+    [CovariantClass L L (Function.swap (· + ·)) (· ≤ ·)] :
+    UniqueSums (σ →₀ L) := show UniqueSums ((Lex (σ →₀ L))) from
+  { uniqueAdd_of_nonempty := fun {A B} A0 B0 => by
+      refine ⟨_, A.max'_mem A0, _, B.max'_mem B0, ?_⟩
+      intros a b aA bB
+      exact (add_eq_add_iff_eq_and_eq (A.le_max' a aA) (B.le_max' b bB)).mp }
+
 variable {R A : Type*} [Semiring R]
 
 /-- The coefficient of a monomial in a product `f * g` that can be reached in at most one way
@@ -93,6 +106,47 @@ theorem mul_apply_add_eq_mul_of_forall_ne [Add A] {f g : AddMonoidAlgebra R A} {
         · simp only [not_mem_support_iff.mp af, zero_mul, ite_self]
       · exact fun bf0 => by simp [not_mem_support_iff.mp bf0]
 #align add_monoid_algebra.mul_apply_add_eq_mul_of_forall_ne AddMonoidAlgebra.mul_apply_add_eq_mul_of_forall_ne
+
+instance {A : Type*} [NoZeroDivisors R] [AddMonoid A] [UniqueSums A] :
+    NoZeroDivisors (AddMonoidAlgebra R A) where
+  eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} c => by
+    rcases eq_or_ne a 0 with (rfl | ha)
+    · simp
+    rcases eq_or_ne b 0 with (rfl | hb)
+    · simp
+    contrapose! c
+    obtain ⟨da, a0, db, b0, h⟩ := UniqueSums.uniqueAdd_of_nonempty
+      (support_nonempty_iff.mpr ha) (support_nonempty_iff.mpr hb)
+    apply support_nonempty_iff.mp
+    apply Set.nonempty_of_mem (x := da + db)
+    apply mem_support_iff.mpr
+    convert_to a da * b db ≠ 0
+    · rw [AddMonoidAlgebra.mul_apply_add_eq_mul_of_forall_ne]
+      intros m n ma nb H
+      contrapose! H
+      apply h ma nb H
+    · apply mul_eq_zero.not.mpr ?_
+      simp [not_or, mem_support_iff.mp a0, mem_support_iff.mp b0]
+
+/-- The proof goes via the equivalence `R ≃ₗ[ℚ] (Basis.ofVectorSpaceIndex ℚ R) →₀ ℚ`,
+i.e. choosing a basis.
+Once we have a basis, we use the Lexicographic order on the coordinates and all the instances
+that `ℚ` already has.
+-/
+instance {R : Type*} [AddCommGroup R] [Module ℚ R] : UniqueSums R :=
+-- We first setup the relevant instances on (Basis.ofVectorSpaceIndex ℚ R) →₀ ℚ
+-- Endow it with the "trivial" PartialOrder `(· = ·)`
+let _ : PartialOrder (Basis.ofVectorSpaceIndex ℚ R) :=
+{ le := (· = ·)
+  le_refl := fun a ↦ rfl
+  le_trans := fun _ _ _ => Eq.trans
+  le_antisymm := fun a b ab _ => ab }
+-- Extend arbitrarily the trivial order to a `LinearOrder`
+let _ : LinearOrder ((Basis.ofVectorSpaceIndex ℚ R)) :=
+  show LinearOrder (LinearExtension (Basis.ofVectorSpaceIndex ℚ R)) from inferInstance
+-- `r` is the equivalence of `R` with its "coordinates"
+let r := (Basis.ofVectorSpace ℚ R).repr
+UniqueSums.addHom_image_of_injective r r.injective inferInstance
 
 section LeftOrRightOrderability
 
