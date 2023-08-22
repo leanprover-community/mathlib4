@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Triangulated.Rotate
+import Mathlib.Algebra.GroupPower.NegOnePow
 
 /-!
 # The shift on the category of triangles
@@ -38,9 +39,8 @@ to the triangle obtained by shifting the objects by `n` in `C` and by
 multiplying the three morphisms by `(-1)^n`. -/
 @[simps]
 noncomputable def Triangle.shiftFunctor (n : ℤ) : Triangle C ⥤ Triangle C where
-  obj T := Triangle.mk (((-1 : Units ℤ) ^ n : ℤ) • T.mor₁⟦n⟧')
-    (((-1 : Units ℤ) ^ n : ℤ) • T.mor₂⟦n⟧')
-    (((-1 : Units ℤ) ^ n : ℤ) • T.mor₃⟦n⟧' ≫ (shiftFunctorComm C 1 n).hom.app T.obj₁)
+  obj T := Triangle.mk (n.negOnePow • T.mor₁⟦n⟧') (n.negOnePow • T.mor₂⟦n⟧')
+    (n.negOnePow • T.mor₃⟦n⟧' ≫ (shiftFunctorComm C 1 n).hom.app T.obj₁)
   map f :=
     { hom₁ := f.hom₁⟦n⟧'
       hom₂ := f.hom₂⟦n⟧'
@@ -66,7 +66,7 @@ noncomputable def Triangle.shiftFunctorZero : Triangle.shiftFunctor C 0 ≅ 𝟭
       ((CategoryTheory.shiftFunctorZero C ℤ).app _) ((CategoryTheory.shiftFunctorZero C ℤ).app _)
       (by aesop_cat) (by aesop_cat) (by
         dsimp
-        simp only [zpow_zero, Units.val_one, one_zsmul, assoc, shiftFunctorComm_zero_hom_app,
+        simp only [one_zsmul, assoc, shiftFunctorComm_zero_hom_app,
           ← Functor.map_comp, Iso.inv_hom_id_app, Functor.id_obj, Functor.map_id,
           comp_id, NatTrans.naturality, Functor.id_map]))
     (by aesop_cat)
@@ -86,19 +86,19 @@ noncomputable def Triangle.shiftFunctorAdd' (a b n : ℤ) (h : a + b = n) :
         subst h
         dsimp
         rw [zsmul_comp, NatTrans.naturality, comp_zsmul, Functor.comp_map, Functor.map_zsmul,
-          comp_zsmul, smul_smul, Units.coe_neg_one_zpow_add, mul_comm])
+          comp_zsmul, smul_smul, Int.negOnePow_add, mul_comm])
       (by
         subst h
         dsimp
         rw [zsmul_comp, NatTrans.naturality, comp_zsmul, Functor.comp_map, Functor.map_zsmul,
-          comp_zsmul, smul_smul, Units.coe_neg_one_zpow_add, mul_comm])
+          comp_zsmul, smul_smul, Int.negOnePow_add, mul_comm])
       (by
         subst h
         dsimp
         rw [zsmul_comp, comp_zsmul, Functor.map_zsmul, zsmul_comp, comp_zsmul, smul_smul,
           assoc, Functor.map_comp, assoc]
         erw [← NatTrans.naturality_assoc]
-        simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, Units.coe_neg_one_zpow_add,
+        simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, Int.negOnePow_add,
           shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app, add_comm a]))
     (by aesop_cat)
 
