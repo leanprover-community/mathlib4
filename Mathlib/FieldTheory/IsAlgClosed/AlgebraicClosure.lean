@@ -410,10 +410,7 @@ instance inhabited : Inhabited (AlgebraicClosure k) :=
 instance {S : Type*} [DistribSMul S k] [IsScalarTower S k k] : SMul S (AlgebraicClosure k) :=
   Submodule.Quotient.instSMul' _
 
-instance algebra : Algebra k (AlgebraicClosure k) :=
-  Ideal.Quotient.algebra _
-
-instance algebra' {R : Type*} [CommSemiring R] [Algebra R k] : Algebra R (AlgebraicClosure k) :=
+instance instAlgebra {R : Type*} [CommSemiring R] [Algebra R k] : Algebra R (AlgebraicClosure k) :=
   Ideal.Quotient.algebra _
 
 instance {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [Algebra S k] [Algebra R k]
