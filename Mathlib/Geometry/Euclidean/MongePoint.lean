@@ -63,7 +63,7 @@ namespace Simplex
 
 open Finset AffineSubspace EuclideanGeometry PointsWithCircumcenterIndex
 
-variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- The Monge point of a simplex (in 2 or more dimensions) is a
@@ -283,7 +283,7 @@ theorem mongePoint_mem_mongePlane {n : ℕ} (s : Simplex ℝ P (n + 2)) {i₁ i�
   refine' ⟨_, s.mongePoint_mem_affineSpan⟩
   intro v hv
   rcases Submodule.mem_span_singleton.mp hv with ⟨r, rfl⟩
-  rw [inner_smul_right, s.inner_mongePoint_vsub_face_centroid_vsub, MulZeroClass.mul_zero]
+  rw [inner_smul_right, s.inner_mongePoint_vsub_face_centroid_vsub, mul_zero]
 #align affine.simplex.monge_point_mem_monge_plane Affine.Simplex.mongePoint_mem_mongePlane
 
 /-- The direction of a Monge plane. -/
@@ -431,7 +431,7 @@ namespace Triangle
 
 open EuclideanGeometry Finset Simplex AffineSubspace FiniteDimensional
 
-variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- The orthocenter of a triangle is the intersection of its
@@ -636,7 +636,7 @@ namespace EuclideanGeometry
 
 open Affine AffineSubspace FiniteDimensional
 
-variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- Four points form an orthocentric system if they consist of the

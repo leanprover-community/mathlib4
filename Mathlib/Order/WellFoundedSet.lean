@@ -47,7 +47,7 @@ Prove that `s` is partial well ordered iff it has no infinite descending chain o
 -/
 
 
-variable {ι α β γ : Type _} {π : ι → Type _}
+variable {ι α β γ : Type*} {π : ι → Type*}
 
 namespace Set
 
@@ -782,8 +782,7 @@ theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsRefl
   have hnil : ∀ n, f n ≠ List.nil := fun n con =>
     hf1.2 n n.succ n.lt_succ_self (con.symm ▸ List.SublistForall₂.nil)
   have : ∀ n, (f n).headI ∈ s
-  · simp only [Set.range_subset_iff, Function.comp_apply]
-    exact fun n => hf1.1 n _ (List.head!_mem_self (hnil n))
+  · exact fun n => hf1.1 n _ (List.head!_mem_self (hnil n))
   obtain ⟨g, hg⟩ := h.exists_monotone_subseq (fun n => (f n).headI) this
   have hf' :=
     hf2 (g 0) (fun n => if n < g 0 then f n else List.tail (f (g (n - g 0))))
@@ -823,7 +822,7 @@ This includes the classical case of Dickson's lemma that `ℕ ^ n` is a well par
 Some generalizations would be possible based on this proof, to include cases where the target is
 partially well ordered, and also to consider the case of `Set.PartiallyWellOrderedOn` instead of
 `Set.IsPwo`. -/
-theorem Pi.isPwo {α : ι → Type _} [∀ i, LinearOrder (α i)] [∀ i, IsWellOrder (α i) (· < ·)]
+theorem Pi.isPwo {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellOrder (α i) (· < ·)]
     [Finite ι] (s : Set (∀ i, α i)) : s.IsPwo := by
   cases nonempty_fintype ι
   suffices ∀ (s : Finset ι) (f : ℕ → ∀ s, α s),

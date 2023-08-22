@@ -99,9 +99,9 @@ Either of these will later be shown to be equivalent to the weak convergence of 
 of measures.
 -/
 
-variable {Ω : Type _} [MeasurableSpace Ω]
+variable {Ω : Type*} [MeasurableSpace Ω]
 
-theorem le_measure_compl_liminf_of_limsup_measure_le {ι : Type _} {L : Filter ι} {μ : Measure Ω}
+theorem le_measure_compl_liminf_of_limsup_measure_le {ι : Type*} {L : Filter ι} {μ : Measure Ω}
     {μs : ι → Measure Ω} [IsProbabilityMeasure μ] [∀ i, IsProbabilityMeasure (μs i)] {E : Set Ω}
     (E_mble : MeasurableSet E) (h : (L.limsup fun i => μs i E) ≤ μ E) :
     μ Eᶜ ≤ L.liminf fun i => μs i Eᶜ := by
@@ -122,14 +122,14 @@ theorem le_measure_compl_liminf_of_limsup_measure_le {ι : Type _} {L : Filter �
   exact antitone_const_tsub h
 #align measure_theory.le_measure_compl_liminf_of_limsup_measure_le MeasureTheory.le_measure_compl_liminf_of_limsup_measure_le
 
-theorem le_measure_liminf_of_limsup_measure_compl_le {ι : Type _} {L : Filter ι} {μ : Measure Ω}
+theorem le_measure_liminf_of_limsup_measure_compl_le {ι : Type*} {L : Filter ι} {μ : Measure Ω}
     {μs : ι → Measure Ω} [IsProbabilityMeasure μ] [∀ i, IsProbabilityMeasure (μs i)] {E : Set Ω}
     (E_mble : MeasurableSet E) (h : (L.limsup fun i => μs i Eᶜ) ≤ μ Eᶜ) :
     μ E ≤ L.liminf fun i => μs i E :=
   compl_compl E ▸ le_measure_compl_liminf_of_limsup_measure_le (MeasurableSet.compl E_mble) h
 #align measure_theory.le_measure_liminf_of_limsup_measure_compl_le MeasureTheory.le_measure_liminf_of_limsup_measure_compl_le
 
-theorem limsup_measure_compl_le_of_le_liminf_measure {ι : Type _} {L : Filter ι} {μ : Measure Ω}
+theorem limsup_measure_compl_le_of_le_liminf_measure {ι : Type*} {L : Filter ι} {μ : Measure Ω}
     {μs : ι → Measure Ω} [IsProbabilityMeasure μ] [∀ i, IsProbabilityMeasure (μs i)] {E : Set Ω}
     (E_mble : MeasurableSet E) (h : μ E ≤ L.liminf fun i => μs i E) :
     (L.limsup fun i => μs i Eᶜ) ≤ μ Eᶜ := by
@@ -150,7 +150,7 @@ theorem limsup_measure_compl_le_of_le_liminf_measure {ι : Type _} {L : Filter �
   exact antitone_const_tsub h
 #align measure_theory.limsup_measure_compl_le_of_le_liminf_measure MeasureTheory.limsup_measure_compl_le_of_le_liminf_measure
 
-theorem limsup_measure_le_of_le_liminf_measure_compl {ι : Type _} {L : Filter ι} {μ : Measure Ω}
+theorem limsup_measure_le_of_le_liminf_measure_compl {ι : Type*} {L : Filter ι} {μ : Measure Ω}
     {μs : ι → Measure Ω} [IsProbabilityMeasure μ] [∀ i, IsProbabilityMeasure (μs i)] {E : Set Ω}
     (E_mble : MeasurableSet E) (h : μ Eᶜ ≤ L.liminf fun i => μs i Eᶜ) :
     (L.limsup fun i => μs i E) ≤ μ E :=
@@ -168,7 +168,7 @@ under a candidate limit measure.
 (O) The liminf of the measures of any open set is at least the measure of the open set
 under a candidate limit measure.
 -/
-theorem limsup_measure_closed_le_iff_liminf_measure_open_ge {ι : Type _} {L : Filter ι}
+theorem limsup_measure_closed_le_iff_liminf_measure_open_ge {ι : Type*} {L : Filter ι}
     {μ : Measure Ω} {μs : ι → Measure Ω} [IsProbabilityMeasure μ]
     [∀ i, IsProbabilityMeasure (μs i)] :
     (∀ F, IsClosed F → (L.limsup fun i => μs i F) ≤ μ F) ↔
@@ -202,9 +202,9 @@ implies that
 -/
 
 
-variable {Ω : Type _} [MeasurableSpace Ω]
+variable {Ω : Type*} [MeasurableSpace Ω]
 
-theorem tendsto_measure_of_le_liminf_measure_of_limsup_measure_le {ι : Type _} {L : Filter ι}
+theorem tendsto_measure_of_le_liminf_measure_of_limsup_measure_le {ι : Type*} {L : Filter ι}
     {μ : Measure Ω} {μs : ι → Measure Ω} {E₀ E E₁ : Set Ω} (E₀_subset : E₀ ⊆ E) (subset_E₁ : E ⊆ E₁)
     (nulldiff : μ (E₁ \ E₀) = 0) (h_E₀ : μ E₀ ≤ L.liminf fun i => μs i E₀)
     (h_E₁ : (L.limsup fun i => μs i E₁) ≤ μ E₁) : L.Tendsto (fun i => μs i E) (𝓝 (μ E)) := by
@@ -237,7 +237,7 @@ least the measure of the open set under a candidate limit measure, then for any 
 boundary carries no probability mass under the candidate limit measure, then its measures under the
 sequence converge to its measure under the candidate limit measure.
 -/
-theorem tendsto_measure_of_null_frontier {ι : Type _} {L : Filter ι} {μ : Measure Ω}
+theorem tendsto_measure_of_null_frontier {ι : Type*} {L : Filter ι} {μ : Measure Ω}
     {μs : ι → Measure Ω} [IsProbabilityMeasure μ] [∀ i, IsProbabilityMeasure (μs i)]
     (h_opens : ∀ G, IsOpen G → μ G ≤ L.liminf fun i => μs i G) {E : Set Ω}
     (E_nullbdry : μ (frontier E) = 0) : L.Tendsto (fun i => μs i E) (𝓝 (μ E)) :=
@@ -266,7 +266,7 @@ of `E` is the measure of `E` under the limit measure.
 -/
 
 
-variable {Ω : Type _} [MeasurableSpace Ω]
+variable {Ω : Type*} [MeasurableSpace Ω]
 
 /-- If bounded continuous functions tend to the indicator of a measurable set and are
 uniformly bounded, then their integrals against a finite measure tend to the measure of the set.
@@ -275,7 +275,7 @@ This formulation assumes:
  * the limit is in the almost everywhere sense;
  * boundedness holds almost everywhere.
 -/
-theorem measure_of_cont_bdd_of_tendsto_filter_indicator {ι : Type _} {L : Filter ι}
+theorem measure_of_cont_bdd_of_tendsto_filter_indicator {ι : Type*} {L : Filter ι}
     [L.IsCountablyGenerated] [TopologicalSpace Ω] [OpensMeasurableSpace Ω] (μ : Measure Ω)
     [IsFiniteMeasure μ] {c : ℝ≥0} {E : Set Ω} (E_mble : MeasurableSet E) (fs : ι → Ω →ᵇ ℝ≥0)
     (fs_bdd : ∀ᶠ i in L, ∀ᵐ ω : Ω ∂μ, fs i ω ≤ c)
@@ -313,7 +313,7 @@ theorem measure_of_cont_bdd_of_tendsto_indicator [TopologicalSpace Ω] [OpensMea
 /-- The integrals of thickened indicators of a closed set against a finite measure tend to the
 measure of the closed set if the thickening radii tend to zero.
 -/
-theorem tendsto_lintegral_thickenedIndicator_of_isClosed {Ω : Type _} [MeasurableSpace Ω]
+theorem tendsto_lintegral_thickenedIndicator_of_isClosed {Ω : Type*} [MeasurableSpace Ω]
     [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] (μ : Measure Ω) [IsFiniteMeasure μ] {F : Set Ω}
     (F_closed : IsClosed F) {δs : ℕ → ℝ} (δs_pos : ∀ n, 0 < δs n)
     (δs_lim : Tendsto δs atTop (𝓝 0)) :
@@ -329,7 +329,7 @@ theorem tendsto_lintegral_thickenedIndicator_of_isClosed {Ω : Type _} [Measurab
 Weak convergence of finite measures implies that the limsup of the measures of any closed set is
 at most the measure of the closed set under the limit measure.
 -/
-theorem FiniteMeasure.limsup_measure_closed_le_of_tendsto {Ω ι : Type _} {L : Filter ι}
+theorem FiniteMeasure.limsup_measure_closed_le_of_tendsto {Ω ι : Type*} {L : Filter ι}
     [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] {μ : FiniteMeasure Ω}
     {μs : ι → FiniteMeasure Ω} (μs_lim : Tendsto μs L (𝓝 μ)) {F : Set Ω} (F_closed : IsClosed F) :
     (L.limsup fun i => (μs i : Measure Ω) F) ≤ (μ : Measure Ω) F := by
@@ -368,7 +368,7 @@ theorem FiniteMeasure.limsup_measure_closed_le_of_tendsto {Ω ι : Type _} {L : 
 Weak convergence of probability measures implies that the limsup of the measures of any closed
 set is at most the measure of the closed set under the limit probability measure.
 -/
-theorem ProbabilityMeasure.limsup_measure_closed_le_of_tendsto {Ω ι : Type _} {L : Filter ι}
+theorem ProbabilityMeasure.limsup_measure_closed_le_of_tendsto {Ω ι : Type*} {L : Filter ι}
     [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] {μ : ProbabilityMeasure Ω}
     {μs : ι → ProbabilityMeasure Ω} (μs_lim : Tendsto μs L (𝓝 μ)) {F : Set Ω}
     (F_closed : IsClosed F) : (L.limsup fun i => (μs i : Measure Ω) F) ≤ (μ : Measure Ω) F := by
@@ -380,7 +380,7 @@ theorem ProbabilityMeasure.limsup_measure_closed_le_of_tendsto {Ω ι : Type _} 
 Weak convergence of probability measures implies that the liminf of the measures of any open set
 is at least the measure of the open set under the limit probability measure.
 -/
-theorem ProbabilityMeasure.le_liminf_measure_open_of_tendsto {Ω ι : Type _} {L : Filter ι}
+theorem ProbabilityMeasure.le_liminf_measure_open_of_tendsto {Ω ι : Type*} {L : Filter ι}
     [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] {μ : ProbabilityMeasure Ω}
     {μs : ι → ProbabilityMeasure Ω} (μs_lim : Tendsto μs L (𝓝 μ)) {G : Set Ω} (G_open : IsOpen G) :
     (μ : Measure Ω) G ≤ L.liminf fun i => (μs i : Measure Ω) G :=
@@ -390,7 +390,7 @@ theorem ProbabilityMeasure.le_liminf_measure_open_of_tendsto {Ω ι : Type _} {L
     (h_closeds _ (isClosed_compl_iff.mpr G_open))
 #align measure_theory.probability_measure.le_liminf_measure_open_of_tendsto MeasureTheory.ProbabilityMeasure.le_liminf_measure_open_of_tendsto
 
-theorem ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto' {Ω ι : Type _}
+theorem ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto' {Ω ι : Type*}
     {L : Filter ι} [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω]
     {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω} (μs_lim : Tendsto μs L (𝓝 μ))
     {E : Set Ω} (E_nullbdry : (μ : Measure Ω) (frontier E) = 0) :
@@ -408,7 +408,7 @@ equals the measure of the set under the limit probability measure.
 A version with coercions to ordinary `ℝ≥0∞`-valued measures is
 `MeasureTheory.ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto'`.
 -/
-theorem ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto {Ω ι : Type _} {L : Filter ι}
+theorem ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto {Ω ι : Type*} {L : Filter ι}
     [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] {μ : ProbabilityMeasure Ω}
     {μs : ι → ProbabilityMeasure Ω} (μs_lim : Tendsto μs L (𝓝 μ)) {E : Set Ω}
     (E_nullbdry : μ (frontier E) = 0) : Tendsto (fun i => μs i E) L (𝓝 (μ E)) := by
@@ -429,7 +429,7 @@ TODO: The proof of the implication is not yet here. Add it.
 -/
 
 
-variable {Ω : Type _} [PseudoEMetricSpace Ω] [MeasurableSpace Ω] [OpensMeasurableSpace Ω]
+variable {Ω : Type*} [PseudoEMetricSpace Ω] [MeasurableSpace Ω] [OpensMeasurableSpace Ω]
 
 theorem exists_null_frontier_thickening (μ : Measure Ω) [SigmaFinite μ] (s : Set Ω) {a b : ℝ}
     (hab : a < b) : ∃ r ∈ Ioo a b, μ (frontier (Metric.thickening r s)) = 0 := by
