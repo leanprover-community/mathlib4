@@ -326,7 +326,6 @@ theorem vecAlt0_vecAppend (v : Fin n → α) : vecAlt0 rfl (vecAppend rfl v v) =
   simp_rw [Function.comp, bit0, vecAlt0, vecAppend_eq_ite]
   split_ifs with h <;> congr
   · rw [Fin.val_mk] at h
-    simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk]
     exact (Nat.mod_eq_of_lt h).symm
   · rw [Fin.val_mk, not_lt] at h
     simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk, Nat.mod_eq_sub_mod h]
@@ -344,9 +343,8 @@ theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) : vecAlt1 rfl (vecAppend rfl 
     simp only [Nat.zero_eq, zero_add, Nat.lt_one_iff] at hi; subst i; rfl
   | succ n =>
     split_ifs with h <;> simp_rw [bit1, bit0] <;> congr
-    · simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk]
-      rw [Fin.val_mk] at h
-      erw [Nat.mod_eq_of_lt (Nat.lt_of_succ_lt h)]
+    · rw [Fin.val_mk] at h
+      rw [Nat.mod_eq_of_lt (Nat.lt_of_succ_lt h)]
       erw [Nat.mod_eq_of_lt h]
     · rw [Fin.val_mk, not_lt] at h
       simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk, Nat.mod_add_mod, Fin.val_one,

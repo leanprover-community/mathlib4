@@ -1118,7 +1118,7 @@ theorem mem_div_iff_of_nonzero {I J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) {
 
 theorem mul_one_div_le_one {I : FractionalIdeal R₁⁰ K} : I * (1 / I) ≤ 1 := by
   by_cases hI : I = 0
-  · rw [hI, div_zero, MulZeroClass.mul_zero]
+  · rw [hI, div_zero, mul_zero]
     exact zero_le 1
   · rw [← coe_le_coe, coe_mul, coe_div hI, coe_one]
     apply Submodule.mul_one_div_le_one
@@ -1127,7 +1127,7 @@ theorem mul_one_div_le_one {I : FractionalIdeal R₁⁰ K} : I * (1 / I) ≤ 1 :
 theorem le_self_mul_one_div {I : FractionalIdeal R₁⁰ K} (hI : I ≤ (1 : FractionalIdeal R₁⁰ K)) :
     I ≤ I * (1 / I) := by
   by_cases hI_nz : I = 0
-  · rw [hI_nz, div_zero, MulZeroClass.mul_zero]
+  · rw [hI_nz, div_zero, mul_zero]
   · rw [← coe_le_coe, coe_mul, coe_div hI_nz, coe_one]
     rw [← coe_le_coe, coe_one] at hI
     exact Submodule.le_self_mul_one_div hI
@@ -1469,7 +1469,7 @@ theorem div_spanSingleton (J : FractionalIdeal R₁⁰ K) (d : K) :
     J / spanSingleton R₁⁰ d = spanSingleton R₁⁰ d⁻¹ * J := by
   rw [← one_div_spanSingleton]
   by_cases hd : d = 0
-  · simp only [hd, spanSingleton_zero, div_zero, MulZeroClass.zero_mul]
+  · simp only [hd, spanSingleton_zero, div_zero, zero_mul]
   have h_spand : spanSingleton R₁⁰ d ≠ 0 := mt spanSingleton_eq_zero_iff.mp hd
   apply le_antisymm
   · intro x hx
@@ -1574,7 +1574,7 @@ theorem isNoetherian_spanSingleton_inv_to_map_mul (x : R₁) {I : FractionalIdea
     (hI : IsNoetherian R₁ I) :
     IsNoetherian R₁ (spanSingleton R₁⁰ (algebraMap R₁ K x)⁻¹ * I : FractionalIdeal R₁⁰ K) := by
   by_cases hx : x = 0
-  · rw [hx, RingHom.map_zero, inv_zero, spanSingleton_zero, MulZeroClass.zero_mul]
+  · rw [hx, RingHom.map_zero, inv_zero, spanSingleton_zero, zero_mul]
     exact isNoetherian_zero
   have h_gx : algebraMap R₁ K x ≠ 0 :=
     mt ((injective_iff_map_eq_zero (algebraMap R₁ K)).mp (IsFractionRing.injective _ _) x) hx

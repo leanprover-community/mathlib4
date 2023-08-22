@@ -90,7 +90,7 @@ theorem smul_diff' (h : H) :
   letI := H.fintypeQuotientOfFiniteIndex
   rw [diff, diff, index_eq_card, ←Finset.card_univ, ←Finset.prod_const, ←Finset.prod_mul_distrib]
   refine' Finset.prod_congr rfl fun q _ => _
-  simp_rw [Subtype.ext_iff, MonoidHom.id_apply, coe_mul, coe_mk, mul_assoc, mul_right_inj]
+  simp_rw [Subtype.ext_iff, MonoidHom.id_apply, coe_mul, mul_assoc, mul_right_inj]
   rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, unop_op, mul_left_inj, ←Subtype.ext_iff,
     Equiv.apply_eq_iff_eq, inv_smul_eq_iff]
   exact self_eq_mul_right.mpr ((QuotientGroup.eq_one_iff _).mpr h.2)
