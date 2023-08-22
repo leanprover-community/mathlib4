@@ -1251,7 +1251,3 @@ end MulOpposite
 
 @[simp] theorem pow_eq {m : ℤ} {n : ℕ} : m.pow n = m ^ n := rfl
 
-lemma Units.coe_neg_one_zpow_add (n₁ n₂ : ℤ) :
-    ((-1 : Units ℤ) ^ (n₁ + n₂) : ℤ) =
-      ((-1 : Units ℤ) ^ n₁ : ℤ) * ((-1 : Units ℤ) ^ n₂ : ℤ) := by
-  simp only [← Units.val_mul, ← Units.ext_iff, zpow_add]

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.Additive
+import Mathlib.Algebra.GroupPower.NegOnePow
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -35,7 +36,7 @@ multiplies the differentials by `(-1)^n`. -/
 def shiftFunctor (n : ℤ) : CochainComplex C ℤ ⥤ CochainComplex C ℤ where
   obj K :=
     { X := fun i => K.X (i + n)
-      d := fun i j => ((-1 : Units ℤ) ^ n : ℤ) • K.d _ _
+      d := fun i j => n.negOnePow • K.d _ _
       d_comp_d' := by
         intros
         simp only [Preadditive.comp_zsmul, Preadditive.zsmul_comp, d_comp_d, smul_zero]
@@ -85,8 +86,8 @@ def shiftFunctorAdd' (n₁ n₂ n₁₂ : ℤ) (h : n₁ + n₂ = n₁₂ ) :
     (fun _ _ _ => by
       subst h
       dsimp
-      simp only [add_comm n₁ n₂, Units.coe_neg_one_zpow_add, Preadditive.comp_zsmul,
-        XIsoOfEq_hom_comp_d, smul_smul, Preadditive.zsmul_comp, d_comp_XIsoOfEq_hom]))
+      simp only [add_comm n₁ n₂, Int.negOnePow_add, Preadditive.zsmul_comp,
+        Preadditive.comp_zsmul, d_comp_XIsoOfEq_hom, smul_smul, XIsoOfEq_hom_comp_d]))
     (by aesop_cat)
 
 attribute [local simp] XIsoOfEq
@@ -176,7 +177,7 @@ variable {C}
 lemma shiftFunctorComm_hom_app_f (K : CochainComplex C ℤ) (a b p : ℤ) :
     ((shiftFunctorComm (CochainComplex C ℤ) a b).hom.app K).f p =
       (K.XIsoOfEq (show p + b + a = p + a + b
-        by dsimp; rw [add_assoc, add_comm b, add_assoc])).hom := by
+        by rw [add_assoc, add_comm b, add_assoc])).hom := by
   rw [shiftFunctorComm_eq _ _ _ _ rfl]
   dsimp
   rw [shiftFunctorAdd'_inv_app_f', shiftFunctorAdd'_hom_app_f']
