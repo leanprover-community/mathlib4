@@ -5,6 +5,7 @@ Authors: Keeley Hoek, Patrick Massot, Scott Morrison
 -/
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Order.Monotone.Basic
+import Mathlib.Order.Hom.Basic
 
 /-!
 # The `apply_fun` tactic.
@@ -86,6 +87,11 @@ def maybeProveInjective (ginj : Expr) (using? : Option Expr) : MetaM Bool := do
   if ok.isSome then return true
   return false
 
+-- for simplicity of the implementation below it is helpful
+-- to have the forward direction of these lemmas
+alias OrderIso.le_iff_le ↔ ApplyFun.le_of_le _
+alias OrderIso.lt_iff_lt ↔ ApplyFun.lt_of_lt _
+
 /-- Apply a function to the main goal. -/
 def applyFunTarget (f : Term) (using? : Option Expr) (g : MVarId) : TacticM (List MVarId) := do
   -- handle applying a two-argument theorem whose first argument is f
@@ -106,10 +112,10 @@ def applyFunTarget (f : Term) (using? : Option Expr) (g : MVarId) : TacticM (Lis
     | (``Eq, #[_, _, _]) => handle ``ne_of_apply_ne
     | _ => applyFunTargetFailure f
   -- TODO Once `Order.Hom.Basic` has been ported, verify these work.
-  -- | (``LE.le, _) => g.apply (← mkAppM ``OrderIso.le_iff_le #[f])
-  -- | (``GE.ge, _) => g.apply (← mkAppM ``OrderIso.le_iff_le #[f])
-  -- | (``LT.lt, _) => g.apply (← mkAppM ``OrderIso.lt_iff_lt #[f])
-  -- | (``GT.gt, _) => g.apply (← mkAppM ``OrderIso.lt_iff_lt #[f])
+  | (``LE.le, _)
+  | (``GE.ge, _) => handle ``ApplyFun.le_of_le
+  | (``LT.lt, _)
+  | (``GT.gt, _) => handle ``ApplyFun.lt_of_lt
   | (``Eq, #[_, _, _]) => do
     -- g' is for the `f lhs = f rhs` goal
     let g' ← mkFreshExprSyntheticOpaqueMVar (← mkFreshTypeMVar) (← g.getTag)
@@ -169,7 +175,7 @@ placeholders. Named placeholders (like `?a` or `?_`) will produce new goals.
  -/
 syntax (name := applyFun) "apply_fun " term (location)? (" using " term)? : tactic
 
-elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do
+elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => withMainContext do
   let P ← P.mapM (elabTerm · none)
   withLocation (expandOptLocation (Lean.mkOptionalNode loc))
     (atLocal := fun h ↦ do replaceMainGoal <| ← applyFunHyp f P h (← getMainGoal))
