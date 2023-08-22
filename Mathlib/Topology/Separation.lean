@@ -1408,13 +1408,13 @@ theorem IsCompact.finite_compact_cover [T2Space α] {s : Set α} (hs : IsCompact
 
 end
 
-/-- If every points of a Hausdorff space admits a compact neighborhood, then this space is locally
-compact. -/
-theorem locally_compact_of_compact_nhds [T2Space α] (h : ∀ x : α, ∃ s, s ∈ 𝓝 x ∧ IsCompact s) :
+-- see Note [lower instance priority]
+/-- A weakly locally compact Hausdorff space is locally compact. -/
+instance WeaklyLocallyCompactSpace.locallyCompactSpace [WeaklyLocallyCompactSpace α] [T2Space α] :
     LocallyCompactSpace α :=
   ⟨fun x _n hn =>
     let ⟨_u, un, uo, xu⟩ := mem_nhds_iff.mp hn
-    let ⟨k, kx, kc⟩ := h x
+    let ⟨k, kc, kx⟩ := exists_compact_mem_nhds x
     -- K is compact but not necessarily contained in N.
     -- K \ U is again compact and doesn't contain x, so
     -- we may find open sets V, W separating x from K \ U.
@@ -1425,12 +1425,12 @@ theorem locally_compact_of_compact_nhds [T2Space α] (h : ∀ x : α, ∃ s, s �
     have wn : wᶜ ∈ 𝓝 x :=
       mem_nhds_iff.mpr ⟨v, vw.subset_compl_right, vo, singleton_subset_iff.mp xv⟩
     ⟨k \ w, Filter.inter_mem kx wn, Subset.trans (diff_subset_comm.mp kuw) un, kc.diff wo⟩⟩
-#align locally_compact_of_compact_nhds locally_compact_of_compact_nhds
+#align locally_compact_of_compact_nhds WeaklyLocallyCompactSpace.locallyCompactSpace
 
--- see Note [lower instance priority]
-instance (priority := 100) locally_compact_of_compact [T2Space α] [CompactSpace α] :
+@[deprecated WeaklyLocallyCompactSpace.locallyCompactSpace]
+theorem locally_compact_of_compact [T2Space α] [CompactSpace α] :
     LocallyCompactSpace α :=
-  locally_compact_of_compact_nhds fun _ => ⟨univ, isOpen_univ.mem_nhds trivial, isCompact_univ⟩
+  inferInstance
 #align locally_compact_of_compact locally_compact_of_compact
 
 /-- In a weakly locally compact T₂ space,
