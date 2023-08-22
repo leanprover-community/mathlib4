@@ -119,7 +119,8 @@ def ιIso' : (QB' π) ≅ B.toCompHaus :=
 /-- Implementation: The quotient of `relation π`, considered as an object of `Profinite`. -/
 def QB : Profinite where
   toCompHaus := QB' π
-  IsTotallyDisconnected := CompHaus.totallyDisconnectedSpace_ofIsIso (ιIso' π surj).symm
+  IsTotallyDisconnected := ⟨(CompHaus.homeoOfIso (ιIso' π surj)).embedding.isTotallyDisconnected
+    (isTotallyDisconnected_of_totallyDisconnectedSpace _)⟩
 
 /-- Implementation: The function `ιFun`, considered as a morphism in `Profinite`. -/
 def ιHom : (QB π surj) ⟶ B := ⟨ιFun π, ιFun_continuous π⟩
