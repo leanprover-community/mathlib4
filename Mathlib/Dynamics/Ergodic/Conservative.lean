@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module dynamics.ergodic.conservative
-! leanprover-community/mathlib commit bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.Combinatorics.Pigeonhole
+
+#align_import dynamics.ergodic.conservative from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
 /-!
 # Conservative systems
@@ -47,7 +44,7 @@ open Classical Set Filter MeasureTheory Finset Function TopologicalSpace
 
 open Classical Topology
 
-variable {ι : Type _} {α : Type _} [MeasurableSpace α] {f : α → α} {s : Set α} {μ : Measure α}
+variable {ι : Type*} {α : Type*} [MeasurableSpace α] {f : α → α} {s : Set α} {μ : Measure α}
 
 namespace MeasureTheory
 
@@ -201,7 +198,7 @@ protected theorem iterate (hf : Conservative f μ) (n : ℕ) : Conservative f^[n
     exact (Nat.modEq_iff_dvd' hkl.le).1 hn
   refine' ⟨f^[k] x, hk, m, _, _⟩
   · intro hm
-    rw [hm, MulZeroClass.mul_zero, eq_comm, tsub_eq_zero_iff_le] at this
+    rw [hm, mul_zero, eq_comm, tsub_eq_zero_iff_le] at this
     exact this.not_lt hkl
   · rwa [← iterate_mul, this, ← iterate_add_apply, tsub_add_cancel_of_le]
     exact hkl.le

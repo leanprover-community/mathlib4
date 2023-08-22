@@ -15,6 +15,8 @@ import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Relation.Trans
 
+set_option autoImplicit true
+
 #align opt_param_eq optParam_eq
 
 /- Implication -/
@@ -475,7 +477,7 @@ lemma Equivalence.reflexive {r : β → β → Prop} (h : Equivalence r) : Refle
 
 lemma Equivalence.symmetric {r : β → β → Prop} (h : Equivalence r) : Symmetric r := λ _ _ => h.symm
 
-lemma Equivalence.transitive  {r : β → β → Prop}(h : Equivalence r) : Transitive r :=
+lemma Equivalence.transitive {r : β → β → Prop}(h : Equivalence r) : Transitive r :=
   λ _ _ _ => h.trans
 
 /-- A relation is total if for all `x` and `y`, either `x ≺ y` or `y ≺ x`. -/

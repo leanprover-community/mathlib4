@@ -2,13 +2,11 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module analysis.special_functions.sqrt
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.ContDiff
+import Mathlib.Analysis.Calculus.Deriv.Pow
+
+#align_import analysis.special_functions.sqrt from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Smoothness of `Real.sqrt`
@@ -48,7 +46,7 @@ noncomputable def sqLocalHomeomorph : LocalHomeomorph ℝ ℝ where
 theorem deriv_sqrt_aux {x : ℝ} (hx : x ≠ 0) :
     HasStrictDerivAt sqrt (1 / (2 * sqrt x)) x ∧ ∀ n, ContDiffAt ℝ n sqrt x := by
   cases' hx.lt_or_lt with hx hx
-  · rw [sqrt_eq_zero_of_nonpos hx.le, MulZeroClass.mul_zero, div_zero]
+  · rw [sqrt_eq_zero_of_nonpos hx.le, mul_zero, div_zero]
     have : sqrt =ᶠ[𝓝 x] fun _ => 0 := (gt_mem_nhds hx).mono fun x hx => sqrt_eq_zero_of_nonpos hx.le
     exact
       ⟨(hasStrictDerivAt_const x (0 : ℝ)).congr_of_eventuallyEq this.symm, fun n =>
@@ -112,7 +110,7 @@ end deriv
 
 section fderiv
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {n : ℕ∞} {s : Set E}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {n : ℕ∞} {s : Set E}
   {x : E} {f' : E →L[ℝ] ℝ}
 
 theorem HasFDerivAt.sqrt (hf : HasFDerivAt f f' x) (hx : f x ≠ 0) :

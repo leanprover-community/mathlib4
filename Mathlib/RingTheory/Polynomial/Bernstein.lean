@@ -2,11 +2,6 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module ring_theory.polynomial.bernstein
-! leanprover-community/mathlib commit bbeb185db4ccee8ed07dc48449414ebfa39cb821
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Derivative
 import Mathlib.Data.Nat.Choose.Sum
@@ -15,12 +10,14 @@ import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.Data.MvPolynomial.PDeriv
 
+#align_import ring_theory.polynomial.bernstein from "leanprover-community/mathlib"@"bbeb185db4ccee8ed07dc48449414ebfa39cb821"
+
 /-!
 # Bernstein polynomials
 
 The definition of the Bernstein polynomials
 ```
-bernsteinPolynomial (R : Type _) [CommRing R] (n ν : ℕ) : R[X] :=
+bernsteinPolynomial (R : Type*) [CommRing R] (n ν : ℕ) : R[X] :=
 (choose n ν) * X^ν * (1 - X)^(n - ν)
 ```
 and the fact that for `ν : fin (n+1)` these are linearly independent over `ℚ`.
@@ -45,7 +42,7 @@ open Polynomial (X)
 
 open scoped BigOperators Polynomial
 
-variable (R : Type _) [CommRing R]
+variable (R : Type*) [CommRing R]
 
 /-- `bernsteinPolynomial R n ν` is `(choose n ν) * X^ν * (1 - X)^(n - ν)`.
 
@@ -70,7 +67,7 @@ theorem eq_zero_of_lt {n ν : ℕ} (h : n < ν) : bernsteinPolynomial R n ν = 0
 
 section
 
-variable {R} {S : Type _} [CommRing S]
+variable {R} {S : Type*} [CommRing S]
 
 @[simp]
 theorem map (f : R →+* S) (n ν : ℕ) :
@@ -114,7 +111,7 @@ theorem derivative_succ_aux (n ν : ℕ) :
       (↑(n + 1) : R[X]) * ((n.choose ν : R[X]) * X ^ ν * (1 - X) ^ (n - ν) -
         (n.choose (ν + 1) : R[X]) * X ^ (ν + 1) * (1 - X) ^ (n - (ν + 1))) by
     simpa [Polynomial.derivative_pow, ← sub_eq_add_neg, Nat.succ_sub_succ_eq_sub,
-      Polynomial.derivative_mul, Polynomial.derivative_nat_cast, MulZeroClass.zero_mul,
+      Polynomial.derivative_mul, Polynomial.derivative_nat_cast, zero_mul,
       Nat.cast_add, algebraMap.coe_one, Polynomial.derivative_X, mul_one, zero_add,
       Polynomial.derivative_sub, Polynomial.derivative_one, zero_sub, mul_neg, Nat.sub_zero,
       bernsteinPolynomial, map_add, map_natCast, Nat.cast_one]
@@ -333,7 +330,7 @@ theorem sum_smul (n : ℕ) :
     -- Step inside the sum:
     refine' Finset.sum_congr rfl fun k _ => (w k).trans _
     simp only [pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, nsmul_eq_mul, Bool.cond_true,
-      Bool.cond_false, add_zero, mul_one, MulZeroClass.mul_zero, smul_zero, MvPolynomial.aeval_X,
+      Bool.cond_false, add_zero, mul_one, mul_zero, smul_zero, MvPolynomial.aeval_X,
       MvPolynomial.pderiv_mul, Derivation.leibniz_pow, Derivation.map_coe_nat, map_natCast, map_pow,
       map_mul]
   · rw [(pderiv true).leibniz_pow, (pderiv true).map_add, pderiv_true_x, pderiv_true_y]
@@ -373,7 +370,7 @@ theorem sum_mul_smul (n : ℕ) :
     -- Step inside the sum:
     refine' Finset.sum_congr rfl fun k _ => (w k).trans _
     simp only [pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, nsmul_eq_mul, Bool.cond_true,
-      Bool.cond_false, add_zero, zero_add, MulZeroClass.mul_zero, smul_zero, mul_one,
+      Bool.cond_false, add_zero, zero_add, mul_zero, smul_zero, mul_one,
       MvPolynomial.aeval_X, MvPolynomial.pderiv_X_self, MvPolynomial.pderiv_X_of_ne,
       Derivation.leibniz_pow, Derivation.leibniz, Derivation.map_coe_nat, map_natCast, map_pow,
       map_mul, map_add]

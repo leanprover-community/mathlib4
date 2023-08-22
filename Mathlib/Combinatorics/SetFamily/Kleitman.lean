@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module combinatorics.set_family.kleitman
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SetFamily.HarrisKleitman
 import Mathlib.Combinatorics.SetFamily.Intersecting
+
+#align_import combinatorics.set_family.kleitman from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Kleitman's bound on the size of intersecting families
@@ -33,7 +30,7 @@ open Finset
 
 open Fintype (card)
 
-variable {ι α : Type _} [Fintype α] [DecidableEq α] [Nonempty α]
+variable {ι α : Type*} [Fintype α] [DecidableEq α] [Nonempty α]
 
 /-- **Kleitman's theorem**. An intersecting family on `n` elements contains at most `2ⁿ⁻¹` sets, and
 each further intersecting family takes at most half of the sets that are in no previous family. -/

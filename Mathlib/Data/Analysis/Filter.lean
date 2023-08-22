@@ -2,13 +2,10 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.analysis.filter
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Cofinite
+
+#align_import data.analysis.filter from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Computational realization of filters (experimental)
@@ -29,7 +26,7 @@ open Set Filter
 /-- A `CFilter α σ` is a realization of a filter (base) on `α`,
   represented by a type `σ` together with operations for the top element and
   the binary `inf` operation. -/
-structure CFilter (α σ : Type _) [PartialOrder α] where
+structure CFilter (α σ : Type*) [PartialOrder α] where
   f : σ → α
   pt : σ
   inf : σ → σ → σ
@@ -37,7 +34,7 @@ structure CFilter (α σ : Type _) [PartialOrder α] where
   inf_le_right : ∀ a b : σ, f (inf a b) ≤ f b
 #align cfilter CFilter
 
-variable {α : Type _} {β : Type _} {σ : Type _} {τ : Type _}
+variable {α : Type*} {β : Type*} {σ : Type*} {τ : Type*}
 
 instance [Inhabited α] [SemilatticeInf α] : Inhabited (CFilter α α) :=
   ⟨{  f := id
@@ -100,7 +97,7 @@ end CFilter
 -- Porting note: TODO write doc strings
 /-- A realizer for filter `f` is a cfilter which generates `f`. -/
 structure Filter.Realizer (f : Filter α) where
-  σ : Type _
+  σ : Type*
   F : CFilter (Set α) σ
   eq : F.toFilter = f
 #align filter.realizer Filter.Realizer

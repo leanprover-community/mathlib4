@@ -2,11 +2,6 @@
 Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module algebra.order.to_interval_mod
-! leanprover-community/mathlib commit 213b0cff7bc5ab6696ee07cceec80829ce42efec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.ModEq
 import Mathlib.Algebra.Module.Basic
@@ -16,6 +11,8 @@ import Mathlib.Data.Int.SuccPred
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.Order.Circular
 import Mathlib.Data.List.TFAE
+
+#align_import algebra.order.to_interval_mod from "leanprover-community/mathlib"@"213b0cff7bc5ab6696ee07cceec80829ce42efec"
 
 /-!
 # Reducing to an interval modulo its length
@@ -39,7 +36,7 @@ noncomputable section
 
 section LinearOrderedAddCommGroup
 
-variable {α : Type _} [LinearOrderedAddCommGroup α] [hα : Archimedean α] {p : α} (hp : 0 < p)
+variable {α : Type*} [LinearOrderedAddCommGroup α] [hα : Archimedean α] {p : α} (hp : 0 < p)
   {a b c : α} {n : ℤ}
 
 /--
@@ -992,7 +989,7 @@ end LinearOrderedAddCommGroup
 
 section LinearOrderedField
 
-variable {α : Type _} [LinearOrderedField α] [FloorRing α] {p : α} (hp : 0 < p)
+variable {α : Type*} [LinearOrderedField α] [FloorRing α] {p : α} (hp : 0 < p)
 
 theorem toIcoDiv_eq_floor (a b : α) : toIcoDiv hp a b = ⌊(b - a) / p⌋ := by
   refine' toIcoDiv_eq_of_sub_zsmul_mem_Ico hp _
@@ -1048,7 +1045,7 @@ open Set Int
 
 section LinearOrderedAddCommGroup
 
-variable {α : Type _} [LinearOrderedAddCommGroup α] [Archimedean α] {p : α} (hp : 0 < p) (a : α)
+variable {α : Type*} [LinearOrderedAddCommGroup α] [Archimedean α] {p : α} (hp : 0 < p) (a : α)
 
 theorem iUnion_Ioc_add_zsmul : ⋃ n : ℤ, Ioc (a + n • p) (a + (n + 1) • p) = univ := by
   refine' eq_univ_iff_forall.mpr fun b => mem_iUnion.mpr _
@@ -1087,7 +1084,7 @@ end LinearOrderedAddCommGroup
 
 section LinearOrderedRing
 
-variable {α : Type _} [LinearOrderedRing α] [Archimedean α] (a : α)
+variable {α : Type*} [LinearOrderedRing α] [Archimedean α] (a : α)
 
 theorem iUnion_Ioc_add_int_cast : ⋃ n : ℤ, Ioc (a + n) (a + n + 1) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using

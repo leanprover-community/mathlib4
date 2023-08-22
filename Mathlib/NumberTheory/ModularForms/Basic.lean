@@ -2,15 +2,12 @@
 Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
-
-! This file was ported from Lean 3 source module number_theory.modular_forms.basic
-! leanprover-community/mathlib commit 57f9349f2fe19d2de7207e99b0341808d977cdcf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
 import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
+
+#align_import number_theory.modular_forms.basic from "leanprover-community/mathlib"@"57f9349f2fe19d2de7207e99b0341808d977cdcf"
 
 /-!
 # Modular forms
@@ -36,7 +33,7 @@ section ModularForm
 
 open ModularForm
 
-variable (F : Type _) (Γ : Subgroup SL(2, ℤ)) (k : ℤ)
+variable (F : Type*) (Γ : Subgroup SL(2, ℤ)) (k : ℤ)
 
 open scoped ModularForm
 
@@ -61,7 +58,7 @@ add_decl_doc CuspForm.toSlashInvariantForm
 /-- `modular_form_class F Γ k` says that `F` is a type of bundled functions that extend
 `slash_invariant_form_class` by requiring that the functions be holomorphic and bounded
 at infinity. -/
-class ModularFormClass (F : Type _) (Γ : outParam <| Subgroup (SL(2, ℤ))) (k : outParam ℤ)
+class ModularFormClass (F : Type*) (Γ : outParam <| Subgroup (SL(2, ℤ))) (k : outParam ℤ)
     extends SlashInvariantFormClass F Γ k where
   holo : ∀ f : F, MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f : ℍ → ℂ)
   bdd_at_infty : ∀ (f : F) (A : SL(2, ℤ)), IsBoundedAtImInfty (f ∣[k] A)
@@ -70,7 +67,7 @@ class ModularFormClass (F : Type _) (Γ : outParam <| Subgroup (SL(2, ℤ))) (k 
 /-- `cusp_form_class F Γ k` says that `F` is a type of bundled functions that extend
 `slash_invariant_form_class` by requiring that the functions be holomorphic and zero
 at infinity. -/
-class CuspFormClass (F : Type _) (Γ : outParam <| Subgroup (SL(2, ℤ))) (k : outParam ℤ)
+class CuspFormClass (F : Type*) (Γ : outParam <| Subgroup (SL(2, ℤ))) (k : outParam ℤ)
     extends SlashInvariantFormClass F Γ k where
   holo : ∀ f : F, MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f : ℍ → ℂ)
   zero_at_infty : ∀ (f : F) (A : SL(2, ℤ)), IsZeroAtImInfty (f ∣[k] A)
@@ -143,7 +140,7 @@ namespace ModularForm
 
 open SlashInvariantForm
 
-variable {F : Type _} {Γ : Subgroup SL(2, ℤ)} {k : ℤ}
+variable {F : Type*} {Γ : Subgroup SL(2, ℤ)} {k : ℤ}
 
 instance add : Add (ModularForm Γ k) :=
   ⟨fun f g =>
@@ -180,7 +177,7 @@ theorem zero_apply (z : ℍ) : (0 : ModularForm Γ k) z = 0 :=
 
 section
 
-variable {α : Type _} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
+variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
 
 instance hasSmul : SMul α (ModularForm Γ k) :=
   ⟨fun c f =>
@@ -286,7 +283,7 @@ namespace CuspForm
 
 open ModularForm
 
-variable {F : Type _} {Γ : Subgroup SL(2, ℤ)} {k : ℤ}
+variable {F : Type*} {Γ : Subgroup SL(2, ℤ)} {k : ℤ}
 
 instance hasAdd : Add (CuspForm Γ k) :=
   ⟨fun f g =>
@@ -323,7 +320,7 @@ theorem zero_apply (z : ℍ) : (0 : CuspForm Γ k) z = 0 :=
 
 section
 
-variable {α : Type _} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
+variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
 
 instance hasSmul : SMul α (CuspForm Γ k) :=
   ⟨fun c f =>

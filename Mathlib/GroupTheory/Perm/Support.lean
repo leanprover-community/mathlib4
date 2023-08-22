@@ -2,15 +2,12 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
-
-! This file was ported from Lean 3 source module group_theory.perm.support
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Fintype.Basic
 import Mathlib.GroupTheory.Perm.Basic
+
+#align_import group_theory.perm.support from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 /-!
 # support of a permutation
 
@@ -31,7 +28,7 @@ open Equiv Finset
 
 namespace Equiv.Perm
 
-variable {α : Type _}
+variable {α : Type*}
 
 section Disjoint
 
@@ -539,7 +536,7 @@ theorem support_le_prod_of_mem {l : List (Perm α)} (h : f ∈ l) (hl : l.Pairwi
 
 section ExtendDomain
 
-variable {β : Type _} [DecidableEq β] [Fintype β] {p : β → Prop} [DecidablePred p]
+variable {β : Type*} [DecidableEq β] [Fintype β] {p : β → Prop} [DecidablePred p]
 
 @[simp]
 theorem support_extend_domain (f : α ≃ Subtype p) {g : Perm α} :
@@ -660,7 +657,7 @@ end support
 
 @[simp]
 theorem support_subtype_perm [DecidableEq α] {s : Finset α} (f : Perm α) (h) :
-    ((f.subtypePerm h : Perm { x // x ∈ s }).support)  =
+    ((f.subtypePerm h : Perm { x // x ∈ s }).support) =
     (s.attach.filter ((fun x => decide (f x ≠ x))) : Finset { x // x ∈ s }) := by
   ext
   simp [Subtype.ext_iff]

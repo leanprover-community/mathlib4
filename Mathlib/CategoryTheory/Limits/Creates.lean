@@ -2,13 +2,10 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.creates
-! leanprover-community/mathlib commit fe5e4ce6c72d96d77ad40ac832a6e7f8040990bc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+
+#align_import category_theory.limits.creates from "leanprover-community/mathlib"@"fe5e4ce6c72d96d77ad40ac832a6e7f8040990bc"
 
 /-!
 # Creating (co)limits

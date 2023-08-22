@@ -2,14 +2,11 @@
 Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
-
-! This file was ported from Lean 3 source module measure_theory.function.uniform_integrable
-! leanprover-community/mathlib commit 57ac39bd365c2f80589a700f9fbb664d3a1a30c2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
 import Mathlib.MeasureTheory.Function.L1Space
+
+#align_import measure_theory.function.uniform_integrable from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
 
 /-!
 # Uniform integrability
@@ -56,7 +53,7 @@ namespace MeasureTheory
 
 open Set Filter TopologicalSpace
 
-variable {α β ι : Type _} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup β]
+variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup β]
 
 /-- Uniform integrability in the measure theory sense.
 
@@ -939,7 +936,7 @@ theorem uniformIntegrable_average (hp : 1 ≤ p) {f : ℕ → α → ℝ} (hf : 
       · rfl
     simp_rw [this, snorm_const_smul, ← Finset.mul_sum, nnnorm_inv, Real.nnnorm_coe_nat]
     by_cases hn : (↑(↑n : ℝ≥0)⁻¹ : ℝ≥0∞) = 0
-    · simp only [hn, MulZeroClass.zero_mul, zero_le]
+    · simp only [hn, zero_mul, zero_le]
     refine' le_trans _ (_ : ↑(↑n : ℝ≥0)⁻¹ * n • ENNReal.ofReal ε ≤ ENNReal.ofReal ε)
     · refine' (ENNReal.mul_le_mul_left hn ENNReal.coe_ne_top).2 _
       conv_rhs => rw [← Finset.card_range n]
@@ -957,7 +954,7 @@ theorem uniformIntegrable_average (hp : 1 ≤ p) {f : ℕ → α → ℝ} (hf : 
       simp only [mul_comm, Pi.smul_apply, Algebra.id.smul_eq_mul]
     simp_rw [this, snorm_const_smul, ← Finset.mul_sum, nnnorm_inv, Real.nnnorm_coe_nat]
     by_cases hn : (↑(↑n : ℝ≥0)⁻¹ : ℝ≥0∞) = 0
-    · simp only [hn, MulZeroClass.zero_mul, zero_le]
+    · simp only [hn, zero_mul, zero_le]
     refine' le_trans _ (_ : ↑(↑n : ℝ≥0)⁻¹ * (n • C : ℝ≥0∞) ≤ C)
     · refine' (ENNReal.mul_le_mul_left hn ENNReal.coe_ne_top).2 _
       conv_rhs => rw [← Finset.card_range n]

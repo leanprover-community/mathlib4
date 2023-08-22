@@ -2,17 +2,14 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.big_operators.order
-! leanprover-community/mathlib commit 824f9ae93a4f5174d2ea948e2d75843dd83447bb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Fintype.Card
 import Mathlib.Tactic.GCongr.Core
+
+#align_import algebra.big_operators.order from "leanprover-community/mathlib"@"824f9ae93a4f5174d2ea948e2d75843dd83447bb"
 
 /-!
 # Results about big operators with values in an ordered algebraic structure.
@@ -25,7 +22,7 @@ open Function
 
 open BigOperators
 
-variable {ι α β M N G k R : Type _}
+variable {ι α β M N G k R : Type*}
 
 namespace Finset
 
@@ -232,7 +229,7 @@ theorem card_biUnion_le_card_mul [DecidableEq β] (s : Finset ι) (f : ι → Fi
   card_biUnion_le.trans <| sum_le_card_nsmul _ _ _ h
 #align finset.card_bUnion_le_card_mul Finset.card_biUnion_le_card_mul
 
-variable {ι' : Type _} [DecidableEq ι']
+variable {ι' : Type*} [DecidableEq ι']
 
 -- Porting note: Mathport warning: expanding binder collection (y «expr ∉ » t)
 @[to_additive sum_fiberwise_le_sum_of_sum_fiber_nonneg]
@@ -259,21 +256,21 @@ theorem prod_le_prod_fiberwise_of_prod_fiber_le_one' {t : Finset ι'} {g : ι �
 
 end OrderedCommMonoid
 
-theorem abs_sum_le_sum_abs {G : Type _} [LinearOrderedAddCommGroup G] (f : ι → G) (s : Finset ι) :
+theorem abs_sum_le_sum_abs {G : Type*} [LinearOrderedAddCommGroup G] (f : ι → G) (s : Finset ι) :
     |∑ i in s, f i| ≤ ∑ i in s, |f i| := le_sum_of_subadditive _ abs_zero abs_add s f
 #align finset.abs_sum_le_sum_abs Finset.abs_sum_le_sum_abs
 
-theorem abs_sum_of_nonneg {G : Type _} [LinearOrderedAddCommGroup G] {f : ι → G} {s : Finset ι}
+theorem abs_sum_of_nonneg {G : Type*} [LinearOrderedAddCommGroup G] {f : ι → G} {s : Finset ι}
     (hf : ∀ i ∈ s, 0 ≤ f i) : |∑ i : ι in s, f i| = ∑ i : ι in s, f i := by
   rw [abs_of_nonneg (Finset.sum_nonneg hf)]
 #align finset.abs_sum_of_nonneg Finset.abs_sum_of_nonneg
 
-theorem abs_sum_of_nonneg' {G : Type _} [LinearOrderedAddCommGroup G] {f : ι → G} {s : Finset ι}
+theorem abs_sum_of_nonneg' {G : Type*} [LinearOrderedAddCommGroup G] {f : ι → G} {s : Finset ι}
     (hf : ∀ i, 0 ≤ f i) : |∑ i : ι in s, f i| = ∑ i : ι in s, f i := by
   rw [abs_of_nonneg (Finset.sum_nonneg' hf)]
 #align finset.abs_sum_of_nonneg' Finset.abs_sum_of_nonneg'
 
-theorem abs_prod {R : Type _} [LinearOrderedCommRing R] {f : ι → R} {s : Finset ι} :
+theorem abs_prod {R : Type*} [LinearOrderedCommRing R] {f : ι → R} {s : Finset ι} :
     |∏ x in s, f x| = ∏ x in s, |f x| :=
   (absHom.toMonoidHom : R →* R).map_prod _ _
 #align finset.abs_prod Finset.abs_prod
@@ -694,13 +691,13 @@ theorem prod_mono' [OrderedCommMonoid M] : Monotone fun f : ι → M ↦ ∏ i, 
 #align fintype.prod_mono' Fintype.prod_mono'
 #align fintype.sum_mono Fintype.sum_mono
 
-@[to_additive sum_strict_mono]
-theorem prod_strict_mono' [OrderedCancelCommMonoid M] : StrictMono fun f : ι → M ↦ ∏ x, f x :=
+@[to_additive sum_strictMono]
+theorem prod_strictMono' [OrderedCancelCommMonoid M] : StrictMono fun f : ι → M ↦ ∏ x, f x :=
   fun _ _ hfg ↦
   let ⟨hle, i, hlt⟩ := Pi.lt_def.mp hfg
   Finset.prod_lt_prod' (fun i _ ↦ hle i) ⟨i, Finset.mem_univ i, hlt⟩
-#align fintype.prod_strict_mono' Fintype.prod_strict_mono'
-#align fintype.sum_strict_mono Fintype.sum_strict_mono
+#align fintype.prod_strict_mono' Fintype.prod_strictMono'
+#align fintype.sum_strict_mono Fintype.sum_strictMono
 
 end Fintype
 
@@ -737,7 +734,7 @@ end WithTop
 
 section AbsoluteValue
 
-variable {S : Type _}
+variable {S : Type*}
 
 theorem AbsoluteValue.sum_le [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
     (s : Finset ι) (f : ι → R) : abv (∑ i in s, f i) ≤ ∑ i in s, abv (f i) :=

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module number_theory.zsqrtd.to_real
-! leanprover-community/mathlib commit e59154361202a34b26176e0de9267ef8e2dcd446
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Sqrt
 import Mathlib.NumberTheory.Zsqrtd.Basic
+
+#align_import number_theory.zsqrtd.to_real from "leanprover-community/mathlib"@"e59154361202a34b26176e0de9267ef8e2dcd446"
 
 /-!
 # Image of `Zsqrtd` in `ℝ`

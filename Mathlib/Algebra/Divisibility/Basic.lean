@@ -3,14 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Amelia Livingston, Yury Kudryashov,
 Neil Strickland, Aaron Anderson
-Ported by: Matej Penciak
-
-! This file was ported from Lean 3 source module algebra.divisibility.basic
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
+
+#align_import algebra.divisibility.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # Divisibility
@@ -34,7 +30,7 @@ divisibility, divides
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 section Semigroup
 
@@ -98,9 +94,9 @@ theorem dvd_of_mul_right_dvd (h : a * b ∣ c) : a ∣ c :=
 
 section map_dvd
 
-variable {M N : Type _} [Monoid M] [Monoid N]
+variable {M N : Type*} [Monoid M] [Monoid N]
 
-theorem map_dvd {F : Type _} [MulHomClass F M N] (f : F) {a b} : a ∣ b → f a ∣ f b
+theorem map_dvd {F : Type*} [MulHomClass F M N] (f : F) {a b} : a ∣ b → f a ∣ f b
   | ⟨c, h⟩ => ⟨f c, h.symm ▸ map_mul f a c⟩
 #align map_dvd map_dvd
 

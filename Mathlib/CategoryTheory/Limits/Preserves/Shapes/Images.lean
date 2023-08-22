@@ -2,14 +2,11 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
-
-! This file was ported from Lean 3 source module category_theory.limits.preserves.shapes.images
-! leanprover-community/mathlib commit fc78e3c190c72a109699385da6be2725e88df841
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+
+#align_import category_theory.limits.preserves.shapes.images from "leanprover-community/mathlib"@"fc78e3c190c72a109699385da6be2725e88df841"
 
 /-!
 # Preserving images

@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Sébastien Gouëzel, Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.measure.lebesgue.basic
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.LinearAlgebra.Determinant
@@ -15,6 +10,8 @@ import Mathlib.LinearAlgebra.Matrix.Transvection
 import Mathlib.MeasureTheory.Constructions.Pi
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+
+#align_import measure_theory.measure.lebesgue.basic from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # Lebesgue measure on the real line and on `ℝⁿ`
@@ -37,7 +34,7 @@ assert_not_exists MeasureTheory.integral
 
 noncomputable section
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Classical Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
@@ -52,7 +49,7 @@ open scoped BigOperators ENNReal NNReal Topology
 
 namespace Real
 
-variable {ι : Type _} [Fintype ι]
+variable {ι : Type*} [Fintype ι]
 
 /-- The volume on the real line (as a particular case of the volume on a finite-dimensional
 inner product space) coincides with the Stieltjes measure coming from the identity function. -/
@@ -396,7 +393,7 @@ theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionS
     simp only [LinearEquiv.map_smul, dite_eq_ite, LinearMap.id_coe, ite_not,
       Algebra.id.smul_eq_mul, one_mul, dotProduct, stdBasisMatrix,
       MeasurableEquiv.piEquivPiSubtypeProd_symm_apply, id.def, transvection, Pi.add_apply,
-      MulZeroClass.zero_mul, LinearMap.smul_apply, Function.comp_apply,
+      zero_mul, LinearMap.smul_apply, Function.comp_apply,
       MeasurableEquiv.piEquivPiSubtypeProd_apply, Matrix.TransvectionStruct.toMatrix_mk,
       Matrix.mulVec, LinearEquiv.map_add, ite_mul, Matrix.toLin'_apply, Pi.smul_apply,
       Subtype.coe_mk, LinearMap.add_apply, Finset.sum_congr, Matrix.toLin'_one]
@@ -404,7 +401,7 @@ theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionS
     · simp only [h, true_and_iff, Finset.mem_univ, if_true, eq_self_iff_true, Finset.sum_ite_eq,
         one_apply, boole_mul, add_comm]
     · simp only [h, Ne.symm h, add_zero, if_false, Finset.sum_const_zero, false_and_iff,
-        MulZeroClass.mul_zero]
+        mul_zero]
   rw [this]
   have A : MeasurePreserving e := by
     convert volume_preserving_piEquivPiSubtypeProd (fun _ : ι => ℝ) p
@@ -463,7 +460,7 @@ end Real
 
 section regionBetween
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- The region between two real-valued functions on an arbitrary set. -/
 def regionBetween (f g : α → ℝ) (s : Set α) : Set (α × ℝ) :=

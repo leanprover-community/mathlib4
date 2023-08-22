@@ -2,14 +2,11 @@
 Copyright © 2021 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Heather Macbeth
-
-! This file was ported from Lean 3 source module geometry.manifold.instances.units_of_normed_algebra
-! leanprover-community/mathlib commit ef901ea68d3bb1dd08f8bc3034ab6b32b2e6ecdf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 import Mathlib.Analysis.NormedSpace.Units
+
+#align_import geometry.manifold.instances.units_of_normed_algebra from "leanprover-community/mathlib"@"ef901ea68d3bb1dd08f8bc3034ab6b32b2e6ecdf"
 
 /-!
 # Units of a normed algebra
@@ -55,7 +52,7 @@ open scoped Manifold
 
 namespace Units
 
-variable {R : Type _} [NormedRing R] [CompleteSpace R]
+variable {R : Type*} [NormedRing R] [CompleteSpace R]
 
 instance : ChartedSpace R Rˣ :=
   openEmbedding_val.singletonChartedSpace
@@ -68,7 +65,7 @@ theorem chartAt_source {a : Rˣ} : (chartAt R a).source = Set.univ :=
   rfl
 #align units.chart_at_source Units.chartAt_source
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 R]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 R]
 
 instance : SmoothManifoldWithCorners 𝓘(𝕜, R) Rˣ :=
   openEmbedding_val.singleton_smoothManifoldWithCorners 𝓘(𝕜, R)

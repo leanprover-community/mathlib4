@@ -2,15 +2,12 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
-
-! This file was ported from Lean 3 source module data.nat.gcd.basic
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Nat.Order.Lemmas
+
+#align_import data.nat.gcd.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # Definitions and properties of `Nat.gcd`, `Nat.lcm`, and `Nat.coprime`

@@ -2,13 +2,10 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
-
-! This file was ported from Lean 3 source module topology.sets.closeds
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sets.Opens
+
+#align_import topology.sets.closeds from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Closed sets
@@ -25,7 +22,7 @@ For a topological space `α`,
 
 open Order OrderDual Set
 
-variable {ι α β : Type _} [TopologicalSpace α] [TopologicalSpace β]
+variable {ι α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 namespace TopologicalSpace
 
@@ -33,7 +30,7 @@ namespace TopologicalSpace
 
 
 /-- The type of closed subsets of a topological space. -/
-structure Closeds (α : Type _) [TopologicalSpace α] where
+structure Closeds (α : Type*) [TopologicalSpace α] where
   carrier : Set α
   closed' : IsClosed carrier
 #align topological_space.closeds TopologicalSpace.Closeds
@@ -276,7 +273,7 @@ theorem Opens.isCoatom_iff [T1Space α] {s : Opens α} :
 
 
 /-- The type of clopen sets of a topological space. -/
-structure Clopens (α : Type _) [TopologicalSpace α] where
+structure Clopens (α : Type*) [TopologicalSpace α] where
   carrier : Set α
   clopen' : IsClopen carrier
 #align topological_space.clopens TopologicalSpace.Clopens

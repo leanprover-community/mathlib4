@@ -2,16 +2,13 @@
 Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
-
-! This file was ported from Lean 3 source module init.data.nat.lemmas
-! leanprover-community/lean commit 38b59111b2b4e6c572582b27e8937e92fc70ac02
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Std.Data.Nat.Lemmas
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Div
 import Mathlib.Init.Algebra.Functions
+
+#align_import init.data.nat.lemmas from "leanprover-community/lean"@"38b59111b2b4e6c572582b27e8937e92fc70ac02"
 
 universe u
 
@@ -155,8 +152,6 @@ instance linearOrder : LinearOrder ℕ where
 
 #align nat.le_of_add_le_add_right Nat.le_of_add_le_add_rightₓ
 
-protected theorem add_le_add_iff_right {k n m : ℕ} : n + k ≤ m + k ↔ n ≤ m :=
-  ⟨Nat.le_of_add_le_add_right, fun h => Nat.add_le_add_right h _⟩
 #align nat.add_le_add_iff_right Nat.add_le_add_iff_right
 
 #align nat.lt_of_add_lt_add_left Nat.lt_of_add_lt_add_left
@@ -414,8 +409,6 @@ Many lemmas are proven more generally in mathlib `algebra/order/sub` -/
 
 #align nat.le_of_le_of_sub_le_sub_right Nat.le_of_le_of_sub_le_sub_right
 
-protected theorem sub_le_sub_iff_right {n m k : ℕ} (h : k ≤ m) : n - k ≤ m - k ↔ n ≤ m :=
-  ⟨Nat.le_of_le_of_sub_le_sub_right h, fun h => Nat.sub_le_sub_right h k⟩
 #align nat.sub_le_sub_iff_right Nat.sub_le_sub_iff_right
 
 #align nat.sub_self_add Nat.sub_self_add
@@ -507,15 +500,6 @@ def subInduction {P : ℕ → ℕ → Sort u} (H1 : ∀ m, P 0 m) (H2 : ∀ n, P
   | succ n, succ m => H3 _ _ (subInduction H1 H2 H3 n m)
 #align nat.sub_induction Nat.subInduction
 
-protected def strongRecOn {p : Nat → Sort u} (n : Nat) (h : ∀ n, (∀ m, m < n → p m) → p n) :
-    p n := by
-  suffices ∀ n m, m < n → p m from this (succ n) n (lt_succ_self _)
-  intro n; induction' n with n ih
-  · intro m h₁; exact absurd h₁ m.not_lt_zero
-  · intro m h₁
-    apply Or.by_cases (Decidable.lt_or_eq_of_le (le_of_lt_succ h₁))
-    · intros; apply ih; assumption
-    · intros; subst m; apply h _ ih
 #align nat.strong_rec_on Nat.strongRecOn
 
 -- porting note: added `elab_as_elim`
@@ -835,9 +819,7 @@ lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length <= 
   | succ n =>
     by_cases hterm : n.succ / 10 = 0
     case pos => simp only [hterm, Nat.toDigitsCore]; assumption
-    case neg =>
-      simp only [hterm]
-      exact to_digits_core_length 10 (by decide) (Nat.succ n + 1) (Nat.succ n) e he e0
+    case neg => exact to_digits_core_length 10 (by decide) (Nat.succ n + 1) (Nat.succ n) e he e0
 
 end Find
 
