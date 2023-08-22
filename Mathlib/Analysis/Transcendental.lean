@@ -478,25 +478,15 @@ instance : CharZero (K p) :=
 
 instance : IsGalois ℚ (K p) where
 
-abbrev lift : K' p ≃ₐ[ℚ] K p :=
+abbrev Lift : K' p ≃ₐ[ℚ] K p :=
   IsSplittingField.algEquiv (K' p) p
 set_option linter.uppercaseLean3 false in
-#align aux.Lift Aux.lift
+#align aux.Lift Aux.Lift
 
 instance algebraKℂ : Algebra (K p) ℂ :=
-  ((K' p).val.comp (lift p).symm.toAlgHom).toRingHom.toAlgebra
+  ((K' p).val.comp (Lift p).symm.toAlgHom).toRingHom.toAlgebra
 set_option linter.uppercaseLean3 false in
 #align aux.algebra_K_ℂ Aux.algebraKℂ
-
-instance avoidDiamondCache : Algebra (⊥ : IntermediateField ℚ (K p)) (K p) :=
-  IntermediateField.toAlgebra _
-#align aux.avoid_diamond_cache Aux.avoidDiamondCache
-
-/-- example : algebra_int (K p) = (infer_instance : algebra ℤ (K p)) := rfl
--/
-instance avoidDiamondIntCache : Algebra ℤ (K p) :=
-  algebraInt (K p)
-#align aux.avoid_diamond_int_cache Aux.avoidDiamondIntCache
 
 instance : Algebra ℚ (K p) :=
   inferInstance
@@ -554,39 +544,39 @@ section
 
 variable (s : Finset ℂ)
 
-abbrev poly : ℚ[X] :=
+abbrev Poly : ℚ[X] :=
   ∏ x in s, minpoly ℚ x
 set_option linter.uppercaseLean3 false in
-#align Poly poly
+#align Poly Poly
 
 abbrev K' : IntermediateField ℚ ℂ :=
-  IntermediateField.adjoin ℚ ((poly s).rootSet ℂ)
+  IntermediateField.adjoin ℚ ((Poly s).rootSet ℂ)
 set_option linter.uppercaseLean3 false in
 #align K' K'
 
 abbrev K : Type _ :=
-  (poly s).SplittingField
+  (Poly s).SplittingField
 set_option linter.uppercaseLean3 false in
 #align K K
 
 abbrev Gal : Type _ :=
-  (poly s).Gal
+  (Poly s).Gal
 set_option linter.uppercaseLean3 false in
 #align Gal Gal
 
-abbrev Transcendental.lift : K' s ≃ₐ[ℚ] K s :=
-  IsSplittingField.algEquiv (K' s) (poly s)
+abbrev Lift : K' s ≃ₐ[ℚ] K s :=
+  IsSplittingField.algEquiv (K' s) (Poly s)
 set_option linter.uppercaseLean3 false in
-#align Lift Transcendental.lift
+#align Lift Lift
 
 open Transcendental
 
-theorem algebraMap_K_apply (x) : algebraMap (K s) ℂ x = ((Transcendental.lift s).symm x : ℂ) :=
+theorem algebraMap_K_apply (x) : algebraMap (K s) ℂ x = ((Lift s).symm x : ℂ) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebra_map_K_apply algebraMap_K_apply
 
-theorem poly_ne_zero (hs : ∀ x ∈ s, IsIntegral ℚ x) : poly s ≠ 0 :=
+theorem poly_ne_zero (hs : ∀ x ∈ s, IsIntegral ℚ x) : Poly s ≠ 0 :=
   prod_ne_zero_iff.mpr fun x hx => minpoly.ne_zero (hs x hx)
 set_option linter.uppercaseLean3 false in
 #align Poly_ne_zero poly_ne_zero
@@ -1242,10 +1232,10 @@ theorem linear_independent_exp_aux_rat (u : ι → ℂ) (hu : ∀ i, IsIntegral 
     exact
       ⟨poly_ne_zero s hs, v i, mem_union_right _ (mem_image.mpr ⟨i, mem_univ _, rfl⟩),
         minpoly.aeval _ _⟩
-  let u' : ∀ _, K s := fun i : ι => Transcendental.lift s ⟨u i, u_mem i⟩
-  let v' : ∀ _, K s := fun i : ι => Transcendental.lift s ⟨v i, v_mem i⟩
+  let u' : ∀ _, K s := fun i : ι => Lift s ⟨u i, u_mem i⟩
+  let v' : ∀ _, K s := fun i : ι => Lift s ⟨v i, v_mem i⟩
   have u'_inj : Function.Injective u' := fun i j hij =>
-    u_inj (Subtype.mk.inj ((Transcendental.lift s).injective hij))
+    u_inj (Subtype.mk.inj ((Lift s).injective hij))
   replace h : ∑ i, algebraMap (K s) ℂ (v' i) * exp (algebraMap (K s) ℂ (u' i)) = 0
   · simp_rw [algebraMap_K_apply, AlgEquiv.symm_apply_apply, ← h]
   let f : AddMonoidAlgebra (K s) (K s) :=
