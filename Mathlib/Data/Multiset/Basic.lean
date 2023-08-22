@@ -2275,7 +2275,9 @@ theorem countp_filter (q) [DecidablePred q] (s : Multiset α) :
 
 theorem countp_eq_countp_filter_add (s) (p q : α → Prop) [DecidablePred p] [DecidablePred q] :
     countp p s = (filter q s).countp p + (filter (fun a => ¬q a) s).countp p :=
-  Quot.inductionOn s fun l => by convert l.countp_eq_countp_filter_add (p ·) (q ·); simp
+  Quot.inductionOn s fun l => by
+    convert l.countp_eq_countp_filter_add (p ·) (q ·)
+    simp [countp_filter]
 #align multiset.countp_eq_countp_filter_add Multiset.countp_eq_countp_filter_add
 
 @[simp]
@@ -2303,11 +2305,11 @@ theorem countp_pos {s} : 0 < countp p s ↔ ∃ a ∈ s, p a :=
 #align multiset.countp_pos Multiset.countp_pos
 
 theorem countp_eq_zero {s} : countp p s = 0 ↔ ∀ a ∈ s, ¬p a :=
-  Quot.inductionOn s fun _l => by simp
+  Quot.inductionOn s fun _l => by simp [List.countp_eq_zero]
 #align multiset.countp_eq_zero Multiset.countp_eq_zero
 
 theorem countp_eq_card {s} : countp p s = card s ↔ ∀ a ∈ s, p a :=
-  Quot.inductionOn s fun _l => by simp
+  Quot.inductionOn s fun _l => by simp [List.countp_eq_length]
 #align multiset.countp_eq_card Multiset.countp_eq_card
 
 theorem countp_pos_of_mem {s a} (h : a ∈ s) (pa : p a) : 0 < countp p s :=
