@@ -14,7 +14,7 @@ This file shows that when `E` is a C⋆-algebra (over a densely normed field `�
 show that every C⋆-algebra is a `RegularNormedAlgebra`.
 
 In addition, we show that in a `RegularNormedAlgebra` which is a `StarRing` for which the
-involution is isometric, that multipliciation on the right is also an isometry (i.e.,
+involution is isometric, that multiplication on the right is also an isometry (i.e.,
 `Isometry (ContinuousLinearMap.mul 𝕜 E).flip`).
 -/
 
@@ -157,7 +157,7 @@ instance Unitization.instCstarRing : CstarRing (Unitization 𝕜 E) where
         rw [sq]
         gcongr
         simpa only [star_star] using h₁ (star x)
-    -- Show that `(Unitization.splitMul 𝕜 E x).fst` satisifes the C⋆-property
+    -- Show that `(Unitization.splitMul 𝕜 E x).fst` satisfies the C⋆-property
     have h₃ : ‖(Unitization.splitMul 𝕜 E (star x * x)).fst‖
         = ‖(Unitization.splitMul 𝕜 E x).fst‖ ^ 2 := by
       simp only [Unitization.splitMul_apply, Unitization.fst_mul, Unitization.fst_star, add_zero,
