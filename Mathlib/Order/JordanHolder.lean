@@ -325,7 +325,6 @@ theorem mem_eraseTop_of_ne_of_mem {s : CompositionSeries X} {x : X} (hx : x ≠ 
 
 theorem mem_eraseTop {s : CompositionSeries X} {x : X} (h : 0 < s.length) :
     x ∈ s.eraseTop ↔ x ≠ s.top ∧ x ∈ s := by
-  simp only [mem_def]
   dsimp only [eraseTop]
   constructor
   · rintro ⟨i, rfl⟩

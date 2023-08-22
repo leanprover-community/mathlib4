@@ -416,16 +416,16 @@ lemma snoc_last (p : RelSeries r) (a : α) (rel : r (p (Fin.last _)) a) :
   exact Fin.append_right _ _ 0
 
 @[simp]
-theorem snoc_castSucc (s : RelSeries r) (a : α) (connect : r s.last x)
-    (i : Fin (s.length + 1)) : snoc s x connect (Fin.castSucc i) = s i := by
+theorem snoc_castSucc (s : RelSeries r) (a : α) (connect : r s.last a)
+    (i : Fin (s.length + 1)) : snoc s a connect (Fin.castSucc i) = s i := by
   unfold snoc
   simp only [append_length, singleton_length, Nat.add_zero, append_toFun, Fin.cast_refl,
     Function.comp_apply, id_eq]
   exact Fin.append_left _ _ i
 
 @[simp]
-theorem head_snoc (s : RelSeries r) (a : α) (connect : r s.last x) :
-    (snoc s x connect).head = s.head := by
+theorem head_snoc (s : RelSeries r) (a : α) (connect : r s.last a) :
+    (snoc s a connect).head = s.head := by
   unfold snoc head
   simp only [append_toFun, singleton_length, Nat.add_zero, Fin.cast_refl,
     Function.comp_apply, id_eq]
