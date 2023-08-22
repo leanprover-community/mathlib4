@@ -8,6 +8,7 @@ import Mathlib.Data.List.FinRange
 import Mathlib.Data.Prod.Lex
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.Data.Fin.Interval
+import Mathlib.Tactic.FinCases
 
 #align_import data.fin.tuple.sort from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
@@ -114,13 +115,76 @@ theorem sort_lt_at_start_of_monotone {α} [LinearOrder α] (m : ℕ) (f : Fin m 
     (j : Fin m) (h : j < Fintype.card {i // f i ≤ a}) :
     f j ≤ a := by
   contrapose! h
-  have := Fintype.card_subtype_compl (¬f · ≤ a)
-  simp_rw [not_not, not_le] at this
-  rw [this, Fintype.card_fin, tsub_le_iff_tsub_le, Fintype.card_subtype]
-  refine le_trans (by simp) (Finset.card_mono $ show Finset.Ici j ≤ _ from fun k hk ↦ ?_)
-  simp only [Finset.mem_Ici] at hk
-  exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, h.trans_le (h_sorted hk)⟩
+  rw [← Fin.card_Iio, Fintype.card_subtype]
+  refine Finset.card_mono (fun i => Function.mtr ?_)
+  simp_rw [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_Iio]
+  exact fun hij => (h.trans_le <| h_sorted <| le_of_not_lt hij).not_le
 /- Proofs by Ruben Van de Velde, Eric {Rodriguez and Wieser} -/
+
+def Equiv.subtypeSubtype_comm  {α : Type} (p q : α → Prop) :
+    (Subtype fun x => (p x) ∧ (q x)) ≃ (Subtype fun x => (q x) ∧ (p x)) := by
+  simp_rw [and_comm]
+  apply Equiv.refl
+
+lemma Fintype.card_eq_subtypeSubtype_comm {α : Type} [Fintype α] (p q : α → Prop)
+    [DecidablePred p] [DecidablePred q] : Fintype.card (Subtype fun x => (p x) ∧ (q x)) =
+      Fintype.card (Subtype fun x => (q x) ∧ (p x)) := by
+  refine' Fintype.card_eq.2 (Nonempty.intro ?_)
+  simp_rw [and_comm]
+  apply Equiv.refl
+
+lemma Fintype.card_inter_eq_card_and {α : Type} [Fintype α] (p q : α → Prop)
+    [DecidablePred p] [DecidablePred q] : Fintype.card {i : (Subtype fun x => (p x)) // (q i)} =
+      Fintype.card (Subtype fun x => (q x) ∧ (p x)) := by
+  rw [← Fintype.card_eq_subtypeSubtype_comm p q]
+  refine' Fintype.card_eq.2 (Nonempty.intro ?_)
+  exact Equiv.subtypeSubtypeEquivSubtypeInter (fun x ↦ p x) q
+
+lemma Fintype.card_fin_lt_nat (m g : ℕ) (h : g ≤ m) : Fintype.card {i : Fin m // i < g } = g := by
+  conv_rhs => rw [← Fintype.card_fin g]
+  refine' Fintype.card_eq.2 (Nonempty.intro ?_)
+  refine ⟨
+    fun x => ⟨x, x.prop⟩,
+    fun x => ⟨⟨x, (lt_of_lt_of_le (Fin.is_lt x) h)⟩, x.prop⟩,
+    fun x => by simp, fun x => by simp⟩
+
+theorem sort_ge_at_end_of_monotone {α} [LinearOrder α] (m r: ℕ)(f : Fin m → α) (a : α)
+    (h_sorted : Monotone f)
+    (j : Fin m) :
+    f j ≤ a → (j < Fintype.card {i // f i ≤ a}) := by
+  -- by_cases hm : m = 0
+  -- · exfalso
+  --   apply (ne_of_lt (Fin.size_pos j)) hm.symm
+  -- by_cases hf : Fintype.card {i // f i ≤ a} = 0
+  -- · intro h
+  --   exfalso
+  --   have : Nonempty {i // f i ≤ a} := by apply Nonempty.intro ⟨j, h⟩
+  --   refine' (ne_of_lt (Fintype.card_pos_iff.2 this)) hf.symm
+  -- by_cases hfm : Fintype.card {i // f i ≤ a} = m
+  -- · contrapose!
+  --   rw [hfm]
+  --   intro h
+  --   exfalso
+  --   refine' (not_lt.2 h) (Fin.is_lt j)
+
+  -- have hm : 1 ≤ m := Nat.pos_of_ne_zero hm
+  -- have hf : 1 ≤ Fintype.card {i // f i ≤ a} := Nat.pos_of_ne_zero hf
+  intro h
+  by_contra' hc
+  have he := Fintype.card_eq.2 (Nonempty.intro (Equiv.sumCompl (
+      fun x : {i // f i ≤ a} => (x < (Fintype.card {i // f i ≤ a})))))
+  let p := fun x : Fin m => f x ≤ a
+  let q := fun x : Fin m => (x < (Fintype.card {i // f i ≤ a}))
+  have h4 : Fintype.card {j : {x : Fin m // p x} // q j} = Fintype.card {j // q j} := by
+    exact (Fintype.card_eq.2 (Nonempty.intro (@Equiv.subtypeSubtypeEquivSubtype _ p q
+      (by apply sort_lt_at_start_of_monotone m f a h_sorted) ) ) )
+  rw [Fintype.card_sum, h4, Fintype.card_fin_lt_nat, add_right_eq_self] at he
+  have : 0 < Fintype.card {j : {x : Fin m // p x} // ¬q j} := by
+    apply Fintype.card_pos_iff.2 (Nonempty.intro ⟨⟨j, h⟩, not_lt.2 hc⟩)
+  apply (ne_of_lt this) he.symm
+  conv_rhs => rw [← Fintype.card_fin m]
+  exact Fintype.card_subtype_le _
+
 
 end Tuple
 
