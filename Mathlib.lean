@@ -3215,6 +3215,7 @@ import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.Category.Profinite.Limits
 import Mathlib.Topology.Category.Profinite.Projective
 import Mathlib.Topology.Category.Stonean.Basic
+import Mathlib.Topology.Category.Stonean.EffectiveEpi
 import Mathlib.Topology.Category.Stonean.Limits
 import Mathlib.Topology.Category.TopCat.Adjunctions
 import Mathlib.Topology.Category.TopCat.Basic
