@@ -78,7 +78,7 @@ theorem mul_apply_add_eq_mul_of_forall_ne [Add A] {f g : AddMonoidAlgebra R A} {
       · exact fun bf0 => by simp [not_mem_support_iff.mp bf0]
 #align add_monoid_algebra.mul_apply_add_eq_mul_of_forall_ne AddMonoidAlgebra.mul_apply_add_eq_mul_of_forall_ne
 
-instance {A : Type*} [NoZeroDivisors R] [AddMonoid A] [UniqueSums A] :
+instance {A : Type*} [NoZeroDivisors R] [AddSemigroup A] [UniqueSums A] :
     NoZeroDivisors (AddMonoidAlgebra R A) where
   eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} c => by
     rcases eq_or_ne a 0 with (rfl | ha)
