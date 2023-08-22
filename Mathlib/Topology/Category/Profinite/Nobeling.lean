@@ -21,7 +21,7 @@ This file proves Nöbeling's theorem,
 
 ## Main result
 
-- `Nobeling`: For `S : Profinite`, the ℤ-module `LocallyConstant S ℤ` is free.
+- `Nobeling`: For `S : Profinite`, the `ℤ`-module `LocallyConstant S ℤ` is free.
 
 ## Implementation Details
 
@@ -50,7 +50,7 @@ def Proj : ((i : ι) → X i) → ((i : ι) → X i) :=
   fun c i ↦ if J i then c i else default
 
 @[simp]
-lemma continuous_proj :
+theorem continuous_proj :
     Continuous (Proj J : ((i : ι) → X i) → ((i : ι) → X i)) := by
   refine continuous_pi ?_
   intro i
@@ -66,23 +66,23 @@ def ProjRestrict : C → C.proj J :=
   Set.MapsTo.restrict (Proj J) _ _ (Set.mapsTo_image _ _)
 
 @[simp]
-lemma continuous_projRestrict : Continuous (ProjRestrict C J) :=
+theorem continuous_projRestrict : Continuous (ProjRestrict C J) :=
   Continuous.restrict _ (continuous_proj _)
 
-lemma surjective_projRestrict :
+theorem surjective_projRestrict :
     Function.Surjective (ProjRestrict C J) := by
   intro x
   obtain ⟨y, hy⟩ := x.prop
   refine ⟨⟨y, hy.1⟩, ?_⟩
   exact Subtype.ext hy.2
 
-lemma proj_eq_self {x : (i : ι) → X i} (h : ∀ i, x i ≠ default → J i) : Proj J x = x := by
+theorem proj_eq_self {x : (i : ι) → X i} (h : ∀ i, x i ≠ default → J i) : Proj J x = x := by
   ext i
   simp only [Proj, ite_eq_left_iff]
   rw [← not_imp_not, not_not, eq_comm, ← ne_eq]
   exact h i
 
-lemma proj_prop_eq_self (hh : ∀ i x, x ∈ C → x i ≠ default → J i) : C.proj J = C := by
+theorem proj_prop_eq_self (hh : ∀ i x, x ∈ C → x i ≠ default → J i) : C.proj J = C := by
   ext x
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨y, hy⟩ := h
@@ -93,7 +93,7 @@ lemma proj_prop_eq_self (hh : ∀ i x, x ∈ C → x i ≠ default → J i) : C.
     rw [proj_eq_self]
     exact fun i ↦ hh i x h
 
-lemma proj_comp_of_subset (h : ∀ i, J i → K i) : (Proj J ∘ Proj K) =
+theorem proj_comp_of_subset (h : ∀ i, J i → K i) : (Proj J ∘ Proj K) =
     (Proj J : ((i : ι) → X i) → ((i : ι) → X i)) := by
   ext x i
   dsimp [Proj]
@@ -102,7 +102,7 @@ lemma proj_comp_of_subset (h : ∀ i, J i → K i) : (Proj J ∘ Proj K) =
   · exfalso; exact hh' (h i hh)
   · rfl
 
-lemma proj_eq_of_subset (h : ∀ i, J i → K i) : (C.proj K).proj J = C.proj J := by
+theorem proj_eq_of_subset (h : ∀ i, J i → K i) : (C.proj K).proj J = C.proj J := by
   ext x
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨y, hy⟩ := h
@@ -123,14 +123,14 @@ def ProjRestricts (h : ∀ i, J i → K i) : C.proj K → C.proj J :=
   Homeomorph.setCongr (proj_eq_of_subset C J K h) ∘ ProjRestrict (C.proj K) J
 
 @[simp]
-lemma continuous_projRestricts (h : ∀ i, J i → K i) : Continuous (ProjRestricts C h) :=
+theorem continuous_projRestricts (h : ∀ i, J i → K i) : Continuous (ProjRestricts C h) :=
   Continuous.comp (Homeomorph.continuous _) (continuous_projRestrict _ _)
 
-lemma surjective_projRestricts (h : ∀ i, J i → K i) : Function.Surjective (ProjRestricts C h) :=
+theorem surjective_projRestricts (h : ∀ i, J i → K i) : Function.Surjective (ProjRestricts C h) :=
   Function.Surjective.comp (Homeomorph.surjective _) (surjective_projRestrict _ _)
 
 variable (J) in
-lemma projRestricts_eq_id  :
+theorem projRestricts_eq_id  :
     ProjRestricts C (fun i (h : J i) ↦ h) = id := by
   ext x i
   simp only [Set.proj, Proj, ProjRestricts_coe, id_eq, ite_eq_left_iff]
@@ -138,7 +138,7 @@ lemma projRestricts_eq_id  :
   intro h
   rw [← hy.2, Proj, if_neg h]
 
-lemma projRestricts_eq_comp (hJK : ∀ i, J i → K i) (hKL : ∀ i, K i → L i) :
+theorem projRestricts_eq_comp (hJK : ∀ i, J i → K i) (hKL : ∀ i, K i → L i) :
     ProjRestricts C hJK ∘ ProjRestricts C hKL = ProjRestricts C (fun i ↦ hKL i ∘ hJK i) := by
   ext x i
   simp only [Set.proj, Proj, Function.comp_apply, ProjRestricts_coe]
@@ -147,7 +147,7 @@ lemma projRestricts_eq_comp (hJK : ∀ i, J i → K i) (hKL : ∀ i, K i → L i
   · exfalso; exact hh (hJK i h)
   · rfl
 
-lemma projRestricts_comp_projRestrict (h : ∀ i, J i → K i) :
+theorem projRestricts_comp_projRestrict (h : ∀ i, J i → K i) :
     ProjRestricts C h ∘ ProjRestrict C K = ProjRestrict C J := by
   ext x i
   simp only [Set.proj, Proj, Function.comp_apply, ProjRestricts_coe, ProjRestrict_coe]
@@ -166,7 +166,7 @@ variable [∀ i, T2Space (X i)] [∀ i, TotallyDisconnectedSpace (X i)]
 
 open CategoryTheory Limits Opposite
 
-lemma mem_projRestrict (h : J ⊆ K) (x : C.proj (· ∈ K)) :
+theorem mem_projRestrict (h : J ⊆ K) (x : C.proj (· ∈ K)) :
     Proj (· ∈ J) x.val ∈ C.proj (· ∈ J) := by
   obtain ⟨y, hy⟩ := x.prop
   refine ⟨y, ⟨hy.1, ?_⟩⟩
@@ -201,7 +201,7 @@ def FinsetsCone : Cone (FinsetsToProfinite hC) where
       · rfl
   }
 
-lemma eq_of_forall_proj_eq (a b : C) (h : ∀ (J : Finset ι), ProjRestrict C (· ∈ J) a =
+theorem eq_of_forall_proj_eq (a b : C) (h : ∀ (J : Finset ι), ProjRestrict C (· ∈ J) a =
     ProjRestrict C (· ∈ J) b) : a = b := by
   ext i
   specialize h ({i} : Finset ι)
@@ -305,7 +305,7 @@ noncomputable def piecewise' {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ 
       exact hf x ⟨hx₁, hx₂⟩
 
 @[simp]
-lemma piecewise'_apply_left {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : IsClosed C₁)
+theorem piecewise'_apply_left {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : IsClosed C₁)
     (h₂ : IsClosed C₂) (f₁ : LocallyConstant C₁ Z) (f₂ : LocallyConstant C₂ Z)
     [DecidablePred (· ∈ C₁)] (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩ = f₂ ⟨x, hx.2⟩)
     (x : C₀) (hx : x.val ∈ C₁) :
@@ -316,7 +316,7 @@ lemma piecewise'_apply_left {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C
   rfl
 
 @[simp]
-lemma piecewise'_apply_right {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : IsClosed C₁)
+theorem piecewise'_apply_right {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : IsClosed C₁)
     (h₂ : IsClosed C₂) (f₁ : LocallyConstant C₁ Z) (f₂ : LocallyConstant C₂ Z)
     [DecidablePred (· ∈ C₁)] (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩ = f₂ ⟨x, hx.2⟩)
     (x : C₀) (hx : x.val ∈ C₂) :
@@ -356,7 +356,7 @@ instance : LinearOrder (Products I) :=
   inferInstanceAs (LinearOrder {l : List I // l.Chain' (·>·)})
 
 @[simp]
-lemma lt_iff_lex_lt (l m : Products I) : l < m ↔ List.Lex (·<·) l.val m.val := by
+theorem lt_iff_lex_lt (l m : Products I) : l < m ↔ List.Lex (·<·) l.val m.val := by
   cases l; cases m; rw [Subtype.mk_lt_mk]; exact Iff.rfl
 
 /-- The evaluation of of a formal product. -/
@@ -366,7 +366,7 @@ def eval (l : Products I) := (l.1.map (e C)).prod
 def isGood (l : Products I) : Prop :=
   l.eval C ∉ Submodule.span ℤ ((Products.eval C) '' {m | m < l})
 
-lemma rel_head!_of_mem {i : I} {l : Products I} (hi : i ∈ l.val) : i ≤ l.val.head! := by
+theorem rel_head!_of_mem {i : I} {l : Products I} (hi : i ∈ l.val) : i ≤ l.val.head! := by
   have h := l.prop
   rw [List.chain'_iff_pairwise, ← List.cons_head!_tail (List.ne_nil_of_mem hi)] at h
   rw [← List.cons_head!_tail (List.ne_nil_of_mem hi)] at hi
@@ -375,7 +375,7 @@ lemma rel_head!_of_mem {i : I} {l : Products I} (hi : i ∈ l.val) : i ≤ l.val
   · exact le_of_eq hi
   · exact le_of_lt (List.rel_of_sorted_cons h i hi)
 
-lemma head!_le_of_lt {q l : Products I} (h : q < l) (hq : q.val ≠ []) :
+theorem head!_le_of_lt {q l : Products I} (h : q < l) (hq : q.val ≠ []) :
     q.val.head! ≤ l.val.head! := by
   by_cases hl : l.val = []
   · rw [lt_iff_lex_lt, hl] at h
@@ -397,7 +397,7 @@ namespace GoodProducts
 def eval (l : {l : Products I // l.isGood C}) :
   LocallyConstant C ℤ := Products.eval C l.1
 
-lemma injective : Function.Injective (eval C) := by
+theorem injective : Function.Injective (eval C) := by
   intro ⟨a,ha⟩ ⟨b,hb⟩ h
   dsimp [eval] at h
   apply Or.elim3 (trichotomous_of (·<·) a b : a < b ∨ a = b ∨ b < a)
@@ -415,10 +415,10 @@ noncomputable
 def equiv_range : GoodProducts C ≃ range C :=
   Equiv.ofInjective (eval C) (injective C)
 
-lemma equiv_toFun_eq_eval : (equiv_range C).toFun =
+theorem equiv_toFun_eq_eval : (equiv_range C).toFun =
   Set.rangeFactorization (eval C) := by rfl
 
-lemma linearIndependent_iff_range : LinearIndependent ℤ (GoodProducts.eval C) ↔
+theorem linearIndependent_iff_range : LinearIndependent ℤ (GoodProducts.eval C) ↔
     LinearIndependent ℤ (fun (p : range C) ↦ p.1) := by
   rw [← @Set.rangeFactorization_eq _ _ (GoodProducts.eval C), ← equiv_toFun_eq_eval C]
   exact linearIndependent_equiv (equiv_range C)
@@ -427,7 +427,7 @@ end GoodProducts
 
 namespace Products
 
-lemma eval_eq (l : Products I) (x : C) :
+theorem eval_eq (l : Products I) (x : C) :
     l.eval C x = if ∀ i, i ∈ l.val → (x.val i = true) then 1 else 0 := by
   change LocallyConstant.evalMonoidHom x (l.eval C) = _
   rw [eval, map_list_prod]
@@ -447,7 +447,7 @@ lemma eval_eq (l : Products I) (x : C) :
     dsimp [LocallyConstant.evalMonoidHom, e]
     simp only [ite_eq_right_iff]
 
-lemma evalFacProp {l : Products I} (J : I → Prop)
+theorem evalFacProp {l : Products I} (J : I → Prop)
     (h : ∀ a, a ∈ l.val → J a) [∀ j, Decidable (J j)] :
     l.eval (C.proj J) ∘ ProjRestrict C J = l.eval C := by
   ext x
@@ -461,7 +461,7 @@ lemma evalFacProp {l : Products I} (J : I → Prop)
   · exfalso; apply h₁; intro i hi; rw [← h₂ i hi]; exact (this i hi).symm
   · rfl
 
-lemma evalFacPropsAux {l : Products I} (J K : I → Prop) (hJK : ∀ i, J i → K i)
+theorem evalFacPropsAux {l : Products I} (J K : I → Prop) (hJK : ∀ i, J i → K i)
     [∀ j, Decidable (J j)] [∀ j, Decidable (K j)] :
     l.eval (C.proj J) ∘ Homeomorph.setCongr (proj_eq_of_subset C J K hJK) =
     l.eval ((C.proj K).proj J) := by
@@ -470,14 +470,14 @@ lemma evalFacPropsAux {l : Products I} (J K : I → Prop) (hJK : ∀ i, J i → 
     Equiv.setCongr_apply]
   rw [Products.eval_eq, Products.eval_eq]
 
-lemma evalFacProps {l : Products I} (J K : I → Prop)
+theorem evalFacProps {l : Products I} (J K : I → Prop)
     (h : ∀ a, a ∈ l.val → J a) [∀ j, Decidable (J j)] [∀ j, Decidable (K j)]
     (hJK : ∀ i, J i → K i) :
     l.eval (C.proj J) ∘ ProjRestricts C hJK = l.eval (C.proj K) := by
   dsimp only [ProjRestricts]
   rw [← Function.comp.assoc, evalFacPropsAux C J K hJK, ← evalFacProp (C.proj K) J h]
 
-lemma prop_of_isGood  {l : Products I} (J : I → Prop) [∀ j, Decidable (J j)]
+theorem prop_of_isGood  {l : Products I} (J : I → Prop) [∀ j, Decidable (J j)]
     (h : l.isGood (C.proj J)) : ∀ a, a ∈ l.val → J a := by
   intro i hi
   by_contra h'
@@ -505,7 +505,7 @@ instance : IsWellFounded (Products I) (·<·) := by
   rw [hflip]
   exact inferInstance
 
-lemma eval_mem_span_goodProducts (l : Products I) :
+theorem eval_mem_span_goodProducts (l : Products I) :
     l.eval C ∈ Submodule.span ℤ (Set.range (GoodProducts.eval C)) := by
   let L : Products I → Prop := fun m ↦ m.eval C ∈ Submodule.span ℤ (Set.range (GoodProducts.eval C))
   suffices L l by assumption
@@ -526,7 +526,7 @@ lemma eval_mem_span_goodProducts (l : Products I) :
 
 end Products
 
-lemma GoodProducts.span_iff_products : ⊤ ≤ Submodule.span ℤ (Set.range (eval C)) ↔
+theorem GoodProducts.span_iff_products : ⊤ ≤ Submodule.span ℤ (Set.range (eval C)) ↔
     ⊤ ≤ Submodule.span ℤ (Set.range (Products.eval C)) := by
   refine ⟨fun h ↦ le_trans h (Submodule.span_mono (fun a ⟨b, hb⟩ ↦ ⟨b.val, hb⟩)), fun h ↦ ?_⟩
   refine le_trans h ?_
@@ -547,20 +547,21 @@ noncomputable
 def πJ : LocallyConstant (C.proj (· ∈ J)) ℤ →ₗ[ℤ] LocallyConstant C ℤ :=
   LocallyConstant.comapₗ ℤ _ (continuous_projRestrict C (· ∈ J))
 
-lemma πJ_of_eval (l : Products I) (hl : l.isGood (C.proj (· ∈ J))) :
+theorem πJ_of_eval (l : Products I) (hl : l.isGood (C.proj (· ∈ J))) :
     l.eval C = πJ C J (l.eval (C.proj (· ∈ J))) := by
   ext f
   simp only [πJ, LocallyConstant.comapₗ, LinearMap.coe_mk, AddHom.coe_mk,
     (continuous_projRestrict C (· ∈ J)), LocallyConstant.coe_comap, Function.comp_apply]
   exact (congr_fun (Products.evalFacProp C (· ∈ J) (Products.prop_of_isGood  C (· ∈ J) hl)) _).symm
 
-lemma mem_J_of_x_true (x : C.proj (· ∈ J)) (i : I) : x.val i = true → i ∈ J := by
+theorem mem_J_of_x_true (x : C.proj (· ∈ J)) (i : I) : x.val i = true → i ∈ J := by
   intro hi
   obtain ⟨y, hx⟩ := x.prop
   rw [← hx.2] at hi
   simp only [Proj, Bool.ite_eq_true_distrib, if_false_right_eq_and] at hi
   exact hi.1
 
+/-- `C.proj (· ∈ J)` is finite for a finite set `J`. -/
 noncomputable
 instance : Fintype (C.proj (· ∈ J)) := by
   let f : C.proj (· ∈ J) → (J → Bool) := fun x j ↦ x.val j.val
@@ -577,7 +578,9 @@ instance : Fintype (C.proj (· ∈ J)) := by
     · simp only [hh, not_true] at hi
     · rfl
 
+
 open Classical in
+/-- The Kronecker delta as a locally constant map from `C.proj (· ∈ J)` to `ℤ`. -/
 noncomputable
 def SpanFinBasis (x : C.proj (· ∈ J)) : LocallyConstant (C.proj (· ∈ J)) ℤ where
   toFun := fun y ↦ if y = x then 1 else 0
@@ -586,7 +589,7 @@ def SpanFinBasis (x : C.proj (· ∈ J)) : LocallyConstant (C.proj (· ∈ J)) �
     IsLocallyConstant.of_discrete _
 
 open Classical in
-lemma SpanFinBasis.span : ⊤ ≤ Submodule.span ℤ (Set.range (SpanFinBasis C J)) := by
+theorem SpanFinBasis.span : ⊤ ≤ Submodule.span ℤ (Set.range (SpanFinBasis C J)) := by
   intro f _
   rw [Finsupp.mem_span_range_iff_exists_finsupp]
   use Finsupp.onFinset (Finset.univ) f.toFun (fun _ _ ↦ Finset.mem_univ _)
@@ -597,19 +600,20 @@ lemma SpanFinBasis.span : ⊤ ≤ Submodule.span ℤ (Set.range (SpanFinBasis C 
     mul_zero, Finsupp.sum_ite_eq, Finsupp.mem_support_iff, ne_eq, ite_not]
   split_ifs with h <;> [exact h.symm; rfl]
 
-def ListOfElementForProd (x : C.proj (· ∈ J)) :
-    List (LocallyConstant (C.proj (· ∈ J)) ℤ) :=
+/-- A list of locally constant maps whose product is `SpanFinBasis C J x` (see
+    `factors_prod_eq_basis`) -/
+def Factors (x : C.proj (· ∈ J)) : List (LocallyConstant (C.proj (· ∈ J)) ℤ) :=
   List.map (fun i ↦ if x.val i = true then e (C.proj (· ∈ J)) i else (1 - (e (C.proj (· ∈ J)) i)))
     (J.sort (·≥·))
 
-lemma listProd_apply (x : C) (l : List (LocallyConstant C ℤ)) :
+theorem list_prod_apply (x : C) (l : List (LocallyConstant C ℤ)) :
     l.prod x = (l.map (LocallyConstant.evalMonoidHom x)).prod := by
   rw [← map_list_prod (LocallyConstant.evalMonoidHom x) l]
   rfl
 
-theorem listProd_eq_basis_of_eq {x y : (Set.proj C fun x ↦ x ∈ J)} (h : y = x) :
-    (ListOfElementForProd C J x).prod y = 1 := by
-  rw [listProd_apply (C.proj (· ∈ J)) y _]
+theorem factors_prod_eq_basis_of_eq {x y : (Set.proj C fun x ↦ x ∈ J)} (h : y = x) :
+    (Factors C J x).prod y = 1 := by
+  rw [list_prod_apply (C.proj (· ∈ J)) y _]
   apply List.prod_eq_one
   intro n hn
   simp only [List.mem_map] at hn
@@ -617,7 +621,7 @@ theorem listProd_eq_basis_of_eq {x y : (Set.proj C fun x ↦ x ∈ J)} (h : y = 
   rw [← ha.2]
   dsimp [LocallyConstant.evalMonoidHom]
   rw [h]
-  dsimp [ListOfElementForProd] at ha
+  dsimp [Factors] at ha
   simp only [List.mem_map] at ha
   obtain ⟨b, hb⟩ := ha.1
   rw [← hb.2]
@@ -627,8 +631,8 @@ theorem listProd_eq_basis_of_eq {x y : (Set.proj C fun x ↦ x ∈ J)} (h : y = 
     simp only [LocallyConstant.toFun_eq_coe, LocallyConstant.coe_one, Pi.one_apply, sub_zero]
 
 theorem e_mem_of_eq_true {x : (Set.proj C (· ∈ J))} {a : I} (hx : x.val a = true) :
-    e (Set.proj C (· ∈ J)) a ∈ ListOfElementForProd C J x := by
-  simp only [ListOfElementForProd, List.mem_map]
+    e (Set.proj C (· ∈ J)) a ∈ Factors C J x := by
+  simp only [Factors, List.mem_map]
   refine ⟨a, ⟨?_, if_pos hx⟩⟩
   simp only [Finset.mem_sort]
   obtain ⟨z, hz⟩ := x.prop
@@ -637,8 +641,8 @@ theorem e_mem_of_eq_true {x : (Set.proj C (· ∈ J))} {a : I} (hx : x.val a = t
   exact hx.1
 
 theorem one_sub_e_mem_of_ne_true {x y : (Set.proj C (· ∈ J))} {a : I} (ha : y.val a ≠ x.val a)
-    (hx : x.val a ≠ true) : 1 - e (Set.proj C (· ∈ J)) a ∈ ListOfElementForProd C J x := by
-  simp only [ListOfElementForProd, List.mem_map]
+    (hx : x.val a ≠ true) : 1 - e (Set.proj C (· ∈ J)) a ∈ Factors C J x := by
+  simp only [Factors, List.mem_map]
   refine ⟨a, ⟨?_, if_neg hx⟩⟩
   simp only [Finset.mem_sort]
   obtain ⟨z, hz⟩ := y.prop
@@ -648,9 +652,9 @@ theorem one_sub_e_mem_of_ne_true {x y : (Set.proj C (· ∈ J))} {a : I} (ha : y
   simp only [Bool.ite_eq_true_distrib, if_false_right_eq_and] at ha
   exact ha.1
 
-theorem listProd_eq_basis_of_ne {x y : (Set.proj C (· ∈ J))} (h : y ≠ x) :
-    (ListOfElementForProd C J x).prod y = 0 := by
-  rw [listProd_apply (C.proj (· ∈ J)) y _]
+theorem factors_prod_eq_basis_of_ne {x y : (Set.proj C (· ∈ J))} (h : y ≠ x) :
+    (Factors C J x).prod y = 0 := by
+  rw [list_prod_apply (C.proj (· ∈ J)) y _]
   apply List.prod_eq_zero
   simp only [List.mem_map]
   have h' : y.val ≠ x.val
@@ -670,13 +674,14 @@ theorem listProd_eq_basis_of_ne {x y : (Set.proj C (· ∈ J))} (h : y ≠ x) :
     simp only [Bool.not_eq_true] at hx
     rwa [hx, ne_eq, Bool.not_eq_false] at ha
 
-lemma listProd_eq_basis (x : C.proj (· ∈ J)) :
-    (ListOfElementForProd C J x).prod = SpanFinBasis C J x := by
+theorem factors_prod_eq_basis (x : C.proj (· ∈ J)) :
+    (Factors C J x).prod = SpanFinBasis C J x := by
   ext y
   dsimp [SpanFinBasis]
-  split_ifs with h <;> [exact listProd_eq_basis_of_eq _ _ h; exact listProd_eq_basis_of_ne _ _ h]
+  split_ifs with h <;> [exact factors_prod_eq_basis_of_eq _ _ h;
+    exact factors_prod_eq_basis_of_ne _ _ h]
 
-lemma Finset.sort_chain'_gt {α : Type*} [LinearOrder α] [DecidableRel (α := α) (·≥·)]
+theorem Finset.sort_chain'_gt {α : Type*} [LinearOrder α] [DecidableRel (α := α) (·≥·)]
     (s : Finset α) : (s.sort (·≥·)).Chain' (·>·) := by
   rw [List.chain'_iff_pairwise]
   have hr : (·>· : α → α → Prop) = (fun a b ↦ a ≥ b ∧ a ≠ b)
@@ -688,16 +693,17 @@ lemma Finset.sort_chain'_gt {α : Type*} [LinearOrder α] [DecidableRel (α := �
   rw [List.chain'_iff_pairwise]
   exact Finset.sort_sorted _ _
 
-lemma GoodProducts.spanFin : ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.proj (· ∈ J)))) := by
+theorem GoodProducts.spanFin : ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.proj (· ∈ J)))) := by
   rw [span_iff_products]
   refine le_trans (SpanFinBasis.span C J) ?_
   rw [Submodule.span_le]
   intro f hf
   obtain ⟨x, hx⟩ := hf
-  rw [← hx, ← listProd_eq_basis]
+  rw [← hx, ← factors_prod_eq_basis]
   let l := J.sort (·≥·)
-  dsimp [ListOfElementForProd]
-  suffices : l.Chain' (·>·) → (l.map (fun i ↦ if x.val i = true then e (C.proj (· ∈ J)) i else (1 - (e (C.proj (· ∈ J)) i)))).prod ∈
+  dsimp [Factors]
+  suffices : l.Chain' (·>·) → (l.map (fun i ↦ if x.val i = true then e (C.proj (· ∈ J)) i
+      else (1 - (e (C.proj (· ∈ J)) i)))).prod ∈
       Submodule.span ℤ ((Products.eval (C.proj (· ∈ J))) '' {m | m.val ≤ l})
   · exact Submodule.span_mono (Set.image_subset_range _ _) (this (Finset.sort_chain'_gt _))
   induction l with
@@ -858,7 +864,7 @@ lemma GoodProducts.spanFin : ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.proj
 
 end Fin
 
-lemma fin_comap_jointlySurjective
+theorem fin_comap_jointlySurjective
     (hC : IsClosed C)
     (f : LocallyConstant C ℤ) : ∃ (J : Finset I)
     (g : LocallyConstant (C.proj (· ∈ J)) ℤ), f = g.comap (ProjRestrict C (· ∈ J)) := by
@@ -867,7 +873,7 @@ lemma fin_comap_jointlySurjective
     (finsetsCone_isLimit hC.isCompact) f
   exact ⟨(Opposite.unop J), g, h⟩
 
-lemma GoodProducts.span (hC : IsClosed C) :
+theorem GoodProducts.span (hC : IsClosed C) :
     ⊤ ≤ Submodule.span ℤ (Set.range (eval C)) := by
   rw [span_iff_products]
   intro f _
@@ -887,24 +893,26 @@ end Span
 
 variable (I)
 
+/-- An term of `I` regarded as an ordinal. -/
 def ord (i : I) : Ordinal := Ordinal.typein ((·<·) : I → I → Prop) i
 
+/-- An ordinal regarded as a term of `I`. -/
 noncomputable
 def term {o : Ordinal} (ho : o < Ordinal.type ((·<·) : I → I → Prop)) : I :=
   Ordinal.enum ((·<·) : I → I → Prop) o ho
 
 variable {I}
 
-lemma term_ord_aux {i : I} (ho : ord I i < Ordinal.type ((·<·) : I → I → Prop)) :
+theorem term_ord_aux {i : I} (ho : ord I i < Ordinal.type ((·<·) : I → I → Prop)) :
     term I ho = i := by
   simp only [term, ord, Ordinal.enum_typein]
 
 @[simp]
-lemma ord_term_aux {o : Ordinal} (ho : o < Ordinal.type ((·<·) : I → I → Prop)) :
+theorem ord_term_aux {o : Ordinal} (ho : o < Ordinal.type ((·<·) : I → I → Prop)) :
     ord I (term I ho) = o := by
   simp only [ord, term, Ordinal.typein_enum]
 
-lemma ord_term {o : Ordinal} (ho : o < Ordinal.type ((·<·) : I → I → Prop)) (i : I) :
+theorem ord_term {o : Ordinal} (ho : o < Ordinal.type ((·<·) : I → I → Prop)) (i : I) :
     ord I i = o ↔ term I ho = i := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · subst h
@@ -912,9 +920,10 @@ lemma ord_term {o : Ordinal} (ho : o < Ordinal.type ((·<·) : I → I → Prop)
   · rw [← h]
     exact ord_term_aux ho
 
+/-- A predicate saying that `C` is "small" enough to satisfy the inductive hypothesis. -/
 def contained (o : Ordinal) : Prop := ∀ f, f ∈ C → ∀ (i : I), f i = true → ord I i < o
 
-lemma Products.prop_of_isGood_of_contained  {l : Products I} (o : Ordinal) (h : l.isGood C)
+theorem Products.prop_of_isGood_of_contained  {l : Products I} (o : Ordinal) (h : l.isGood C)
     (hsC : contained C o) : ∀ a, a ∈ l.val → ord I a < o := by
   intro i hi
   by_contra h'
@@ -938,12 +947,13 @@ instance : IsEmpty { l // Products.isGood (∅ : Set (I → Bool)) l } :=
   rw [subsingleton_iff.mp inferInstance (Products.eval ∅ l) 0]
   exact Submodule.zero_mem _ ))
 
-lemma GoodProducts.linearIndependentEmpty :
+theorem GoodProducts.linearIndependentEmpty :
     LinearIndependent ℤ (eval (∅ : Set (I → Bool))) := linearIndependent_empty_type
 
+/-- The empty list as a `Products` -/
 def Products.nil : Products I := ⟨[], by simp only [List.chain'_nil]⟩
 
-lemma Products.lt_nil_empty : { m : Products I | m < Products.nil } = ∅ := by
+theorem Products.lt_nil_empty : { m : Products I | m < Products.nil } = ∅ := by
   ext ⟨m, hm⟩
   refine ⟨fun h ↦ ?_, by tauto⟩
   simp only [Set.mem_setOf_eq, lt_iff_lex_lt, nil, List.Lex.not_nil_right] at h
@@ -954,13 +964,13 @@ instance {α : Type*} [TopologicalSpace α] [Inhabited α] : Nontrivial (Locally
   apply @zero_ne_one ℤ
   exact h default
 
-lemma Products.isGood_nil : Products.isGood ({fun _ ↦ false} : Set (I → Bool)) Products.nil:= by
+theorem Products.isGood_nil : Products.isGood ({fun _ ↦ false} : Set (I → Bool)) Products.nil:= by
   intro h
   rw [Products.lt_nil_empty] at h
   simp only [Products.eval, List.map, List.prod_nil, Set.image_empty, Submodule.span_empty,
     Submodule.mem_bot, one_ne_zero] at h
 
-lemma Products.span_nil_eq_top :
+theorem Products.span_nil_eq_top :
     Submodule.span ℤ (eval ({fun _ ↦ false} : Set (I → Bool)) '' {nil}) = ⊤ := by
   rw [Set.image_singleton, eq_top_iff]
   intro f _
@@ -972,6 +982,7 @@ lemma Products.span_nil_eq_top :
   rw [this]
   rfl
 
+/-- There is a unique `GoodProducts` for the singleton `{fun _ ↦ false}`. -/
 noncomputable
 instance : Unique { l // Products.isGood ({fun _ ↦ false} : Set (I → Bool)) l } where
   default := ⟨Products.nil, Products.isGood_nil⟩
@@ -1003,7 +1014,7 @@ instance (α : Type*) [TopologicalSpace α] : NoZeroSMulDivisors ℤ (LocallyCon
       exact h x
     · exact mul_right_injective₀ hc
 
-lemma GoodProducts.linearIndependentSingleton :
+theorem GoodProducts.linearIndependentSingleton :
     LinearIndependent ℤ (eval ({fun _ ↦ false} : Set (I → Bool))) := by
   refine linearIndependent_unique (eval ({fun _ ↦ false} : Set (I → Bool))) ?_
   simp only [eval, Products.eval, List.map, List.prod_nil, ne_eq, one_ne_zero, not_false_eq_true]
@@ -1012,16 +1023,16 @@ end Zero
 
 section Maps
 
-lemma contained_eq_proj (o : Ordinal) (h : contained C o) :
+theorem contained_eq_proj (o : Ordinal) (h : contained C o) :
     C = C.proj (ord I · < o) := by
   have := proj_prop_eq_self C (ord I · < o)
   simp [Set.proj, Bool.not_eq_false] at this
   exact (this (fun i x hx ↦ h x hx i)).symm
 
-lemma isClosed_proj (o : Ordinal) (hC : IsClosed C) : IsClosed (C.proj (ord I · < o)) :=
+theorem isClosed_proj (o : Ordinal) (hC : IsClosed C) : IsClosed (C.proj (ord I · < o)) :=
   (continuous_proj (ord I · < o)).isClosedMap C hC
 
-lemma contained_proj (o : Ordinal) : contained (C.proj (ord I · < o)) o := by
+theorem contained_proj (o : Ordinal) : contained (C.proj (ord I · < o)) o := by
   intro x hx j hj
   obtain ⟨_, ⟨_, h⟩⟩ := hx
   dsimp [Proj] at h
@@ -1035,13 +1046,15 @@ noncomputable
 def πs (o : Ordinal) : LocallyConstant (C.proj (ord I · < o)) ℤ →ₗ[ℤ] LocallyConstant C ℤ :=
   LocallyConstant.comapₗ ℤ (ProjRestrict C (ord I · < o)) (continuous_projRestrict _ _)
 
-lemma coe_πs (o : Ordinal) (f : LocallyConstant (C.proj (ord I · < o)) ℤ) :
+theorem coe_πs (o : Ordinal) (f : LocallyConstant (C.proj (ord I · < o)) ℤ) :
     πs C o f = f ∘ ProjRestrict C (ord I · < o) := by
   simp only [πs_apply, continuous_projRestrict, LocallyConstant.coe_comap]
 
-lemma injective_πs (o : Ordinal) : Function.Injective (πs C o) :=
+theorem injective_πs (o : Ordinal) : Function.Injective (πs C o) :=
   LocallyConstant.comap_injective _ (continuous_projRestrict _ _) (surjective_projRestrict _ _)
 
+/-- The `ℤ`-linear map induced by precomposition of the projection
+    `C.proj (ord I · < o₂) → C.proj (ord I · < o₁)` for `o₁ ≤ o₂`. -/
 @[simps!]
 noncomputable
 def πs' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) :
@@ -1049,12 +1062,12 @@ def πs' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) :
   LocallyConstant.comapₗ ℤ (ProjRestricts C (fun _ hh ↦ lt_of_lt_of_le hh h))
     (continuous_projRestricts _ _)
 
-lemma coe_πs' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) (f : LocallyConstant (C.proj (ord I · < o₁)) ℤ) :
+theorem coe_πs' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) (f : LocallyConstant (C.proj (ord I · < o₁)) ℤ) :
     (πs' C h f).toFun = f.toFun ∘ (ProjRestricts C (fun _ hh ↦ lt_of_lt_of_le hh h)) := by
   simp only [πs'_apply, LocallyConstant.toFun_eq_coe, continuous_projRestricts,
     LocallyConstant.coe_comap]
 
-lemma injective_πs' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : Function.Injective (πs' C h) :=
+theorem injective_πs' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : Function.Injective (πs' C h) :=
   LocallyConstant.comap_injective _ (continuous_projRestricts _ _) (surjective_projRestricts _ _)
 
 end Maps
@@ -1079,13 +1092,13 @@ theorem lt_iff_head!_lt {l : Products I} {o : Ordinal} :
     (l.val ≠ [] → ord I (l.val.head!) < o) ↔ ∀ i ∈ l.val, ord I i < o :=
   ⟨lt_of_head!_lt, fun h hn ↦ h l.val.head! (List.head!_mem_self hn)⟩
 
-lemma eval_πs {l : Products I} {o : Ordinal} (hlt : ∀ i ∈ l.val, ord I i < o) :
+theorem eval_πs {l : Products I} {o : Ordinal} (hlt : ∀ i ∈ l.val, ord I i < o) :
     πs C o (l.eval (C.proj (ord I · < o))) = l.eval C := by
   rw [← LocallyConstant.coe_inj]
   simp only [πs_apply, continuous_projRestrict, LocallyConstant.coe_comap]
   exact evalFacProp C (ord I · < o) hlt
 
-lemma eval_πs' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
+theorem eval_πs' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     (hlt : ∀ i ∈ l.val, ord I i < o₁) :
     πs' C h (l.eval (C.proj (ord I · < o₁))) = l.eval (C.proj (ord I · < o₂)) := by
   rw [← LocallyConstant.coe_inj, ← LocallyConstant.toFun_eq_coe]
@@ -1093,7 +1106,7 @@ lemma eval_πs' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     LocallyConstant.coe_comap]
   exact evalFacProps C (fun (i : I) ↦ ord I i < o₁) (fun (i : I) ↦ ord I i < o₂) hlt _
 
-lemma lt_ord_of_lt {l m : Products I} {o : Ordinal} (hmltl : m < l)
+theorem lt_ord_of_lt {l m : Products I} {o : Ordinal} (hmltl : m < l)
     (hlt : ∀ i ∈ l.val, ord I i < o) : ∀ i ∈ m.val, ord I i < o := by
   rw [← lt_iff_head!_lt] at hlt ⊢
   intro hm
@@ -1113,7 +1126,7 @@ lemma lt_ord_of_lt {l m : Products I} {o : Ordinal} (hmltl : m < l)
       List.Lex.rel hn
     exact List.Lex.isAsymm.aux _ _ _ hml hmltl
 
-lemma eval_πs_image {l : Products I} {o : Ordinal}
+theorem eval_πs_image {l : Products I} {o : Ordinal}
     (hl : ∀ i ∈ l.val, ord I i < o) : eval C '' { m | m < l } =
     (πs C o) '' (eval (C.proj (ord I · < o)) '' { m | m < l }) := by
   ext f
@@ -1130,7 +1143,7 @@ lemma eval_πs_image {l : Products I} {o : Ordinal}
     simp only [Set.mem_image, Set.mem_setOf_eq, exists_exists_and_eq_and]
     exact ⟨m, ⟨hm.1, by rfl⟩⟩
 
-lemma eval_πs_image' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
+theorem eval_πs_image' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     (hl : ∀ i ∈ l.val, ord I i < o₁) : eval (C.proj (ord I · < o₂)) '' { m | m < l } =
     (πs' C h) '' (eval (C.proj (ord I · < o₁)) '' { m | m < l }) := by
   ext f
@@ -1148,11 +1161,11 @@ lemma eval_πs_image' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     use m
     exact ⟨hm.1, by rfl⟩
 
-lemma head_lt_ord_of_isGood {l : Products I} {o : Ordinal}
+theorem head_lt_ord_of_isGood {l : Products I} {o : Ordinal}
     (h : l.isGood (C.proj (ord I · < o))) : l.val ≠ [] → ord I (l.val.head!) < o :=
   fun hn ↦ prop_of_isGood  C (ord I · < o) h l.val.head! (List.head!_mem_self hn)
 
-lemma isGood_mono {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
+theorem isGood_mono {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     (hl : l.isGood (C.proj (ord I · < o₁))) : l.isGood (C.proj (ord I · < o₂)) := by
   intro hl'
   apply hl
@@ -1168,15 +1181,18 @@ section Smaller
 
 namespace GoodProducts
 
+/-- The image of the `GoodProducts` for `C.proj (ord I · < o)` in `LocallyConstant C ℤ` -/
 def smaller (o : Ordinal) : Set (LocallyConstant C ℤ) :=
   (πs C o) '' (range (C.proj (ord I · < o)))
 
+/-- The map from the image of the `GoodProducts` in `LocallyConstant (C.proj (ord I · < o)) ℤ`
+    to `smaller C o` -/
 noncomputable
 def range_equiv_smaller_toFun (o : Ordinal) :
     range (C.proj (ord I · < o)) → smaller C o :=
   fun x ↦ ⟨πs C o ↑x, by dsimp [smaller]; use x.val; exact ⟨x.property, rfl⟩ ⟩
 
-lemma range_equiv_smaller_toFun_bijective (o : Ordinal) :
+theorem range_equiv_smaller_toFun_bijective (o : Ordinal) :
     Function.Bijective (range_equiv_smaller_toFun C o) := by
   refine ⟨fun a b hab ↦ ?_, fun ⟨a,ha⟩ ↦ ?_⟩
   · dsimp [range_equiv_smaller_toFun] at hab
@@ -1189,15 +1205,17 @@ lemma range_equiv_smaller_toFun_bijective (o : Ordinal) :
     simp only [Subtype.mk.injEq]
     exact hb.2
 
+/-- The equivalence from the image of the `GoodProducts` in
+    `LocallyConstant (C.proj (ord I · < o)) ℤ` to `smaller C o` -/
 noncomputable
 def range_equiv_smaller (o : Ordinal) : range (C.proj (ord I · < o)) ≃ smaller C o :=
   Equiv.ofBijective (range_equiv_smaller_toFun C o) (range_equiv_smaller_toFun_bijective C o)
 
-lemma smaller_factorization (o : Ordinal) :
+theorem smaller_factorization (o : Ordinal) :
     (fun (p : smaller C o) ↦ p.1) ∘ (range_equiv_smaller C o).toFun =
     (πs C o) ∘ (fun (p : range (C.proj (ord I · < o))) ↦ p.1) := by rfl
 
-lemma linearIndependent_iff_smaller (o : Ordinal) :
+theorem linearIndependent_iff_smaller (o : Ordinal) :
     LinearIndependent ℤ (GoodProducts.eval (C.proj (ord I · < o))) ↔
     LinearIndependent ℤ (fun (p : smaller C o) ↦ p.1) := by
   rw [GoodProducts.linearIndependent_iff_range,
@@ -1205,7 +1223,7 @@ lemma linearIndependent_iff_smaller (o : Ordinal) :
     (LinearMap.ker_eq_bot_of_injective (injective_πs _ _)), ← smaller_factorization C o]
   exact linearIndependent_equiv _
 
-lemma smaller_mono {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : smaller C o₁ ⊆ smaller C o₂ := by
+theorem smaller_mono {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : smaller C o₁ ⊆ smaller C o₂ := by
   intro f hf
   dsimp only [smaller] at *
   obtain ⟨g, hg⟩ := hf
@@ -1227,7 +1245,7 @@ end Smaller
 
 section Limit
 
-lemma Products.limitOrdinal {o : Ordinal} (ho : o.IsLimit) (l : Products I) :
+theorem Products.limitOrdinal {o : Ordinal} (ho : o.IsLimit) (l : Products I) :
     l.isGood (C.proj (ord I · < o)) ↔
     ∃ (o' : Ordinal), o' < o ∧ l.isGood (C.proj (ord I · < o')) := by
   refine ⟨fun h ↦ ?_, fun h ↦ by obtain ⟨o',⟨ho',hl⟩⟩ := h; exact isGood_mono C (le_of_lt ho') hl⟩
@@ -1245,7 +1263,7 @@ lemma Products.limitOrdinal {o : Ordinal} (ho : o.IsLimit) (l : Products I) :
   rwa [eval_πs_image' C (le_of_lt hslt) hlt, ← eval_πs' C (le_of_lt hslt) hlt,
     Submodule.apply_mem_span_image_iff_mem_span (injective_πs' C _)]
 
-lemma GoodProducts.union {o : Ordinal} (ho : o.IsLimit) (hsC : contained C o) :
+theorem GoodProducts.union {o : Ordinal} (ho : o.IsLimit) (hsC : contained C o) :
     range C = ⋃ (e : {o' // o' < o}), (smaller C e.val) := by
   ext p
   refine ⟨fun hp ↦ ?_, fun hp ↦ ?_⟩
@@ -1264,14 +1282,16 @@ lemma GoodProducts.union {o : Ordinal} (ho : o.IsLimit) (hsC : contained C o) :
     rw [contained_eq_proj C o hsC]
     exact Products.isGood_mono C (le_of_lt h) hl
 
+/-- The image of the `GoodProducts` in `C` is equivalent to the union of `smaller C o'` over all
+    ordinals `o' < o`. -/
 def GoodProducts.range_equiv {o : Ordinal} (ho : o.IsLimit) (hsC : contained C o) :
     range C ≃ ⋃ (e : {o' // o' < o}), (smaller C e.val) := Equiv.Set.ofEq (union C ho hsC)
 
-lemma GoodProducts.range_equiv_factorization {o : Ordinal} (ho : o.IsLimit) (hsC : contained C o) :
+theorem GoodProducts.range_equiv_factorization {o : Ordinal} (ho : o.IsLimit) (hsC : contained C o) :
     (fun (p : ⋃ (e : {o' // o' < o}), (smaller C e.val)) ↦ p.1) ∘ (range_equiv C ho hsC).toFun =
     (fun (p : range C) ↦ (p.1 : LocallyConstant C ℤ)) := rfl
 
-lemma GoodProducts.linearIndependent_iff_union_smaller {o : Ordinal} (ho : o.IsLimit)
+theorem GoodProducts.linearIndependent_iff_union_smaller {o : Ordinal} (ho : o.IsLimit)
     (hsC : contained C o) : LinearIndependent ℤ (GoodProducts.eval C) ↔
     LinearIndependent ℤ (fun (p : ⋃ (e : {o' // o' < o}), (smaller C e.val)) ↦ p.1) := by
   rw [GoodProducts.linearIndependent_iff_range, ← range_equiv_factorization C ho hsC]
@@ -1284,103 +1304,30 @@ section Successor
 variable {o : Ordinal} (hC : IsClosed C) (hsC : contained C (Order.succ o))
   (ho : o < Ordinal.type (·<· : I → I → Prop))
 
-namespace GoodProducts
+section ExactSequence
 
-def StartingWithMax : Set (Products I) := {l | l.isGood C ∧ term I ho ∈ l.val}
-
-lemma union_succ : GoodProducts C = GoodProducts (C.proj (ord I · < o)) ∪ StartingWithMax C ho := by
-  ext l
-  dsimp [GoodProducts, StartingWithMax]
-  simp only [Set.mem_union, Set.mem_setOf_eq]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · by_cases hh : term I ho ∈ l.val
-    · right
-      exact ⟨h, hh⟩
-    · left
-      intro he
-      apply h
-      have h' := Products.prop_of_isGood_of_contained C _ h hsC
-      simp only [Order.lt_succ_iff] at h'
-      simp only [not_imp_not] at hh
-      have hh' : ∀ a ∈ l.val, ord I a < o
-      · intro a ha
-        refine lt_of_le_of_ne (h' a ha) ?_
-        rw [ne_eq, ord_term ho a]
-        intro hta
-        simp only [hta, ha, not_true] at hh
-      rwa [Products.eval_πs_image C hh', ← Products.eval_πs C hh',
-        Submodule.apply_mem_span_image_iff_mem_span (injective_πs _ _)]
-  · refine Or.elim h (fun hh ↦ ?_) (fun hh ↦ ?_)
-    · have := Products.isGood_mono C (le_of_lt (Order.lt_succ o)) hh
-      rwa [contained_eq_proj C (Order.succ o) hsC]
-    · exact hh.1
-
-def sum_to : (GoodProducts (C.proj (ord I · < o))) ⊕ (StartingWithMax C ho) → Products I :=
-  Sum.elim Subtype.val Subtype.val
-
-lemma injective_sum_to : Function.Injective (sum_to C ho) := by
-  refine Function.Injective.sum_elim Subtype.val_injective Subtype.val_injective
-    (fun ⟨a,ha⟩ ⟨b,hb⟩  ↦ (fun (hab : a = b) ↦ ?_))
-  rw [← hab] at hb
-  have ha' := Products.prop_of_isGood  C _ ha (term I ho) hb.2
-  simp only [ord_term_aux, lt_self_iff_false] at ha'
-
-noncomputable
-def sum_to_equiv := Equiv.ofInjective (sum_to C ho) (injective_sum_to C ho)
-
-lemma sum_to_range :
-    Set.range (sum_to C ho) = GoodProducts (C.proj (ord I · < o)) ∪ StartingWithMax C ho := by
-  have h : Set.range (sum_to C ho) = _ ∪ _ := Set.Sum.elim_range _ _; rw [h]; congr<;> ext l
-  · exact ⟨fun ⟨m,hm⟩ ↦ by rw [← hm]; exact m.prop, fun hl ↦ ⟨⟨l,hl⟩, rfl⟩⟩
-  · exact ⟨fun ⟨m,hm⟩ ↦ by rw [← hm]; exact m.prop, fun hl ↦ ⟨⟨l,hl⟩, rfl⟩⟩
-
-noncomputable
-def sum_equiv : GoodProducts (C.proj (ord I · < o)) ⊕ (StartingWithMax C ho) ≃ GoodProducts C :=
-  Equiv.trans (Equiv.trans (sum_to_equiv C ho) (Equiv.Set.ofEq (sum_to_range C ho)))
-    (Equiv.Set.ofEq (union_succ C hsC ho).symm)
-
-lemma sum_equiv_comp_eval_eq_elim : eval C ∘ (sum_equiv C hsC ho).toFun =
-    (Sum.elim (fun (l : GoodProducts (C.proj (ord I · < o))) ↦ Products.eval C l.1)
-    (fun (l : StartingWithMax C ho) ↦ Products.eval C l.1)) := by
-  ext ⟨_,_⟩ <;> [rfl; rfl]
-
-def u : GoodProducts (C.proj (ord I · < o)) ⊕ StartingWithMax C ho →
-    LocallyConstant C ℤ :=
-  Sum.elim (fun l ↦ l.1.eval C) (fun l ↦ l.1.eval C)
-
-lemma linearIndependent_iff_sum :
-    LinearIndependent ℤ (eval C) ↔ LinearIndependent ℤ (u C ho) := by
-  rw [← linearIndependent_equiv (sum_equiv C hsC ho), u, ← sum_equiv_comp_eval_eq_elim C hsC ho]
-  exact Iff.rfl
-
-lemma span_sum : Set.range (eval C) = Set.range (Sum.elim
-    (fun (l : GoodProducts (C.proj (ord I · < o))) ↦ Products.eval C l.1)
-    (fun (l : StartingWithMax C ho) ↦ Products.eval C l.1)) := by
-  rw [← sum_equiv_comp_eval_eq_elim C hsC ho]
-  simp only [Equiv.toFun_as_coe, EquivLike.range_comp]
-
-end GoodProducts
-
+/-- The subset of `C` consisting of those elements whose `o`-th entry is `false`. -/
 def C0 := C ∩ {f | f (term I ho) = false}
 
+/-- The subset of `C` consisting of those elements whose `o`-th entry is `true`. -/
 def C1 := C ∩ {f | f (term I ho) = true}
 
-lemma isClosed_C0 : IsClosed (C0 C ho) := by
+theorem isClosed_C0 : IsClosed (C0 C ho) := by
   refine IsClosed.inter hC ?_
   have h : Continuous ((fun f ↦ f (term I ho) : (I → Bool) → Bool)) :=
       continuous_apply (term I ho)
   exact (continuous_iff_isClosed.mp h) {false} (isClosed_discrete _)
 
-lemma isClosed_C1 : IsClosed (C1 C ho) := by
+theorem isClosed_C1 : IsClosed (C1 C ho) := by
   refine IsClosed.inter hC ?_
   have h : Continuous ((fun f ↦ f (term I ho) : (I → Bool) → Bool)) :=
       continuous_apply (term I ho)
   exact (continuous_iff_isClosed.mp h) {true} (isClosed_discrete _)
 
-lemma contained_C1 : contained ((C1 C ho).proj (ord I · < o)) o :=
+theorem contained_C1 : contained ((C1 C ho).proj (ord I · < o)) o :=
   contained_proj _ _
 
-lemma union_C0C1_eq : (C0 C ho) ∪ (C1 C ho) = C := by
+theorem union_C0C1_eq : (C0 C ho) ∪ (C1 C ho) = C := by
   ext x
   refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
   · dsimp [C0, C1] at hx
@@ -1397,24 +1344,23 @@ lemma union_C0C1_eq : (C0 C ho) ∪ (C1 C ho) = C := by
     · right
       simpa only [← Bool.not_eq_false]
 
+/-- The intersection of `C0` and the projection of `C1`. We will apply the inductive hypothesis to
+    this set. -/
 def C' := C0 C ho ∩ (C1 C ho).proj (ord I · < o)
 
-lemma isClosed_C' : IsClosed (C' C ho) :=
+theorem isClosed_C' : IsClosed (C' C ho) :=
   IsClosed.inter (isClosed_C0 _ hC _) (isClosed_proj _ _ (isClosed_C1 _ hC _))
 
-lemma contained_C' : contained (C' C ho) o := fun f hf i hi ↦ contained_C1 C ho f hf.2 i hi
-
-def CC'₀ : C' C ho → C := fun g ↦ ⟨g.val,g.prop.1.1⟩
-
-lemma continuous_CC'₀ : Continuous (CC'₀ C ho) := Continuous.subtype_mk continuous_subtype_val _
+theorem contained_C' : contained (C' C ho) o := fun f hf i hi ↦ contained_C1 C ho f hf.2 i hi
 
 variable (o)
 
+/-- Swapping the `o`-th coordinate to `true`. -/
 noncomputable
 def SwapTrue : (I → Bool) → I → Bool :=
   fun f i ↦ if ord I i = o then true else f i
 
-lemma continuous_swapTrue  :
+theorem continuous_swapTrue  :
     Continuous (SwapTrue o : (I → Bool) → I → Bool) := by
   refine continuous_pi ?_
   intro i
@@ -1423,27 +1369,13 @@ lemma continuous_swapTrue  :
   · exact continuous_const
   · exact continuous_apply _
 
-noncomputable
-def SwapFalse : (I → Bool) → I → Bool :=
-  fun f i ↦ if ord I i = o then false else f i
-
-lemma continuous_swapFalse :
-    Continuous (SwapFalse o : (I → Bool) → I → Bool) := by
-  refine continuous_pi ?_
-  intro i
-  dsimp [SwapFalse]
-  split_ifs
-  · exact continuous_const
-  · exact continuous_apply _
-
 variable {o}
 
-lemma swapTrue_mem_C1 (f : (C1 C ho).proj (ord I · < o)) :
+theorem swapTrue_mem_C1 (f : (C1 C ho).proj (ord I · < o)) :
     SwapTrue o f.val ∈ C1 C ho := by
   obtain ⟨f, ⟨g, hg⟩⟩ := f
   suffices : SwapTrue o f = g
-  · rw [this]
-    exact hg.1
+  · rw [this]; exact hg.1
   dsimp [SwapTrue]
   ext i
   split_ifs with h
@@ -1460,59 +1392,35 @@ lemma swapTrue_mem_C1 (f : (C1 C ho).proj (ord I · < o)) :
     simp only [not_lt, Bool.not_eq_true] at hsC
     exact (hsC hh).symm
 
-lemma swapTrue_mem_C (f : C' C ho) : SwapTrue o f.val ∈ C := by
-  suffices : SwapTrue o f.val ∈ C1 C ho
-  · exact this.1
-  exact (swapTrue_mem_C1 C hsC ho ⟨f.val,f.prop.2⟩)
+/-- The first way to map `C'` into `C`. -/
+def CC'₀ : C' C ho → C := fun g ↦ ⟨g.val,g.prop.1.1⟩
 
+/-- The second way to map `C'` into `C`. -/
 noncomputable
 def CC'₁ : C' C ho → C :=
-  fun g ↦ ⟨SwapTrue o g.val, swapTrue_mem_C C hsC ho g⟩
+  fun g ↦ ⟨SwapTrue o g.val, (swapTrue_mem_C1 C hsC ho ⟨g.val,g.prop.2⟩).1⟩
 
-lemma continuous_CC'₁ : Continuous (CC'₁ C hsC ho) :=
+theorem continuous_CC'₀ : Continuous (CC'₀ C ho) := Continuous.subtype_mk continuous_subtype_val _
+
+theorem continuous_CC'₁ : Continuous (CC'₁ C hsC ho) :=
   Continuous.subtype_mk (Continuous.comp (continuous_swapTrue o) continuous_subtype_val) _
 
+/-- The `ℤ`-linear map induced by precomposing with `CC'₀` -/
 noncomputable
 def Linear_CC'₀ : LocallyConstant C ℤ →ₗ[ℤ] LocallyConstant (C' C ho) ℤ :=
   LocallyConstant.comapₗ ℤ (CC'₀ C ho) (continuous_CC'₀ C ho)
 
+/-- The `ℤ`-linear map induced by precomposing with `CC'₁` -/
 noncomputable
 def Linear_CC'₁ : LocallyConstant C ℤ →ₗ[ℤ] LocallyConstant (C' C ho) ℤ :=
   LocallyConstant.comapₗ ℤ (CC'₁ C hsC ho) (continuous_CC'₁ C hsC ho)
 
+/-- The difference between `Linear_CC'₁` and `Linear_CC'₀`. -/
 noncomputable
 def Linear_CC' : LocallyConstant C ℤ →ₗ[ℤ] LocallyConstant (C' C ho) ℤ :=
   Linear_CC'₁ C hsC ho - Linear_CC'₀ C ho
 
-variable (o) in
-def GoodProducts.v : GoodProducts (C.proj (ord I · < o)) →
-    LocallyConstant (C.proj (ord I · < o)) ℤ :=
-  eval (C.proj (ord I · < o))
-
-lemma GoodProducts.huv : u C ho ∘ Sum.inl = πs C o ∘ v C o := by
-  ext l
-  dsimp [u]
-  rw [← Products.eval_πs C (Products.prop_of_isGood  _ _ l.prop)]
-  rfl
-
-noncomputable
-def GoodProducts.w : StartingWithMax C ho → LocallyConstant (C' C ho) ℤ :=
-  Linear_CC' C hsC ho ∘ u C ho ∘ Sum.inr
-
-lemma swapTrue_swapFalse (x : I → Bool) (hx : x ∈ (C1 C ho).proj (ord I · < o)) :
-    SwapFalse o (SwapTrue o x) = x := by
-  ext i
-  dsimp [SwapTrue, SwapFalse]
-  split_ifs with h
-  · obtain ⟨y, hy⟩ := hx
-    rw [← hy.2]
-    dsimp [Proj]
-    split_ifs with h'
-    · simp only [h, lt_self_iff_false] at h'
-    · rfl
-  · rfl
-
-lemma CC_comp_zero : ∀ y, (Linear_CC' C hsC ho) ((πs C o) y) = 0 := by
+theorem CC_comp_zero : ∀ y, (Linear_CC' C hsC ho) ((πs C o) y) = 0 := by
   intro y
   dsimp [Linear_CC', Linear_CC'₀, Linear_CC'₁]
   ext x
@@ -1533,7 +1441,7 @@ lemma CC_comp_zero : ∀ y, (Linear_CC' C hsC ho) ((πs C o) y) = 0 := by
     · rfl
   · rfl
 
-lemma C0_projOrd {x : I → Bool} (hx : x ∈ C0 C ho) : Proj (ord I · < o) x = x := by
+theorem C0_projOrd {x : I → Bool} (hx : x ∈ C0 C ho) : Proj (ord I · < o) x = x := by
   ext i
   simp only [Proj, Set.mem_setOf, ite_eq_left_iff, not_lt]
   intro hi
@@ -1547,7 +1455,7 @@ lemma C0_projOrd {x : I → Bool} (hx : x ∈ C0 C ho) : Proj (ord I · < o) x =
     rw [eq_comm, ord_term ho] at hi
     rw [← hx.2, hi]
 
-lemma C1_projOrd {x : I → Bool} (hx : x ∈ C1 C ho) : SwapTrue o (Proj (ord I · < o) x) = x := by
+theorem C1_projOrd {x : I → Bool} (hx : x ∈ C1 C ho) : SwapTrue o (Proj (ord I · < o) x) = x := by
   ext i
   dsimp [SwapTrue, Proj]
   split_ifs with hi h
@@ -1562,7 +1470,7 @@ lemma C1_projOrd {x : I → Bool} (hx : x ∈ C1 C ho) : SwapTrue o (Proj (ord I
     exact (hsC h').symm
 
 open Classical in
-lemma CC_exact {f : LocallyConstant C ℤ} (hf : Linear_CC' C hsC ho f = 0) :
+theorem CC_exact {f : LocallyConstant C ℤ} (hf : Linear_CC' C hsC ho f = 0) :
     ∃ y, πs C o y = f := by
   dsimp [Linear_CC', Linear_CC'₀, Linear_CC'₁] at hf
   rw [sub_eq_zero, ← LocallyConstant.coe_inj, LocallyConstant.coe_comap _ _ (continuous_CC'₁ _ _ _),
@@ -1608,11 +1516,11 @@ lemma CC_exact {f : LocallyConstant C ℤ} (hf : Linear_CC' C hsC ho f = 0) :
       exact C1_projOrd C hsC ho hx₁
 
 variable (o) in
-lemma succ_mono : CategoryTheory.Mono (ModuleCat.ofHom (πs C o)) := by
+theorem succ_mono : CategoryTheory.Mono (ModuleCat.ofHom (πs C o)) := by
   rw [ModuleCat.mono_iff_injective]
   exact injective_πs _ _
 
-lemma succ_exact : CategoryTheory.Exact
+theorem succ_exact : CategoryTheory.Exact
     (ModuleCat.ofHom (πs C o))
     (ModuleCat.ofHom (Linear_CC' C hsC ho)) := by
   rw [ModuleCat.exact_iff]
@@ -1624,14 +1532,132 @@ lemma succ_exact : CategoryTheory.Exact
     exact CC_comp_zero _ _ _ y
   · exact CC_exact _ hC _ ho hf
 
-lemma swapTrue_eq_true : ∀ x, SwapTrue o x (term I ho) = true := by
+end ExactSequence
+
+section GoodProducts
+
+namespace GoodProducts
+
+/-- The `GoodProducts` in `C` that contain `o` (they necessarily start with `o`, see
+    `GoodProducts.head!_eq_o_of_startingWithMax`) -/
+def StartingWithMax : Set (Products I) := {l | l.isGood C ∧ term I ho ∈ l.val}
+
+theorem union_succ : GoodProducts C = GoodProducts (C.proj (ord I · < o)) ∪ StartingWithMax C ho := by
+  ext l
+  dsimp [GoodProducts, StartingWithMax]
+  simp only [Set.mem_union, Set.mem_setOf_eq]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · by_cases hh : term I ho ∈ l.val
+    · right
+      exact ⟨h, hh⟩
+    · left
+      intro he
+      apply h
+      have h' := Products.prop_of_isGood_of_contained C _ h hsC
+      simp only [Order.lt_succ_iff] at h'
+      simp only [not_imp_not] at hh
+      have hh' : ∀ a ∈ l.val, ord I a < o
+      · intro a ha
+        refine lt_of_le_of_ne (h' a ha) ?_
+        rw [ne_eq, ord_term ho a]
+        intro hta
+        simp only [hta, ha, not_true] at hh
+      rwa [Products.eval_πs_image C hh', ← Products.eval_πs C hh',
+        Submodule.apply_mem_span_image_iff_mem_span (injective_πs _ _)]
+  · refine Or.elim h (fun hh ↦ ?_) (fun hh ↦ ?_)
+    · have := Products.isGood_mono C (le_of_lt (Order.lt_succ o)) hh
+      rwa [contained_eq_proj C (Order.succ o) hsC]
+    · exact hh.1
+
+/-- The inclusion map from the sum of `GoodProducts (C.proj (ord I · < o))` and
+    `(StartingWithMax C ho)` to `Products I`. -/
+def sum_to : (GoodProducts (C.proj (ord I · < o))) ⊕ (StartingWithMax C ho) → Products I :=
+  Sum.elim Subtype.val Subtype.val
+
+theorem injective_sum_to : Function.Injective (sum_to C ho) := by
+  refine Function.Injective.sum_elim Subtype.val_injective Subtype.val_injective
+    (fun ⟨a,ha⟩ ⟨b,hb⟩  ↦ (fun (hab : a = b) ↦ ?_))
+  rw [← hab] at hb
+  have ha' := Products.prop_of_isGood  C _ ha (term I ho) hb.2
+  simp only [ord_term_aux, lt_self_iff_false] at ha'
+
+theorem sum_to_range :
+    Set.range (sum_to C ho) = GoodProducts (C.proj (ord I · < o)) ∪ StartingWithMax C ho := by
+  have h : Set.range (sum_to C ho) = _ ∪ _ := Set.Sum.elim_range _ _; rw [h]; congr<;> ext l
+  · exact ⟨fun ⟨m,hm⟩ ↦ by rw [← hm]; exact m.prop, fun hl ↦ ⟨⟨l,hl⟩, rfl⟩⟩
+  · exact ⟨fun ⟨m,hm⟩ ↦ by rw [← hm]; exact m.prop, fun hl ↦ ⟨⟨l,hl⟩, rfl⟩⟩
+
+/-- The equivalence from the sum of `GoodProducts (C.proj (ord I · < o))` and
+    `(StartingWithMax C ho)` to `GoodProducts C`. -/
+noncomputable
+def sum_equiv : GoodProducts (C.proj (ord I · < o)) ⊕ (StartingWithMax C ho) ≃ GoodProducts C :=
+  Equiv.trans (Equiv.trans (Equiv.ofInjective (sum_to C ho) (injective_sum_to C ho))
+    (Equiv.Set.ofEq (sum_to_range C ho)))
+    (Equiv.Set.ofEq (union_succ C hsC ho).symm)
+
+theorem sum_equiv_comp_eval_eq_elim : eval C ∘ (sum_equiv C hsC ho).toFun =
+    (Sum.elim (fun (l : GoodProducts (C.proj (ord I · < o))) ↦ Products.eval C l.1)
+    (fun (l : StartingWithMax C ho) ↦ Products.eval C l.1)) := by
+  ext ⟨_,_⟩ <;> [rfl; rfl]
+
+/-- Let
+
+`N := LocallyConstant (C.proj (ord I · < o)) ℤ`
+
+`M := LocallyConstant C ℤ`
+
+`P := LocallyConstant (C' C ho) ℤ`
+
+`ι := GoodProducts (C.proj (ord I · < o))`
+
+`ι' := GoodProducts (C' C ho')`
+
+`v : ι → N := GoodProducts.eval (C.proj (ord I · < o))`
+
+Then `SumEval C ho` is the map `u` in the diagram below. It is linearly independent if and only if
+`GoodProducts.eval C` is, see `linearIndependent_iff_sum`. The top row is the exact sequence given
+by `succ_exact` and `succ_mono`. The left square commutes by `GoodProducts.square_commutes`.
+```
+0 --→ N --→ M --→  P
+      ↑     ↑      ↑
+     v|    u|      |
+      ι → ι ⊕ ι' ← ι'
+```
+-/
+def SumEval : GoodProducts (C.proj (ord I · < o)) ⊕ StartingWithMax C ho →
+    LocallyConstant C ℤ :=
+  Sum.elim (fun l ↦ l.1.eval C) (fun l ↦ l.1.eval C)
+
+theorem linearIndependent_iff_sum :
+    LinearIndependent ℤ (eval C) ↔ LinearIndependent ℤ (SumEval C ho) := by
+  rw [← linearIndependent_equiv (sum_equiv C hsC ho), SumEval,
+    ← sum_equiv_comp_eval_eq_elim C hsC ho]
+  exact Iff.rfl
+
+theorem span_sum : Set.range (eval C) = Set.range (Sum.elim
+    (fun (l : GoodProducts (C.proj (ord I · < o))) ↦ Products.eval C l.1)
+    (fun (l : StartingWithMax C ho) ↦ Products.eval C l.1)) := by
+  rw [← sum_equiv_comp_eval_eq_elim C hsC ho]
+  simp only [Equiv.toFun_as_coe, EquivLike.range_comp]
+
+
+theorem square_commutes : SumEval C ho ∘ Sum.inl =
+    ModuleCat.ofHom (πs C o) ∘ eval (C.proj (ord I · < o)) := by
+  ext l
+  dsimp [SumEval]
+  rw [← Products.eval_πs C (Products.prop_of_isGood  _ _ l.prop)]
+  rfl
+
+end GoodProducts
+
+theorem swapTrue_eq_true : ∀ x, SwapTrue o x (term I ho) = true := by
   intro x
   dsimp [SwapTrue]
   split_ifs with h
   · rfl
   · simp only [ord_term_aux, not_true] at h
 
-lemma mem_C'_eq_false : ∀ x, x ∈ C' C ho → x (term I ho) = false := by
+theorem mem_C'_eq_false : ∀ x, x ∈ C' C ho → x (term I ho) = false := by
   intro x ⟨_,⟨y,⟨_,hy⟩⟩⟩
   rw [← hy]
   dsimp [Proj]
@@ -1639,21 +1665,22 @@ lemma mem_C'_eq_false : ∀ x, x ∈ C' C ho → x (term I ho) = false := by
   · simp only [ord_term_aux, lt_self_iff_false] at h
   · rfl
 
+/-- `List.tail` as a `Products`. -/
 def Products.Tail (l : Products I) : Products I :=
   ⟨l.val.tail, List.Chain'.tail l.prop⟩
 
-lemma Products.max_eq_o_cons_tail (l : Products I) (hl : l.val ≠ [])
+theorem Products.max_eq_o_cons_tail (l : Products I) (hl : l.val ≠ [])
     (hlh : l.val.head! = term I ho) : l.val = term I ho :: l.Tail.val := by
   rw [← List.cons_head!_tail hl, hlh]
   rfl
 
-lemma Products.max_eq_o_cons_tail' (l : Products I) (hl : l.val ≠ [])
+theorem Products.max_eq_o_cons_tail' (l : Products I) (hl : l.val ≠ [])
     (hlh : l.val.head! = term I ho) (hlc : List.Chain' (·>·) (term I ho :: l.Tail.val)) :
     l = ⟨term I ho :: l.Tail.val, hlc⟩ := by
   simp_rw [← max_eq_o_cons_tail ho l hl hlh]
   rfl
 
-lemma GoodProducts.head!_eq_o_of_startingWithMax (l : ↑(StartingWithMax C ho)) :
+theorem GoodProducts.head!_eq_o_of_startingWithMax (l : ↑(StartingWithMax C ho)) :
     l.val.val.head! = term I ho := by
   rw [eq_comm, ← ord_term ho]
   have hm := l.prop.2
@@ -1666,17 +1693,17 @@ lemma GoodProducts.head!_eq_o_of_startingWithMax (l : ↑(StartingWithMax C ho))
     exact Products.rel_head!_of_mem hm
   rwa [ord_term_aux] at h
 
-lemma GoodProducts.max_eq_o_cons_tail (l : StartingWithMax C ho) :
+theorem GoodProducts.max_eq_o_cons_tail (l : StartingWithMax C ho) :
     l.val.val = (term I ho) :: l.val.Tail.val :=
   Products.max_eq_o_cons_tail ho l.val (List.ne_nil_of_mem l.prop.2)
     (head!_eq_o_of_startingWithMax _ hsC ho l)
 
-lemma Products.evalCons {l : List I} {a : I}
+theorem Products.evalCons {l : List I} {a : I}
     (hla : (a::l).Chain' (·>·)) : Products.eval C ⟨a::l,hla⟩ =
     (e C a) * Products.eval C ⟨l,List.Chain'.sublist hla (List.tail_sublist (a::l))⟩ := by
   simp only [eval._eq_1, List.map, List.prod_cons]
 
-lemma Products.max_eq_eval (l : Products I) (hl : l.val ≠ [])
+theorem Products.max_eq_eval (l : Products I) (hl : l.val ≠ [])
     (hlh : l.val.head! = term I ho) :
     Linear_CC' C hsC ho (l.eval C) = l.Tail.eval (C' C ho) := by
   have hlc : ((term I ho) :: l.Tail.val).Chain' (·>·)
@@ -1714,18 +1741,20 @@ lemma Products.max_eq_eval (l : Products I) (hl : l.val ≠ [])
   · push_neg at h₁; obtain ⟨i, hi⟩ := h₁; exfalso; rw [← hi' i hi.1] at hi; exact hi.2 (h₆ i hi.1)
   · rfl
 
-lemma GoodProducts.max_eq_eval (l : StartingWithMax C ho) :
+namespace GoodProducts
+
+theorem max_eq_eval (l : StartingWithMax C ho) :
     Linear_CC' C hsC ho (l.val.eval C) = l.val.Tail.eval (C' C ho) :=
   Products.max_eq_eval _ _ _ _ (List.ne_nil_of_mem l.prop.2)
     (head!_eq_o_of_startingWithMax _ hsC ho l)
 
-lemma GoodProducts.max_eq_eval_unapply :
+theorem max_eq_eval_unapply :
     (Linear_CC' C hsC ho) ∘ (fun (l : StartingWithMax C ho) ↦ Products.eval C l.val) =
     (fun l ↦ l.val.Tail.eval (C' C ho)) := by
   ext1 l
   exact max_eq_eval _ _ _ _
 
-theorem GoodProducts.chain'_cons_of_lt (l : StartingWithMax C ho)
+theorem chain'_cons_of_lt (l : StartingWithMax C ho)
     (q : Products I) (hq : q < l.val.Tail) :
     List.Chain' (fun x x_1 ↦ x > x_1) (term I ho :: q.val) := by
   rw [List.chain'_iff_pairwise]
@@ -1740,7 +1769,7 @@ theorem GoodProducts.chain'_cons_of_lt (l : StartingWithMax C ho)
     rw [max_eq_o_cons_tail C hsC ho l, List.chain'_iff_pairwise] at this
     exact List.rel_of_pairwise_cons this (List.head!_mem_self hM)
 
-theorem GoodProducts.good_lt_startingWithMax (q : GoodProducts (C.proj (ord I · < o)))
+theorem good_lt_startingWithMax (q : GoodProducts (C.proj (ord I · < o)))
     (l : StartingWithMax C ho) : List.Lex (·<·) q.val.val l.val.val := by
   by_cases h : q.val.val = []
   · rw [h, max_eq_o_cons_tail C hsC ho l]
@@ -1751,7 +1780,7 @@ theorem GoodProducts.good_lt_startingWithMax (q : GoodProducts (C.proj (ord I ·
     simp only [term, Ordinal.typein_enum]
     exact Products.prop_of_isGood C _ q.prop q.val.val.head! (List.head!_mem_self h)
 
-lemma GoodProducts.maxTail_isGood (l : StartingWithMax C ho)
+theorem maxTail_isGood (l : StartingWithMax C ho)
     (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.proj (ord I · < o))))) :
     l.val.Tail.isGood (C' C ho) := by
   intro h
@@ -1810,43 +1839,52 @@ lemma GoodProducts.maxTail_isGood (l : StartingWithMax C ho)
     rw [max_eq_o_cons_tail C hsC ho l]
     exact List.Lex.cons ((Products.lt_iff_lex_lt q l.val.Tail).mp (hmmem hq))
 
+/-- Given `l : StartingWithMax C ho`, its `l.val.Tail` is a `GoodProducts (C' C ho)`. -/
 noncomputable
-def GoodProducts.StartingWithMaxFunToGood
+def MaxToGood
     (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.proj (ord I · < o))))) :
     StartingWithMax C ho → GoodProducts (C' C ho) :=
   fun l ↦ ⟨l.val.Tail, maxTail_isGood C hC hsC ho l h₁⟩
 
-lemma GoodProducts.StartingWithMaxFunToGoodInj
+theorem maxToGood_injective
     (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.proj (ord I · < o))))) :
-    (StartingWithMaxFunToGood C hC hsC ho h₁).Injective := by
+    (MaxToGood C hC hsC ho h₁).Injective := by
   intro m n h
   apply Subtype.ext ∘ Subtype.ext
   rw [Subtype.ext_iff] at h
-  dsimp [StartingWithMaxFunToGood] at h
+  dsimp [MaxToGood] at h
   rw [max_eq_o_cons_tail C hsC ho m, max_eq_o_cons_tail C hsC ho n, h]
 
-lemma GoodProducts.hhw (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.proj (ord I · < o))))) :
-    LinearIndependent ℤ (eval (C' C ho)) → LinearIndependent ℤ (w C hsC ho) := by
-  dsimp [w, u]
+theorem linearIndependent_comp_of_eval
+    (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.proj (ord I · < o))))) :
+    LinearIndependent ℤ (eval (C' C ho)) →
+    LinearIndependent ℤ (ModuleCat.ofHom (Linear_CC' C hsC ho) ∘ SumEval C ho ∘ Sum.inr) := by
+  dsimp [SumEval, ModuleCat.ofHom]
   rw [max_eq_eval_unapply C hsC ho]
   intro h
-  let f := StartingWithMaxFunToGood C hC hsC ho h₁
-  have hf : f.Injective := StartingWithMaxFunToGoodInj C hC hsC ho h₁
+  let f := MaxToGood C hC hsC ho h₁
+  have hf : f.Injective := maxToGood_injective C hC hsC ho h₁
   have hh : (fun l ↦ Products.eval (C' C ho) l.val.Tail) = eval (C' C ho) ∘ f := rfl
   rw [hh]
   exact h.comp f hf
+
+end GoodProducts
+
+end GoodProducts
 
 end Successor
 
 section Induction
 
 variable (I) in
+/-- The predicate on ordinals which we prove by induction, see `GoodProducts.P0`,
+    `GoodProducts.Plimit` and `GoodProducts.linearIndependentAux`.  -/
 def P (o : Ordinal) : Prop :=
   o ≤ Ordinal.type (·<· : I → I → Prop) →
   (∀ (C : Set (I → Bool)), IsClosed C → contained C o →
     LinearIndependent ℤ (GoodProducts.eval C))
 
-lemma GoodProducts.P0 : P I 0 := fun _ C _ hsC ↦ by
+theorem GoodProducts.P0 : P I 0 := fun _ C _ hsC ↦ by
   have : C ⊆ {(fun _ ↦ false)} := fun c hc ↦ by
     ext x; exact Bool.eq_false_iff.mpr (fun ht ↦ (Ordinal.not_lt_zero (ord I x)) (hsC c hc x ht))
   rw [Set.subset_singleton_iff_eq] at this
@@ -1856,32 +1894,34 @@ lemma GoodProducts.P0 : P I 0 := fun _ C _ hsC ↦ by
   · subst C
     exact linearIndependentSingleton
 
-lemma GoodProducts.Plimit :
-    ∀ (o : Ordinal), Ordinal.IsLimit o → (∀ (o' : Ordinal), o' < o → P I o') → P I o := by
-  intro o ho h hho C hC hsC
+theorem GoodProducts.Plimit (o : Ordinal) (ho : Ordinal.IsLimit o) :
+    (∀ (o' : Ordinal), o' < o → P I o') → P I o := by
+  intro h hho C hC hsC
   rw [linearIndependent_iff_union_smaller C ho hsC]
   exact linearIndependent_iUnion_of_directed
     (directed_of_sup fun _ _ h ↦ GoodProducts.smaller_mono C h) fun ⟨o', ho'⟩ ↦
     (linearIndependent_iff_smaller _ _).mp (h o' ho' (le_of_lt (lt_of_lt_of_le ho' hho))
     (C.proj (ord I · < o')) (isClosed_proj _ _ hC) (contained_proj _ _))
 
-lemma GoodProducts.linearIndependentAux (μ : Ordinal) : P I μ := by
+theorem GoodProducts.linearIndependentAux (μ : Ordinal) : P I μ := by
   refine Ordinal.limitRecOn μ P0 (fun o h ho C hC hsC ↦ ?_)
       (fun o ho h ↦ (GoodProducts.Plimit o ho (fun o' ho' ↦ (h o' ho'))))
   have ho' : o < Ordinal.type (·<· : I → I → Prop) :=
     lt_of_lt_of_le (Order.lt_succ _) ho
   rw [linearIndependent_iff_sum C hsC ho']
   refine ModuleCat.linearIndependent_leftExact ?_ ?_ (succ_mono C o) (succ_exact C hC hsC ho')
-      (huv C ho')
+      (square_commutes C ho')
   · exact h (le_of_lt ho') (C.proj (ord I · < o)) (isClosed_proj C o hC) (contained_proj C o)
-  · exact hhw C hC hsC ho' (span (C.proj (ord I · < o)) (isClosed_proj C o hC))
-      (h (le_of_lt ho') (C' C ho') (isClosed_C' C hC ho') (contained_C' C ho'))
+  · exact linearIndependent_comp_of_eval C hC hsC ho' (span (C.proj (ord I · < o))
+      (isClosed_proj C o hC)) (h (le_of_lt ho') (C' C ho') (isClosed_C' C hC ho')
+      (contained_C' C ho'))
 
-lemma GoodProducts.linearIndependent (hC : IsClosed C) :
+theorem GoodProducts.linearIndependent (hC : IsClosed C) :
     LinearIndependent ℤ (GoodProducts.eval C) :=
   GoodProducts.linearIndependentAux (Ordinal.type (·<· : I → I → Prop)) (le_refl _)
     C hC (fun _ _ _ _ ↦ Ordinal.typein_lt_type _ _)
 
+/-- `GoodProducts C` as a `ℤ`-basis for `LocallyConstant C ℤ`.  -/
 noncomputable
 def GoodProducts.Basis (hC : IsClosed C) :
     Basis (GoodProducts C) ℤ (LocallyConstant C ℤ) :=
@@ -1891,7 +1931,7 @@ end Induction
 
 variable {S : Profinite} {ι : S → I → Bool} (hι : ClosedEmbedding ι)
 
-lemma Nobeling : Module.Free ℤ (LocallyConstant S ℤ) := Module.Free.of_equiv'
+theorem Nobeling : Module.Free ℤ (LocallyConstant S ℤ) := Module.Free.of_equiv'
   (Module.Free.of_basis <| GoodProducts.Basis _ hι.closed_range) (LocallyConstant.congrLeftₗ ℤ
   (Homeomorph.ofEmbedding ι hι.toEmbedding)).symm
 
@@ -1908,7 +1948,7 @@ instance (α : Type*) [TopologicalSpace α] [CompactSpace α] [TotallyDisconnect
   rwa [← compact_t2_tot_disc_iff_tot_sep]
 
 open Classical in
-lemma Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
+theorem Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
   apply Continuous.closedEmbedding
   · dsimp [ι]
     refine continuous_pi ?_
