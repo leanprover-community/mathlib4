@@ -302,26 +302,26 @@ theorem minpoly_out (c : GalConjClasses F E) : _root_.minpoly F c.out = minpoly 
   rw [← c.out_eq, minpoly_mk, c.out_eq]
 #align gal_conj_classes.minpoly_out GalConjClasses.minpoly_out
 
-nonrec theorem minpoly.monic (c : GalConjClasses F E) : (minpoly c).Monic := by
+theorem monic_minpoly (c : GalConjClasses F E) : (minpoly c).Monic := by
   rw [← c.out_eq, minpoly_mk]; exact minpoly.monic (IsSeparable.isIntegral F _)
-#align gal_conj_classes.minpoly.monic GalConjClasses.minpoly.monic
+#align gal_conj_classes.minpoly.monic GalConjClasses.monic_minpoly
 
-nonrec theorem minpoly.ne_zero (c : GalConjClasses F E) : minpoly c ≠ 0 := by
+theorem minpoly_ne_zero (c : GalConjClasses F E) : minpoly c ≠ 0 := by
   rw [← c.out_eq, minpoly_mk]
   exact minpoly.ne_zero (IsSeparable.isIntegral F _)
-#align gal_conj_classes.minpoly.ne_zero GalConjClasses.minpoly.ne_zero
+#align gal_conj_classes.minpoly.ne_zero GalConjClasses.minpoly_ne_zero
 
-nonrec theorem minpoly.irreducible (c : GalConjClasses F E) : Irreducible (minpoly c) := by
+theorem irreducible_minpoly (c : GalConjClasses F E) : Irreducible (minpoly c) := by
   rw [← c.out_eq, minpoly_mk]; exact minpoly.irreducible (IsSeparable.isIntegral F _)
-#align gal_conj_classes.minpoly.irreducible GalConjClasses.minpoly.irreducible
+#align gal_conj_classes.minpoly.irreducible GalConjClasses.irreducible_minpoly
 
-theorem minpoly.splits [n : Normal F E] (c : GalConjClasses F E) :
+theorem splits_minpoly [n : Normal F E] (c : GalConjClasses F E) :
     Splits (algebraMap F E) (minpoly c) := by rw [← c.out_eq, minpoly_mk]; exact n.splits c.out
-#align gal_conj_classes.minpoly.splits GalConjClasses.minpoly.splits
+#align gal_conj_classes.minpoly.splits GalConjClasses.splits_minpoly
 
-theorem minpoly.separable (c : GalConjClasses F E) : Separable (minpoly c) := by
+theorem separable_minpoly (c : GalConjClasses F E) : Separable (minpoly c) := by
   rw [← c.out_eq, minpoly_mk]; exact IsSeparable.separable F c.out
-#align gal_conj_classes.minpoly.separable GalConjClasses.minpoly.separable
+#align gal_conj_classes.minpoly.separable GalConjClasses.separable_minpoly
 
 -- Porting note: added
 lemma aux {a b : F[X]} (h : a = b) :
@@ -331,7 +331,7 @@ lemma aux {a b : F[X]} (h : a = b) :
   cases h
   rfl
 
-theorem minpoly.inj [Normal F E] {c d : GalConjClasses F E} (h : minpoly c = minpoly d) :
+theorem minpoly_inj [Normal F E] {c d : GalConjClasses F E} (h : minpoly c = minpoly d) :
     c = d := by
   let fc := IntermediateField.adjoinRootEquivAdjoin F (IsSeparable.isIntegral F c.out)
   let fd := IntermediateField.adjoinRootEquivAdjoin F (IsSeparable.isIntegral F d.out)
@@ -365,43 +365,43 @@ theorem minpoly.inj [Normal F E] {c d : GalConjClasses F E} (h : minpoly c = min
     IntermediateField.adjoinRootEquivAdjoin_symm_apply_gen]
   refine' eq_of_heq (HEq.trans _ (congr_f_apply _).symm)
   rw [minpoly_out, minpoly_out, h]
-#align gal_conj_classes.minpoly.inj GalConjClasses.minpoly.inj
+#align gal_conj_classes.minpoly.inj GalConjClasses.minpoly_inj
 
-theorem minpoly.injective [Normal F E] : Function.Injective (@minpoly F _ E _ _ _) := fun _ _ =>
-  minpoly.inj
-#align gal_conj_classes.minpoly.injective GalConjClasses.minpoly.injective
+theorem minpoly_injective [Normal F E] : Function.Injective (@minpoly F _ E _ _ _) := fun _ _ =>
+  minpoly_inj
+#align gal_conj_classes.minpoly.injective GalConjClasses.minpoly_injective
 
-theorem minpoly.nodup_aroots (c : GalConjClasses F E) : ((minpoly c).aroots E).Nodup :=
-  nodup_roots (minpoly.separable c).map
-#align gal_conj_classes.minpoly.nodup_aroots GalConjClasses.minpoly.nodup_aroots
+theorem nodup_aroots_minpoly (c : GalConjClasses F E) : ((minpoly c).aroots E).Nodup :=
+  nodup_roots c.separable_minpoly.map
+#align gal_conj_classes.minpoly.nodup_aroots GalConjClasses.nodup_aroots_minpoly
 
 theorem aeval_minpoly_iff [Normal F E] (x : E) (c : GalConjClasses F E) :
     aeval x (minpoly c) = 0 ↔ mk F x = c := by
   symm; constructor
   · rintro rfl; exact minpoly.aeval _ _
   intro h
-  apply minpoly.inj
-  rw [minpoly_mk, ← minpoly.eq_of_irreducible (minpoly.irreducible c) h]
-  rw [(minpoly.monic c).leadingCoeff, inv_one, map_one, mul_one]
+  apply minpoly_inj
+  rw [minpoly_mk, ← minpoly.eq_of_irreducible c.irreducible_minpoly h]
+  rw [c.monic_minpoly.leadingCoeff, inv_one, map_one, mul_one]
 #align gal_conj_classes.aeval_minpoly_iff GalConjClasses.aeval_minpoly_iff
 
 theorem rootSet_minpoly_eq_orbit [Normal F E] (c : GalConjClasses F E) :
     (minpoly c).rootSet E = c.orbit := by
   ext x; rw [mem_orbit]
   simp_rw [mem_rootSet, aeval_minpoly_iff x c]
-  simp [minpoly.ne_zero c]
+  simp [c.minpoly_ne_zero]
 #align gal_conj_classes.root_set_minpoly_eq_orbit GalConjClasses.rootSet_minpoly_eq_orbit
 
 theorem aroots_minpoly_eq_orbit_val [DecidableEq E] [Fintype (E ≃ₐ[F] E)] [Normal F E]
     (c : GalConjClasses F E) : (minpoly c).aroots E = c.orbit.toFinset.1 := by
   simp_rw [← rootSet_minpoly_eq_orbit, rootSet_def, Finset.toFinset_coe, Multiset.toFinset_val]
   symm; rw [Multiset.dedup_eq_self]
-  exact nodup_roots ((separable_map _).mpr (minpoly.separable c))
+  exact nodup_roots ((separable_map _).mpr c.separable_minpoly)
 #align gal_conj_classes.aroots_minpoly_eq_orbit_val GalConjClasses.aroots_minpoly_eq_orbit_val
 
 theorem orbit_eq_mk_aroots_minpoly [DecidableEq E] [Fintype (E ≃ₐ[F] E)] [Normal F E]
     (c : GalConjClasses F E) :
-    c.orbit.toFinset = ⟨(minpoly c).aroots E, minpoly.nodup_aroots c⟩ := by
+    c.orbit.toFinset = ⟨(minpoly c).aroots E, c.nodup_aroots_minpoly⟩ := by
   simp only [aroots_minpoly_eq_orbit_val]
 #align gal_conj_classes.orbit_eq_mk_aroots_minpoly GalConjClasses.orbit_eq_mk_aroots_minpoly
 
@@ -412,9 +412,9 @@ theorem minpoly.map_eq_prod [DecidableEq E] [Fintype (E ≃ₐ[F] E)] [Normal F 
     Finset.toFinset_coe, Multiset.toFinset_val]
   rw [Multiset.dedup_eq_self.mpr (nodup_roots _),
     prod_multiset_X_sub_C_of_monic_of_roots_card_eq (Monic.map _ _)]
-  · rw [splits_iff_card_roots.mp]; rw [splits_id_iff_splits]; exact minpoly.splits c
-  · exact minpoly.monic c
-  · exact (minpoly.separable c).map
+  · rw [splits_iff_card_roots.mp]; rw [splits_id_iff_splits]; exact c.splits_minpoly
+  · exact c.monic_minpoly
+  · exact c.separable_minpoly.map
 #align gal_conj_classes.minpoly.map_eq_prod GalConjClasses.minpoly.map_eq_prod
 
 end GalConjClasses

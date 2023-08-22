@@ -1342,7 +1342,7 @@ theorem linear_independent_exp_aux' (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ
   have : c.minpoly.aroots ℂ = (c.minpoly.aroots (K s)).map (algebraMap (K s) ℂ) := by
     change roots _ = _
     rw [← roots_map, Polynomial.map_map, IsScalarTower.algebraMap_eq ℚ (K s) ℂ]
-    rw [splits_map_iff, RingHom.id_comp]; exact GalConjClasses.minpoly.splits c
+    rw [splits_map_iff, RingHom.id_comp]; exact c.splits_minpoly
   simp_rw [this, c.aroots_minpoly_eq_orbit_val, sum_map, Multiset.map_map]; rfl
 #align linear_independent_exp_aux' linear_independent_exp_aux'
 
