@@ -1943,11 +1943,14 @@ open Classical in
 noncomputable
 def Nobeling.ι : S → ({C : Set S // IsClopen C} → Bool) := fun s C => decide (s ∈ C.1)
 
+namespace Profinite
+
+protected -- to avoid weird CI error. TODO: PR separately
 instance (α : Type*) [TopologicalSpace α] [CompactSpace α] [TotallyDisconnectedSpace α]
     [T2Space α] : TotallySeparatedSpace α := by
   rwa [← compact_t2_tot_disc_iff_tot_sep]
 
-open Classical in
+open Classical Nobeling in
 theorem Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
   apply Continuous.closedEmbedding
   · dsimp [ι]
@@ -1977,3 +1980,5 @@ theorem Nobeling : Module.Free ℤ (LocallyConstant S ℤ) :=
   @NobelingProof.Nobeling {C : Set S // IsClopen C} ⟨⟨∅, isClopen_empty⟩⟩
     (IsWellOrder.linearOrder WellOrderingRel)
     WellOrderingRel.isWellOrder S (Nobeling.ι S) (Nobeling.embedding S)
+
+end Profinite
