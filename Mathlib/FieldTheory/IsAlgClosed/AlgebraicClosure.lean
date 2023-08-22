@@ -312,7 +312,7 @@ open AlgebraicClosure
 local instance field : Field (AlgebraicClosureAux k) :=
   Field.DirectLimit.field _ _
 
-local instance : Inhabited (AlgebraicClosureAux k) :=
+instance : Inhabited (AlgebraicClosureAux k) :=
   ⟨37⟩
 
 /-- The canonical ring embedding from the `n`th step to the algebraic closure. -/
@@ -320,8 +320,6 @@ def ofStep (n : ℕ) : Step k n →+* AlgebraicClosureAux k :=
   Ring.DirectLimit.of _ _ _
 #noalign algebraic_closure.of_step
 
-local instance algebraOfStep (n) : Algebra (Step k n) (AlgebraicClosureAux k) :=
-  (ofStep k n).toAlgebra
 #noalign algebraic_closure.algebra_of_step
 
 theorem ofStep_succ (n : ℕ) : (ofStep k (n + 1)).comp (toStepSucc k n) = ofStep k n := by
@@ -358,7 +356,7 @@ theorem exists_root {f : Polynomial (AlgebraicClosureAux k)}
   rw [← ofStep_succ k n, eval_map, ← hom_eval₂, hx, RingHom.map_zero]
 #noalign algebraic_closure.exists_root
 
-local instance instIsAlgClosed : IsAlgClosed (AlgebraicClosureAux k) :=
+@[local instance] theorem instIsAlgClosed : IsAlgClosed (AlgebraicClosureAux k) :=
   IsAlgClosed.of_exists_root _ fun _ => exists_root k
 
 local instance instAlgebra {R : Type*} [CommSemiring R] [alg : Algebra R k] :
@@ -385,7 +383,7 @@ theorem isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosureAux k) := fun z =>
     let ⟨n, x, hx⟩ := exists_ofStep k z
     hx ▸ map_isIntegral (ofStepHom k n) (Step.isIntegral k n x)
 
-local instance : IsAlgClosure k (AlgebraicClosureAux k) :=
+@[local instance] theorem isAlgClosure : IsAlgClosure k (AlgebraicClosureAux k) :=
   ⟨AlgebraicClosureAux.instIsAlgClosed k, isAlgebraic k⟩
 
 end AlgebraicClosureAux
@@ -473,13 +471,11 @@ instance [CharZero k] : CharZero (AlgebraicClosure k) :=
 instance {p : ℕ} [CharP k p] : CharP (AlgebraicClosure k) p :=
   charP_of_injective_algebraMap (RingHom.injective (algebraMap k (AlgebraicClosure k))) p
 
-example :
-    (AddCommMonoid.natModule : Module ℕ (AlgebraicClosure k)) =
+example : (AddCommMonoid.natModule : Module ℕ (AlgebraicClosure k)) =
       @Algebra.toModule _ _ _ _ (AlgebraicClosure.instAlgebra k) :=
   rfl
 
-example :
-    (AddCommGroup.intModule _ : Module ℤ (AlgebraicClosure k)) =
+example : (AddCommGroup.intModule _ : Module ℤ (AlgebraicClosure k)) =
       @Algebra.toModule _ _ _ _ (AlgebraicClosure.instAlgebra k) :=
   rfl
 
@@ -490,3 +486,4 @@ example : algebraInt (AlgebraicClosure ℚ) = AlgebraicClosure.instAlgebra ℚ :
   rfl
 
 end AlgebraicClosure
+#lint
