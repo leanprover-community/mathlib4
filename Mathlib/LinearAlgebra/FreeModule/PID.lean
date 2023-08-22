@@ -471,9 +471,9 @@ lemma le_ker_coord_of_nmem_range {i : ι} (hi : i ∉ Set.range snf.f) :
   exact fun a ↦ (mul_eq_zero_of_right _ a).symm
 
 @[simp] lemma repr_comp_embedding_eq_smul :
-    snf.bM.repr m ∘ snf.f = (snf.bN.repr m : Fin n → R) • snf.a := by
+    snf.bM.repr m ∘ snf.f = snf.a • (snf.bN.repr m : Fin n → R) := by
   ext i
-  simp [Pi.smul_apply (snf.a i), mul_comm _ (snf.a _)]
+  simp [Pi.smul_apply (snf.a i)]
 
 @[simp] lemma coord_apply_embedding_eq_smul_coord {i : Fin n} :
     snf.bM.coord (snf.f i) ∘ₗ N.subtype = snf.a i • snf.bN.coord i := by
