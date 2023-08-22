@@ -7,6 +7,7 @@ import Mathlib.Data.Finset.Sort
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.Prod.Lex
 import Mathlib.GroupTheory.Perm.Basic
+import Mathlib.Data.Fin.Interval
 
 #align_import data.fin.tuple.sort from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
@@ -106,6 +107,20 @@ theorem monotone_sort (f : Fin n → α) : Monotone (f ∘ sort f) := by
   rw [self_comp_sort]
   exact (monotone_proj f).comp (graphEquiv₂ f).monotone
 #align tuple.monotone_sort Tuple.monotone_sort
+
+/-- All the elements `· ≤ a` appear the start of a sorted tuple -/
+theorem sort_lt_at_start_of_monotone {α} [LinearOrder α] (m : ℕ) (f : Fin m → α) (a : α)
+    (h_sorted : Monotone f)
+    (j : Fin m) (h : j < Fintype.card {i // f i ≤ a}) :
+    f j ≤ a := by
+  contrapose! h
+  have := Fintype.card_subtype_compl (¬f · ≤ a)
+  simp_rw [not_not, not_le] at this
+  rw [this, Fintype.card_fin, tsub_le_iff_tsub_le, Fintype.card_subtype]
+  refine le_trans (by simp) (Finset.card_mono $ show Finset.Ici j ≤ _ from fun k hk ↦ ?_)
+  simp only [Finset.mem_Ici] at hk
+  exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, h.trans_le (h_sorted hk)⟩
+/- Proofs by Ruben Van de Velde, Eric {Rodriguez and Wieser} -/
 
 end Tuple
 
