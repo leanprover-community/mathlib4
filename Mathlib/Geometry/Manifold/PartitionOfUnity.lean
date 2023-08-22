@@ -341,8 +341,8 @@ theorem exists_isSubordinate [T2Space M] [SigmaCompactSpace M] (hs : IsClosed s)
     (hU : ∀ x ∈ s, U x ∈ 𝓝 x) :
     ∃ (ι : Type uM) (f : SmoothBumpCovering ι I M s), f.IsSubordinate U := by
   -- First we deduce some missing instances
-  haveI : LocallyCompactSpace H := I.locally_compact
-  haveI : LocallyCompactSpace M := ChartedSpace.locallyCompact H M
+  haveI : LocallyCompactSpace H := I.locallyCompactSpace
+  haveI : LocallyCompactSpace M := ChartedSpace.locallyCompactSpace H M
   haveI : NormalSpace M := normal_of_paracompact_t2
   -- Next we choose a covering by supports of smooth bump functions
   have hB := fun x hx => SmoothBumpFunction.nhds_basis_support I (hU x hx)
@@ -521,8 +521,8 @@ variable [T2Space M] [SigmaCompactSpace M]
 `s`, then there exists a `SmoothPartitionOfUnity ι M s` that is subordinate to `U`. -/
 theorem exists_isSubordinate {s : Set M} (hs : IsClosed s) (U : ι → Set M) (ho : ∀ i, IsOpen (U i))
     (hU : s ⊆ ⋃ i, U i) : ∃ f : SmoothPartitionOfUnity ι I M s, f.IsSubordinate U := by
-  haveI : LocallyCompactSpace H := I.locally_compact
-  haveI : LocallyCompactSpace M := ChartedSpace.locallyCompact H M
+  haveI : LocallyCompactSpace H := I.locallyCompactSpace
+  haveI : LocallyCompactSpace M := ChartedSpace.locallyCompactSpace H M
   haveI : NormalSpace M := normal_of_paracompact_t2
   -- porting note(https://github.com/leanprover/std4/issues/116):
   -- split `rcases` into `have` + `rcases`
