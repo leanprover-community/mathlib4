@@ -14,17 +14,6 @@ open Polynomial
 
 open scoped Polynomial BigOperators
 
-namespace minpoly
-
-theorem eq_of_algHom_eq {K S T : Type _} [Field K] [Ring S] [Ring T] [Algebra K S] [Algebra K T]
-    (f : S →ₐ[K] T) (hf : Function.Injective f) {x : S} {y : T} (hx : IsIntegral K x)
-    (h : y = f x) : minpoly K x = minpoly K y :=
-  minpoly.unique _ _ (minpoly.monic hx)
-    (by rw [h, aeval_algHom_apply, minpoly.aeval, AlgHom.map_zero]) fun q q_monic root_q =>
-    minpoly.min _ _ q_monic (by rwa [h, aeval_algHom_apply, map_eq_zero_iff _ hf] at root_q )
-#align minpoly.eq_of_alg_hom_eq minpoly.eq_of_algHom_eq
-
-end minpoly
 
 section HEq
 
