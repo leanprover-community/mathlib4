@@ -342,19 +342,6 @@ theorem xeigenvectorBasis_apply_self_apply (v : E) (i : Fin n) :
   intro a
   rw [smul_smul, mul_comm]
 
-/-- All the elements `· ≤ a` appear the start of a sorted tuple -/
-lemma sortingLemma {α} [LinearOrder α] (m : ℕ) (f : Fin m → α) (a : α)
-    (h_sorted : Monotone f)
-    (j : Fin m) (h : j < Fintype.card {i // f i ≤ a}) :
-    f j ≤ a := by
-  contrapose! h
-  have := Fintype.card_subtype_compl (¬f · ≤ a)
-  simp_rw [not_not, not_le] at this
-  rw [this, Fintype.card_fin, tsub_le_iff_tsub_le, Fintype.card_subtype]
-  refine le_trans (by simp) (Finset.card_mono $ show Finset.Ici j ≤ _ from fun k hk ↦ ?_)
-  simp only [Finset.mem_Ici] at hk
-  exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, h.trans_le (h_sorted hk)⟩
-
 end MohanadsAttempt
 
 

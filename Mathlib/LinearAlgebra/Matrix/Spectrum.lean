@@ -241,49 +241,34 @@ lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := 
     rank_mul_eq_left_of_isUnit_det hA.eigenvectorMatrixInv _ hiE,
     rank_diagonal, Function.comp_apply, ne_eq, algebraMap.lift_map_eq_zero_iff]
 
-/-- A sorted nonnegative list with m elements and exactly r ≤ m non-zero elemnts has the first
-(m - r) elemnts as zero -/
-lemma wierd (m r : ℕ) (hrm : r ≤ m) (f : Fin m → ℝ)
-    (h_nonneg : ∀ (i : Fin m), 0 ≤  f i)
-    (h_nz_cnt : Fintype.card { i // f i =  0} = (m -r))
+/-- All the elements `· ≤ a` appear the start of a sorted tuple -/
+lemma sortingLemma {α} [LinearOrder α] (m : ℕ) (f : Fin m → α) (a : α)
     (h_sorted : Monotone f)
-    (j : Fin m):
-    ( j < (m - r) ) → f j = 0 := by
-  intro hjm
-  have hj := eq_or_lt_of_le ( h_nonneg j)
-  cases' hj with hj hj
-  exact hj.symm
-  exfalso
-  unfold Monotone at h_sorted
-  have : ∃ q : Fin m, (m - r) ≤ q ∧ f q = 0 := by sorry
-  obtain ⟨q , hq⟩ := this
-  have hjq : j < q := by exact_mod_cast lt_of_lt_of_le hjm hq.left
-  have h1 : (f q < f j) := by
-    rw [hq.2]
-    exact hj
-  have h2 := h_sorted (le_of_lt hjq)
-  apply (not_lt.2 h2) h1
+    (j : Fin m) (h : j < Fintype.card {i // f i ≤ a}) :
+    f j ≤ a := by
+  contrapose! h
+  have := Fintype.card_subtype_compl (¬f · ≤ a)
+  simp_rw [not_not, not_le] at this
+  rw [this, Fintype.card_fin, tsub_le_iff_tsub_le, Fintype.card_subtype]
+  refine le_trans (by simp) (Finset.card_mono $ show Finset.Ici j ≤ _ from fun k hk ↦ ?_)
+  simp only [Finset.mem_Ici] at hk
+  exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, h.trans_le (h_sorted hk)⟩
 
-
-
-
-
-#eval 0
-  -- cases' r with rs
-  -- · simp only [nonpos_iff_eq_zero, tsub_zero, Fin.is_lt] at hjm
-  --   by_contra h
-  --   apply not_nonempty_iff.2 (Fintype.card_eq_zero_iff.1 h_nz_cnt) ⟨j, h⟩
-  -- · unfold Monotone at h_sorted
-  --   -- by_contra h
-  --   sorry
-
-
-
+lemma xeigenvalues_zero_lt_size_sub_rank (j : Fin (Fintype.card n))
+    (hj : j < Fintype.card n - A.rank) :
+    hA.xeigenvalues j = 0 := by
+  -- unfold xeigenvalues LinearMap.IsSymmetric.xeigenvalues
+  have : hA.xeigenvalues j = 0 ↔ ‖ hA.xeigenvalues j‖ ≤ 0 := by
+    simp only [Real.norm_eq_abs, abs_nonpos_iff]
+  rw [this]
+  refine' sortingLemma (Fintype.card n) (fun j => ‖hA.xeigenvalues j‖) (0:ℝ) ?_ ?_ ?_
+  unfold xeigenvalues
+  by sorry
 
 
 
 -- lemma xrank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.xeigenvalues).rank := by
---   conv_lhs => rw [hA.xspectral_theorem']
+  -- conv_lhs => rw [hA.xspectral_theorem']
 --   have hE := isUnit_det_of_invertible (hA.xeigenvectorMatrix)
 --   have hiE := isUnit_det_of_invertible (hA.eigenvectorMatrixInv)
 --   simp only [rank_mul_eq_right_of_isUnit_det hA.eigenvectorMatrix _ hE,
