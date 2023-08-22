@@ -46,6 +46,8 @@ section General
 
 variable (J K L : ι → Prop) [∀ i, Decidable (J i)] [∀ i, Decidable (K i)] [∀ i, Decidable (L i)]
 
+/-- The projection mapping everything that satisfies `J i` to itself, and everything else to
+    `default` -/
 def Proj : ((i : ι) → X i) → ((i : ι) → X i) :=
   fun c i ↦ if J i then c i else default
 
@@ -59,8 +61,10 @@ theorem continuous_proj :
   · exact continuous_apply _
   · exact continuous_const
 
+/-- The image of `Proj π J` -/
 def Set.proj : Set ((i : ι) → X i) := (Proj J) '' C
 
+/-- The restriction `Proj π J` to a subset, mapping to its image. -/
 @[simps!]
 def ProjRestrict : C → C.proj J :=
   Set.MapsTo.restrict (Proj J) _ _ (Set.mapsTo_image _ _)
@@ -118,6 +122,7 @@ theorem proj_eq_of_subset (h : ∀ i, J i → K i) : (C.proj K).proj J = C.proj 
 
 variable {J K L}
 
+/-- A variant of `ProjRestrict` with domain of the form `C.proj K` -/
 @[simps!]
 def ProjRestricts (h : ∀ i, J i → K i) : C.proj K → C.proj J :=
   Homeomorph.setCongr (proj_eq_of_subset C J K h) ∘ ProjRestrict (C.proj K) J
@@ -174,6 +179,7 @@ theorem mem_projRestrict (h : J ⊆ K) (x : C.proj (· ∈ K)) :
   ext i
   split_ifs with hh<;> [rw [← hy.2, Proj, if_pos (h hh)]; rfl]
 
+/-- The functor from the poset of finsets of `ι` to  `Profinite`, indexing the limit. -/
 noncomputable
 def FinsetsToProfinite :
     (Finset ι)ᵒᵖ ⥤ Profinite.{u} where
@@ -183,6 +189,7 @@ def FinsetsToProfinite :
   map_id J := by dsimp; simp_rw [projRestricts_eq_id C (· ∈ (unop J))]; rfl
   map_comp _ _ := by dsimp; congr; dsimp; rw [projRestricts_eq_comp]
 
+/-- The limit cone on `FinsetsToProfinite` -/
 noncomputable
 def FinsetsCone : Cone (FinsetsToProfinite hC) where
   pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
@@ -247,16 +254,19 @@ instance isIso_finsetsCone_lift [DecidableEq ι] :
             (fun J => (hc J (a.val (op J))).isCompact) fun J => hc J (a.val (op J))
         exact ⟨x, Set.mem_iInter.1 hx⟩)
 
+/-- The canonical map from `C` to the explicit limit as an isomorphism. -/
 noncomputable
 def isoFinsetsConeLift [DecidableEq ι] :
     @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _ ≅
     (Profinite.limitCone (FinsetsToProfinite hC)).pt :=
   asIso <| (Profinite.limitConeIsLimit _).lift (FinsetsCone hC)
 
+/-- The isomorphism of cones induced by `isoFinsetsConeLift`. -/
 noncomputable
 def asLimitFinsetsConeIso [DecidableEq ι] : FinsetsCone hC ≅ Profinite.limitCone _ :=
   Limits.Cones.ext (isoFinsetsConeLift hC) fun _ => rfl
 
+/-- `FinsetsCone` is a limit cone. -/
 noncomputable
 def finsetsCone_isLimit [DecidableEq ι] : CategoryTheory.Limits.IsLimit (FinsetsCone hC) :=
   Limits.IsLimit.ofIsoLimit (Profinite.limitConeIsLimit _) (asLimitFinsetsConeIso hC).symm
@@ -268,6 +278,7 @@ namespace LocallyConstant -- This section is PR #6589
 
 variable {X Z : Type*} [TopologicalSpace X]
 
+/-- This is the modified version of `LocallyConstant.piecewise` from #6589. -/
 def piecewise'' {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) (h : C₁ ∪ C₂ = Set.univ)
     (f : LocallyConstant C₁ Z) (g : LocallyConstant C₂ Z)
     (hfg : ∀ (x : X) (hx : x ∈ C₁ ∩ C₂), f ⟨x, hx.1⟩ = g ⟨x, hx.2⟩)
@@ -291,6 +302,7 @@ def piecewise'' {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂
       · simp only [cond_true, Set.restrict_dite, Subtype.coe_eta]
         exact hf
 
+/-- A variant of `LocallyConstant.piecewise` where the two closed sets cover a subset. -/
 noncomputable def piecewise' {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : IsClosed C₁)
     (h₂ : IsClosed C₂) (f₁ : LocallyConstant C₁ Z) (f₂ : LocallyConstant C₂ Z)
     [DecidablePred (· ∈ C₁)] (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩ = f₂ ⟨x, hx.2⟩) :
@@ -1940,12 +1952,13 @@ end NobelingProof
 variable (S : Profinite.{u})
 
 open Classical in
+/-- The embedding `S → (I → Bool)` where `I` is the set of clopens of `S`. -/
 noncomputable
 def Nobeling.ι : S → ({C : Set S // IsClopen C} → Bool) := fun s C => decide (s ∈ C.1)
 
 namespace Profinite
 
-protected -- to avoid weird CI error. TODO: PR separately
+protected -- This is PR #6722
 instance (α : Type*) [TopologicalSpace α] [CompactSpace α] [TotallyDisconnectedSpace α]
     [T2Space α] : TotallySeparatedSpace α := by
   rwa [← compact_t2_tot_disc_iff_tot_sep]
