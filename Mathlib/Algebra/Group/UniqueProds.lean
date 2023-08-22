@@ -50,6 +50,9 @@ namespace UniqueMul
 
 variable {G H : Type*} [Mul G] [Mul H] {A B : Finset G} {a0 b0 : G}
 
+@[to_additive (attr := nontriviality, simp)]
+theorem of_subsingleton [Subsingleton G] : UniqueMul A B a0 b0 := by simp [UniqueMul]
+
 theorem mt {G} [Mul G] {A B : Finset G} {a0 b0 : G} (h : UniqueMul A B a0 b0) :
     ∀ ⦃a b⦄, a ∈ A → b ∈ B → a ≠ a0 ∨ b ≠ b0 → a * b ≠ a0 * b0 := fun _ _ ha hb k ↦ by
   contrapose! k
@@ -217,3 +220,39 @@ instance (priority := 100) Covariants.to_uniqueProds {A} [Mul A] [LinearOrder A]
         eq_and_eq_of_le_of_le_of_mul_le (Finset.min'_le _ _ ‹_›) (Finset.min'_le _ _ ‹_›) ab.le⟩
 #align covariants.to_unique_prods Covariants.to_uniqueProds
 #align covariants.to_unique_sums Covariants.to_uniqueSums
+
+namespace UniqueProds
+variable {G H : Type*} [Mul G] [Mul H]
+
+@[to_additive (attr := nontriviality, simp)]
+theorem of_subsingleton [Subsingleton G] : UniqueProds G :=
+⟨fun {_ _} ⟨a, ha⟩ ⟨b, hb⟩ => ⟨a, ha, b, hb, UniqueMul.of_subsingleton⟩⟩
+
+open Finset in
+@[to_additive]
+theorem mulHom_image_of_injective (f : H →ₙ* G) (hf : Function.Injective f) (uG : UniqueProds G) :
+    UniqueProds H := by
+  nontriviality H
+  classical
+  constructor
+  intros A B A0 B0
+  obtain ⟨f', hinv⟩ := hf.hasLeftInverse
+  have fid : f' ∘ f = id := funext hinv
+  obtain ⟨a0, ha0, b0, hb0, h⟩ := uG.uniqueMul_of_nonempty (A0.image f) (B0.image f)
+  rcases mem_image.mp ha0 with ⟨a', -, rfl⟩
+  rcases mem_image.mp hb0 with ⟨b', -, rfl⟩
+  refine ⟨f' (f a'), ?_, f' (f b'), ?_, ?_⟩
+  · convert mem_image_of_mem f' ha0
+    rw [image_image, fid, image_id]
+  · convert mem_image_of_mem f' hb0
+    rw [image_image, fid, image_id]
+  · rw [hinv a', hinv b']
+    exact (UniqueMul.mulHom_image_iff f hf).mp h
+
+/-- `UniqueProd` is preserved under multiplicative equivalences. -/
+@[to_additive "`UniqueSums` is preserved under additive equivalences."]
+theorem mulHom_image_iff (f : G ≃* H) :
+    UniqueProds G ↔ UniqueProds H :=
+⟨mulHom_image_of_injective f.symm f.symm.injective, mulHom_image_of_injective f f.injective⟩
+
+end UniqueProds
