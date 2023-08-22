@@ -387,6 +387,7 @@ theorem mulVec_stdBasisMatrix [Semiring R] [Fintype n] [DecidableEq n] [Fintype 
 
 -- we need to reorder some files so that this result isn't in a file that depends on Bochner
 -- integration:
+-- add import Mathlib.MeasureTheory.Group.Lintegral after #6715 is merged
 @[to_additive]
 theorem _root_.MeasureTheory.lintegral_mul_right_eq_self [MeasurableSpace G] [Group G] {μ : Measure G}
     [IsMulRightInvariant μ] (f : G → ℝ≥0∞) (g : G) :
