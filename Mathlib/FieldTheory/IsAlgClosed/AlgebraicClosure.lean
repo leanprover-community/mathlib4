@@ -365,22 +365,7 @@ local instance instAlgebra {R : Type*} [CommSemiring R] [alg : Algebra R k] :
     Algebra R (AlgebraicClosureAux k) :=
   ((ofStep k 0).comp (@algebraMap _ _ _ _ alg)).toAlgebra
 
-theorem algebraMap_def {R : Type*} [CommSemiring R] [alg : Algebra R k] :
-    algebraMap R (AlgebraicClosureAux k) = (ofStep k 0 : k →+* _).comp (@algebraMap _ _ _ _ alg) :=
-  rfl
 #noalign algebraic_closure.algebra_map_def
-
-local instance {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [Algebra S k] [Algebra R k]
-    [IsScalarTower R S k] : IsScalarTower R S (AlgebraicClosureAux k) := by
-  apply IsScalarTower.of_algebraMap_eq _
-  intro x
-  simp only [algebraMap_def]
-  rw [RingHom.comp_apply, RingHom.comp_apply]
-  exact RingHom.congr_arg _ (IsScalarTower.algebraMap_apply R S k x : _)
-  -- Porting Note: Original proof (without `by`) didn't work anymore, I think it couldn't figure
-  -- out `algebraMap_def`. Orignally:
-  -- IsScalarTower.of_algebraMap_eq fun x =>
-  --   RingHom.congr_arg _ (IsScalarTower.algebraMap_apply R S k x : _)
 
 /-- Canonical algebra embedding from the `n`th step to the algebraic closure. -/
 def ofStepHom (n) : Step k n →ₐ[k] AlgebraicClosureAux k :=
