@@ -221,6 +221,7 @@ import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.Algebra.Homology.Homology
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Homology.HomotopyCategory
+import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.LocalCohomology
 import Mathlib.Algebra.Homology.ModuleCat
@@ -2249,6 +2250,7 @@ import Mathlib.LinearAlgebra.Multilinear.Basis
 import Mathlib.LinearAlgebra.Multilinear.FiniteDimensional
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 import Mathlib.LinearAlgebra.Orientation
+import Mathlib.LinearAlgebra.PID
 import Mathlib.LinearAlgebra.PerfectPairing
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.PiTensorProduct

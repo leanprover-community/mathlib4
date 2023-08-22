@@ -647,6 +647,7 @@ def NhdsContainBoxes (s : Set α) (t : Set β) : Prop :=
     ∃ (u : Set α) (v : Set β), IsOpen u ∧ IsOpen v ∧ s ⊆ u ∧ t ⊆ v ∧ u ×ˢ v ⊆ n
 #align nhds_contain_boxes NhdsContainBoxes
 
+@[symm]
 theorem NhdsContainBoxes.symm {s : Set α} {t : Set β} :
     NhdsContainBoxes s t → NhdsContainBoxes t s := fun H n hn hp =>
   let ⟨u, v, uo, vo, su, tv, p⟩ :=
