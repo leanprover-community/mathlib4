@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Topology.Homeomorph
-import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.StoneCech
 
 #align_import topology.extremally_disconnected from "leanprover-community/mathlib"@"7e281deff072232a3c5b3e90034bd65dde396312"
@@ -73,8 +72,7 @@ instance [ExtremallyDisconnected X] [T2Space X] : TotallySeparatedSpace X :=
 
 end TotallySeparated
 
-/-- The closure of every open set is open. -/
-add_decl_doc ExtremallyDisconnected.open_closure
+section
 
 /-- The assertion `CompactT2.Projective` states that given continuous maps
 `f : X → Z` and `g : Y → Z` with `g` surjective between `t_2`, compact topological spaces,
@@ -315,5 +313,3 @@ instance instExtremallyDisconnected {π : ι → Type*} [∀ i, TopologicalSpace
     · rw [sigma_mk_preimage_image' ij]
       apply isOpen_empty
   · continuity
-
-end
