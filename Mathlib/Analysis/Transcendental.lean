@@ -1626,7 +1626,7 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
 #align linear_independent_exp linear_independent_exp
 
 theorem Complex.isIntegral_int_i : IsIntegral ℤ I := by
-  refine' ⟨X ^ 2 + C 1, monic_X_pow_add_C _ two_ne_zero, _⟩
+  refine' ⟨X ^ 2 + C 1, monic_X_pow_add_C two_ne_zero, _⟩
   rw [eval₂_add, eval₂_X_pow, eval₂_C, I_sq, eq_intCast, Int.cast_one, add_left_neg]
 set_option linter.uppercaseLean3 false in
 #align complex.is_integral_int_I Complex.isIntegral_int_i
