@@ -416,8 +416,8 @@ instance algebra : Algebra k (AlgebraicClosure k) :=
 instance algebra' {R : Type*} [CommSemiring R] [Algebra R k] : Algebra R (AlgebraicClosure k) :=
   Ideal.Quotient.algebra _
 
-instance isScalarTower {R : Type*} [CommSemiring R] [Algebra R k] :
-    IsScalarTower R k (AlgebraicClosure k) :=
+instance {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [Algebra S k] [Algebra R k]
+    [IsScalarTower R S k] : IsScalarTower R S (AlgebraicClosure k) :=
   Ideal.Quotient.isScalarTower _ _ _
 
 /-- The equivalence between `AlgebraicClosure` and `AlgebraicClosureAux`, which we use to transfer
