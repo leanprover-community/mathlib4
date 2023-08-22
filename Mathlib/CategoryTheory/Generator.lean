@@ -653,4 +653,33 @@ theorem wellPowered_of_isDetector [HasPullbacks C] (G : C) (hG : IsDetector G) :
   wellPowered_of_isDetecting hG
 #align category_theory.well_powered_of_is_detector CategoryTheory.wellPowered_of_isDetector
 
+theorem foobar1 (G : C) [HasEqualizers C]
+    (hG : ∀ (X : C) (S : Subobject X),  S ≠ ⊤ →
+      ∃ e : G ⟶ X, ∀ t : G ⟶ S, t ≫ S.arrow ≠ e) :
+    IsSeparator G := by
+  rw [isSeparator_def]
+  intro X Y a b h
+  let E := equalizer a b
+  let ι : E ⟶ X := equalizer.ι _ _
+  let E' : Subobject X := .mk ι
+  by_contra c
+  have hE' : E' ≠ ⊤ := by
+    contrapose! c
+    have : IsIso ι := by exact Iff.mpr (Subobject.isIso_iff_mk_eq_top ι) c
+    have : ι ≫ a = ι ≫ b := equalizer.condition _ _
+    rwa [cancel_epi] at this
+  specialize hG X E' hE'
+  obtain ⟨e, he⟩ := hG
+  fapply he
+  let t : G ⟶ E := equalizer.lift e (h _)
+  let q : (E' : C) ≅ E := Subobject.underlyingIso _
+  refine t ≫ q.inv
+  simp
+
+theorem foobar (X S G : C) (hG : IsSeparator G) (i : S ⟶ X) :
+    ∃ e : G ⟶ X, ∀ t : G ⟶ S, t ≫ i ≠ e := by
+  rw [isSeparator_def] at hG
+  contrapose! hG
+  _
+
 end CategoryTheory
