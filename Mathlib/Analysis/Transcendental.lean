@@ -336,7 +336,7 @@ def algAutCongrLeft {k R G : Type _} [CommSemiring k] [Semiring R] [Algebra k R]
     simp [Finsupp.mapRange_apply]
 #align add_monoid_algebra.alg_aut_congr_left AddMonoidAlgebra.algAutCongrLeft
 
-@[simp]
+@[simp 1001] -- LHS simplifies
 lemma algAutCongrLeft_apply_one {k R G : Type _} [CommSemiring k] [Semiring R] [Algebra k R]
     [AddMonoid G] :
     algAutCongrLeft (k := k) (R := R) (G := G) 1 = AlgEquiv.refl := by
@@ -398,7 +398,7 @@ def mapDomainAlgAut (k A : Type _) [CommSemiring k] [Semiring A] [Algebra k A] {
     rfl
 #align add_monoid_algebra.map_domain_alg_aut AddMonoidAlgebra.mapDomainAlgAut
 
-@[simp]
+@[simp 1001] -- LHS simplifies
 lemma mapDomainAlgAut_apply_one {k A : Type _} [CommSemiring k] [Semiring A] [Algebra k A]
     {G : Type _} [AddMonoid G] :
     mapDomainAlgAut k A (G := G) 1 = AlgEquiv.refl := by
@@ -686,7 +686,7 @@ def toConjEquiv : mapDomainFixed s F ≃ (GalConjClasses ℚ (K s) →₀ F) := 
   · refine' fun f => Finsupp.ext fun x => Quotient.inductionOn' x fun i => rfl
 #align to_conj_equiv toConjEquiv
 
-@[simp]
+@[simp 1001] -- LHS simplifies
 theorem toConjEquiv_apply_apply_mk (f : mapDomainFixed s F) (i : K s) :
     toConjEquiv s F f (mk ℚ i) = f i :=
   rfl
@@ -703,12 +703,12 @@ theorem toConjEquiv_apply_apply (f : mapDomainFixed s F) (i : GalConjClasses ℚ
     toConjEquiv s F f i = f i.out := by rw [← i.out_eq, toConjEquiv_apply_apply_mk, i.out_eq]
 #align to_conj_equiv_apply_apply toConjEquiv_apply_apply
 
-@[simp]
+@[simp 1001] -- LHS simplifies
 theorem toConjEquiv_apply_zero_eq (f : mapDomainFixed s F) : toConjEquiv s F f 0 = f 0 := by
   rw [toConjEquiv_apply_apply, GalConjClasses.zero_out]
 #align to_conj_equiv_apply_zero_eq toConjEquiv_apply_zero_eq
 
-@[simp]
+@[simp 1001] -- LHS simplifies
 theorem toConjEquiv_symm_apply_zero_eq (f : GalConjClasses ℚ (K s) →₀ F) :
     (toConjEquiv s F).symm f 0 = f 0 := by rw [toConjEquiv_symm_apply_apply]; rfl
 #align to_conj_equiv_symm_apply_zero_eq toConjEquiv_symm_apply_zero_eq
