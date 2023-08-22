@@ -405,8 +405,9 @@ theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionS
   rw [lintegral_map (measurable_one.indicator h2s) ht, volume_pi]
   refine integral_eq_of_marginal_eq {t.i} ((measurable_one.indicator h2s).comp ht)
     (measurable_one.indicator h2s) ?_
-  simp_rw [marginal_singleton]
   ext x
+  induction' x using Quotient.inductionOn with x
+  simp_rw [marginal_singleton_apply]
   cases t with | mk t_i t_j t_hij t_c =>
   simp [transvection, mulVec_stdBasisMatrix]
   simp_rw [Function.update_noteq t_hij.symm, ← Function.update_add, add_zero]
