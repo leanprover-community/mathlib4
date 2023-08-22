@@ -346,8 +346,8 @@ theorem exists_ofStep (z : AlgebraicClosureAux k) : ∃ n x, ofStep k n x = z :=
   Ring.DirectLimit.exists_of z
 #noalign algebraic_closure.exists_of_step
 
-theorem exists_root {f : Polynomial (AlgebraicClosureAux k)} (hfm : f.Monic) (hfi : Irreducible f) :
-    ∃ x : AlgebraicClosureAux k, f.eval x = 0 := by
+theorem exists_root {f : Polynomial (AlgebraicClosureAux k)}
+    (hfm : f.Monic) (hfi : Irreducible f) : ∃ x : AlgebraicClosureAux k, f.eval x = 0 := by
   have : ∃ n p, Polynomial.map (ofStep k n) p = f := by
     convert Ring.DirectLimit.Polynomial.exists_of f
   obtain ⟨n, p, rfl⟩ := this
