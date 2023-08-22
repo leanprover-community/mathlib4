@@ -71,7 +71,7 @@ In this file we prove the following facts:
 -/
 
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type _} [NormedAddCommGroup F]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*} [NormedAddCommGroup F]
   [NormedSpace ℝ F]
 
 open Metric Set Asymptotics ContinuousLinearMap Filter
@@ -247,7 +247,7 @@ Let `f` and `B` be continuous functions on `[a, b]` such that
 * we have `f' x < B' x` whenever `‖f x‖ = B x`.
 
 Then `‖f x‖ ≤ B x` everywhere on `[a, b]`. -/
-theorem image_norm_le_of_liminf_right_slope_norm_lt_deriv_boundary {E : Type _}
+theorem image_norm_le_of_liminf_right_slope_norm_lt_deriv_boundary {E : Type*}
     [NormedAddCommGroup E] {f : ℝ → E} {f' : ℝ → ℝ} (hf : ContinuousOn f (Icc a b))
     -- `hf'` actually says `liminf (‖f z‖ - ‖f x‖) / (z - x) ≤ f' x`
     (hf' : ∀ x ∈ Ico a b, ∀ r, f' x < r → ∃ᶠ z in 𝓝[>] x, slope (norm ∘ f) x z < r)
@@ -446,7 +446,7 @@ also assume `[NormedSpace ℝ E]` to have a notion of a `Convex` set. -/
 
 section
 
-variable {𝕜 G : Type _} [IsROrC 𝕜] [NormedSpace 𝕜 E] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {𝕜 G : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 namespace Convex
 
@@ -1321,7 +1321,7 @@ make sense and are enough. Many formulations of the mean value inequality could 
 balls over `ℝ` or `ℂ`. For now, we only include the ones that we need.
 -/
 
-variable {𝕜 : Type _} [IsROrC 𝕜] {G : Type _} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {H : Type _}
+variable {𝕜 : Type*} [IsROrC 𝕜] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {H : Type*}
   [NormedAddCommGroup H] [NormedSpace 𝕜 H] {f : G → H} {f' : G → G →L[𝕜] H} {x : G}
 
 /-- Over the reals or the complexes, a continuously differentiable function is strictly

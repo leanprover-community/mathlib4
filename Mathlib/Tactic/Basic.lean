@@ -7,6 +7,8 @@ import Lean
 import Std
 import Mathlib.Tactic.Cases
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 

@@ -41,7 +41,7 @@ boolean ring, boolean algebra
 -/
 
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 /-- A Boolean ring is a ring where multiplication is idempotent. -/
 class BooleanRing (α) extends Ring α where
@@ -126,7 +126,7 @@ instance : BooleanRing PUnit :=
 section RingToAlgebra
 
 /-- Type synonym to view a Boolean ring as a Boolean algebra. -/
-def AsBoolAlg (α : Type _) :=
+def AsBoolAlg (α : Type*) :=
   α
 #align as_boolalg AsBoolAlg
 
@@ -255,7 +255,7 @@ def toBooleanAlgebra : BooleanAlgebra α :=
     le_top := fun a => show a + 1 + a * 1 = 1 by rw [mul_one, (add_comm a 1),
                                                      add_assoc, add_self, add_zero]
     bot := 0
-    bot_le := fun a => show 0 + a + 0 * a = a by rw [MulZeroClass.zero_mul, zero_add, add_zero]
+    bot_le := fun a => show 0 + a + 0 * a = a by rw [zero_mul, zero_add, add_zero]
     compl := fun a => 1 + a
     inf_compl_le_bot := fun a =>
       show a * (1 + a) + 0 + a * (1 + a) * 0 = 0 by norm_num [mul_add, mul_self, add_self]
@@ -382,7 +382,7 @@ end RingToAlgebra
 section AlgebraToRing
 
 /-- Type synonym to view a Boolean ring as a Boolean algebra. -/
-def AsBoolRing (α : Type _) :=
+def AsBoolRing (α : Type*) :=
   α
 #align as_boolring AsBoolRing
 
@@ -576,7 +576,7 @@ end AlgebraToRing
 /-- Order isomorphism between `α` considered as a Boolean ring considered as a Boolean algebra and
 `α`. -/
 @[simps!]
-def OrderIso.asBoolAlgAsBoolRing (α : Type _) [BooleanAlgebra α] : AsBoolAlg (AsBoolRing α) ≃o α :=
+def OrderIso.asBoolAlgAsBoolRing (α : Type*) [BooleanAlgebra α] : AsBoolAlg (AsBoolRing α) ≃o α :=
   ⟨ofBoolAlg.trans ofBoolRing,
    ofBoolRing_le_ofBoolRing_iff.trans ofBoolAlg_mul_ofBoolAlg_eq_left_iff⟩
 #align order_iso.as_boolalg_as_boolring OrderIso.asBoolAlgAsBoolRing
@@ -584,7 +584,7 @@ def OrderIso.asBoolAlgAsBoolRing (α : Type _) [BooleanAlgebra α] : AsBoolAlg (
 /-- Ring isomorphism between `α` considered as a Boolean algebra considered as a Boolean ring and
 `α`. -/
 @[simps!]
-def RingEquiv.asBoolRingAsBoolAlg (α : Type _) [BooleanRing α] : AsBoolRing (AsBoolAlg α) ≃+* α :=
+def RingEquiv.asBoolRingAsBoolAlg (α : Type*) [BooleanRing α] : AsBoolRing (AsBoolAlg α) ≃+* α :=
   { ofBoolRing.trans ofBoolAlg with
     map_mul' := fun _a _b => rfl
     map_add' := ofBoolAlg_symmDiff }
