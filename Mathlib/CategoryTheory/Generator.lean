@@ -676,10 +676,23 @@ theorem foobar1 (G : C) [HasEqualizers C]
   refine t ≫ q.inv
   simp
 
-theorem foobar (X S G : C) (hG : IsSeparator G) (i : S ⟶ X) :
-    ∃ e : G ⟶ X, ∀ t : G ⟶ S, t ≫ i ≠ e := by
+theorem foobar (X G : C) (hG : IsSeparator G)
+    (S : Subobject X) (hS : S ≠ ⊤) [Balanced C] :
+    ∃ e : G ⟶ X, ∀ t : G ⟶ S, t ≫ S.arrow ≠ e := by
   rw [isSeparator_def] at hG
-  contrapose! hG
-  _
+  have : ¬ (Epi S.arrow) := by
+    contrapose! hS
+    have : IsIso S.arrow := by
+      exact isIso_of_mono_of_epi (Subobject.arrow S)
+    apply Subobject.eq_top_of_isIso_arrow
+  contrapose! this
+  constructor
+  intro Y a b h
+  apply hG
+  intro e
+  specialize this e
+  obtain ⟨t,ht⟩ := this
+  rw [← ht]
+  simp [h]
 
 end CategoryTheory
