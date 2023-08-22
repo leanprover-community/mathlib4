@@ -2,8 +2,6 @@
 Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
-
-! This file was ported from Lean 3 source module main
 -/
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Analysis.Complex.Basic
@@ -24,8 +22,9 @@ import Mathlib.Order.Extension.Linear
 import Mathlib.Data.Finsupp.Lex
 import Mathlib.Algebra.Group.UniqueProds
 
--- assert_not_exists Module.Dual
--- attribute [-reducible] Module.Dual
+/-!
+# The Lindemann-Weierstrass theorem
+-/
 
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
@@ -67,8 +66,7 @@ theorem deriv_eq_f (p : ℂ[X]) (s : ℂ) :
   have h :
     exp (s.arg • I) * p.sumIderiv.eval (x • exp (s.arg • I)) -
         (derivative (R := ℂ) (sumIderiv p)).eval (x • exp (s.arg • I)) * exp (s.arg • I) =
-      p.eval (x • exp (s.arg • I)) * exp (s.arg • I) :=
-    by
+      p.eval (x • exp (s.arg • I)) * exp (s.arg • I) := by
     conv_lhs =>
       congr
       rw [sumIderiv_eq_self_add, sumIderiv_derivative]
@@ -91,7 +89,8 @@ theorem deriv_eq_f (p : ℂ[X]) (s : ℂ) :
 
 theorem integral_f_eq (p : ℂ[X]) (s : ℂ) :
     ∫ x in (0)..(Complex.abs s), exp (-(x • exp (s.arg • I))) * p.eval (x • exp (s.arg • I)) =
-      -(exp (-s) * p.sumIderiv.eval s) / exp (s.arg • I) - -p.sumIderiv.eval 0 / exp (s.arg • I) := by
+      -(exp (-s) * p.sumIderiv.eval s) / exp (s.arg • I) -
+        -p.sumIderiv.eval 0 / exp (s.arg • I) := by
   convert
     intervalIntegral.integral_deriv_eq_sub'
       (fun x : ℝ =>
@@ -117,10 +116,14 @@ set_option linter.uppercaseLean3 false in
 #align P P
 
 theorem P_le' (p : ℕ → ℂ[X]) (s : ℂ)
-    (h : ∃ c, ∀ (q : ℕ), ∀ x ∈ Set.Ioc 0 (Complex.abs s), Complex.abs ((p q).eval (x • exp (s.arg • I))) ≤ c ^ q) :
-    ∃ c ≥ 0, ∀ q : ℕ, Complex.abs (P (p q) s) ≤ Real.exp s.re * (Real.exp (Complex.abs s) * c ^ q * (Complex.abs s)) := by
+    (h :
+      ∃ c, ∀ (q : ℕ), ∀ x ∈ Set.Ioc 0 (Complex.abs s),
+        Complex.abs ((p q).eval (x • exp (s.arg • I))) ≤ c ^ q) :
+    ∃ c ≥ 0, ∀ q : ℕ,
+      Complex.abs (P (p q) s) ≤
+        Real.exp s.re * (Real.exp (Complex.abs s) * c ^ q * (Complex.abs s)) := by
   simp_rw [P]; cases' h with c hc; replace hc := fun q x hx => (hc q x hx).trans (le_abs_self _)
-  simp_rw [_root_.abs_pow] at hc ; use |c|, abs_nonneg _; intro q
+  simp_rw [_root_.abs_pow] at hc; use |c|, abs_nonneg _; intro q
   have h := integral_f_eq (p q) s
   rw [← sub_div, eq_div_iff (exp_ne_zero _), ← @mul_right_inj' _ _ (exp s) _ _ (exp_ne_zero _),
     neg_sub_neg, mul_sub, ← mul_assoc _ (exp _), ← exp_add, add_neg_self, exp_zero, one_mul] at h
@@ -142,11 +145,14 @@ set_option linter.uppercaseLean3 false in
 #align P_le' P_le'
 
 theorem P_le (p : ℕ → ℂ[X]) (s : ℂ)
-    (h : ∃ c, ∀ (q : ℕ), ∀ x ∈ Set.Ioc 0 (Complex.abs s), Complex.abs ((p q).eval (x • exp (s.arg • I))) ≤ c ^ q) :
+    (h :
+      ∃ c, ∀ (q : ℕ), ∀ x ∈ Set.Ioc 0 (Complex.abs s),
+        Complex.abs ((p q).eval (x • exp (s.arg • I))) ≤ c ^ q) :
     ∃ c ≥ 0, ∀ q ≥ 1, Complex.abs (P (p q) s) ≤ c ^ q := by
   simp_rw []; obtain ⟨c', hc', h'⟩ := P_le' p s h; clear h
   let c₁ := max (Real.exp s.re) 1
-  let c₂ := max (Real.exp (Complex.abs s)) 1; have h₂ : 0 ≤ Real.exp (Complex.abs s) := (Real.exp_pos _).le
+  let c₂ := max (Real.exp (Complex.abs s)) 1
+  have h₂ : 0 ≤ Real.exp (Complex.abs s) := (Real.exp_pos _).le
   let c₃ := max (Complex.abs s) 1; have h₃ : 0 ≤ (Complex.abs s) := Complex.abs.nonneg _
   have hc : ∀ {x : ℝ}, 0 ≤ max x 1 := fun {x} => zero_le_one.trans (le_max_right _ _)
   use c₁ * (c₂ * c' * c₃), mul_nonneg hc (mul_nonneg (mul_nonneg hc hc') hc)
@@ -177,19 +183,21 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
   let p' q := (X ^ (q - 1) * p ^ q).map (algebraMap ℤ ℂ)
   have :
     ∀ s : ℂ,
-      ∃ c, ∀ (q : ℕ), ∀ x ∈ Set.Ioc 0 (Complex.abs s), Complex.abs ((p' q).eval (x • exp (s.arg • I))) ≤ c ^ q :=
-    by
+      ∃ c, ∀ (q : ℕ), ∀ x ∈ Set.Ioc 0 (Complex.abs s),
+        Complex.abs ((p' q).eval (x • exp (s.arg • I))) ≤ c ^ q := by
     intro s; dsimp only
     simp_rw [Polynomial.map_mul, Polynomial.map_pow, map_X, eval_mul, eval_pow, eval_X, map_mul,
       Complex.abs_pow, real_smul, map_mul, abs_exp_ofReal_mul_I, abs_ofReal, mul_one, ←
       eval₂_eq_eval_map, ← aeval_def]
     have :
       Metric.Bounded
-        ((fun (x : ℝ) => max |x| 1 * (Complex.abs (aeval (↑x * exp (↑s.arg * I)) p))) '' Set.Ioc 0 (abs s)) :=
-      by
+        ((fun (x : ℝ) => max |x| 1 * (Complex.abs (aeval (↑x * exp (↑s.arg * I)) p))) ''
+          Set.Ioc 0 (abs s)) := by
       have h :
-        (fun (x : ℝ) => max |x| 1 * (Complex.abs (aeval (↑x * exp (↑s.arg * I)) p))) '' Set.Ioc 0 (abs s) ⊆
-          (fun (x : ℝ) => max |x| 1 * (Complex.abs (aeval (↑x * exp (↑s.arg * I)) p))) '' Set.Icc 0 (abs s) :=
+        (fun (x : ℝ) => max |x| 1 * (Complex.abs (aeval (↑x * exp (↑s.arg * I)) p))) ''
+            Set.Ioc 0 (abs s) ⊆
+          (fun (x : ℝ) => max |x| 1 * (Complex.abs (aeval (↑x * exp (↑s.arg * I)) p))) ''
+              Set.Icc 0 (abs s) :=
         Set.image_subset _ Set.Ioc_subset_Icc_self
       refine' (IsCompact.image isCompact_Icc _).bounded.mono h
       · refine' (continuous_id.abs.max continuous_const).mul _
@@ -197,7 +205,8 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
         exact continuous_ofReal.mul continuous_const
     cases' this.exists_norm_le with c h
     use c; intro q x hx
-    specialize h (max |x| 1 * Complex.abs (aeval (↑x * exp (↑s.arg * I)) p)) (Set.mem_image_of_mem _ hx)
+    specialize h (max |x| 1 * Complex.abs (aeval (↑x * exp (↑s.arg * I)) p))
+      (Set.mem_image_of_mem _ hx)
     refine' le_trans _ (pow_le_pow_of_le_left (norm_nonneg _) h _)
     simp_rw [norm_mul, Real.norm_eq_abs, Complex.abs_abs, mul_pow]
     refine' mul_le_mul_of_nonneg_right _ (pow_nonneg (Complex.abs.nonneg _) _)
@@ -250,8 +259,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
         (X ^ (q - 1) *
           (C (map (algebraMap ℤ ℂ) p).leadingCoeff *
               (((p.aroots ℂ).erase r).map fun a : ℂ => X - C a).prod) ^
-            q) :=
-    by
+            q) := by
     rw [mul_left_comm, ← mul_pow, mul_left_comm (_ - _),
       Multiset.prod_map_erase (f := fun a =>  X - C a) hr]
     have : Multiset.card (p.aroots ℂ) = (p.map (algebraMap ℤ ℂ)).natDegree :=
@@ -275,9 +283,7 @@ namespace AddMonoidAlgebra
 def ringEquivCongrLeft {R S G : Type _} [Semiring R] [Semiring S] [AddMonoid G]
     (f : R ≃+* S) :
     AddMonoidAlgebra R G ≃+* AddMonoidAlgebra S G :=
-  {
-    Finsupp.mapRange.addEquiv
-      f.toAddEquiv with
+  { Finsupp.mapRange.addEquiv f.toAddEquiv with
     toFun := (Finsupp.mapRange f f.map_zero : AddMonoidAlgebra R G → AddMonoidAlgebra S G)
     invFun :=
       (Finsupp.mapRange f.symm f.symm.map_zero : AddMonoidAlgebra S G → AddMonoidAlgebra R G)
@@ -303,9 +309,7 @@ def ringEquivCongrLeft {R S G : Type _} [Semiring R] [Semiring S] [AddMonoid G]
 @[simps]
 def algEquivCongrLeft {k R S G : Type _} [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
     [Algebra k S] [AddMonoid G] (f : R ≃ₐ[k] S) : AddMonoidAlgebra R G ≃ₐ[k] AddMonoidAlgebra S G :=
-  {
-    ringEquivCongrLeft
-      f.toRingEquiv with
+  { ringEquivCongrLeft f.toRingEquiv with
     toFun := (Finsupp.mapRange f f.map_zero : AddMonoidAlgebra R G → AddMonoidAlgebra S G)
     invFun :=
       (Finsupp.mapRange f.symm f.symm.map_zero : AddMonoidAlgebra S G → AddMonoidAlgebra R G)
@@ -320,8 +324,7 @@ def algEquivCongrLeft {k R S G : Type _} [CommSemiring k] [Semiring R] [Algebra 
 
 @[simps]
 def algAutCongrLeft {k R G : Type _} [CommSemiring k] [Semiring R] [Algebra k R] [AddMonoid G] :
-    (R ≃ₐ[k] R) →* AddMonoidAlgebra R G ≃ₐ[k] AddMonoidAlgebra R G
-    where
+    (R ≃ₐ[k] R) →* AddMonoidAlgebra R G ≃ₐ[k] AddMonoidAlgebra R G where
   toFun f := algEquivCongrLeft f
   map_one' := by
     ext
@@ -334,7 +337,8 @@ def algAutCongrLeft {k R G : Type _} [CommSemiring k] [Semiring R] [Algebra k R]
 #align add_monoid_algebra.alg_aut_congr_left AddMonoidAlgebra.algAutCongrLeft
 
 @[simp]
-lemma algAutCongrLeft_apply_one {k R G : Type _} [CommSemiring k] [Semiring R] [Algebra k R] [AddMonoid G] :
+lemma algAutCongrLeft_apply_one {k R G : Type _} [CommSemiring k] [Semiring R] [Algebra k R]
+    [AddMonoid G] :
     algAutCongrLeft (k := k) (R := R) (G := G) 1 = AlgEquiv.refl := by
   ext
   exact Finsupp.mapRange_id _
@@ -538,8 +542,7 @@ noncomputable def ratCoeff : Subalgebra ℚ (AddMonoidAlgebra (K s) (K s))
     refine' sum_mem fun c _ => sum_mem fun d _ => _
     dsimp only; split_ifs; exacts [mul_mem (ha c) (hb d), zero_mem _]
   add_mem' {a b} ha hb i := by rw [Finsupp.add_apply]; exact add_mem (ha i) (hb i)
-  algebraMap_mem' r hr :=
-    by
+  algebraMap_mem' r hr := by
     rw [AddMonoidAlgebra.coe_algebraMap, Function.comp_apply, Finsupp.single_apply]
     split_ifs; exacts [IntermediateField.algebraMap_mem _ _, zero_mem _]
 #align rat_coeff ratCoeff
@@ -580,7 +583,8 @@ def RatCoeffEquiv.aux : ratCoeff s ≃ₐ[ℚ] AddMonoidAlgebra (⊥ : Intermedi
   map_add' x y := by
     refine Finsupp.ext fun a => ?_
     ext
-    change (x + y : AddMonoidAlgebra (K s) (K s)) a = (x : AddMonoidAlgebra (K s) (K s)) a + (y : AddMonoidAlgebra (K s) (K s)) a
+    change (x + y : AddMonoidAlgebra (K s) (K s)) a =
+      (x : AddMonoidAlgebra (K s) (K s)) a + (y : AddMonoidAlgebra (K s) (K s)) a
     rw [Finsupp.add_apply]
   commutes' x := by
     refine Finsupp.ext fun a => ?_
@@ -600,7 +604,8 @@ def ratCoeffEquiv : ratCoeff s ≃ₐ[ℚ] AddMonoidAlgebra ℚ (K s) :=
 #align rat_coeff_equiv ratCoeffEquiv
 
 theorem ratCoeffEquiv_apply_apply (x : ratCoeff s) (i : K s) :
-    ratCoeffEquiv s x i = (IntermediateField.botEquiv ℚ (K s)) ⟨(x : AddMonoidAlgebra (K s) (K s)) i, x.2 i⟩ :=
+    ratCoeffEquiv s x i =
+      (IntermediateField.botEquiv ℚ (K s)) ⟨(x : AddMonoidAlgebra (K s) (K s)) i, x.2 i⟩ :=
   rfl
 #align rat_coeff_equiv_apply_apply ratCoeffEquiv_apply_apply
 
@@ -615,13 +620,11 @@ section
 
 variable (F : Type _) [Field F] [Algebra ℚ F]
 
-noncomputable def mapDomainFixed : Subalgebra F (AddMonoidAlgebra F (K s))
-    where
+noncomputable def mapDomainFixed : Subalgebra F (AddMonoidAlgebra F (K s)) where
   carrier x := ∀ f : Gal s, AddMonoidAlgebra.mapDomainAlgAut ℚ _ f.toAddEquiv x = x
   mul_mem' {a b} ha hb f := by rw [map_mul, ha, hb]
   add_mem' {a b} ha hb f := by rw [map_add, ha, hb]
-  algebraMap_mem' r f :=
-    by
+  algebraMap_mem' r f := by
     change Finsupp.equivMapDomain f.toEquiv (Finsupp.single _ _) = Finsupp.single _ _
     rw [Finsupp.equivMapDomain_single]
     change Finsupp.single (f 0) _ = _; rw [AlgEquiv.map_zero]
@@ -663,14 +666,16 @@ open GalConjClasses
 
 def toConjEquiv : mapDomainFixed s F ≃ (GalConjClasses ℚ (K s) →₀ F) := by
   refine' (mapDomainFixedEquivSubtype s F).trans _
-  letI f' (f : { f : AddMonoidAlgebra F (K s) // MulAction.orbitRel (_root_.Gal s) (K s) ≤ Setoid.ker ↑f }) :=
+  letI f'
+      (f : { f : AddMonoidAlgebra F (K s) // MulAction.orbitRel (Gal s) (K s) ≤ Setoid.ker ↑f }) :=
     @Quotient.liftFinsupp _ _ (IsGalConj.setoid _ _) _ (f : AddMonoidAlgebra F (K s)) f.2
   refine'
     { toFun := f'
       invFun := fun f => ⟨_, _⟩
       left_inv := _
       right_inv := _ }
-  · refine' ⟨f.support.biUnion fun i => i.orbit.toFinset, fun x => f (GalConjClasses.mk ℚ x), fun i => _⟩
+  · refine' ⟨f.support.biUnion fun i => i.orbit.toFinset, fun x => f (GalConjClasses.mk ℚ x),
+      fun i => _⟩
     simp_rw [mem_biUnion, Set.mem_toFinset, mem_orbit, Finsupp.mem_support_iff, exists_eq_right']
   · change ∀ i j, i ∈ MulAction.orbit (Gal s) j → f (Quotient.mk'' i) = f (Quotient.mk'' j)
     exact fun i j h => congr_arg f (Quotient.sound' h)
@@ -763,17 +768,15 @@ instance : CommRing (GalConjClasses ℚ (K s) →₀ F) :=
     (inferInstance : CommSemigroup (GalConjClasses ℚ (K s) →₀ F)),
     (inferInstance : MulZeroClass (GalConjClasses ℚ (K s) →₀ F)) with
     one_mul := fun a => by
-      simp_rw [one_def, mul_def, LinearEquiv.symm_apply_apply, one_mul, LinearEquiv.apply_symm_apply]
+      simp_rw [one_def, mul_def, LinearEquiv.symm_apply_apply, one_mul,
+        LinearEquiv.apply_symm_apply]
     mul_one := fun a => by
-      simp_rw [one_def, mul_def, LinearEquiv.symm_apply_apply, mul_one, LinearEquiv.apply_symm_apply]
+      simp_rw [one_def, mul_def, LinearEquiv.symm_apply_apply, mul_one,
+        LinearEquiv.apply_symm_apply]
     left_distrib := fun a b c => by
       simp only [mul_def, ← map_add, ← mul_add]
     right_distrib := fun a b c => by
       simp only [mul_def, ← map_add, ← add_mul] }
-
--- instance cache : IsScalarTower F (mapDomainFixed s F) (mapDomainFixed s F) :=
---   IsScalarTower.right
--- #align finsupp.gal_conj_classes.cache Finsupp.GalConjClasses.cache
 
 instance : Algebra F (GalConjClasses ℚ (K s) →₀ F) :=
   Algebra.ofModule'
@@ -807,8 +810,7 @@ def toConjAlgEquiv : mapDomainFixed s F ≃ₐ[F] GalConjClasses ℚ (K s) →�
     toFun := toConjLinearEquiv s F
     invFun := (toConjLinearEquiv s F).symm
     map_mul' := fun x y => by simp_rw [Finsupp.GalConjClasses.mul_def, LinearEquiv.symm_apply_apply]
-    commutes' := fun r =>
-      by
+    commutes' := fun r => by
       simp_rw [Finsupp.GalConjClasses.algebraMap_eq_single]
       change toConjEquiv s F (algebraMap F (mapDomainFixed s F) r) = _
       ext i; rw [toConjEquiv_apply_apply]
@@ -844,13 +846,6 @@ theorem single_prod_apply_zero_ne_zero_iff (x : GalConjClasses ℚ (K s)) {a : F
   simp_rw [Finsupp.GalConjClasses.mul_def, toConjLinearEquiv_apply, toConjLinearEquiv_symm_apply,
     toConjEquiv_apply_zero_eq]
   simp_rw [toConjEquiv_symm_single, MulMemClass.mk_mul_mk]
-  -- change
-  --   ((Finsupp.indicator x.orbit.toFinset fun _ _ => a) *
-  --             Finsupp.indicator y.orbit.toFinset fun _ _ => b :
-  --           AddMonoidAlgebra _ _)
-  --         0 ≠
-  --       _ ↔
-  --     _
   haveI := Nat.noZeroSMulDivisors ℚ F
   simp_rw [Finsupp.indicator_const_eq_sum_single, sum_mul, mul_sum,
     AddMonoidAlgebra.single_mul_single]
@@ -891,8 +886,7 @@ theorem Eval_apply (x : AddMonoidAlgebra F (K s)) :
   rw [Eval, AddMonoidAlgebra.lift_apply]; rfl
 #align Eval_apply Eval_apply
 
-theorem Eval_ratCoeff (x : ratCoeff s) : Eval s (K s) x = Eval s ℚ (ratCoeffEquiv s x) :=
-  by
+theorem Eval_ratCoeff (x : ratCoeff s) : Eval s (K s) x = Eval s ℚ (ratCoeffEquiv s x) := by
   simp_rw [Eval_apply, Finsupp.sum, support_ratCoeffEquiv, ratCoeffEquiv_apply_apply]
   refine' sum_congr rfl fun i _ => _
   simp_rw [Algebra.smul_def, IsScalarTower.algebraMap_eq ℚ (K s) ℂ, RingHom.comp_apply]
@@ -906,8 +900,7 @@ theorem Eval_ratCoeff (x : ratCoeff s) : Eval s (K s) x = Eval s ℚ (ratCoeffEq
 theorem Eval_toConjAlgEquiv_symm (x : GalConjClasses ℚ (K s) →₀ ℚ) :
     Eval s ℚ ((toConjAlgEquiv s ℚ).symm x) =
       ∑ c : GalConjClasses ℚ (K s) in x.support,
-        x c • ∑ i : K s in c.orbit.toFinset, exp (algebraMap (K s) ℂ i) :=
-  by
+        x c • ∑ i : K s in c.orbit.toFinset, exp (algebraMap (K s) ℂ i) := by
   conv_lhs => rw [← x.sum_single, Finsupp.sum, map_sum]
   simp_rw [toConjAlgEquiv_symm_apply, toConjLinearEquiv_symm_apply]
   have :
@@ -1054,7 +1047,8 @@ theorem linear_independent_exp_aux2 (s : Finset ℂ) (x : AddMonoidAlgebra ℚ (
   have hV'' : V'' 0 ≠ 0 := by
     rw [V''_def, ← V'.sum_single, Finsupp.sum, ← add_sum_erase _ _ hi, add_mul, sum_mul,
       Finsupp.add_apply]
-    convert_to ((Finsupp.single i (V' i) * Finsupp.single (-i) 1 : GalConjClasses ℚ (K s) →₀ ℚ) 0 + 0) ≠ 0
+    convert_to
+      ((Finsupp.single i (V' i) * Finsupp.single (-i) 1 : GalConjClasses ℚ (K s) →₀ ℚ) 0 + 0) ≠ 0
     · congr 1
       rw [Finsupp.finset_sum_apply]
       refine' sum_eq_zero fun j hj => _
@@ -1067,8 +1061,7 @@ theorem linear_independent_exp_aux2 (s : Finset ℂ) (x : AddMonoidAlgebra ℚ (
     · rwa [Finsupp.mem_support_iff] at hi
     · exact one_ne_zero
   have zero_mem : (0 : GalConjClasses ℚ (K s)) ∈ V''.support := by rwa [Finsupp.mem_support_iff]
-  have Eval_V'' : Eval s ℚ ((toConjAlgEquiv s ℚ).symm V'') = 0 :=
-    by
+  have Eval_V'' : Eval s ℚ ((toConjAlgEquiv s ℚ).symm V'') = 0 := by
     dsimp only
     rw [map_mul, Subalgebra.coe_mul, map_mul, AlgEquiv.symm_apply_apply, Subtype.coe_mk]
     rw [RingHom.mem_ker] at V_ker
@@ -1087,8 +1080,7 @@ theorem linear_independent_exp_aux1 (s : Finset ℂ) (x : AddMonoidAlgebra (K s)
       (0 : GalConjClasses ℚ (K s)) ∉ q) (w' : GalConjClasses ℚ (K s) → ℚ),
       (w + ∑ c in q, w' c • ∑ x in c.orbit.toFinset, exp (algebraMap (K s) ℂ x) : ℂ) = 0 := by
   let U := ∏ f : Gal s, AddMonoidAlgebra.algAutCongrLeft f x
-  have hU : ∀ f : Gal s, AddMonoidAlgebra.algAutCongrLeft f U = U :=
-    by
+  have hU : ∀ f : Gal s, AddMonoidAlgebra.algAutCongrLeft f U = U := by
     intro f; dsimp only
     simp_rw [map_prod, ← AlgEquiv.trans_apply, ← AlgEquiv.aut_mul, ← map_mul]
     exact (Group.mulLeft_bijective f).prod_comp fun g => AddMonoidAlgebra.algAutCongrLeft g x
@@ -1104,8 +1096,7 @@ theorem linear_independent_exp_aux1 (s : Finset ℂ) (x : AddMonoidAlgebra (K s)
       exact (mul_prod_erase (univ : Finset (Gal s)) _ (mem_univ _)).symm
     dsimp only
     rw [AddMonoidAlgebra.algAutCongrLeft_apply_one]; exact Ideal.mul_mem_right _ _ x_ker
-  have U_mem : ∀ i : K s, U i ∈ IntermediateField.fixedField (⊤ : Subgroup (K s ≃ₐ[ℚ] K s)) :=
-    by
+  have U_mem : ∀ i : K s, U i ∈ IntermediateField.fixedField (⊤ : Subgroup (K s ≃ₐ[ℚ] K s)) := by
     intro i; dsimp [IntermediateField.fixedField, FixedPoints.intermediateField]
     rintro ⟨f, hf⟩; rw [Subgroup.smul_def, Subgroup.coe_mk]
     replace hU : (AddMonoidAlgebra.algAutCongrLeft f) U i = U i; · rw [hU f]
@@ -1185,11 +1176,10 @@ theorem linear_independent_exp_aux_rat (u : ι → ℂ) (hu : ∀ i, IsIntegral 
     rw [dif_pos, u'_inj.right_inv_of_invOfMemRange]; · rfl
     exact mem_image_of_mem _ (mem_univ _)
   have f0 : f ≠ 0 := by
-    rw [Ne.def, Function.funext_iff] at v0 ; push_neg at v0
+    rw [Ne.def, Function.funext_iff] at v0; push_neg at v0
     cases' v0 with i hi
     rw [Pi.zero_apply] at hi
-    have h : f (u' i) ≠ 0 :=
-      by
+    have h : f (u' i) ≠ 0 := by
       rwa [Finsupp.onFinset_apply, dif_pos, u'_inj.right_inv_of_invOfMemRange, Ne.def,
         AddEquivClass.map_eq_zero_iff, ← ZeroMemClass.coe_eq_zero]
       exact mem_image_of_mem _ (mem_univ _)
@@ -1209,8 +1199,7 @@ theorem linear_independent_exp_aux'' (u : ι → ℂ) (hu : ∀ i, IsIntegral �
         0 := by
   obtain ⟨w, w0, q, hq, w', h⟩ := linear_independent_exp_aux_rat u hu u_inj v hv v0 h
   let N := w.den * ∏ c in q, (w' c).den
-  have wN0 : (w * N).num ≠ 0 :=
-    by
+  have wN0 : (w * N).num ≠ 0 := by
     refine' Rat.num_ne_zero_of_ne_zero (mul_ne_zero w0 _); dsimp only
     rw [Nat.cast_ne_zero, mul_ne_zero_iff, prod_ne_zero_iff]
     exact ⟨Rat.den_nz _, fun c _hc => Rat.den_nz _⟩
@@ -1219,14 +1208,14 @@ theorem linear_independent_exp_aux'' (u : ι → ℂ) (hu : ∀ i, IsIntegral �
     dsimp only
     rw [← Rat.den_eq_one_iff, Nat.cast_mul, ← mul_assoc, Rat.mul_den_eq_num]
     norm_cast
-  have hw' : ∀ c ∈ q, ((w' c * N).num : ℚ) = w' c * N :=
-    by
+  have hw' : ∀ c ∈ q, ((w' c * N).num : ℚ) = w' c * N := by
     intro c hc; dsimp only
     rw [← Rat.den_eq_one_iff, ← mul_prod_erase _ _ hc, mul_left_comm, Nat.cast_mul, ← mul_assoc,
       Rat.mul_den_eq_num]
     norm_cast
   convert_to
-    (w * N + ∑ c in q, (w' c * N) • ∑ x in c.orbit.toFinset, exp (algebraMap (K (range u v)) ℂ x)) = 0
+    (w * N + ∑ c in q, (w' c * N) • ∑ x in c.orbit.toFinset, exp (algebraMap (K (range u v)) ℂ x))
+      = 0
   · congr 1
     · norm_cast
     · refine' sum_congr rfl fun i hi => _
@@ -1239,8 +1228,9 @@ set_option maxHeartbeats 800000 in
 theorem linear_independent_exp_aux' (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
     (u_inj : Function.Injective u) (v : ι → ℂ) (hv : ∀ i, IsIntegral ℚ (v i)) (v0 : v ≠ 0)
     (h : ∑ i, v i * exp (u i) = 0) :
-    ∃ (w : ℤ) (w0 : w ≠ 0) (n : ℕ) (p : Fin n → ℚ[X]) (_p0 : ∀ j, (p j).eval 0 ≠ 0) (w' : Fin n → ℤ),
-      (w + ∑ j, w' j • (((p j).aroots ℂ).map fun x => exp x).sum : ℂ) = 0 := by
+    ∃ (w : ℤ) (w0 : w ≠ 0) (n : ℕ) (p : Fin n → ℚ[X]) (_p0 : ∀ j, (p j).eval 0 ≠ 0)
+      (w' : Fin n → ℤ),
+        (w + ∑ j, w' j • (((p j).aroots ℂ).map fun x => exp x).sum : ℂ) = 0 := by
   let s := range u v
   obtain ⟨w, w0, q, hq, w', h⟩ := linear_independent_exp_aux'' u hu u_inj v hv v0 h
   let c : Fin q.card → GalConjClasses ℚ (K s) := fun j => q.equivFin.symm j
@@ -1254,7 +1244,7 @@ theorem linear_independent_exp_aux' (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ
     rw [eval_sub, eval_X, eval_C, sub_ne_zero]
     rintro rfl
     rw [Set.mem_toFinset, GalConjClasses.mem_orbit, GalConjClasses.mk_zero] at ha
-    rw [← ha] at hc ; exact hq hc
+    rw [← ha] at hc; exact hq hc
   rw [← h, add_right_inj]
   change ∑ j, ((fun c => w' c • ((c.minpoly.aroots ℂ).map exp).sum) ·) (q.equivFin.symm j) = _
   -- Porting note: were `rw [Equiv.sum_comp q.equivFin.symm, sum_coe_sort]`
@@ -1272,8 +1262,9 @@ theorem linear_independent_exp_aux' (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ
 theorem linear_independent_exp_aux (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
     (u_inj : Function.Injective u) (v : ι → ℂ) (hv : ∀ i, IsIntegral ℚ (v i)) (v0 : v ≠ 0)
     (h : ∑ i, v i * exp (u i) = 0) :
-    ∃ (w : ℤ) (w0 : w ≠ 0) (n : ℕ) (p : Fin n → ℤ[X]) (_p0 : ∀ j, (p j).eval 0 ≠ 0) (w' : Fin n → ℤ),
-      (w + ∑ j, w' j • (((p j).aroots ℂ).map fun x => exp x).sum : ℂ) = 0 := by
+    ∃ (w : ℤ) (w0 : w ≠ 0) (n : ℕ) (p : Fin n → ℤ[X]) (_p0 : ∀ j, (p j).eval 0 ≠ 0)
+      (w' : Fin n → ℤ),
+        (w + ∑ j, w' j • (((p j).aroots ℂ).map fun x => exp x).sum : ℂ) = 0 := by
   obtain ⟨w, w0, n, p, hp, w', h⟩ := linear_independent_exp_aux' u hu u_inj v hv v0 h
   let b j := (IsLocalization.integerNormalization_map_to_map (nonZeroDivisors ℤ) (p j)).choose
   have hb :
@@ -1377,8 +1368,7 @@ theorem exists_sum_map_aroot_smul_eq {R S : Type _} [CommRing R] [Field S] [Alge
   have :
     (fun x : S => k ^ e • aeval x q) =
       (fun x => aeval x (∑ i in range (e + 1), monomial i (k' ^ i * k ^ (e - i) * q.coeff i))) ∘
-        fun x => p.leadingCoeff • x :=
-    by
+        fun x => p.leadingCoeff • x := by
     funext x; rw [Function.comp_apply]
     simp_rw [map_sum, aeval_eq_sum_range' (Nat.lt_add_one_iff.mpr he), aeval_monomial, smul_sum]
     refine' sum_congr rfl fun i hi => _
@@ -1425,10 +1415,10 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
   haveI I : Nonempty (Fin m) := Fin.pos_iff_nonempty.mp (Nat.pos_of_ne_zero m0)
   let P := ∏ i : Fin m, p i
   let K := SplittingField (P.map (algebraMap ℤ ℚ))
-  have p0' : ∀ j, p j ≠ 0 := by intro j h; specialize p0 j; rw [h, eval_zero] at p0 ; exact p0 rfl
+  have p0' : ∀ j, p j ≠ 0 := by intro j h; specialize p0 j; rw [h, eval_zero] at p0; exact p0 rfl
   have P0 : P.eval 0 ≠ 0 := by
     dsimp only; rw [eval_prod, prod_ne_zero_iff]; exact fun j _hj => p0 j
-  have P0' : P ≠ 0 := by intro h; rw [h, eval_zero] at P0 ; exact P0 rfl
+  have P0' : P ≠ 0 := by intro h; rw [h, eval_zero] at P0; exact P0 rfl
   have P0'' : P.map (algebraMap ℤ K) ≠ 0 := by
     rwa [Polynomial.map_ne_zero_iff (algebraMap ℤ K).injective_int]
 
@@ -1635,8 +1625,7 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
         (((le_max_right _ _).trans (le_max_right _ _)).trans_lt hqN)⟩
 #align linear_independent_exp linear_independent_exp
 
-theorem Complex.isIntegral_int_i : IsIntegral ℤ I :=
-  by
+theorem Complex.isIntegral_int_i : IsIntegral ℤ I := by
   refine' ⟨X ^ 2 + C 1, monic_X_pow_add_C _ two_ne_zero, _⟩
   rw [eval₂_add, eval₂_X_pow, eval₂_C, I_sq, eq_intCast, Int.cast_one, add_left_neg]
 set_option linter.uppercaseLean3 false in
@@ -1647,8 +1636,8 @@ theorem Complex.isIntegral_rat_i : IsIntegral ℚ I :=
 set_option linter.uppercaseLean3 false in
 #align complex.is_integral_rat_I Complex.isIntegral_rat_i
 
-theorem transcendental_exp {a : ℂ} (a0 : a ≠ 0) (ha : IsAlgebraic ℤ a) : Transcendental ℤ (exp a) :=
-  by
+theorem transcendental_exp {a : ℂ} (a0 : a ≠ 0) (ha : IsAlgebraic ℤ a) :
+    Transcendental ℤ (exp a) := by
   intro h
   have is_integral_a : IsIntegral ℚ a :=
     isAlgebraic_iff_isIntegral.mp
@@ -1671,8 +1660,7 @@ theorem transcendental_exp {a : ℂ} (a0 : a ≠ 0) (ha : IsAlgebraic ℤ a) : T
   simp
 #align transcendental_exp transcendental_exp
 
-theorem transcendental_pi : Transcendental ℤ Real.pi :=
-  by
+theorem transcendental_pi : Transcendental ℤ Real.pi := by
   intro h
   have is_integral_pi' : IsIntegral ℚ Real.pi :=
     isAlgebraic_iff_isIntegral.mp

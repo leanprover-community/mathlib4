@@ -6,6 +6,10 @@ Authors: Yuyang Zhao
 import Mathlib.RingTheory.MvPolynomial.Symmetric.FundamentalTheorem
 import Mathlib.RingTheory.Polynomial.Vieta
 
+/-!
+TODO
+-/
+
 open scoped BigOperators Polynomial
 
 namespace List
