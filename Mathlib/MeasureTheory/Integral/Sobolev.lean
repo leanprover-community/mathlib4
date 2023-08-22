@@ -421,7 +421,7 @@ theorem marginal_singleton_rhsAux_le [Nontrivial ι] (f : (∀ i, π i) → ℝ�
     _ = F (insert i s) x ^ p *
           ∫⁻ t, F s (X t) ^ (m * p) * ∏ j in (insert i s)ᶜ, (F (insert j s) (X t)) ^ p ∂(μ i) := by
               -- pull out this constant factor
-              simp_rw [marginal_update μ (s.mem_insert_self i)]
+              simp_rw [marginal_update_of_mem μ (s.mem_insert_self i)]
               rw [lintegral_const_mul]
               exact (hf'.pow_const _).mul <| Finset.measurable_prod _ fun _ _ ↦ hf'.pow_const _
     _ ≤ F (insert i s) x ^ p *

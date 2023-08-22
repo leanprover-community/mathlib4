@@ -550,7 +550,7 @@ section Marginal
 
 open TopologicalSpace
 
-variable {δ : Type _} {π : δ → Type _} [∀ x, MeasurableSpace (π x)]
+variable {δ δ' : Type _} {π : δ → Type _} [∀ x, MeasurableSpace (π x)]
 
 variable {μ : ∀ i, Measure (π i)} [∀ i, SigmaFinite (μ i)]
 
@@ -602,8 +602,8 @@ theorem marginal_congr {x y : ∀ i, π i} (f : (∀ i, π i) → ℝ≥0∞)
     (∫⋯∫_s, f ∂μ) x = (∫⋯∫_s, f ∂μ) y := by
   dsimp [marginal, updateSet]; rcongr; exact h _ ‹_›
 
-theorem marginal_update [DecidableEq δ] {i : δ} (hi : i ∈ s) (x : ∀ i, π i) (f : (∀ i, π i) → ℝ≥0∞)
-    (y : π i) :
+theorem marginal_update_of_mem [DecidableEq δ] {i : δ} (hi : i ∈ s)
+    (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) (y : π i) :
     (∫⋯∫_s, f ∂μ) (Function.update x i y) = (∫⋯∫_s, f ∂μ) x := by
   gcongr with j hj
   have : j ≠ i := by rintro rfl; exact hj hi
@@ -655,7 +655,7 @@ theorem integral_update [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (i :
 
 /-- Peel off a single integral from a `marginal` integral at the beginning (compare with
 `marginal_insert'`, which peels off an integral at the end). -/
-theorem marginal_insert (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {i : δ}
+theorem marginal_insert [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {i : δ}
     (hi : i ∉ s) (x : ∀ i, π i) :
     (∫⋯∫_insert i s, f ∂μ) x = ∫⁻ xᵢ, (∫⋯∫_s, f ∂μ) (Function.update x i xᵢ) ∂μ i := by
   rw [Finset.insert_eq, marginal_union μ f hf (Finset.disjoint_singleton_left.mpr hi),
@@ -673,6 +673,16 @@ theorem measurable_update' {δ : Type _} [DecidableEq δ] {π : δ → Type _}
     dsimp
     exact measurable_snd
   · exact measurable_pi_iff.1 measurable_fst _
+
+theorem measurable_update_left {δ : Type _} [DecidableEq δ] {π : δ → Type _}
+    [∀ a : δ, MeasurableSpace (π a)] {a : δ} {x : π a} :
+    Measurable (update · a x) := by
+  rw [measurable_pi_iff]; intro j
+  dsimp [update]
+  split_ifs with h
+  · subst h
+    exact measurable_const
+  · exact measurable_pi_apply j
 
 /-- Peel off a single integral from a `marginal` integral at the end (compare with
 `marginal_insert`, which peels off an integral at the beginning). -/
@@ -698,6 +708,28 @@ theorem marginal_univ [Fintype δ] {f : (∀ i, π i) → ℝ≥0∞} :
 
 theorem lintegral_eq_marginal_univ [Fintype δ] {f : (∀ i, π i) → ℝ≥0∞} (x : ∀ i, π i) :
     ∫⁻ x, f x ∂Measure.pi μ = (∫⋯∫_univ, f ∂μ) x := by rw [marginal_univ]
+
+theorem marginal_image [DecidableEq δ] {e : δ' → δ} (he : Injective e) (s : Finset δ')
+    {f : (∀ i, π (e i)) → ℝ≥0∞} (hf : Measurable f) (x : ∀ i, π i) :
+      (∫⋯∫_s.image e, f ∘ (· ∘' e) ∂μ) x = (∫⋯∫_s, f ∂μ ∘' e) (x ∘' e) := by
+  have h : Measurable ((· ∘' e) : (∀ i, π i) → _) :=
+    measurable_pi_iff.mpr <| λ i ↦ measurable_pi_apply (e i)
+  induction s using Finset.induction generalizing x
+  case empty => simp
+  case insert i s hi ih =>
+    rw [image_insert, marginal_insert _ (hf.comp h) (he.mem_finset_image.not.mpr hi),
+      marginal_insert _ hf hi]
+    simp_rw [ih, ← update_comp_eq_of_injective' x he]
+
+theorem marginal_update_of_not_mem [DecidableEq δ] {i : δ}
+    {f : (∀ i, π i) → ℝ≥0∞} (hf : Measurable f) (hi : i ∉ s) (x : ∀ i, π i) (y : π i) :
+    (∫⋯∫_s, f ∂μ) (Function.update x i y) = (∫⋯∫_s, f ∘ (Function.update · i y) ∂μ) x := by
+  induction s using Finset.induction generalizing x
+  case empty => simp
+  case insert i' s hi' ih =>
+    rw [marginal_insert _ hf hi', marginal_insert _ (hf.comp measurable_update_left) hi']
+    have hii' : i ≠ i' := mt (by rintro rfl; exact mem_insert_self i s) hi
+    simp_rw [update_comm hii', ih (mt Finset.mem_insert_of_mem hi)]
 
 theorem marginal_eq_of_subset {f g : (∀ i, π i) → ℝ≥0∞} (hst : s ⊆ t)
     (hf : Measurable f) (hg : Measurable g) (hfg : ∫⋯∫_s, f ∂μ = ∫⋯∫_s, g ∂μ) :
@@ -727,5 +759,93 @@ theorem integral_le_of_marginal_le [Fintype δ] (s : Finset δ) {f g : (∀ i, �
   simp_rw [lintegral_eq_marginal_univ x, marginal_le_of_subset (Finset.subset_univ s) hf hg hfg x]
 
 end Marginal
+
+
+section
+
+/-! Compute some measures using marginal. -/
+
+variable {α : Fin (n+1) → Type*} [∀ i, MeasurableSpace (α i)] {μ : ∀ i, Measure (α i)}
+variable [∀ i, SigmaFinite (μ i)]
+
+open Fin
+
+@[simp]
+theorem insertNth_dcomp_succAbove (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i.succAbove j)) :
+    insertNth i x p ∘' i.succAbove = p :=
+  funext (insertNth_apply_succAbove i x p)
+
+@[simp]
+theorem insertNth_apply_dcomp_succAbove (i : Fin (n + 1)) (x : α i) (z : ∀ i, α i) :
+    insertNth i x (z ∘' i.succAbove) = update z i x := by
+  ext j
+  rcases eq_or_ne i j with rfl|hij
+  · simp
+  obtain ⟨j', rfl⟩ := exists_succAbove_eq_iff.mpr hij.symm
+  simp [dcomp, hij.symm]
+
+theorem insertNth_comp_dcomp_succAbove (i : Fin (n + 1)) (x : α i) :
+    insertNth i x ∘ (· ∘' i.succAbove) = (update · i x) := by
+  simp
+
+theorem insertNth_eq_of_ne {i j : Fin (n + 1)} (h : i ≠ j) (x x' : α i)
+    (p : ∀ j, α (i.succAbove j)) : insertNth i x p j = insertNth i x' p j := by
+  obtain ⟨j', rfl⟩ := exists_succAbove_eq_iff.mpr h.symm
+  simp
+
+@[simp]
+theorem update_insertNth {i : Fin (n + 1)} (x x' : α i) (p : ∀ j, α (i.succAbove j)) :
+    update (insertNth i x p) i x' = insertNth i x' p := by
+  ext j
+  rcases eq_or_ne i j with rfl|hij
+  · simp
+  simp [hij.symm, insertNth_eq_of_ne hij x x']
+
+theorem measurable_insertNth {i : Fin (n+1)} (x : α i) :
+    Measurable (insertNth i x) := by
+  refine measurable_pi_iff.mpr fun j ↦ ?_
+  rcases eq_or_ne i j with rfl|hij
+  · simp
+  obtain ⟨j', rfl⟩ := exists_succAbove_eq_iff.mpr hij.symm
+  simp [measurable_pi_apply]
+
+theorem lintegral_measure_insertNth {s : Set (∀ i, α i)} (hs : MeasurableSet s) (i : Fin (n+1)) :
+    ∫⁻ x, Measure.pi (μ ∘' i.succAbove) (insertNth i x ⁻¹' s) ∂μ i =
+    Measure.pi μ s := by
+  rcases isEmpty_or_nonempty (α i) with h|⟨⟨x⟩⟩
+  · have : IsEmpty (∀ i, α i) := ⟨λ x ↦ h.elim <| x i⟩
+    simp [lintegral_of_isEmpty, Measure.eq_zero_of_isEmpty]
+  rcases isEmpty_or_nonempty (∀ j, α (i.succAbove j)) with h|⟨⟨y⟩⟩
+  · have : IsEmpty (∀ i, α i) := ⟨λ x ↦ h.elim <| λ j ↦ x _⟩
+    simp [Measure.eq_zero_of_isEmpty]
+  let z := insertNth i x y
+  calc ∫⁻ x : α i, Measure.pi (μ ∘' succAbove i) (insertNth i x ⁻¹' s) ∂μ i
+      = ∫⁻ x : α i, (∫⋯∫_.univ, indicator (insertNth i x ⁻¹' s) 1 ∂μ ∘' succAbove i) y ∂μ i := by
+        simp_rw [← lintegral_indicator_one (measurable_insertNth _ hs),
+          lintegral_eq_marginal_univ y]
+    _ = ∫⁻ x : α i, (∫⋯∫_.univ, indicator (insertNth i x ⁻¹' s) 1 ∂μ ∘' succAbove i)
+          (z ∘' i.succAbove) ∂μ i := by
+        rw [← insertNth_dcomp_succAbove i x y]
+    _ = ∫⁻ x : α i, (∫⋯∫_{i}ᶜ,
+          indicator (insertNth i x ⁻¹' s) 1 ∘ (· ∘' succAbove i) ∂μ) z ∂μ i := by
+        simp_rw [← λ x ↦ marginal_image succAbove_right_injective (μ := μ) .univ
+          (f := indicator (insertNth i x ⁻¹' s) (1 : ((j : Fin n) → α (succAbove i j)) → ℝ≥0∞))
+          (measurable_one.indicator (measurable_insertNth _ hs)) z, Fin.image_succAbove_univ]
+    _ = ∫⁻ x : α i, (∫⋯∫_{i}ᶜ,
+          indicator (insertNth i x ∘ (· ∘' succAbove i) ⁻¹' s) 1 ∂μ) z ∂μ i := by
+        rfl
+    _ = ∫⁻ x : α i, (∫⋯∫_{i}ᶜ,
+          indicator ((Function.update · i x) ⁻¹' s) 1 ∂μ) z ∂μ i := by
+        simp
+    _ = (∫⋯∫_insert i {i}ᶜ, indicator s 1 ∂μ) z := by
+        rw [marginal_insert _ (measurable_one.indicator hs) (not_mem_compl.mpr <| mem_singleton_self i)]
+        simp_rw [marginal_update_of_not_mem (measurable_one.indicator hs)
+          (not_mem_compl.mpr <| mem_singleton_self i)]
+        rfl
+    _ = (∫⋯∫_.univ, indicator s 1 ∂μ) z := by simp
+    _ = Measure.pi μ s := by rw [← lintegral_indicator_one hs, lintegral_eq_marginal_univ z]
+
+end
+
 
 end MeasureTheory
