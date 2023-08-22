@@ -356,8 +356,6 @@ end BasicOpen
 
 end Scheme
 
-set_option profiler true in
-set_option trace.Meta.isDefEq true in
 set_option maxHeartbeats 400000 in
 theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
     (Scheme.Spec.obj <| op R).basicOpen ((SpecΓIdentity.app R).inv f) =
