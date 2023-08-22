@@ -111,7 +111,6 @@ def applyFunTarget (f : Term) (using? : Option Expr) (g : MVarId) : TacticM (Lis
   | (``Not, #[p]) => match p.getAppFnArgs with
     | (``Eq, #[_, _, _]) => handle ``ne_of_apply_ne
     | _ => applyFunTargetFailure f
-  -- TODO Once `Order.Hom.Basic` has been ported, verify these work.
   | (``LE.le, _)
   | (``GE.ge, _) => handle ``ApplyFun.le_of_le
   | (``LT.lt, _)
