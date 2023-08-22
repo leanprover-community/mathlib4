@@ -14,8 +14,6 @@ Apply a function to an equality or inequality in either a local hypothesis or th
 
 ## Porting notes
 When the `mono` tactic has been ported we can attempt to automatically discharge `Monotone f` goals.
-
-When `Logic.Equiv.Basic` and `Order.Hom.Basic` have been ported some additional testing is required.
 -/
 
 namespace Mathlib.Tactic
