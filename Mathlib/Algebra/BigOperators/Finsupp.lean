@@ -607,6 +607,10 @@ lemma indicator_eq_sum_single [AddCommMonoid M] (s : Finset α) (f : ∀ a ∈ s
     rw [not_mem_support_iff.mp hi, single_zero]
 #align finsupp.indicator_eq_sum_single Finsupp.indicator_eq_sum_single
 
+theorem indicator_const_eq_sum_single [AddCommMonoid M] (s : Finset α) (m : M) :
+    (indicator s fun _ _ => m) = ∑ x in s, single x m :=
+  (indicator_eq_sum_single _ _).trans <| sum_attach (f := fun i => single i m)
+
 @[to_additive (attr := simp)]
 lemma prod_indicator_index [Zero M] [CommMonoid N]
     {s : Finset α} (f : ∀ a ∈ s, M) {h : α → M → N} (h_zero : ∀ a ∈ s, h a 0 = 1) :
@@ -616,6 +620,11 @@ lemma prod_indicator_index [Zero M] [CommMonoid N]
   rw [indicator_of_mem]
 #align finsupp.prod_indicator_index Finsupp.prod_indicator_index
 #align finsupp.sum_indicator_index Finsupp.sum_indicator_index
+
+@[to_additive (attr := simp)]
+theorem prod_indicator_const_index [Zero M] [CommMonoid N] {s : Finset α} (m : M) {h : α → M → N}
+    (h_zero : ∀ a ∈ s, h a 0 = 1) : (indicator s fun _ _ => m).prod h = ∏ x in s, h x m :=
+  (prod_indicator_index _ h_zero).trans <| prod_attach (f := fun i => h i m)
 
 end Finsupp
 

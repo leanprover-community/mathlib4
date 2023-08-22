@@ -609,10 +609,16 @@ theorem isRoot_of_mem_roots (h : a ∈ p.roots) : IsRoot p a :=
   (mem_roots'.1 h).2
 #align polynomial.is_root_of_mem_roots Polynomial.isRoot_of_mem_roots
 
+theorem mem_roots_map_of_injective {S : Type*} [Semiring S] {p : S[X]} {f : S →+* R}
+    (hf : Function.Injective f) {x : R} (hp : p ≠ 0) : x ∈ (p.map f).roots ↔ p.eval₂ f x = 0 := by
+  rw [mem_roots ((Polynomial.map_ne_zero_iff hf).mpr hp)]
+  dsimp only [IsRoot]
+  rw [Polynomial.eval_map]
+
 -- Porting note: added during port.
 lemma mem_roots_iff_aeval_eq_zero (w : p ≠ 0) : x ∈ roots p ↔ aeval x p = 0 := by
-  rw [mem_roots w, IsRoot.def, aeval_def, eval₂_eq_eval_map]
-  simp
+  rw [aeval_def, ← mem_roots_map_of_injective (NoZeroSMulDivisors.algebraMap_injective _ _) w,
+    Algebra.id.map_eq_id, map_id]
 
 theorem card_le_degree_of_subset_roots {p : R[X]} {Z : Finset R} (h : Z.val ⊆ p.roots) :
     Z.card ≤ p.natDegree :=
@@ -1012,6 +1018,12 @@ theorem rootSet_mapsTo {p : T[X]} {S S'} [CommRing S] [IsDomain S] [Algebra T S]
     map_injective _ (NoZeroSMulDivisors.algebraMap_injective T S') (by rwa [Polynomial.map_zero])
   exact Polynomial.map_zero _
 #align polynomial.root_set_maps_to Polynomial.rootSet_mapsTo
+
+theorem mem_rootSet_of_injective {S : Type*} [CommRing S] {p : S[X]} [Algebra S R]
+    (h : Function.Injective (algebraMap S R)) {x : R} (hp : p ≠ 0) :
+    x ∈ p.rootSet R ↔ aeval x p = 0 := by
+  classical
+  exact Multiset.mem_toFinset.trans (mem_roots_map_of_injective h hp)
 
 end Roots
 

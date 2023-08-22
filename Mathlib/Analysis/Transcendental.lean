@@ -31,60 +31,9 @@ local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue 
 
 noncomputable section
 
-open scoped BigOperators Classical Polynomial
+open scoped BigOperators Classical Polynomial Nat
 
-open Finset
-
-namespace Finsupp
-
-variable {α M N : Type _}
-
-theorem indicator_const_eq_sum_single [AddCommMonoid M] (s : Finset α) (m : M) :
-    (indicator s fun _ _ => m) = ∑ x in s, single x m :=
-  (indicator_eq_sum_single _ _).trans <| @sum_attach _ _ _ _ fun i => single i m
-#align finsupp.indicator_const_eq_sum_single Finsupp.indicator_const_eq_sum_single
-
-@[to_additive (attr := simp)]
-theorem prod_indicator_const_index [Zero M] [CommMonoid N] {s : Finset α} (m : M) {h : α → M → N}
-    (h_zero : ∀ a ∈ s, h a 0 = 1) : (indicator s fun _ _ => m).prod h = ∏ x in s, h x m :=
-  (prod_indicator_index _ h_zero).trans <| @prod_attach _ _ _ _ fun i => h i m
-#align finsupp.prod_indicator_const_index Finsupp.prod_indicator_const_index
-#align finsupp.sum_indicator_const_index Finsupp.sum_indicator_const_index
-
-end Finsupp
-
-namespace Polynomial
-
-section
-
-variable {R k : Type _} [Semiring R]
-
-theorem mem_roots_map_of_injective {p : R[X]} [CommRing k] [IsDomain k] {f : R →+* k}
-    (hf : Function.Injective f) {x : k} (hp : p ≠ 0) : x ∈ (p.map f).roots ↔ p.eval₂ f x = 0 := by
-  rw [mem_roots ((Polynomial.map_ne_zero_iff hf).mpr hp)]
-  dsimp only [IsRoot]
-  rw [Polynomial.eval_map]
-#align polynomial.mem_roots_map_of_injective Polynomial.mem_roots_map_of_injective
-
-end
-
-section
-
-variable {R k : Type _} [CommRing R]
-
-theorem mem_rootSet_of_injective {p : R[X]} [CommRing k] [IsDomain k] [Algebra R k]
-    (h : Function.Injective (algebraMap R k)) {x : k} (hp : p ≠ 0) :
-    x ∈ p.rootSet k ↔ aeval x p = 0 :=
-  Multiset.mem_toFinset.trans (mem_roots_map_of_injective h hp)
-#align polynomial.mem_root_set_of_injective Polynomial.mem_rootSet_of_injective
-
-end
-
-end Polynomial
-
-open Polynomial
-
-open scoped Nat
+open Finset Polynomial
 
 variable {R A : Type _} [CommRing R] [IsDomain R] [CommRing A] [IsDomain A] [Algebra R A]
 
@@ -937,25 +886,10 @@ def Eval : AddMonoidAlgebra F (K s) →ₐ[F] ℂ :=
     (expMonoidHom.comp (AddMonoidHom.toMultiplicative (algebraMap (K s) ℂ).toAddMonoidHom))
 #align Eval Eval
 
-theorem Eval_apply' (x : AddMonoidAlgebra F (K s)) :
-    Eval s F x = x.sum fun a c => algebraMap F ℂ c * exp (algebraMap (K s) ℂ a) :=
-  rfl
-#align Eval_apply' Eval_apply'
-
 theorem Eval_apply (x : AddMonoidAlgebra F (K s)) :
     Eval s F x = x.sum fun a c => c • exp (algebraMap (K s) ℂ a) := by
   rw [Eval, AddMonoidAlgebra.lift_apply]; rfl
 #align Eval_apply Eval_apply
-
-theorem Eval_rat_apply (x : AddMonoidAlgebra ℚ (K s)) :
-    Eval s ℚ x = x.sum fun a c => c • exp (algebraMap (K s) ℂ a) :=
-  Eval_apply s ℚ x
-#align Eval_rat_apply Eval_rat_apply
-
-theorem Eval_k_apply (x : AddMonoidAlgebra (K s) (K s)) :
-    Eval s (K s) x = x.sum fun a c => c • exp (algebraMap (K s) ℂ a) :=
-  rfl
-#align Eval_K_apply Eval_k_apply
 
 theorem Eval_ratCoeff (x : ratCoeff s) : Eval s (K s) x = Eval s ℚ (ratCoeffEquiv s x) :=
   by
@@ -1700,15 +1634,6 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
       Nat.not_dvd_of_pos_of_lt (Int.natAbs_pos.mpr w0)
         (((le_max_right _ _).trans (le_max_right _ _)).trans_lt hqN)⟩
 #align linear_independent_exp linear_independent_exp
-
-/-- `X ^ n + a` is monic. -/
-theorem monic_X_pow_add_C {R : Type _} [Ring R] (a : R) {n : ℕ} (h : n ≠ 0) : (X ^ n + C a).Monic :=
-  by
-  obtain ⟨k, hk⟩ := Nat.exists_eq_succ_of_ne_zero h
-  convert monic_X_pow_add _
-  exact le_trans degree_C_le Nat.WithBot.coe_nonneg
-set_option linter.uppercaseLean3 false in
-#align monic_X_pow_add_C monic_X_pow_add_C
 
 theorem Complex.isIntegral_int_i : IsIntegral ℤ I :=
   by
