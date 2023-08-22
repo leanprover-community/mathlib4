@@ -52,20 +52,20 @@ lemma negOnePow_odd (n : ℤ) (hn : Odd n) : n.negOnePow = -1 := by
 
 lemma negOnePow_eq_one_iff (n : ℤ) : n.negOnePow = 1 ↔ Even n := by
   constructor
-  . intro h
+  · intro h
     rw [Int.even_iff_not_odd]
     intro h'
     simp only [negOnePow_odd _ h'] at h
-  . exact negOnePow_even n
+  · exact negOnePow_even n
 
 lemma negOnePow_eq_neg_one_iff (n : ℤ) : n.negOnePow = -1 ↔ Odd n := by
   constructor
-  . intro h
+  · intro h
     rw [Int.odd_iff_not_even]
     intro h'
     rw [negOnePow_even _ h'] at h
     simp only at h
-  . exact negOnePow_odd n
+  · exact negOnePow_odd n
 
 @[simp]
 lemma negOnePow_neg (n : ℤ) : (-n).negOnePow = n.negOnePow := by
@@ -79,9 +79,9 @@ lemma negOnePow_sub (n₁ n₂ : ℤ) :
 lemma negOnePow_eq_iff (n₁ n₂ : ℤ) :
     n₁.negOnePow = n₂.negOnePow ↔ Even (n₁ - n₂) := by
   by_cases h₂ : Even n₂
-  . rw [negOnePow_even _ h₂, Int.even_sub, negOnePow_eq_one_iff]
+  · rw [negOnePow_even _ h₂, Int.even_sub, negOnePow_eq_one_iff]
     tauto
-  . rw [← Int.odd_iff_not_even] at h₂
+  · rw [← Int.odd_iff_not_even] at h₂
     rw [negOnePow_odd _ h₂, Int.even_sub, negOnePow_eq_neg_one_iff,
       Int.even_iff_not_odd, Int.even_iff_not_odd]
     tauto
