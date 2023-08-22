@@ -427,7 +427,7 @@ def algEquivAlgebraicClosureAux :
 
 -- This instance is basically copied from the `Field` instance on `SplittingField`
 instance : Field (AlgebraicClosure k) :=
-  let e := algEquivAlgebraicClosureAux k
+  letI e := algEquivAlgebraicClosureAux k
   { toCommRing := AlgebraicClosure.commRing k
     ratCast := fun a => algebraMap k _ (a : k)
     inv := fun a => e.symm (e a)⁻¹
