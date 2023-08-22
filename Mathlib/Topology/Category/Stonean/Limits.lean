@@ -120,6 +120,7 @@ def finiteCoproduct.isColimit' : Limits.IsColimit (finiteCoproduct.explicitCocon
     apply_fun (fun q => q t) at hm
     exact hm
 
+/-- The isomorphism from the explicit finite coproducts to the abstract coproduct. -/
 noncomputable
 def coproductIsoCoproduct : finiteCoproduct X ≅ ∐ X :=
 Limits.IsColimit.coconePointUniqueUpToIso
