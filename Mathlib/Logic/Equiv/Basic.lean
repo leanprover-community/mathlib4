@@ -387,9 +387,8 @@ variable {r : α → γ → Prop} {s : β → δ → Prop} {a : α} {b : β} {c 
   {x : Sum α β} {y : Sum γ δ} {e : Sum α β ≃ Sum γ δ} {f : Sum γ δ ≃ Sum α β}
 
 lemma liftRel_self_apply_iff_liftRel_apply_symm_self :
-(∀ x, LiftRel r s x (e x)) ↔ ∀ y, LiftRel r s (e.symm y) y :=
-⟨fun H cd => by convert (H (e.symm cd)) ; exact (e.apply_symm_apply _).symm,
-fun H ab => by convert (H (e ab)) ; exact (e.symm_apply_apply _).symm⟩
+(∀ x, LiftRel r s x (e x)) ↔ ∀ y, LiftRel r s (e.symm y) y := by
+simp_rw [e.forall_congr_left', apply_symm_apply]
 
 lemma liftRel_apply_self_iff_liftRel_self_apply_symm :
   (∀ x, LiftRel r s (f x) x) ↔ ∀ y, LiftRel r s y (f.symm y) :=
