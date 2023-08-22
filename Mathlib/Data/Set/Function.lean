@@ -1188,6 +1188,7 @@ lemma InvOn.comp (hf : InvOn f' f s t) (hg : InvOn g' g t p) (fst : MapsTo f s t
   ⟨hf.1.comp hg.1 fst, hf.2.comp hg.2 g'pt⟩
 #align set.inv_on.comp Set.InvOn.comp
 
+@[symm]
 theorem InvOn.symm (h : InvOn f' f s t) : InvOn f f' t s :=
   ⟨h.right, h.left⟩
 #align set.inv_on.symm Set.InvOn.symm
