@@ -15,7 +15,7 @@ universe v v₁ u u₁ w
   mention `Stonean`, `Profinite` or `CompHaus` explicitly.
 - The code in section `OpenEmbedding` should be added to `Mathlib.Topology.Category.Stonean.Limits`
   in a separate PR and does not depend on any of the previous stuff in this file.
-- The section `StoneanProjective` can be removed once #5808 is merged.
+- The section `StoneanProjective` can be removed once #5808 is merged. (DONE)
 - The section `StoneanPrecoherent` can be removed once #6725 is merged.
 - The sections `CompHausExplicitSheaves` and `ProfiniteExplicitSheaves` are identical except for
   the words `CompHaus` and `Profinite`. I think this is unavoidable. These sections depend on
