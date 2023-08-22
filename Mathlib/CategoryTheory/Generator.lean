@@ -653,7 +653,7 @@ theorem wellPowered_of_isDetector [HasPullbacks C] (G : C) (hG : IsDetector G) :
   wellPowered_of_isDetecting hG
 #align category_theory.well_powered_of_is_detector CategoryTheory.wellPowered_of_isDetector
 
-theorem foobar1 (G : C) [HasEqualizers C]
+theorem IsSeparator.of_subobject (G : C) [HasEqualizers C]
     (hG : ∀ (X : C) (S : Subobject X),  S ≠ ⊤ →
       ∃ e : G ⟶ X, ∀ t : G ⟶ S, t ≫ S.arrow ≠ e) :
     IsSeparator G := by
@@ -676,7 +676,7 @@ theorem foobar1 (G : C) [HasEqualizers C]
   refine t ≫ q.inv
   simp
 
-theorem foobar (X G : C) (hG : IsSeparator G)
+theorem IsSeparator.iff_subobject_aux (X G : C) (hG : IsSeparator G)
     (S : Subobject X) (hS : S ≠ ⊤) [Balanced C] :
     ∃ e : G ⟶ X, ∀ t : G ⟶ S, t ≫ S.arrow ≠ e := by
   rw [isSeparator_def] at hG
@@ -694,5 +694,12 @@ theorem foobar (X G : C) (hG : IsSeparator G)
   obtain ⟨t,ht⟩ := this
   rw [← ht]
   simp [h]
+
+theorem IsSeparator.iff_subobject (G : C)
+    [HasEqualizers C] [Balanced C] :
+    IsSeparator G ↔ (∀ (X : C) (S : Subobject X), S ≠ ⊤ →
+    ∃ e : G ⟶ X, ∀ t : G ⟶ S, t ≫ S.arrow ≠ e) :=
+  ⟨fun h _ _ hS => IsSeparator.iff_subobject_aux _ _ h _ hS,
+   fun h => IsSeparator.of_subobject _ h⟩
 
 end CategoryTheory
