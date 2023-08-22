@@ -14,6 +14,7 @@ import Std.Data.String.Basic
 import Std.Util.LibraryNote
 import Mathlib.Tactic.RunCmd -- not necessary, but useful for debugging
 import Mathlib.Lean.Linter
+import Std.Data.List.Count
 
 /-!
 # Simps attribute

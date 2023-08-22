@@ -7,7 +7,7 @@ import Lean.Elab
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
 import Std.Data.Option.Basic
-import Std.Data.List.Basic
+import Std.Data.List.Count
 
 /-! ## Additional utilities in `Lean.MVarId` -/
 
