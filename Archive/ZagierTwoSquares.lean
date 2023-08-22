@@ -74,24 +74,6 @@ section Involutions
 
 open Function
 
-variable {α : Type*} [Fintype α] [DecidableEq α] (f : Function.End α)
-
-noncomputable instance : Fintype (fixedPoints f) := Fintype.ofFinite _
-
-/-- The number of fixed points of an involution over a finite set and that set's cardinality
-have the same parity. This is the `p = 2` case of `card_modEq_card_fixedPoints` in
-`Mathlib.GroupTheory.PGroup`, but proved independently. -/
-theorem card_modEq_card_fixedPoints_of_sq (hf : f ^ 2 = 1) :
-    Fintype.card α ≡ Fintype.card (fixedPoints f) [MOD 2] := by
-  let σ : α ≃ α := ⟨f, f, congrFun hf, congrFun hf⟩
-  have hσ : σ ^ (2 ^ 1) = 1 := by ext x; exact congrFun hf x
-  suffices : Fintype.card (fixedPoints f) = Finset.card (Equiv.Perm.support σ)ᶜ
-  · exact this ▸ (Equiv.Perm.card_compl_support_modEq hσ).symm
-  suffices : fixedPoints f = (Equiv.Perm.support σ)ᶜ
-  · simp only [this]
-    apply Fintype.card_coe
-  simp [Set.ext_iff, IsFixedPt]
-
 variable (k : ℕ) [hk : Fact (4 * k + 1).Prime]
 
 /-- The obvious involution `(x, y, z) ↦ (x, z, y)`. -/
@@ -207,8 +189,8 @@ theorem Nat.Prime.sq_add_sq' {p : ℕ} [h : Fact p.Prime] (hp : p % 4 = 1) :
   rw [← div_add_mod p 4, hp] at h ⊢
   let k := p / 4
   apply sq_add_sq_of_nonempty_fixedPoints
-  have key := (card_modEq_card_fixedPoints_of_sq (obvInvo k) (obvInvo_sq k)).symm.trans
-    (card_modEq_card_fixedPoints_of_sq (complexInvo k) (complexInvo_sq k))
+  have key := (Equiv.Perm.card_fixedPoints_modEq (p := 2) (n := 1) (obvInvo_sq k)).symm.trans
+    (Equiv.Perm.card_fixedPoints_modEq (p := 2) (n := 1) (complexInvo_sq k))
   contrapose key
   rw [Set.not_nonempty_iff_eq_empty] at key
   simp_rw [key, Fintype.card_of_isEmpty, card_fixedPoints_eq_one]

@@ -330,6 +330,24 @@ theorem card_compl_support_modEq [DecidableEq α] {p n : ℕ} [hp : Fact p.Prime
   · exact Finset.card_le_univ _
 #align equiv.perm.card_compl_support_modeq Equiv.Perm.card_compl_support_modEq
 
+open Function in
+/-- The number of fixed points of a `p ^ n`-th root of the identity function over a finite set
+and the set's cardinality have the same residue modulo `p`, where `p` is a prime. -/
+theorem card_fixedPoints_modEq [DecidableEq α] {f : Function.End α} {p n : ℕ}
+    [hp : Fact p.Prime] (hf : f ^ p ^ n = 1) :
+    Fintype.card α ≡ Fintype.card f.fixedPoints [MOD p] := by
+  let σ : α ≃ α := ⟨f, f ^ (p ^ n - 1),
+    leftInverse_iff_comp.mpr ((pow_sub_mul_pow f (Nat.one_le_pow n p hp.out.pos)).trans hf),
+    leftInverse_iff_comp.mpr ((pow_mul_pow_sub f (Nat.one_le_pow n p hp.out.pos)).trans hf)⟩
+  have hσ : σ ^ p ^ n = 1
+  · rw [FunLike.ext'_iff, coe_pow]
+    exact (hom_coe_pow (fun g : Function.End α ↦ g) rfl (fun g h ↦ rfl) f (p ^ n)).symm.trans hf
+  suffices : Fintype.card f.fixedPoints = (support σ)ᶜ.card
+  · exact this ▸ (card_compl_support_modEq hσ).symm
+  suffices : f.fixedPoints = (support σ)ᶜ
+  · simp only [this]; apply Fintype.card_coe
+  simp [Set.ext_iff, IsFixedPt]
+
 theorem exists_fixed_point_of_prime {p n : ℕ} [hp : Fact p.Prime] (hα : ¬p ∣ Fintype.card α)
     {σ : Perm α} (hσ : σ ^ p ^ n = 1) : ∃ a : α, σ a = a := by
   classical
