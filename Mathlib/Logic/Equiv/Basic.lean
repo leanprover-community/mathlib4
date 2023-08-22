@@ -381,6 +381,22 @@ theorem sumCongr_refl : sumCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (S
 
 end Perm
 
+section LiftRel
+
+variable {r : α → γ → Prop} {s : β → δ → Prop} {a : α} {b : β} {c : γ} {d : δ}
+  {x : Sum α β} {y : Sum γ δ} {e : Sum α β ≃ Sum γ δ} {f : Sum γ δ ≃ Sum α β}
+
+lemma liftRel_self_apply_iff_liftRel_apply_symm_self :
+(∀ x, LiftRel r s x (e x)) ↔ ∀ y, LiftRel r s (e.symm y) y :=
+⟨fun H cd => by convert (H (e.symm cd)) ; exact (e.apply_symm_apply _).symm,
+fun H ab => by convert (H (e ab)) ; exact (e.symm_apply_apply _).symm⟩
+
+lemma liftRel_apply_self_iff_liftRel_self_apply_symm :
+  (∀ x, LiftRel r s (f x) x) ↔ ∀ y, LiftRel r s y (f.symm y) :=
+f.symm_symm ▸ liftRel_self_apply_iff_liftRel_apply_symm_self.symm
+
+end LiftRel
+
 /-- `Bool` is equivalent the sum of two `PUnit`s. -/
 def boolEquivPUnitSumPUnit : Bool ≃ Sum PUnit.{u + 1} PUnit.{v + 1} :=
   ⟨fun b => b.casesOn (inl PUnit.unit) (inr PUnit.unit) , Sum.elim (fun _ => false) fun _ => true,
