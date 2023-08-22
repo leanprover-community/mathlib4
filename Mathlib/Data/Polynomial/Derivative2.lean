@@ -28,7 +28,6 @@ end Nat
 
 namespace Polynomial
 
-
 variable {R : Type _}
 
 section Semiring
@@ -109,90 +108,11 @@ theorem sumIderiv_eq_self_add (p : R[X]) : sumIderiv p = p + sumIderiv (derivati
   rw [iterate_derivative_eq_zero (Nat.lt_succ_self _)]
 #align polynomial.sum_ideriv_eq_self_add Polynomial.sumIderiv_eq_self_add
 
-noncomputable def iterateDerivativeLinearMap (n : ℕ) : R[X] →ₗ[R] R[X] where
-  toFun p := (derivative^[n]) p
-  map_add' p q := iterate_map_add _ _ p q
-  map_smul' a p := iterate_derivative_smul a p _
-#align polynomial.iterate_derivative_linear_map Polynomial.iterateDerivativeLinearMap
-
-theorem iterateDerivativeLinearMap_apply (p : R[X]) (n : ℕ) :
-    iterateDerivativeLinearMap n p = (derivative^[n]) p :=
-  rfl
-#align polynomial.iterate_derivative_linear_map_apply Polynomial.iterateDerivativeLinearMap_apply
-
-variable (f p q : R[X]) (n k : ℕ)
-
-theorem coeff_iterate_derivative_as_prod_range' :
-    ∀ m : ℕ, ((derivative^[k]) f).coeff m = (∏ i in range k, (m + k - i)) • f.coeff (m + k) := by
-  induction' k with k ih
-  · simp
-  intro m
-  calc
-    ((derivative^[k.succ]) f).coeff m =
-        (∏ i in range k, (m + k.succ - i)) • f.coeff (m + k.succ) * (m + 1) :=
-      by rw [Function.iterate_succ_apply', coeff_derivative, ih m.succ, Nat.succ_add, Nat.add_succ]
-    _ = ((∏ i in range k, (m + k.succ - i)) * (m + 1)) • f.coeff (m + k.succ) := by
-      rw [← Nat.cast_add_one, ← nsmul_eq_mul', smul_smul, mul_comm]
-    _ = (∏ i in range k.succ, (m + k.succ - i)) • f.coeff (m + k.succ) := by
-      rw [prod_range_succ, add_tsub_assoc_of_le k.le_succ, Nat.succ_sub le_rfl, tsub_self]
-#align polynomial.coeff_iterate_derivative_as_prod_range' Polynomial.coeff_iterate_derivative_as_prod_range'
-
-theorem coeff_iterate_derivative_as_descFactorial (m : ℕ) :
-    ((derivative^[k]) f).coeff m = (m + k).descFactorial k • f.coeff (m + k) := by
-  rw [coeff_iterate_derivative_as_prod_range', ← Nat.descFactorial_eq_prod_range]
-#align polynomial.coeff_iterate_derivative_as_desc_factorial Polynomial.coeff_iterate_derivative_as_descFactorial
-
-theorem natDegree_iterate_derivative (p : R[X]) (k : ℕ) :
-    ((derivative^[k]) p).natDegree ≤ p.natDegree - k := by
-  induction' k with d hd; · rw [Function.iterate_zero_apply, Nat.sub_zero]
-  rw [Function.iterate_succ_apply', Nat.sub_succ']
-  refine' (natDegree_derivative_le _).trans _
-  exact Nat.sub_le_sub_right hd 1
-#align polynomial.nat_degree_iterate_derivative Polynomial.natDegree_iterate_derivative
-
 end Semiring
-
-section Ring
-
-variable [Ring R]
-
-theorem sumIderiv_sub (p : R[X]) : sumIderiv p - sumIderiv (derivative p) = p := by
-  rw [sumIderiv_eq_self_add, add_sub_cancel]
-#align polynomial.sum_ideriv_sub Polynomial.sumIderiv_sub
-
-noncomputable def sumIderivLinearEquiv : R[X] ≃ₗ[R] R[X] :=
-  { sumIderiv with
-    toFun := fun p => ∑ i in range (p.natDegree + 1), (derivative^[i]) p
-    invFun := fun p => p - derivative p
-    left_inv := fun p => by simp_rw [← sumIderiv_apply, ← sumIderiv_derivative, sumIderiv_sub]
-    right_inv := fun p => by simp_rw [← sumIderiv_apply, map_sub, sumIderiv_sub] }
-#align polynomial.sum_ideriv_linear_equiv Polynomial.sumIderivLinearEquiv
-
-theorem sumIderivLinearEquiv_apply (p : R[X]) :
-    sumIderivLinearEquiv p = ∑ i in range (p.natDegree + 1), (derivative^[i]) p :=
-  rfl
-#align polynomial.sum_ideriv_linear_equiv_apply Polynomial.sumIderivLinearEquiv_apply
-
-theorem sumIderivLinearEquiv_symm_apply (p : R[X]) :
-    sumIderivLinearEquiv.symm p = p - derivative p :=
-  rfl
-#align polynomial.sum_ideriv_linear_equiv_symm_apply Polynomial.sumIderivLinearEquiv_symm_apply
-
-theorem sumIderivLinearEquiv_eq_sumIderiv (p : R[X]) : sumIderivLinearEquiv p = sumIderiv p :=
-  rfl
-#align polynomial.sum_ideriv_linear_equiv_eq_sum_ideriv Polynomial.sumIderivLinearEquiv_eq_sumIderiv
-
-end Ring
 
 section CommRing
 
 variable [CommRing R]
-
-theorem iterate_derivative_X_sub_pow' (r : R) (k n : ℕ) :
-    (derivative^[n]) ((X - C r) ^ k : R[X]) = k.descFactorial n • (X - C r) ^ (k - n) := by
-  rw [iterate_derivative_X_sub_pow, Nat.descFactorial_eq_prod_range, nsmul_eq_mul]
-set_option linter.uppercaseLean3 false in
-#align polynomial.iterate_derivative_X_sub_C_pow Polynomial.iterate_derivative_X_sub_pow'
 
 theorem iterate_derivative_eq_factorial_mul (p : R[X]) (k : ℕ) :
     ∃ gp : R[X], gp.natDegree ≤ p.natDegree - k ∧ (derivative^[k]) p = k ! • gp := by

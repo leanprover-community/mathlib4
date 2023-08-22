@@ -5,6 +5,7 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Data.Polynomial.Eval
+import Mathlib.Data.Nat.Factorial.BigOperators
 
 #align_import data.polynomial.derivative from "leanprover-community/mathlib"@"bbeb185db4ccee8ed07dc48449414ebfa39cb821"
 
@@ -15,7 +16,6 @@ import Mathlib.Data.Polynomial.Eval
  * `Polynomial.derivative`: The formal derivative of polynomials, expressed as a linear map.
 
 -/
-
 
 noncomputable section
 
@@ -218,6 +218,13 @@ theorem natDegree_derivative_le (p : R[X]) : p.derivative.natDegree ≤ p.natDeg
   · exact Nat.le_pred_of_lt (natDegree_derivative_lt p0)
 #align polynomial.nat_degree_derivative_le Polynomial.natDegree_derivative_le
 
+theorem natDegree_iterate_derivative (p : R[X]) (k : ℕ) :
+    (derivative^[k] p).natDegree ≤ p.natDegree - k := by
+  induction' k with d hd
+  · rw [Function.iterate_zero_apply, Nat.sub_zero]
+  rw [Function.iterate_succ_apply', Nat.sub_succ']
+  exact (natDegree_derivative_le _).trans <| Nat.sub_le_sub_right hd 1
+
 @[simp]
 theorem derivative_nat_cast {n : ℕ} : derivative (n : R[X]) = 0 := by
   rw [← map_natCast C n]
@@ -416,6 +423,10 @@ theorem coeff_iterate_derivative_as_prod_range {k} (p : R[X]) :
     _ = (∏ i in range k.succ, (m + k.succ - i)) • p.coeff (m + k.succ) := by
       rw [prod_range_succ, add_tsub_assoc_of_le k.le_succ, Nat.succ_sub le_rfl, tsub_self]
 #align polynomial.coeff_iterate_derivative_as_prod_range Polynomial.coeff_iterate_derivative_as_prod_range
+
+theorem coeff_iterate_derivative_as_descFactorial {k} (p : R[X]) (m : ℕ) :
+    (derivative^[k] p).coeff m = (m + k).descFactorial k • p.coeff (m + k) := by
+  rw [coeff_iterate_derivative_as_prod_range, ← Nat.descFactorial_eq_prod_range]
 
 theorem iterate_derivative_mul {n} (p q : R[X]) :
     derivative^[n] (p * q) =
@@ -669,6 +680,10 @@ theorem iterate_derivative_X_sub_pow (n k : ℕ) (c : R) :
   rw [sub_eq_add_neg, ← C_neg, iterate_derivative_X_add_pow]
 set_option linter.uppercaseLean3 false in
 #align polynomial.iterate_derivative_X_sub_pow Polynomial.iterate_derivative_X_sub_pow
+
+theorem iterate_derivative_X_sub_pow' (n k : ℕ) (c : R) :
+    (derivative^[k]) ((X - C c) ^ n : R[X]) = n.descFactorial k • (X - C c) ^ (n - k) := by
+  rw [iterate_derivative_X_sub_pow, Nat.descFactorial_eq_prod_range, nsmul_eq_mul]
 
 end CommRing
 

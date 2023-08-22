@@ -14,20 +14,6 @@ open Polynomial
 
 open scoped Polynomial BigOperators
 
-namespace MulAction
-
-@[to_additive]
-instance (α : Type _) {β : Type _} [Monoid α] [Fintype α] [MulAction α β] [DecidableEq β] (b : β) :
-    Fintype (orbit α b) :=
-  Set.fintypeRange _
-
-@[to_additive]
-instance (α : Type _) {β : Type _} [Group α] [Fintype α] [MulAction α β] [DecidableEq β]
-    (x : MulAction.orbitRel.Quotient α β) : Fintype x.orbit :=
-  Quotient.recOnSubsingleton' x fun _ => Set.fintypeRange _
-
-end MulAction
-
 namespace minpoly
 
 theorem eq_of_algHom_eq {K S T : Type _} [Field K] [Ring S] [Ring T] [Algebra K S] [Algebra K T]
