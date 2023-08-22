@@ -387,7 +387,6 @@ lemma additiveObjIsoBiproduct_hom_π (F : Mat_ C ⥤ D) [Functor.Additive F] (M 
       F.map (M.isoBiproductEmbedding.hom ≫ biproduct.π _ i) := by
   dsimp [additiveObjIsoBiproduct]
   rw [biproduct.lift_π, Category.assoc]
-  dsimp [Functor.mapBiproduct]
   erw [biproduct.lift_π, ← F.map_comp]
   simp
 
@@ -561,7 +560,7 @@ open Matrix
 instance (R : Type u) [Semiring R] : Category (Mat R) where
   Hom X Y := Matrix X Y R
   id X := (1 : Matrix X X R)
-  comp f g := f ⬝ g
+  comp {X Y Z} f g := (show Matrix X Y R from f) * (show Matrix Y Z R from g)
   assoc := by intros; simp [Matrix.mul_assoc]
 
 namespace Mat

@@ -17,6 +17,8 @@ import Mathlib.Tactic.Common
 This file defines `Prod.swap : α × β → β × α` and proves various simple lemmas about `Prod`.
 -/
 
+set_option autoImplicit true
+
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 @[simp]

@@ -89,7 +89,7 @@ theorem X_sub_C_mul_removeFactor (f : K[X]) (hf : f.natDegree ≠ 0) :
   let ⟨g, hg⟩ := factor_dvd_of_natDegree_ne_zero hf
   apply (mul_divByMonic_eq_iff_isRoot
     (R := AdjoinRoot f.factor) (a := AdjoinRoot.root f.factor)).mpr
-  rw [IsRoot.def, eval_map, hg, eval₂_mul, ← hg, AdjoinRoot.eval₂_root, MulZeroClass.zero_mul]
+  rw [IsRoot.def, eval_map, hg, eval₂_mul, ← hg, AdjoinRoot.eval₂_root, zero_mul]
 set_option linter.uppercaseLean3 false in
 #align polynomial.X_sub_C_mul_remove_factor Polynomial.X_sub_C_mul_removeFactor
 
@@ -321,8 +321,11 @@ instance : Field (SplittingField f) :=
       assumption
     inv_zero := by simp }
 
-instance [CharZero K] : CharZero (SplittingField f) :=
+instance instCharZero [CharZero K] : CharZero (SplittingField f) :=
   charZero_of_injective_algebraMap (algebraMap K _).injective
+
+instance instCharP (p : ℕ) [CharP K p] : CharP (SplittingField f) p :=
+  charP_of_injective_algebraMap (algebraMap K _).injective p
 
 -- The algebra instance deriving from `K` should be definitionally equal to that
 -- deriving from the field structure on `SplittingField f`.

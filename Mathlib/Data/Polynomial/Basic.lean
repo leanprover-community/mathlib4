@@ -948,12 +948,10 @@ theorem sum_def {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) :
   rfl
 #align polynomial.sum_def Polynomial.sum_def
 
-theorem sum_eq_of_subset {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S)
-    (hf : ∀ i, f i 0 = 0) (s : Finset ℕ) (hs : p.support ⊆ s) :
-    p.sum f = ∑ n in s, f n (p.coeff n) := by
-  refine Finset.sum_subset hs fun n _hn h'n => ?_
-  rw [not_mem_support_iff] at h'n
-  simp [h'n, hf]
+theorem sum_eq_of_subset {S : Type*} [AddCommMonoid S] {p : R[X]} (f : ℕ → R → S)
+    (hf : ∀ i, f i 0 = 0) {s : Finset ℕ} (hs : p.support ⊆ s) :
+    p.sum f = ∑ n in s, f n (p.coeff n) :=
+  Finsupp.sum_of_support_subset _ hs f (fun i _ ↦ hf i)
 #align polynomial.sum_eq_of_subset Polynomial.sum_eq_of_subset
 
 /-- Expressing the product of two polynomials as a double sum. -/
@@ -971,32 +969,29 @@ theorem sum_zero_index {S : Type*} [AddCommMonoid S] (f : ℕ → R → S) : (0 
 #align polynomial.sum_zero_index Polynomial.sum_zero_index
 
 @[simp]
-theorem sum_monomial_index {S : Type*} [AddCommMonoid S] (n : ℕ) (a : R) (f : ℕ → R → S)
-    (hf : f n 0 = 0) : (monomial n a : R[X]).sum f = f n a := by
-  by_cases h : a = 0
-  · simp [h, hf]
-  · simp [sum, support_monomial, h, coeff_monomial]
+theorem sum_monomial_index {S : Type*} [AddCommMonoid S] {n : ℕ} (a : R) (f : ℕ → R → S)
+    (hf : f n 0 = 0) : (monomial n a : R[X]).sum f = f n a :=
+  Finsupp.sum_single_index hf
 #align polynomial.sum_monomial_index Polynomial.sum_monomial_index
 
 @[simp]
 theorem sum_C_index {a} {β} [AddCommMonoid β] {f : ℕ → R → β} (h : f 0 0 = 0) :
     (C a).sum f = f 0 a :=
-  sum_monomial_index 0 a f h
+  sum_monomial_index a f h
 #align polynomial.sum_C_index Polynomial.sum_C_index
 
 -- the assumption `hf` is only necessary when the ring is trivial
 @[simp]
 theorem sum_X_index {S : Type*} [AddCommMonoid S] {f : ℕ → R → S} (hf : f 1 0 = 0) :
     (X : R[X]).sum f = f 1 1 :=
-  sum_monomial_index 1 1 f hf
+  sum_monomial_index 1 f hf
 #align polynomial.sum_X_index Polynomial.sum_X_index
 
 theorem sum_add_index {S : Type*} [AddCommMonoid S] (p q : R[X]) (f : ℕ → R → S)
     (hf : ∀ i, f i 0 = 0) (h_add : ∀ a b₁ b₂, f a (b₁ + b₂) = f a b₁ + f a b₂) :
     (p + q).sum f = p.sum f + q.sum f := by
-  rcases p with ⟨⟩; rcases q with ⟨⟩
-  simp only [← ofFinsupp_add, Sum, support, coeff, Pi.add_apply, coe_add]
-  exact Finsupp.sum_add_index' hf h_add
+  rw [show p + q = ⟨p.toFinsupp + q.toFinsupp⟩ from add_def p q]
+  exact Finsupp.sum_add_index (fun i _ ↦ hf i) (fun a _ b₁ b₂ ↦ h_add a b₁ b₂)
 #align polynomial.sum_add_index Polynomial.sum_add_index
 
 theorem sum_add' {S : Type*} [AddCommMonoid S] (p : R[X]) (f g : ℕ → R → S) :
@@ -1009,9 +1004,8 @@ theorem sum_add {S : Type*} [AddCommMonoid S] (p : R[X]) (f g : ℕ → R → S)
 #align polynomial.sum_add Polynomial.sum_add
 
 theorem sum_smul_index {S : Type*} [AddCommMonoid S] (p : R[X]) (b : R) (f : ℕ → R → S)
-    (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a => f n (b * a) := by
-  rcases p with ⟨⟩
-  simpa [sum, support, coeff] using Finsupp.sum_smul_index hf
+    (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a => f n (b * a) :=
+  Finsupp.sum_smul_index hf
 #align polynomial.sum_smul_index Polynomial.sum_smul_index
 
 theorem sum_monomial_eq : ∀ p : R[X], (p.sum fun n a => monomial n a) = p
