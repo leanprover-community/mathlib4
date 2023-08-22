@@ -153,9 +153,9 @@ theorem iterate_derivative_of_eq (p : R[X]) (q : ℕ) (r : A) {p' : A[X]}
   rw [aeval_def, eval₂_eq_eval_map, ← iterate_derivative_map]
   simp_rw [hp, iterate_derivative_mul, iterate_derivative_X_sub_pow', ← smul_mul_assoc, smul_smul]
   rw [sum_range_succ', Nat.choose_zero_right, one_mul, tsub_zero, Nat.descFactorial_self, tsub_self,
-    pow_zero, smul_mul_assoc, one_mul, Function.iterate_zero, eval_add, eval_smul]
-  convert zero_add _; rw [← coe_evalRingHom, map_sum]; apply sum_eq_zero; intro x hx
-  rw [coe_evalRingHom, h (x + 1) le_add_self (Nat.add_one_le_iff.mpr (mem_range.mp hx)), pow_one,
+    pow_zero, smul_mul_assoc, one_mul, Function.iterate_zero_apply, eval_add, eval_smul]
+  convert zero_add _; rw [eval_finset_sum]; apply sum_eq_zero; intro x hx
+  rw [h (x + 1) le_add_self (Nat.add_one_le_iff.mpr (mem_range.mp hx)), pow_one,
     eval_mul, eval_smul, eval_mul, eval_sub, eval_X, eval_C, sub_self, MulZeroClass.zero_mul,
     smul_zero, MulZeroClass.zero_mul]
 #align polynomial.iterate_derivative_of_eq Polynomial.iterate_derivative_of_eq
@@ -166,16 +166,10 @@ theorem iterate_derivative_large (p : R[X]) (q : ℕ) {k : ℕ} (hk : q ≤ k) :
     ∃ gp : R[X], gp.natDegree ≤ p.natDegree - k ∧
       ∀ r : A, aeval r ((derivative^[k]) p) = q ! • aeval r gp := by
   obtain ⟨p', p'_le, hp'⟩ := iterate_derivative_eq_factorial_mul p k
-  refine' ⟨(k.descFactorial (k - q) : ℤ) • p', _, _⟩
-  · rw [zsmul_eq_mul, ← C_eq_int_cast]
-    exact (natDegree_C_mul_le _ _).trans p'_le
-  intro r
-  rw [hp', aeval_def, eval₂_eq_eval_map, nsmul_eq_mul, Polynomial.map_mul, Polynomial.map_nat_cast]
-  rw [eval_mul, eval_nat_cast, ← Nat.factorial_mul_descFactorial (tsub_le_self : k - q ≤ k),
-    tsub_tsub_cancel_of_le hk, Nat.cast_mul, mul_assoc]
-  rw [aeval_def, eval₂_eq_eval_map, zsmul_eq_mul, Polynomial.map_mul, Polynomial.map_int_cast,
-    eval_mul, eval_int_cast, Int.cast_ofNat, nsmul_eq_mul]
-  simp only [ge_iff_le, Nat.cast_mul, mul_assoc, Int.cast_ofNat]
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hk
+  refine ⟨((q + k).descFactorial k : R[X]) * p', (natDegree_C_mul_le _ _).trans p'_le, fun r => ?_⟩
+  simp_rw [hp', nsmul_eq_mul, map_mul, map_natCast, ← mul_assoc, ← Nat.cast_mul,
+    Nat.add_descFactorial_eq_ascFactorial, Nat.factorial_mul_ascFactorial]
 #align polynomial.iterate_derivative_large Polynomial.iterate_derivative_large
 
 theorem sumIderiv_sl (p : R[X]) (q : ℕ) :
