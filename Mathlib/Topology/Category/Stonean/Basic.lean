@@ -177,12 +177,12 @@ def presentation (X : CompHaus) : Stonean where
 
 /-- The morphism from `presentation X` to `X`. -/
 noncomputable
-def presentationπ (X : CompHaus) : X.presentation.compHaus ⟶ X :=
+def presentation.π (X : CompHaus) : X.presentation.compHaus ⟶ X :=
   (projectivePresentation X).f
 
 /-- The morphism from `presentation X` to `X` is an epimorphism. -/
 noncomputable
-instance epiPresentπ (X : CompHaus) : Epi X.presentationπ :=
+instance presentation.epi_π (X : CompHaus) : Epi (π X) :=
   (projectivePresentation X).epi
 
 /--
