@@ -497,10 +497,14 @@ section
 
 variable (s : Finset ℂ)
 
+namespace Transcendental -- Conflict with Mathlib.NumberTheory.Dioph
 abbrev Poly : ℚ[X] :=
   ∏ x in s, minpoly ℚ x
 set_option linter.uppercaseLean3 false in
-#align Poly Poly
+#align Poly Transcendental.Poly
+end Transcendental
+
+open Transcendental
 
 abbrev K' : IntermediateField ℚ ℂ :=
   IntermediateField.adjoin ℚ ((Poly s).rootSet ℂ)
@@ -522,7 +526,6 @@ abbrev Lift : K' s ≃ₐ[ℚ] K s :=
 set_option linter.uppercaseLean3 false in
 #align Lift Lift
 
-open Transcendental
 
 theorem algebraMap_K_apply (x) : algebraMap (K s) ℂ x = ((Lift s).symm x : ℂ) :=
   rfl
