@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Kevin Buzzard
 -/
 import Mathlib.CategoryTheory.Preadditive.Projective
+import Mathlib.CategoryTheory.Generator
+import Mathlib.Order.Zorn
 
 #align_import category_theory.preadditive.injective from "leanprover-community/mathlib"@"3974a774a707e2e06046a14c0eaef4654584fada"
 
@@ -371,5 +373,24 @@ theorem enoughInjectives_iff (F : C ≌ D) : EnoughInjectives C ↔ EnoughInject
 #align category_theory.equivalence.enough_injectives_iff CategoryTheory.Equivalence.enoughInjectives_iff
 
 end Equivalence
+
+section Generator
+
+theorem Injective.of_generator
+    (G I : C)
+    (hG : IsSeparator G)
+    (h : ∀ (S : Subobject G) (t : (S : C) ⟶ I), ∃ e : G ⟶ I, S.arrow ≫ e = t) :
+    Injective I := by
+  constructor
+  intro A B f i _
+  let As : Subobject B := .mk i
+  let e : (As : C) ≅ A := Subobject.underlyingIso i
+  let α : Type _ := { s : Σ (A' : Subobject B), (A' : C) ⟶ I //
+    ∃ (h : As ≤ s.fst), Subobject.ofLE _ _ h ≫ s.snd = e.hom ≫ f }
+  let r : α → α → Prop := fun s t => s.val.fst ≤ t.val.fst
+  have key := exists_maximal_of_chains_bounded (r := r)
+  sorry
+
+end Generator
 
 end CategoryTheory
