@@ -215,10 +215,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
       exact pow_le_one _ (abs_nonneg _) hx1
     · push_neg at hx1
       rw [_root_.abs_abs]; exact pow_le_pow hx1.le (Nat.sub_le _ _)
-  let c' r := (P_le p' r (this r)).choose
-  have c'0 : ∀ r, 0 ≤ c' r := fun r => (P_le p' r (this r)).choose_spec.1
-  have Pp'_le : ∀ (r : ℂ), ∀ q ≥ 1, abs (P (p' q) r) ≤ c' r ^ q := fun r =>
-    (P_le p' r (this r)).choose_spec.2
+  choose c' c'0 Pp'_le using fun r ↦ P_le p' r (this r)
   let c :=
     if h : ((p.aroots ℂ).map c').toFinset.Nonempty then ((p.aroots ℂ).map c').toFinset.max' h else 0
   have hc : ∀ x ∈ p.aroots ℂ, c' x ≤ c := by
@@ -1181,24 +1178,20 @@ theorem linear_independent_exp_aux (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ 
       (w' : Fin n → ℤ),
         (w + ∑ j, w' j • (((p j).aroots ℂ).map fun x => exp x).sum : ℂ) = 0 := by
   obtain ⟨w, w0, n, p, hp, w', h⟩ := linear_independent_exp_aux' u hu u_inj v hv v0 h
-  let b j := (IsLocalization.integerNormalization_map_to_map (nonZeroDivisors ℤ) (p j)).choose
-  have hb :
-    ∀ j,
-      (IsLocalization.integerNormalization (nonZeroDivisors ℤ) (p j)).map (algebraMap ℤ ℚ) =
-        b j • p j :=
-    fun j => (IsLocalization.integerNormalization_map_to_map (nonZeroDivisors ℤ) (p j)).choose_spec
+  choose b hb using
+    fun j ↦ IsLocalization.integerNormalization_map_to_map (nonZeroDivisors ℤ) (p j)
   refine'
     ⟨w, w0, n, fun i => IsLocalization.integerNormalization (nonZeroDivisors ℤ) (p i), _, w', _⟩
   · intro j
     suffices
       aeval (algebraMap ℤ ℚ 0) (IsLocalization.integerNormalization (nonZeroDivisors ℤ) (p j)) ≠ 0
       by rwa [aeval_algebraMap_apply, map_ne_zero_iff _ (algebraMap ℤ ℚ).injective_int] at this
-    rw [map_zero, aeval_def, eval₂_eq_eval_map, hb, eval_smul, Submonoid.smul_def, smul_ne_zero_iff]
+    rw [map_zero, aeval_def, eval₂_eq_eval_map, hb, eval_smul, smul_ne_zero_iff]
     exact ⟨nonZeroDivisors.coe_ne_zero _, hp j⟩
   rw [← h, add_right_inj]
   refine' sum_congr rfl fun j _hj => congr_arg _ (congr_arg _ (Multiset.map_congr _ fun _ _ => rfl))
   change roots _ = roots _
-  rw [IsScalarTower.algebraMap_eq ℤ ℚ ℂ, ← Polynomial.map_map, hb, Submonoid.smul_def,
+  rw [IsScalarTower.algebraMap_eq ℤ ℚ ℂ, ← Polynomial.map_map, hb,
     zsmul_eq_mul, ← C_eq_int_cast, Polynomial.map_mul, map_C, roots_C_mul]
   rw [map_ne_zero_iff _ (algebraMap ℚ ℂ).injective, Int.cast_ne_zero]
   exact nonZeroDivisors.coe_ne_zero _
@@ -1303,22 +1296,6 @@ theorem exists_sum_map_aroot_smul_eq {R S : Type _} [CommRing R] [Field S] [Alge
   · exact card_aroots
 #align exists_sum_map_aroot_smul_eq exists_sum_map_aroot_smul_eq
 
-def existsSumMapArootSmulEqSome {R S : Type _} [CommRing R] [Field S] [Algebra R S] (p : R[X])
-    (k : R) (e : ℕ) (q : R[X]) (hk : p.leadingCoeff ∣ k) (he : q.natDegree ≤ e)
-    (inj : Function.Injective (algebraMap R S))
-    (card_aroots : Multiset.card (p.map (algebraMap R S)).roots = p.natDegree) : R :=
-  (exists_sum_map_aroot_smul_eq p k e q hk he inj card_aroots).choose
-#align exists_sum_map_aroot_smul_eq_some existsSumMapArootSmulEqSome
-
-theorem existsSumMapArootSmulEqSome_spec {R S : Type _} [CommRing R] [Field S] [Algebra R S]
-    (p : R[X]) (k : R) (e : ℕ) (q : R[X]) (hk : p.leadingCoeff ∣ k) (he : q.natDegree ≤ e)
-    (inj : Function.Injective (algebraMap R S))
-    (card_aroots : Multiset.card (p.map (algebraMap R S)).roots = p.natDegree) :
-    ((p.aroots S).map fun x => k ^ e • aeval x q).sum =
-      algebraMap R S (existsSumMapArootSmulEqSome p k e q hk he inj card_aroots) :=
-  (exists_sum_map_aroot_smul_eq p k e q hk he inj card_aroots).choose_spec
-#align exists_sum_map_aroot_smul_eq_some_spec existsSumMapArootSmulEqSome_spec
-
 theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
     (u_inj : Function.Injective u) (v : ι → ℂ) (hv : ∀ i, IsIntegral ℚ (v i))
     (h : ∑ i, v i * exp (u i) = 0) : v = 0 := by
@@ -1386,15 +1363,8 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
     ext
     rw [map_id, natDegree_map_eq_of_injective (algebraMap ℤ K).injective_int]
 
-  let sz : Fin m → ℤ := fun j =>
-    existsSumMapArootSmulEqSome (p j) k (P.natDegree * q) gp (sz_h₁ j) hgp
-      (algebraMap ℤ K).injective_int (sz_h₂ j)
-  have hsz :
-    ∀ j,
-      (((p j).aroots K).map fun x : K => k ^ (P.natDegree * q) • aeval x gp).sum =
-        algebraMap ℤ K (sz j) :=
-    fun j =>
-    existsSumMapArootSmulEqSome_spec (p j) k (P.natDegree * q) gp (sz_h₁ j) hgp
+  choose sz hsz using fun j ↦
+    exists_sum_map_aroot_smul_eq (p j) k (P.natDegree * q) gp (sz_h₁ j) hgp
       (algebraMap ℤ K).injective_int (sz_h₂ j)
 
   let t := P.natDegree * q
