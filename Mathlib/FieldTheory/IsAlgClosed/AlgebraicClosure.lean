@@ -486,4 +486,3 @@ example : algebraInt (AlgebraicClosure ℚ) = AlgebraicClosure.instAlgebra ℚ :
   rfl
 
 end AlgebraicClosure
-#lint
