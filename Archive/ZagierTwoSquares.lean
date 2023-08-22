@@ -157,7 +157,7 @@ theorem complexInvo_sq : complexInvo k ^ 2 = 1 := by
 theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (complexInvo k)) :
     t.val = (1, 1, k) := by
   obtain ⟨⟨x, y, z⟩, h⟩ := t
-  obtain ⟨xb, yb, zb⟩ := zagierSet_lower_bound k h
+  obtain ⟨_, _, _⟩ := zagierSet_lower_bound k h
   rw [mem_fixedPoints_iff, complexInvo, Subtype.mk.injEq] at mem
   split_ifs at mem with less more <;>
     -- less (completely handled by the pre-applied `simp_all only`)
@@ -179,15 +179,18 @@ theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (comple
       linarith [e]
 
 /-- The singleton containing `(1, 1, k)`. -/
-def singletonFixedPoint : Set (zagierSet k) :=
+def singletonFixedPoint : Finset (zagierSet k) :=
   {⟨(1, 1, k), (by simp only [zagierSet, Set.mem_setOf_eq]; linarith)⟩}
 
 /-- `complexInvo k` has exactly one fixed point. -/
-theorem fixedPoints_eq_singleton : fixedPoints (complexInvo k) = singletonFixedPoint k := by
-  rw [singletonFixedPoint, Set.eq_singleton_iff_unique_mem, mem_fixedPoints_iff]
+theorem fixedPoints_eq_singleton : Fintype.card (fixedPoints (complexInvo k)) = 1 := by
+  rw [show 1 = Finset.card (singletonFixedPoint k) by rfl, ← Set.toFinset_card]
+  congr
+  rw [singletonFixedPoint, Finset.eq_singleton_iff_unique_mem]
   constructor
-  · simp [complexInvo]
-  · intro t mem
+  · simp [IsFixedPt, complexInvo]
+  · intro _ mem
+    simp only [Set.mem_toFinset] at mem
     replace mem := eq_of_mem_fixedPoints k mem
     congr!
 
@@ -208,6 +211,4 @@ theorem Nat.Prime.sq_add_sq' {p : ℕ} [h : Fact p.Prime] (hp : p % 4 = 1) :
     (card_modEq_card_fixedPoints_of_sq (complexInvo k) (complexInvo_sq k))
   contrapose key
   rw [Set.not_nonempty_iff_eq_empty] at key
-  have := fixedPoints_eq_singleton k
-  unfold singletonFixedPoint at this
-  simp_rw [key, Fintype.card_of_isEmpty, this, Fintype.card_ofSubsingleton]
+  simp_rw [key, Fintype.card_of_isEmpty, fixedPoints_eq_singleton]
