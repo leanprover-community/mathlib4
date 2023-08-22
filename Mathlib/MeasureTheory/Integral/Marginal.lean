@@ -765,7 +765,7 @@ section
 
 /-! Compute some measures using marginal. -/
 
-variable {α : Fin (n+1) → Type*} [∀ i, MeasurableSpace (α i)] {μ : ∀ i, Measure (α i)}
+variable {α : Fin (n+1) → Type*} [∀ i, MeasurableSpace (α i)] (μ : ∀ i, Measure (α i))
 variable [∀ i, SigmaFinite (μ i)]
 
 open Fin
@@ -809,6 +809,11 @@ theorem measurable_insertNth {i : Fin (n+1)} (x : α i) :
   obtain ⟨j', rfl⟩ := exists_succAbove_eq_iff.mpr hij.symm
   simp [measurable_pi_apply]
 
+/-- An example of a computation we can do with `marginal`. Working with `marginal` directly is
+  probably easier than using this lemma, though. This is roughly `FUBINI_SIMPLE` from HOL Light,
+  though this has weaker assumptions (HOL Light assumes that `s` is bounded in `ℝⁿ`).
+  Note: we could generalize `i.succAbove : Fin n → Fin (n+1)` to an arbitrary injective map `ι → ι'`
+  whose range misses one point. -/
 theorem lintegral_measure_insertNth {s : Set (∀ i, α i)} (hs : MeasurableSet s) (i : Fin (n+1)) :
     ∫⁻ x, Measure.pi (μ ∘' i.succAbove) (insertNth i x ⁻¹' s) ∂μ i =
     Measure.pi μ s := by
@@ -818,6 +823,7 @@ theorem lintegral_measure_insertNth {s : Set (∀ i, α i)} (hs : MeasurableSet 
   rcases isEmpty_or_nonempty (∀ j, α (i.succAbove j)) with h|⟨⟨y⟩⟩
   · have : IsEmpty (∀ i, α i) := ⟨λ x ↦ h.elim <| λ j ↦ x _⟩
     simp [Measure.eq_zero_of_isEmpty]
+  have hi : i ∉ ({i}ᶜ : Finset _) := not_mem_compl.mpr <| mem_singleton_self i
   let z := insertNth i x y
   calc ∫⁻ x : α i, Measure.pi (μ ∘' succAbove i) (insertNth i x ⁻¹' s) ∂μ i
       = ∫⁻ x : α i, (∫⋯∫_.univ, indicator (insertNth i x ⁻¹' s) 1 ∂μ ∘' succAbove i) y ∂μ i := by
@@ -838,14 +844,27 @@ theorem lintegral_measure_insertNth {s : Set (∀ i, α i)} (hs : MeasurableSet 
           indicator ((Function.update · i x) ⁻¹' s) 1 ∂μ) z ∂μ i := by
         simp
     _ = (∫⋯∫_insert i {i}ᶜ, indicator s 1 ∂μ) z := by
-        rw [marginal_insert _ (measurable_one.indicator hs) (not_mem_compl.mpr <| mem_singleton_self i)]
-        simp_rw [marginal_update_of_not_mem (measurable_one.indicator hs)
-          (not_mem_compl.mpr <| mem_singleton_self i)]
+        simp_rw [marginal_insert _ (measurable_one.indicator hs) hi,
+          marginal_update_of_not_mem (measurable_one.indicator hs) hi]
         rfl
     _ = (∫⋯∫_.univ, indicator s 1 ∂μ) z := by simp
     _ = Measure.pi μ s := by rw [← lintegral_indicator_one hs, lintegral_eq_marginal_univ z]
 
 end
+
+section MeasureSpace
+
+/-! Compute some measures using marginal. -/
+
+variable {α : Fin (n+1) → Type*} [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume (α := α i))]
+
+open Fin
+
+theorem lintegral_volume_insertNth {s : Set (∀ i, α i)} (hs : MeasurableSet s) (i : Fin (n+1)) :
+    ∫⁻ x, volume (insertNth i x ⁻¹' s) = volume s :=
+  lintegral_measure_insertNth (fun _ ↦ volume) hs i
+
+end MeasureSpace
 
 
 end MeasureTheory
