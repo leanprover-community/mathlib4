@@ -89,8 +89,8 @@ lemma longestRelSeries_is_longest [r.FiniteDimensional] (x : RelSeries r) :
 /-- a relation `r` is said to be infinite dimensional iff there exists relation series of arbitrary
   length. -/
 class InfiniteDimensional : Prop where
-  /-- a relation `r` is said to be infinite dimensional iff there exists relation series of arbitrary
-    length. -/
+  /-- a relation `r` is said to be infinite dimensional iff there exists relation series of
+    arbitrary length. -/
   infinite : ∀ (n : ℕ), ∃ (x : RelSeries r), n ≤ x.length
 
 /-- a relation series with length at least `n` if the relation is infinite dimensional -/

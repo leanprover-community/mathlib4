@@ -125,7 +125,8 @@ lemma eq_top_of_infiniteDimensionalType [InfiniteDimensionalType α] :
 lemma eq_len_of_finiteDimensionalType [FiniteDimensionalType α] :
   krullDim α = (longestLTSeries α).length := krullDimOfRel.eq_len_of_finiteDimensional _
 
-lemma infiniteDimensional_of_strictMono (f : α → β) (hf : StrictMono f) [InfiniteDimensionalType α] :
+lemma infiniteDimensional_of_strictMono
+    (f : α → β) (hf : StrictMono f) [InfiniteDimensionalType α] :
   InfiniteDimensionalType β where
     infinite := λ n ↦ by
       obtain ⟨x, h⟩ := RelSeries.exists_len_gt_of_infiniteDimensional ((. < .) : Rel α α) (n + 1)
