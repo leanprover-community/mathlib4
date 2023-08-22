@@ -183,7 +183,7 @@ def singletonFixedPoint : Finset (zagierSet k) :=
   {⟨(1, 1, k), (by simp only [zagierSet, Set.mem_setOf_eq]; linarith)⟩}
 
 /-- `complexInvo k` has exactly one fixed point. -/
-theorem fixedPoints_eq_singleton : Fintype.card (fixedPoints (complexInvo k)) = 1 := by
+theorem card_fixedPoints_eq_one : Fintype.card (fixedPoints (complexInvo k)) = 1 := by
   rw [show 1 = Finset.card (singletonFixedPoint k) by rfl, ← Set.toFinset_card]
   congr
   rw [singletonFixedPoint, Finset.eq_singleton_iff_unique_mem]
@@ -211,4 +211,4 @@ theorem Nat.Prime.sq_add_sq' {p : ℕ} [h : Fact p.Prime] (hp : p % 4 = 1) :
     (card_modEq_card_fixedPoints_of_sq (complexInvo k) (complexInvo_sq k))
   contrapose key
   rw [Set.not_nonempty_iff_eq_empty] at key
-  simp_rw [key, Fintype.card_of_isEmpty, fixedPoints_eq_singleton]
+  simp_rw [key, Fintype.card_of_isEmpty, card_fixedPoints_eq_one]
