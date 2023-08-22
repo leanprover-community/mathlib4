@@ -10,7 +10,7 @@ import Mathlib.Data.List.BigOperators.Basic
 /-!
 # Counting in lists
 
-This file proves basic properties of `List.countp` and `List.count`, which count the number of
+This file proves basic properties of `List.countP` and `List.count`, which count the number of
 elements of a list satisfying a predicate and equal to a given element respectively. Their
 definitions can be found in `Std.Data.List.Basic`.
 -/
@@ -24,58 +24,58 @@ variable {l : List α}
 
 namespace List
 
-section Countp
+section CountP
 
 variable (p q : α → Bool)
 
-#align list.countp_nil List.countp_nil
+#align list.countp_nil List.countP_nil
 
-#align list.countp_cons_of_pos List.countp_cons_of_pos
+#align list.countp_cons_of_pos List.countP_cons_of_pos
 
-#align list.countp_cons_of_neg List.countp_cons_of_neg
+#align list.countp_cons_of_neg List.countP_cons_of_neg
 
-#align list.countp_cons List.countp_cons
+#align list.countp_cons List.countP_cons
 
-#align list.length_eq_countp_add_countp List.length_eq_countp_add_countp
+#align list.length_eq_countp_add_countp List.length_eq_countP_add_countP
 
-#align list.countp_eq_length_filter List.countp_eq_length_filter
+#align list.countp_eq_length_filter List.countP_eq_length_filter
 
-#align list.countp_le_length List.countp_le_length
+#align list.countp_le_length List.countP_le_length
 
-#align list.countp_append List.countp_append
+#align list.countp_append List.countP_append
 
-theorem countp_join : ∀ l : List (List α), countp p l.join = (l.map (countp p)).sum
+theorem countP_join : ∀ l : List (List α), countP p l.join = (l.map (countP p)).sum
   | [] => rfl
-  | a :: l => by rw [join, countp_append, map_cons, sum_cons, countp_join l]
-#align list.countp_join List.countp_join
+  | a :: l => by rw [join, countP_append, map_cons, sum_cons, countP_join l]
+#align list.countp_join List.countP_join
 
-#align list.countp_pos List.countp_pos
+#align list.countp_pos List.countP_pos
 
-#align list.countp_eq_zero List.countp_eq_zero
+#align list.countp_eq_zero List.countP_eq_zero
 
-#align list.countp_eq_length List.countp_eq_length
+#align list.countp_eq_length List.countP_eq_length
 
 theorem length_filter_lt_length_iff_exists (l) :
     length (filter p l) < length l ↔ ∃ x ∈ l, ¬p x := by
-  simpa [length_eq_countp_add_countp p l, countp_eq_length_filter] using
-  countp_pos (fun x => ¬p x) (l := l)
+  simpa [length_eq_countP_add_countP p l, countP_eq_length_filter] using
+  countP_pos (fun x => ¬p x) (l := l)
 #align list.length_filter_lt_length_iff_exists List.length_filter_lt_length_iff_exists
 
-#align list.sublist.countp_le List.Sublist.countp_le
+#align list.sublist.countp_le List.Sublist.countP_le
 
-#align list.countp_filter List.countp_filter
+#align list.countp_filter List.countP_filter
 
-#align list.countp_true List.countp_true
+#align list.countp_true List.countP_true
 
-#align list.countp_false List.countp_false
+#align list.countp_false List.countP_false
 
-#align list.countp_map List.countp_map
+#align list.countp_map List.countP_map
 
-#align list.countp_mono_left List.countp_mono_left
+#align list.countp_mono_left List.countP_mono_left
 
-#align list.countp_congr List.countp_congr
+#align list.countp_congr List.countP_congr
 
-end Countp
+end CountP
 
 /-! ### count -/
 
@@ -87,7 +87,7 @@ variable [DecidableEq α]
 
 @[deprecated] theorem count_cons' (a b : α) (l : List α) :
     count a (b :: l) = count a l + if a = b then 1 else 0 := by conv =>
-  simp [count, countp_cons]
+  simp [count, countP_cons]
   lhs
   simp only [eq_comm]
 #align list.count_cons' List.count_cons'
@@ -113,7 +113,7 @@ variable [DecidableEq α]
 #align list.count_append List.count_append
 
 theorem count_join (l : List (List α)) (a : α) : l.join.count a = (l.map (count a)).sum :=
-  countp_join _ _
+  countP_join _ _
 #align list.count_join List.count_join
 
 #align list.count_concat List.count_concat
@@ -151,7 +151,7 @@ theorem count_bind {α β} [DecidableEq β] (l : List α) (f : α → List β) (
 @[simp]
 theorem count_map_of_injective {α β} [DecidableEq α] [DecidableEq β] (l : List α) (f : α → β)
     (hf : Function.Injective f) (x : α) : count (f x) (map f l) = count x l := by
-  simp only [count, countp_map, (· ∘ ·), hf.beq_eq]
+  simp only [count, countP_map, (· ∘ ·), hf.beq_eq]
 #align list.count_map_of_injective List.count_map_of_injective
 
 #align list.count_le_count_map List.count_le_count_map

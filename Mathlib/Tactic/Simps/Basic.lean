@@ -628,7 +628,7 @@ def findProjection (str : Name) (proj : ParsedProjectionData)
   not used. -/
 def checkForUnusedCustomProjs (stx : Syntax) (str : Name) (projs : Array ParsedProjectionData) :
   CoreM Unit := do
-  let nrCustomProjections := projs.toList.countp (·.isCustom)
+  let nrCustomProjections := projs.toList.countP (·.isCustom)
   let env ← getEnv
   let customDeclarations := env.constants.map₂.foldl (init := #[]) fun xs nm _ =>
     if (str ++ `Simps).isPrefixOf nm && !nm.isInternal' then xs.push nm else xs

@@ -2192,11 +2192,11 @@ theorem filterMap_le_filterMap (f : α → Option β) {s t : Multiset α} (h : s
 /-- `countp p s` counts the number of elements of `s` (with multiplicity) that
   satisfy `p`. -/
 def countp (s : Multiset α) : ℕ :=
-  Quot.liftOn s (List.countp p) fun _l₁ _l₂ => Perm.countp_eq (p ·)
+  Quot.liftOn s (List.countP p) fun _l₁ _l₂ => Perm.countP_eq (p ·)
 #align multiset.countp Multiset.countp
 
 @[simp]
-theorem coe_countp (l : List α) : countp p l = l.countp p :=
+theorem coe_countp (l : List α) : countp p l = l.countP p :=
   rfl
 #align multiset.coe_countp Multiset.coe_countp
 
@@ -2209,26 +2209,26 @@ variable {p}
 
 @[simp]
 theorem countp_cons_of_pos {a : α} (s) : p a → countp p (a ::ₘ s) = countp p s + 1 :=
-  Quot.inductionOn s <| by simpa using List.countp_cons_of_pos (p ·)
+  Quot.inductionOn s <| by simpa using List.countP_cons_of_pos (p ·)
 #align multiset.countp_cons_of_pos Multiset.countp_cons_of_pos
 
 @[simp]
 theorem countp_cons_of_neg {a : α} (s) : ¬p a → countp p (a ::ₘ s) = countp p s :=
-  Quot.inductionOn s <| by simpa using List.countp_cons_of_neg (p ·)
+  Quot.inductionOn s <| by simpa using List.countP_cons_of_neg (p ·)
 #align multiset.countp_cons_of_neg Multiset.countp_cons_of_neg
 
 variable (p)
 
 theorem countp_cons (b : α) (s) : countp p (b ::ₘ s) = countp p s + if p b then 1 else 0 :=
-  Quot.inductionOn s <| by simp [List.countp_cons]
+  Quot.inductionOn s <| by simp [List.countP_cons]
 #align multiset.countp_cons Multiset.countp_cons
 
 theorem countp_eq_card_filter (s) : countp p s = card (filter p s) :=
-  Quot.inductionOn s fun l => l.countp_eq_length_filter (p ·)
+  Quot.inductionOn s fun l => l.countP_eq_length_filter (p ·)
 #align multiset.countp_eq_card_filter Multiset.countp_eq_card_filter
 
 theorem countp_le_card (s) : countp p s ≤ card s :=
-  Quot.inductionOn s fun _l => countp_le_length (p ·)
+  Quot.inductionOn s fun _l => countP_le_length (p ·)
 #align multiset.countp_le_card Multiset.countp_le_card
 
 @[simp]
@@ -2242,7 +2242,7 @@ theorem countp_nsmul (s) (n : ℕ) : countp p (n • s) = n * countp p s := by
 #align multiset.countp_nsmul Multiset.countp_nsmul
 
 theorem card_eq_countp_add_countp (s) : card s = countp p s + countp (fun x => ¬p x) s :=
-  Quot.inductionOn s fun l => by simp [l.length_eq_countp_add_countp p]
+  Quot.inductionOn s fun l => by simp [l.length_eq_countP_add_countP p]
 #align multiset.card_eq_countp_add_countp Multiset.card_eq_countp_add_countp
 
 /-- `countp p`, the number of elements of a multiset satisfying `p`, promoted to an
@@ -2276,18 +2276,18 @@ theorem countp_filter (q) [DecidablePred q] (s : Multiset α) :
 theorem countp_eq_countp_filter_add (s) (p q : α → Prop) [DecidablePred p] [DecidablePred q] :
     countp p s = (filter q s).countp p + (filter (fun a => ¬q a) s).countp p :=
   Quot.inductionOn s fun l => by
-    convert l.countp_eq_countp_filter_add (p ·) (q ·)
+    convert l.countP_eq_countP_filter_add (p ·) (q ·)
     simp [countp_filter]
 #align multiset.countp_eq_countp_filter_add Multiset.countp_eq_countp_filter_add
 
 @[simp]
 theorem countp_True {s : Multiset α} : countp (fun _ => True) s = card s :=
-  Quot.inductionOn s fun _l => List.countp_true
+  Quot.inductionOn s fun _l => List.countP_true
 #align multiset.countp_true Multiset.countp_True
 
 @[simp]
 theorem countp_False {s : Multiset α} : countp (fun _ => False) s = 0 :=
-  Quot.inductionOn s fun _l => List.countp_false
+  Quot.inductionOn s fun _l => List.countP_false
 #align multiset.countp_false Multiset.countp_False
 
 theorem countp_map (f : α → β) (s : Multiset α) (p : β → Prop) [DecidablePred p] :
@@ -2301,15 +2301,15 @@ theorem countp_map (f : α → β) (s : Multiset α) (p : β → Prop) [Decidabl
 variable {p}
 
 theorem countp_pos {s} : 0 < countp p s ↔ ∃ a ∈ s, p a :=
-  Quot.inductionOn s fun _l => by simpa using List.countp_pos (p ·)
+  Quot.inductionOn s fun _l => by simpa using List.countP_pos (p ·)
 #align multiset.countp_pos Multiset.countp_pos
 
 theorem countp_eq_zero {s} : countp p s = 0 ↔ ∀ a ∈ s, ¬p a :=
-  Quot.inductionOn s fun _l => by simp [List.countp_eq_zero]
+  Quot.inductionOn s fun _l => by simp [List.countP_eq_zero]
 #align multiset.countp_eq_zero Multiset.countp_eq_zero
 
 theorem countp_eq_card {s} : countp p s = card s ↔ ∀ a ∈ s, p a :=
-  Quot.inductionOn s fun _l => by simp [List.countp_eq_length]
+  Quot.inductionOn s fun _l => by simp [List.countP_eq_length]
 #align multiset.countp_eq_card Multiset.countp_eq_card
 
 theorem countp_pos_of_mem {s a} (h : a ∈ s) (pa : p a) : 0 < countp p s :=
@@ -2323,7 +2323,7 @@ theorem countp_congr {s s' : Multiset α} (hs : s = s')
   exact Quot.induction_on₂ s s'
     (fun l l' hs hp => by
       simp only [quot_mk_to_coe'', coe_eq_coe] at hs
-      apply hs.countp_congr
+      apply hs.countP_congr
       simpa using hp)
 #align multiset.countp_congr Multiset.countp_congr
 

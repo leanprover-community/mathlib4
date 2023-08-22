@@ -464,40 +464,40 @@ theorem Sublist.exists_perm_append : ∀ {l₁ l₂ : List α}, l₁ <+ l₂ →
     ⟨l, p.cons a⟩
 #align list.sublist.exists_perm_append List.Sublist.exists_perm_append
 
-theorem Perm.countp_eq (p : α → Bool) {l₁ l₂ : List α} (s : l₁ ~ l₂) :
-    countp p l₁ = countp p l₂ := by
-  rw [countp_eq_length_filter, countp_eq_length_filter]; exact (s.filter _).length_eq
-#align list.perm.countp_eq List.Perm.countp_eq
+theorem Perm.countP_eq (p : α → Bool) {l₁ l₂ : List α} (s : l₁ ~ l₂) :
+    countP p l₁ = countP p l₂ := by
+  rw [countP_eq_length_filter, countP_eq_length_filter]; exact (s.filter _).length_eq
+#align list.perm.countp_eq List.Perm.countP_eq
 
-theorem Subperm.countp_le (p : α → Bool) {l₁ l₂ : List α} :
-    l₁ <+~ l₂ → countp p l₁ ≤ countp p l₂
-  | ⟨_l, p', s⟩ => p'.countp_eq p ▸ s.countp_le p
-#align list.subperm.countp_le List.Subperm.countp_le
+theorem Subperm.countP_le (p : α → Bool) {l₁ l₂ : List α} :
+    l₁ <+~ l₂ → countP p l₁ ≤ countP p l₂
+  | ⟨_l, p', s⟩ => p'.countP_eq p ▸ s.countP_le p
+#align list.subperm.countp_le List.Subperm.countP_le
 
-theorem Perm.countp_congr (s : l₁ ~ l₂) {p p' : α → Bool}
-    (hp : ∀ x ∈ l₁, p x = p' x) : l₁.countp p = l₂.countp p' := by
-  rw [← s.countp_eq p']
+theorem Perm.countP_congr (s : l₁ ~ l₂) {p p' : α → Bool}
+    (hp : ∀ x ∈ l₁, p x = p' x) : l₁.countP p = l₂.countP p' := by
+  rw [← s.countP_eq p']
   clear s
   induction' l₁ with y s hs
   · rfl
   · simp only [mem_cons, forall_eq_or_imp] at hp
-    simp only [countp_cons, hs hp.2, hp.1]
-#align list.perm.countp_congr List.Perm.countp_congr
+    simp only [countP_cons, hs hp.2, hp.1]
+#align list.perm.countp_congr List.Perm.countP_congr
 
-theorem countp_eq_countp_filter_add (l : List α) (p q : α → Bool) :
-    l.countp p = (l.filter q).countp p + (l.filter fun a => ¬q a).countp p := by
-  rw [← countp_append]
-  exact Perm.countp_eq _ (filter_append_perm _ _).symm
-#align list.countp_eq_countp_filter_add List.countp_eq_countp_filter_add
+theorem countP_eq_countP_filter_add (l : List α) (p q : α → Bool) :
+    l.countP p = (l.filter q).countP p + (l.filter fun a => ¬q a).countP p := by
+  rw [← countP_append]
+  exact Perm.countP_eq _ (filter_append_perm _ _).symm
+#align list.countp_eq_countp_filter_add List.countP_eq_countP_filter_add
 
 theorem Perm.count_eq [DecidableEq α] {l₁ l₂ : List α} (p : l₁ ~ l₂) (a) :
     count a l₁ = count a l₂ :=
-  p.countp_eq _
+  p.countP_eq _
 #align list.perm.count_eq List.Perm.count_eq
 
 theorem Subperm.count_le [DecidableEq α] {l₁ l₂ : List α} (s : l₁ <+~ l₂) (a) :
     count a l₁ ≤ count a l₂ :=
-  s.countp_le _
+  s.countP_le _
 #align list.subperm.count_le List.Subperm.count_le
 
 theorem Perm.foldl_eq' {f : β → α → β} {l₁ l₂ : List α} (p : l₁ ~ l₂) :
