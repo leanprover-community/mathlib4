@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 
-import Mathlib.Tactic.Basic
+import Std.Tactic.Lint
 import Mathlib.Tactic.ToExpr
 
 /-! # Script to check `undergrad.yaml`, `overview.yaml`, and `100.yaml`
