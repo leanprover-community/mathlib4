@@ -114,7 +114,7 @@ theorem deriv_eq_f (p : ℂ[X]) (s : ℂ) :
   rw [deriv_div_const, deriv.neg, deriv_mul, deriv_cexp, deriv.neg]
   any_goals simp_rw [h]; clear h
   rw [deriv_smul_const, deriv_id'', deriv.comp, Polynomial.deriv, deriv_smul_const, deriv_id'']
-  simp_rw [derivative_map, one_smul, mul_assoc, ← mul_add]
+  simp_rw [one_smul, mul_assoc, ← mul_add]
   have h :
     exp (s.arg • I) * p.sumIderiv.eval (x • exp (s.arg • I)) -
         (derivative (R := ℂ) (sumIderiv p)).eval (x • exp (s.arg • I)) * exp (s.arg • I) =
@@ -150,7 +150,6 @@ theorem integral_f_eq (p : ℂ[X]) (s : ℂ) :
       (deriv_eq_f p s) _ _
   any_goals simp_rw [real_smul, abs_mul_exp_arg_mul_I]
   · simp_rw [zero_smul, neg_zero, Complex.exp_zero, one_mul]
-    simp only [ofReal_zero, zero_mul, neg_zero, exp_zero, one_mul]
   · intro x _; apply ((Differentiable.mul _ _).neg.div_const _).differentiableAt
     apply @Differentiable.real_of_complex fun c : ℂ => exp (-(c * exp (s.arg • I)))
     refine' (differentiable_id.mul_const _).neg.cexp
@@ -401,22 +400,23 @@ def mapDomainRingEquiv (k : Type _) [Semiring k] {G H : Type _} [AddMonoid G] [A
       simp_rw [← Finsupp.domCongr_apply]
       induction x using Finsupp.induction_linear with
       | h0 =>
-          simp only [map_zero, MulZeroClass.zero_mul]
+        simp only [map_zero, MulZeroClass.zero_mul]
       | hadd f g hf hg =>
         -- Porting note: was
         -- simp only [add_mul, map_add, *]
         rw [add_mul, map_add, hf, hg, map_add, add_mul]
       | hsingle => ?_
-      induction y using Finsupp.induction_linear <;>
-        simp only [MulZeroClass.mul_zero, MulZeroClass.zero_mul, map_zero, mul_add, map_add, *]
-      · -- Porting note: added
-        rw [mul_add, map_add]
-        simp only [*]
-        rw [mul_add]
-      -- Porting note: was `ext`
-      refine Finsupp.ext fun a => ?_
-      simp only [Finsupp.domCongr_apply, single_mul_single, Finsupp.equivMapDomain_single,
-        AddEquiv.coe_toEquiv, map_add] }
+      induction y using Finsupp.induction_linear with
+      | h0 =>
+        simp only [mul_zero, map_zero]
+      | hadd f g hf hg =>
+        simp only [map_add]
+        rw [mul_add, map_add, hf, hg, mul_add]
+      | hsingle =>
+        -- Porting note: was `ext`
+        refine Finsupp.ext fun a => ?_
+        simp only [Finsupp.domCongr_apply, single_mul_single, Finsupp.equivMapDomain_single,
+          AddEquiv.coe_toEquiv, map_add] }
 #align add_monoid_algebra.map_domain_ring_equiv AddMonoidAlgebra.mapDomainRingEquiv
 
 @[simps]
@@ -722,8 +722,7 @@ def toConjEquiv : mapDomainFixed s F ≃ (GalConjClasses ℚ (K s) →₀ F) := 
       left_inv := _
       right_inv := _ }
   · refine' ⟨f.support.biUnion fun i => i.orbit.toFinset, fun x => f (GalConjClasses.mk ℚ x), fun i => _⟩
-    simp_rw [mem_biUnion, Set.mem_toFinset, mem_orbit, Finsupp.mem_support_iff, exists_prop,
-      exists_eq_right']
+    simp_rw [mem_biUnion, Set.mem_toFinset, mem_orbit, Finsupp.mem_support_iff, exists_eq_right']
   · change ∀ i j, i ∈ MulAction.orbit (Gal s) j → f (Quotient.mk'' i) = f (Quotient.mk'' j)
     exact fun i j h => congr_arg f (Quotient.sound' h)
   · exact fun _ => Subtype.eq <| Finsupp.ext fun x => rfl
@@ -770,7 +769,7 @@ def toConjLinearEquiv : mapDomainFixed s F ≃ₗ[F] GalConjClasses ℚ (K s) �
       ext i; simp_rw [Finsupp.coe_add, Pi.add_apply, toConjEquiv_apply_apply]
       rfl
     map_smul' := fun r x => by
-      ext i; simp_rw [Finsupp.coe_smul, Pi.smul_apply, toConjEquiv_apply_apply]
+      ext i; simp_rw [Finsupp.coe_smul, toConjEquiv_apply_apply]
       simp only [SetLike.val_smul, RingHom.id_apply]
       rw [Finsupp.coe_smul, Pi.smul_apply]
       rw [Pi.smul_apply]
@@ -982,7 +981,7 @@ theorem Eval_toConjAlgEquiv_symm (x : GalConjClasses ℚ (K s) →₀ ℚ) :
       ((Finsupp.indicator s' fun _ _ => b).sum fun a c => c • exp (algebraMap (K s) ℂ a)) =
         ∑ i in s', b • exp (algebraMap (K s) ℂ i) :=
     fun s' b => Finsupp.sum_indicator_const_index _ fun i _ => by rw [zero_smul]
-  simp_rw [toConjEquiv_symm_single, AddSubmonoidClass.coe_finset_sum, Subtype.coe_mk, map_sum,
+  simp_rw [toConjEquiv_symm_single, AddSubmonoidClass.coe_finset_sum, map_sum,
     Eval_apply, this, smul_sum]
 #align Eval_to_conj_alg_equiv_symm Eval_toConjAlgEquiv_symm
 
@@ -1079,7 +1078,7 @@ end
 instance instIsDomain1 : NoZeroDivisors (AddMonoidAlgebra (K s) (K s)) := inferInstance
 instance instIsDomain2 : IsDomain (AddMonoidAlgebra ℚ (K s)) := IsDomain.mk
 instance instIsDomain3 : IsDomain (GalConjClasses ℚ (K s) →₀ ℚ) :=
-RingEquiv.isDomain (mapDomainFixed s ℚ) (toConjAlgEquiv s ℚ).symm
+MulEquiv.isDomain (mapDomainFixed s ℚ) (toConjAlgEquiv s ℚ).symm
 
 set_option maxHeartbeats 400000 in
 set_option synthInstance.maxHeartbeats 40000 in
@@ -1333,7 +1332,7 @@ theorem linear_independent_exp_aux' (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ
     change roots _ = _
     rw [← roots_map, Polynomial.map_map, IsScalarTower.algebraMap_eq ℚ (K s) ℂ]
     rw [splits_map_iff, RingHom.id_comp]; exact c.splits_minpoly
-  simp_rw [this, c.aroots_minpoly_eq_orbit_val, sum_map, Multiset.map_map]; rfl
+  simp_rw [this, c.aroots_minpoly_eq_orbit_val, Multiset.map_map]; rfl
 #align linear_independent_exp_aux' linear_independent_exp_aux'
 
 theorem linear_independent_exp_aux (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
@@ -1430,7 +1429,7 @@ theorem linear_independent_exp_exists_prime (n : ℕ) (a : ℝ) (c : ℝ) :
         (pow_nonneg (abs_nonneg _) _) (Int.cast_nonneg.mpr (Int.ceil_nonneg (abs_nonneg _)))
   refine' this.trans_lt _; clear this
   refine' lt_of_eq_of_lt (_ : _ = ((⌈|a|⌉.natAbs * ⌈|c|⌉.natAbs ^ p : ℕ) : ℝ)) _
-  · simp_rw [Nat.cast_mul, Nat.cast_pow, Int.cast_natAbs, ← Int.cast_abs,
+  · simp_rw [Nat.cast_mul, Nat.cast_pow, Int.cast_natAbs,
       abs_eq_self.mpr (Int.ceil_nonneg (_root_.abs_nonneg (_ : ℝ)))]
   rwa [Nat.cast_lt]
 #align linear_independent_exp_exists_prime linear_independent_exp_exists_prime
@@ -1741,8 +1740,7 @@ theorem transcendental_exp {a : ℂ} (a0 : a ≠ 0) (ha : IsAlgebraic ℤ a) : T
   · intro i j; dsimp; split_ifs with h_1 h_2 h_2
     all_goals
       simp only [IsEmpty.forall_iff, forall_true_left, a0, *]
-    any_goals simp_rw [eq_self_iff_true, imp_true_iff]
-    all_goals simp_rw [Bool.true_eq_false_eq_False, imp_false, ← Ne.def]
+    all_goals simp_rw [imp_false, ← Ne.def]
     exact a0.symm
   · intro i; dsimp; split_ifs; exacts [isIntegral_one, isIntegral_neg is_integral_expa]
   simp
@@ -1766,8 +1764,7 @@ theorem transcendental_pi : Transcendental ℤ Real.pi :=
   · intro i j; dsimp; split_ifs
     all_goals
       simp only [IsEmpty.forall_iff, forall_true_left, *]
-    any_goals simp_rw [eq_self_iff_true, imp_true_iff]
-    all_goals simp_rw [Bool.true_eq_false_eq_False, imp_false, ← Ne.def]
+    all_goals simp_rw [imp_false, ← Ne.def]
     any_goals rw [@ne_comm ℂ 0]
     all_goals rw [mul_ne_zero_iff]; norm_cast; simp [Real.pi_ne_zero, I_ne_zero]
   · intro i; dsimp; exact isIntegral_one
