@@ -114,4 +114,18 @@ lemma interList_get_to_qf_ker (i : ℕ) (hi : i < s.length) :
   · linarith
   exact hx.1
 
+/--
+the quotient factor of a composition series intersecting with a submodule
+-/
+@[reducible]
+def inter_qf (i : ℕ) (hi : i < s.length) : Type _ :=
+  (s.interList N).get ⟨i + 1, (s.interList_length N).symm ▸ (add_lt_add_iff_right 1).mpr hi⟩ ⧸ₛ
+  ((s.interList N).get ⟨i, (s.interList_length N).symm ▸ hi.trans (by linarith)⟩)
+
+instance inter_qf_addCommGroup (i : ℕ) (hi : i < s.length) : AddCommGroup <| s.inter_qf N i hi :=
+  inferInstance
+
+instance inter_qf_module (i : ℕ) (hi : i < s.length) : Module R <| s.inter_qf N i hi :=
+  inferInstance
+
 end CompositionSeries
