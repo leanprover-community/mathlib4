@@ -1432,15 +1432,15 @@ theorem transcendental_exp {a : ℂ} (a0 : a ≠ 0) (ha : IsAlgebraic ℤ a) :
     isAlgebraic_iff_isIntegral.mp
       (isAlgebraic_of_larger_base_of_injective (algebraMap ℤ ℚ).injective_int h)
   have :=
-    linear_independent_exp (fun i : Bool => if i = False then a else 0) ?_ ?_
-      (fun i : Bool => if i = False then 1 else -exp a) ?_ ?_
-  · simpa [ite_eq_iff] using congr_fun this false
+    linear_independent_exp (fun i : Prop => if i then a else 0) ?_ ?_
+      (fun i : Prop => if i then 1 else -exp a) ?_ ?_
+  · simpa [ite_eq_iff] using congr_fun this True
   · intro i; dsimp only; split_ifs
     exacts [is_integral_a, isIntegral_zero]
   · intro i j; dsimp; split_ifs with h_1 h_2 h_2
     all_goals
       simp only [IsEmpty.forall_iff, forall_true_left, a0, *]
-    all_goals simp_rw [imp_false, ← Ne.def]
+    simp_rw [imp_false, ← Ne.def]
     exact a0.symm
   · intro i; dsimp; split_ifs; exacts [isIntegral_one, isIntegral_neg is_integral_expa]
   simp
@@ -1454,8 +1454,8 @@ theorem transcendental_pi : Transcendental ℤ Real.pi := by
   have is_integral_pi : IsIntegral ℚ (algebraMap ℝ ℂ Real.pi) :=
     (isIntegral_algebraMap_iff (algebraMap ℝ ℂ).injective).mpr is_integral_pi'
   have :=
-    linear_independent_exp (fun i : Bool => if i = False then Real.pi * I else 0) ?_ ?_
-      (fun _ : Bool => 1) ?_ ?_
+    linear_independent_exp (fun i : Prop => if i then Real.pi * I else 0) ?_ ?_
+      (fun _ : Prop => 1) ?_ ?_
   · simpa only [Pi.zero_apply, one_ne_zero] using congr_fun this False
   · intro i; dsimp only; split_ifs
     · exact isIntegral_mul is_integral_pi Complex.isIntegral_rat_i
