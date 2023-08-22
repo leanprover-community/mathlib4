@@ -2,7 +2,6 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
-Ported by: E.W.Ayers
 -/
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Data.String.Defs
@@ -30,15 +29,17 @@ and definitions (but not inductive types and structures) from a multiplicative
 theory to an additive theory.
 -/
 
+set_option autoImplicit true
+
 open Lean Meta Elab Command Std
 
-/-- The  `to_additive_ignore_args` attribute. -/
+/-- The `to_additive_ignore_args` attribute. -/
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" (ppSpace num)* : attr
-/-- The  `to_additive_relevant_arg` attribute. -/
+/-- The `to_additive_relevant_arg` attribute. -/
 syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg " num : attr
-/-- The  `to_additive_reorder` attribute. -/
+/-- The `to_additive_reorder` attribute. -/
 syntax (name := to_additive_reorder) "to_additive_reorder " (num+),+ : attr
-/-- The  `to_additive_change_numeral` attribute. -/
+/-- The `to_additive_change_numeral` attribute. -/
 syntax (name := to_additive_change_numeral) "to_additive_change_numeral" (ppSpace num)* : attr
 /-- An `attr := ...` option for `to_additive`. -/
 syntax toAdditiveAttrOption := &"attr" " := " Parser.Term.attrInstance,*
@@ -74,7 +75,7 @@ def endCapitalNames : Lean.RBMap String (List String) compare :=
 This function takes a String and splits it into separate parts based on the following
 (naming conventions)[https://github.com/leanprover-community/mathlib4/wiki#naming-convention].
 
-E.g. `#eval  "InvHMulLEConjugate₂SMul_ne_top".splitCase` yields
+E.g. `#eval "InvHMulLEConjugate₂SMul_ne_top".splitCase` yields
 `["Inv", "HMul", "LE", "Conjugate₂", "SMul", "_", "ne", "_", "top"]`.
 -/
 partial def String.splitCase (s : String) (i₀ : Pos := 0) (r : List String := []) : List String :=
@@ -95,7 +96,7 @@ Id.run do
   if (s.get i₁).isUpper then
     if let some strs := endCapitalNames.find? (s.extract 0 i₁) then
       if let some (pref, newS) := strs.findSome?
-        fun x ↦ (s.extract i₁ s.endPos).dropPrefix? x |>.map (x, ·.toString) then
+        fun x : String ↦ (s.extract i₁ s.endPos).dropPrefix? x |>.map (x, ·.toString) then
         return splitCase newS 0 <| (s.extract 0 i₁ ++ pref)::r
     if !(s.get i₀).isUpper then
       return splitCase (s.extract i₁ s.endPos) 0 <| (s.extract 0 i₁)::r
@@ -1084,7 +1085,7 @@ Use the `(attr := ...)` syntax to apply attributes to both the multiplicative an
 version:
 
 ```
-@[to_additive (attr := simp)] lemma mul_one' {G : Type _} [group G] (x : G) : x * 1 = x := mul_one x
+@[to_additive (attr := simp)] lemma mul_one' {G : Type*} [group G] (x : G) : x * 1 = x := mul_one x
 ```
 
 For `simp` and `simps` this also ensures that some generated lemmas are added to the additive

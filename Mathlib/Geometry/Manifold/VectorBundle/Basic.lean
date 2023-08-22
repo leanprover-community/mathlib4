@@ -2,14 +2,11 @@
 Copyright (c) 2022 Floris van Doorn, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
-
-! This file was ported from Lean 3 source module geometry.manifold.vector_bundle.basic
-! leanprover-community/mathlib commit e473c3198bb41f68560cab68a0529c854b618833
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.VectorBundle.FiberwiseLinear
 import Mathlib.Topology.VectorBundle.Constructions
+
+#align_import geometry.manifold.vector_bundle.basic from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 
 /-! # Smooth vector bundles
 
@@ -61,6 +58,8 @@ fields, they can also be C^k vector bundles, etc.
   bundle.
 -/
 
+set_option autoImplicit true
+
 
 assert_not_exists mfderiv
 
@@ -72,7 +71,7 @@ open Filter
 
 open scoped Manifold Bundle Topology
 
-variable {𝕜 B B' F M : Type _} {E : B → Type _}
+variable {𝕜 B B' F M : Type*} {E : B → Type*}
 
 /-! ### Charted space structure on a fiber bundle -/
 
@@ -80,7 +79,7 @@ variable {𝕜 B B' F M : Type _} {E : B → Type _}
 section
 
 variable [TopologicalSpace F] [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)]
-  {HB : Type _} [TopologicalSpace HB] [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
+  {HB : Type*} [TopologicalSpace HB] [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
 
 /-- A fiber bundle `E` over a base `B` with model fiber `F` is naturally a charted space modelled on
 `B × F`. -/
@@ -129,10 +128,10 @@ end
 section
 
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)] {EB : Type _}
-  [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type _} [TopologicalSpace HB]
-  (IB : ModelWithCorners 𝕜 EB HB) (E' : B → Type _) [∀ x, Zero (E' x)] {EM : Type _}
-  [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type _} [TopologicalSpace HM]
+  [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)] {EB : Type*}
+  [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
+  (IB : ModelWithCorners 𝕜 EB HB) (E' : B → Type*) [∀ x, Zero (E' x)] {EM : Type*}
+  [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]
   {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
   [Is : SmoothManifoldWithCorners IM M] {n : ℕ∞}
 
@@ -148,12 +147,30 @@ protected theorem FiberBundle.extChartAt (x : TotalSpace F E) :
   rw [LocalEquiv.prod_trans, LocalEquiv.refl_trans]
 #align fiber_bundle.ext_chart_at FiberBundle.extChartAt
 
+protected theorem FiberBundle.extChartAt_target (x : TotalSpace F E) :
+    (extChartAt (IB.prod 𝓘(𝕜, F)) x).target =
+      ((extChartAt IB x.proj).target ∩
+        (extChartAt IB x.proj).symm ⁻¹' (trivializationAt F E x.proj).baseSet) ×ˢ univ := by
+  rw [FiberBundle.extChartAt, LocalEquiv.trans_target, Trivialization.target_eq, inter_prod]
+  rfl
+
+theorem FiberBundle.writtenInExtChartAt_trivializationAt {x : TotalSpace F E} {y}
+    (hy : y ∈ (extChartAt (IB.prod 𝓘(𝕜, F)) x).target) :
+    writtenInExtChartAt (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) x
+      (trivializationAt F E x.proj) y = y :=
+  writtenInExtChartAt_chartAt_comp _ _ hy
+
+theorem FiberBundle.writtenInExtChartAt_trivializationAt_symm {x : TotalSpace F E} {y}
+    (hy : y ∈ (extChartAt (IB.prod 𝓘(𝕜, F)) x).target) :
+    writtenInExtChartAt (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) (trivializationAt F E x.proj x)
+      (trivializationAt F E x.proj).toLocalHomeomorph.symm y = y :=
+  writtenInExtChartAt_chartAt_symm_comp _ _ hy
+
 /-! ### Smoothness of maps in/out fiber bundles
 
 Note: For these results we don't need that the bundle is a smooth vector bundle, or even a vector
 bundle at all, just that it is a fiber bundle over a charted base space.
 -/
-
 
 namespace Bundle
 
@@ -254,10 +271,10 @@ end
 /-! ### Smooth vector bundles -/
 
 
-variable [NontriviallyNormedField 𝕜] {EB : Type _} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
-  {HB : Type _} [TopologicalSpace HB] (IB : ModelWithCorners 𝕜 EB HB) [TopologicalSpace B]
-  [ChartedSpace HB B] [SmoothManifoldWithCorners IB B] {EM : Type _} [NormedAddCommGroup EM]
-  [NormedSpace 𝕜 EM] {HM : Type _} [TopologicalSpace HM] {IM : ModelWithCorners 𝕜 EM HM}
+variable [NontriviallyNormedField 𝕜] {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
+  {HB : Type*} [TopologicalSpace HB] (IB : ModelWithCorners 𝕜 EB HB) [TopologicalSpace B]
+  [ChartedSpace HB B] [SmoothManifoldWithCorners IB B] {EM : Type*} [NormedAddCommGroup EM]
+  [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM] {IM : ModelWithCorners 𝕜 EM HM}
   [TopologicalSpace M] [ChartedSpace HM M] [Is : SmoothManifoldWithCorners IM M] {n : ℕ∞}
   [∀ x, AddCommMonoid (E x)] [∀ x, Module 𝕜 (E x)] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
@@ -559,7 +576,7 @@ end
 
 namespace VectorBundleCore
 
-variable {ι : Type _} {F}
+variable {ι : Type*} {F}
 variable (Z : VectorBundleCore 𝕜 B F ι)
 
 /-- Mixin for a `VectorBundleCore` stating smoothness (of transition functions). -/
@@ -605,10 +622,10 @@ instance Bundle.Trivial.smoothVectorBundle : SmoothVectorBundle F (Bundle.Trivia
 
 section Prod
 
-variable (F₁ : Type _) [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] (E₁ : B → Type _)
+variable (F₁ : Type*) [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] (E₁ : B → Type*)
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, AddCommMonoid (E₁ x)] [∀ x, Module 𝕜 (E₁ x)]
 
-variable (F₂ : Type _) [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] (E₂ : B → Type _)
+variable (F₂ : Type*) [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] (E₂ : B → Type*)
   [TopologicalSpace (TotalSpace F₂ E₂)] [∀ x, AddCommMonoid (E₂ x)] [∀ x, Module 𝕜 (E₂ x)]
 
 variable [∀ x : B, TopologicalSpace (E₁ x)] [∀ x : B, TopologicalSpace (E₂ x)] [FiberBundle F₁ E₁]

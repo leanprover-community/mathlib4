@@ -2,14 +2,11 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.normed_space.pointwise
-! leanprover-community/mathlib commit bc91ed7093bf098d253401e69df601fc33dde156
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.NormedSpace.Basic
+
+#align_import analysis.normed_space.pointwise from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
 
 /-!
 # Properties of pointwise scalar multiplication of sets in normed spaces.
@@ -24,7 +21,7 @@ open Metric Set
 
 open Pointwise Topology
 
-variable {𝕜 E : Type _}
+variable {𝕜 E : Type*}
 
 section SMulZeroClass
 

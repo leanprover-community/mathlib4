@@ -2,14 +2,11 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Anne Baanen
-
-! This file was ported from Lean 3 source module algebra.big_operators.associated
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.BigOperators.Finsupp
+
+#align_import algebra.big_operators.associated from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Products of associated, prime, and irreducible elements.
@@ -20,7 +17,7 @@ and products of multisets, finsets, and finsupps.
 -/
 
 
-variable {α β γ δ : Type _}
+variable {α β γ δ : Type*}
 
 -- the same local notation used in `Algebra.Associated`
 local infixl:50 " ~ᵤ " => Associated
@@ -176,7 +173,7 @@ open Finset Finsupp
 
 section CommMonoidWithZero
 
-variable {M : Type _} [CommMonoidWithZero M]
+variable {M : Type*} [CommMonoidWithZero M]
 
 theorem Prime.dvd_finset_prod_iff {S : Finset α} {p : M} (pp : Prime p) (g : α → M) :
     p ∣ S.prod g ↔ ∃ a ∈ S, p ∣ g a :=

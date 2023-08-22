@@ -2,15 +2,12 @@
 Copyright (c) 2020 Thomas Browning and Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
-
-! This file was ported from Lean 3 source module field_theory.abel_ruffini
-! leanprover-community/mathlib commit e3f4be1fcb5376c4948d7f095bec45350bfb9d1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Solvable
 import Mathlib.FieldTheory.PolynomialGaloisGroup
 import Mathlib.RingTheory.RootsOfUnity.Basic
+
+#align_import field_theory.abel_ruffini from "leanprover-community/mathlib"@"e3f4be1fcb5376c4948d7f095bec45350bfb9d1a"
 
 /-!
 # The Abel-Ruffini Theorem
@@ -31,7 +28,7 @@ that is solvable by radicals has a solvable Galois group.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open scoped Classical Polynomial
 
@@ -39,7 +36,7 @@ open Polynomial IntermediateField
 
 section AbelRuffini
 
-variable {F : Type _} [Field F] {E : Type _} [Field E] [Algebra F E]
+variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 
 theorem gal_zero_isSolvable : IsSolvable (0 : F[X]).Gal := by infer_instance
 #align gal_zero_is_solvable gal_zero_isSolvable
@@ -161,7 +158,7 @@ set_option linter.uppercaseLean3 false in
 #align gal_X_pow_sub_C_is_solvable_aux gal_X_pow_sub_C_isSolvable_aux
 
 set_option maxHeartbeats 300000 in
-theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type _} [Field F] {E : Type _} [Field E]
+theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [Field E]
     (i : F →+* E) (n : ℕ) {a : F} (ha : a ≠ 0) (h : (X ^ n - C a).Splits i) :
     (X ^ n - 1 : F[X]).Splits i := by
   have ha' : i a ≠ 0 := mt ((injective_iff_map_eq_zero i).mp i.injective a) ha
@@ -240,7 +237,6 @@ def solvableByRad : IntermediateField F E where
     change IsSolvableByRad F 0
     convert IsSolvableByRad.base (E := E) (0 : F); rw [RingHom.map_zero]
   add_mem' := by apply IsSolvableByRad.add
-  neg_mem' := IsSolvableByRad.neg
   one_mem' := by
     change IsSolvableByRad F 1
     convert IsSolvableByRad.base (E := E) (1 : F); rw [RingHom.map_one]

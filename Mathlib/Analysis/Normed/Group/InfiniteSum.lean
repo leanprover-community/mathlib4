@@ -2,15 +2,12 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Heather Macbeth, Johannes Hölzl, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.normed.group.infinite_sum
-! leanprover-community/mathlib commit 9a59dcb7a2d06bf55da57b9030169219980660cd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Topology.Instances.NNReal
+
+#align_import analysis.normed.group.infinite_sum from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
 
 /-!
 # Infinite sums in (semi)normed groups
@@ -38,7 +35,7 @@ open Classical BigOperators Topology NNReal
 
 open Finset Filter Metric
 
-variable {ι α E F : Type _} [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
+variable {ι α E F : Type*} [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
 
 theorem cauchySeq_finset_iff_vanishing_norm {f : ι → E} :
     (CauchySeq fun s : Finset ι => ∑ i in s, f i) ↔

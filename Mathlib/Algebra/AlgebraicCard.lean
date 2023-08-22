@@ -2,14 +2,11 @@
 Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
-
-! This file was ported from Lean 3 source module algebra.algebraic_card
-! leanprover-community/mathlib commit 40494fe75ecbd6d2ec61711baa630cf0a7b7d064
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Cardinal
 import Mathlib.RingTheory.Algebraic
+
+#align_import algebra.algebraic_card from "leanprover-community/mathlib"@"40494fe75ecbd6d2ec61711baa630cf0a7b7d064"
 
 /-!
 ### Cardinality of algebraic numbers
@@ -30,12 +27,12 @@ open Cardinal Polynomial
 
 namespace Algebraic
 
-theorem infinite_of_charZero (R A : Type _) [CommRing R] [IsDomain R] [Ring A] [Algebra R A]
+theorem infinite_of_charZero (R A : Type*) [CommRing R] [IsDomain R] [Ring A] [Algebra R A]
     [CharZero A] : { x : A | IsAlgebraic R x }.Infinite :=
   infinite_of_injective_forall_mem Nat.cast_injective isAlgebraic_nat
 #align algebraic.infinite_of_char_zero Algebraic.infinite_of_charZero
 
-theorem aleph0_le_cardinal_mk_of_charZero (R A : Type _) [CommRing R] [IsDomain R] [Ring A]
+theorem aleph0_le_cardinal_mk_of_charZero (R A : Type*) [CommRing R] [IsDomain R] [Ring A]
     [Algebra R A] [CharZero A] : ℵ₀ ≤ #{ x : A // IsAlgebraic R x } :=
   infinite_iff.1 (Set.infinite_coe_iff.2 <| infinite_of_charZero R A)
 #align algebraic.aleph_0_le_cardinal_mk_of_char_zero Algebraic.aleph0_le_cardinal_mk_of_charZero

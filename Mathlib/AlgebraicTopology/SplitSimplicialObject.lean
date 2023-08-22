@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.split_simplicial_object
-! leanprover-community/mathlib commit dd1f8496baa505636a82748e6b652165ea888733
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.SimplicialObject
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+
+#align_import algebraic_topology.split_simplicial_object from "leanprover-community/mathlib"@"dd1f8496baa505636a82748e6b652165ea888733"
 
 /-!
 
@@ -45,7 +42,7 @@ open Simplicial
 
 universe u
 
-variable {C : Type _} [Category C]
+variable {C : Type*} [Category C]
 
 namespace SimplicialObject
 
@@ -100,7 +97,6 @@ instance : Fintype (IndexSet Δ) :=
       simp only [unop_op, Sigma.mk.inj_iff, Fin.mk.injEq] at h₁
       have h₂ : Δ₁ = Δ₂ := by
         ext1
-        simp at h₁
         simpa only [Fin.mk_eq_mk] using h₁.1
       subst h₂
       refine' ext _ _ rfl _

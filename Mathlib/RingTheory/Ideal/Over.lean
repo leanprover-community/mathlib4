@@ -2,15 +2,12 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.ideal.over
-! leanprover-community/mathlib commit 198cb64d5c961e1a8d0d3e219feb7058d5353861
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Algebraic
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Localization.Integral
+
+#align_import ring_theory.ideal.over from "leanprover-community/mathlib"@"198cb64d5c961e1a8d0d3e219feb7058d5353861"
 
 /-!
 # Ideals over/under ideals
@@ -30,7 +27,7 @@ can be proven using more general going-up/going-down theory.
 -/
 
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 namespace Ideal
 
@@ -42,7 +39,7 @@ open Submodule
 
 section CommRing
 
-variable {S : Type _} [CommRing S] {f : R →+* S} {I J : Ideal S}
+variable {S : Type*} [CommRing S] {f : R →+* S} {I J : Ideal S}
 
 theorem coeff_zero_mem_comap_of_root_mem_of_eval_mem {r : S} (hr : r ∈ I) {p : R[X]}
     (hp : p.eval₂ f r ∈ I) : p.coeff 0 ∈ I.comap f := by
@@ -194,7 +191,7 @@ end CommRing
 
 section IsDomain
 
-variable {S : Type _} [CommRing S] {f : R →+* S} {I J : Ideal S}
+variable {S : Type*} [CommRing S] {f : R →+* S} {I J : Ideal S}
 
 theorem exists_coeff_ne_zero_mem_comap_of_root_mem [IsDomain S] {r : S} (r_ne_zero : r ≠ 0)
     (hr : r ∈ I) {p : R[X]} :
@@ -299,14 +296,14 @@ theorem isMaximal_comap_of_isIntegral_of_isMaximal (hRS : Algebra.IsIntegral R S
       algebraMap_quotient_injective (by rwa [← Quotient.maximal_ideal_iff_isField_quotient])
 #align ideal.is_maximal_comap_of_is_integral_of_is_maximal Ideal.isMaximal_comap_of_isIntegral_of_isMaximal
 
-theorem isMaximal_comap_of_isIntegral_of_isMaximal' {R S : Type _} [CommRing R] [CommRing S]
+theorem isMaximal_comap_of_isIntegral_of_isMaximal' {R S : Type*} [CommRing R] [CommRing S]
     (f : R →+* S) (hf : f.IsIntegral) (I : Ideal S) (hI : I.IsMaximal) : IsMaximal (I.comap f) :=
   @isMaximal_comap_of_isIntegral_of_isMaximal R _ S _ f.toAlgebra hf I hI
 #align ideal.is_maximal_comap_of_is_integral_of_is_maximal' Ideal.isMaximal_comap_of_isIntegral_of_isMaximal'
 
 section IsIntegralClosure
 
-variable (S) {A : Type _} [CommRing A]
+variable (S) {A : Type*} [CommRing A]
 
 variable [Algebra R A] [Algebra A S] [IsScalarTower R A S] [IsIntegralClosure A R S]
 

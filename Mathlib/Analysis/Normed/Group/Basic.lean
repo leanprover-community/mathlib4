@@ -2,11 +2,6 @@
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.normed.group.basic
-! leanprover-community/mathlib commit 195fcd60ff2bfe392543bceb0ec2adcdb472db4c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Seminorm
 import Mathlib.Order.LiminfLimsup
@@ -15,6 +10,8 @@ import Mathlib.Topology.Instances.Rat
 import Mathlib.Topology.MetricSpace.Algebra
 import Mathlib.Topology.MetricSpace.IsometricSMul
 import Mathlib.Topology.Sequences
+
+#align_import analysis.normed.group.basic from "leanprover-community/mathlib"@"41bef4ae1254365bc190aee63b947674d2977f01"
 
 /-!
 # Normed (semi)groups
@@ -47,7 +44,7 @@ normed group
 -/
 
 
-variable {𝓕 𝕜 α ι κ E F G : Type _}
+variable {𝓕 𝕜 α ι κ E F G : Type*}
 
 open Filter Function Metric
 
@@ -57,14 +54,14 @@ open BigOperators ENNReal Filter NNReal Uniformity Pointwise Topology
 class is designed to be extended in more interesting classes specifying the properties of the norm.
 -/
 @[notation_class]
-class Norm (E : Type _) where
+class Norm (E : Type*) where
   /-- the `ℝ`-valued norm function. -/
   norm : E → ℝ
 #align has_norm Norm
 
 /-- Auxiliary class, endowing a type `α` with a function `nnnorm : α → ℝ≥0` with notation `‖x‖₊`. -/
 @[notation_class]
-class NNNorm (E : Type _) where
+class NNNorm (E : Type*) where
   /-- the `ℝ≥0`-valued norm function. -/
   nnnorm : E → ℝ≥0
 #align has_nnnorm NNNorm
@@ -81,7 +78,7 @@ notation "‖" e "‖₊" => nnnorm e
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
-class SeminormedAddGroup (E : Type _) extends Norm E, AddGroup E, PseudoMetricSpace E where
+class SeminormedAddGroup (E : Type*) extends Norm E, AddGroup E, PseudoMetricSpace E where
   dist := fun x y => ‖x - y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
@@ -90,7 +87,7 @@ class SeminormedAddGroup (E : Type _) extends Norm E, AddGroup E, PseudoMetricSp
 /-- A seminormed group is a group endowed with a norm for which `dist x y = ‖x / y‖` defines a
 pseudometric space structure. -/
 @[to_additive]
-class SeminormedGroup (E : Type _) extends Norm E, Group E, PseudoMetricSpace E where
+class SeminormedGroup (E : Type*) extends Norm E, Group E, PseudoMetricSpace E where
   dist := fun x y => ‖x / y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
@@ -98,7 +95,7 @@ class SeminormedGroup (E : Type _) extends Norm E, Group E, PseudoMetricSpace E 
 
 /-- A normed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖` defines a
 metric space structure. -/
-class NormedAddGroup (E : Type _) extends Norm E, AddGroup E, MetricSpace E where
+class NormedAddGroup (E : Type*) extends Norm E, AddGroup E, MetricSpace E where
   dist := fun x y => ‖x - y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
@@ -107,7 +104,7 @@ class NormedAddGroup (E : Type _) extends Norm E, AddGroup E, MetricSpace E wher
 /-- A normed group is a group endowed with a norm for which `dist x y = ‖x / y‖` defines a metric
 space structure. -/
 @[to_additive]
-class NormedGroup (E : Type _) extends Norm E, Group E, MetricSpace E where
+class NormedGroup (E : Type*) extends Norm E, Group E, MetricSpace E where
   dist := fun x y => ‖x / y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
@@ -115,7 +112,7 @@ class NormedGroup (E : Type _) extends Norm E, Group E, MetricSpace E where
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
-class SeminormedAddCommGroup (E : Type _) extends Norm E, AddCommGroup E,
+class SeminormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E,
   PseudoMetricSpace E where
   dist := fun x y => ‖x - y‖
   /-- The distance function is induced by the norm. -/
@@ -125,7 +122,7 @@ class SeminormedAddCommGroup (E : Type _) extends Norm E, AddCommGroup E,
 /-- A seminormed group is a group endowed with a norm for which `dist x y = ‖x / y‖`
 defines a pseudometric space structure. -/
 @[to_additive]
-class SeminormedCommGroup (E : Type _) extends Norm E, CommGroup E, PseudoMetricSpace E where
+class SeminormedCommGroup (E : Type*) extends Norm E, CommGroup E, PseudoMetricSpace E where
   dist := fun x y => ‖x / y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
@@ -133,7 +130,7 @@ class SeminormedCommGroup (E : Type _) extends Norm E, CommGroup E, PseudoMetric
 
 /-- A normed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖` defines a
 metric space structure. -/
-class NormedAddCommGroup (E : Type _) extends Norm E, AddCommGroup E, MetricSpace E where
+class NormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E, MetricSpace E where
   dist := fun x y => ‖x - y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
@@ -142,7 +139,7 @@ class NormedAddCommGroup (E : Type _) extends Norm E, AddCommGroup E, MetricSpac
 /-- A normed group is a group endowed with a norm for which `dist x y = ‖x / y‖` defines a metric
 space structure. -/
 @[to_additive]
-class NormedCommGroup (E : Type _) extends Norm E, CommGroup E, MetricSpace E where
+class NormedCommGroup (E : Type*) extends Norm E, CommGroup E, MetricSpace E where
   dist := fun x y => ‖x / y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
@@ -497,14 +494,14 @@ open Lean Meta Qq Function
 `norm_nonneg'`. -/
 @[positivity Norm.norm _]
 def evalMulNorm : PositivityExt where eval {_ _} _zα _pα e := do
-  let .app _ a ← whnfR e | throwError "not ‖ ⬝ ‖"
+  let .app _ a ← whnfR e | throwError "not ‖ · ‖"
   let p ← mkAppM ``norm_nonneg' #[a]
   pure (.nonnegative p)
 
 /-- Extension for the `positivity` tactic: additive norms are nonnegative, via `norm_nonneg`. -/
 @[positivity Norm.norm _]
 def evalAddNorm : PositivityExt where eval {_ _} _zα _pα e := do
-  let .app _ a ← whnfR e | throwError "not ‖ ⬝ ‖"
+  let .app _ a ← whnfR e | throwError "not ‖ · ‖"
   let p ← mkAppM ``norm_nonneg #[a]
   pure (.nonnegative p)
 
@@ -547,11 +544,11 @@ theorem norm_div_le_of_le {r₁ r₂ : ℝ} (H₁ : ‖a₁‖ ≤ r₁) (H₂ :
 #align norm_div_le_of_le norm_div_le_of_le
 #align norm_sub_le_of_le norm_sub_le_of_le
 
-@[to_additive]
-theorem dist_le_norm_mul_norm (a b : E) : dist a b ≤ ‖a‖ + ‖b‖ := by
+@[to_additive dist_le_norm_add_norm]
+theorem dist_le_norm_add_norm' (a b : E) : dist a b ≤ ‖a‖ + ‖b‖ := by
   rw [dist_eq_norm_div]
   apply norm_div_le
-#align dist_le_norm_mul_norm dist_le_norm_mul_norm
+#align dist_le_norm_add_norm' dist_le_norm_add_norm'
 #align dist_le_norm_add_norm dist_le_norm_add_norm
 
 @[to_additive abs_norm_sub_norm_le]
@@ -1010,12 +1007,39 @@ theorem MonoidHomClass.antilipschitz_of_bound [MonoidHomClass 𝓕 E F] (f : �
 #align monoid_hom_class.antilipschitz_of_bound MonoidHomClass.antilipschitz_of_bound
 #align add_monoid_hom_class.antilipschitz_of_bound AddMonoidHomClass.antilipschitz_of_bound
 
+@[to_additive LipschitzWith.norm_le_mul]
+theorem LipschitzWith.norm_le_mul' {f : E → F} {K : ℝ≥0} (h : LipschitzWith K f) (hf : f 1 = 1)
+    (x) : ‖f x‖ ≤ K * ‖x‖ := by simpa only [dist_one_right, hf] using h.dist_le_mul x 1
+#align lipschitz_with.norm_le_mul' LipschitzWith.norm_le_mul'
+#align lipschitz_with.norm_le_mul LipschitzWith.norm_le_mul
+
+@[to_additive LipschitzWith.nnorm_le_mul]
+theorem LipschitzWith.nnorm_le_mul' {f : E → F} {K : ℝ≥0} (h : LipschitzWith K f) (hf : f 1 = 1)
+    (x) : ‖f x‖₊ ≤ K * ‖x‖₊ :=
+  h.norm_le_mul' hf x
+#align lipschitz_with.nnorm_le_mul' LipschitzWith.nnorm_le_mul'
+#align lipschitz_with.nnorm_le_mul LipschitzWith.nnorm_le_mul
+
+@[to_additive AntilipschitzWith.le_mul_norm]
+theorem AntilipschitzWith.le_mul_norm' {f : E → F} {K : ℝ≥0} (h : AntilipschitzWith K f)
+    (hf : f 1 = 1) (x) : ‖x‖ ≤ K * ‖f x‖ := by
+  simpa only [dist_one_right, hf] using h.le_mul_dist x 1
+#align antilipschitz_with.le_mul_norm' AntilipschitzWith.le_mul_norm'
+#align antilipschitz_with.le_mul_norm AntilipschitzWith.le_mul_norm
+
+@[to_additive AntilipschitzWith.le_mul_nnnorm]
+theorem AntilipschitzWith.le_mul_nnnorm' {f : E → F} {K : ℝ≥0} (h : AntilipschitzWith K f)
+    (hf : f 1 = 1) (x) : ‖x‖₊ ≤ K * ‖f x‖₊ :=
+  h.le_mul_norm' hf x
+#align antilipschitz_with.le_mul_nnnorm' AntilipschitzWith.le_mul_nnnorm'
+#align antilipschitz_with.le_mul_nnnorm AntilipschitzWith.le_mul_nnnorm
+
 @[to_additive]
-theorem MonoidHomClass.bound_of_antilipschitz [MonoidHomClass 𝓕 E F] (f : 𝓕) {K : ℝ≥0}
-    (h : AntilipschitzWith K f) (x) : ‖x‖ ≤ K * ‖f x‖ := by
-  simpa only [dist_one_right, map_one] using h.le_mul_dist x 1
-#align monoid_hom_class.bound_of_antilipschitz MonoidHomClass.bound_of_antilipschitz
-#align add_monoid_hom_class.bound_of_antilipschitz AddMonoidHomClass.bound_of_antilipschitz
+theorem OneHomClass.bound_of_antilipschitz [OneHomClass 𝓕 E F] (f : 𝓕) {K : ℝ≥0}
+    (h : AntilipschitzWith K f) (x) : ‖x‖ ≤ K * ‖f x‖ :=
+  h.le_mul_nnnorm' (map_one f) x
+#align one_hom_class.bound_of_antilipschitz OneHomClass.bound_of_antilipschitz
+#align zero_hom_class.bound_of_antilipschitz ZeroHomClass.bound_of_antilipschitz
 
 end NNNorm
 
@@ -1905,11 +1929,11 @@ theorem mul_div_lipschitzWith (hf : AntilipschitzWith Kf f) (hg : LipschitzWith 
 #align antilipschitz_with.mul_div_lipschitz_with AntilipschitzWith.mul_div_lipschitzWith
 #align antilipschitz_with.add_sub_lipschitz_with AntilipschitzWith.add_sub_lipschitzWith
 
-@[to_additive]
+@[to_additive le_mul_norm_sub]
 theorem le_mul_norm_div {f : E → F} (hf : AntilipschitzWith K f) (x y : E) :
     ‖x / y‖ ≤ K * ‖f x / f y‖ := by simp [← dist_eq_norm_div, hf.le_mul_dist x y]
 #align antilipschitz_with.le_mul_norm_div AntilipschitzWith.le_mul_norm_div
-#align antilipschitz_with.le_add_norm_sub AntilipschitzWith.le_add_norm_sub
+#align antilipschitz_with.le_mul_norm_sub AntilipschitzWith.le_mul_norm_sub
 
 end AntilipschitzWith
 
@@ -2436,7 +2460,7 @@ end Prod
 
 section Pi
 
-variable {π : ι → Type _} [Fintype ι]
+variable {π : ι → Type*} [Fintype ι]
 
 section SeminormedGroup
 

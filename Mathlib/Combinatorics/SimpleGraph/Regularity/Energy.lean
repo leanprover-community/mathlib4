@@ -2,16 +2,13 @@
 Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.regularity.energy
-! leanprover-community/mathlib commit bf7ef0e83e5b7e6c1169e97f055e58a2e4e9d52d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.Data.Rat.BigOperators
+
+#align_import combinatorics.simple_graph.regularity.energy from "leanprover-community/mathlib"@"bf7ef0e83e5b7e6c1169e97f055e58a2e4e9d52d"
 
 /-!
 # Energy of a partition
@@ -32,10 +29,10 @@ open Finset
 
 open BigOperators
 
-variable {α : Type _} [DecidableEq α] {s : Finset α} (P : Finpartition s) (G : SimpleGraph α)
+variable {α : Type*} [DecidableEq α] {s : Finset α} (P : Finpartition s) (G : SimpleGraph α)
   [DecidableRel G.Adj]
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 namespace Finpartition
 
@@ -64,7 +61,7 @@ theorem energy_le_one : P.energy G ≤ 1 :=
 #align finpartition.energy_le_one Finpartition.energy_le_one
 
 @[simp, norm_cast]
-theorem coe_energy {𝕜 : Type _} [LinearOrderedField 𝕜] : (P.energy G : 𝕜) =
+theorem coe_energy {𝕜 : Type*} [LinearOrderedField 𝕜] : (P.energy G : 𝕜) =
     (∑ uv in P.parts.offDiag, (G.edgeDensity uv.1 uv.2 : 𝕜) ^ 2) / (P.parts.card : 𝕜) ^ 2 := by
   rw [energy]; norm_cast
 #align finpartition.coe_energy Finpartition.coe_energy

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.tensor_algebra.to_tensor_power
-! leanprover-community/mathlib commit d97a0c9f7a7efe6d76d652c5a6b7c9c634b70e0a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 import Mathlib.LinearAlgebra.TensorPower
+
+#align_import linear_algebra.tensor_algebra.to_tensor_power from "leanprover-community/mathlib"@"d97a0c9f7a7efe6d76d652c5a6b7c9c634b70e0a"
 
 /-!
 # Tensor algebras as direct sums of tensor powers
@@ -21,7 +18,7 @@ In this file we show that `TensorAlgebra R M` is isomorphic to a direct sum of t
 
 open scoped DirectSum TensorProduct
 
-variable {R M : Type _} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 namespace TensorPower
 
@@ -159,7 +156,6 @@ theorem toDirectSum_tensorPower_tprod {n} (x : Fin n → M) :
     toDirectSum (tprod R M n x) = DirectSum.of _ n (PiTensorProduct.tprod R x) := by
   rw [tprod_apply, AlgHom.map_list_prod, List.map_ofFn]
   simp_rw [Function.comp, toDirectSum_ι]
-  dsimp only
   rw [DirectSum.list_prod_ofFn_of_eq_dProd]
   apply DirectSum.of_eq_of_gradedMonoid_eq
   rw [GradedMonoid.mk_list_dProd]

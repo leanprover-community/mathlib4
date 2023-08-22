@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.regularity.lemma
-! leanprover-community/mathlib commit 1d4d3ca5ec44693640c4f5e407a6b611f77accc8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Increment
+
+#align_import combinatorics.simple_graph.regularity.lemma from "leanprover-community/mathlib"@"1d4d3ca5ec44693640c4f5e407a6b611f77accc8"
 
 /-!
 # Szemerédi's Regularity Lemma
@@ -71,9 +68,9 @@ open Finpartition Finset Fintype Function SzemerediRegularity
 
 open scoped Classical
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
-variable {α : Type _} [Fintype α] (G : SimpleGraph α) {ε : ℝ} {l : ℕ}
+variable {α : Type*} [Fintype α] (G : SimpleGraph α) {ε : ℝ} {l : ℕ}
 
 /-- Effective **Szemerédi Regularity Lemma**: For any sufficiently large graph, there is an
 `ε`-uniform equipartition of bounded size (where the bound does not depend on the graph). -/
@@ -122,7 +119,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   induction' i with i ih
   -- For `i = 0`, the dummy equipartition is enough.
   · refine' ⟨dum, hdum₁, hdum₂.ge, hdum₂.le, Or.inr _⟩
-    rw [Nat.cast_zero, MulZeroClass.mul_zero]
+    rw [Nat.cast_zero, mul_zero]
     exact_mod_cast dum.energy_nonneg G
   -- For the induction step at `i + 1`, find `P` the equipartition at `i`.
   obtain ⟨P, hP₁, hP₂, hP₃, hP₄⟩ := ih

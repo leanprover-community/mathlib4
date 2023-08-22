@@ -2,13 +2,10 @@
 Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
-
-! This file was ported from Lean 3 source module probability.process.hitting_time
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.Process.Stopping
+
+#align_import probability.process.hitting_time from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Hitting time
@@ -44,7 +41,7 @@ open scoped Classical MeasureTheory NNReal ENNReal Topology BigOperators
 
 namespace MeasureTheory
 
-variable {Ω β ι : Type _} {m : MeasurableSpace Ω}
+variable {Ω β ι : Type*} {m : MeasurableSpace Ω}
 
 /-- Hitting time: given a stochastic process `u` and a set `s`, `hitting u s n m` is the first time
 `u` is in `s` after time `n` and before time `m` (if `u` does not hit `s` after time `n` and

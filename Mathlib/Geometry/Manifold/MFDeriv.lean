@@ -2,13 +2,10 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
-
-! This file was ported from Lean 3 source module geometry.manifold.mfderiv
-! leanprover-community/mathlib commit e473c3198bb41f68560cab68a0529c854b618833
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+
+#align_import geometry.manifold.mfderiv from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 
 /-!
 # The derivative of functions between smooth manifolds
@@ -77,7 +74,7 @@ definition, differentiability implies continuity).
 
 *Warning*: the derivative (even within a subset) is a linear map on the whole tangent space. Suppose
 that one is given a smooth submanifold `N`, and a function which is smooth on `N` (i.e., its
-restriction to the subtype  `N` is smooth). Then, in the whole manifold `M`, the property
+restriction to the subtype `N` is smooth). Then, in the whole manifold `M`, the property
 `MDifferentiableOn I I' f N` holds. However, `mfderivWithin I I' f N` is not uniquely defined
 (what values would one choose for vectors that are transverse to `N`?), which can create issues down
 the road. The problem here is that knowing the value of `f` along `N` does not determine the
@@ -95,6 +92,8 @@ the space of equivalence classes of smooth curves in the manifold.
 ## Tags
 Derivative, manifold
 -/
+
+set_option autoImplicit true
 
 
 noncomputable section
@@ -117,11 +116,10 @@ this specific chart.
 We use the names `MDifferentiable` and `mfderiv`, where the prefix letter `m` means "manifold".
 -/
 
-
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type _}
-  [TopologicalSpace M] [ChartedSpace H M] {E' : Type _} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  {H' : Type _} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H') {M' : Type _}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type*}
+  [TopologicalSpace M] [ChartedSpace H M] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H') {M' : Type*}
   [TopologicalSpace M'] [ChartedSpace H' M']
 
 /-- Property in the model space of a model with corners of being differentiable within at set at a
@@ -319,15 +317,15 @@ section DerivativesProperties
 
 /-! ### Unique differentiability sets in manifolds -/
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type _}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type*}
   [TopologicalSpace M] [ChartedSpace H M]
   --
-  {E' : Type _}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type _} [TopologicalSpace H']
-  {I' : ModelWithCorners 𝕜 E' H'} {M' : Type _} [TopologicalSpace M'] [ChartedSpace H' M']
-  {E'' : Type _} [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type _} [TopologicalSpace H'']
-  {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type _} [TopologicalSpace M''] [ChartedSpace H'' M'']
+  {E' : Type*}
+  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
+  {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
   {f f₀ f₁ : M → M'} {x : M} {s t : Set M} {g : M' → M''} {u : Set M'}
 
 theorem uniqueMDiffWithinAt_univ : UniqueMDiffWithinAt I univ x := by
@@ -658,7 +656,7 @@ theorem mdifferentiableAt_iff_of_mem_source {x' : M} {y : M'}
 theorem ContMDiffWithinAt.mdifferentiableWithinAt (hf : ContMDiffWithinAt I I' n f s x)
     (hn : 1 ≤ n) : MDifferentiableWithinAt I I' f s x := by
   suffices h : MDifferentiableWithinAt I I' f (s ∩ f ⁻¹' (extChartAt I' (f x)).source) x
-  · rwa [mdifferentiableWithinAt_inter'] at h 
+  · rwa [mdifferentiableWithinAt_inter'] at h
     apply hf.1.preimage_mem_nhdsWithin
     exact extChartAt_source_mem_nhds I' (f x)
   rw [mdifferentiableWithinAt_iff]
@@ -1061,8 +1059,8 @@ this and related statements.
 -/
 
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {E' : Type _} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {f : E → E'}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {f : E → E'}
   {s : Set E} {x : E}
 
 theorem uniqueMDiffWithinAt_iff_uniqueDiffWithinAt :
@@ -1181,13 +1179,13 @@ section SpecificFunctions
 /-! ### Differentiability of specific functions -/
 
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type _}
-  [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M] {E' : Type _}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type _} [TopologicalSpace H']
-  (I' : ModelWithCorners 𝕜 E' H') {M' : Type _} [TopologicalSpace M'] [ChartedSpace H' M']
-  [SmoothManifoldWithCorners I' M'] {E'' : Type _} [NormedAddCommGroup E''] [NormedSpace 𝕜 E'']
-  {H'' : Type _} [TopologicalSpace H''] (I'' : ModelWithCorners 𝕜 E'' H'') {M'' : Type _}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type*}
+  [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M] {E' : Type*}
+  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  (I' : ModelWithCorners 𝕜 E' H') {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  [SmoothManifoldWithCorners I' M'] {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E'']
+  {H'' : Type*} [TopologicalSpace H''] (I'' : ModelWithCorners 𝕜 E'' H'') {M'' : Type*}
   [TopologicalSpace M''] [ChartedSpace H'' M''] [SmoothManifoldWithCorners I'' M'']
 
 namespace ContinuousLinearMap
@@ -1580,7 +1578,7 @@ section Arithmetic
 
 /-! #### Arithmetic
 
-Note that in the in `HasMFDerivAt` lemmas there is an abuse of the defeq between `E'` and
+Note that in the `HasMFDerivAt` lemmas there is an abuse of the defeq between `E'` and
 `TangentSpace 𝓘(𝕜, E') (f z)` (similarly for `g',F',p',q'`). In general this defeq is not
 canonical, but in this case (the tangent space of a vector space) it is canonical.
  -/
@@ -1690,7 +1688,7 @@ end Group
 
 section AlgebraOverRing
 
-variable {I} {z : M} {F' : Type _} [NormedRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
+variable {I} {z : M} {F' : Type*} [NormedRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
   {p' q' : TangentSpace I z →L[𝕜] F'}
 
 theorem HasMFDerivWithinAt.mul' (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p')
@@ -1730,7 +1728,7 @@ end AlgebraOverRing
 
 section AlgebraOverCommRing
 
-variable {I} {z : M} {F' : Type _} [NormedCommRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
+variable {I} {z : M} {F' : Type*} [NormedCommRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
   {p' q' : TangentSpace I z →L[𝕜] F'}
 
 theorem HasMFDerivWithinAt.mul (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p')
@@ -1883,13 +1881,13 @@ end SpecificFunctions
 
 namespace LocalHomeomorph.MDifferentiable
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type _}
-  [TopologicalSpace M] [ChartedSpace H M] {E' : Type _} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  {H' : Type _} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {M' : Type _}
-  [TopologicalSpace M'] [ChartedSpace H' M'] {E'' : Type _} [NormedAddCommGroup E'']
-  [NormedSpace 𝕜 E''] {H'' : Type _} [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''}
-  {M'' : Type _} [TopologicalSpace M''] [ChartedSpace H'' M''] {e : LocalHomeomorph M M'}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*}
+  [TopologicalSpace M] [ChartedSpace H M] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*}
+  [TopologicalSpace M'] [ChartedSpace H' M'] {E'' : Type*} [NormedAddCommGroup E'']
+  [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''}
+  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M''] {e : LocalHomeomorph M M'}
   (he : e.MDifferentiable I I') {e' : LocalHomeomorph M' M''}
 
 nonrec theorem symm : e.symm.MDifferentiable I' I := he.symm
@@ -1987,8 +1985,8 @@ end LocalHomeomorph.MDifferentiable
 
 section extChartAt
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type _}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type*}
   [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M] {s : Set M} {x y : M}
 
 theorem hasMFDerivAt_extChartAt (h : y ∈ (chartAt H x).source) :
@@ -2017,11 +2015,11 @@ end extChartAt
 
 section UniqueMDiff
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type _}
-  [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M] {E' : Type _}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type _} [TopologicalSpace H']
-  {I' : ModelWithCorners 𝕜 E' H'} {M' : Type _} [TopologicalSpace M'] [ChartedSpace H' M']
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*}
+  [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M] {E' : Type*}
+  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   [SmoothManifoldWithCorners I' M'] {s : Set M}
 
 /-- If `s` has the unique differential property at `x`, `f` is differetiable within `s` at x` and
@@ -2099,7 +2097,7 @@ theorem UniqueMDiffOn.uniqueDiffOn_inter_preimage (hs : UniqueMDiffOn I s) (x : 
 
 open Bundle
 
-variable {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {Z : M → Type _}
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {Z : M → Type*}
   [TopologicalSpace (TotalSpace F Z)] [∀ b, TopologicalSpace (Z b)] [∀ b, AddCommMonoid (Z b)]
   [∀ b, Module 𝕜 (Z b)] [FiberBundle F Z] [VectorBundle 𝕜 F Z] [SmoothVectorBundle F Z I]
 

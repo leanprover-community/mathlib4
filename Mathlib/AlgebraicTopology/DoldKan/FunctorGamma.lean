@@ -2,13 +2,10 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.dold_kan.functor_gamma
-! leanprover-community/mathlib commit 5b8284148e8149728f4b90624888d98c36284454
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
+
+#align_import algebraic_topology.dold_kan.functor_gamma from "leanprover-community/mathlib"@"5b8284148e8149728f4b90624888d98c36284454"
 
 /-!
 
@@ -28,6 +25,8 @@ By construction, `Γ₀.obj K` is a split simplicial object whose splitting is `
 We also construct `Γ₂ : Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialObject C)`
 which shall be an equivalence for any additive category `C`.
 
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
+
 -/
 
 
@@ -40,7 +39,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type _} [Category C] [Preadditive C] (K K' : ChainComplex C ℕ) (f : K ⟶ K')
+variable {C : Type*} [Category C] [Preadditive C] (K K' : ChainComplex C ℕ) (f : K ⟶ K')
   {Δ Δ' Δ'' : SimplexCategory}
 
 /-- `Isδ₀ i` is a simple condition used to check whether a monomorphism `i` in

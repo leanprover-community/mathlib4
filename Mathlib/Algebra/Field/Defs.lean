@@ -2,16 +2,13 @@
 Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.field.defs
-! leanprover-community/mathlib commit 2651125b48fc5c170ab1111afd0817c903b1fc6c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 
 import Mathlib.Algebra.Ring.Defs
 import Std.Data.Rat
 import Mathlib.Data.Rat.Init
+
+#align_import algebra.field.defs from "leanprover-community/mathlib"@"2651125b48fc5c170ab1111afd0817c903b1fc6c"
 
 /-!
 # Division (semi)rings and (semi)fields
@@ -55,7 +52,7 @@ open Function Set
 
 universe u
 
-variable {α β K : Type _}
+variable {α β K : Type*}
 
 /-- The default definition of the coercion `(↑(a : ℚ) : K)` for a division ring `K`
 is defined as `(a / b : K) = (a : K) * (b : K)⁻¹`.
@@ -74,7 +71,7 @@ def qsmulRec (coe : ℚ → K) [Mul K] (a : ℚ) (x : K) : K :=
 #align qsmul_rec qsmulRec
 
 /-- A `DivisionSemiring` is a `Semiring` with multiplicative inverses for nonzero elements. -/
-class DivisionSemiring (α : Type _) extends Semiring α, GroupWithZero α
+class DivisionSemiring (α : Type*) extends Semiring α, GroupWithZero α
 #align division_semiring DivisionSemiring
 
 /-- A `DivisionRing` is a `Ring` with multiplicative inverses for nonzero elements.
@@ -109,11 +106,11 @@ class DivisionRing (K : Type u) extends Ring K, DivInvMonoid K, Nontrivial K, Ra
 
 -- see Note [lower instance priority]
 instance (priority := 100) DivisionRing.toDivisionSemiring [DivisionRing α] : DivisionSemiring α :=
-  { ‹DivisionRing α›, (inferInstance : Semiring α) with }
+  { ‹DivisionRing α› with }
 #align division_ring.to_division_semiring DivisionRing.toDivisionSemiring
 
 /-- A `Semifield` is a `CommSemiring` with multiplicative inverses for nonzero elements. -/
-class Semifield (α : Type _) extends CommSemiring α, DivisionSemiring α, CommGroupWithZero α
+class Semifield (α : Type*) extends CommSemiring α, DivisionSemiring α, CommGroupWithZero α
 #align semifield Semifield
 
 /-- A `Field` is a `CommRing` with multiplicative inverses for nonzero elements.
@@ -152,7 +149,7 @@ theorem smul_def (a : ℚ) (x : K) : a • x = ↑a * x :=
 #align rat.smul_def Rat.smul_def
 
 @[simp]
-theorem smul_one_eq_coe (A : Type _) [DivisionRing A] (m : ℚ) : m • (1 : A) = ↑m := by
+theorem smul_one_eq_coe (A : Type*) [DivisionRing A] (m : ℚ) : m • (1 : A) = ↑m := by
   rw [Rat.smul_def, mul_one]
 #align rat.smul_one_eq_coe Rat.smul_one_eq_coe
 
@@ -173,7 +170,7 @@ variable [Field K]
 
 -- see Note [lower instance priority]
 instance (priority := 100) Field.toSemifield : Semifield K :=
-  { ‹Field K›, (inferInstance : Semiring K) with }
+  { ‹Field K› with }
 #align field.to_semifield Field.toSemifield
 
 end Field

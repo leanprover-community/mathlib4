@@ -2,15 +2,12 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
-
-! This file was ported from Lean 3 source module data.complex.exponential
-! leanprover-community/mathlib commit a8b2226cfb0a79f5986492053fc49b1a0c6aeffb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Complex.Basic
 import Mathlib.Data.Nat.Choose.Sum
+
+#align_import data.complex.exponential from "leanprover-community/mathlib"@"a8b2226cfb0a79f5986492053fc49b1a0c6aeffb"
 
 /-!
 # Exponential, trigonometric and hyperbolic trigonometric functions
@@ -34,7 +31,7 @@ open Real IsAbsoluteValue Finset
 
 section
 
-variable {α : Type _} {β : Type _} [Ring β] [LinearOrderedField α] [Archimedean α] {abv : β → α}
+variable {α : Type*} {β : Type*} [Ring β] [LinearOrderedField α] [Archimedean α] {abv : β → α}
   [IsAbsoluteValue abv]
 
 theorem isCauSeq_of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥ m, |f n| ≤ a)
@@ -85,7 +82,7 @@ end
 
 section NoArchimedean
 
-variable {α : Type _} {β : Type _} [Ring β] [LinearOrderedField α] {abv : β → α}
+variable {α : Type*} {β : Type*} [Ring β] [LinearOrderedField α] {abv : β → α}
   [IsAbsoluteValue abv]
 
 theorem isCauSeq_series_of_abv_le_of_isCauSeq {f : ℕ → β} {g : ℕ → α} (n : ℕ) :
@@ -126,9 +123,9 @@ end NoArchimedean
 
 section
 
-variable {α : Type _} [LinearOrderedField α] [Archimedean α]
+variable {α : Type*} [LinearOrderedField α] [Archimedean α]
 
-theorem isCauSeq_geo_series {β : Type _} [Ring β] [Nontrivial β] {abv : β → α} [IsAbsoluteValue abv]
+theorem isCauSeq_geo_series {β : Type*} [Ring β] [Nontrivial β] {abv : β → α} [IsAbsoluteValue abv]
     (x : β) (hx1 : abv x < 1) : IsCauSeq abv fun n => ∑ m in range n, x ^ m :=
   have hx1' : abv x ≠ 1 := fun h => by simp [h, lt_irrefl] at hx1
   isCauSeq_series_of_abv_isCauSeq
@@ -156,7 +153,7 @@ theorem isCauSeq_geo_series_const (a : α) {x : α} (hx1 : |x| < 1) :
   simpa [mul_sum] using this
 #align is_cau_geo_series_const isCauSeq_geo_series_const
 
-variable {β : Type _} [Ring β] {abv : β → α} [IsAbsoluteValue abv]
+variable {β : Type*} [Ring β] {abv : β → α} [IsAbsoluteValue abv]
 
 theorem series_ratio_test {f : ℕ → β} (n : ℕ) (r : α) (hr0 : 0 ≤ r) (hr1 : r < 1)
     (h : ∀ m, n ≤ m → abv (f m.succ) ≤ r * abv (f m)) :
@@ -185,7 +182,7 @@ theorem series_ratio_test {f : ℕ → β} (n : ℕ) (r : α) (hr0 : 0 ≤ r) (h
     exact ih _ h _ (by simp) rfl
 #align series_ratio_test series_ratio_test
 
-theorem sum_range_diag_flip {α : Type _} [AddCommMonoid α] (n : ℕ) (f : ℕ → ℕ → α) :
+theorem sum_range_diag_flip {α : Type*} [AddCommMonoid α] (n : ℕ) (f : ℕ → ℕ → α) :
     (∑ m in range n, ∑ k in range (m + 1), f k (m - k)) =
       ∑ m in range n, ∑ k in range (n - m), f m k := by
   rw [sum_sigma', sum_sigma']
@@ -220,13 +217,13 @@ end
 
 section NoArchimedean
 
-variable {α : Type _} {β : Type _} [LinearOrderedField α] {abv : β → α}
+variable {α : Type*} {β : Type*} [LinearOrderedField α] {abv : β → α}
 
 section
 
 variable [Semiring β] [IsAbsoluteValue abv]
 
-theorem abv_sum_le_sum_abv {γ : Type _} (f : γ → β) (s : Finset γ) :
+theorem abv_sum_le_sum_abv {γ : Type*} (f : γ → β) (s : Finset γ) :
     abv (∑ k in s, f k) ≤ ∑ k in s, abv (f k) :=
   haveI := Classical.decEq γ
   Finset.induction_on s (by simp [abv_zero abv]) fun a s has ih => by
@@ -532,7 +529,7 @@ theorem exp_multiset_sum (s : Multiset ℂ) : exp s.sum = (s.map exp).prod :=
   @MonoidHom.map_multiset_prod (Multiplicative ℂ) ℂ _ _ expMonoidHom s
 #align complex.exp_multiset_sum Complex.exp_multiset_sum
 
-theorem exp_sum {α : Type _} (s : Finset α) (f : α → ℂ) :
+theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℂ) :
     exp (∑ x in s, f x) = ∏ x in s, exp (f x) :=
   @map_prod (Multiplicative ℂ) α ℂ _ _ _ _ expMonoidHom f s
 #align complex.exp_sum Complex.exp_sum
@@ -1152,7 +1149,7 @@ theorem exp_multiset_sum (s : Multiset ℝ) : exp s.sum = (s.map exp).prod :=
   @MonoidHom.map_multiset_prod (Multiplicative ℝ) ℝ _ _ expMonoidHom s
 #align real.exp_multiset_sum Real.exp_multiset_sum
 
-theorem exp_sum {α : Type _} (s : Finset α) (f : α → ℝ) :
+theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
     exp (∑ x in s, f x) = ∏ x in s, exp (f x) :=
   @map_prod (Multiplicative ℝ) α ℝ _ _ _ _ expMonoidHom f s
 #align real.exp_sum Real.exp_sum
@@ -1510,10 +1507,16 @@ theorem exp_strictMono : StrictMono exp := fun x y h => by
       (lt_of_lt_of_le (by linarith) (add_one_le_exp_of_nonneg (by linarith)))
 #align real.exp_strict_mono Real.exp_strictMono
 
+@[gcongr]
+theorem exp_lt_exp_of_lt {x y : ℝ} (h : x < y) : exp x < exp y := exp_strictMono h
+
 @[mono]
 theorem exp_monotone : Monotone exp :=
   exp_strictMono.monotone
 #align real.exp_monotone Real.exp_monotone
+
+@[gcongr]
+theorem exp_le_exp_of_le {x y : ℝ} (h : x ≤ y) : exp x ≤ exp y := exp_monotone h
 
 @[simp]
 theorem exp_lt_exp {x y : ℝ} : exp x < exp y ↔ x < y :=
@@ -1570,7 +1573,7 @@ end Real
 
 namespace Complex
 
-theorem sum_div_factorial_le {α : Type _} [LinearOrderedField α] (n j : ℕ) (hn : 0 < n) :
+theorem sum_div_factorial_le {α : Type*} [LinearOrderedField α] (n j : ℕ) (hn : 0 < n) :
     (∑ m in filter (fun k => n ≤ k) (range j),
       (1 / m.factorial : α)) ≤ n.succ / (n.factorial * n) :=
   calc
@@ -2006,16 +2009,16 @@ theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t 
 
 end Real
 
-namespace Tactic
+namespace Mathlib.Meta.Positivity
 open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `Real.exp` is always positive. -/
 @[positivity Real.exp _]
-def evalExp : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} _ _ e := do
+def evalExp : PositivityExt where eval {_ _} _ _ e := do
   let (.app _ (a : Q(ℝ))) ← withReducible (whnf e) | throwError "not Real.exp"
   pure (.positive (q(Real.exp_pos $a) : Lean.Expr))
 
-end Tactic
+end Mathlib.Meta.Positivity
 
 namespace Complex
 

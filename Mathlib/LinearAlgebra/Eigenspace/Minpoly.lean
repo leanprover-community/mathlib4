@@ -2,14 +2,11 @@
 Copyright (c) 2020 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
-
-! This file was ported from Lean 3 source module linear_algebra.eigenspace.minpoly
-! leanprover-community/mathlib commit c3216069e5f9369e6be586ccbfcde2592b3cec92
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.FieldTheory.Minpoly.Field
+
+#align_import linear_algebra.eigenspace.minpoly from "leanprover-community/mathlib"@"c3216069e5f9369e6be586ccbfcde2592b3cec92"
 
 /-!
 # Eigenvalues are the roots of the minimal polynomial.
@@ -84,7 +81,7 @@ theorem hasEigenvalue_of_isRoot (h : (minpoly K f).IsRoot μ) : f.HasEigenvalue 
   have p_ne_0 : p ≠ 0 := by
     intro con
     apply minpoly.ne_zero f.isIntegral
-    rw [hp, con, MulZeroClass.mul_zero]
+    rw [hp, con, mul_zero]
   have : (aeval f) p = 0 := by
     have h_aeval := minpoly.aeval K f
     revert h_aeval

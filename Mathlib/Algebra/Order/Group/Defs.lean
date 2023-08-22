@@ -2,15 +2,12 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.order.group.defs
-! leanprover-community/mathlib commit b599f4e4e5cf1fbcb4194503671d3d9e569c1fce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Monoid.Cancel.Defs
 import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Order.Hom.Basic
+
+#align_import algebra.order.group.defs from "leanprover-community/mathlib"@"b599f4e4e5cf1fbcb4194503671d3d9e569c1fce"
 
 /-!
 # Ordered groups
@@ -759,7 +756,7 @@ theorem div_le_iff_le_mul : a / c ≤ b ↔ a ≤ b * c := by
 -- TODO: Should we get rid of `sub_le_iff_le_add` in favor of
 -- (a renamed version of) `tsub_le_iff_right`?
 -- see Note [lower instance priority]
-instance (priority := 100) AddGroup.toHasOrderedSub {α : Type _} [AddGroup α] [LE α]
+instance (priority := 100) AddGroup.toHasOrderedSub {α : Type*} [AddGroup α] [LE α]
     [CovariantClass α α (swap (· + ·)) (· ≤ ·)] : OrderedSub α :=
   ⟨fun _ _ _ => sub_le_iff_le_add⟩
 #align add_group.to_has_ordered_sub AddGroup.toHasOrderedSub
@@ -1067,7 +1064,7 @@ theorem div_le_inv_mul_iff [CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
 -- Note: we intentionally don't have `@[simp]` for the additive version,
 -- since the LHS simplifies with `tsub_le_iff_right`
 @[to_additive, simp]
-theorem div_le_div_flip {α : Type _} [CommGroup α] [LinearOrder α]
+theorem div_le_div_flip {α : Type*} [CommGroup α] [LinearOrder α]
     [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} : a / b ≤ b / a ↔ a ≤ b := by
   rw [div_eq_mul_inv b, mul_comm]
   exact div_le_inv_mul_iff
@@ -1091,7 +1088,7 @@ class LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α, Li
 
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
-class LinearOrderedAddCommGroupWithTop (α : Type _) extends LinearOrderedAddCommMonoidWithTop α,
+class LinearOrderedAddCommGroupWithTop (α : Type*) extends LinearOrderedAddCommMonoidWithTop α,
   SubNegMonoid α, Nontrivial α where
   protected neg_top : -(⊤ : α) = ⊤
   protected add_neg_cancel : ∀ a : α, a ≠ ⊤ → a + -a = 0
@@ -1170,7 +1167,7 @@ namespace AddCommGroup
 This is useful for constructing an `OrderedAddCommGroup`
 by choosing a positive cone in an existing `AddCommGroup`. -/
 -- Porting note: @[nolint has_nonempty_instance]
-structure PositiveCone (α : Type _) [AddCommGroup α] where
+structure PositiveCone (α : Type*) [AddCommGroup α] where
   nonneg : α → Prop
   pos : α → Prop := fun a => nonneg a ∧ ¬nonneg (-a)
   pos_iff : ∀ a, pos a ↔ nonneg a ∧ ¬nonneg (-a) := by intros; rfl
@@ -1182,7 +1179,7 @@ structure PositiveCone (α : Type _) [AddCommGroup α] where
 /-- A positive cone in an `AddCommGroup` induces a linear order if
 for every `a`, either `a` or `-a` is non-negative. -/
 -- Porting note: @[nolint has_nonempty_instance]
-structure TotalPositiveCone (α : Type _) [AddCommGroup α] extends PositiveCone α where
+structure TotalPositiveCone (α : Type*) [AddCommGroup α] extends PositiveCone α where
   /-- For any `a` the proposition `nonneg a` is decidable -/
   nonnegDecidable : DecidablePred nonneg
   /-- Either `a` or `-a` is `nonneg` -/
@@ -1201,7 +1198,7 @@ open AddCommGroup
 
 /-- Construct an `OrderedAddCommGroup` by
 designating a positive cone in an existing `AddCommGroup`. -/
-def mkOfPositiveCone {α : Type _} [AddCommGroup α] (C : PositiveCone α) : OrderedAddCommGroup α :=
+def mkOfPositiveCone {α : Type*} [AddCommGroup α] (C : PositiveCone α) : OrderedAddCommGroup α :=
   { ‹AddCommGroup α› with
     le := fun a b => C.nonneg (b - a),
     lt := fun a b => C.pos (b - a),
@@ -1222,7 +1219,7 @@ open AddCommGroup
 /-- Construct a `LinearOrderedAddCommGroup` by
 designating a positive cone in an existing `AddCommGroup`
 such that for every `a`, either `a` or `-a` is non-negative. -/
-def mkOfPositiveCone {α : Type _} [AddCommGroup α] (C : TotalPositiveCone α) :
+def mkOfPositiveCone {α : Type*} [AddCommGroup α] (C : TotalPositiveCone α) :
     LinearOrderedAddCommGroup α :=
   { OrderedAddCommGroup.mkOfPositiveCone C.toPositiveCone with
     -- Porting note: was `C.nonneg_total (b - a)`
@@ -1276,7 +1273,7 @@ end NormNumLemmas
 
 section
 
-variable {β : Type _} [Group α] [Preorder α] [CovariantClass α α (· * ·) (· ≤ ·)]
+variable {β : Type*} [Group α] [Preorder α] [CovariantClass α α (· * ·) (· ≤ ·)]
   [CovariantClass α α (swap (· * ·)) (· ≤ ·)] [Preorder β] {f : β → α} {s : Set β}
 
 @[to_additive]
@@ -1307,7 +1304,7 @@ end
 
 section
 
-variable {β : Type _} [Group α] [Preorder α] [CovariantClass α α (· * ·) (· < ·)]
+variable {β : Type*} [Group α] [Preorder α] [CovariantClass α α (· * ·) (· < ·)]
   [CovariantClass α α (swap (· * ·)) (· < ·)] [Preorder β] {f : β → α} {s : Set β}
 
 @[to_additive]

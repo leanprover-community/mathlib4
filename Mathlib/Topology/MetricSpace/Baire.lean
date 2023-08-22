@@ -2,17 +2,14 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.metric_space.baire
-! leanprover-community/mathlib commit b9e46fe101fc897fb2e7edaf0bf1f09ea49eb81a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Sets.Compacts
 import Mathlib.Order.Filter.CountableInter
+
+#align_import topology.metric_space.baire from "leanprover-community/mathlib"@"b9e46fe101fc897fb2e7edaf0bf1f09ea49eb81a"
 
 /-!
 # Baire theorem
@@ -35,7 +32,7 @@ open Classical Topology Filter ENNReal
 
 open Filter Encodable Set TopologicalSpace
 
-variable {α : Type _} {β : Type _} {γ : Type _} {ι : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {ι : Type*}
 
 section BaireTheorem
 
@@ -45,7 +42,7 @@ open EMetric ENNReal
 any countable intersection of open dense subsets is dense.
 Formulated here when the source space is ℕ (and subsumed below by `dense_iInter_of_open` working
 with any encodable source space). -/
-class BaireSpace (α : Type _) [TopologicalSpace α] : Prop where
+class BaireSpace (α : Type*) [TopologicalSpace α] : Prop where
   baire_property : ∀ f : ℕ → Set α, (∀ n, IsOpen (f n)) → (∀ n, Dense (f n)) → Dense (⋂ n, f n)
 #align baire_space BaireSpace
 

@@ -2,14 +2,11 @@
 Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Keeley Hoek, Floris van Doorn, Chris Bailey
-
-! This file was ported from Lean 3 source module data.string.defs
-! leanprover-community/mathlib commit e7131068d9696deec51e6cd7668b6d9ac69af6a4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Std.Data.List.Basic
 import Mathlib.Mathport.Rename
+
+#align_import data.string.defs from "leanprover-community/mathlib"@"e7131068d9696deec51e6cd7668b6d9ac69af6a4"
 
 /-!
 # Definitions for `String`
@@ -47,10 +44,6 @@ then reassembles the string by intercalating the separator token `c` over the ma
 def mapTokens (c : Char) (f : String → String) : String → String :=
   intercalate (singleton c) ∘ List.map f ∘ (·.split (· = c))
 #align string.map_tokens String.mapTokens
-
-/-- Count the occurrences of a character in a string. -/
-def count (s : String) (c : Char) : Nat :=
-  s.foldl (fun n d => if d = c then n + 1 else n) 0
 
 /-- `getRest s t` returns `some r` if `s = t ++ r`.
 If `t` is not a prefix of `s`, it returns `none`. -/

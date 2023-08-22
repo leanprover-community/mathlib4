@@ -2,11 +2,6 @@
 Copyright (c) 2018 Rohan Mitta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.metric_space.lipschitz
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Data.Set.Intervals.ProjIcc
@@ -14,6 +9,8 @@ import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.Bornology.Hom
 import Mathlib.Tactic.GCongr
+
+#align_import topology.metric_space.lipschitz from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Lipschitz continuous functions
@@ -42,6 +39,8 @@ The parameter `K` has type `ℝ≥0`. This way we avoid conjunction in the defin
 coercions both to `ℝ` and `ℝ≥0∞`. Constructors whose names end with `'` take `K : ℝ` as an
 argument, and return `LipschitzWith (Real.toNNReal K) f`.
 -/
+
+set_option autoImplicit true
 
 
 universe u v w x

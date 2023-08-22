@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.finset.pairwise
-! leanprover-community/mathlib commit c4c2ed622f43768eff32608d4a0f8a6cec1c047d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Lattice
+
+#align_import data.finset.pairwise from "leanprover-community/mathlib"@"c4c2ed622f43768eff32608d4a0f8a6cec1c047d"
 
 /-!
 # Relations holding pairwise on finite sets
@@ -21,7 +18,7 @@ as well as the interaction of `List.Pairwise Disjoint` and the condition of
 
 open Finset
 
-variable {α ι ι' : Type _}
+variable {α ι ι' : Type*}
 
 instance [DecidableEq α] {r : α → α → Prop} [DecidableRel r] {s : Finset α} :
     Decidable ((s : Set α).Pairwise r) :=
@@ -78,7 +75,7 @@ end Set
 
 namespace List
 
-variable {β : Type _} [DecidableEq α] {r : α → α → Prop} {l : List α}
+variable {β : Type*} [DecidableEq α] {r : α → α → Prop} {l : List α}
 
 theorem pairwise_of_coe_toFinset_pairwise (hl : (l.toFinset : Set α).Pairwise r) (hn : l.Nodup) :
     l.Pairwise r := by

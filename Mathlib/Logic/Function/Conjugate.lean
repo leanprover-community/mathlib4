@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module logic.function.conjugate
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Relation.Rfl
+
+#align_import logic.function.conjugate from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Semiconjugate and commuting maps
@@ -25,7 +22,7 @@ We define the following predicates:
 
 namespace Function
 
-variable {α : Type _} {β : Type _} {γ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*}
 
 /--
 We say that `f : α → β` semiconjugates `ga : α → α` to `gb : β → β` if `f ∘ ga = gb ∘ f`.
@@ -84,9 +81,11 @@ Two maps `f g : α → α` commute if `f (g x) = g (f x)` for all `x : α`.
 Given `h : Function.commute f g` and `a : α`, we have `h a : f (g a) = g (f a)` and
 `h.comp_eq : f ∘ g = g ∘ f`.
 -/
-def Commute (f g : α → α) : Prop :=
+protected def Commute (f g : α → α) : Prop :=
   Semiconj f g g
 #align function.commute Function.Commute
+
+open Function (Commute)
 
 /-- Reinterpret `Function.Semiconj f g g` as `Function.Commute f g`. These two predicates are
 definitionally equal but have different dot-notation lemmas. -/

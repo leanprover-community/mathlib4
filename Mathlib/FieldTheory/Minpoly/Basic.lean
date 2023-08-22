@@ -2,13 +2,10 @@
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johan Commelin
-
-! This file was ported from Lean 3 source module field_theory.minpoly.basic
-! leanprover-community/mathlib commit df0098f0db291900600f32070f6abb3e178be2ba
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.IntegralClosure
+
+#align_import field_theory.minpoly.basic from "leanprover-community/mathlib"@"df0098f0db291900600f32070f6abb3e178be2ba"
 
 /-!
 # Minimal polynomials
@@ -22,7 +19,7 @@ such as irreducibility under the assumption `B` is a domain.
 
 open Classical Polynomial Set Function
 
-variable {A B B' : Type _}
+variable {A B B' : Type*}
 
 section MinPolyDef
 
@@ -98,7 +95,7 @@ theorem ne_one [Nontrivial B] : minpoly A x ≠ 1 := by
   simpa using congr_arg (Polynomial.aeval x) h
 #align minpoly.ne_one minpoly.ne_one
 
-theorem map_ne_one [Nontrivial B] {R : Type _} [Semiring R] [Nontrivial R] (f : A →+* R) :
+theorem map_ne_one [Nontrivial B] {R : Type*} [Semiring R] [Nontrivial R] (f : A →+* R) :
     (minpoly A x).map f ≠ 1 := by
   by_cases hx : IsIntegral A x
   · exact mt ((monic hx).eq_one_of_map_eq_one f) (ne_one A x)
@@ -151,7 +148,7 @@ theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
   have : natDegree r ≤ 0 := by
     have hr0 : r ≠ 0 := by
       rintro rfl
-      exact ne_zero hx (MulZeroClass.mul_zero p ▸ hr)
+      exact ne_zero hx (mul_zero p ▸ hr)
     apply_fun natDegree at hr
     rw [hm.natDegree_mul' hr0] at hr
     apply Nat.le_of_add_le_add_left

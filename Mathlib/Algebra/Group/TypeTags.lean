@@ -2,15 +2,12 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.group.type_tags
-! leanprover-community/mathlib commit 2e0975f6a25dd3fbfb9e41556a77f075f6269748
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Data.Finite.Defs
+
+#align_import algebra.group.type_tags from "leanprover-community/mathlib"@"2e0975f6a25dd3fbfb9e41556a77f075f6269748"
 
 /-!
 # Type tags that turn additive structures into multiplicative, and vice versa
@@ -41,12 +38,12 @@ variable {α : Type u} {β : Type v}
 
 /-- If `α` carries some multiplicative structure, then `Additive α` carries the corresponding
 additive structure. -/
-def Additive (α : Type _) := α
+def Additive (α : Type*) := α
 #align additive Additive
 
 /-- If `α` carries some additive structure, then `Multiplicative α` carries the corresponding
 multiplicative structure. -/
-def Multiplicative (α : Type _) := α
+def Multiplicative (α : Type*) := α
 #align multiplicative Multiplicative
 
 namespace Additive
@@ -134,11 +131,11 @@ instance [h: Infinite α] : Infinite (Additive α) := h
 
 instance [h: Infinite α] : Infinite (Multiplicative α) := h
 
-instance [Nontrivial α] : Nontrivial (Additive α) :=
+instance instNontrivialAdditive [Nontrivial α] : Nontrivial (Additive α) :=
   ofMul.injective.nontrivial
 #align additive.nontrivial instNontrivialAdditive
 
-instance [Nontrivial α] : Nontrivial (Multiplicative α) :=
+instance instNontrivialMultiplicative [Nontrivial α] : Nontrivial (Multiplicative α) :=
   ofAdd.injective.nontrivial
 #align multiplicative.nontrivial instNontrivialMultiplicative
 
@@ -220,7 +217,7 @@ theorem ofMul_one [One α] : @Additive.ofMul α 1 = 0 := rfl
 #align of_mul_one ofMul_one
 
 @[simp]
-theorem ofMul_eq_zero {A : Type _} [One A] {x : A} : Additive.ofMul x = 0 ↔ x = 1 := Iff.rfl
+theorem ofMul_eq_zero {A : Type*} [One A] {x : A} : Additive.ofMul x = 0 ↔ x = 1 := Iff.rfl
 #align of_mul_eq_zero ofMul_eq_zero
 
 @[simp]
@@ -236,7 +233,7 @@ theorem ofAdd_zero [Zero α] : @Multiplicative.ofAdd α 0 = 1 :=
 #align of_add_zero ofAdd_zero
 
 @[simp]
-theorem ofAdd_eq_one {A : Type _} [Zero A] {x : A} : Multiplicative.ofAdd x = 1 ↔ x = 0 :=
+theorem ofAdd_eq_one {A : Type*} [Zero A] {x : A} : Multiplicative.ofAdd x = 1 ↔ x = 0 :=
   Iff.rfl
 #align of_add_eq_one ofAdd_eq_one
 
@@ -503,7 +500,7 @@ then `Additive α` should also coerce to the same function.
 This allows `Additive` to be used on bundled function types with a multiplicative structure, which
 is often used for composition, without affecting the behavior of the function itself.
 -/
-instance Additive.coeToFun {α : Type _} {β : α → Sort _} [CoeFun α β] :
+instance Additive.coeToFun {α : Type*} {β : α → Sort*} [CoeFun α β] :
     CoeFun (Additive α) fun a => β (toMul a) :=
   ⟨fun a => CoeFun.coe (toMul a)⟩
 #align additive.has_coe_to_fun Additive.coeToFun
@@ -514,7 +511,7 @@ then `Multiplicative α` should also coerce to the same function.
 This allows `Multiplicative` to be used on bundled function types with an additive structure, which
 is often used for composition, without affecting the behavior of the function itself.
 -/
-instance Multiplicative.coeToFun {α : Type _} {β : α → Sort _} [CoeFun α β] :
+instance Multiplicative.coeToFun {α : Type*} {β : α → Sort*} [CoeFun α β] :
     CoeFun (Multiplicative α) fun a => β (toAdd a) :=
   ⟨fun a => CoeFun.coe (toAdd a)⟩
 #align multiplicative.has_coe_to_fun Multiplicative.coeToFun

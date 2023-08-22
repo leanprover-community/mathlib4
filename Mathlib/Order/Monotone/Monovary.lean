@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.monotone.monovary
-! leanprover-community/mathlib commit 6cb77a8eaff0ddd100e87b1591c6d3ad319514ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Image
+
+#align_import order.monotone.monovary from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
 /-!
 # Monovariance of functions
@@ -31,7 +28,7 @@ This condition comes up in the rearrangement inequality. See `Algebra.Order.Rear
 
 open Function Set
 
-variable {ι ι' α β γ : Type _}
+variable {ι ι' α β γ : Type*}
 
 section Preorder
 
@@ -379,18 +376,22 @@ theorem AntivaryOn.comp_antitoneOn_right (h : AntivaryOn f g s) (hg : AntitoneOn
   h hj hi <| hg.reflect_lt (mem_image_of_mem _ hi) (mem_image_of_mem _ hj) hij
 #align antivary_on.comp_antitone_on_right AntivaryOn.comp_antitoneOn_right
 
+@[symm]
 protected theorem Monovary.symm (h : Monovary f g) : Monovary g f := fun _ _ hf =>
   le_of_not_lt fun hg => hf.not_le <| h hg
 #align monovary.symm Monovary.symm
 
+@[symm]
 protected theorem Antivary.symm (h : Antivary f g) : Antivary g f := fun _ _ hf =>
   le_of_not_lt fun hg => hf.not_le <| h hg
 #align antivary.symm Antivary.symm
 
+@[symm]
 protected theorem MonovaryOn.symm (h : MonovaryOn f g s) : MonovaryOn g f s := fun _ hi _ hj hf =>
   le_of_not_lt fun hg => hf.not_le <| h hj hi hg
 #align monovary_on.symm MonovaryOn.symm
 
+@[symm]
 protected theorem AntivaryOn.symm (h : AntivaryOn f g s) : AntivaryOn g f s := fun _ hi _ hj hf =>
   le_of_not_lt fun hg => hf.not_le <| h hi hj hg
 #align antivary_on.symm AntivaryOn.symm
