@@ -1530,7 +1530,6 @@ import Mathlib.Data.List.ToFinsupp
 import Mathlib.Data.List.Zip
 import Mathlib.Data.MLList.BestFirst
 import Mathlib.Data.MLList.DepthFirst
-import Mathlib.Data.MLList.Heartbeats
 import Mathlib.Data.MLList.IO
 import Mathlib.Data.MLList.Split
 import Mathlib.Data.Matrix.Auto
