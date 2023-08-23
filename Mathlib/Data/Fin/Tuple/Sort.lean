@@ -142,10 +142,8 @@ lemma Fintype.card_inter_eq_card_and {α : Type} [Fintype α] (p q : α → Prop
 
 lemma Fintype.card_fin_lt_nat (m g : ℕ) (h : g ≤ m) : Fintype.card {i : Fin m // i < g } = g := by
   conv_rhs => rw [← Fintype.card_fin g]
-  refine' Fintype.card_eq.2 (Nonempty.intro ?_)
-  refine ⟨
-    fun x => ⟨x, x.prop⟩,
-    fun x => ⟨⟨x, (lt_of_lt_of_le (Fin.is_lt x) h)⟩, x.prop⟩,
+  apply Fintype.card_congr
+  exact ⟨ fun x => ⟨x, x.prop⟩, fun x => ⟨⟨x, (lt_of_lt_of_le (Fin.is_lt x) h)⟩, x.prop⟩,
     fun x => by simp, fun x => by simp⟩
 
 theorem sort_lt_at_start_of_monotone' {α} [LinearOrder α] (m : ℕ)(f : Fin m → α) (a : α)
@@ -157,11 +155,12 @@ theorem sort_lt_at_start_of_monotone' {α} [LinearOrder α] (m : ℕ)(f : Fin m 
   let p := fun x : Fin m => f x ≤ a
   let q := fun x : Fin m => (x < (Fintype.card {i // f i ≤ a}))
 
-  have he := Fintype.card_eq.2 $ Nonempty.intro $ Equiv.sumCompl
-    $ fun x : {i // f i ≤ a} => (x < (Fintype.card {i // f i ≤ a}))
+  have he := Fintype.card_congr $ Equiv.sumCompl $
+    fun x : {i // f i ≤ a} => (x < (Fintype.card {i // f i ≤ a}))
+
   have h4 : Fintype.card {j : {x : Fin m // p x} // q j} = Fintype.card {j // q j} := by
-    exact (Fintype.card_eq.2 (Nonempty.intro (@Equiv.subtypeSubtypeEquivSubtype _ p q
-      (by apply sort_lt_at_start_of_monotone m f a h_sorted) ) ) )
+    exact (Fintype.card_congr (@Equiv.subtypeSubtypeEquivSubtype _ p q
+      (by apply sort_lt_at_start_of_monotone m f a h_sorted) ) )
   rw [Fintype.card_sum, h4, Fintype.card_fin_lt_nat, add_right_eq_self] at he
   have : 0 < Fintype.card {j : {x : Fin m // p x} // ¬q j} := by
     apply Fintype.card_pos_iff.2 (Nonempty.intro ⟨⟨j, h⟩, not_lt.2 hc⟩)
