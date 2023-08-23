@@ -392,10 +392,10 @@ instance instSemiring : Semiring (ArithmeticFunction R) :=
     ArithmeticFunction.instAddCommMonoid with
     zero_mul := fun f => by
       ext
-      simp only [mul_apply, MulZeroClass.zero_mul, sum_const_zero, zero_apply]
+      simp only [mul_apply, zero_mul, sum_const_zero, zero_apply]
     mul_zero := fun f => by
       ext
-      simp only [mul_apply, sum_const_zero, MulZeroClass.mul_zero, zero_apply]
+      simp only [mul_apply, sum_const_zero, mul_zero, zero_apply]
     left_distrib := fun a b c => by
       ext
       simp only [← sum_add_distrib, mul_add, mul_apply, add_apply]
@@ -830,7 +830,7 @@ theorem isMultiplicative_one [MonoidWithZero R] : IsMultiplicative (1 : Arithmet
       intro m n hm _hn hmn
       rcases eq_or_ne m 1 with (rfl | hm')
       · simp
-      rw [one_apply_ne, one_apply_ne hm', MulZeroClass.zero_mul]
+      rw [one_apply_ne, one_apply_ne hm', zero_mul]
       rw [Ne.def, mul_eq_one, not_and_or]
       exact Or.inl hm'⟩
 #align nat.arithmetic_function.is_multiplicative_one Nat.ArithmeticFunction.isMultiplicative_one
@@ -1027,8 +1027,6 @@ theorem isMultiplicative_moebius : IsMultiplicative μ := by
     zero_mul, mul_zero]
   rw [cardFactors_mul hn hm] -- porting note: `simp` does not seem to use this lemma.
   simp only [moebius, ZeroHom.coe_mk, squarefree_mul hnm, ite_and, cardFactors_mul hn hm]
-  simp only [Nat.isUnit_iff, ZeroHom.toFun_eq_coe, IsUnit.mul_iff, mul_ite, ite_mul,
-    zero_mul, mul_zero]
   rw [pow_add, ite_mul_zero_left, ite_mul_zero_right]
   split_ifs <;>  -- porting note: added
   simp           -- porting note: added
@@ -1042,7 +1040,7 @@ theorem moebius_mul_coe_zeta : (μ * ζ : ArithmeticFunction ℤ) = 1 := by
   refine' recOnPosPrimePosCoprime _ _ _ _ n
   · intro p n hp hn
     rw [coe_mul_zeta_apply, sum_divisors_prime_pow hp, sum_range_succ']
-    simp_rw [Function.Embedding.coeFn_mk, pow_zero, moebius_apply_one,
+    simp_rw [pow_zero, moebius_apply_one,
       moebius_apply_prime_pow hp (Nat.succ_ne_zero _), Nat.succ_inj', sum_ite_eq', mem_range,
       if_pos hn, add_left_neg]
     rw [one_apply_ne]

@@ -129,7 +129,7 @@ theorem dist_le_dist_coe_div_sqrt (z w : ℍ) : dist z w ≤ dist (z : ℂ) w / 
 to `TopologicalSpace`. We replace it later. -/
 def metricSpaceAux : MetricSpace ℍ where
   dist := dist
-  dist_self z := by rw [dist_eq, dist_self, zero_div, arsinh_zero, MulZeroClass.mul_zero]
+  dist_self z := by rw [dist_eq, dist_self, zero_div, arsinh_zero, mul_zero]
   dist_comm := UpperHalfPlane.dist_comm
   dist_triangle := UpperHalfPlane.dist_triangle
   eq_of_dist_eq_zero {z w} h := by

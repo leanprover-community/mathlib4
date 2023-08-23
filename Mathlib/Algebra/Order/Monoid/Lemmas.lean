@@ -163,7 +163,7 @@ theorem mul_lt_mul_of_lt_of_lt [CovariantClass α α (· * ·) (· < ·)]
 #align mul_lt_mul_of_lt_of_lt mul_lt_mul_of_lt_of_lt
 #align add_lt_add_of_lt_of_lt add_lt_add_of_lt_of_lt
 
-alias add_lt_add_of_lt_of_lt ← add_lt_add
+alias add_lt_add := add_lt_add_of_lt_of_lt
 #align add_lt_add add_lt_add
 
 @[to_additive]
@@ -1012,19 +1012,19 @@ theorem Right.one_lt_mul' [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a
 #align right.one_lt_mul' Right.one_lt_mul'
 #align right.add_pos' Right.add_pos'
 
-alias Left.mul_le_one ← mul_le_one'
+alias mul_le_one' := Left.mul_le_one
 #align mul_le_one' mul_le_one'
 
-alias Left.mul_lt_one_of_le_of_lt ← mul_lt_one_of_le_of_lt
+alias mul_lt_one_of_le_of_lt := Left.mul_lt_one_of_le_of_lt
 #align mul_lt_one_of_le_of_lt mul_lt_one_of_le_of_lt
 
-alias Left.mul_lt_one_of_lt_of_le ← mul_lt_one_of_lt_of_le
+alias mul_lt_one_of_lt_of_le := Left.mul_lt_one_of_lt_of_le
 #align mul_lt_one_of_lt_of_le mul_lt_one_of_lt_of_le
 
-alias Left.mul_lt_one ← mul_lt_one
+alias mul_lt_one := Left.mul_lt_one
 #align mul_lt_one mul_lt_one
 
-alias Left.mul_lt_one' ← mul_lt_one'
+alias mul_lt_one' := Left.mul_lt_one'
 #align mul_lt_one' mul_lt_one'
 
 attribute [to_additive add_nonpos "**Alias** of `Left.add_nonpos`."] mul_le_one'
@@ -1044,19 +1044,19 @@ attribute [to_additive "**Alias** of `Left.add_neg`."] mul_lt_one
 attribute [to_additive "**Alias** of `Left.add_neg'`."] mul_lt_one'
 #align add_neg' add_neg'
 
-alias Left.one_le_mul ← one_le_mul
+alias one_le_mul := Left.one_le_mul
 #align one_le_mul one_le_mul
 
-alias Left.one_lt_mul_of_le_of_lt ← one_lt_mul_of_le_of_lt'
+alias one_lt_mul_of_le_of_lt' := Left.one_lt_mul_of_le_of_lt
 #align one_lt_mul_of_le_of_lt' one_lt_mul_of_le_of_lt'
 
-alias Left.one_lt_mul_of_lt_of_le ← one_lt_mul_of_lt_of_le'
+alias one_lt_mul_of_lt_of_le' := Left.one_lt_mul_of_lt_of_le
 #align one_lt_mul_of_lt_of_le' one_lt_mul_of_lt_of_le'
 
-alias Left.one_lt_mul ← one_lt_mul'
+alias one_lt_mul' := Left.one_lt_mul
 #align one_lt_mul' one_lt_mul'
 
-alias Left.one_lt_mul' ← one_lt_mul''
+alias one_lt_mul'' := Left.one_lt_mul'
 #align one_lt_mul'' one_lt_mul''
 
 attribute [to_additive add_nonneg "**Alias** of `Left.add_nonneg`."] one_le_mul
