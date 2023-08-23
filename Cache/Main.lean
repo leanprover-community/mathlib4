@@ -75,7 +75,7 @@ def main (args : List String) : IO Unit := do
     (args, false)
   -- For now we hard code the build directory, to avoid having to process the lakefile.
   -- Perhaps if https://github.com/leanprover/lake/issues/176 is addressed this can be revisited.
-  (if noLock then id else Lake.withLockFile (FilePath.mk "build" / "lake.lock")) do
+  (if noLock then id else Lake.withLockFile (FilePath.mk "build" / Lake.lockFileName)) do
   match args with
   | ["get"] => getFiles hashMap false false goodCurl true
   | ["get!"] => getFiles hashMap true true goodCurl true
