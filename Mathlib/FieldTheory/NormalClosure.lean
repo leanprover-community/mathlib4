@@ -5,6 +5,7 @@ Authors: Thomas Browning
 -/
 
 import Mathlib.FieldTheory.Normal
+import Mathlib.Order.Closure
 
 #align_import field_theory.normal from "leanprover-community/mathlib"@"9fb8964792b4237dac6200193a0d533f1b3f7423"
 /-!
@@ -105,7 +106,7 @@ end normalClosure
 namespace IntermediateField
 
 variable {F L}
-variable (K : IntermediateField F L)
+variable (K K' : IntermediateField F L)
 
 lemma le_normalClosure : K ≤ normalClosure F K L :=
 K.fieldRange_val.symm.trans_le K.val.fieldRange_le_normalClosure
@@ -126,7 +127,20 @@ lemma normalClosure_def'' : normalClosure F K L = ⨆ f : L ≃ₐ[F] L, K.map f
       (fun b ⟨a, h⟩ ↦ ⟨a, h.1, h.2 ▸ f.restrictNormal_commutes L a⟩)
   · exact le_iSup_of_le f le_rfl
 
-variable {K : IntermediateField F L}
+lemma normalClosure_mono (h : K ≤ K') : normalClosure F K L ≤ normalClosure F K' L := by
+  rw [normalClosure_def', normalClosure_def']
+  exact iSup_mono (fun f ↦ map_mono f h)
+
+variable (F L)
+
+/-- `normalClosure` as a `ClosureOperator`. -/
+noncomputable def closureOperator : ClosureOperator (IntermediateField F L) where
+  toFun := fun K ↦ normalClosure F K L
+  monotone' := fun K K' ↦ normalClosure_mono K K'
+  le_closure' := le_normalClosure
+  idempotent' := fun K ↦ normalClosure_of_normal (normalClosure F K L)
+
+variable {K : IntermediateField F L} {F L}
 
 lemma normal_iff_normalClosure_eq : Normal F K ↔ normalClosure F K L = K :=
 ⟨@normalClosure_of_normal (K := K), fun h ↦ h ▸ normalClosure.normal F K L⟩
