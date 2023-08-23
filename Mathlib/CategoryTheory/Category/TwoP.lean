@@ -49,7 +49,7 @@ theorem coe_of {X : Type*} (toTwoPointing : TwoPointing X) : ↥(of toTwoPointin
   rfl
 #align Twop.coe_of TwoP.coe_of
 
-alias of ← _root_.TwoPointing.TwoP
+alias _root_.TwoPointing.TwoP := of
 #align two_pointing.Twop TwoPointing.TwoP
 
 instance : Inhabited TwoP :=

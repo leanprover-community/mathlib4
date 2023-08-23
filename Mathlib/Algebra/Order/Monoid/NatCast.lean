@@ -110,11 +110,11 @@ lemma one_lt_two [CovariantClass α α (·+·) (·<·)] : (1 : α) < 2 := by
 
 end
 
-alias zero_lt_two ← two_pos
+alias two_pos := zero_lt_two
 #align two_pos two_pos
 
-alias zero_lt_three ← three_pos
+alias three_pos := zero_lt_three
 #align three_pos three_pos
 
-alias zero_lt_four ← four_pos
+alias four_pos := zero_lt_four
 #align four_pos four_pos
