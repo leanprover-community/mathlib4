@@ -89,6 +89,7 @@ variable [Preorder α]
 section AddCommSemigroup
 
 variable [AddCommSemigroup α] [Sub α] [OrderedSub α] {a b c d : α}
+/- TODO: Most results can be generalized to [Add α] [IsSymmOp α α (· + ·)] -/
 
 theorem tsub_le_iff_left : a - b ≤ c ↔ a ≤ b + c := by rw [tsub_le_iff_right, add_comm]
 #align tsub_le_iff_left tsub_le_iff_left
