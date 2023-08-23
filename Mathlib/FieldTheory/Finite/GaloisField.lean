@@ -48,7 +48,7 @@ instance FiniteField.isSplittingField_sub (K F : Type*) [Field K] [Fintype K]
   adjoin_rootSet' := by
     classical
     trans Algebra.adjoin F ((roots (X ^ Fintype.card K - X : K[X])).toFinset : Set K)
-    · simp only [rootSet, Polynomial.map_pow, map_X, Polynomial.map_sub]
+    · simp only [rootSet, aroots, Polynomial.map_pow, map_X, Polynomial.map_sub]
     · rw [FiniteField.roots_X_pow_card_sub_X, val_toFinset, coe_univ, Algebra.adjoin_univ]
 #align finite_field.has_sub.sub.polynomial.is_splitting_field FiniteField.isSplittingField_sub
 
