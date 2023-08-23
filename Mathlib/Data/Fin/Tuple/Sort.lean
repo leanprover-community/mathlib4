@@ -124,9 +124,9 @@ theorem sort_lt_at_start_of_monotone {α} [LinearOrder α] (m : ℕ) (f : Fin m 
 lemma Fintype.card_eq_subtypeSubtype_comm {α : Type} [Fintype α] (p q : α → Prop)
     [DecidablePred p] [DecidablePred q] : Fintype.card (Subtype fun x => (p x) ∧ (q x)) =
       Fintype.card (Subtype fun x => (q x) ∧ (p x)) := by
-  refine' Fintype.card_eq.2 (Nonempty.intro ?_)
-  simp_rw [and_comm]
-  apply Equiv.refl
+  apply Fintype.card_congr
+  exact ⟨fun x => ⟨x, ⟨x.2.2, x.2.1⟩⟩, fun x => ⟨x, ⟨x.2.2, x.2.1⟩⟩,
+    fun _ => by dsimp, fun _ => by dsimp ⟩
 
 lemma Fintype.card_inter_eq_card_and {α : Type} [Fintype α] (p q : α → Prop)
     [DecidablePred p] [DecidablePred q] : Fintype.card {i : (Subtype fun x => (p x)) // (q i)} =
