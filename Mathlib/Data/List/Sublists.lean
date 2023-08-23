@@ -60,7 +60,6 @@ theorem sublists'Aux_eq_array_foldl (a : α) : ∀ (r₁ r₂ : List (List α)),
 theorem sublists'_eq_sublists'Aux (l : List α) :
     sublists' l = l.foldr (fun a r => sublists'Aux a r r) [[]] := by
   simp only [sublists', sublists'Aux_eq_array_foldl]
-  dsimp only
   rw [← List.foldr_hom Array.toList]
   · rfl
   · intros _ _; congr <;> simp

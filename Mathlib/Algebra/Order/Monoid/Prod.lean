@@ -17,8 +17,8 @@ namespace Prod
 variable {α β M N : Type*}
 
 @[to_additive]
-instance [OrderedCommMonoid α] [OrderedCommMonoid β] : OrderedCommMonoid (α × β) :=
-  { mul_le_mul_left := fun _ _ h _ ↦ ⟨mul_le_mul_left' h.1 _, mul_le_mul_left' h.2 _⟩ }
+instance [OrderedCommMonoid α] [OrderedCommMonoid β] : OrderedCommMonoid (α × β) where
+  mul_le_mul_left _ _ h _ := ⟨mul_le_mul_left' h.1 _, mul_le_mul_left' h.2 _⟩
 
 @[to_additive]
 instance instOrderedCancelCommMonoid [OrderedCancelCommMonoid M] [OrderedCancelCommMonoid N] :
@@ -48,23 +48,23 @@ namespace Lex
 instance orderedCommMonoid [OrderedCommMonoid α]
     [CovariantClass α α (· * ·) (· < ·)] [OrderedCommMonoid β] :
     OrderedCommMonoid (α ×ₗ β) where
-  mul_le_mul_left := fun x y hxy z => ((le_iff _ _).1 hxy).elim
+  mul_le_mul_left x y hxy z := ((le_iff _ _).1 hxy).elim
     (fun hxy => left _ _ <| mul_lt_mul_left' hxy _)
     (fun hxy => (le_iff _ _).2 <| Or.inr ⟨by rw [hxy.1], mul_le_mul_left' hxy.2 _⟩)
 
 @[to_additive]
 instance orderedCancelCommMonoid [OrderedCancelCommMonoid α] [OrderedCancelCommMonoid β] :
     OrderedCancelCommMonoid (α ×ₗ β) where
-  mul_le_mul_left := @mul_le_mul_left' _ _ _ _
-  le_of_mul_le_mul_left := fun _ _ _ hxyz => ((le_iff _ _).1 hxyz).elim
+  mul_le_mul_left _ _ := mul_le_mul_left'
+  le_of_mul_le_mul_left _ _ _ hxyz := ((le_iff _ _).1 hxyz).elim
     (fun hxy => left _ _ <| lt_of_mul_lt_mul_left' hxy)
     (fun hxy => (le_iff _ _).2 <| Or.inr ⟨mul_left_cancel hxy.1, le_of_mul_le_mul_left' hxy.2⟩)
 
 @[to_additive]
 instance linearOrderedCancelCommMonoid [LinearOrderedCancelCommMonoid α]
-    [LinearOrderedCancelCommMonoid β] : LinearOrderedCancelCommMonoid (α ×ₗ β) :=
-  { (inferInstance : LinearOrder (α ×ₗ β)),
-    (inferInstance: OrderedCancelCommMonoid (α ×ₗ β)) with }
+    [LinearOrderedCancelCommMonoid β] : LinearOrderedCancelCommMonoid (α ×ₗ β) where
+  __ := (inferInstance : LinearOrder (α ×ₗ β))
+  __ := (inferInstance : OrderedCancelCommMonoid (α ×ₗ β))
 
 end Lex
 

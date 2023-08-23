@@ -198,23 +198,23 @@ instance Lex.orderBot [∀ i, CanonicallyOrderedAddMonoid (α i)] : OrderBot (Le
 
 instance Lex.orderedAddCancelCommMonoid [∀ i, OrderedCancelAddCommMonoid (α i)] :
     OrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) where
-  add_le_add_left := fun _ _ h _ => add_le_add_left (α := Lex (∀ i, α i)) h _
-  le_of_add_le_add_left := fun _ _ _ h => le_of_add_le_add_left (α := Lex (∀ i, α i)) h
+  add_le_add_left _ _ h _ := add_le_add_left (α := Lex (∀ i, α i)) h _
+  le_of_add_le_add_left _ _ _ := le_of_add_le_add_left (α := Lex (∀ i, α i))
 
 instance Lex.orderedAddCommGroup [∀ i, OrderedAddCommGroup (α i)] :
     OrderedAddCommGroup (Lex (Π₀ i, α i)) where
-  add_le_add_left := @add_le_add_left _ _ _ _
+  add_le_add_left _ _ := add_le_add_left
 
 instance Lex.linearOrderedCancelAddCommMonoid
     [∀ i, LinearOrderedCancelAddCommMonoid (α i)] :
-    LinearOrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) :=
-  { (inferInstance : LinearOrder (Lex (Π₀ i, α i))),
-    (inferInstance: OrderedCancelAddCommMonoid (Lex (Π₀ i, α i))) with }
+    LinearOrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) where
+  __ := (inferInstance : LinearOrder (Lex (Π₀ i, α i)))
+  __ := (inferInstance : OrderedCancelAddCommMonoid (Lex (Π₀ i, α i)))
 
 instance Lex.linearOrderedAddCommGroup [∀ i, LinearOrderedAddCommGroup (α i)] :
-    LinearOrderedAddCommGroup (Lex (Π₀ i, α i)) :=
-  { (inferInstance : LinearOrder (Lex (Π₀ i, α i))) with
-    add_le_add_left := @add_le_add_left _ _ _ _ }
+    LinearOrderedAddCommGroup (Lex (Π₀ i, α i)) where
+  __ := (inferInstance : LinearOrder (Lex (Π₀ i, α i)))
+  add_le_add_left _ _ := add_le_add_left
 
 end OrderedAddMonoid
 
