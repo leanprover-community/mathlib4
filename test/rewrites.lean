@@ -4,6 +4,8 @@ import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Algebra.Group.Basic
 
+set_option autoImplicit true
+
 -- To see the (sorted) list of lemmas that `rw?` will try rewriting by, use:
 -- set_option trace.Tactic.rewrites.lemmas true
 
@@ -130,3 +132,20 @@ info: Try this: rw [@AddCommMonoidWithOne.add_comm]
 #guard_msgs in
 example (n : ℕ) : let y := 3; n + y = 3 + n := by
   rw?!
+
+axiom α : Type
+axiom f : α → α
+axiom z : α
+axiom f_eq (n) : f n = z
+
+-- Check that the same lemma isn't used multiple times.
+-- This used to report two redundant copies of `f_eq`.
+-- It be lovely if `rw?` could produce two *different* rewrites by `f_eq` here!
+/--
+info: Try this: rw [f_eq]
+-- z = f m
+-/
+#guard_msgs in
+lemma test : f n = f m := by
+  rw?
+  rw [f_eq, f_eq]
