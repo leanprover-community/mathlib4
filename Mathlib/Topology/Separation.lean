@@ -1985,7 +1985,7 @@ theorem compact_t2_tot_disc_iff_tot_sep : TotallyDisconnectedSpace α ↔ Totall
 variable [TotallyDisconnectedSpace α]
 
 /-- A totally disconnected compact Hausdorff space is totally separated. -/
-instance : TotallySeparatedSpace α := by rwa [← compact_t2_tot_disc_iff_tot_sep]
+instance : TotallySeparatedSpace α := compact_t2_tot_disc_iff_tot_sep.mp inferInstance
 
 theorem nhds_basis_clopen (x : α) : (𝓝 x).HasBasis (fun s : Set α => x ∈ s ∧ IsClopen s) id :=
   ⟨fun U => by
