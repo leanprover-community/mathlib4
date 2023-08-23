@@ -442,15 +442,9 @@ instance : Field (AlgebraicClosure k) :=
       apply Field.ratCast_mk
     exists_pair_ne := ⟨e.symm 0, e.symm 1, fun w => zero_ne_one ((e.symm).injective w)⟩
     mul_inv_cancel := fun a w => by
-      -- This could surely be golfed.
       apply_fun e
-      have : e a ≠ 0 := fun w' => by
-        apply w
-        simp at w'
-        exact w'
-      simp only [map_mul, AlgEquiv.apply_symm_apply, ne_eq, AddEquivClass.map_eq_zero_iff, map_one]
-      rw [mul_inv_cancel]
-      assumption
+      simp_rw [map_mul, e.apply_symm_apply, map_one]
+      exact mul_inv_cancel ((AddEquivClass.map_ne_zero_iff e).mpr w)
     inv_zero := by simp }
 
 instance isAlgClosed : IsAlgClosed (AlgebraicClosure k) :=
