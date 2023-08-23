@@ -242,8 +242,7 @@ lemma exists_ne_one_iff_not_bot {G : Type*} [Group G]
       apply And.intro
       exact hx
       simp_all only [not_false_eq_true]
-    · intro _
-      intro a
+    · intro _ a
       simp_all only [Subgroup.mem_bot]
 
 /-- The sum of a nontrivial subgroup of the units of a field is zero. -/
