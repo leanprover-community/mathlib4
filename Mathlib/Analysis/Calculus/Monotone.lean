@@ -51,7 +51,7 @@ theorem tendsto_apply_add_mul_sq_div_sub {f : ℝ → ℝ} {x a c d : ℝ} {l : 
     have : Tendsto (fun y => 1 + c * (y - x)) l (𝓝 (1 + c * (x - x))) := by
       apply Tendsto.mono_left _ (hl.trans nhdsWithin_le_nhds)
       exact ((tendsto_id.sub_const x).const_mul c).const_add 1
-    simp only [_root_.sub_self, add_zero, MulZeroClass.mul_zero] at this
+    simp only [_root_.sub_self, add_zero, mul_zero] at this
     apply Tendsto.congr' (Eventually.filter_mono hl _) this
     filter_upwards [self_mem_nhdsWithin] with y hy
     field_simp [sub_ne_zero.2 hy]

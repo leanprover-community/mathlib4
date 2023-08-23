@@ -75,9 +75,10 @@ theorem count_equiv_one_or_two_mod3_of_derivable (en : Miustr) :
   any_goals apply mod3_eq_1_or_mod3_eq_2 h_ih
   -- Porting note: `simp_rw [count_append]` usually doesn't work
   · left; rw [count_append, count_append]; rfl
-  · right; simp_rw [count_append, count_cons, if_false, two_mul]
+  · right; simp_rw [count_append, count_cons, if_false, two_mul]; simp
   · left; rw [count_append, count_append, count_append]
     simp_rw [count_cons_self, count_nil, count_cons, ite_false, add_right_comm, add_mod_right]
+    simp
   · left; rw [count_append, count_append, count_append]
     simp only [ne_eq, count_cons_of_ne, count_nil, add_zero]
 #align miu.count_equiv_one_or_two_mod3_of_derivable Miu.count_equiv_one_or_two_mod3_of_derivable

@@ -645,7 +645,7 @@ variable (S)
 theorem localization_comap_inducing [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     Inducing (comap (algebraMap R S)) := by
   constructor
-  rw [topologicalSpace_eq_iff]
+  rw [TopologicalSpace.ext_iff]
   intro U
   rw [← isClosed_compl_iff, ← @isClosed_compl_iff (α := PrimeSpectrum S) (s := U)]
   generalize Uᶜ = Z
@@ -699,7 +699,7 @@ open Function RingHom
 
 theorem comap_inducing_of_surjective (hf : Surjective f) : Inducing (comap f) where
   induced := by
-    simp_rw [topologicalSpace_eq_iff, ← isClosed_compl_iff,
+    simp_rw [TopologicalSpace.ext_iff, ← isClosed_compl_iff,
       ← @isClosed_compl_iff (PrimeSpectrum S)
         ((TopologicalSpace.induced (comap f) zariskiTopology)), isClosed_induced_iff,
       isClosed_iff_zeroLocus]
@@ -709,7 +709,7 @@ theorem comap_inducing_of_surjective (hf : Surjective f) : Inducing (comap f) wh
           rw [preimage_comap_zeroLocus, Function.Surjective.image_preimage hf, hF]⟩,
         _⟩
     rintro ⟨-, ⟨F, rfl⟩, hF⟩
-    exact ⟨f '' F, hF.symm.trans (preimage_comap_zeroLocus f F)⟩
+    exact ⟨f '' F, hF.symm.trans (preimage_comap_zeroLocus f F)⟩ }
 #align prime_spectrum.comap_inducing_of_surjective PrimeSpectrum.comap_inducing_of_surjective
 
 theorem image_comap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal S) :
