@@ -151,7 +151,7 @@ private lemma interList_qf_aux (i : Fin s.length) :
 set_option maxHeartbeats 500000 in
 lemma eq_or_interList_qf_is_simple_module (i : Fin s.length) :
   s.interList_get_succ N i = s.interList_get N i ∨
-  IsSimpleModule R (s.interList_qf N i) := by sorry
+  IsSimpleModule R (s.interList_qf N i) := by
   obtain ⟨⟨e⟩⟩|⟨⟨e⟩⟩ := s.interList_qf_aux N i
   · left
     have uniq_qf : Nonempty (Unique (s.interList_qf N i)) := ⟨Equiv.unique e.toEquiv⟩
