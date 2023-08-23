@@ -86,6 +86,8 @@ instance {A : Type*} [NoZeroDivisors R] [Add A] [UniqueSums A] :
     rw [mem_support_iff] at a0 b0 ⊢
     exact mul_apply_add_eq_mul_of_uniqueAdd h ▸ mul_ne_zero a0 b0
 
+/- TODO: MonoidAlgebra versions -/
+
 /-- The proof goes via the equivalence `R ≃ₗ[ℚ] (Basis.ofVectorSpaceIndex ℚ R) →₀ ℚ`,
 i.e. choosing a basis.
 Once we have a basis, we use the Lexicographic order on the coordinates and all the instances
