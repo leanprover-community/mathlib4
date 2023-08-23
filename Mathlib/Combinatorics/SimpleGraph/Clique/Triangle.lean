@@ -46,8 +46,8 @@ theorem triangleThick_iff : G.TriangleThick ε ↔ ∀ ⦃H⦄, H ≤ G → H.Cl
   ε * (card α ^ 2 : ℕ) ≤ G.edgeFinset.card - H.edgeFinset.card := deleteFar_iff
 #align simple_graph.far_from_triangle_free_iff SimpleGraph.triangleThick_iff
 
-alias triangleThick_iff ↔ triangleThick.le_card_sub_card _
-#align simple_graph.far_from_triangle_free.le_card_sub_card SimpleGraph.triangleThick.le_card_sub_card
+alias ⟨TriangleThick.le_card_sub_card, _⟩ := triangleThick_iff
+#align simple_graph.far_from_triangle_free.le_card_sub_card SimpleGraph.TriangleThick.le_card_sub_card
 
 nonrec theorem TriangleThick.mono (hε : G.TriangleThick ε) (h : δ ≤ ε) :
     G.TriangleThick δ := hε.mono <| by gcongr
