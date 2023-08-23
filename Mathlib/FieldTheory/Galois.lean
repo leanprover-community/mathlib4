@@ -396,19 +396,19 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
     IsGalois F E := by
   haveI hFE : FiniteDimensional F E := Polynomial.IsSplittingField.finiteDimensional E p
   letI := Classical.decEq E
-  let s := (p.aroots E).toFinset
-  have adjoin_root : IntermediateField.adjoin F (s : Set E) = ⊤ := by
+  let s := p.rootSet E
+  have adjoin_root : IntermediateField.adjoin F s = ⊤ := by
     apply IntermediateField.toSubalgebra_injective
     rw [IntermediateField.top_toSubalgebra, ← top_le_iff, ← sp.adjoin_rootSet]
     apply IntermediateField.algebra_adjoin_le_adjoin
   let P : IntermediateField F E → Prop := fun K => Fintype.card (K →ₐ[F] E) = finrank F K
-  suffices P (IntermediateField.adjoin F ↑s) by
+  suffices P (IntermediateField.adjoin F s) by
     rw [adjoin_root] at this
     apply of_card_aut_eq_finrank
     rw [← Eq.trans this (LinearEquiv.finrank_eq IntermediateField.topEquiv.toLinearEquiv)]
     exact Fintype.card_congr ((algEquivEquivAlgHom F E).toEquiv.trans
       (IntermediateField.topEquiv.symm.arrowCongr AlgEquiv.refl))
-  apply IntermediateField.induction_on_adjoin_finset s P
+  apply IntermediateField.induction_on_adjoin_finset _ P
   · have key := IntermediateField.card_algHom_adjoin_integral F (K := E)
       (show IsIntegral F (0 : E) from isIntegral_zero)
     rw [minpoly.zero, Polynomial.natDegree_X] at key
