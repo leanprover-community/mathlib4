@@ -166,7 +166,7 @@ lemma eq_or_interList_qf_is_simple_module (i : Fin s.length) :
     · intro hx; exact s.interList_get_le_get_succ N i hx
   · right; exact IsSimpleModule.congr e
 
-set_option maxHeartbeats 1600000 in
+set_option maxHeartbeats 6000000 in
 lemma interList_get_eq_succ_or_covby (i : Fin s.length) :
     s.interList_get N i = s.interList_get_succ N i ∨
     s.interList_get N i ⋖ s.interList_get_succ N i := by
@@ -175,6 +175,6 @@ lemma interList_get_eq_succ_or_covby (i : Fin s.length) :
   · right
     delta interList_qf quot at h
     rw [covby_iff_quot_is_simple]
-    exact h
+    convert h
 
 end CompositionSeries
