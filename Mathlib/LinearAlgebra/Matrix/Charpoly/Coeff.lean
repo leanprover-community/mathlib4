@@ -306,8 +306,8 @@ lemma reverse_charpoly (M : Matrix n n R) :
 lemma trace_eq_neg_coeff_det_one_sub_X_smul_C (M : Matrix n n R) :
     trace M = - coeff (det (1 - (X : R[X]) • M.map C)) 1 := by
   nontriviality R
-  cases isEmpty_or_nonempty n; simp
-  simp [trace_eq_neg_charpoly_coeff M, neg_inj, ← M.reverse_charpoly, coeff_one_reverse, nextCoeff]
+  cases isEmpty_or_nonempty n; simp [coeff_one]
+  simp [trace_eq_neg_charpoly_coeff M, ← M.reverse_charpoly, nextCoeff]
 
 lemma isUnit_det_one_sub_X_smul_C_of_IsNilpotent (hM : IsNilpotent M) :
     IsUnit (det (1 - (X : R[X]) • M.map C)) := by
