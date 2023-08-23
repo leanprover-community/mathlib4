@@ -914,6 +914,8 @@ theorem funext [Infinite R] {p q : R[X]} (ext : ∀ r : R, p.eval r = q.eval r) 
 
 variable [CommRing T]
 
+/-- `aroots p A` gives the multiset of the roots of `p` in an algebra `A`,
+including their multiplicities. -/
 noncomputable abbrev aroots (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] : Multiset S :=
   (p.map (algebraMap T S)).roots
 
@@ -921,9 +923,18 @@ theorem aroots_def (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] :
     p.aroots S = (p.map (algebraMap T S)).roots :=
   rfl
 
-/-- The set of distinct roots of `p` in `E`.
+theorem mem_aroots' {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S] {a : S} :
+    a ∈ p.aroots S ↔ p.map (algebraMap T S) ≠ 0 ∧ aeval a p = 0 := by
+  rw [mem_roots', IsRoot.def, ← eval₂_eq_eval_map, aeval_def]
 
-If you have a non-separable polynomial, use `Polynomial.roots` for the multiset
+theorem mem_aroots {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S]
+    [NoZeroSMulDivisors T S] {a : S} : a ∈ p.aroots S ↔ p ≠ 0 ∧ aeval a p = 0 := by
+  rw [mem_aroots', Polynomial.map_ne_zero_iff]
+  exact NoZeroSMulDivisors.algebraMap_injective T S
+
+/-- The set of distinct roots of `p` in `S`.
+
+If you have a non-separable polynomial, use `Polynomial.aroots` for the multiset
 where multiple roots have the appropriate multiplicity. -/
 def rootSet (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] : Set S :=
   haveI := Classical.decEq S
@@ -979,14 +990,13 @@ theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S]
 theorem mem_rootSet' {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S] {a : S} :
     a ∈ p.rootSet S ↔ p.map (algebraMap T S) ≠ 0 ∧ aeval a p = 0 := by
   classical
-  rw [rootSet_def, Finset.mem_coe, mem_toFinset, mem_roots', IsRoot.def, ← eval₂_eq_eval_map,
-    aeval_def]
+  rw [rootSet_def, Finset.mem_coe, mem_toFinset, mem_aroots']
 #align polynomial.mem_root_set' Polynomial.mem_rootSet'
 
 theorem mem_rootSet {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S]
     [NoZeroSMulDivisors T S] {a : S} : a ∈ p.rootSet S ↔ p ≠ 0 ∧ aeval a p = 0 := by
-  rw [mem_rootSet',
-    (map_injective _ (NoZeroSMulDivisors.algebraMap_injective T S)).ne_iff' (Polynomial.map_zero _)]
+  rw [mem_rootSet', Polynomial.map_ne_zero_iff]
+  exact NoZeroSMulDivisors.algebraMap_injective T S
 #align polynomial.mem_root_set Polynomial.mem_rootSet
 
 theorem mem_rootSet_of_ne {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S]
