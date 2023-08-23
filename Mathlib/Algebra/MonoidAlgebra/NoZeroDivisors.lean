@@ -53,7 +53,7 @@ open Finsupp
 instance {L σ : Type*} [LinearOrder L] [AddGroup L]
     [ContravariantClass L L (· + ·) (· ≤ ·)]
     [CovariantClass L L (Function.swap (· + ·)) (· ≤ ·)] :
-    UniqueSums (σ →₀ L) := show UniqueSums ((Lex (σ →₀ L))) from
+    UniqueSums (σ →₀ L) := show UniqueSums (Lex (σ →₀ L)) from
 { uniqueAdd_of_nonempty := fun {A B} A0 B0 =>
   --  introduce an arbitrary order on `σ`, the trivial one in this case
   let _ : PartialOrder σ :=
