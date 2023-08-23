@@ -53,7 +53,7 @@ theorem expand_monomial (p : ℕ) (d : σ →₀ ℕ) (r : R) :
 #align mv_polynomial.expand_monomial MvPolynomial.expand_monomial
 
 theorem expand_one_apply (f : MvPolynomial σ R) : expand 1 f = f := by
-  simp only [expand, pow_one, eval₂Hom_eq_bind₂, bind₂_C_left, RingHom.toMonoidHom_eq_coe,
+  simp [expand, pow_one, eval₂Hom_eq_bind₂, bind₂_C_left, RingHom.toMonoidHom_eq_coe,
     RingHom.coe_monoidHom_id, AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.id_apply]
 #align mv_polynomial.expand_one_apply MvPolynomial.expand_one_apply
 

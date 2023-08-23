@@ -93,6 +93,10 @@ theorem intervalIntegrable_rpow' {r : ℝ} (h : -1 < r) :
     rw [uIoc_of_le (by linarith : 0 ≤ -c)] at hx
     simp only [Pi.smul_apply, Algebra.id.smul_eq_mul, log_neg_eq_log, mul_comm,
       rpow_def_of_pos hx.1, rpow_def_of_neg (by linarith [hx.1] : -x < 0)]
+    rw [Pi.smul_apply]
+    simp [rpow_def_of_pos hx.1]
+    apply Or.inl
+    ac_rfl
 #align interval_integral.interval_integrable_rpow' intervalIntegral.intervalIntegrable_rpow'
 
 /-- See `intervalIntegrable_cpow'` for a version with a weaker hypothesis on `r`, but assuming the

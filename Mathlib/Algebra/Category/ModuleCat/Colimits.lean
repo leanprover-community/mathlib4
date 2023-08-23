@@ -305,7 +305,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
       rfl
     · rw [quot_zero, map_zero] -- porting note: was `simp` but `map_zero` won't fire
       rfl
-    · simpa
+    · rwa [quot_neg, map_neg, map_neg, neg_inj]
     · rw [quot_add, map_add, map_add]  -- porting note: this was closed by `simp [*]`
       congr 1
     · rw [quot_smul, map_smul, map_smul]  -- porting note: this was closed by `simp [*]`

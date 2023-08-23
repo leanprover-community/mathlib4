@@ -718,7 +718,7 @@ variable {F : Type u} [Field F] {W : WeierstrassCurve F} {x₁ x₂ y₁ y₂ : 
   (h₂' : W.equation x₂ y₂)
 
 -- porting note: increased `maxHeartbeats` for `ring1`
-set_option maxHeartbeats 800000 in
+set_option maxHeartbeats 0 in
 lemma XYIdeal_neg_mul : XYIdeal W x₁ (C <| W.negY x₁ y₁) * XYIdeal W x₁ (C y₁) = XIdeal W x₁ := by
   have Y_rw :
     (Y - C (C y₁)) * (Y - C (C (W.negY x₁ y₁))) -
@@ -761,8 +761,8 @@ private lemma XYIdeal'_mul_inv :
     XIdeal, FractionalIdeal.coe_ideal_span_singleton_mul_inv W.FunctionField <| XClass_ne_zero W x₁]
 
 -- porting note: increased `maxHeartbeats` for `ring1`
-set_option synthInstance.maxHeartbeats 60000 in
-set_option maxHeartbeats 600000 in
+set_option synthInstance.maxHeartbeats 0 in
+set_option maxHeartbeats 0 in
 lemma XYIdeal_mul_XYIdeal (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) :
     XIdeal W (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) * (XYIdeal W x₁ (C y₁) * XYIdeal W x₂ (C y₂)) =
       YIdeal W (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) *

@@ -135,7 +135,9 @@ noncomputable def colimit : GroupCat.{max v u} :=
 @[to_additive "The cocone over the proposed colimit additive group."]
 noncomputable def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
-  ι := { (MonCat.FilteredColimits.colimitCocone (F ⋙ forget₂ GroupCat MonCat.{max v u})).ι with }
+  ι := let src := (MonCat.FilteredColimits.colimitCocone (F ⋙ forget₂ GroupCat MonCat.{max v u})).ι
+    { app := src.app
+      naturality := src.naturality }
 #align Group.filtered_colimits.colimit_cocone GroupCat.FilteredColimits.colimitCocone
 #align AddGroup.filtered_colimits.colimit_cocone AddGroupCat.FilteredColimits.colimitCocone
 
@@ -216,9 +218,9 @@ noncomputable def colimit : CommGroupCat :=
 @[to_additive "The cocone over the proposed colimit additive commutative group."]
 noncomputable def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
-  ι :=
-    { (GroupCat.FilteredColimits.colimitCocone
-          (F ⋙ forget₂ CommGroupCat GroupCat.{max v u})).ι with }
+  ι := let src := (GroupCat.FilteredColimits.colimitCocone
+          (F ⋙ forget₂ CommGroupCat GroupCat.{max v u})).ι
+    { app := src.app, naturality := src.naturality }
 #align CommGroup.filtered_colimits.colimit_cocone CommGroupCat.FilteredColimits.colimitCocone
 #align AddCommGroup.filtered_colimits.colimit_cocone AddCommGroupCat.FilteredColimits.colimitCocone
 

@@ -390,10 +390,13 @@ noncomputable def colimit : CommMonCat.{max v u} :=
 
 /-- The cocone over the proposed colimit commutative monoid. -/
 @[to_additive "The cocone over the proposed colimit additive commutative monoid."]
-noncomputable def colimitCocone : Cocone F where
-  pt := colimit.{v, u} F
-  ι := { (MonCat.FilteredColimits.colimitCocone.{v, u}
-    (F ⋙ forget₂ CommMonCat MonCat.{max v u})).ι with }
+noncomputable def colimitCocone : Cocone F :=
+  { pt := colimit.{v, u} F
+    ι :=
+      let src := (MonCat.FilteredColimits.colimitCocone.{v, u}
+        (F ⋙ forget₂ CommMonCat MonCat.{max v u}))
+      { app := src.ι.app
+        naturality := src.ι.naturality }}
 #align CommMon.filtered_colimits.colimit_cocone CommMonCat.FilteredColimits.colimitCocone
 #align AddCommMon.filtered_colimits.colimit_cocone AddCommMonCat.FilteredColimits.colimitCocone
 

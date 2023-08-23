@@ -923,6 +923,7 @@ instance instSubsingletonCoordinateRing [Subsingleton R] : Subsingleton W.Coordi
   Module.subsingleton R[X] _
 #align weierstrass_curve.coordinate_ring.subsingleton WeierstrassCurve.CoordinateRing.instSubsingletonCoordinateRing
 
+set_option synthInstance.maxHeartbeats 40000 in
 /-- The $R$-algebra isomorphism from $R[W] / \langle X - x, Y - y(X) \rangle$ to
 $R[X, Y] / \langle X - x, Y - y(X) \rangle$ provided that $W(x, y(x)) = 0$. -/
 noncomputable def quotientXYIdealEquiv' {x : R} {y : R[X]} (h : (W.polynomial.eval y).eval x = 0) :
@@ -1033,6 +1034,7 @@ lemma norm_smul_basis (p q : R[X]) :
   ring1
 #align weierstrass_curve.coordinate_ring.norm_smul_basis WeierstrassCurve.CoordinateRing.norm_smul_basis
 
+set_option maxHeartbeats 400000 in
 lemma coe_norm_smul_basis (p q : R[X]) :
     ↑(Algebra.norm R[X] <| p • (1 : W.CoordinateRing) + q • mk W Y) =
       mk W ((C p + C q * X) * (C p + C q * (-Y - C (C W.a₁ * X + C W.a₃)))) :=

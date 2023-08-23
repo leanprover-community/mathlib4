@@ -239,7 +239,8 @@ example : ¬CovariantClass (Lex (F →₀ F)) (Lex (F →₀ F)) (· + ·) (· �
   refine (not_lt (α := Lex (F →₀ F))).mpr (@h (Finsupp.single (0 : F) (1 : F))
     (Finsupp.single 1 1) (Finsupp.single 0 1) ?_) ⟨1, ?_⟩
   · exact Or.inr ⟨0, by simp [(by boom : ∀ j : F, j < 0 ↔ False)]⟩
-  · simp only [(by boom : ∀ j : F, j < 1 ↔ j = 0), Function.comp, ofLex_add, toDFinsupp_add,
+  · dsimp
+    simp only [(by boom : ∀ j : F, j < 1 ↔ j = 0), Function.comp, ofLex_add, toDFinsupp_add,
       toLex_add, ofLex_toLex, DFinsupp.coe_add, toDFinsupp_coe, Pi.toLex_apply, Pi.add_apply,
       forall_eq, f010, f1, f110, add_zero, f011, f111, zero_add, and_self]
 

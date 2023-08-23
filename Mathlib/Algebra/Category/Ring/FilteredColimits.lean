@@ -205,9 +205,9 @@ set_option linter.uppercaseLean3 false in
 /-- The cocone over the proposed colimit commutative semiring. -/
 def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
-  ι :=
-    { (SemiRingCat.FilteredColimits.colimitCocone
-          (F ⋙ forget₂ CommSemiRingCat SemiRingCat.{max v u})).ι with }
+  ι := let src := (SemiRingCat.FilteredColimits.colimitCocone
+          (F ⋙ forget₂ CommSemiRingCat SemiRingCat.{max v u})).ι
+    { app := src.app, naturality := src.naturality }
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.filtered_colimits.colimit_cocone CommSemiRingCat.FilteredColimits.colimitCocone
 
@@ -281,9 +281,9 @@ set_option linter.uppercaseLean3 false in
 /-- The cocone over the proposed colimit ring. -/
 def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
-  ι :=
-    { (SemiRingCat.FilteredColimits.colimitCocone
-          (F ⋙ forget₂ RingCat SemiRingCat.{max v u})).ι with }
+  ι := let src :=  (SemiRingCat.FilteredColimits.colimitCocone
+          (F ⋙ forget₂ RingCat SemiRingCat.{max v u})).ι
+    { app := src.app, naturality := src.naturality }
 set_option linter.uppercaseLean3 false in
 #align Ring.filtered_colimits.colimit_cocone RingCat.FilteredColimits.colimitCocone
 
@@ -356,8 +356,9 @@ set_option linter.uppercaseLean3 false in
 /-- The cocone over the proposed colimit commutative ring. -/
 def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
-  ι :=
-    { (RingCat.FilteredColimits.colimitCocone (F ⋙ forget₂ CommRingCat RingCat.{max v u})).ι with }
+  ι := let src := (RingCat.FilteredColimits.colimitCocone
+    (F ⋙ forget₂ CommRingCat RingCat.{max v u})).ι
+    { app := src.app, naturality := src.naturality }
 set_option linter.uppercaseLean3 false in
 #align CommRing.filtered_colimits.colimit_cocone CommRingCat.FilteredColimits.colimitCocone
 

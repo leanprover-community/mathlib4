@@ -528,6 +528,7 @@ end Finite
 
 section FiniteType
 
+set_option maxHeartbeats 400000 in
 theorem localization_finiteType : RingHom.LocalizationPreserves @RingHom.FiniteType := by
   introv R hf
   -- mirrors the proof of `localization_map_finite`
