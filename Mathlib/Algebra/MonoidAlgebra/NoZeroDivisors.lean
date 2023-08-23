@@ -5,8 +5,6 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.Group.UniqueProds
-import Mathlib.Data.Finsupp.Lex
-import Mathlib.Order.Extension.Linear
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 #align_import algebra.monoid_algebra.no_zero_divisors from "leanprover-community/mathlib"@"3e067975886cf5801e597925328c335609511b1a"
