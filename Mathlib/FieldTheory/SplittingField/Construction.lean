@@ -206,7 +206,7 @@ theorem adjoin_rootSet (n : ℕ) :
     rw [roots_mul hmf0, Polynomial.map_sub, map_X, map_C, roots_X_sub_C, Multiset.toFinset_add,
       Finset.coe_union, Multiset.toFinset_singleton, Finset.coe_singleton,
       Algebra.adjoin_union_eq_adjoin_adjoin, ← Set.image_singleton,
-      Algebra.adjoin_algebraMap K (AdjoinRoot f.factor) (SplittingFieldAux n f.removeFactor),
+      Algebra.adjoin_algebraMap K (SplittingFieldAux n f.removeFactor),
       AdjoinRoot.adjoinRoot_eq_top, Algebra.map_top]
     /- Porting note: was `rw [IsScalarTower.adjoin_range_toAlgHom K (AdjoinRoot f.factor)
         (SplittingFieldAux n f.removeFactor)]` -/
