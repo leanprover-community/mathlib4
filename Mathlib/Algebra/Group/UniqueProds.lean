@@ -20,9 +20,10 @@ converts `UniqueProds` into `UniqueSums`.
 A common way of *proving* that a group satisfies the `UniqueProds/Sums` property is by assuming
 the existence of some kind of ordering on the group that is well-behaved with respect to the
 group operation and showing that minima/maxima are the "unique products/sums".
+However, the order is just a convenience and is not part of the `UniqueProds/Sums` setup.
 
 Here you can see several examples of Types that have `UniqueSums/Prods`
-(`inferInstance` uses `Covariants.to_uniqueProds_left` and `Covariants.to_uniqueSums_left`).
+(`inferInstance` uses `Covariant.to_uniqueProds_left` and `Covariant.to_uniqueSums_left`).
 ```lean
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.PNat.Basic
