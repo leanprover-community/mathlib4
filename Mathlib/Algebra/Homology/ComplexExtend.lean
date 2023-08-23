@@ -387,50 +387,86 @@ lemma extendXMap'_comp_extendXMap :
     K.extendXMap' e y₁ y₂ ≫ K.extendXMap e y₁ y₂ = 𝟙 _ := by
   rw [K.extendXMap_eq e _ _ hy, K.extendXMap'_eq e _ _ hy, Iso.hom_inv_id]
 
-lemma extendCyclesIso [K.HasHomology y₁] [(K.extend e).HasHomology y₂] :
-    (K.extend e).cycles y₂ ≅ K.cycles y₁ := by
-  exact ShortComplex.isoCyclesOfIso₂ (by
-    apply extendSc'Map'
-    · exact hy
-    · rfl
-    · rfl
-    · rfl) (by
-    apply K.extendSc'Map
-    · exact hy
-    · rfl
-    · rfl
-    · rfl) (by exact K.extendXMap'_comp_extendXMap e _ _ hy)
-        (by exact K.extendXMap_comp_extendXMap' e _ _ hy)
+section
 
-lemma extendOpcyclesIso [K.HasHomology y₁] [(K.extend e).HasHomology y₂] :
-    (K.extend e).opcycles y₂ ≅ K.opcycles y₁ := by
-  exact ShortComplex.isoOpcyclesOfIso₂ (by
-    apply extendSc'Map'
-    · exact hy
-    · rfl
-    · rfl
-    · rfl) (by
-    apply K.extendSc'Map
-    · exact hy
-    · rfl
-    · rfl
-    · rfl) (by exact K.extendXMap'_comp_extendXMap e _ _ hy)
-        (by exact K.extendXMap_comp_extendXMap' e _ _ hy)
+variable [K.HasHomology y₁] [(K.extend e).HasHomology y₂]
 
-lemma extendHomologyIso [K.HasHomology y₁] [(K.extend e).HasHomology y₂] :
-    (K.extend e).homology y₂ ≅ K.homology y₁ := by
-  exact ShortComplex.isoHomologyOfIso₂ (by
-    apply extendSc'Map'
-    · exact hy
-    · rfl
-    · rfl
-    · rfl) (by
-    apply K.extendSc'Map
-    · exact hy
-    · rfl
-    · rfl
-    · rfl) (by exact K.extendXMap'_comp_extendXMap e _ _ hy)
-        (by exact K.extendXMap_comp_extendXMap' e _ _ hy)
+lemma extendCyclesIso :
+    (K.extend e).cycles y₂ ≅ K.cycles y₁ :=
+  ShortComplex.isoCyclesOfIso₂
+    (by exact K.extendSc'Map' e _ y₁ (c₁.next y₁) _ y₂ _ hy rfl rfl rfl)
+    (by exact K.extendSc'Map e (c₁.prev y₁) y₁ _ _ y₂ _ hy rfl rfl rfl)
+    (by exact K.extendXMap'_comp_extendXMap e _ _ hy)
+    (by exact K.extendXMap_comp_extendXMap' e _ _ hy)
+
+lemma extendOpcyclesIso :
+    (K.extend e).opcycles y₂ ≅ K.opcycles y₁ :=
+  ShortComplex.isoOpcyclesOfIso₂
+    (by exact K.extendSc'Map' e _ y₁ (c₁.next y₁) _ y₂ _ hy rfl rfl rfl)
+    (by exact K.extendSc'Map e (c₁.prev y₁) y₁ _ _ y₂ _ hy rfl rfl rfl)
+    (by exact K.extendXMap'_comp_extendXMap e _ _ hy)
+    (by exact K.extendXMap_comp_extendXMap' e _ _ hy)
+
+lemma extendHomologyIso :
+    (K.extend e).homology y₂ ≅ K.homology y₁ :=
+  ShortComplex.isoHomologyOfIso₂
+    (by exact K.extendSc'Map' e _ y₁ (c₁.next y₁) _ y₂ _ hy rfl rfl rfl)
+    (by exact K.extendSc'Map e (c₁.prev y₁) y₁ _ _ y₂ _ hy rfl rfl rfl)
+    (by exact K.extendXMap'_comp_extendXMap e _ _ hy)
+    (by exact K.extendXMap_comp_extendXMap' e _ _ hy)
+
+end
+
+/-
+section
+
+instance [h : (K.extend e).HasHomology y₂] : ((extendFunctor C e).obj K).HasHomology y₂ := h
+
+variable {K}
+variable [K.HasHomology y₁] [(K.extend e).HasHomology y₂]
+  [(K.extend e).HasHomology y₂]
+  [L.HasHomology y₁] [(L.extend e).HasHomology y₂]
+
+@[reassoc (attr := simp)]
+lemma extendCyclesIso_hom_naturality :
+    cyclesMap ((extendFunctor C e).map ψ) y₂ ≫ (L.extendCyclesIso e _ _ hy).hom =
+      (K.extendCyclesIso e _ _ hy).hom ≫ cyclesMap ψ y₁ := by
+  sorry
+
+@[reassoc (attr := simp)]
+lemma extendHomologyIso_hom_naturality :
+    homologyMap ((extendFunctor C e).map ψ) y₂ ≫ (L.extendHomologyIso e _ _ hy).hom =
+      (K.extendHomologyIso e _ _ hy).hom ≫ homologyMap ψ  y₁ := by
+  sorry
+
+@[reassoc (attr := simp)]
+lemma extendOpcyclesIso_hom_naturality :
+    opcyclesMap ((extendFunctor C e).map ψ) y₂ ≫ (L.extendOpcyclesIso e _ _ hy).hom =
+      (K.extendOpcyclesIso e _ _ hy).hom ≫ opcyclesMap ψ  y₁ := by
+  sorry
+
+end
+
+section
+
+variable [CategoryWithHomology C]
+
+@[simps!]
+noncomputable def extendCyclesNatIso :
+    extendFunctor C e ⋙ cyclesFunctor C c₂ y₂ ≅ cyclesFunctor C c₁ y₁ :=
+  NatIso.ofComponents (fun K => K.extendCyclesIso e _ _ hy) (by aesop_cat)
+
+@[simps!]
+noncomputable def extendOpcyclesNatIso :
+    extendFunctor C e ⋙ opcyclesFunctor C c₂ y₂ ≅ opcyclesFunctor C c₁ y₁ :=
+  NatIso.ofComponents (fun K => K.extendOpcyclesIso e _ _ hy) (by aesop_cat)
+
+@[simps!]
+noncomputable def extendHomologyNatIso :
+    extendFunctor C e ⋙ homologyFunctor C c₂ y₂ ≅ homologyFunctor C c₁ y₁ :=
+  NatIso.ofComponents (fun K => K.extendHomologyIso e _ _ hy) (by aesop_cat)
+
+end -/
 
 end
 
