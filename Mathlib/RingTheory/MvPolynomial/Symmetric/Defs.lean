@@ -206,13 +206,6 @@ theorem esymm_eq_sum_monomial (n : ℕ) :
   rfl
 #align mv_polynomial.esymm_eq_sum_monomial MvPolynomial.esymm_eq_sum_monomial
 
-/- to be moved -/
-lemma _root_.Finset.sum_finsupp_single {t : Finset σ} :
-    (∑ i in t, Finsupp.single i 1) = Finsupp.indicator t (fun _ _ => 1) := by
-  classical
-  refine' Finsupp.ext (fun i => _)
-  simp_rw [sum_apply', Finsupp.single_apply, sum_ite_eq']; rfl
-
 @[simp]
 theorem esymm_zero : esymm σ R 0 = 1 := by
   simp only [esymm, powersetLen_zero, sum_singleton, prod_empty]

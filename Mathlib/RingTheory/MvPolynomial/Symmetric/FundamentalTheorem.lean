@@ -373,11 +373,11 @@ lemma maxDegree_monic_esymm [Nontrivial R] {i : ℕ} (him : i < m) :
     Monic (esymm (Fin m) R (i + 1)) := by
   have := maxDegree_leadingCoeff_sum_eq (univ.powersetLen (i + 1))
     (a := Iic (⟨i, him⟩ : Fin m)) ?_ (fun s => monomial (∑ j in s, Finsupp.single j 1) (1 : R)) ?_
-  · rwa [← esymm_eq_sum_monomial, sum_finsupp_single, maxDegree_monomial _ one_ne_zero,
-         leadingCoeff_monomial] at this
+  · rwa [← esymm_eq_sum_monomial, ← Finsupp.indicator_eq_sum_single,
+         maxDegree_monomial _ one_ne_zero, leadingCoeff_monomial] at this
   · exact mem_powersetLen.2 ⟨subset_univ _, Fin.card_Iic _⟩
   intro t ht hne
-  simp_rw [maxDegree_monomial _ one_ne_zero, sum_finsupp_single]
+  simp_rw [maxDegree_monomial _ one_ne_zero, ← Finsupp.indicator_eq_sum_single]
   rw [Ne, eq_comm, ← subset_iff_eq_of_card_le, not_subset] at hne
   · simp_rw [← mem_sdiff] at hne
     refine' ⟨min' _ hne, let hkm := mem_sdiff.1 (min'_mem _ hne); ⟨fun k hk => _, _⟩⟩
