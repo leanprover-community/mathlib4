@@ -296,6 +296,7 @@ import Mathlib.Algebra.Module.Zlattice
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.MonoidAlgebra.Degree
 import Mathlib.Algebra.MonoidAlgebra.Division
+import Mathlib.Algebra.MonoidAlgebra.Equiv
 import Mathlib.Algebra.MonoidAlgebra.Grading
 import Mathlib.Algebra.MonoidAlgebra.Ideal
 import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
@@ -836,7 +837,6 @@ import Mathlib.Analysis.SpecificLimits.IsROrC
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Analysis.Subadditive
 import Mathlib.Analysis.SumIntegralComparisons
-import Mathlib.Analysis.Transcendental
 import Mathlib.Analysis.VonNeumannAlgebra.Basic
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
@@ -2509,11 +2509,6 @@ import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.GaussSum
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 import Mathlib.NumberTheory.LegendreSymbol.ZModChar
-import Mathlib.NumberTheory.Liouville.Basic
-import Mathlib.NumberTheory.Liouville.LiouvilleNumber
-import Mathlib.NumberTheory.Liouville.LiouvilleWith
-import Mathlib.NumberTheory.Liouville.Measure
-import Mathlib.NumberTheory.Liouville.Residual
 import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.NumberTheory.LucasPrimality
 import Mathlib.NumberTheory.Modular
@@ -2545,6 +2540,12 @@ import Mathlib.NumberTheory.PythagoreanTriples
 import Mathlib.NumberTheory.RamificationInertia
 import Mathlib.NumberTheory.SumFourSquares
 import Mathlib.NumberTheory.SumTwoSquares
+import Mathlib.NumberTheory.Transcendental.LindemannWeierstrass
+import Mathlib.NumberTheory.Transcendental.Liouville.Basic
+import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleNumber
+import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
+import Mathlib.NumberTheory.Transcendental.Liouville.Measure
+import Mathlib.NumberTheory.Transcendental.Liouville.Residual
 import Mathlib.NumberTheory.VonMangoldt
 import Mathlib.NumberTheory.WellApproximable
 import Mathlib.NumberTheory.Wilson
