@@ -2,13 +2,10 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module measure_theory.covering.vitali_family
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.MeasureSpace
+
+#align_import measure_theory.covering.vitali_family from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Vitali families
@@ -55,7 +52,7 @@ open MeasureTheory Metric Set Filter TopologicalSpace MeasureTheory.Measure
 
 open Filter MeasureTheory Topology
 
-variable {α : Type _} [MetricSpace α]
+variable {α : Type*} [MetricSpace α]
 
 /-- On a metric space `X` with a measure `μ`, consider for each `x : X` a family of measurable sets
 with nonempty interiors, called `setsAt x`. This family is a Vitali family if it satisfies the
@@ -261,7 +258,7 @@ theorem eventually_filterAt_subset_closedBall (x : α) {ε : ℝ} (hε : 0 < ε)
   exact ⟨ε, hε, fun a _ ha' => ha'⟩
 #align vitali_family.eventually_filter_at_subset_closed_ball VitaliFamily.eventually_filterAt_subset_closedBall
 
-theorem tendsto_filterAt_iff {ι : Type _} {l : Filter ι} {f : ι → Set α} {x : α} :
+theorem tendsto_filterAt_iff {ι : Type*} {l : Filter ι} {f : ι → Set α} {x : α} :
     Tendsto f l (v.filterAt x) ↔
       (∀ᶠ i in l, f i ∈ v.setsAt x) ∧ ∀ ε > (0 : ℝ), ∀ᶠ i in l, f i ⊆ closedBall x ε := by
   refine' ⟨fun H => ⟨H.eventually <| v.eventually_filterAt_mem_sets x,

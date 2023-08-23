@@ -2,25 +2,23 @@
 Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.calculus.fderiv.mul
-! leanprover-community/mathlib commit d608fc5d4e69d4cc21885913fb573a88b0deb521
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Bilinear
+
+#align_import analysis.calculus.fderiv.mul from "leanprover-community/mathlib"@"d608fc5d4e69d4cc21885913fb573a88b0deb521"
 
 /-!
 # Multiplicative operations on derivatives
 
 For detailed documentation of the Fréchet derivative,
-see the module docstring of `analysis/calculus/fderiv/basic.lean`.
+see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 
 This file contains the usual formulas (and existence assertions) for the derivative of
 
 * multiplication of a function by a scalar function
 * multiplication of two scalar functions
-* inverse function (assuming that it exists; the inverse function theorem is in `../inverse.lean`)
+* inverse function (assuming that it exists; the inverse function theorem is in
+  `Mathlib/Analysis/Calculus/Inverse.lean`)
 -/
 
 
@@ -30,15 +28,15 @@ noncomputable section
 
 section
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-variable {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-variable {G : Type _} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-variable {G' : Type _} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 variable {f f₀ f₁ g : E → F}
 
@@ -57,7 +55,7 @@ section ClmCompApply
 /-! ### Derivative of the pointwise composition/application of continuous linear maps -/
 
 
-variable {H : Type _} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {c : E → G →L[𝕜] H}
+variable {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {c : E → G →L[𝕜] H}
   {c' : E →L[𝕜] G →L[𝕜] H} {d : E → F →L[𝕜] G} {d' : E →L[𝕜] F →L[𝕜] G} {u : E → G} {u' : E →L[𝕜] G}
 
 theorem HasStrictFDerivAt.clm_comp (hc : HasStrictFDerivAt c c' x) (hd : HasStrictFDerivAt d d' x) :
@@ -174,7 +172,7 @@ normed vector space.
 -/
 
 
-variable {𝕜' : Type _} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' F]
+variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' F]
   [IsScalarTower 𝕜 𝕜' F]
 
 variable {c : E → 𝕜'} {c' : E →L[𝕜] 𝕜'}
@@ -277,7 +275,7 @@ section Mul
 /-! ### Derivative of the product of two functions -/
 
 
-variable {𝔸 𝔸' : Type _} [NormedRing 𝔸] [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸] [NormedAlgebra 𝕜 𝔸']
+variable {𝔸 𝔸' : Type*} [NormedRing 𝔸] [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸] [NormedAlgebra 𝕜 𝔸']
   {a b : E → 𝔸} {a' b' : E →L[𝕜] 𝔸} {c d : E → 𝔸'} {c' d' : E →L[𝕜] 𝔸'}
 
 theorem HasStrictFDerivAt.mul' {x : E} (ha : HasStrictFDerivAt a a' x)
@@ -508,7 +506,7 @@ end Mul
 
 section AlgebraInverse
 
-variable {R : Type _} [NormedRing R] [NormedAlgebra 𝕜 R] [CompleteSpace R]
+variable {R : Type*} [NormedRing R] [NormedAlgebra 𝕜 R] [CompleteSpace R]
 
 open NormedRing ContinuousLinearMap Ring
 
@@ -568,13 +566,13 @@ end AlgebraInverse
 
 /-! ### Derivative of the inverse in a division ring
 
-Note these lemmas are primed as they need `complete_space R`, whereas the other lemmas in
-`deriv/inv.lean` do not, but instead need `nontrivially_normed_field R`.
+Note these lemmas are primed as they need `CompleteSpace R`, whereas the other lemmas in
+`Mathlib/Analysis/Calculus/Deriv/Inv.lean` do not, but instead need `NontriviallyNormedField R`.
 -/
 
 section DivisionRingInverse
 
-variable {R : Type _} [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [CompleteSpace R]
+variable {R : Type*} [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [CompleteSpace R]
 
 open NormedRing ContinuousLinearMap Ring
 
@@ -602,7 +600,7 @@ theorem fderiv_inv' {x : R} (hx : x ≠ 0) : fderiv 𝕜 Inv.inv x = -mulLeftRig
   (hasFDerivAt_inv' hx).fderiv
 #align fderiv_inv' fderiv_inv'
 
-/-- Non-commutative version of `fderiv_within_inv` -/
+/-- Non-commutative version of `fderivWithin_inv` -/
 theorem fderivWithin_inv' {s : Set R} {x : R} (hx : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun x => x⁻¹) s x = -mulLeftRight 𝕜 R x⁻¹ x⁻¹ := by
   rw [DifferentiableAt.fderivWithin (differentiableAt_inv' hx) hxs]

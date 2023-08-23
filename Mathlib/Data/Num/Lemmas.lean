@@ -2,17 +2,14 @@
 Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.num.lemmas
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Num.Bitwise
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Size
+
+#align_import data.num.lemmas from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
 # Properties of the binary representation of integers
@@ -33,7 +30,7 @@ attribute [local simp] add_assoc
 
 namespace PosNum
 
-variable {α : Type _}
+variable {α : Type*}
 
 @[simp, norm_cast]
 theorem cast_one [One α] [Add α] : ((1 : PosNum) : α) = 1 :=
@@ -203,7 +200,7 @@ end PosNum
 
 namespace Num
 
-variable {α : Type _}
+variable {α : Type*}
 
 open PosNum
 
@@ -468,6 +465,9 @@ instance linearOrderedSemiring : LinearOrderedSemiring Num :=
       apply mul_lt_mul_of_pos_right
     decidableLT := Num.decidableLT
     decidableLE := Num.decidableLE
+    -- This is relying on an automatically generated instance name,
+    -- generated in a `deriving` handler.
+    -- See https://github.com/leanprover/lean4/issues/2343
     decidableEq := instDecidableEqNum
     exists_pair_ne := ⟨0, 1, by decide⟩ }
 #align num.linear_ordered_semiring Num.linearOrderedSemiring
@@ -517,7 +517,7 @@ end Num
 
 namespace PosNum
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Num
 
@@ -711,7 +711,7 @@ end PosNum
 
 namespace Num
 
-variable {α : Type _}
+variable {α : Type*}
 
 open PosNum
 
@@ -834,7 +834,7 @@ end PosNum
 
 namespace Num
 
-variable {α : Type _}
+variable {α : Type*}
 
 open PosNum
 
@@ -897,7 +897,7 @@ theorem bitwise'_to_nat {f : Num → Num → Num} {g : Bool → Bool → Bool} (
   -- Porting note: `change .. with ..` is now `simp only [show .. = .. from rfl]`.
   intros m n
   cases' m with m <;> cases' n with n <;>
-      simp only [show zero = 0 from rfl, show ((0 : Num) : ℕ) = 0 from rfl]
+      try simp only [show zero = 0 from rfl, show ((0 : Num) : ℕ) = 0 from rfl]
   · rw [f00, Nat.bitwise'_zero]; rfl
   · unfold Nat.bitwise'
     rw [f0n, Nat.binaryRec_zero]
@@ -1029,7 +1029,7 @@ end Num
 
 namespace ZNum
 
-variable {α : Type _}
+variable {α : Type*}
 
 open PosNum
 
@@ -1178,7 +1178,7 @@ end ZNum
 
 namespace PosNum
 
-variable {α : Type _}
+variable {α : Type*}
 
 theorem cast_to_znum : ∀ n : PosNum, (n : ZNum) = ZNum.pos n
   | 1 => rfl
@@ -1226,7 +1226,7 @@ end PosNum
 
 namespace Num
 
-variable {α : Type _}
+variable {α : Type*}
 
 @[simp]
 theorem cast_sub' [AddGroupWithOne α] : ∀ m n : Num, (sub' m n : α) = m - n
@@ -1318,7 +1318,7 @@ end Num
 
 namespace ZNum
 
-variable {α : Type _}
+variable {α : Type*}
 
 @[simp, norm_cast]
 theorem cast_add [AddGroupWithOne α] : ∀ m n, ((m + n : ZNum) : α) = m + n
@@ -1344,8 +1344,8 @@ theorem cast_succ [AddGroupWithOne α] (n) : ((succ n : ZNum) : α) = n + 1 := b
 
 @[simp, norm_cast]
 theorem mul_to_int : ∀ m n, ((m * n : ZNum) : ℤ) = m * n
-  | 0, a => by cases a <;> exact (MulZeroClass.zero_mul _).symm
-  | b, 0 => by cases b <;> exact (MulZeroClass.mul_zero _).symm
+  | 0, a => by cases a <;> exact (zero_mul _).symm
+  | b, 0 => by cases b <;> exact (mul_zero _).symm
   | pos a, pos b => PosNum.cast_mul a b
   | pos a, neg b => show -↑(a * b) = ↑a * -↑b by rw [PosNum.cast_mul, neg_mul_eq_mul_neg]
   | neg a, pos b => show -↑(a * b) = -↑a * ↑b by rw [PosNum.cast_mul, neg_mul_eq_neg_mul]
@@ -1461,6 +1461,8 @@ instance linearOrder : LinearOrder ZNum where
     intro a b
     transfer_rw
     apply le_total
+  -- This is relying on an automatically generated instance name, generated in a `deriving` handler.
+  -- See https://github.com/leanprover/lean4/issues/2343
   decidableEq := instDecidableEqZNum
   decidableLE := ZNum.decidableLE
   decidableLT := ZNum.decidableLT

@@ -366,8 +366,8 @@ def parseArgs (s : Option (TSyntax ``args)) :
     | _ => panic! "Unreachable parse of solve_by_elim arguments."
   let args := args.toList
   (args.contains none,
-    args.filterMap fun o => o.bind Sum.getLeft,
-    args.filterMap fun o => o.bind Sum.getRight)
+    args.filterMap fun o => o.bind Sum.getLeft?,
+    args.filterMap fun o => o.bind Sum.getRight?)
 
 /-- Parse the `using ...` argument for `solve_by_elim`. -/
 def parseUsing (s : Option (TSyntax ``using_)) : Array Ident :=
@@ -499,7 +499,7 @@ syntax (name := applyRulesSyntax) "apply_rules" (config)? (&" only")? (args)? (u
 
 -- See also `Lean.MVarId.applyRules` for a `MetaM` level analogue of this tactic.
 elab_rules : tactic |
-    `(tactic| apply_rules $[$cfg]? $[only%$o]? $[$t:args]? $[$use:using_]?)  => do
+    `(tactic| apply_rules $[$cfg]? $[only%$o]? $[$t:args]? $[$use:using_]?) => do
   let (star, add, remove) := parseArgs t
   let use := parseUsing use
   let cfg ← elabApplyRulesConfig (mkOptionalNode cfg)

@@ -2,13 +2,10 @@
 Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module combinatorics.set_family.compression.uv
-! leanprover-community/mathlib commit 6f8ab7de1c4b78a68ab8cf7dd83d549eb78a68a1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SetFamily.Shadow
+
+#align_import combinatorics.set_family.compression.uv from "leanprover-community/mathlib"@"6f8ab7de1c4b78a68ab8cf7dd83d549eb78a68a1"
 
 /-!
 # UV-compressions
@@ -54,7 +51,7 @@ compression, UV-compression, shadow
 
 open Finset
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- UV-compression is injective on the elements it moves. See `UV.compress`. -/
 theorem sup_sdiff_injOn [GeneralizedBooleanAlgebra α] (u v : α) :
@@ -211,7 +208,6 @@ theorem card_compression (u v : α) (s : Finset α) : (𝓒 u v s).card = s.card
   · rw [disjoint_iff_inter_eq_empty]
     exact filter_inter_filter_neg_eq _ _ _
   intro a ha b hb hab
-  dsimp at hab
   rw [mem_coe, mem_filter, Function.comp_apply] at ha hb
   rw [compress] at ha hab
   split_ifs at ha hab with has

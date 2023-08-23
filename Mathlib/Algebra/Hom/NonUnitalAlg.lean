@@ -2,13 +2,10 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.hom.non_unital_alg
-! leanprover-community/mathlib commit bd9851ca476957ea4549eb19b40e7b5ade9428cc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Hom
+
+#align_import algebra.hom.non_unital_alg from "leanprover-community/mathlib"@"bd9851ca476957ea4549eb19b40e7b5ade9428cc"
 
 /-!
 # Morphisms of non-unital algebras
@@ -46,6 +43,8 @@ TODO: add `NonUnitalAlgEquiv` when needed.
 non-unital, algebra, morphism
 -/
 
+set_option autoImplicit true
+
 
 universe u v w w₁ w₂ w₃
 
@@ -67,8 +66,8 @@ attribute [nolint docBlame] NonUnitalAlgHom.toMulHom
 
 /-- `NonUnitalAlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B`.  -/
-class NonUnitalAlgHomClass (F : Type _) (R : outParam (Type _)) (A : outParam (Type _))
-  (B : outParam (Type _)) [Monoid R] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
+class NonUnitalAlgHomClass (F : Type*) (R : outParam (Type*)) (A : outParam (Type*))
+  (B : outParam (Type*)) [Monoid R] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
   [DistribMulAction R A] [DistribMulAction R B] extends DistribMulActionHomClass F R A B,
   MulHomClass F A B
 #align non_unital_alg_hom_class NonUnitalAlgHomClass
@@ -80,7 +79,7 @@ namespace NonUnitalAlgHomClass
 
 -- Porting note: Made following instance non-dangerous through [...] -> [...] replacement
 -- See note [lower instance priority]
-instance (priority := 100) toNonUnitalRingHomClass {F R A B : Type _}
+instance (priority := 100) toNonUnitalRingHomClass {F R A B : Type*}
     [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
     [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
     [NonUnitalAlgHomClass F R A B] : NonUnitalRingHomClass F A B :=
@@ -91,16 +90,22 @@ variable [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
   [NonUnitalNonAssocSemiring B] [Module R B]
 
 -- see Note [lower instance priority]
-instance (priority := 100) {F : Type _} [NonUnitalAlgHomClass F R A B] : LinearMapClass F R A B :=
+instance (priority := 100) {F : Type*} [NonUnitalAlgHomClass F R A B] : LinearMapClass F R A B :=
   { ‹NonUnitalAlgHomClass F R A B› with map_smulₛₗ := map_smul }
 
-instance {F R A B : Type _} [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
+/-- Turn an element of a type `F` satisfying `NonUnitalAlgHomClass F R A B` into an actual
+`NonUnitalAlgHom`. This is declared as the default coercion from `F` to `A →ₙₐ[R] B`. -/
+@[coe]
+def toNonUnitalAlgHom {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]
+    [DistribMulAction R A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
+    [NonUnitalAlgHomClass F R A B] (f : F) : A →ₙₐ[R] B :=
+  { (f : A →ₙ+* B) with
+    map_smul' := map_smul f }
+
+instance {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
     [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [NonUnitalAlgHomClass F R A B] :
-    CoeTC F (A →ₙₐ[R] B)
-    where coe f :=
-    { (f : A →ₙ+* B) with
-      toFun := f
-      map_smul' := map_smul f }
+    CoeTC F (A →ₙₐ[R] B) :=
+  ⟨toNonUnitalAlgHom⟩
 
 end NonUnitalAlgHomClass
 
@@ -135,7 +140,7 @@ initialize_simps_projections NonUnitalAlgHom
   (toDistribMulActionHom_toMulActionHom_toFun → apply, -toDistribMulActionHom)
 
 @[simp]
-protected theorem coe_coe {F : Type _} [NonUnitalAlgHomClass F R A B] (f : F) :
+protected theorem coe_coe {F : Type*} [NonUnitalAlgHomClass F R A B] (f : F) :
     ⇑(f : A →ₙₐ[R] B) = f :=
   rfl
 #align non_unital_alg_hom.coe_coe NonUnitalAlgHom.coe_coe
@@ -169,7 +174,7 @@ theorem congr_fun {f g : A →ₙₐ[R] B} (h : f = g) (x : A) : f x = g x :=
 #align non_unital_alg_hom.congr_fun NonUnitalAlgHom.congr_fun
 
 @[simp]
-theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₙₐ[R] B)  = f :=
+theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₙₐ[R] B) = f :=
   rfl
 #align non_unital_alg_hom.coe_mk NonUnitalAlgHom.coe_mk
 
@@ -248,7 +253,7 @@ protected theorem map_zero (f : A →ₙₐ[R] B) : f 0 = 0 :=
 #align non_unital_alg_hom.map_zero NonUnitalAlgHom.map_zero
 
 /-- The identity map as a `NonUnitalAlgHom`. -/
-protected def id (R A : Type _) [Monoid R] [NonUnitalNonAssocSemiring A]
+protected def id (R A : Type*) [Monoid R] [NonUnitalNonAssocSemiring A]
     [DistribMulAction R A] : A →ₙₐ[R] A :=
   { NonUnitalRingHom.id A with
     toFun := id

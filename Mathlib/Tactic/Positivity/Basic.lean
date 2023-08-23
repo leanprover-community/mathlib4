@@ -18,6 +18,8 @@ import Qq
 This file sets up the basic `positivity` extensions tagged with the `@[positivity]` attribute.
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Meta.Positivity
 open Lean Meta Qq Function
 
@@ -84,7 +86,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
 section LinearOrder
 variable [LinearOrder R] {a b c : R}
 
-private lemma le_min_of_lt_of_le  (ha : a < b) (hb : a ≤ c) : a ≤ min b c := le_min ha.le hb
+private lemma le_min_of_lt_of_le (ha : a < b) (hb : a ≤ c) : a ≤ min b c := le_min ha.le hb
 private lemma le_min_of_le_of_lt (ha : a ≤ b) (hb : a < c) : a ≤ min b c := le_min ha hb.le
 private lemma min_ne (ha : a ≠ c) (hb : b ≠ c) : min a b ≠ c :=
 by rw [min_def]; split_ifs <;> assumption
@@ -370,7 +372,7 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
     | .nonzero pa => ofNonzero pa (← synthInstanceQ (_ : Q(Type u)))
     | .none => pure .none
 
-private theorem abs_pos_of_ne_zero {α : Type _} [AddGroup α] [LinearOrder α]
+private theorem abs_pos_of_ne_zero {α : Type*} [AddGroup α] [LinearOrder α]
  [CovariantClass α α (·+·) (·≤·)] {a : α} : a ≠ 0 → 0 < |a| := abs_pos.mpr
 
 /-- The `positivity` extension which identifies expressions of the form `|a|`. -/

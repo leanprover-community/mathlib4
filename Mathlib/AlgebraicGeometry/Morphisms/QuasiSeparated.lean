@@ -2,14 +2,11 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module algebraic_geometry.morphisms.quasi_separated
-! leanprover-community/mathlib commit 1a51edf13debfcbe223fa06b1cb353b9ed9751cc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 import Mathlib.Topology.QuasiSeparated
+
+#align_import algebraic_geometry.morphisms.quasi_separated from "leanprover-community/mathlib"@"1a51edf13debfcbe223fa06b1cb353b9ed9751cc"
 
 /-!
 # Quasi-separated morphisms
@@ -539,7 +536,7 @@ theorem is_localization_basicOpen_of_qcqs {X : Scheme} {U : Opens X.carrier} (hU
       refine' ⟨⟨_, n, rfl⟩, _⟩
       simpa [mul_comm z] using e
     · rintro ⟨⟨_, n, rfl⟩, e : f ^ n * z = 0⟩
-      rw [← ((RingedSpace.isUnit_res_basicOpen _ f).pow n).mul_right_inj, MulZeroClass.mul_zero, ←
+      rw [← ((RingedSpace.isUnit_res_basicOpen _ f).pow n).mul_right_inj, mul_zero, ←
         map_pow]
       -- Porting note: this one lemma needs `erw`
       erw [← map_mul]

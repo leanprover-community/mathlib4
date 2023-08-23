@@ -2,13 +2,10 @@
 Copyright (c) 2022 Wrenna Robson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson
-
-! This file was ported from Lean 3 source module topology.metric_space.infsep
-! leanprover-community/mathlib commit 5316314b553dcf8c6716541851517c1a9715e22b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Basic
+
+#align_import topology.metric_space.infsep from "leanprover-community/mathlib"@"5316314b553dcf8c6716541851517c1a9715e22b"
 
 /-!
 # Infimum separation
@@ -31,7 +28,7 @@ All lemmas and definitions are in the `Set` namespace to give access to dot nota
 !-/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Set
 
@@ -136,7 +133,7 @@ theorem einfsep_singleton : ({x} : Set α).einfsep = ∞ :=
   subsingleton_singleton.einfsep
 #align set.einfsep_singleton Set.einfsep_singleton
 
-theorem einfsep_iUnion_mem_option {ι : Type _} (o : Option ι) (s : ι → Set α) :
+theorem einfsep_iUnion_mem_option {ι : Type*} (o : Option ι) (s : ι → Set α) :
     (⋃ i ∈ o, s i).einfsep = ⨅ i ∈ o, (s i).einfsep := by cases o <;> simp
 #align set.einfsep_Union_mem_option Set.einfsep_iUnion_mem_option
 
@@ -151,7 +148,8 @@ theorem einfsep_insert_le : (insert x s).einfsep ≤ ⨅ (y ∈ s) (_ : x ≠ y)
 
 theorem le_einfsep_pair : edist x y ⊓ edist y x ≤ ({x, y} : Set α).einfsep := by
   simp_rw [le_einfsep_iff, inf_le_iff, mem_insert_iff, mem_singleton_iff]
-  rintro a (rfl | rfl) b (rfl | rfl) hab <;> simp only [le_refl, true_or, or_true] <;> contradiction
+  rintro a (rfl | rfl) b (rfl | rfl) hab <;> (try simp only [le_refl, true_or, or_true]) <;>
+    contradiction
 #align set.le_einfsep_pair Set.le_einfsep_pair
 
 theorem einfsep_pair_le_left (hxy : x ≠ y) : ({x, y} : Set α).einfsep ≤ edist x y :=
@@ -237,7 +235,7 @@ theorem einfsep_triple (hxy : x ≠ y) (hyz : y ≠ z) (hxz : x ≠ z) :
     ciInf_pos hxy, ciInf_pos hyz, ciInf_pos hxz]
 #align set.einfsep_triple Set.einfsep_triple
 
-theorem le_einfsep_pi_of_le {π : β → Type _} [Fintype β] [∀ b, PseudoEMetricSpace (π b)]
+theorem le_einfsep_pi_of_le {π : β → Type*} [Fintype β] [∀ b, PseudoEMetricSpace (π b)]
     {s : ∀ b : β, Set (π b)} {c : ℝ≥0∞} (h : ∀ b, c ≤ einfsep (s b)) :
     c ≤ einfsep (Set.pi univ s) := by
   refine' le_einfsep fun x hx y hy hxy => _

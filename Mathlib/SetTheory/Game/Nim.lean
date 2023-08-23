@@ -2,15 +2,12 @@
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson, Markus Himmel
-
-! This file was ported from Lean 3 source module set_theory.game.nim
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.SetTheory.Game.Birthday
 import Mathlib.SetTheory.Game.Impartial
+
+#align_import set_theory.game.nim from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 # Nim and the Sprague-Grundy theorem
@@ -121,14 +118,14 @@ theorem moveRight_nim {o : Ordinal} (i) : (nim o).moveRight (toRightMovesNim i) 
 
 /-- A recursion principle for left moves of a nim game. -/
 @[elab_as_elim]
-def leftMovesNimRecOn {o : Ordinal} {P : (nim o).LeftMoves → Sort _} (i : (nim o).LeftMoves)
+def leftMovesNimRecOn {o : Ordinal} {P : (nim o).LeftMoves → Sort*} (i : (nim o).LeftMoves)
     (H : ∀ a (H : a < o), P <| toLeftMovesNim ⟨a, H⟩) : P i := by
   rw [← toLeftMovesNim.apply_symm_apply i]; apply H
 #align pgame.left_moves_nim_rec_on PGame.leftMovesNimRecOn
 
 /-- A recursion principle for right moves of a nim game. -/
 @[elab_as_elim]
-def rightMovesNimRecOn {o : Ordinal} {P : (nim o).RightMoves → Sort _} (i : (nim o).RightMoves)
+def rightMovesNimRecOn {o : Ordinal} {P : (nim o).RightMoves → Sort*} (i : (nim o).RightMoves)
     (H : ∀ a (H : a < o), P <| toRightMovesNim ⟨a, H⟩) : P i := by
   rw [← toRightMovesNim.apply_symm_apply i]; apply H
 #align pgame.right_moves_nim_rec_on PGame.rightMovesNimRecOn

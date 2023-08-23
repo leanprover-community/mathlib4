@@ -2,16 +2,13 @@
 Copyright (c) 2020 Yury Kudryashov All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.normed_space.hahn_banach.extension
-! leanprover-community/mathlib commit 915591b2bb3ea303648db07284a161a7f2a9e3d4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Cone.Basic
 import Mathlib.Analysis.NormedSpace.IsROrC
 import Mathlib.Analysis.NormedSpace.Extend
 import Mathlib.Data.IsROrC.Lemmas
+
+#align_import analysis.normed_space.hahn_banach.extension from "leanprover-community/mathlib"@"915591b2bb3ea303648db07284a161a7f2a9e3d4"
 
 /-!
 # Extension Hahn-Banach theorem
@@ -39,7 +36,7 @@ universe u v
 
 namespace Real
 
-variable {E : Type _} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- Hahn-Banach theorem for continuous linear functions over `ℝ`. -/
 theorem exists_extension_norm_eq (p : Subspace ℝ E) (f : p →L[ℝ] ℝ) :
@@ -66,7 +63,7 @@ section IsROrC
 
 open IsROrC
 
-variable {𝕜 : Type _} [IsROrC 𝕜] {F : Type _} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 : Type*} [IsROrC 𝕜] {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-- Hahn-Banach theorem for continuous linear functions over `𝕜` satisfying `IsROrC 𝕜`. -/
 theorem exists_extension_norm_eq (p : Subspace 𝕜 F) (f : p →L[𝕜] 𝕜) :
@@ -90,10 +87,10 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 F) (f : p →L[𝕜] 𝕜) :
     rw [this]
     apply ext
     · simp only [add_zero, Algebra.id.smul_eq_mul, I_re, ofReal_im, AddMonoidHom.map_add, zero_sub,
-        I_im', MulZeroClass.zero_mul, ofReal_re, eq_self_iff_true, sub_zero, mul_neg, ofReal_neg,
-        mul_re, MulZeroClass.mul_zero, sub_neg_eq_add, ContinuousLinearMap.map_smul]
+        I_im', zero_mul, ofReal_re, eq_self_iff_true, sub_zero, mul_neg, ofReal_neg,
+        mul_re, mul_zero, sub_neg_eq_add, ContinuousLinearMap.map_smul]
     · simp only [Algebra.id.smul_eq_mul, I_re, ofReal_im, AddMonoidHom.map_add, zero_sub, I_im',
-        MulZeroClass.zero_mul, ofReal_re, mul_neg, mul_im, zero_add, ofReal_neg, mul_re,
+        zero_mul, ofReal_re, mul_neg, mul_im, zero_add, ofReal_neg, mul_re,
         sub_neg_eq_add, ContinuousLinearMap.map_smul]
   -- And we derive the equality of the norms by bounding on both sides.
   refine' ⟨h, le_antisymm _ _⟩

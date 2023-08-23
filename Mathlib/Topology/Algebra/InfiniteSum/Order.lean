@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module topology.algebra.infinite_sum.order
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Algebra.Order.MonotoneConvergence
+
+#align_import topology.algebra.infinite_sum.order from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # Infinite sum in an order
@@ -23,7 +20,7 @@ This file provides lemmas about the interaction of infinite sums and order opera
 open Finset Filter Function BigOperators
 open scoped Classical
 
-variable {ι κ α : Type _}
+variable {ι κ α : Type*}
 
 section Preorder
 
@@ -258,7 +255,7 @@ theorem summable_abs_iff [LinearOrderedAddCommGroup α] [UniformSpace α] [Unifo
   _ ↔ Summable f := by simp only [summable_neg_iff, summable_subtype_and_compl]
 #align summable_abs_iff summable_abs_iff
 
-alias summable_abs_iff ↔ Summable.of_abs Summable.abs
+alias ⟨Summable.of_abs, Summable.abs⟩ := summable_abs_iff
 #align summable.of_abs Summable.of_abs
 #align summable.abs Summable.abs
 

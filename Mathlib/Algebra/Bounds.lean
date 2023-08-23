@@ -2,17 +2,14 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module algebra.bounds
-! leanprover-community/mathlib commit dd71334db81d0bd444af1ee339a29298bef40734
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+
+#align_import algebra.bounds from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 
 /-!
 # Upper/lower bounds in ordered monoids and groups
@@ -28,7 +25,7 @@ open Pointwise
 
 section InvNeg
 
-variable {G : Type _} [Group G] [Preorder G] [CovariantClass G G (· * ·) (· ≤ ·)]
+variable {G : Type*} [Group G] [Preorder G] [CovariantClass G G (· * ·) (· ≤ ·)]
   [CovariantClass G G (swap (· * ·)) (· ≤ ·)] {s : Set G} {a : G}
 
 @[to_additive (attr := simp)]
@@ -95,7 +92,7 @@ end InvNeg
 
 section mul_add
 
-variable {M : Type _} [Mul M] [Preorder M] [CovariantClass M M (· * ·) (· ≤ ·)]
+variable {M : Type*} [Mul M] [Preorder M] [CovariantClass M M (· * ·) (· ≤ ·)]
   [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
 
 @[to_additive]
@@ -144,7 +141,7 @@ section ConditionallyCompleteLattice
 
 section Right
 
-variable {ι G : Type _} [Group G] [ConditionallyCompleteLattice G]
+variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G]
   [CovariantClass G G (Function.swap (· * ·)) (· ≤ ·)] [Nonempty ι] {f : ι → G}
 
 @[to_additive]
@@ -163,7 +160,7 @@ end Right
 
 section Left
 
-variable {ι G : Type _} [Group G] [ConditionallyCompleteLattice G]
+variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G]
   [CovariantClass G G (· * ·) (· ≤ ·)] [Nonempty ι] {f : ι → G}
 
 @[to_additive]

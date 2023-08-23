@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.monoidal.CommMon_
-! leanprover-community/mathlib commit a836c6dba9bd1ee2a0cdc9af0006a596f243031c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided
 import Mathlib.CategoryTheory.Monoidal.Mon_
+
+#align_import category_theory.monoidal.CommMon_ from "leanprover-community/mathlib"@"a836c6dba9bd1ee2a0cdc9af0006a596f243031c"
 
 /-!
 # The category of commutative monoids in a braided monoidal category.
@@ -169,8 +166,8 @@ namespace EquivLaxBraidedFunctorPunit
 /-- Implementation of `CommMon_.equivLaxBraidedFunctorPunit`. -/
 @[simps]
 def laxBraidedToCommMon : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C ⥤ CommMon_ C where
-  obj F := (F.mapCommMon : CommMon_ _ ⥤ CommMon_ C).obj (trivial (Discrete PUnit))
-  map α := ((mapCommMonFunctor (Discrete PUnit) C).map α).app _
+  obj F := (F.mapCommMon : CommMon_ _ ⥤ CommMon_ C).obj (trivial (Discrete PUnit.{u+1}))
+  map α := ((mapCommMonFunctor (Discrete PUnit.{u+1}) C).map α).app _
 set_option linter.uppercaseLean3 false in
 #align CommMon_.equiv_lax_braided_functor_punit.lax_braided_to_CommMon CommMon_.EquivLaxBraidedFunctorPunit.laxBraidedToCommMon
 

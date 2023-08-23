@@ -2,15 +2,12 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Wieser
-
-! This file was ported from Lean 3 source module ring_theory.mv_polynomial.homogeneous
-! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.DirectSum.Internal
 import Mathlib.Algebra.GradedMonoid
 import Mathlib.Data.MvPolynomial.Variables
+
+#align_import ring_theory.mv_polynomial.homogeneous from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
 /-!
 # Homogeneous polynomials
@@ -33,7 +30,7 @@ open BigOperators
 
 namespace MvPolynomial
 
-variable {σ : Type _} {τ : Type _} {R : Type _} {S : Type _}
+variable {σ : Type*} {τ : Type*} {R : Type*} {S : Type*}
 
 /-
 TODO
@@ -92,12 +89,13 @@ theorem homogeneousSubmodule_mul [CommSemiring R] (m n : ℕ) :
     homogeneousSubmodule σ R m * homogeneousSubmodule σ R n ≤ homogeneousSubmodule σ R (m + n) := by
   rw [Submodule.mul_le]
   intro φ hφ ψ hψ c hc
+  classical
   rw [coeff_mul] at hc
   obtain ⟨⟨d, e⟩, hde, H⟩ := Finset.exists_ne_zero_of_sum_ne_zero hc
   have aux : coeff d φ ≠ 0 ∧ coeff e ψ ≠ 0 := by
     contrapose! H
     by_cases h : coeff d φ = 0 <;>
-      simp_all only [Ne.def, not_false_iff, MulZeroClass.zero_mul, MulZeroClass.mul_zero]
+      simp_all only [Ne.def, not_false_iff, zero_mul, mul_zero]
   specialize hφ aux.1
   specialize hψ aux.2
   rw [Finsupp.mem_antidiagonal] at hde
@@ -182,7 +180,7 @@ theorem add (hφ : IsHomogeneous φ n) (hψ : IsHomogeneous ψ n) : IsHomogeneou
   (homogeneousSubmodule σ R n).add_mem hφ hψ
 #align mv_polynomial.is_homogeneous.add MvPolynomial.IsHomogeneous.add
 
-theorem sum {ι : Type _} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : ℕ)
+theorem sum {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : ℕ)
     (h : ∀ i ∈ s, IsHomogeneous (φ i) n) : IsHomogeneous (∑ i in s, φ i) n :=
   (homogeneousSubmodule σ R n).sum_mem h
 #align mv_polynomial.is_homogeneous.sum MvPolynomial.IsHomogeneous.sum
@@ -191,7 +189,7 @@ theorem mul (hφ : IsHomogeneous φ m) (hψ : IsHomogeneous ψ n) : IsHomogeneou
   homogeneousSubmodule_mul m n <| Submodule.mul_mem_mul hφ hψ
 #align mv_polynomial.is_homogeneous.mul MvPolynomial.IsHomogeneous.mul
 
-theorem prod {ι : Type _} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : ι → ℕ)
+theorem prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : ι → ℕ)
     (h : ∀ i ∈ s, IsHomogeneous (φ i) (n i)) : IsHomogeneous (∏ i in s, φ i) (∑ i in s, n i) := by
   classical
   revert h

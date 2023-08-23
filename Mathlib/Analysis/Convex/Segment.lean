@@ -2,17 +2,14 @@
 Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.convex.segment
-! leanprover-community/mathlib commit c5773405394e073885e2a144c9ca14637e8eb963
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.SMul
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 import Mathlib.LinearAlgebra.Ray
 import Mathlib.Tactic.GCongr
+
+#align_import analysis.convex.segment from "leanprover-community/mathlib"@"c5773405394e073885e2a144c9ca14637e8eb963"
 
 /-!
 # Segments in vector spaces
@@ -35,7 +32,7 @@ define `clopenSegment`/`convex.Ico`/`convex.Ioc`?
 -/
 
 
-variable {𝕜 E F G ι : Type _} {π : ι → Type _}
+variable {𝕜 E F G ι : Type*} {π : ι → Type*}
 
 open Function Set
 
@@ -554,13 +551,13 @@ theorem Convex.mem_Ioc (h : x < y) :
   · obtain ⟨a, b, ha, hb, hab, rfl⟩ := (Convex.mem_Icc h.le).1 (Ioc_subset_Icc_self hz)
     obtain rfl | hb' := hb.eq_or_lt
     · rw [add_zero] at hab
-      rw [hab, one_mul, MulZeroClass.zero_mul, add_zero] at hz
+      rw [hab, one_mul, zero_mul, add_zero] at hz
       exact (hz.1.ne rfl).elim
     · exact ⟨a, b, ha, hb', hab, rfl⟩
   · rintro ⟨a, b, ha, hb, hab, rfl⟩
     obtain rfl | ha' := ha.eq_or_lt
     · rw [zero_add] at hab
-      rwa [hab, one_mul, MulZeroClass.zero_mul, zero_add, right_mem_Ioc]
+      rwa [hab, one_mul, zero_mul, zero_add, right_mem_Ioc]
     · exact Ioo_subset_Ioc_self ((Convex.mem_Ioo h).2 ⟨a, b, ha', hb, hab, rfl⟩)
 #align convex.mem_Ioc Convex.mem_Ioc
 
@@ -572,13 +569,13 @@ theorem Convex.mem_Ico (h : x < y) :
   · obtain ⟨a, b, ha, hb, hab, rfl⟩ := (Convex.mem_Icc h.le).1 (Ico_subset_Icc_self hz)
     obtain rfl | ha' := ha.eq_or_lt
     · rw [zero_add] at hab
-      rw [hab, one_mul, MulZeroClass.zero_mul, zero_add] at hz
+      rw [hab, one_mul, zero_mul, zero_add] at hz
       exact (hz.2.ne rfl).elim
     · exact ⟨a, b, ha', hb, hab, rfl⟩
   · rintro ⟨a, b, ha, hb, hab, rfl⟩
     obtain rfl | hb' := hb.eq_or_lt
     · rw [add_zero] at hab
-      rwa [hab, one_mul, MulZeroClass.zero_mul, add_zero, left_mem_Ico]
+      rwa [hab, one_mul, zero_mul, add_zero, left_mem_Ico]
     · exact Ioo_subset_Ico_self ((Convex.mem_Ioo h).2 ⟨a, b, ha, hb', hab, rfl⟩)
 #align convex.mem_Ico Convex.mem_Ico
 

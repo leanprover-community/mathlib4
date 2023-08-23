@@ -2,16 +2,13 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module group_theory.free_group
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.Basic
 import Mathlib.GroupTheory.Subgroup.Basic
+
+#align_import group_theory.free_group from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
 /-!
 # Free groups
@@ -748,7 +745,7 @@ theorem lift.unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) =
 See note [partially-applied ext lemmas]. -/
 @[to_additive (attr := ext) "Two homomorphisms out of a free additive group are equal if they are
   equal on generators. See note [partially-applied ext lemmas]."]
-theorem ext_hom {G : Type _} [Group G] (f g : FreeGroup α →* G) (h : ∀ a, f (of a) = g (of a)) :
+theorem ext_hom {G : Type*} [Group G] (f g : FreeGroup α →* G) (h : ∀ a, f (of a) = g (of a)) :
     f = g :=
   lift.symm.injective <| funext h
 #align free_group.ext_hom FreeGroup.ext_hom
@@ -1189,7 +1186,7 @@ theorem reduce.not {p : Prop} : ∀ {L₁ L₂ L₃ : List (α × Bool)} {x : α
 /-- The second theorem that characterises the function `reduce`: the maximal reduction of a word
 only reduces to itself. -/
 @[to_additive "The second theorem that characterises the function `reduce`: the maximal reduction of
-  a word  only reduces to itself."]
+  a word only reduces to itself."]
 theorem reduce.min (H : Red (reduce L₁) L₂) : reduce L₁ = L₂ := by
   induction' H with L1 L' L2 H1 H2 ih
   · rfl
@@ -1222,10 +1219,10 @@ theorem reduce.eq_of_red (H : Red L₁ L₂) : reduce L₁ = reduce L₂ :=
 #align free_group.reduce.eq_of_red FreeGroup.reduce.eq_of_red
 #align free_add_group.reduce.eq_of_red FreeAddGroup.reduce.eq_of_red
 
-alias reduce.eq_of_red ← red.reduce_eq
+alias red.reduce_eq := reduce.eq_of_red
 #align free_group.red.reduce_eq FreeGroup.red.reduce_eq
 
-alias FreeAddGroup.reduce.eq_of_red ← freeAddGroup.red.reduce_eq
+alias freeAddGroup.red.reduce_eq := FreeAddGroup.reduce.eq_of_red
 #align free_group.free_add_group.red.reduce_eq FreeGroup.freeAddGroup.red.reduce_eq
 
 @[to_additive]

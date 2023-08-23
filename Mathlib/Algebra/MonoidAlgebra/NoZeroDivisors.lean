@@ -2,13 +2,10 @@
 Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module algebra.monoid_algebra.no_zero_divisors
-! leanprover-community/mathlib commit 3e067975886cf5801e597925328c335609511b1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.MonoidAlgebra.Support
+
+#align_import algebra.monoid_algebra.no_zero_divisors from "leanprover-community/mathlib"@"3e067975886cf5801e597925328c335609511b1a"
 
 /-!
 # Variations on non-zero divisors in `AddMonoidAlgebra`s
@@ -49,7 +46,7 @@ namespace AddMonoidAlgebra
 
 open Finsupp
 
-variable {R A : Type _} [Semiring R]
+variable {R A : Type*} [Semiring R]
 
 /-- The coefficient of a monomial in a product `f * g` that can be reached in at most one way
 as a product of monomials in the supports of `f` and `g` is a product. -/
@@ -64,7 +61,7 @@ theorem mul_apply_add_eq_mul_of_forall_ne [Add A] {f g : AddMonoidAlgebra R A} {
     · refine' (Finset.sum_eq_single b0 (fun b bg b0 => _) _).trans (if_pos rfl)
       · by_cases af : a0 ∈ f.support
         · exact if_neg (h af bg (Or.inr b0))
-        · simp only [not_mem_support_iff.mp af, MulZeroClass.zero_mul, ite_self]
+        · simp only [not_mem_support_iff.mp af, zero_mul, ite_self]
       · exact fun bf0 => by simp [not_mem_support_iff.mp bf0]
 #align add_monoid_algebra.mul_apply_add_eq_mul_of_forall_ne AddMonoidAlgebra.mul_apply_add_eq_mul_of_forall_ne
 

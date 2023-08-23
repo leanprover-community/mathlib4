@@ -2,13 +2,10 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.metric_space.gluing
-! leanprover-community/mathlib commit e1a7bdeb4fd826b7e71d130d34988f0a2d26a177
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Isometry
+
+#align_import topology.metric_space.gluing from "leanprover-community/mathlib"@"e1a7bdeb4fd826b7e71d130d34988f0a2d26a177"
 
 /-!
 # Metric space gluing
@@ -50,6 +47,8 @@ identify `X n` and `X (n+1)` through `f n`. This is a metric space in which all 
 isometrically and in a way compatible with `f n`.
 
 -/
+
+set_option autoImplicit true
 
 
 noncomputable section
@@ -310,7 +309,7 @@ namespace Sigma
 
 /- Copy of the previous paragraph, but for arbitrary disjoint unions instead of the disjoint union
 of two spaces. I.e., work with sigma types instead of sum types. -/
-variable {ι : Type _} {E : ι → Type _} [∀ i, MetricSpace (E i)]
+variable {ι : Type*} {E : ι → Type*} [∀ i, MetricSpace (E i)]
 
 open Classical
 
@@ -492,7 +491,7 @@ def gluePremetric (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : PseudoMetricSpace (X
 #align metric.glue_premetric Metric.gluePremetric
 
 /-- Given two isometric embeddings `Φ : Z → X` and `Ψ : Z → Y`, we define a
-space  `GlueSpace hΦ hΨ` by identifying in `X ⊕ Y` the points `Φ x` and `Ψ x`. -/
+space `GlueSpace hΦ hΨ` by identifying in `X ⊕ Y` the points `Φ x` and `Ψ x`. -/
 def GlueSpace (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Type _ :=
   @UniformSpace.SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace
 #align metric.glue_space Metric.GlueSpace

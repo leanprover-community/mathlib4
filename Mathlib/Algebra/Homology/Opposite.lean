@@ -2,15 +2,12 @@
 Copyright (c) 2022 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Amelia Livingston
-
-! This file was ported from Lean 3 source module algebra.homology.opposite
-! leanprover-community/mathlib commit 8c75ef3517d4106e89fe524e6281d0b0545f47fc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.CategoryTheory.Abelian.Homology
 import Mathlib.Algebra.Homology.Additive
+
+#align_import algebra.homology.opposite from "leanprover-community/mathlib"@"8c75ef3517d4106e89fe524e6281d0b0545f47fc"
 
 /-!
 # Opposite categories of complexes
@@ -37,7 +34,7 @@ open Opposite CategoryTheory CategoryTheory.Limits
 
 section
 
-variable {V : Type _} [Category V] [Abelian V]
+variable {V : Type*} [Category V] [Abelian V]
 
 theorem imageToKernel_op {X Y Z : V} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
     imageToKernel g.op f.op (by rw [← op_comp, w, op_zero]) =
@@ -89,7 +86,7 @@ end
 
 namespace HomologicalComplex
 
-variable {ι V : Type _} [Category V] {c : ComplexShape ι}
+variable {ι V : Type*} [Category V] {c : ComplexShape ι}
 
 section
 

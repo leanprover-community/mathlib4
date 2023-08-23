@@ -2,11 +2,6 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.comm_sq
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.CommSq
 import Mathlib.CategoryTheory.Limits.Opposites
@@ -14,6 +9,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
+
+#align_import category_theory.limits.shapes.comm_sq from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Pullback and pushout squares, and bicartesian squares
@@ -1019,10 +1016,10 @@ theorem Functor.map_isPushout [PreservesColimit (span f g) F] (s : IsPushout f g
   · simp
 #align category_theory.functor.map_is_pushout CategoryTheory.Functor.map_isPushout
 
-alias Functor.map_isPullback ← IsPullback.map
+alias IsPullback.map := Functor.map_isPullback
 #align category_theory.is_pullback.map CategoryTheory.IsPullback.map
 
-alias Functor.map_isPushout ← IsPushout.map
+alias IsPushout.map := Functor.map_isPushout
 #align category_theory.is_pushout.map CategoryTheory.IsPushout.map
 
 theorem IsPullback.of_map [ReflectsLimit (cospan h i) F] (e : f ≫ h = g ≫ i)
@@ -1040,7 +1037,7 @@ theorem IsPullback.of_map_of_faithful [ReflectsLimit (cospan h i) F] [Faithful F
   H.of_map F (F.map_injective <| by simpa only [F.map_comp] using H.w)
 #align category_theory.is_pullback.of_map_of_faithful CategoryTheory.IsPullback.of_map_of_faithful
 
-theorem IsPullback.map_iff {D : Type _} [Category D] (F : C ⥤ D) [PreservesLimit (cospan h i) F]
+theorem IsPullback.map_iff {D : Type*} [Category D] (F : C ⥤ D) [PreservesLimit (cospan h i) F]
     [ReflectsLimit (cospan h i) F] (e : f ≫ h = g ≫ i) :
     IsPullback (F.map f) (F.map g) (F.map h) (F.map i) ↔ IsPullback f g h i :=
   ⟨fun h => h.of_map F e, fun h => h.map F⟩
@@ -1061,7 +1058,7 @@ theorem IsPushout.of_map_of_faithful [ReflectsColimit (span f g) F] [Faithful F]
   H.of_map F (F.map_injective <| by simpa only [F.map_comp] using H.w)
 #align category_theory.is_pushout.of_map_of_faithful CategoryTheory.IsPushout.of_map_of_faithful
 
-theorem IsPushout.map_iff {D : Type _} [Category D] (F : C ⥤ D) [PreservesColimit (span f g) F]
+theorem IsPushout.map_iff {D : Type*} [Category D] (F : C ⥤ D) [PreservesColimit (span f g) F]
     [ReflectsColimit (span f g) F] (e : f ≫ h = g ≫ i) :
     IsPushout (F.map f) (F.map g) (F.map h) (F.map i) ↔ IsPushout f g h i :=
   ⟨fun h => h.of_map F e, fun h => h.map F⟩

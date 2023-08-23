@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.dfinsupp.order
-! leanprover-community/mathlib commit 1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.DFinsupp.Basic
+
+#align_import data.dfinsupp.order from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
 /-!
 # Pointwise order on finitely supported dependent functions
@@ -26,7 +23,7 @@ open BigOperators
 
 open Finset
 
-variable {ι : Type _} {α : ι → Type _}
+variable {ι : Type*} {α : ι → Type*}
 
 namespace DFinsupp
 
@@ -129,12 +126,12 @@ end Zero
 /-! ### Algebraic order structures -/
 
 
-instance (α : ι → Type _) [∀ i, OrderedAddCommMonoid (α i)] : OrderedAddCommMonoid (Π₀ i, α i) :=
+instance (α : ι → Type*) [∀ i, OrderedAddCommMonoid (α i)] : OrderedAddCommMonoid (Π₀ i, α i) :=
   { (inferInstance : AddCommMonoid (DFinsupp α)),
     (inferInstance : PartialOrder (DFinsupp α)) with
     add_le_add_left := fun _ _ h c i ↦ add_le_add_left (h i) (c i) }
 
-instance (α : ι → Type _) [∀ i, OrderedCancelAddCommMonoid (α i)] :
+instance (α : ι → Type*) [∀ i, OrderedCancelAddCommMonoid (α i)] :
     OrderedCancelAddCommMonoid (Π₀ i, α i) :=
   { (inferInstance : OrderedAddCommMonoid (DFinsupp α)) with
     le_of_add_le_add_left := fun _ _ _ H i ↦ le_of_add_le_add_left (H i) }

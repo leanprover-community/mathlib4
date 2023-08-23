@@ -2,15 +2,12 @@
 Copyright (c) 2020 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
-
-! This file was ported from Lean 3 source module imo.imo1964_q1
-! leanprover-community/mathlib commit 2d6f88c296da8df484d7f5b9ee1d10910ab473a2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Tactic.Ring
+
+#align_import imo.imo1964_q1 from "leanprover-community/mathlib"@"2d6f88c296da8df484d7f5b9ee1d10910ab473a2"
 
 /-!
 # IMO 1964 Q1

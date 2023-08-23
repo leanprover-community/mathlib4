@@ -2,11 +2,6 @@
 Copyright (c) 2018 Rohan Mitta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.metric_space.lipschitz
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Data.Set.Intervals.ProjIcc
@@ -14,6 +9,8 @@ import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.Bornology.Hom
 import Mathlib.Tactic.GCongr
+
+#align_import topology.metric_space.lipschitz from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Lipschitz continuous functions
@@ -43,6 +40,8 @@ coercions both to `ℝ` and `ℝ≥0∞`. Constructors whose names end with `'` 
 argument, and return `LipschitzWith (Real.toNNReal K) f`.
 -/
 
+set_option autoImplicit true
+
 
 universe u v w x
 
@@ -62,7 +61,7 @@ theorem lipschitzWith_iff_dist_le_mul [PseudoMetricSpace α] [PseudoMetricSpace 
   norm_cast
 #align lipschitz_with_iff_dist_le_mul lipschitzWith_iff_dist_le_mul
 
-alias lipschitzWith_iff_dist_le_mul ↔ LipschitzWith.dist_le_mul LipschitzWith.of_dist_le_mul
+alias ⟨LipschitzWith.dist_le_mul, LipschitzWith.of_dist_le_mul⟩ := lipschitzWith_iff_dist_le_mul
 #align lipschitz_with.dist_le_mul LipschitzWith.dist_le_mul
 #align lipschitz_with.of_dist_le_mul LipschitzWith.of_dist_le_mul
 
@@ -90,7 +89,8 @@ theorem lipschitzOnWith_iff_dist_le_mul [PseudoMetricSpace α] [PseudoMetricSpac
   norm_cast
 #align lipschitz_on_with_iff_dist_le_mul lipschitzOnWith_iff_dist_le_mul
 
-alias lipschitzOnWith_iff_dist_le_mul ↔ LipschitzOnWith.dist_le_mul LipschitzOnWith.of_dist_le_mul
+alias ⟨LipschitzOnWith.dist_le_mul, LipschitzOnWith.of_dist_le_mul⟩ :=
+  lipschitzOnWith_iff_dist_le_mul
 #align lipschitz_on_with.dist_le_mul LipschitzOnWith.dist_le_mul
 #align lipschitz_on_with.of_dist_le_mul LipschitzOnWith.of_dist_le_mul
 
@@ -104,7 +104,7 @@ theorem lipschitzOnWith_iff_restrict [PseudoEMetricSpace α] [PseudoEMetricSpace
   simp only [LipschitzOnWith, LipschitzWith, SetCoe.forall', restrict, Subtype.edist_eq]
 #align lipschitz_on_with_iff_restrict lipschitzOnWith_iff_restrict
 
-alias lipschitzOnWith_iff_restrict ↔ LipschitzOnWith.to_restrict _
+alias ⟨LipschitzOnWith.to_restrict, _⟩ := lipschitzOnWith_iff_restrict
 #align lipschitz_on_with.to_restrict LipschitzOnWith.to_restrict
 
 theorem MapsTo.lipschitzOnWith_iff_restrict [PseudoEMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0}
@@ -113,7 +113,7 @@ theorem MapsTo.lipschitzOnWith_iff_restrict [PseudoEMetricSpace α] [PseudoEMetr
   _root_.lipschitzOnWith_iff_restrict
 #align maps_to.lipschitz_on_with_iff_restrict MapsTo.lipschitzOnWith_iff_restrict
 
-alias MapsTo.lipschitzOnWith_iff_restrict ↔ LipschitzOnWith.to_restrict_mapsTo _
+alias ⟨LipschitzOnWith.to_restrict_mapsTo, _⟩ := MapsTo.lipschitzOnWith_iff_restrict
 #align lipschitz_on_with.to_restrict_maps_to LipschitzOnWith.to_restrict_mapsTo
 
 namespace LipschitzWith

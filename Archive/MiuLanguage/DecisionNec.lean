@@ -2,16 +2,13 @@
 Copyright (c) 2020 Gihan Marasingha. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gihan Marasingha
-
-! This file was ported from Lean 3 source module miu_language.decision_nec
-! leanprover-community/mathlib commit 3813d4ea1c6a34dbb472de66e73b8c6855b03964
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Archive.MiuLanguage.Basic
 import Mathlib.Data.List.Count
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Tactic.Ring
+
+#align_import miu_language.decision_nec from "leanprover-community/mathlib"@"3813d4ea1c6a34dbb472de66e73b8c6855b03964"
 
 /-!
 # Decision procedure: necessary condition
@@ -78,9 +75,10 @@ theorem count_equiv_one_or_two_mod3_of_derivable (en : Miustr) :
   any_goals apply mod3_eq_1_or_mod3_eq_2 h_ih
   -- Porting note: `simp_rw [count_append]` usually doesn't work
   · left; rw [count_append, count_append]; rfl
-  · right; simp_rw [count_append, count_cons, if_false, two_mul]
+  · right; simp_rw [count_append, count_cons, if_false, two_mul]; simp
   · left; rw [count_append, count_append, count_append]
     simp_rw [count_cons_self, count_nil, count_cons, ite_false, add_right_comm, add_mod_right]
+    simp
   · left; rw [count_append, count_append, count_append]
     simp only [ne_eq, count_cons_of_ne, count_nil, add_zero]
 #align miu.count_equiv_one_or_two_mod3_of_derivable Miu.count_equiv_one_or_two_mod3_of_derivable

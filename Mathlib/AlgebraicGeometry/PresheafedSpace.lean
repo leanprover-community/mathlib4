@@ -2,14 +2,11 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebraic_geometry.presheafed_space
-! leanprover-community/mathlib commit d39590fc8728fbf6743249802486f8c91ffe07bc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+
+#align_import algebraic_geometry.presheafed_space from "leanprover-community/mathlib"@"d39590fc8728fbf6743249802486f8c91ffe07bc"
 
 /-!
 # Presheafed spaces
@@ -24,7 +21,7 @@ presheaves.
 
 open Opposite CategoryTheory CategoryTheory.Category CategoryTheory.Functor TopCat TopologicalSpace
 
-variable (C : Type _) [Category C]
+variable (C : Type*) [Category C]
 
 -- Porting note: we used to have:
 -- local attribute [tidy] tactic.auto_cases_opens
@@ -67,7 +64,7 @@ attribute [coe] PresheafedSpace.carrier
 
 -- Porting note: we add this instance, as Lean does not reliably use the `CoeOut` instance above
 -- in downstream files.
-instance : CoeSort (PresheafedSpace C) (Type _) where coe := fun X => X.carrier
+instance : CoeSort (PresheafedSpace C) (Type*) where coe := fun X => X.carrier
 
 -- porting note: the following lemma is removed because it is a syntactic tauto
 /-@[simp]
@@ -504,7 +501,7 @@ variable {C}
 
 namespace CategoryTheory
 
-variable {D : Type _} [Category D]
+variable {D : Type*} [Category D]
 
 attribute [local simp] Presheaf.pushforwardObj
 

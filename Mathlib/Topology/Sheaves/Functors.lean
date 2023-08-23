@@ -2,13 +2,10 @@
 Copyright (c) 2021 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
-
-! This file was ported from Lean 3 source module topology.sheaves.functors
-! leanprover-community/mathlib commit 85d6221d32c37e68f05b2e42cde6cee658dae5e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
+
+#align_import topology.sheaves.functors from "leanprover-community/mathlib"@"85d6221d32c37e68f05b2e42cde6cee658dae5e9"
 
 /-!
 # functors between categories of sheaves
@@ -54,7 +51,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition_pairwise_intersections.map_diagram TopCat.Presheaf.SheafConditionPairwiseIntersections.map_diagram
 
 theorem mapCocone :
-    HEq ((Opens.map f).mapCocone (Pairwise.cocone U)) 
+    HEq ((Opens.map f).mapCocone (Pairwise.cocone U))
       (Pairwise.cocone ((Opens.map f).obj ∘ U)) := by
   unfold Functor.mapCocone Cocones.functoriality; dsimp; congr
   iterate 2 rw [map_diagram]; rw [Opens.map_iSup]

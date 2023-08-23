@@ -2,16 +2,13 @@
 Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.uniform_space.compact
-! leanprover-community/mathlib commit 735b22f8f9ff9792cf4212d7cb051c4c994bc685
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.Equicontinuity
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Support
+
+#align_import topology.uniform_space.compact from "leanprover-community/mathlib"@"735b22f8f9ff9792cf4212d7cb051c4c994bc685"
 
 /-!
 # Compact separated uniform spaces
@@ -41,7 +38,7 @@ uniform space, uniform continuity, compact space
 
 open Classical Uniformity Topology Filter UniformSpace Set
 
-variable {α β γ : Type _} [UniformSpace α] [UniformSpace β]
+variable {α β γ : Type*} [UniformSpace α] [UniformSpace β]
 
 /-!
 ### Uniformity on compact spaces
@@ -71,7 +68,7 @@ theorem compactSpace_uniformity [CompactSpace α] : 𝓤 α = ⨆ x, 𝓝 (x, x)
 theorem unique_uniformity_of_compact [t : TopologicalSpace γ] [CompactSpace γ]
     {u u' : UniformSpace γ} (h : u.toTopologicalSpace = t) (h' : u'.toTopologicalSpace = t) :
     u = u' := by
-  refine uniformSpace_eq ?_
+  refine UniformSpace.ext ?_
   have : @CompactSpace γ u.toTopologicalSpace := by rwa [h]
   have : @CompactSpace γ u'.toTopologicalSpace := by rwa [h']
   rw [@compactSpace_uniformity _ u, compactSpace_uniformity, h, h']
@@ -266,7 +263,7 @@ section UniformConvergence
 
 /-- An equicontinuous family of functions defined on a compact uniform space is automatically
 uniformly equicontinuous. -/
-theorem CompactSpace.uniformEquicontinuous_of_equicontinuous {ι : Type _} {F : ι → β → α}
+theorem CompactSpace.uniformEquicontinuous_of_equicontinuous {ι : Type*} {F : ι → β → α}
     [CompactSpace β] (h : Equicontinuous F) : UniformEquicontinuous F := by
   rw [equicontinuous_iff_continuous] at h
   rw [uniformEquicontinuous_iff_uniformContinuous]

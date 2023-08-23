@@ -2,14 +2,11 @@
 Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, François Dupuis
-
-! This file was ported from Lean 3 source module analysis.convex.function
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Tactic.GCongr
+
+#align_import analysis.convex.function from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 # Convex and concave functions
@@ -33,7 +30,7 @@ a convex set.
 
 open LinearMap Set BigOperators Classical Convex Pointwise
 
-variable {𝕜 E F α β ι : Type _}
+variable {𝕜 E F α β ι : Type*}
 
 section OrderedSemiring
 
@@ -872,16 +869,16 @@ theorem neg_strictConcaveOn_iff : StrictConcaveOn 𝕜 s (-f) ↔ StrictConvexOn
   rw [← neg_strictConvexOn_iff, neg_neg f]
 #align neg_strict_concave_on_iff neg_strictConcaveOn_iff
 
-alias neg_convexOn_iff ↔ _ ConcaveOn.neg
+alias ⟨_, ConcaveOn.neg⟩ := neg_convexOn_iff
 #align concave_on.neg ConcaveOn.neg
 
-alias neg_concaveOn_iff ↔ _ ConvexOn.neg
+alias ⟨_, ConvexOn.neg⟩ := neg_concaveOn_iff
 #align convex_on.neg ConvexOn.neg
 
-alias neg_strictConvexOn_iff ↔ _ StrictConcaveOn.neg
+alias ⟨_, StrictConcaveOn.neg⟩ := neg_strictConvexOn_iff
 #align strict_concave_on.neg StrictConcaveOn.neg
 
-alias neg_strictConcaveOn_iff ↔ _ StrictConvexOn.neg
+alias ⟨_, StrictConvexOn.neg⟩ := neg_strictConcaveOn_iff
 #align strict_convex_on.neg StrictConvexOn.neg
 
 theorem ConvexOn.sub (hf : ConvexOn 𝕜 s f) (hg : ConcaveOn 𝕜 s g) : ConvexOn 𝕜 s (f - g) :=

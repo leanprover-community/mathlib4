@@ -2,15 +2,12 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.category.BoolRing
-! leanprover-community/mathlib commit 67779f73e572fd1fec2218648b2078d167d16c0a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Algebra.Ring.BooleanRing
 import Mathlib.Order.Category.BoolAlgCat
+
+#align_import algebra.category.BoolRing from "leanprover-community/mathlib"@"67779f73e572fd1fec2218648b2078d167d16c0a"
 
 /-!
 # The category of Boolean rings
@@ -35,19 +32,19 @@ def BoolRingCat :=
 
 namespace BoolRingCat
 
-instance : CoeSort BoolRingCat (Type _) :=
+instance : CoeSort BoolRingCat (Type*) :=
   Bundled.coeSort
 
 instance (X : BoolRingCat) : BooleanRing X :=
   X.str
 
 /-- Construct a bundled `BoolRingCat` from a `BooleanRing`. -/
-def of (α : Type _) [BooleanRing α] : BoolRingCat :=
+def of (α : Type*) [BooleanRing α] : BoolRingCat :=
   Bundled.of α
 #align BoolRing.of BoolRingCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [BooleanRing α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [BooleanRing α] : ↥(of α) = α :=
   rfl
 #align BoolRing.coe_of BoolRingCat.coe_of
 

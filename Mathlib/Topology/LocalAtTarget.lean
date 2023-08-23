@@ -2,13 +2,10 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module topology.local_at_target
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sets.Opens
+
+#align_import topology.local_at_target from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Properties of maps that are local at the target.
@@ -26,9 +23,9 @@ open TopologicalSpace Set Filter
 
 open Topology Filter
 
-variable {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
 
-variable {s : Set β} {ι : Type _} {U : ι → Opens β} (hU : iSup U = ⊤)
+variable {s : Set β} {ι : Type*} {U : ι → Opens β} (hU : iSup U = ⊤)
 
 theorem Set.restrictPreimage_inducing (s : Set β) (h : Inducing f) :
     Inducing (s.restrictPreimage f) := by
@@ -38,7 +35,7 @@ theorem Set.restrictPreimage_inducing (s : Set β) (h : Inducing f) :
   rw [← h, ← inducing_subtype_val.nhds_eq_comap]
 #align set.restrict_preimage_inducing Set.restrictPreimage_inducing
 
-alias Set.restrictPreimage_inducing ← Inducing.restrictPreimage
+alias Inducing.restrictPreimage := Set.restrictPreimage_inducing
 #align inducing.restrict_preimage Inducing.restrictPreimage
 
 theorem Set.restrictPreimage_embedding (s : Set β) (h : Embedding f) :
@@ -46,7 +43,7 @@ theorem Set.restrictPreimage_embedding (s : Set β) (h : Embedding f) :
   ⟨h.1.restrictPreimage s, h.2.restrictPreimage s⟩
 #align set.restrict_preimage_embedding Set.restrictPreimage_embedding
 
-alias Set.restrictPreimage_embedding ← Embedding.restrictPreimage
+alias Embedding.restrictPreimage := Set.restrictPreimage_embedding
 #align embedding.restrict_preimage Embedding.restrictPreimage
 
 theorem Set.restrictPreimage_openEmbedding (s : Set β) (h : OpenEmbedding f) :
@@ -55,7 +52,7 @@ theorem Set.restrictPreimage_openEmbedding (s : Set β) (h : OpenEmbedding f) :
     (s.range_restrictPreimage f).symm ▸ continuous_subtype_val.isOpen_preimage _ h.2⟩
 #align set.restrict_preimage_open_embedding Set.restrictPreimage_openEmbedding
 
-alias Set.restrictPreimage_openEmbedding ← OpenEmbedding.restrictPreimage
+alias OpenEmbedding.restrictPreimage := Set.restrictPreimage_openEmbedding
 #align open_embedding.restrict_preimage OpenEmbedding.restrictPreimage
 
 theorem Set.restrictPreimage_closedEmbedding (s : Set β) (h : ClosedEmbedding f) :
@@ -64,7 +61,7 @@ theorem Set.restrictPreimage_closedEmbedding (s : Set β) (h : ClosedEmbedding f
     (s.range_restrictPreimage f).symm ▸ inducing_subtype_val.isClosed_preimage _ h.2⟩
 #align set.restrict_preimage_closed_embedding Set.restrictPreimage_closedEmbedding
 
-alias Set.restrictPreimage_closedEmbedding ← ClosedEmbedding.restrictPreimage
+alias ClosedEmbedding.restrictPreimage := Set.restrictPreimage_closedEmbedding
 #align closed_embedding.restrict_preimage ClosedEmbedding.restrictPreimage
 
 theorem Set.restrictPreimage_isClosedMap (s : Set β) (H : IsClosedMap f) :

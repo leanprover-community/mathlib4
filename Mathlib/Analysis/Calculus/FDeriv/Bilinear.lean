@@ -2,13 +2,10 @@
 Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.calculus.fderiv.bilinear
-! leanprover-community/mathlib commit e3fb84046afd187b710170887195d50bada934ee
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Prod
+
+#align_import analysis.calculus.fderiv.bilinear from "leanprover-community/mathlib"@"e3fb84046afd187b710170887195d50bada934ee"
 
 /-!
 # The derivative of bounded bilinear maps
@@ -28,15 +25,15 @@ noncomputable section
 
 section
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-variable {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-variable {G : Type _} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-variable {G' : Type _} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 variable {f f₀ f₁ g : E → F}
 

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Bhavik Mehta, Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Kexing Ying
-
-! This file was ported from Lean 3 source module wiedijk_100_theorems.ballot_problem
-! leanprover-community/mathlib commit 5563b1b49e86e135e8c7b556da5ad2f5ff881cad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.CondCount
+
+#align_import wiedijk_100_theorems.ballot_problem from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
 /-!
 # Ballot problem
@@ -245,7 +242,7 @@ theorem first_vote_pos :
         exact subset_union_left _ _
       rw [(condCount_eq_zero_iff <| (countedSequence_finite _ _).image _).2 this, condCount,
         cond_apply _ list_int_measurableSet, hint, count_injective_image List.cons_injective,
-        count_countedSequence, count_countedSequence, one_mul, MulZeroClass.zero_mul, add_zero,
+        count_countedSequence, count_countedSequence, one_mul, zero_mul, add_zero,
         Nat.cast_add, Nat.cast_one]
       · rw [mul_comm, ← div_eq_mul_inv, ENNReal.div_eq_div_iff]
         · norm_cast

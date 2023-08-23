@@ -2,14 +2,11 @@
 Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Scott Morrison
-
-! This file was ported from Lean 3 source module set_theory.surreal.basic
-! leanprover-community/mathlib commit ee02a30e209a2a77b93eac1254e8c66e76192f54
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.SetTheory.Game.Ordinal
+
+#align_import set_theory.surreal.basic from "leanprover-community/mathlib"@"ee02a30e209a2a77b93eac1254e8c66e76192f54"
 
 /-!
 # Surreal numbers
@@ -136,14 +133,14 @@ theorem le_of_lf {x y : PGame} (h : x ⧏ y) (ox : Numeric x) (oy : Numeric y) :
   not_lf.1 (lf_asymm ox oy h)
 #align pgame.le_of_lf PGame.le_of_lf
 
-alias le_of_lf ← Lf.le
+alias Lf.le := le_of_lf
 #align pgame.lf.le PGame.Lf.le
 
 theorem lt_of_lf {x y : PGame} (h : x ⧏ y) (ox : Numeric x) (oy : Numeric y) : x < y :=
   (lt_or_fuzzy_of_lf h).resolve_right (not_fuzzy_of_le (h.le ox oy))
 #align pgame.lt_of_lf PGame.lt_of_lf
 
-alias lt_of_lf ← Lf.lt
+alias Lf.lt := lt_of_lf
 #align pgame.lf.lt PGame.Lf.lt
 
 theorem lf_iff_lt {x y : PGame} (ox : Numeric x) (oy : Numeric y) : x ⧏ y ↔ x < y :=
@@ -282,7 +279,7 @@ open PGame
 by the equivalence relation `x ≈ y ↔ x ≤ y ∧ y ≤ x`. In the quotient,
 the order becomes a total order. -/
 def Surreal :=
-  Quotient (Subtype.instSetoidSubtype Numeric)
+  Quotient (inferInstanceAs <| Setoid (Subtype Numeric))
 #align surreal Surreal
 
 namespace Surreal

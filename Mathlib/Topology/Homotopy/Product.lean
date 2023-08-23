@@ -2,14 +2,11 @@
 Copyright (c) 2021 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
-
-! This file was ported from Lean 3 source module topology.homotopy.product
-! leanprover-community/mathlib commit 6a51706df6baee825ace37c94dc9f75b64d7f035
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.Homotopy.Path
+
+#align_import topology.homotopy.product from "leanprover-community/mathlib"@"6a51706df6baee825ace37c94dc9f75b64d7f035"
 
 /-!
 # Product of homotopies
@@ -58,7 +55,7 @@ open ContinuousMap
 
 section Pi
 
-variable {I A : Type _} {X : I → Type _} [∀ i, TopologicalSpace (X i)] [TopologicalSpace A]
+variable {I A : Type*} {X : I → Type*} [∀ i, TopologicalSpace (X i)] [TopologicalSpace A]
   {f g : ∀ i, C(A, X i)} {S : Set A}
 
 -- Porting note: this definition is already in `Topology.Homotopy.Basic`
@@ -88,11 +85,11 @@ end Pi
 
 section Prod
 
-variable {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] {A : Type _} [TopologicalSpace A]
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {A : Type*} [TopologicalSpace A]
   {f₀ f₁ : C(A, α)} {g₀ g₁ : C(A, β)} {S : Set A}
 
 /-- The product of homotopies `F` and `G`,
-  where `F` takes `f₀` to `f₁`  and `G` takes `g₀` to `g₁` -/
+  where `F` takes `f₀` to `f₁` and `G` takes `g₀` to `g₁` -/
 @[simps]
 def Homotopy.prod (F : Homotopy f₀ f₁) (G : Homotopy g₀ g₁) :
     Homotopy (ContinuousMap.prodMk f₀ g₀) (ContinuousMap.prodMk f₁ g₁) where
@@ -102,7 +99,7 @@ def Homotopy.prod (F : Homotopy f₀ f₁) (G : Homotopy g₀ g₁) :
 #align continuous_map.homotopy.prod ContinuousMap.Homotopy.prod
 
 /-- The relative product of homotopies `F` and `G`,
-  where `F` takes `f₀` to `f₁`  and `G` takes `g₀` to `g₁` -/
+  where `F` takes `f₀` to `f₁` and `G` takes `g₀` to `g₁` -/
 @[simps!]
 def HomotopyRel.prod (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel g₀ g₁ S) :
     HomotopyRel (prodMk f₀ g₀) (prodMk f₁ g₁) S :=
@@ -127,7 +124,7 @@ local infixl:70 " ⬝ " => Quotient.comp
 
 section Pi
 
-variable {ι : Type _} {X : ι → Type _} [∀ i, TopologicalSpace (X i)] {as bs cs : ∀ i, X i}
+variable {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] {as bs cs : ∀ i, X i}
 
 /-- The product of a family of path homotopies. This is just a specialization of `HomotopyRel`. -/
 def piHomotopy (γ₀ γ₁ : ∀ i, Path (as i) (bs i)) (H : ∀ i, Path.Homotopy (γ₀ i) (γ₁ i)) :
@@ -187,7 +184,7 @@ end Pi
 
 section Prod
 
-variable {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] {a₁ a₂ a₃ : α} {b₁ b₂ b₃ : β}
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {a₁ a₂ a₃ : α} {b₁ b₂ b₃ : β}
   {p₁ p₁' : Path a₁ a₂} {p₂ p₂' : Path b₁ b₂} (q₁ : Path.Homotopic.Quotient a₁ a₂)
   (q₂ : Path.Homotopic.Quotient b₁ b₂)
 

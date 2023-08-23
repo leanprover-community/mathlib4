@@ -2,13 +2,10 @@
 Copyright © 2022 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Sébastien Gouëzel, Heather Macbeth, Floris van Doorn
-
-! This file was ported from Lean 3 source module topology.fiber_bundle.constructions
-! leanprover-community/mathlib commit e473c3198bb41f68560cab68a0529c854b618833
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.FiberBundle.Basic
+
+#align_import topology.fiber_bundle.constructions from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 
 /-!
 # Standard constructions on fiber bundles
@@ -42,7 +39,7 @@ namespace Bundle
 
 namespace Trivial
 
-variable (B : Type _) (F : Type _)
+variable (B : Type*) (F : Type*)
 
 -- Porting note: Added name for this instance.
 -- TODO: use `TotalSpace.toProd`
@@ -102,11 +99,11 @@ end Bundle
 
 section Prod
 
-variable {B : Type _}
+variable {B : Type*}
 
 section Defs
 
-variable (F₁ : Type _) (E₁ : B → Type _) (F₂ : Type _) (E₂ : B → Type _)
+variable (F₁ : Type*) (E₁ : B → Type*) (F₂ : Type*) (E₂ : B → Type*)
 
 variable [TopologicalSpace (TotalSpace F₁ E₁)] [TopologicalSpace (TotalSpace F₂ E₂)]
 
@@ -130,8 +127,8 @@ end Defs
 
 open FiberBundle
 
-variable [TopologicalSpace B] (F₁ : Type _) [TopologicalSpace F₁] (E₁ : B → Type _)
-  [TopologicalSpace (TotalSpace F₁ E₁)] (F₂ : Type _) [TopologicalSpace F₂] (E₂ : B → Type _)
+variable [TopologicalSpace B] (F₁ : Type*) [TopologicalSpace F₁] (E₁ : B → Type*)
+  [TopologicalSpace (TotalSpace F₁ E₁)] (F₂ : Type*) [TopologicalSpace F₂] (E₂ : B → Type*)
   [TopologicalSpace (TotalSpace F₂ E₂)]
 
 namespace Trivialization

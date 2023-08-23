@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module geometry.euclidean.inversion
-! leanprover-community/mathlib commit 46b633fd842bef9469441c0209906f6dddd2b4f5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Basic
+
+#align_import geometry.euclidean.inversion from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
 /-!
 # Inversion in an affine space
@@ -25,12 +22,14 @@ Currently, we prove only a few basic lemmas needed to prove Ptolemy's inequality
 `EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist`.
 -/
 
+set_option autoImplicit true
+
 noncomputable section
 
 open Metric Function AffineMap Set AffineSubspace
 open scoped Topology
 
-variable {V P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 namespace EuclideanGeometry
@@ -183,12 +182,12 @@ theorem mul_dist_le_mul_dist_add_mul_dist (a b c d : P) :
     dist a c * dist b d ≤ dist a b * dist c d + dist b c * dist a d := by
   -- If one of the points `b`, `c`, `d` is equal to `a`, then the inequality is trivial.
   rcases eq_or_ne b a with (rfl | hb)
-  · rw [dist_self, MulZeroClass.zero_mul, zero_add]
+  · rw [dist_self, zero_mul, zero_add]
   rcases eq_or_ne c a with (rfl | hc)
-  · rw [dist_self, MulZeroClass.zero_mul]
+  · rw [dist_self, zero_mul]
     apply_rules [add_nonneg, mul_nonneg, dist_nonneg]
   rcases eq_or_ne d a with (rfl | hd)
-  · rw [dist_self, MulZeroClass.mul_zero, add_zero, dist_comm d, dist_comm d, mul_comm]
+  · rw [dist_self, mul_zero, add_zero, dist_comm d, dist_comm d, mul_comm]
   /- Otherwise, we apply the triangle inequality to `EuclideanGeometry.inversion a 1 b`,
     `EuclideanGeometry.inversion a 1 c`, and `EuclideanGeometry.inversion a 1 d`. -/
   have H := dist_triangle (inversion a 1 b) (inversion a 1 c) (inversion a 1 d)
@@ -213,7 +212,7 @@ protected theorem Filter.Tendsto.inversion {l : Filter α} {fc fx : α → P} {f
     Tendsto (fun a ↦ inversion (fc a) (fR a) (fx a)) l (𝓝 (inversion c R x)) :=
   (((hR.div (hx.dist hc) <| dist_ne_zero.2 hne).pow 2).smul (hx.vsub hc)).vadd hc
 
-variable {X : Type _} [TopologicalSpace X] {c x : X → P} {R : X → ℝ} {a₀ : X} {s : Set X}
+variable {X : Type*} [TopologicalSpace X] {c x : X → P} {R : X → ℝ} {a₀ : X} {s : Set X}
 
 protected nonrec theorem ContinuousWithinAt.inversion (hc : ContinuousWithinAt c s a₀)
     (hR : ContinuousWithinAt R s a₀) (hx : ContinuousWithinAt x s a₀) (hne : x a₀ ≠ c a₀) :

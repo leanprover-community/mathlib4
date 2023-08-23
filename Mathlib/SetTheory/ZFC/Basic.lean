@@ -2,15 +2,12 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module set_theory.zfc.basic
-! leanprover-community/mathlib commit f0b3759a8ef0bd8239ecdaa5e1089add5feebe1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Lattice
 import Mathlib.Logic.Small.Basic
 import Mathlib.Order.WellFounded
+
+#align_import set_theory.zfc.basic from "leanprover-community/mathlib"@"f0b3759a8ef0bd8239ecdaa5e1089add5feebe1a"
 
 /-!
 # A model of ZFC
@@ -560,6 +557,7 @@ def Resp.Equiv {n} (a b : Resp n) : Prop :=
   Arity.Equiv a.1 b.1
 #align pSet.resp.equiv PSet.Resp.Equiv
 
+@[refl]
 protected theorem Resp.Equiv.refl {n} (a : Resp n) : Resp.Equiv a a :=
   a.2
 #align pSet.resp.equiv.refl PSet.Resp.Equiv.refl
@@ -571,10 +569,12 @@ protected theorem Resp.Equiv.euc :
     @Resp.Equiv.euc n (a.f x) (b.f y) (c.f y) (hab _ _ h) (hcb _ _ <| PSet.Equiv.refl y)
 #align pSet.resp.equiv.euc PSet.Resp.Equiv.euc
 
+@[symm]
 protected theorem Resp.Equiv.symm {n} {a b : Resp n} : Resp.Equiv a b → Resp.Equiv b a :=
   (Resp.Equiv.refl b).euc
 #align pSet.resp.equiv.symm PSet.Resp.Equiv.symm
 
+@[trans]
 protected theorem Resp.Equiv.trans {n} {x y z : Resp n} (h1 : Resp.Equiv x y)
     (h2 : Resp.Equiv y z) : Resp.Equiv x z :=
   h1.euc h2.symm
@@ -1420,7 +1420,7 @@ theorem hereditarily_iff : Hereditarily p x ↔ p x ∧ ∀ y ∈ x, Hereditaril
   rw [← Hereditarily]
 #align Set.hereditarily_iff ZFSet.hereditarily_iff
 
-alias hereditarily_iff ↔ Hereditarily.def _
+alias ⟨Hereditarily.def, _⟩ := hereditarily_iff
 #align Set.hereditarily.def ZFSet.Hereditarily.def
 
 theorem Hereditarily.self (h : x.Hereditarily p) : p x :=
@@ -1458,8 +1458,8 @@ namespace Class
 
 -- Porting note: this is no longer an automatically derived instance.
 /-- `{x ∈ A | p x}` is the class of elements in `A` satisfying `p` -/
-protected def sep (p : Class → Prop) (A : Class) : Class :=
-  {y | A y ∧ p A}
+protected def sep (p : ZFSet → Prop) (A : Class) : Class :=
+  {y | A y ∧ p y}
 
 @[ext]
 theorem ext {x y : Class.{u}} : (∀ z : ZFSet.{u}, x z ↔ y z) → x = y :=

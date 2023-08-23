@@ -2,14 +2,11 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module logic.small.basic
-! leanprover-community/mathlib commit d012cd09a9b256d870751284dd6a29882b0be105
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Tactic.PPWithUniv
+
+#align_import logic.small.basic from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
 
 /-!
 # Small types
@@ -22,6 +19,8 @@ A subsingleton type is `w`-small for any `w`.
 
 If `α ≃ β`, then `Small.{w} α ↔ Small.{w} β`.
 -/
+
+set_option autoImplicit true
 
 
 universe u w v
@@ -70,7 +69,7 @@ instance (priority := 101) small_self (α : Type v) : Small.{v} α :=
   Small.mk' <| Equiv.refl α
 #align small_self small_self
 
-theorem small_map {α : Type _} {β : Type _} [hβ : Small.{w} β] (e : α ≃ β) : Small.{w} α :=
+theorem small_map {α : Type*} {β : Type*} [hβ : Small.{w} β] (e : α ≃ β) : Small.{w} α :=
   let ⟨_, ⟨f⟩⟩ := hβ.equiv_small
   Small.mk' (e.trans f)
 #align small_map small_map
@@ -96,7 +95,7 @@ section
 
 open Classical
 
-theorem small_congr {α : Type _} {β : Type _} (e : α ≃ β) : Small.{w} α ↔ Small.{w} β :=
+theorem small_congr {α : Type*} {β : Type*} (e : α ≃ β) : Small.{w} α ↔ Small.{w} β :=
   ⟨fun h => @small_map _ _ h e.symm, fun h => @small_map _ _ h e⟩
 #align small_congr small_congr
 
@@ -131,13 +130,13 @@ to keep imports to `logic` to a minimum.
 -/
 
 
-instance small_Pi {α} (β : α → Type _) [Small.{w} α] [∀ a, Small.{w} (β a)] :
+instance small_Pi {α} (β : α → Type*) [Small.{w} α] [∀ a, Small.{w} (β a)] :
     Small.{w} (∀ a, β a) :=
   ⟨⟨∀ a' : Shrink α, Shrink (β ((equivShrink α).symm a')),
       ⟨Equiv.piCongr (equivShrink α) fun a => by simpa using equivShrink (β a)⟩⟩⟩
 #align small_Pi small_Pi
 
-instance small_sigma {α} (β : α → Type _) [Small.{w} α] [∀ a, Small.{w} (β a)] :
+instance small_sigma {α} (β : α → Type*) [Small.{w} α] [∀ a, Small.{w} (β a)] :
     Small.{w} (Σa, β a) :=
   ⟨⟨Σa' : Shrink α, Shrink (β ((equivShrink α).symm a')),
       ⟨Equiv.sigmaCongr (equivShrink α) fun a => by simpa using equivShrink (β a)⟩⟩⟩

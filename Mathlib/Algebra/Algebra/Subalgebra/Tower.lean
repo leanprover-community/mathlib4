@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Anne Baanen
-
-! This file was ported from Lean 3 source module algebra.algebra.subalgebra.tower
-! leanprover-community/mathlib commit a35ddf20601f85f78cd57e7f5b09ed528d71b7af
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Tower
+
+#align_import algebra.algebra.subalgebra.tower from "leanprover-community/mathlib"@"a35ddf20601f85f78cd57e7f5b09ed528d71b7af"
 
 /-!
 # Subalgebras in towers of algebras
@@ -46,7 +43,7 @@ variable [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
 
 variable {A}
 
-theorem lmul_algebraMap (x : R) : Algebra.lmul R A (algebraMap R A x) = Algebra.lsmul R A x :=
+theorem lmul_algebraMap (x : R) : Algebra.lmul R A (algebraMap R A x) = Algebra.lsmul R R A x :=
   Eq.symm <| LinearMap.ext <| smul_def x
 #align algebra.lmul_algebra_map Algebra.lmul_algebraMap
 
@@ -131,6 +128,19 @@ def ofRestrictScalars (U : Subalgebra S A) (f : U →ₐ[S] B) : U.restrictScala
 #align subalgebra.of_restrict_scalars Subalgebra.ofRestrictScalars
 
 end Semiring
+
+section CommSemiring
+
+@[simp]
+lemma range_isScalarTower_toAlgHom [CommSemiring R] [CommSemiring A]
+    [Algebra R A] (S : Subalgebra R A) :
+    LinearMap.range (IsScalarTower.toAlgHom R S A) = Subalgebra.toSubmodule S := by
+  ext
+  simp only [← Submodule.range_subtype (Subalgebra.toSubmodule S), LinearMap.mem_range,
+    IsScalarTower.coe_toAlgHom', Subalgebra.mem_toSubmodule]
+  rfl
+
+end CommSemiring
 
 end Subalgebra
 

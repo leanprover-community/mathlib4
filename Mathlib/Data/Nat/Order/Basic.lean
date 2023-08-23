@@ -2,15 +2,12 @@
 Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.order.basic
-! leanprover-community/mathlib commit 3ed3f98a1e836241990d3d308f1577e434977130
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Bits
+
+#align_import data.nat.order.basic from "leanprover-community/mathlib"@"3ed3f98a1e836241990d3d308f1577e434977130"
 
 
 /-!
@@ -685,7 +682,7 @@ protected theorem bit1_le {n m : ℕ} (h : n ≤ m) : bit1 n ≤ bit1 m :=
 #align nat.bit1_le Nat.bit1_le
 
 theorem bit_le : ∀ (b : Bool) {m n : ℕ}, m ≤ n → bit b m ≤ bit b n
-  | true, _, _, h => Nat.bit1_le  h
+  | true, _, _, h => Nat.bit1_le h
   | false, _, _, h => Nat.bit0_le h
 #align nat.bit_le Nat.bit_le
 
