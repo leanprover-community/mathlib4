@@ -231,7 +231,7 @@ theorem sum_pow_units [DecidableEq K] (i : ℕ) :
 /-- The sum of a nontrivial subgroup of the units of a field is zero. -/
 theorem sum_subgroup_units_zero_of_ne_bot
     {G : Subgroup (Units K)} [Fintype G] (hg : G ≠ ⊥) : ∑ x : G, (x.val : K) = 0 := by
-  rw [neq_bot_iff_exists_ne_one] at hg
+  rw [ne_bot_iff_exists_ne_one] at hg
   rcases hg with ⟨a, ha⟩
   -- The action of a on G is injective
   have hinj := mul_right_injective a
