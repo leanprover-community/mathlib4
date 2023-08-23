@@ -34,6 +34,13 @@ example : UniqueProds ℕ+ := by infer_instance
 ```
 -/
 
+open MulOpposite in
+@[to_additive]
+instance {A : Type*} [inst : Mul A] [inst_1 : IsLeftCancelMul A] : IsRightCancelMul Aᵐᵒᵖ :=
+⟨fun a b c bc => by
+  apply_fun unop at bc ⊢ using unop_injective (α := A)
+  exact mul_left_cancel bc⟩
+
 
 /-- Let `G` be a Type with multiplication, let `A B : Finset G` be finite subsets and
 let `a0 b0 : G` be two elements.  `UniqueMul A B a0 b0` asserts `a0 * b0` can be written in at
@@ -122,6 +129,15 @@ theorem mulHom_preimage (f : G →ₙ* H) (hf : Function.Injective f) (a0 b0 : G
 #align unique_mul.mul_hom_preimage UniqueMul.mulHom_preimage
 #align unique_add.add_hom_preimage UniqueAdd.addHom_preimage
 
+open Finset MulOpposite in
+@[to_additive]
+theorem of_mulOpposite (h : @UniqueMul Gᵐᵒᵖ (MulOpposite.mul G)
+      (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0)) :
+    UniqueMul A B a0 b0 := by
+  intros a b aA bB ab
+  have := h (mem_map_of_mem _ bB) (mem_map_of_mem _ aA) (by erw [← op_mul, ab, op_mul])
+  simpa [and_comm] using this
+
 /-- `Unique_Mul` is preserved under multiplicative maps that are injective.
 
 See `UniqueMul.mulHom_map_iff` for a version with swapped bundling. -/
@@ -199,13 +215,24 @@ end Additive
 #noalign covariants.to_unique_prods
 #noalign covariants.to_unique_sums
 
+namespace UniqueProds
+
+open Finset MulOpposite in
+@[to_additive]
+theorem of_mulOpposite (G : Type*) [Mul G] (h : @UniqueProds Gᵐᵒᵖ (MulOpposite.mul G)) :
+    UniqueProds G :=
+⟨fun hA hB =>
+  let f : G ↪ Gᵐᵒᵖ := ⟨op, op_injective⟩
+  let ⟨y, yB, x, xA, hxy⟩ := h.uniqueMul_of_nonempty (hB.map (f := f)) (hA.map (f := f))
+  ⟨unop x, (mem_map' _).mp xA, unop y, (mem_map' _).mp yB, hxy.of_mulOpposite⟩⟩
+
 -- see Note [lower instance priority]
 /-- This instance asserts that if `A` has a right-cancellative multiplication, a linear order,
   and multiplication is strictly monotone w.r.t. the second argument, then `A` has `UniqueProds`. -/
-@[to_additive Covariant.to_uniqueSums_right
+@[to_additive _root_.Covariant.to_uniqueSums_right
   "This instance asserts that if `A` has a right-cancellative addition, a linear order,
   and addition is strictly monotone w.r.t. the second argument, then `A` has `UniqueSums`." ]
-instance (priority := 100) Covariant.to_uniqueProds_right {A} [Mul A] [IsRightCancelMul A]
+instance (priority := 100) _root_.Covariant.to_uniqueProds_right {A} [Mul A] [IsRightCancelMul A]
     [LinearOrder A] [CovariantClass A A (· * ·) (· < ·)] :
     UniqueProds A where
   uniqueMul_of_nonempty {A B} hA hB := by
@@ -218,26 +245,23 @@ instance (priority := 100) Covariant.to_uniqueProds_right {A} [Mul A] [IsRightCa
     · refine ((he ▸ mul_lt_mul_left' hl a0).not_le <| Finset.le_max' _ (a0 * b) ?_).elim
       exact Finset.mem_mul.mpr ⟨a0, b, ha0, hb, rfl⟩
 
+open MulOpposite in
 -- see Note [lower instance priority]
 /-- This instance asserts that if `A` has a left-cancellative multiplication, a linear order,
   and multiplication is strictly monotone w.r.t. the first argument, then `A` has `UniqueProds`. -/
-@[to_additive Covariant.to_uniqueSums_left
+@[to_additive _root_.Covariant.to_uniqueSums_left
   "This instance asserts that if `A` has a left-cancellative addition, a linear order,
   and addition is strictly monotone w.r.t. the first argument, then `A` has `UniqueSums`." ]
-instance (priority := 100) Covariant.to_uniqueProds_left {A} [Mul A] [IsLeftCancelMul A]
+instance (priority := 100) _root_.Covariant.to_uniqueProds_left {A} [Mul A] [IsLeftCancelMul A]
     [LinearOrder A] [CovariantClass A A (Function.swap (· * ·)) (· < ·)] :
-    UniqueProds A where
-  uniqueMul_of_nonempty {A B} hA hB := by
-    obtain ⟨a0, b0, ha0, hb0, he⟩ := Finset.mem_mul.mp (Finset.max'_mem _ <| hA.mul hB)
-    refine ⟨a0, ha0, b0, hb0, fun a b ha hb he' => ?_⟩
-    obtain hl | rfl | hl := lt_trichotomy a a0
-    · refine ((he'.trans he ▸ mul_lt_mul_right' hl b).not_le <| Finset.le_max' _ (a0 * b) ?_).elim
-      exact Finset.mem_mul.mpr ⟨a0, b, ha0, hb, rfl⟩
-    · exact ⟨rfl, mul_left_cancel he'⟩
-    · refine ((he ▸ mul_lt_mul_right' hl b0).not_le <| Finset.le_max' _ (a * b0) ?_).elim
-      exact Finset.mem_mul.mpr ⟨a, b0, ha, hb0, rfl⟩
+    UniqueProds A :=
+let _ := LinearOrder.lift' (unop : Aᵐᵒᵖ → A) unop_injective
+let _ : CovariantClass Aᵐᵒᵖ Aᵐᵒᵖ (· * ·) (· < ·) :=
+{ elim := fun _ _ _ bc =>
+          have : StrictMono (unop (α := A)) := fun _ _ => id
+          mul_lt_mul_right' (α := A) bc (unop _) }
+of_mulOpposite _ Covariant.to_uniqueProds_right
 
-namespace UniqueProds
 variable {G H : Type*} [Mul G] [Mul H]
 
 @[to_additive (attr := nontriviality, simp)]
