@@ -93,6 +93,14 @@ We also generate additive structures on `αᵃᵒᵖ` using `to_additive`
 
 
 @[to_additive]
+instance isRightCancelMul [Mul α] [IsLeftCancelMul α] : IsRightCancelMul αᵐᵒᵖ :=
+  { mul_right_cancel := fun _ _ _ => (unop_injective <| mul_left_cancel <| op_injective ·) }
+
+@[to_additive]
+instance isLeftCancelMul [Mul α] [IsRightCancelMul α] : IsLeftCancelMul αᵐᵒᵖ :=
+  { mul_left_cancel := fun _ _ _ => (unop_injective <| mul_right_cancel <| op_injective ·) }
+
+@[to_additive]
 instance semigroup [Semigroup α] : Semigroup αᵐᵒᵖ :=
   { MulOpposite.mul α with
     mul_assoc := fun x y z => unop_injective <| Eq.symm <| mul_assoc (unop z) (unop y) (unop x) }
@@ -100,20 +108,12 @@ instance semigroup [Semigroup α] : Semigroup αᵐᵒᵖ :=
 @[to_additive]
 instance leftCancelSemigroup [RightCancelSemigroup α] : LeftCancelSemigroup αᵐᵒᵖ :=
   { MulOpposite.semigroup α with
-    mul_left_cancel := fun _ _ _ H => unop_injective <| mul_right_cancel <| op_injective H }
-
-@[to_additive]
-instance isLeftCancelSemigroup [Mul α] [IsRightCancelMul α] : IsLeftCancelMul αᵐᵒᵖ :=
-⟨fun _ _ _ => (unop_injective <| mul_right_cancel <| op_injective ·)⟩
+    mul_left_cancel := by apply mul_left_cancel }
 
 @[to_additive]
 instance rightCancelSemigroup [LeftCancelSemigroup α] : RightCancelSemigroup αᵐᵒᵖ :=
   { MulOpposite.semigroup α with
-    mul_right_cancel := fun _ _ _ H => unop_injective <| mul_left_cancel <| op_injective H }
-
-@[to_additive]
-instance isRightCancelSemigroup [Mul α] [IsLeftCancelMul α] : IsRightCancelMul αᵐᵒᵖ :=
-⟨fun _ _ _ => (unop_injective <| mul_left_cancel <| op_injective ·)⟩
+    mul_right_cancel := by apply mul_right_cancel }
 
 @[to_additive]
 instance commSemigroup [CommSemigroup α] : CommSemigroup αᵐᵒᵖ :=
