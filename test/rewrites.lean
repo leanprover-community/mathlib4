@@ -133,8 +133,19 @@ info: Try this: rw [@AddCommMonoidWithOne.add_comm]
 example (n : ℕ) : let y := 3; n + y = 3 + n := by
   rw?!
 
+axiom α : Type
+axiom f : α → α
+axiom z : α
+axiom f_eq (n) : f n = z
+
 -- Check that the same lemma isn't used multiple times.
--- This used to report e.g. two redundant copies of `Nat.add_assoc`.
-lemma test (n m : ℕ) : n + m + 1 = m + n + 1 := by
+-- This used to report two redundant copies of `f_eq`.
+-- It be lovely if `rw?` could produce two *different* rewrites by `f_eq` here!
+/--
+info: Try this: rw [f_eq]
+-- z = f m
+-/
+#guard_msgs in
+lemma test : f n = f m := by
   rw?
-  rw [add_comm n m]
+  rw [f_eq, f_eq]
