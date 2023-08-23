@@ -99,8 +99,9 @@ lemma interList_get_succ_to_qf_ker (i : Fin s.length) :
     LinearMap.ker (s.interList_get_succ_to_qf N i) =
     Submodule.comap (s.interList_get_succ N i).subtype (s.interList_get N i) := by
   ext ⟨x, hx⟩
-  rw [LinearMap.mem_ker, Submodule.mem_comap, Submodule.subtype_apply, interList_get_succ_to_qf_apply,
-    Submodule.Quotient.mk_eq_zero, LinearMap.restrict_apply, Submodule.mem_comap]
+  rw [LinearMap.mem_ker, Submodule.mem_comap, Submodule.subtype_apply,
+    interList_get_succ_to_qf_apply, Submodule.Quotient.mk_eq_zero, LinearMap.restrict_apply,
+    Submodule.mem_comap]
   change x.1 ∈ _ ↔ _
   rw [interList_get_eq, Submodule.mem_comap, Submodule.subtype_apply, Submodule.mem_inf,
     iff_and_self]
@@ -141,6 +142,39 @@ noncomputable def interList_qf_equiv (i : Fin s.length) :
     (s.interList_qf N i) ≃ₗ[R] LinearMap.range (s.interList_get_succ_to_qf N i) :=
   aux1 N (s.interList_get_succ_to_qf N i) (s.interList_get_succ_to_qf_ker N i)
 
-example : true := rfl
+private lemma interList_qf_aux (i : Fin s.length) :
+    Nonempty (s.interList_qf N i ≃ₗ[R] (PUnit : Type)) ∨
+    Nonempty (s.interList_qf N i ≃ₗ[R] s.qf i) :=
+  IsSimpleModule.equiv_punit_sum_equiv_of_equiv_submodule' (R := R) (m := s.qf i)
+    (e := s.interList_qf_equiv N i)
+
+set_option maxHeartbeats 500000 in
+lemma eq_or_interList_qf_is_simple_module (i : Fin s.length) :
+  s.interList_get_succ N i = s.interList_get N i ∨
+  IsSimpleModule R (s.interList_qf N i) := by sorry
+  obtain ⟨⟨e⟩⟩|⟨⟨e⟩⟩ := s.interList_qf_aux N i
+  · left
+    have uniq_qf : Nonempty (Unique (s.interList_qf N i)) := ⟨Equiv.unique e.toEquiv⟩
+    delta interList_qf quot at uniq_qf
+    replace uniq_qf := Submodule.unique_quotient_iff_forall_mem.mp uniq_qf
+
+    ext x : 1; fconstructor
+    · intro hx
+      have uniq_qf' := @uniq_qf ⟨x, hx⟩
+      rw [Submodule.mem_comap] at uniq_qf'
+      exact uniq_qf'
+    · intro hx; exact s.interList_get_le_get_succ N i hx
+  · right; exact IsSimpleModule.congr e
+
+set_option maxHeartbeats 1600000 in
+lemma interList_get_eq_succ_or_covby (i : Fin s.length) :
+    s.interList_get N i = s.interList_get_succ N i ∨
+    s.interList_get N i ⋖ s.interList_get_succ N i := by
+  rcases s.eq_or_interList_qf_is_simple_module N i with (h|h)
+  · left; rw [h]
+  · right
+    delta interList_qf quot at h
+    rw [covby_iff_quot_is_simple]
+    exact h
 
 end CompositionSeries
