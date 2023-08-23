@@ -235,10 +235,10 @@ theorem of_mulOpposite (G : Type*) [Mul G] (h : @UniqueProds Gᵐᵒᵖ (MulOppo
 -- see Note [lower instance priority]
 /-- This instance asserts that if `A` has a right-cancellative multiplication, a linear order,
   and multiplication is strictly monotone w.r.t. the second argument, then `A` has `UniqueProds`. -/
-@[to_additive _root_.Covariant.to_uniqueSums_right
+@[to_additive
   "This instance asserts that if `A` has a right-cancellative addition, a linear order,
   and addition is strictly monotone w.r.t. the second argument, then `A` has `UniqueSums`." ]
-instance (priority := 100) _root_.Covariant.to_uniqueProds_right {A} [Mul A] [IsRightCancelMul A]
+instance (priority := 100) of_Covariant_right {A} [Mul A] [IsRightCancelMul A]
     [LinearOrder A] [CovariantClass A A (· * ·) (· < ·)] :
     UniqueProds A where
   uniqueMul_of_nonempty {A B} hA hB := by
@@ -255,10 +255,10 @@ open MulOpposite in
 -- see Note [lower instance priority]
 /-- This instance asserts that if `A` has a left-cancellative multiplication, a linear order,
   and multiplication is strictly monotone w.r.t. the first argument, then `A` has `UniqueProds`. -/
-@[to_additive _root_.Covariant.to_uniqueSums_left
+@[to_additive
   "This instance asserts that if `A` has a left-cancellative addition, a linear order,
   and addition is strictly monotone w.r.t. the first argument, then `A` has `UniqueSums`." ]
-instance (priority := 100) _root_.Covariant.to_uniqueProds_left {A} [Mul A] [IsLeftCancelMul A]
+instance (priority := 100) of_Covariant_left {A} [Mul A] [IsLeftCancelMul A]
     [LinearOrder A] [CovariantClass A A (Function.swap (· * ·)) (· < ·)] :
     UniqueProds A :=
 let _ := LinearOrder.lift' (unop : Aᵐᵒᵖ → A) unop_injective
@@ -266,7 +266,7 @@ let _ : CovariantClass Aᵐᵒᵖ Aᵐᵒᵖ (· * ·) (· < ·) :=
 { elim := fun _ _ _ bc =>
           have : StrictMono (unop (α := A)) := fun _ _ => id
           mul_lt_mul_right' (α := A) bc (unop _) }
-of_mulOpposite _ Covariant.to_uniqueProds_right
+of_mulOpposite _ of_Covariant_right
 
 variable {G H : Type*} [Mul G] [Mul H]
 
