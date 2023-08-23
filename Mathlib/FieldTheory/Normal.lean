@@ -204,7 +204,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
 -- Porting note: the following proof was just `_`.
     rw [← aeval_def, minpoly.aeval]
   suffices Nonempty (D →ₐ[C] E) by exact Nonempty.map (AlgHom.restrictScalars F) this
-  let S : Set D := (p.[E]-roots.map (algebraMap E D)).toFinset
+  let S : Set D := ((p.aroots E).map (algebraMap E D)).toFinset
   suffices ⊤ ≤ IntermediateField.adjoin C S by
     refine' IntermediateField.algHom_mk_adjoin_splits' (top_le_iff.mp this) fun y hy => _
     rcases Multiset.mem_map.mp (Multiset.mem_toFinset.mp hy) with ⟨z, hz1, hz2⟩
@@ -231,7 +231,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
 /- Porting note: the `change` was `dsimp only [S]`. This is the step that requires increasing
 `maxHeartbeats`. Using `set S ... with hS` doesn't work. -/
   change Subalgebra.restrictScalars F (Algebra.adjoin C
-    ((p.[E]-roots.map (algebraMap E D)).toFinset : Set D)) = _
+    (((p.aroots E).map (algebraMap E D)).toFinset : Set D)) = _
   rw [← Finset.image_toFinset, Finset.coe_image]
   apply
     Eq.trans

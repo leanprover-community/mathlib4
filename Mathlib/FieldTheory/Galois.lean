@@ -358,7 +358,7 @@ variable {p : F[X]}
 
 theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.IsSplittingField F E]
     (hp : p.Separable) (K : Type*) [Field K] [Algebra F K] [Algebra K E] [IsScalarTower F K E]
-    {x : E} (hx : x ∈ p.[E]-roots)
+    {x : E} (hx : x ∈ p.aroots E)
     -- these are both implied by `hFE`, but as they carry data this makes the lemma more general
     [Fintype (K →ₐ[F] E)]
     [Fintype (K⟮x⟯.restrictScalars F →ₐ[F] E)] :
@@ -366,7 +366,7 @@ theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.I
   have h : IsIntegral K x :=
     isIntegral_of_isScalarTower (isIntegral_of_noetherian (IsNoetherian.iff_fg.2 hFE) x)
   have h1 : p ≠ 0 := fun hp => by
-    rw [hp, Polynomial.map_zero, Polynomial.roots_zero] at hx
+    rw [hp, Polynomial.aroots_def, Polynomial.map_zero, Polynomial.roots_zero] at hx
     exact Multiset.not_mem_zero x hx
   have h2 : minpoly K x ∣ p.map (algebraMap F K) := by
     apply minpoly.dvd
@@ -396,7 +396,7 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
     IsGalois F E := by
   haveI hFE : FiniteDimensional F E := Polynomial.IsSplittingField.finiteDimensional E p
   letI := Classical.decEq E
-  let s := p.[E]-roots.toFinset
+  let s := (p.aroots E).toFinset
   have adjoin_root : IntermediateField.adjoin F (s : Set E) = ⊤ := by
     apply IntermediateField.toSubalgebra_injective
     rw [IntermediateField.top_toSubalgebra, ← top_le_iff, ← sp.adjoin_rootSet]

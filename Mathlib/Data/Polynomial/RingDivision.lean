@@ -538,25 +538,6 @@ noncomputable def roots (p : R[X]) : Multiset R :=
   if h : p = 0 then ∅ else Classical.choose (exists_multiset_roots h)
 #align polynomial.roots Polynomial.roots
 
-notation:1023 p ".[" A "]-roots" =>
-  Polynomial.roots (Polynomial.map (algebraMap _ A) p)
-
-open Lean PrettyPrinter.Delaborator SubExpr in
-@[delab app.Polynomial.roots]
-def delabPolynomialRoots : Delab := do
-  let e ← getExpr
-  guard $ e.isAppOfArity' ``Polynomial.roots 4
-  let (A, B) ← withNaryArg 3 do
-    let e ← getExpr
-    guard $ e.isAppOfArity' ``Polynomial.map 6
-    let A ← withNaryArg 4 do
-      let e ← getExpr
-      guard $ e.isAppOfArity' ``algebraMap 5
-      withNaryArg 1 delab
-    let B ← withNaryArg 5 delab
-    pure (A, B)
-  `($B.[$A]-roots)
-
 theorem roots_def [DecidableEq R] (p : R[X]) [Decidable (p = 0)] :
     p.roots = if h : p = 0 then ∅ else Classical.choose (exists_multiset_roots h) := by
   -- porting noteL `‹_›` doesn't work for instance arguments
@@ -933,17 +914,24 @@ theorem funext [Infinite R] {p q : R[X]} (ext : ∀ r : R, p.eval r = q.eval r) 
 
 variable [CommRing T]
 
+noncomputable abbrev aroots (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] : Multiset S :=
+  (p.map (algebraMap T S)).roots
+
+theorem aroots_def (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] :
+    p.aroots S = (p.map (algebraMap T S)).roots :=
+  rfl
+
 /-- The set of distinct roots of `p` in `E`.
 
 If you have a non-separable polynomial, use `Polynomial.roots` for the multiset
 where multiple roots have the appropriate multiplicity. -/
 def rootSet (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] : Set S :=
   haveI := Classical.decEq S
-  p.[S]-roots.toFinset
+  (p.aroots S).toFinset
 #align polynomial.root_set Polynomial.rootSet
 
 theorem rootSet_def (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] [DecidableEq S] :
-    p.rootSet S = p.[S]-roots.toFinset := by
+    p.rootSet S = (p.aroots S).toFinset := by
   rw [rootSet]
   convert rfl
 #align polynomial.root_set_def Polynomial.rootSet_def
@@ -951,7 +939,7 @@ theorem rootSet_def (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] [Deci
 @[simp]
 theorem rootSet_C [CommRing S] [IsDomain S] [Algebra T S] (a : T) : (C a).rootSet S = ∅ := by
   classical
-  rw [rootSet_def, map_C, roots_C, Multiset.toFinset_zero, Finset.coe_empty]
+  rw [rootSet_def, aroots_def, map_C, roots_C, Multiset.toFinset_zero, Finset.coe_empty]
 set_option linter.uppercaseLean3 false in
 #align polynomial.root_set_C Polynomial.rootSet_C
 
