@@ -1729,7 +1729,7 @@ variable (G)
 @[to_additive]
 theorem exists_isCompact_isClosed_nhds_one [WeaklyLocallyCompactSpace G] :
     ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ∈ 𝓝 1 :=
-  let ⟨L, Lcomp, L1⟩ := exists_compact_mem_nhds (1 : G)
+  let ⟨_L, Lcomp, L1⟩ := exists_compact_mem_nhds (1 : G)
   let ⟨K, Kcl, Kcomp, _, K1⟩ := exists_isCompact_isClosed_subset_isCompact_nhds_one Lcomp L1
   ⟨K, Kcl, Kcomp, K1⟩
 
