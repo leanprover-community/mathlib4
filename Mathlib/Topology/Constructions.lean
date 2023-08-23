@@ -1105,7 +1105,7 @@ theorem continuousAt_codRestrict_iff {f : α → β} {t : Set β} (h1 : ∀ x, f
   inducing_subtype_val.continuousAt_iff
 #align continuous_at_cod_restrict_iff continuousAt_codRestrict_iff
 
-alias continuousAt_codRestrict_iff ↔ _ ContinuousAt.codRestrict
+alias ⟨_, ContinuousAt.codRestrict⟩ := continuousAt_codRestrict_iff
 #align continuous_at.cod_restrict ContinuousAt.codRestrict
 
 theorem ContinuousAt.restrict {f : α → β} {s : Set α} {t : Set β} (h1 : MapsTo f s t) {x : s}

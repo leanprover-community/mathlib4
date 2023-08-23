@@ -45,7 +45,9 @@ open CategoryTheory.Category
 
 namespace CategoryTheory
 
-variable {C : Type u₁} [Category.{v₁} C] (W : MorphismProperty C) {D : Type u₂} [Category.{v₂} D]
+-- category universes first for convenience
+universe uC' uD' uC uD
+variable {C : Type uC} [Category.{uC'} C] (W : MorphismProperty C) {D : Type uD} [Category.{uD'} D]
 
 namespace Localization
 
