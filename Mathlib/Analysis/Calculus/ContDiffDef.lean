@@ -334,6 +334,7 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_left {n : ℕ} :
         exact h.2.2
 #align has_ftaylor_series_up_to_on_succ_iff_left hasFTaylorSeriesUpToOn_succ_iff_left
 
+set_option maxHeartbeats 400000 in
 -- Porting note: this was split out from `hasFTaylorSeriesUpToOn_succ_iff_right` to avoid a timeout.
 theorem HasFTaylorSeriesUpToOn.shift_of_succ
     {n : ℕ} (H : HasFTaylorSeriesUpToOn (n + 1 : ℕ) f p s) :
@@ -828,6 +829,7 @@ theorem norm_fderivWithin_iteratedFDerivWithin {n : ℕ} :
   rw [iteratedFDerivWithin_succ_eq_comp_left, comp_apply, LinearIsometryEquiv.norm_map]
 #align norm_fderiv_within_iterated_fderiv_within norm_fderivWithin_iteratedFDerivWithin
 
+set_option maxHeartbeats 400000 in
 theorem iteratedFDerivWithin_succ_apply_right {n : ℕ} (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s)
     (m : Fin (n + 1) → E) :
     (iteratedFDerivWithin 𝕜 (n + 1) f s x : (Fin (n + 1) → E) → F) m =

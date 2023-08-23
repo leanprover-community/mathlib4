@@ -399,7 +399,8 @@ instance instSupSet : SupSet (OuterMeasure α) :=
 instance instCompleteLattice : CompleteLattice (OuterMeasure α) :=
   { OuterMeasure.orderBot,
     completeLatticeOfSup (OuterMeasure α) fun ms =>
-      ⟨fun m hm s => by apply le_iSup₂ m hm, fun m hm s => iSup₂_le fun m' hm' => hm hm' s⟩ with }
+      ⟨fun m hm s => by apply le_iSup₂ m hm, fun m hm s => iSup₂_le fun m' hm' => hm hm' s⟩ with
+    bot := OuterMeasure.orderBot.bot }
 #align measure_theory.outer_measure.complete_lattice MeasureTheory.OuterMeasure.instCompleteLattice
 
 @[simp]

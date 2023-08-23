@@ -304,7 +304,7 @@ variable {α : Option ι → Type w} [∀ i, AddCommMonoid (α i)]
 -- include dec_ι
 
 /-- Isomorphism obtained by separating the term of index `none` of a direct sum over `Option ι`.-/
-@[simps]
+@[simps!]
 noncomputable def addEquivProdDirectSum : (⨁ i, α i) ≃+ α none × ⨁ i, α (some i) :=
   { DFinsupp.equivProdDFinsupp with map_add' := DFinsupp.equivProdDFinsupp_add }
 #align direct_sum.add_equiv_prod_direct_sum DirectSum.addEquivProdDirectSum
@@ -348,7 +348,8 @@ theorem sigmaUncurry_apply [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ
 /-- The natural map between `⨁ (i : Σ i, α i), δ i.1 i.2` and `⨁ i (j : α i), δ i j`.-/
 def sigmaCurryEquiv [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
     (⨁ i : Σ _i, _, δ i.1 i.2) ≃+ ⨁ (i) (j), δ i j :=
-  { sigmaCurry, DFinsupp.sigmaCurryEquiv with }
+  { DFinsupp.sigmaCurryEquiv, sigmaCurry with
+    toFun := sigmaCurry }
 #align direct_sum.sigma_curry_equiv DirectSum.sigmaCurryEquiv
 
 end Sigma

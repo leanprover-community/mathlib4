@@ -100,9 +100,15 @@ theorem hasFDerivAt_inversion (hx : x ≠ c) :
     (LinearMap.eqOn_span' ?_) fun y hy ↦ ?_)
   · have : ((‖x‖ ^ 2) ^ 2)⁻¹ * (‖x‖ ^ 2) = (‖x‖ ^ 2)⁻¹
     · rw [← div_eq_inv_mul, sq (‖x‖ ^ 2), div_self_mul_self']
+    dsimp
+    simp [reflection_orthogonalComplement_singleton_eq_neg, real_inner_self_eq_norm_sq,
+      two_mul, this, div_eq_mul_inv, mul_add, add_smul, mul_pow]
+    rw [Pi.smul_apply, Pi.smul_apply, real_inner_self_eq_norm_sq]
     simp [reflection_orthogonalComplement_singleton_eq_neg, real_inner_self_eq_norm_sq,
       two_mul, this, div_eq_mul_inv, mul_add, add_smul, mul_pow]
   · simp [Submodule.mem_orthogonal_singleton_iff_inner_right.1 hy,
       reflection_mem_subspace_eq_self hy, div_eq_mul_inv, mul_pow]
-
+    rw [Pi.smul_apply, Pi.smul_apply]
+    simp [Submodule.mem_orthogonal_singleton_iff_inner_right.1 hy,
+      reflection_mem_subspace_eq_self hy, div_eq_mul_inv, mul_pow]
 end EuclideanGeometry

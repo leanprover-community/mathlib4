@@ -303,7 +303,7 @@ variable {R S : Type*} [CommRing R] [CommRing S] [IsDomain S]
 
 variable {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ]
 
-set_option maxHeartbeats 300000 in
+set_option maxHeartbeats 800000 in
 /-- If `I` is a prime ideal of `R[X]` and `pX ∈ I` is a non-constant polynomial,
   then the map `R →+* R[x]/I` descends to an integral map when localizing at `pX.leadingCoeff`.
   In particular `X` is integral because it satisfies `pX`, and constants are trivially integral,
@@ -481,6 +481,7 @@ variable {R : Type*} [CommRing R] [IsJacobson R]
 
 variable (P : Ideal R[X]) [hP : P.IsMaximal]
 
+set_option maxHeartbeats 800000 in
 theorem isMaximal_comap_C_of_isMaximal [Nontrivial R] (hP' : ∀ x : R, C x ∈ P → x = 0) :
     IsMaximal (comap (C : R →+* R[X]) P : Ideal R) := by
   let P' := comap (C : R →+* R[X]) P
@@ -526,6 +527,7 @@ theorem isMaximal_comap_C_of_isMaximal [Nontrivial R] (hP' : ∀ x : R, C x ∈ 
 set_option linter.uppercaseLean3 false in
 #align ideal.polynomial.is_maximal_comap_C_of_is_maximal Ideal.Polynomial.isMaximal_comap_C_of_isMaximal
 
+set_option maxHeartbeats 400000 in
 /-- Used to bootstrap the more general `quotient_mk_comp_C_isIntegral_of_jacobson` -/
 private theorem quotient_mk_comp_C_isIntegral_of_jacobson' [Nontrivial R] (hR : IsJacobson R)
     (hP' : ∀ x : R, C x ∈ P → x = 0) : ((Quotient.mk P).comp C : R →+* R[X] ⧸ P).IsIntegral := by
