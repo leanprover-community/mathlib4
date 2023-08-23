@@ -109,7 +109,8 @@ theorem monotone_sort (f : Fin n → α) : Monotone (f ∘ sort f) := by
   exact (monotone_proj f).comp (graphEquiv₂ f).monotone
 #align tuple.monotone_sort Tuple.monotone_sort
 
-/-- All the elements `· ≤ a` appear the start of a sorted tuple -/
+/-- A sorted tuple with `m` elements and exactly `Fintype.card {i // f i ≤ a}` less than a has the
+elements at the start `≤ a` -/
 theorem sort_lt_at_start_of_monotone {α} [LinearOrder α] (m : ℕ) (f : Fin m → α) (a : α)
     (h_sorted : Monotone f)
     (j : Fin m) (h : j < Fintype.card {i // f i ≤ a}) :
@@ -140,6 +141,8 @@ lemma Fintype.card_fin_lt_nat (m g : ℕ) (h : g ≤ m) : Fintype.card {i : Fin 
   exact ⟨ fun x => ⟨x, x.prop⟩, fun x => ⟨⟨x, (lt_of_lt_of_le (Fin.is_lt x) h)⟩, x.prop⟩,
     fun x => by simp, fun x => by simp⟩
 
+/--In sorted tuple with `m` elements and with `Fintype.card {i // f i ≤ a}` elements less than `a`,
+ all the `· ≤ a` appear the start of a sorted tuple -/
 theorem sort_lt_at_start_of_monotone' {α} [LinearOrder α] (m : ℕ)(f : Fin m → α) (a : α)
     (h_sorted : Monotone f)
     (j : Fin m) :
