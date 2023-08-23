@@ -14,6 +14,7 @@ import Std.Data.String.Basic
 import Std.Util.LibraryNote
 import Mathlib.Tactic.RunCmd -- not necessary, but useful for debugging
 import Mathlib.Lean.Linter
+import Std.Data.List.Count
 
 /-!
 # Simps attribute
@@ -187,7 +188,7 @@ derives two `simp` lemmas:
 
   Example:
   ```lean
-  structure MyProd (α β : Type _) := (fst : α) (snd : β)
+  structure MyProd (α β : Type*) := (fst : α) (snd : β)
   @[simps] def foo : Prod ℕ ℕ × MyProd ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
   ```
   generates
@@ -204,7 +205,7 @@ derives two `simp` lemmas:
 
   Example:
   ```lean
-  structure MyProd (α β : Type _) := (fst : α) (snd : β)
+  structure MyProd (α β : Type*) := (fst : α) (snd : β)
   @[simps fst fst_fst snd] def foo : Prod ℕ ℕ × MyProd ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
   ```
   generates
@@ -507,7 +508,7 @@ partial def getCompositeOfProjectionsAux
   Note that this function is similar to elaborating dot notation, but it can do a little more.
   Example: if we do
   ```
-  structure gradedFun (A : ℕ → Type _) where
+  structure gradedFun (A : ℕ → Type*) where
     toFun := ∀ i j, A i →+ A j →+ A (i + j)
   initialize_simps_projections (toFun_toFun_toFun → myMul)
   ```
@@ -627,7 +628,7 @@ def findProjection (str : Name) (proj : ParsedProjectionData)
   not used. -/
 def checkForUnusedCustomProjs (stx : Syntax) (str : Name) (projs : Array ParsedProjectionData) :
   CoreM Unit := do
-  let nrCustomProjections := projs.toList.countp (·.isCustom)
+  let nrCustomProjections := projs.toList.countP (·.isCustom)
   let env ← getEnv
   let customDeclarations := env.constants.map₂.foldl (init := #[]) fun xs nm _ =>
     if (str ++ `Simps).isPrefixOf nm && !nm.isInternal' then xs.push nm else xs

@@ -18,7 +18,7 @@ We also define `Ring.inverse`, a globally defined function on any ring
 -/
 
 
-variable {α M₀ G₀ M₀' G₀' F F' : Type _}
+variable {α M₀ G₀ M₀' G₀' F F' : Type*}
 
 variable [MonoidWithZero M₀]
 
@@ -254,7 +254,7 @@ theorem isUnit_iff_ne_zero : IsUnit a ↔ a ≠ 0 :=
   Units.exists_iff_ne_zero
 #align is_unit_iff_ne_zero isUnit_iff_ne_zero
 
-alias isUnit_iff_ne_zero ↔ _ Ne.isUnit
+alias ⟨_, Ne.isUnit⟩ := isUnit_iff_ne_zero
 #align ne.is_unit Ne.isUnit
 
 -- porting note: can't add this attribute?
@@ -327,7 +327,7 @@ section NoncomputableDefs
 
 open Classical
 
-variable {M : Type _} [Nontrivial M]
+variable {M : Type*} [Nontrivial M]
 
 /-- Constructs a `GroupWithZero` structure on a `MonoidWithZero`
   consisting only of units and 0. -/

@@ -23,7 +23,7 @@ open Int
 
 universe u v w x y z u₁ u₂
 
-variable {α : Type _} {M : Type u} {N : Type v} {G : Type w} {H : Type x} {A : Type y} {B : Type z}
+variable {α : Type*} {M : Type u} {N : Type v} {G : Type w} {H : Type x} {A : Type y} {B : Type z}
   {R : Type u₁} {S : Type u₂}
 
 /-!
@@ -771,7 +771,7 @@ namespace Int
 lemma natAbs_sq (x : ℤ) : (x.natAbs : ℤ) ^ 2 = x ^ 2 := by rw [sq, Int.natAbs_mul_self', sq]
 #align int.nat_abs_sq Int.natAbs_sq
 
-alias natAbs_sq ← natAbs_pow_two
+alias natAbs_pow_two := natAbs_sq
 #align int.nat_abs_pow_two Int.natAbs_pow_two
 
 theorem natAbs_le_self_sq (a : ℤ) : (Int.natAbs a : ℤ) ≤ a ^ 2 := by
@@ -780,13 +780,13 @@ theorem natAbs_le_self_sq (a : ℤ) : (Int.natAbs a : ℤ) ≤ a ^ 2 := by
   apply Nat.le_mul_self
 #align int.abs_le_self_sq Int.natAbs_le_self_sq
 
-alias natAbs_le_self_sq ← natAbs_le_self_pow_two
+alias natAbs_le_self_pow_two := natAbs_le_self_sq
 
 theorem le_self_sq (b : ℤ) : b ≤ b ^ 2 :=
   le_trans le_natAbs (natAbs_le_self_sq _)
 #align int.le_self_sq Int.le_self_sq
 
-alias le_self_sq ← le_self_pow_two
+alias le_self_pow_two := le_self_sq
 #align int.le_self_pow_two Int.le_self_pow_two
 
 theorem pow_right_injective {x : ℤ} (h : 1 < x.natAbs) :

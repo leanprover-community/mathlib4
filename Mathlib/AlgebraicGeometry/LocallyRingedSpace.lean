@@ -59,7 +59,7 @@ def toTopCat : TopCat :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_Top AlgebraicGeometry.LocallyRingedSpace.toTopCat
 
-instance : CoeSort LocallyRingedSpace (Type _) :=
+instance : CoeSort LocallyRingedSpace (Type*) :=
   ⟨fun X : LocallyRingedSpace => (X.toTopCat : Type _)⟩
 
 instance (x : X) : LocalRing (X.stalk x) :=
@@ -236,7 +236,6 @@ def restrict {U : TopCat} (X : LocallyRingedSpace) {f : U ⟶ X.toTopCat} (h : O
     LocallyRingedSpace where
   localRing := by
     intro x
-    dsimp at *
     -- We show that the stalk of the restriction is isomorphic to the original stalk,
     apply @RingEquiv.localRing _ _ _ (X.localRing (f x))
     exact (X.restrictStalkIso h x).symm.commRingCatIsoToRingEquiv

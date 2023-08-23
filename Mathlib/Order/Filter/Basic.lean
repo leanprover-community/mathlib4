@@ -77,6 +77,8 @@ we do *not* require. This gives `Filter X` better formal properties, in particul
 `[NeBot f]` in a number of lemmas and definitions.
 -/
 
+set_option autoImplicit true
+
 
 open Function Set Order
 open Classical hiding by_cases not_not
@@ -86,7 +88,7 @@ universe u v w x y
 /-- A filter `F` on a type `α` is a collection of sets of `α` which contains the whole `α`,
 is upwards-closed, and is stable under intersection. We do not forbid this collection to be
 all sets of `α`. -/
-structure Filter (α : Type _) where
+structure Filter (α : Type*) where
   /-- The set of sets that belong to the filter. -/
   sets : Set (Set α)
   /-- The set `Set.univ` belongs to any filter. -/
@@ -98,7 +100,7 @@ structure Filter (α : Type _) where
 #align filter Filter
 
 /-- If `F` is a filter on `α`, and `U` a subset of `α` then we can write `U ∈ F` as on paper. -/
-instance {α : Type _} : Membership (Set α) (Filter α) :=
+instance {α : Type*} : Membership (Set α) (Filter α) :=
   ⟨fun U F => U ∈ F.sets⟩
 
 namespace Filter
@@ -190,7 +192,7 @@ theorem biInter_finset_mem {β : Type v} {s : β → Set α} (is : Finset β) :
   biInter_mem is.finite_toSet
 #align filter.bInter_finset_mem Filter.biInter_finset_mem
 
-alias biInter_finset_mem ← _root_.Finset.iInter_mem_sets
+alias _root_.Finset.iInter_mem_sets := biInter_finset_mem
 #align finset.Inter_mem_sets Finset.iInter_mem_sets
 
 -- attribute [protected] Finset.iInter_mem_sets porting note: doesn't work
@@ -223,7 +225,7 @@ theorem exists_mem_and_iff {P : Set α → Prop} {Q : Set α → Prop} (hP : Ant
     exact ⟨⟨u, huf, hPu⟩, u, huf, hQu⟩
 #align filter.exists_mem_and_iff Filter.exists_mem_and_iff
 
-theorem forall_in_swap {β : Type _} {p : Set α → β → Prop} :
+theorem forall_in_swap {β : Type*} {p : Set α → β → Prop} :
     (∀ a ∈ f, ∀ (b), p a b) ↔ ∀ (b), ∀ a ∈ f, p a b :=
   Set.forall_in_swap
 #align filter.forall_in_swap Filter.forall_in_swap
@@ -274,7 +276,7 @@ end Mathlib.Tactic
 
 namespace Filter
 
-variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type _} {ι : Sort x}
+variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type*} {ι : Sort x}
 
 section Principal
 
@@ -390,7 +392,7 @@ theorem mkOfClosure_sets {s : Set (Set α)} {hs : (generate s).sets = s} :
 #align filter.mk_of_closure_sets Filter.mkOfClosure_sets
 
 /-- Galois insertion from sets of sets into filters. -/
-def giGenerate (α : Type _) :
+def giGenerate (α : Type*) :
     @GaloisInsertion (Set (Set α)) (Filter α)ᵒᵈ _ _ Filter.generate Filter.sets where
   gc _ _ := le_generate_iff
   le_l_u _ _ h := GenerateSets.basic h
@@ -463,7 +465,7 @@ section CompleteLattice
 /- We lift the complete lattice along the Galois connection `generate` / `sets`. Unfortunately,
   we want to have different definitional equalities for some lattice operations. So we define them
   upfront and change the lattice operations for the complete lattice instance. -/
-instance : CompleteLattice (Filter α) :=
+instance instCompleteLatticeFilter : CompleteLattice (Filter α) :=
   { @OrderDual.completeLattice _ (giGenerate α).liftCompleteLattice with
     le := (· ≤ ·)
     top := ⊤
@@ -630,12 +632,12 @@ theorem mem_iInf' {ι} {s : ι → Filter α} {U : Set α} :
       iInter_univ, inter_univ, eq_self_iff_true, true_and_iff]
 #align filter.mem_infi' Filter.mem_iInf'
 
-theorem exists_iInter_of_mem_iInf {ι : Type _} {α : Type _} {f : ι → Filter α} {s}
+theorem exists_iInter_of_mem_iInf {ι : Type*} {α : Type*} {f : ι → Filter α} {s}
     (hs : s ∈ ⨅ i, f i) : ∃ t : ι → Set α, (∀ i, t i ∈ f i) ∧ s = ⋂ i, t i :=
   let ⟨_, _, V, hVs, _, _, hVU'⟩ := mem_iInf'.1 hs; ⟨V, hVs, hVU'⟩
 #align filter.exists_Inter_of_mem_infi Filter.exists_iInter_of_mem_iInf
 
-theorem mem_iInf_of_finite {ι : Type _} [Finite ι] {α : Type _} {f : ι → Filter α} (s) :
+theorem mem_iInf_of_finite {ι : Type*} [Finite ι] {α : Type*} {f : ι → Filter α} (s) :
     (s ∈ ⨅ i, f i) ↔ ∃ t : ι → Set α, (∀ i, t i ∈ f i) ∧ s = ⋂ i, t i := by
   refine' ⟨exists_iInter_of_mem_iInf, _⟩
   rintro ⟨t, ht, rfl⟩
@@ -727,7 +729,7 @@ theorem inf_eq_bot_iff {f g : Filter α} : f ⊓ g = ⊥ ↔ ∃ U ∈ f, ∃ V 
   simp only [← disjoint_iff, Filter.disjoint_iff, Set.disjoint_iff_inter_eq_empty]
 #align filter.inf_eq_bot_iff Filter.inf_eq_bot_iff
 
-theorem _root_.Pairwise.exists_mem_filter_of_disjoint {ι : Type _} [Finite ι] {l : ι → Filter α}
+theorem _root_.Pairwise.exists_mem_filter_of_disjoint {ι : Type*} [Finite ι] {l : ι → Filter α}
     (hd : Pairwise (Disjoint on l)) :
     ∃ s : ι → Set α, (∀ i, s i ∈ l i) ∧ Pairwise (Disjoint on s) := by
   have : ∀ i j, i ≠ j → ∃ (s : {s // s ∈ l i}) (t : {t // t ∈ l j}), Disjoint s.1 t.1
@@ -739,7 +741,7 @@ theorem _root_.Pairwise.exists_mem_filter_of_disjoint {ι : Type _} [Finite ι] 
       ((iInter_subset _ i).trans (inter_subset_right _ _))]
 #align pairwise.exists_mem_filter_of_disjoint Pairwise.exists_mem_filter_of_disjoint
 
-theorem _root_.Set.PairwiseDisjoint.exists_mem_filter {ι : Type _} {l : ι → Filter α} {t : Set ι}
+theorem _root_.Set.PairwiseDisjoint.exists_mem_filter {ι : Type*} {l : ι → Filter α} {t : Set ι}
     (hd : t.PairwiseDisjoint l) (ht : t.Finite) :
     ∃ s : ι → Set α, (∀ i, s i ∈ l i) ∧ t.PairwiseDisjoint s := by
   haveI := ht.to_subtype
@@ -769,7 +771,7 @@ theorem forall_mem_nonempty_iff_neBot {f : Filter α} :
   ⟨fun h => ⟨fun hf => not_nonempty_empty (h ∅ <| hf.symm ▸ mem_bot)⟩, @nonempty_of_mem _ _⟩
 #align filter.forall_mem_nonempty_iff_ne_bot Filter.forall_mem_nonempty_iff_neBot
 
-instance [Nonempty α] : Nontrivial (Filter α) :=
+instance instNontrivialFilter [Nonempty α] : Nontrivial (Filter α) :=
   ⟨⟨⊤, ⊥, NeBot.ne <| forall_mem_nonempty_iff_neBot.1
     fun s hs => by rwa [mem_top.1 hs, ← nonempty_iff_univ_nonempty]⟩⟩
 
@@ -834,7 +836,7 @@ theorem biInf_sets_eq {f : β → Filter α} {s : Set β} (h : DirectedOn (f ⁻
   ext fun t => by simp [mem_biInf_of_directed h ne]
 #align filter.binfi_sets_eq Filter.biInf_sets_eq
 
-theorem iInf_sets_eq_finite {ι : Type _} (f : ι → Filter α) :
+theorem iInf_sets_eq_finite {ι : Type*} (f : ι → Filter α) :
     (⨅ i, f i).sets = ⋃ t : Finset ι, (⨅ i ∈ t, f i).sets := by
   rw [iInf_eq_iInf_finset, iInf_sets_eq]
   exact directed_of_sup fun _ _ => biInf_mono
@@ -846,7 +848,7 @@ theorem iInf_sets_eq_finite' (f : ι → Filter α) :
   rfl
 #align filter.infi_sets_eq_finite' Filter.iInf_sets_eq_finite'
 
-theorem mem_iInf_finite {ι : Type _} {f : ι → Filter α} (s) :
+theorem mem_iInf_finite {ι : Type*} {f : ι → Filter α} (s) :
     s ∈ iInf f ↔ ∃ t : Finset ι, s ∈ ⨅ i ∈ t, f i :=
   (Set.ext_iff.1 (iInf_sets_eq_finite f) s).trans mem_iUnion
 #align filter.mem_infi_finite Filter.mem_iInf_finite
@@ -988,7 +990,7 @@ theorem principal_neBot_iff {s : Set α} : NeBot (𝓟 s) ↔ s.Nonempty :=
   neBot_iff.trans <| (not_congr principal_eq_bot_iff).trans nonempty_iff_ne_empty.symm
 #align filter.principal_ne_bot_iff Filter.principal_neBot_iff
 
-alias principal_neBot_iff ↔ _ _root_.Set.Nonempty.principal_neBot
+alias ⟨_, _root_.Set.Nonempty.principal_neBot⟩ := principal_neBot_iff
 #align set.nonempty.principal_ne_bot Set.Nonempty.principal_neBot
 
 theorem isCompl_principal (s : Set α) : IsCompl (𝓟 s) (𝓟 sᶜ) :=
@@ -1155,7 +1157,7 @@ theorem eventually_congr {f : Filter α} {p q : α → Prop} (h : ∀ᶠ x in f,
 #align filter.eventually_congr Filter.eventually_congr
 
 @[simp]
-theorem eventually_all {ι : Type _} [Finite ι] {l} {p : ι → α → Prop} :
+theorem eventually_all {ι : Type*} [Finite ι] {l} {p : ι → α → Prop} :
     (∀ᶠ x in l, ∀ i, p i x) ↔ ∀ i, ∀ᶠ x in l, p i x := by
   cases nonempty_fintype ι
   simpa only [Filter.Eventually, setOf_forall] using iInter_mem
@@ -1167,7 +1169,7 @@ theorem eventually_all_finite {ι} {I : Set ι} (hI : I.Finite) {l} {p : ι → 
   simpa only [Filter.Eventually, setOf_forall] using biInter_mem hI
 #align filter.eventually_all_finite Filter.eventually_all_finite
 
-alias eventually_all_finite ← _root_.Set.Finite.eventually_all
+alias _root_.Set.Finite.eventually_all := eventually_all_finite
 #align set.finite.eventually_all Set.Finite.eventually_all
 
 -- attribute [protected] Set.Finite.eventually_all
@@ -1177,7 +1179,7 @@ alias eventually_all_finite ← _root_.Set.Finite.eventually_all
   I.finite_toSet.eventually_all
 #align filter.eventually_all_finset Filter.eventually_all_finset
 
-alias eventually_all_finset ← _root_.Finset.eventually_all
+alias _root_.Finset.eventually_all := eventually_all_finset
 #align finset.eventually_all Finset.eventually_all
 
 -- attribute [protected] Finset.eventually_all
@@ -1447,7 +1449,7 @@ theorem eventuallyEq_set {s t : Set α} {l : Filter α} : s =ᶠ[l] t ↔ ∀ᶠ
   eventually_congr <| eventually_of_forall fun _ => ⟨Eq.to_iff, Iff.to_eq⟩
 #align filter.eventually_eq_set Filter.eventuallyEq_set
 
-alias eventuallyEq_set ↔ EventuallyEq.mem_iff Eventually.set_eq
+alias ⟨EventuallyEq.mem_iff, Eventually.set_eq⟩ := eventuallyEq_set
 #align filter.eventually_eq.mem_iff Filter.EventuallyEq.mem_iff
 #align filter.eventually.set_eq Filter.Eventually.set_eq
 
@@ -1855,6 +1857,10 @@ theorem image_mem_map (hs : s ∈ f) : m '' s ∈ map m f :=
   f.sets_of_superset hs <| subset_preimage_image m s
 #align filter.image_mem_map Filter.image_mem_map
 
+-- The simpNF linter says that the LHS can be simplified via `Filter.mem_map`.
+-- However this is a higher priority lemma.
+-- https://github.com/leanprover/std4/issues/207
+@[simp 1100, nolint simpNF]
 theorem image_mem_map_iff (hf : Injective m) : m '' s ∈ map m f ↔ s ∈ f :=
   ⟨fun h => by rwa [← preimage_image_eq s hf], image_mem_map⟩
 #align filter.image_mem_map_iff Filter.image_mem_map_iff
@@ -2463,7 +2469,7 @@ theorem comap_snd_neBot [Nonempty α] {f : Filter β} [NeBot f] :
   comap_snd_neBot_iff.2 ⟨‹_›, ‹_›⟩
 #align filter.comap_snd_ne_bot Filter.comap_snd_neBot
 
-theorem comap_eval_neBot_iff' {ι : Type _} {α : ι → Type _} {i : ι} {f : Filter (α i)} :
+theorem comap_eval_neBot_iff' {ι : Type*} {α : ι → Type*} {i : ι} {f : Filter (α i)} :
     (comap (eval i) f).NeBot ↔ (∀ j, Nonempty (α j)) ∧ NeBot f := by
   cases' isEmpty_or_nonempty (∀ j, α j) with H H
   · rw [filter_eq_bot_of_isEmpty (f.comap _), ← not_iff_not]
@@ -2473,12 +2479,12 @@ theorem comap_eval_neBot_iff' {ι : Type _} {α : ι → Type _} {i : ι} {f : F
 #align filter.comap_eval_ne_bot_iff' Filter.comap_eval_neBot_iff'
 
 @[simp]
-theorem comap_eval_neBot_iff {ι : Type _} {α : ι → Type _} [∀ j, Nonempty (α j)] {i : ι}
+theorem comap_eval_neBot_iff {ι : Type*} {α : ι → Type*} [∀ j, Nonempty (α j)] {i : ι}
     {f : Filter (α i)} : (comap (eval i) f).NeBot ↔ NeBot f := by simp [comap_eval_neBot_iff', *]
 #align filter.comap_eval_ne_bot_iff Filter.comap_eval_neBot_iff
 
 @[instance]
-theorem comap_eval_neBot {ι : Type _} {α : ι → Type _} [∀ j, Nonempty (α j)] (i : ι)
+theorem comap_eval_neBot {ι : Type*} {α : ι → Type*} [∀ j, Nonempty (α j)] (i : ι)
     (f : Filter (α i)) [NeBot f] : (comap (eval i) f).NeBot :=
   comap_eval_neBot_iff.2 ‹_›
 #align filter.comap_eval_ne_bot Filter.comap_eval_neBot
@@ -2942,7 +2948,7 @@ theorem tendsto_iff_comap {f : α → β} {l₁ : Filter α} {l₂ : Filter β} 
   map_le_iff_le_comap
 #align filter.tendsto_iff_comap Filter.tendsto_iff_comap
 
-alias tendsto_iff_comap ↔ Tendsto.le_comap _
+alias ⟨Tendsto.le_comap, _⟩ := tendsto_iff_comap
 #align filter.tendsto.le_comap Filter.Tendsto.le_comap
 
 protected theorem Tendsto.disjoint {f : α → β} {la₁ la₂ : Filter α} {lb₁ lb₂ : Filter β}
@@ -3006,7 +3012,7 @@ theorem tendsto_map'_iff {f : β → γ} {g : α → β} {x : Filter α} {y : Fi
   rw [Tendsto, Tendsto, map_map]
 #align filter.tendsto_map'_iff Filter.tendsto_map'_iff
 
-alias tendsto_map'_iff ↔ _ tendsto_map'
+alias ⟨_, tendsto_map'⟩ := tendsto_map'_iff
 #align filter.tendsto_map' Filter.tendsto_map'
 
 theorem tendsto_comap {f : α → β} {x : Filter β} : Tendsto f (comap f x) x :=
@@ -3159,7 +3165,7 @@ protected theorem Tendsto.if {l₁ : Filter α} {l₂ : Filter β} {f g : α →
   exacts [hp₀ h, hp₁ h]
 #align filter.tendsto.if Filter.Tendsto.if
 
-protected theorem Tendsto.if' {α β : Type _} {l₁ : Filter α} {l₂ : Filter β} {f g : α → β}
+protected theorem Tendsto.if' {α β : Type*} {l₁ : Filter α} {l₂ : Filter β} {f g : α → β}
     {p : α → Prop} [DecidablePred p] (hf : Tendsto f l₁ l₂) (hg : Tendsto g l₁ l₂) :
     Tendsto (fun a => if p a then f a else g a) l₁ l₂ :=
   (tendsto_inf_left hf).if (tendsto_inf_left hg)

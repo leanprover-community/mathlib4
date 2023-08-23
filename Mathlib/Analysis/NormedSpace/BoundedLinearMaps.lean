@@ -59,14 +59,14 @@ open Filter (Tendsto)
 
 open Metric ContinuousLinearMap
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type _}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*}
   [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 /-- A function `f` satisfies `IsBoundedLinearMap 𝕜 f` if it is linear and satisfies the
 inequality `‖f x‖ ≤ M * ‖x‖` for some positive constant `M`. -/
-structure IsBoundedLinearMap (𝕜 : Type _) [NormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F] (f : E → F) extends
+structure IsBoundedLinearMap (𝕜 : Type*) [NormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] (f : E → F) extends
   IsLinearMap 𝕜 f : Prop where
   bound : ∃ M, 0 < M ∧ ∀ x : E, ‖f x‖ ≤ M * ‖x‖
 #align is_bounded_linear_map IsBoundedLinearMap
@@ -189,7 +189,7 @@ theorem isBigO_id {f : E → F} (h : IsBoundedLinearMap 𝕜 f) (l : Filter E) :
 set_option linter.uppercaseLean3 false in
 #align is_bounded_linear_map.is_O_id IsBoundedLinearMap.isBigO_id
 
-theorem isBigO_comp {E : Type _} {g : F → G} (hg : IsBoundedLinearMap 𝕜 g) {f : E → F}
+theorem isBigO_comp {E : Type*} {g : F → G} (hg : IsBoundedLinearMap 𝕜 g) {f : E → F}
     (l : Filter E) : (fun x' => g (f x')) =O[l] f :=
   (hg.isBigO_id ⊤).comp_tendsto le_top
 set_option linter.uppercaseLean3 false in
@@ -207,11 +207,11 @@ end IsBoundedLinearMap
 
 section
 
-variable {ι : Type _} [Fintype ι]
+variable {ι : Type*} [Fintype ι]
 
 /-- Taking the cartesian product of two continuous multilinear maps is a bounded linear
 operation. -/
-theorem isBoundedLinearMap_prod_multilinear {E : ι → Type _} [∀ i, NormedAddCommGroup (E i)]
+theorem isBoundedLinearMap_prod_multilinear {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] :
     IsBoundedLinearMap 𝕜 fun p : ContinuousMultilinearMap 𝕜 E F × ContinuousMultilinearMap 𝕜 E G =>
       p.1.prod p.2 :=
@@ -274,15 +274,15 @@ argument of `f`.
 -/
 
 
-variable {R : Type _}
+variable {R : Type*}
 
-variable {𝕜₂ 𝕜' : Type _} [NontriviallyNormedField 𝕜'] [NontriviallyNormedField 𝕜₂]
+variable {𝕜₂ 𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NontriviallyNormedField 𝕜₂]
 
-variable {M : Type _} [TopologicalSpace M]
+variable {M : Type*} [TopologicalSpace M]
 
 variable {σ₁₂ : 𝕜 →+* 𝕜₂}
 
-variable {G' : Type _} [NormedAddCommGroup G'] [NormedSpace 𝕜₂ G'] [NormedSpace 𝕜' G']
+variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜₂ G'] [NormedSpace 𝕜' G']
 
 variable [SMulCommClass 𝕜₂ 𝕜' G']
 
@@ -369,7 +369,7 @@ protected theorem IsBoundedBilinearMap.isBigO (h : IsBoundedBilinearMap 𝕜 f) 
 set_option linter.uppercaseLean3 false in
 #align is_bounded_bilinear_map.is_O IsBoundedBilinearMap.isBigO
 
-theorem IsBoundedBilinearMap.isBigO_comp {α : Type _} (H : IsBoundedBilinearMap 𝕜 f) {g : α → E}
+theorem IsBoundedBilinearMap.isBigO_comp {α : Type*} (H : IsBoundedBilinearMap 𝕜 f) {g : α → E}
     {h : α → F} {l : Filter α} : (fun x => f (g x, h x)) =O[l] fun x => ‖g x‖ * ‖h x‖ :=
   H.isBigO.comp_tendsto le_top
 set_option linter.uppercaseLean3 false in
@@ -435,7 +435,7 @@ theorem IsBoundedBilinearMap.isBoundedLinearMap_right (h : IsBoundedBilinearMap 
   (h.toContinuousLinearMap x).isBoundedLinearMap
 #align is_bounded_bilinear_map.is_bounded_linear_map_right IsBoundedBilinearMap.isBoundedLinearMap_right
 
-theorem isBoundedBilinearMap_smul {𝕜' : Type _} [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {E : Type _}
+theorem isBoundedBilinearMap_smul {𝕜' : Type*} [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E] :
     IsBoundedBilinearMap 𝕜 fun p : 𝕜' × E => p.1 • p.2 :=
   (lsmul 𝕜 𝕜' : 𝕜' →L[𝕜] E →L[𝕜] E).isBoundedBilinearMap
@@ -476,7 +476,7 @@ theorem isBoundedBilinearMap_smulRight :
 
 /-- The composition of a continuous linear map with a continuous multilinear map is a bounded
 bilinear operation. -/
-theorem isBoundedBilinearMap_compMultilinear {ι : Type _} {E : ι → Type _} [Fintype ι]
+theorem isBoundedBilinearMap_compMultilinear {ι : Type*} {E : ι → Type*} [Fintype ι]
     [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] :
     IsBoundedBilinearMap 𝕜 fun p : (F →L[𝕜] G) × ContinuousMultilinearMap 𝕜 E F =>
       p.1.compContinuousMultilinearMap p.2 :=
@@ -509,7 +509,7 @@ variable (𝕜)
 
 /-- The function `ContinuousLinearMap.mulLeftRight : 𝕜' × 𝕜' → (𝕜' →L[𝕜] 𝕜')` is a bounded
 bilinear map. -/
-theorem ContinuousLinearMap.mulLeftRight_isBoundedBilinear (𝕜' : Type _) [NormedRing 𝕜']
+theorem ContinuousLinearMap.mulLeftRight_isBoundedBilinear (𝕜' : Type*) [NormedRing 𝕜']
     [NormedAlgebra 𝕜 𝕜'] :
     IsBoundedBilinearMap 𝕜 fun p : 𝕜' × 𝕜' => ContinuousLinearMap.mulLeftRight 𝕜 𝕜' p.1 p.2 :=
   (ContinuousLinearMap.mulLeftRight 𝕜 𝕜').isBoundedBilinearMap

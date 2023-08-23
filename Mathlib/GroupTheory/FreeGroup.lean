@@ -745,7 +745,7 @@ theorem lift.unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) =
 See note [partially-applied ext lemmas]. -/
 @[to_additive (attr := ext) "Two homomorphisms out of a free additive group are equal if they are
   equal on generators. See note [partially-applied ext lemmas]."]
-theorem ext_hom {G : Type _} [Group G] (f g : FreeGroup α →* G) (h : ∀ a, f (of a) = g (of a)) :
+theorem ext_hom {G : Type*} [Group G] (f g : FreeGroup α →* G) (h : ∀ a, f (of a) = g (of a)) :
     f = g :=
   lift.symm.injective <| funext h
 #align free_group.ext_hom FreeGroup.ext_hom
@@ -1219,10 +1219,10 @@ theorem reduce.eq_of_red (H : Red L₁ L₂) : reduce L₁ = reduce L₂ :=
 #align free_group.reduce.eq_of_red FreeGroup.reduce.eq_of_red
 #align free_add_group.reduce.eq_of_red FreeAddGroup.reduce.eq_of_red
 
-alias reduce.eq_of_red ← red.reduce_eq
+alias red.reduce_eq := reduce.eq_of_red
 #align free_group.red.reduce_eq FreeGroup.red.reduce_eq
 
-alias FreeAddGroup.reduce.eq_of_red ← freeAddGroup.red.reduce_eq
+alias freeAddGroup.red.reduce_eq := FreeAddGroup.reduce.eq_of_red
 #align free_group.free_add_group.red.reduce_eq FreeGroup.freeAddGroup.red.reduce_eq
 
 @[to_additive]

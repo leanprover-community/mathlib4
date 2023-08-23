@@ -88,7 +88,7 @@ open scoped MeasureTheory ENNReal NNReal Topology
 
 open MeasureTheory MeasureTheory.Measure Set TopologicalSpace FiniteDimensional Filter
 
-variable {ι X Y : Type _} [EMetricSpace X] [EMetricSpace Y]
+variable {ι X Y : Type*} [EMetricSpace X] [EMetricSpace Y]
 
 /-- Hausdorff dimension of a set in an (e)metric space. -/
 @[irreducible] noncomputable def dimH (s : Set X) : ℝ≥0∞ := by
@@ -179,7 +179,7 @@ theorem dimH_subsingleton {s : Set X} (h : s.Subsingleton) : dimH s = 0 := by
 set_option linter.uppercaseLean3 false in
 #align dimH_subsingleton dimH_subsingleton
 
-alias dimH_subsingleton ← Set.Subsingleton.dimH_zero
+alias Set.Subsingleton.dimH_zero := dimH_subsingleton
 set_option linter.uppercaseLean3 false in
 #align set.subsingleton.dimH_zero Set.Subsingleton.dimH_zero
 
@@ -232,7 +232,7 @@ theorem dimH_countable {s : Set X} (hs : s.Countable) : dimH s = 0 :=
 set_option linter.uppercaseLean3 false in
 #align dimH_countable dimH_countable
 
-alias dimH_countable ← Set.Countable.dimH_zero
+alias Set.Countable.dimH_zero := dimH_countable
 set_option linter.uppercaseLean3 false in
 #align set.countable.dimH_zero Set.Countable.dimH_zero
 
@@ -241,7 +241,7 @@ theorem dimH_finite {s : Set X} (hs : s.Finite) : dimH s = 0 :=
 set_option linter.uppercaseLean3 false in
 #align dimH_finite dimH_finite
 
-alias dimH_finite ← Set.Finite.dimH_zero
+alias Set.Finite.dimH_zero := dimH_finite
 set_option linter.uppercaseLean3 false in
 #align set.finite.dimH_zero Set.Finite.dimH_zero
 
@@ -251,7 +251,7 @@ theorem dimH_coe_finset (s : Finset X) : dimH (s : Set X) = 0 :=
 set_option linter.uppercaseLean3 false in
 #align dimH_coe_finset dimH_coe_finset
 
-alias dimH_coe_finset ← Finset.dimH_zero
+alias Finset.dimH_zero := dimH_coe_finset
 set_option linter.uppercaseLean3 false in
 #align finset.dimH_zero Finset.dimH_zero
 
@@ -480,7 +480,7 @@ end IsometryEquiv
 
 namespace ContinuousLinearEquiv
 
-variable {𝕜 E F : Type _} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 @[simp]
@@ -510,7 +510,7 @@ end ContinuousLinearEquiv
 
 namespace Real
 
-variable {E : Type _} [Fintype ι] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E : Type*} [Fintype ι] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
 
 theorem dimH_ball_pi (x : ι → ℝ) {r : ℝ} (hr : 0 < r) :
     dimH (Metric.ball x r) = Fintype.card ι := by
@@ -531,7 +531,7 @@ theorem dimH_ball_pi_fin {n : ℕ} (x : Fin n → ℝ) {r : ℝ} (hr : 0 < r) :
 set_option linter.uppercaseLean3 false in
 #align real.dimH_ball_pi_fin Real.dimH_ball_pi_fin
 
-theorem dimH_univ_pi (ι : Type _) [Fintype ι] : dimH (univ : Set (ι → ℝ)) = Fintype.card ι := by
+theorem dimH_univ_pi (ι : Type*) [Fintype ι] : dimH (univ : Set (ι → ℝ)) = Fintype.card ι := by
   simp only [← Metric.iUnion_ball_nat_succ (0 : ι → ℝ), dimH_iUnion,
     dimH_ball_pi _ (Nat.cast_add_one_pos _), iSup_const]
 set_option linter.uppercaseLean3 false in
@@ -574,7 +574,7 @@ set_option linter.uppercaseLean3 false in
 
 end Real
 
-variable {E F : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 theorem dense_compl_of_dimH_lt_finrank {s : Set E} (hs : dimH s < finrank ℝ E) : Dense sᶜ := by

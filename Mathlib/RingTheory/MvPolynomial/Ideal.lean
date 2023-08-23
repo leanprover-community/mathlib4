@@ -20,7 +20,7 @@ Notably this contains results about monomial ideals.
 -/
 
 
-variable {σ R : Type _}
+variable {σ R : Type*}
 
 namespace MvPolynomial
 

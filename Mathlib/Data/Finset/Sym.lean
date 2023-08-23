@@ -32,7 +32,7 @@ This file defines the symmetric powers of a finset as `Finset (Sym α n)` and `F
 
 namespace Finset
 
-variable {α : Type _} [DecidableEq α] {s t : Finset α} {a b : α}
+variable {α : Type*} [DecidableEq α] {s t : Finset α} {a b : α}
 
 theorem isDiag_mk'_of_mem_diag {a : α × α} (h : a ∈ s.diag) : Sym2.IsDiag ⟦a⟧ :=
   (Sym2.isDiag_iff_proj_eq _).2 (mem_diag.1 h).2
@@ -78,7 +78,7 @@ theorem sym2_nonempty : s.sym2.Nonempty ↔ s.Nonempty := by
   rw [Finset.sym2, Nonempty.image_iff, nonempty_product, and_self_iff]
 #align finset.sym2_nonempty Finset.sym2_nonempty
 
-alias sym2_nonempty ↔ _ nonempty.sym2
+alias ⟨_, nonempty.sym2⟩ := sym2_nonempty
 #align finset.nonempty.sym2 Finset.nonempty.sym2
 
 -- Porting note: attribute does not exist

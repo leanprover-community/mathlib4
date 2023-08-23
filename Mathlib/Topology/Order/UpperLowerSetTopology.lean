@@ -56,8 +56,10 @@ Furthermore, the `UpperSetTopology` is used in the construction of the Scott Top
 upper set topology, lower set topology, preorder, Alexandrov
 -/
 
+set_option autoImplicit true
 
-variable (α β : Type _)
+
+variable (α β : Type*)
 
 section preorder
 
@@ -123,7 +125,7 @@ theorem ofUpperSet_inj {a b : WithUpperSetTopology α} : ofUpperSet a = ofUpperS
   Iff.rfl
 
 /-- A recursor for `WithUpperSetTopology`. Use as `induction x using WithUpperSetTopology.rec`. -/
-protected def rec {β : WithUpperSetTopology α → Sort _} (h : ∀ a, β (toUpperSet a)) : ∀ a, β a :=
+protected def rec {β : WithUpperSetTopology α → Sort*} (h : ∀ a, β (toUpperSet a)) : ∀ a, β a :=
   fun a => h (ofUpperSet a)
 
 instance [Nonempty α] : Nonempty (WithUpperSetTopology α) := ‹Nonempty α›
@@ -181,7 +183,7 @@ theorem ofLowerSet_inj {a b : WithLowerSetTopology α} : ofLowerSet a = ofLowerS
   Iff.rfl
 
 /-- A recursor for `WithLowerSetTopology`. Use as `induction x using WithLowerSetTopology.rec`. -/
-protected def rec {β : WithLowerSetTopology α → Sort _} (h : ∀ a, β (toLowerSet a)) : ∀ a, β a :=
+protected def rec {β : WithLowerSetTopology α → Sort*} (h : ∀ a, β (toLowerSet a)) : ∀ a, β a :=
   fun a => h (ofLowerSet a)
 
 instance [Nonempty α] : Nonempty (WithLowerSetTopology α) := ‹Nonempty α›
@@ -224,7 +226,7 @@ def UpperLowerSet_toOrderDualHomeomorph [Preorder α] :
 The upper set topology is the topology where the open sets are the upper sets. In general the upper
 set topology does not coincide with the upper topology.
 -/
-class UpperSetTopology (α : Type _) [t : TopologicalSpace α] [Preorder α] : Prop where
+class UpperSetTopology (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop where
   topology_eq_upperSetTopology : t = upperSetTopology' α
 
 instance [Preorder α] : UpperSetTopology (WithUpperSetTopology α) := ⟨rfl⟩
@@ -239,7 +241,7 @@ instance [Preorder α] : @UpperSetTopology α (upperSetTopology' α) _ := by
 The lower set topology is the topology where the open sets are the lower sets. In general the lower
 set topology does not coincide with the lower topology.
 -/
-class LowerSetTopology (α : Type _) [t : TopologicalSpace α] [Preorder α] : Prop where
+class LowerSetTopology (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop where
   topology_eq_lowerSetTopology : t = lowerSetTopology' α
 
 instance [Preorder α] : LowerSetTopology (WithLowerSetTopology α) := ⟨rfl⟩
@@ -264,7 +266,7 @@ variable {α}
 instance instLowerSetTopologyDual [Preorder α] [TopologicalSpace α] [UpperSetTopology α] :
     LowerSetTopology (αᵒᵈ) where
   topology_eq_lowerSetTopology := by
-    refine topologicalSpace_eq ?_
+    ext
     rw [(UpperSetTopology.topology_eq (α))]
 
 /-- If `α` is equipped with the upper set topology, then it is homeomorphic to
@@ -369,7 +371,7 @@ variable {α}
 instance instUpperSetTopologyDual [Preorder α] [TopologicalSpace α] [LowerSetTopology α] :
     UpperSetTopology (αᵒᵈ) where
   topology_eq_upperSetTopology := by
-    refine topologicalSpace_eq ?_
+    ext
     rw [(LowerSetTopology.topology_eq (α))]
 
 /-- If `α` is equipped with the lower set topology, then it is homeomorphic to

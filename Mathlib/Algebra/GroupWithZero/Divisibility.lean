@@ -17,7 +17,7 @@ Lemmas about divisibility in groups and monoids with zero.
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 section SemigroupWithZero
 
@@ -123,10 +123,10 @@ theorem dvd_antisymm' : a ∣ b → b ∣ a → b = a :=
   flip dvd_antisymm
 #align dvd_antisymm' dvd_antisymm'
 
-alias dvd_antisymm ← Dvd.dvd.antisymm
+alias Dvd.dvd.antisymm := dvd_antisymm
 #align has_dvd.dvd.antisymm Dvd.dvd.antisymm
 
-alias dvd_antisymm' ← Dvd.dvd.antisymm'
+alias Dvd.dvd.antisymm' := dvd_antisymm'
 #align has_dvd.dvd.antisymm' Dvd.dvd.antisymm'
 
 theorem eq_of_forall_dvd (h : ∀ c, a ∣ c ↔ b ∣ c) : a = b :=

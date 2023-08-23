@@ -459,7 +459,7 @@ variable [Limits.HasPullbacks C]
     that `f p = g q`, then there is some `s : pullback f g` such that `fst s = p` and `snd s = q`.
 
     Remark: Borceux claims that `s` is unique, but this is false. See
-    `counterexamples/pseudoelement` for details. -/
+    `Counterexamples/Pseudoelement` for details. -/
 theorem pseudo_pullback {P Q R : C} {f : P ⟶ R} {g : Q ⟶ R} {p : P} {q : Q} :
     f p = g q →
       ∃ s, (pullback.fst : pullback f g ⟶ P) s = p ∧ (pullback.snd : pullback f g ⟶ Q) s = q :=
@@ -476,7 +476,7 @@ section Module
 
 /-- In the category `Module R`, if `x` and `y` are pseudoequal, then the range of the associated
 morphisms is the same. -/
-theorem ModuleCat.eq_range_of_pseudoequal {R : Type _} [CommRing R] {G : ModuleCat R} {x y : Over G}
+theorem ModuleCat.eq_range_of_pseudoequal {R : Type*} [CommRing R] {G : ModuleCat R} {x y : Over G}
     (h : PseudoEqual G x y) : LinearMap.range x.hom = LinearMap.range y.hom := by
   obtain ⟨P, p, q, hp, hq, H⟩ := h
   refine' Submodule.ext fun a => ⟨fun ha => _, fun ha => _⟩
