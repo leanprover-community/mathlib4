@@ -108,7 +108,7 @@ theorem natDegree_divX_eq_natDegree_tsub_one : p.divX.natDegree = p.natDegree - 
     · exact natDegree_C_mul_X_pow (n - 1) c c0
 
 theorem natDegree_divX_le : p.divX.natDegree ≤ p.natDegree :=
-(natDegree_divX_eq_natDegree_tsub_one).trans_le (Nat.pred_le _)
+natDegree_divX_eq_natDegree_tsub_one.trans_le (Nat.pred_le _)
 
 theorem divX_C_mul_X_pow : divX (C a * X ^ n) = if n = 0 then 0 else C a * X ^ (n - 1) := by
   simp only [divX_C_mul, divX_X_pow, mul_ite, mul_zero]
