@@ -169,7 +169,8 @@ def rewrites (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × B
   let results ← rewritesCore lemmas goal target
     -- Don't report duplicate results.
     -- (TODO: we later pretty print results; save them here?)
-    -- (TODO: a config flag to disable this, if distinct-but-pretty-print-the-same results are desirable?)
+    -- (TODO: a config flag to disable this, 
+    -- if distinct-but-pretty-print-the-same results are desirable?)
     |>.dedupBy (fun r => do pure <| (← ppExpr r.result.eNew).pretty)
     -- Stop if we find a rewrite after which `with_reducible rfl` would succeed.
     |>.mapM RewriteResult.computeRfl -- TODO could simply not compute this if `stop_at_rfl` is False
