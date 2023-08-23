@@ -163,7 +163,7 @@ theorem mk_congr (e : α ≃ β) : #α = #β :=
   Quot.sound ⟨e⟩
 #align cardinal.mk_congr Cardinal.mk_congr
 
-alias mk_congr ← _root_.Equiv.cardinal_eq
+alias _root_.Equiv.cardinal_eq := mk_congr
 #align equiv.cardinal_eq Equiv.cardinal_eq
 
 /-- Lift a function between `Type*`s to a function between `Cardinal`s. -/
@@ -428,7 +428,7 @@ theorem mk_le_one_iff_set_subsingleton {s : Set α} : #s ≤ 1 ↔ s.Subsingleto
   le_one_iff_subsingleton.trans s.subsingleton_coe
 #align cardinal.mk_le_one_iff_set_subsingleton Cardinal.mk_le_one_iff_set_subsingleton
 
-alias mk_le_one_iff_set_subsingleton ↔ _ _root_.Set.Subsingleton.cardinal_mk_le_one
+alias ⟨_, _root_.Set.Subsingleton.cardinal_mk_le_one⟩ := mk_le_one_iff_set_subsingleton
 #align set.subsingleton.cardinal_mk_le_one Set.Subsingleton.cardinal_mk_le_one
 
 instance : Add Cardinal.{u} :=
@@ -1491,7 +1491,7 @@ theorem lt_aleph0_iff_set_finite {S : Set α} : #S < ℵ₀ ↔ S.Finite :=
   lt_aleph0_iff_finite.trans finite_coe_iff
 #align cardinal.lt_aleph_0_iff_set_finite Cardinal.lt_aleph0_iff_set_finite
 
-alias lt_aleph0_iff_set_finite ↔ _ _root_.Set.Finite.lt_aleph0
+alias ⟨_, _root_.Set.Finite.lt_aleph0⟩ := lt_aleph0_iff_set_finite
 #align set.finite.lt_aleph_0 Set.Finite.lt_aleph0
 
 @[simp]
@@ -1514,7 +1514,7 @@ theorem le_aleph0_iff_set_countable {s : Set α} : #s ≤ ℵ₀ ↔ s.Countable
   rw [mk_le_aleph0_iff, countable_coe_iff]
 #align cardinal.le_aleph_0_iff_set_countable Cardinal.le_aleph0_iff_set_countable
 
-alias le_aleph0_iff_set_countable ↔ _ _root_.Set.Countable.le_aleph0
+alias ⟨_, _root_.Set.Countable.le_aleph0⟩ := le_aleph0_iff_set_countable
 #align set.countable.le_aleph_0 Set.Countable.le_aleph0
 
 @[simp]

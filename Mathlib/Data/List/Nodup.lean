@@ -275,7 +275,7 @@ theorem nodup_attach {l : List α} : Nodup (attach l) ↔ Nodup l :=
     Nodup.of_map Subtype.val ((attach_map_val l).symm ▸ h)⟩
 #align list.nodup_attach List.nodup_attach
 
-alias nodup_attach ↔ Nodup.of_attach Nodup.attach
+alias ⟨Nodup.of_attach, Nodup.attach⟩ := nodup_attach
 #align list.nodup.attach List.Nodup.attach
 #align list.nodup.of_attach List.Nodup.of_attach
 

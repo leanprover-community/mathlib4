@@ -291,7 +291,7 @@ theorem ext_elem_iff {x y : M} : x = y ↔ ∀ i, b.repr x i = b.repr y i := by
   simp only [← FunLike.ext_iff, EmbeddingLike.apply_eq_iff_eq]
 #align basis.ext_elem_iff Basis.ext_elem_iff
 
-alias ext_elem_iff ↔ _ _root_.Basis.ext_elem
+alias ⟨_, _root_.Basis.ext_elem⟩ := ext_elem_iff
 #align basis.ext_elem Basis.ext_elem
 
 theorem repr_eq_iff {b : Basis ι R M} {f : M →ₗ[R] ι →₀ R} :
