@@ -121,11 +121,6 @@ theorem sort_lt_at_start_of_monotone {α} [LinearOrder α] (m : ℕ) (f : Fin m 
   exact fun hij => (h.trans_le <| h_sorted <| le_of_not_lt hij).not_le
 /- Proofs by Ruben Van de Velde, Eric {Rodriguez and Wieser} -/
 
--- def Equiv.subtypeSubtype_comm  {α : Type} (p q : α → Prop) :
---     (Subtype fun x => (p x) ∧ (q x)) ≃ (Subtype fun x => (q x) ∧ (p x)) := by
---   simp_rw [and_comm]
---   apply Equiv.refl
-
 lemma Fintype.card_eq_subtypeSubtype_comm {α : Type} [Fintype α] (p q : α → Prop)
     [DecidablePred p] [DecidablePred q] : Fintype.card (Subtype fun x => (p x) ∧ (q x)) =
       Fintype.card (Subtype fun x => (q x) ∧ (p x)) := by
@@ -154,17 +149,16 @@ theorem sort_lt_at_start_of_monotone' {α} [LinearOrder α] (m : ℕ)(f : Fin m 
   by_contra' hc
   let p := fun x : Fin m => f x ≤ a
   let q := fun x : Fin m => (x < (Fintype.card {i // f i ≤ a}))
+  let q' := fun x : {i // f i ≤ a} => q x
 
-  have he := Fintype.card_congr $ Equiv.sumCompl $
-    fun x : {i // f i ≤ a} => (x < (Fintype.card {i // f i ≤ a}))
+  have he := Fintype.card_congr $ Equiv.sumCompl $ q'
+  have h4 := (Fintype.card_congr (@Equiv.subtypeSubtypeEquivSubtype _ p q
+    (sort_lt_at_start_of_monotone m f a h_sorted _)))
+  have hw : 0 < Fintype.card {j : {x : Fin m // p x} // ¬q' j} :=
+    Fintype.card_pos_iff.2 (Nonempty.intro ⟨⟨j, h⟩, not_lt.2 hc⟩)
 
-  have h4 : Fintype.card {j : {x : Fin m // p x} // q j} = Fintype.card {j // q j} := by
-    exact (Fintype.card_congr (@Equiv.subtypeSubtypeEquivSubtype _ p q
-      (by apply sort_lt_at_start_of_monotone m f a h_sorted) ) )
   rw [Fintype.card_sum, h4, Fintype.card_fin_lt_nat, add_right_eq_self] at he
-  have : 0 < Fintype.card {j : {x : Fin m // p x} // ¬q j} := by
-    apply Fintype.card_pos_iff.2 (Nonempty.intro ⟨⟨j, h⟩, not_lt.2 hc⟩)
-  apply (ne_of_lt this) he.symm
+  apply (ne_of_lt hw) he.symm
   conv_rhs => rw [← Fintype.card_fin m]
   exact Fintype.card_subtype_le _
 
