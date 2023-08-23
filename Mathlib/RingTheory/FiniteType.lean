@@ -186,8 +186,8 @@ theorem iff_quotient_mvPolynomial' : FiniteType R S ↔
     exact FiniteType.of_surjective (FiniteType.mvPolynomial R ι) f hsur
 #align algebra.finite_type.iff_quotient_mv_polynomial' Algebra.FiniteType.iff_quotient_mvPolynomial'
 
-/-- A commutative algebra is finitely generated if and only if it is a quotient of a polynomial ring in `n`
-variables. -/
+/-- A commutative algebra is finitely generated if and only if it is a quotient of a polynomial ring
+in `n` variables. -/
 theorem iff_quotient_mvPolynomial'' :
     FiniteType R S ↔ ∃ (n : ℕ) (f : MvPolynomial (Fin n) R →ₐ[R] S), Surjective f := by
   constructor
