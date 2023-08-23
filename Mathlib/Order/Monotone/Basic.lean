@@ -264,76 +264,76 @@ theorem strict_anti_on_dual_iff :
     StrictAntiOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ StrictAntiOn f s := by
   rw [strictAntiOn_toDual_comp_iff, strictMonoOn_comp_ofDual_iff]
 
-alias antitone_comp_ofDual_iff ↔ _ Monotone.dual_left
+alias ⟨_, Monotone.dual_left⟩ := antitone_comp_ofDual_iff
 #align monotone.dual_left Monotone.dual_left
 
-alias monotone_comp_ofDual_iff ↔ _ Antitone.dual_left
+alias ⟨_, Antitone.dual_left⟩ := monotone_comp_ofDual_iff
 #align antitone.dual_left Antitone.dual_left
 
-alias antitone_toDual_comp_iff ↔ _ Monotone.dual_right
+alias ⟨_, Monotone.dual_right⟩ := antitone_toDual_comp_iff
 #align monotone.dual_right Monotone.dual_right
 
-alias monotone_toDual_comp_iff ↔ _ Antitone.dual_right
+alias ⟨_, Antitone.dual_right⟩ := monotone_toDual_comp_iff
 #align antitone.dual_right Antitone.dual_right
 
-alias antitoneOn_comp_ofDual_iff ↔ _ MonotoneOn.dual_left
+alias ⟨_, MonotoneOn.dual_left⟩ := antitoneOn_comp_ofDual_iff
 #align monotone_on.dual_left MonotoneOn.dual_left
 
-alias monotoneOn_comp_ofDual_iff ↔ _ AntitoneOn.dual_left
+alias ⟨_, AntitoneOn.dual_left⟩ := monotoneOn_comp_ofDual_iff
 #align antitone_on.dual_left AntitoneOn.dual_left
 
-alias antitoneOn_toDual_comp_iff ↔ _ MonotoneOn.dual_right
+alias ⟨_, MonotoneOn.dual_right⟩ := antitoneOn_toDual_comp_iff
 #align monotone_on.dual_right MonotoneOn.dual_right
 
-alias monotoneOn_toDual_comp_iff ↔ _ AntitoneOn.dual_right
+alias ⟨_, AntitoneOn.dual_right⟩ := monotoneOn_toDual_comp_iff
 #align antitone_on.dual_right AntitoneOn.dual_right
 
-alias strictAnti_comp_ofDual_iff ↔ _ StrictMono.dual_left
+alias ⟨_, StrictMono.dual_left⟩ := strictAnti_comp_ofDual_iff
 #align strict_mono.dual_left StrictMono.dual_left
 
-alias strictMono_comp_ofDual_iff ↔ _ StrictAnti.dual_left
+alias ⟨_, StrictAnti.dual_left⟩ := strictMono_comp_ofDual_iff
 #align strict_anti.dual_left StrictAnti.dual_left
 
-alias strictAnti_toDual_comp_iff ↔ _ StrictMono.dual_right
+alias ⟨_, StrictMono.dual_right⟩ := strictAnti_toDual_comp_iff
 #align strict_mono.dual_right StrictMono.dual_right
 
-alias strictMono_toDual_comp_iff ↔ _ StrictAnti.dual_right
+alias ⟨_, StrictAnti.dual_right⟩ := strictMono_toDual_comp_iff
 #align strict_anti.dual_right StrictAnti.dual_right
 
-alias strictAntiOn_comp_ofDual_iff ↔ _ StrictMonoOn.dual_left
+alias ⟨_, StrictMonoOn.dual_left⟩ := strictAntiOn_comp_ofDual_iff
 #align strict_mono_on.dual_left StrictMonoOn.dual_left
 
-alias strictMonoOn_comp_ofDual_iff ↔ _ StrictAntiOn.dual_left
+alias ⟨_, StrictAntiOn.dual_left⟩ := strictMonoOn_comp_ofDual_iff
 #align strict_anti_on.dual_left StrictAntiOn.dual_left
 
-alias strictAntiOn_toDual_comp_iff ↔ _ StrictMonoOn.dual_right
+alias ⟨_, StrictMonoOn.dual_right⟩ := strictAntiOn_toDual_comp_iff
 #align strict_mono_on.dual_right StrictMonoOn.dual_right
 
-alias strictMonoOn_toDual_comp_iff ↔ _ StrictAntiOn.dual_right
+alias ⟨_, StrictAntiOn.dual_right⟩ := strictMonoOn_toDual_comp_iff
 #align strict_anti_on.dual_right StrictAntiOn.dual_right
 
-alias monotone_dual_iff ↔ _ Monotone.dual
+alias ⟨_, Monotone.dual⟩ := monotone_dual_iff
 #align monotone.dual Monotone.dual
 
-alias antitone_dual_iff ↔ _ Antitone.dual
+alias ⟨_, Antitone.dual⟩ := antitone_dual_iff
 #align antitone.dual Antitone.dual
 
-alias monotone_on_dual_iff ↔ _ MonotoneOn.dual
+alias ⟨_, MonotoneOn.dual⟩ := monotone_on_dual_iff
 #align monotone_on.dual MonotoneOn.dual
 
-alias antitone_on_dual_iff ↔ _ AntitoneOn.dual
+alias ⟨_, AntitoneOn.dual⟩ := antitone_on_dual_iff
 #align antitone_on.dual AntitoneOn.dual
 
-alias strict_mono_dual_iff ↔ _ StrictMono.dual
+alias ⟨_, StrictMono.dual⟩ := strict_mono_dual_iff
 #align strict_mono.dual StrictMono.dual
 
-alias strict_anti_dual_iff ↔ _ StrictAnti.dual
+alias ⟨_, StrictAnti.dual⟩ := strict_anti_dual_iff
 #align strict_anti.dual StrictAnti.dual
 
-alias strict_mono_on_dual_iff ↔ _ StrictMonoOn.dual
+alias ⟨_, StrictMonoOn.dual⟩ := strict_mono_on_dual_iff
 #align strict_mono_on.dual StrictMonoOn.dual
 
-alias strict_anti_on_dual_iff ↔ _ StrictAntiOn.dual
+alias ⟨_, StrictAntiOn.dual⟩ := strict_anti_on_dual_iff
 #align strict_anti_on.dual StrictAntiOn.dual
 
 end OrderDual

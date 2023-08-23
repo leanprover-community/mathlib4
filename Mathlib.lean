@@ -14,7 +14,6 @@ import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.Algebra.Algebra.Subalgebra.Unitization
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Algebra.Unitization
 import Mathlib.Algebra.AlgebraicCard
@@ -1530,7 +1529,6 @@ import Mathlib.Data.List.ToFinsupp
 import Mathlib.Data.List.Zip
 import Mathlib.Data.MLList.BestFirst
 import Mathlib.Data.MLList.DepthFirst
-import Mathlib.Data.MLList.Heartbeats
 import Mathlib.Data.MLList.IO
 import Mathlib.Data.MLList.Split
 import Mathlib.Data.Matrix.Auto
@@ -2111,7 +2109,6 @@ import Mathlib.Init.Propext
 import Mathlib.Init.Quot
 import Mathlib.Init.Set
 import Mathlib.Init.ZeroOne
-import Mathlib.Lean.CoreM
 import Mathlib.Lean.Data.NameMap
 import Mathlib.Lean.Elab.Tactic.Basic
 import Mathlib.Lean.EnvExtension
@@ -2962,7 +2959,6 @@ import Mathlib.SetTheory.ZFC.Basic
 import Mathlib.SetTheory.ZFC.Ordinal
 import Mathlib.Tactic
 import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyCongr
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.ApplyWith
@@ -3217,6 +3213,7 @@ import Mathlib.Topology.Category.Profinite.EffectiveEpi
 import Mathlib.Topology.Category.Profinite.Limits
 import Mathlib.Topology.Category.Profinite.Projective
 import Mathlib.Topology.Category.Stonean.Basic
+import Mathlib.Topology.Category.Stonean.EffectiveEpi
 import Mathlib.Topology.Category.Stonean.Limits
 import Mathlib.Topology.Category.TopCat.Adjunctions
 import Mathlib.Topology.Category.TopCat.Basic

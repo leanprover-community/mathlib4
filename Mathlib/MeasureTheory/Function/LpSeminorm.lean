@@ -533,7 +533,7 @@ theorem Memℒp.of_le {f : α → E} {g : α → F} (hg : Memℒp g p μ) (hf : 
   ⟨hf, (snorm_mono_ae hfg).trans_lt hg.snorm_lt_top⟩
 #align measure_theory.mem_ℒp.of_le MeasureTheory.Memℒp.of_le
 
-alias Memℒp.of_le ← Memℒp.mono
+alias Memℒp.mono := Memℒp.of_le
 #align measure_theory.mem_ℒp.mono MeasureTheory.Memℒp.mono
 
 theorem Memℒp.mono' {f : α → E} {g : α → ℝ} (hg : Memℒp g p μ) (hf : AEStronglyMeasurable f μ)

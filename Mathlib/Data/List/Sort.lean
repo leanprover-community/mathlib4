@@ -159,7 +159,7 @@ theorem monotone_iff_ofFn_sorted : Monotone f ↔ (ofFn f).Sorted (· ≤ ·) :=
 #align list.monotone_iff_of_fn_sorted List.monotone_iff_ofFn_sorted
 
 /-- The list obtained from a monotone tuple is sorted. -/
-alias sorted_le_ofFn_iff ↔ _ _root_.Monotone.ofFn_sorted
+alias ⟨_, _root_.Monotone.ofFn_sorted⟩ := sorted_le_ofFn_iff
 #align list.monotone.of_fn_sorted Monotone.ofFn_sorted
 
 end Monotone
@@ -234,7 +234,6 @@ theorem perm_orderedInsert (a) : ∀ l : List α, orderedInsert r a l ~ a :: l
 theorem orderedInsert_count [DecidableEq α] (L : List α) (a b : α) :
     count a (L.orderedInsert r b) = count a L + if a = b then 1 else 0 := by
   rw [(L.perm_orderedInsert r b).count_eq, count_cons]
-  split_ifs <;> simp only [Nat.succ_eq_add_one, add_zero]
 #align list.ordered_insert_count List.orderedInsert_count
 
 theorem perm_insertionSort : ∀ l : List α, insertionSort r l ~ l
