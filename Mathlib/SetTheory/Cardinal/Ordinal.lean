@@ -24,8 +24,8 @@ using ordinals.
   It is an order isomorphism between ordinals and cardinals.
 * The function `Cardinal.aleph` gives the infinite cardinals listed by their
   ordinal index. `aleph 0 = ℵ₀`, `aleph 1 = succ ℵ₀` is the first
-  uncountable cardinal, and so on. The related function `Ordinal.initial`
-  (notation: `ω_`) gives the first ordinal of a given infinite cardinality.
+  uncountable cardinal, and so on. The notation `ω_` combines the latter with `Cardinal.ord`,
+  giving an enumeration of (infinite) initial ordinals.
   Thus `ω_ 0 = ω` and `ω₁ = ω_ 1` is the first uncountable ordinal.
 * The function `Cardinal.beth` enumerates the Beth cardinals. `beth 0 = ℵ₀`,
   `beth (succ o) = 2 ^ beth o`, and for a limit ordinal `o`, `beth o` is the supremum of `beth a`
@@ -1452,41 +1452,16 @@ section Initial
 
 namespace Ordinal
 
-open Cardinal
+/--
+`ω_ o` is a notation for the *initial ordinal* of cardinality
+`aleph o`. Thus, for example `ω_ 0 = ω`.
+-/
+scoped notation "ω_" => λ o ↦ ord <| aleph o
 
 /--
-`initial o` (notation: `ω_ o`) gives the first ordinal of cardinality
-`aleph o`. Thus `ω_ 0 = ω` and `ω_ 1` is the first uncountable ordinal.
-You can also write `ω_ 1` as `ω₁`.
+`ω₁` is the first uncountable ordinal.
 -/
-def initial (o : Ordinal.{u}) : Ordinal.{u} := (aleph o).ord
-
-@[inherit_doc]
-scoped notation "ω_" => Ordinal.initial
-@[inherit_doc]
-scoped notation "ω₁" => Ordinal.initial 1
-
-@[simp]
-theorem card_initial (o : Ordinal): card (initial o) = aleph o := card_ord _
-
-/--
-The first (infinite) initial ordinal is `ω`.
--/
-@[simp]
-lemma initial0 : ω_ 0 = ω := by
-  unfold initial
-  simp
-
-/--
-An initial ordinal is a limit ordinal.
--/
-lemma isLimit_initial (o : Ordinal): (ω_ o).IsLimit := ord_isLimit (aleph0_le_aleph o)
-
-lemma omega_lt_omega1 : ω < ω₁ := ord_aleph0.symm.trans_lt (ord_lt_ord.mpr (aleph0_lt_aleph_one))
-
-end Ordinal
-
-end Initial
+scoped notation "ω₁" => ord <| aleph 1
 
 section OrdinalIndices
 /-!
