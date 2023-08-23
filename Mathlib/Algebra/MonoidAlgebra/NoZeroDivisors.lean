@@ -50,14 +50,21 @@ namespace AddMonoidAlgebra
 
 open Finsupp
 
-instance {L σ : Type*} [LinearOrder σ] [LinearOrder L] [AddGroup L]
+instance {L σ : Type*} [LinearOrder L] [AddGroup L]
     [ContravariantClass L L (· + ·) (· ≤ ·)]
     [CovariantClass L L (Function.swap (· + ·)) (· ≤ ·)] :
     UniqueSums (σ →₀ L) := show UniqueSums ((Lex (σ →₀ L))) from
-  { uniqueAdd_of_nonempty := fun {A B} A0 B0 => by
-      refine ⟨_, A.max'_mem A0, _, B.max'_mem B0, ?_⟩
-      intros a b aA bB
-      exact (add_eq_add_iff_eq_and_eq (A.le_max' a aA) (B.le_max' b bB)).mp }
+{ uniqueAdd_of_nonempty := fun {A B} A0 B0 =>
+  --  introduce an arbitrary order on `sigma`, the trivial one in this case
+  let _ : PartialOrder σ :=
+  { le := (· = ·)
+    le_refl := fun a ↦ rfl
+    le_trans := fun _ _ _ => Eq.trans
+    le_antisymm := fun a b ab _ => ab }
+  -- Extend the given order to a `LinearOrder`
+  let _ : LinearOrder σ := show LinearOrder (LinearExtension σ) from inferInstance
+  ⟨_, A.max'_mem A0, _, B.max'_mem B0, fun a b aA bB =>
+    (add_eq_add_iff_eq_and_eq (A.le_max' a aA) (B.le_max' b bB)).mp⟩ }
 
 variable {R A : Type*} [Semiring R]
 
@@ -88,22 +95,11 @@ instance {A : Type*} [NoZeroDivisors R] [Add A] [UniqueSums A] :
 
 /-- The proof goes via the equivalence `R ≃ₗ[ℚ] (Basis.ofVectorSpaceIndex ℚ R) →₀ ℚ`,
 i.e. choosing a basis.
-Once we have a basis, we use the Lexicographic order on the coordinates and all the instances
+Once we have a basis, we use the embedding into sequences of coordinates and all the instances
 that `ℚ` already has.
 -/
 instance {R : Type*} [AddCommGroup R] [Module ℚ R] : UniqueSums R :=
-  -- We first setup the relevant instances on (Basis.ofVectorSpaceIndex ℚ R) →₀ ℚ
-  -- Endow it with the "trivial" PartialOrder `(· = ·)`
-  let _ : PartialOrder (Basis.ofVectorSpaceIndex ℚ R) :=
-  { le := (· = ·)
-    le_refl := fun a ↦ rfl
-    le_trans := fun _ _ _ => Eq.trans
-    le_antisymm := fun a b ab _ => ab }
-  -- Extend arbitrarily the trivial order to a `LinearOrder`
-  let _ : LinearOrder ((Basis.ofVectorSpaceIndex ℚ R)) :=
-    show LinearOrder (LinearExtension (Basis.ofVectorSpaceIndex ℚ R)) from inferInstance
-  -- `r` is the equivalence of `R` with its "coordinates"
-  let r := (Basis.ofVectorSpace ℚ R).repr
-  UniqueSums.addHom_image_of_injective r r.injective inferInstance
+let r := (Basis.ofVectorSpace ℚ R).repr
+UniqueSums.addHom_image_of_injective r r.injective inferInstance
 
 end AddMonoidAlgebra
