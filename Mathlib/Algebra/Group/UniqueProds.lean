@@ -48,15 +48,6 @@ about the grading type and then a generic statement of the form "look at the coe
 The file `Algebra/MonoidAlgebra/NoZeroDivisors` contains several examples of this use.
 -/
 
---  PR #6752
-open MulOpposite in
-@[to_additive]
-instance {A : Type*} [inst : Mul A] [inst_1 : IsLeftCancelMul A] : IsRightCancelMul Aᵐᵒᵖ :=
-⟨fun a b c bc => by
-  apply_fun unop at bc ⊢ using unop_injective (α := A)
-  exact mul_left_cancel bc⟩
-
-
 /-- Let `G` be a Type with multiplication, let `A B : Finset G` be finite subsets and
 let `a0 b0 : G` be two elements.  `UniqueMul A B a0 b0` asserts `a0 * b0` can be written in at
 most one way as a product of an element of `A` and an element of `B`. -/
