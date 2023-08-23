@@ -173,14 +173,14 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
       exact sqrt_zero.symm
     have eq₁ : Tendsto (fun n : ℕ => 8 * δ * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
       convert(@tendsto_const_nhds _ _ _ (8 * δ) _).mul tendsto_one_div_add_atTop_nhds_0_nat
-      simp only [MulZeroClass.mul_zero]
+      simp only [mul_zero]
     have : Tendsto (fun n : ℕ => (4 : ℝ) * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
       convert(@tendsto_const_nhds _ _ _ (4 : ℝ) _).mul tendsto_one_div_add_atTop_nhds_0_nat
-      simp only [MulZeroClass.mul_zero]
+      simp only [mul_zero]
     have eq₂ :
         Tendsto (fun n : ℕ => (4 : ℝ) * (1 / (n + 1)) * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
       convert this.mul tendsto_one_div_add_atTop_nhds_0_nat
-      simp only [MulZeroClass.mul_zero]
+      simp only [mul_zero]
     convert eq₁.add eq₂
     simp only [add_zero]
   -- Step 3: By completeness of `K`, let `w : ℕ → K` converge to some `v : K`.
@@ -487,7 +487,7 @@ def orthogonalProjection : E →L[𝕜] K :=
         have ho : ∀ w ∈ K, ⟪c • x - c • orthogonalProjectionFn K x, w⟫ = 0 := by
           intro w hw
           rw [← smul_sub, inner_smul_left, orthogonalProjectionFn_inner_eq_zero _ w hw,
-            MulZeroClass.mul_zero]
+            mul_zero]
         ext
         simp [eq_orthogonalProjectionFn_of_mem_of_inner_eq_zero hm ho] }
     1 fun x => by
@@ -1332,7 +1332,7 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
     · rw [orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero,
         DFinsupp.single_eq_of_ne hij.symm]
       exact hV.isOrtho hij.symm x.prop
-  · simp_rw [map_add, DFinsupp.add_apply]
+  · simp_rw [map_add]
     exact congr_arg₂ (· + ·) hx hy
 #align orthogonal_family.projection_direct_sum_coe_add_hom OrthogonalFamily.projection_directSum_coeAddHom
 

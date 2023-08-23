@@ -24,7 +24,7 @@ theorem dvd_add [LeftDistribClass α] {a b c : α} (h₁ : a ∣ b) (h₂ : a �
   Dvd.elim h₁ fun d hd => Dvd.elim h₂ fun e he => Dvd.intro (d + e) (by simp [left_distrib, hd, he])
 #align dvd_add dvd_add
 
-alias dvd_add ← Dvd.dvd.add
+alias Dvd.dvd.add := dvd_add
 #align has_dvd.dvd.add Dvd.dvd.add
 
 end DistribSemigroup
@@ -65,11 +65,11 @@ theorem neg_dvd : -a ∣ b ↔ a ∣ b :=
   (Equiv.neg _).exists_congr_left.trans <| by simp; rfl
 #align neg_dvd neg_dvd
 
-alias neg_dvd ↔ Dvd.dvd.of_neg_left Dvd.dvd.neg_left
+alias ⟨Dvd.dvd.of_neg_left, Dvd.dvd.neg_left⟩ := neg_dvd
 #align has_dvd.dvd.of_neg_left Dvd.dvd.of_neg_left
 #align has_dvd.dvd.neg_left Dvd.dvd.neg_left
 
-alias dvd_neg ↔ Dvd.dvd.of_neg_right Dvd.dvd.neg_right
+alias ⟨Dvd.dvd.of_neg_right, Dvd.dvd.neg_right⟩ := dvd_neg
 #align has_dvd.dvd.of_neg_right Dvd.dvd.of_neg_right
 #align has_dvd.dvd.neg_right Dvd.dvd.neg_right
 
@@ -83,7 +83,7 @@ theorem dvd_sub (h₁ : a ∣ b) (h₂ : a ∣ c) : a ∣ b - c := by
   simpa only [← sub_eq_add_neg] using h₁.add h₂.neg_right
 #align dvd_sub dvd_sub
 
-alias dvd_sub ← Dvd.dvd.sub
+alias Dvd.dvd.sub := dvd_sub
 #align has_dvd.dvd.sub Dvd.dvd.sub
 
 /-- If an element `a` divides another element `c` in a ring, `a` divides the sum of another element
