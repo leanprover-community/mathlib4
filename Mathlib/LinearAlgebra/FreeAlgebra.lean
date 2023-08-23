@@ -7,6 +7,7 @@ import Mathlib.LinearAlgebra.Basis
 import Mathlib.Algebra.FreeAlgebra
 import Mathlib.LinearAlgebra.Dimension
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 #align_import linear_algebra.free_algebra from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"
 
@@ -40,7 +41,7 @@ instance : Module.Free R (FreeAlgebra R X) :=
 
 end
 
-theorem rank_eq [CommRing R] [StrongRankCondition R] :
+theorem rank_eq [CommRing R] [Nontrivial R] :
     Module.rank R (FreeAlgebra R X) = Cardinal.lift.{u} (Cardinal.mk (List X)) := by
   rw [←(Basis.mk_eq_rank'.{_,_,_,u} (basisFreeMonoid R X)).trans (Cardinal.lift_id _),
     Cardinal.lift_umax'.{v,u}, FreeMonoid]

@@ -6,6 +6,7 @@ Authors: Eric Wieser
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.FreeModule.Rank
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.FreeAlgebra
 
 /-!
@@ -15,7 +16,7 @@ import Mathlib.LinearAlgebra.FreeAlgebra
 
 * `TensorAlgebra.equivMonoidAlgebra b : TensorAlgebra R M ≃ₐ[R] FreeAlgebra R κ`:
   the isomorphism given by a basis `b : Basis κ R M`.
-* `Basis.tensorAlgebra b : Basis (FreeMonoid κ) R (TensorAlgebra R M`:
+* `Basis.tensorAlgebra b : Basis (FreeMonoid κ) R (TensorAlgebra R M)`:
   the basis on the tensor algebra given by a basis `b : Basis κ R M`.
 
 ## Main results
@@ -75,7 +76,7 @@ local infixr:80 " ^ℕ " => @HPow.hPow Cardinal ℕ Cardinal _
 attribute [pp_with_univ] Cardinal.lift
 
 open Cardinal in
-lemma rank_eq [StrongRankCondition R] [Module.Free R M] :
+lemma rank_eq [Nontrivial R] [Module.Free R M] :
     Module.rank R (TensorAlgebra R M) = Cardinal.lift.{uR} (sum fun n ↦ Module.rank R M ^ℕ n) := by
   let ⟨⟨κ, b⟩⟩ := Module.Free.exists_basis (R := R) (M := M)
   rw [(equivFreeAlgebra b).toLinearEquiv.rank_eq, FreeAlgebra.rank_eq, mk_list_eq_sum_pow,
