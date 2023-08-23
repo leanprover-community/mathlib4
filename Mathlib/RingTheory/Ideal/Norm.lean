@@ -116,9 +116,9 @@ theorem cardQuot_mul_of_coprime [IsDedekindDomain S] [Module.Free ℤ S] [Module
     exact not_nontrivial_iff_subsingleton.mpr ‹Subsingleton S› ‹Nontrivial S›
   haveI : Infinite S := Infinite.of_surjective _ b.repr.toEquiv.surjective
   by_cases hI : I = ⊥
-  · rw [hI, Submodule.bot_mul, cardQuot_bot, MulZeroClass.zero_mul]
+  · rw [hI, Submodule.bot_mul, cardQuot_bot, zero_mul]
   by_cases hJ : J = ⊥
-  · rw [hJ, Submodule.mul_bot, cardQuot_bot, MulZeroClass.mul_zero]
+  · rw [hJ, Submodule.mul_bot, cardQuot_bot, mul_zero]
   have hIJ : I * J ≠ ⊥ := mt Ideal.mul_eq_bot.mp (not_or_of_not hI hJ)
   letI := Classical.decEq (Module.Free.ChooseBasisIndex ℤ S)
   letI := I.fintypeQuotientOfFreeOfNeBot hI

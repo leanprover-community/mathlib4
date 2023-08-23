@@ -118,11 +118,11 @@ theorem eq_true_of_not_eq_false {a : Prop} (h : Not a = False) : a = True :=
 theorem ne_of_eq_of_ne {α : Sort u} {a b c : α} (h₁ : a = b) (h₂ : b ≠ c) : a ≠ c :=
   h₁.symm ▸ h₂
 
-alias ne_of_eq_of_ne ← Eq.trans_ne
+alias Eq.trans_ne := ne_of_eq_of_ne
 #align eq.trans_ne Eq.trans_ne
 
 theorem ne_of_ne_of_eq {α : Sort u} {a b c : α} (h₁ : a ≠ b) (h₂ : b = c) : a ≠ c :=
   h₂ ▸ h₁
 
-alias ne_of_ne_of_eq ← Ne.trans_eq
+alias Ne.trans_eq := ne_of_ne_of_eq
 #align ne.trans_eq Ne.trans_eq

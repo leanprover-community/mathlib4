@@ -1338,16 +1338,16 @@ theorem tendsto_atBot_atBot_iff_of_monotone [Nonempty α] [SemilatticeInf α] [P
     ⟨fun h => h a (le_refl a), fun h _a' ha' => le_trans (hf ha') h⟩
 #align filter.tendsto_at_bot_at_bot_iff_of_monotone Filter.tendsto_atBot_atBot_iff_of_monotone
 
-alias tendsto_atTop_atTop_of_monotone ← _root_.Monotone.tendsto_atTop_atTop
+alias _root_.Monotone.tendsto_atTop_atTop := tendsto_atTop_atTop_of_monotone
 #align monotone.tendsto_at_top_at_top Monotone.tendsto_atTop_atTop
 
-alias tendsto_atBot_atBot_of_monotone ← _root_.Monotone.tendsto_atBot_atBot
+alias _root_.Monotone.tendsto_atBot_atBot := tendsto_atBot_atBot_of_monotone
 #align monotone.tendsto_at_bot_at_bot Monotone.tendsto_atBot_atBot
 
-alias tendsto_atTop_atTop_iff_of_monotone ← _root_.Monotone.tendsto_atTop_atTop_iff
+alias _root_.Monotone.tendsto_atTop_atTop_iff := tendsto_atTop_atTop_iff_of_monotone
 #align monotone.tendsto_at_top_at_top_iff Monotone.tendsto_atTop_atTop_iff
 
-alias tendsto_atBot_atBot_iff_of_monotone ← _root_.Monotone.tendsto_atBot_atBot_iff
+alias _root_.Monotone.tendsto_atBot_atBot_iff := tendsto_atBot_atBot_iff_of_monotone
 #align monotone.tendsto_at_bot_at_bot_iff Monotone.tendsto_atBot_atBot_iff
 
 theorem comap_embedding_atTop [Preorder β] [Preorder γ] {e : β → γ}
@@ -1400,7 +1400,7 @@ theorem tendsto_atTop_finset_of_monotone [Preorder β] {f : β → Finset α} (h
   exact (eventually_ge_atTop b).mono fun b' hb' => (Finset.singleton_subset_iff.2 hb).trans (h hb')
 #align filter.tendsto_at_top_finset_of_monotone Filter.tendsto_atTop_finset_of_monotone
 
-alias tendsto_atTop_finset_of_monotone ← _root_.Monotone.tendsto_atTop_finset
+alias _root_.Monotone.tendsto_atTop_finset := tendsto_atTop_finset_of_monotone
 #align monotone.tendsto_at_top_finset Monotone.tendsto_atTop_finset
 
 -- porting note: add assumption `DecidableEq β` so that the lemma applies to any instance

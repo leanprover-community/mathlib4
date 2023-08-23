@@ -70,8 +70,10 @@ theorem right_mem_affineSegment (x y : P) : y ∈ affineSegment R x y :=
 theorem affineSegment_same (x : P) : affineSegment R x x = {x} := by
   -- porting note: added as this doesn't do anything in `simp_rw` any more
   rw [affineSegment]
+  -- Note: when adding "simp made no progress" in lean4#2336,
+  -- had to change `lineMap_same` to `lineMap_same _`. Not sure why?
   -- porting note: added `_ _` and `Function.const`
-  simp_rw [lineMap_same, AffineMap.coe_const _ _, Function.const,
+  simp_rw [lineMap_same _, AffineMap.coe_const _ _, Function.const,
     (Set.nonempty_Icc.mpr zero_le_one).image_const]
 #align affine_segment_same affineSegment_same
 
@@ -272,14 +274,14 @@ theorem wbtw_comm {x y z : P} : Wbtw R x y z ↔ Wbtw R z y x := by
   rw [Wbtw, Wbtw, affineSegment_comm]
 #align wbtw_comm wbtw_comm
 
-alias wbtw_comm ↔ Wbtw.symm _
+alias ⟨Wbtw.symm, _⟩ := wbtw_comm
 #align wbtw.symm Wbtw.symm
 
 theorem sbtw_comm {x y z : P} : Sbtw R x y z ↔ Sbtw R z y x := by
   rw [Sbtw, Sbtw, wbtw_comm, ← and_assoc, ← and_assoc, and_right_comm]
 #align sbtw_comm sbtw_comm
 
-alias sbtw_comm ↔ Sbtw.symm _
+alias ⟨Sbtw.symm, _⟩ := sbtw_comm
 #align sbtw.symm Sbtw.symm
 
 variable (R)

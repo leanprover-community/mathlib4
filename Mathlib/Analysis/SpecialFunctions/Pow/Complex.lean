@@ -118,7 +118,7 @@ theorem cpow_nat_cast (x : ℂ) : ∀ n : ℕ, x ^ (n : ℂ) = x ^ n
   | n + 1 =>
     if hx : x = 0 then by
       simp only [hx, pow_succ, Complex.zero_cpow (Nat.cast_ne_zero.2 (Nat.succ_ne_zero _)),
-        MulZeroClass.zero_mul]
+        zero_mul]
     else by simp [cpow_add, hx, pow_add, cpow_nat_cast x n]
 #align complex.cpow_nat_cast Complex.cpow_nat_cast
 
@@ -166,9 +166,9 @@ theorem mul_cpow_ofReal_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : �
   rcases eq_or_ne r 0 with (rfl | hr)
   · simp only [cpow_zero, mul_one]
   rcases eq_or_lt_of_le ha with (rfl | ha')
-  · rw [ofReal_zero, MulZeroClass.zero_mul, zero_cpow hr, MulZeroClass.zero_mul]
+  · rw [ofReal_zero, zero_mul, zero_cpow hr, zero_mul]
   rcases eq_or_lt_of_le hb with (rfl | hb')
-  · rw [ofReal_zero, MulZeroClass.mul_zero, zero_cpow hr, MulZeroClass.mul_zero]
+  · rw [ofReal_zero, mul_zero, zero_cpow hr, mul_zero]
   have ha'' : (a : ℂ) ≠ 0 := ofReal_ne_zero.mpr ha'.ne'
   have hb'' : (b : ℂ) ≠ 0 := ofReal_ne_zero.mpr hb'.ne'
   rw [cpow_def_of_ne_zero (mul_ne_zero ha'' hb''), log_ofReal_mul ha' hb'', ofReal_log ha,

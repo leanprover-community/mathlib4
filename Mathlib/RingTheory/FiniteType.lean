@@ -249,7 +249,7 @@ theorem of_finite {f : A →+* B} (hf : f.Finite) : f.FiniteType :=
   @Module.Finite.finiteType _ _ _ _ f.toAlgebra hf
 #align ring_hom.finite_type.of_finite RingHom.FiniteType.of_finite
 
-alias of_finite ← _root_.RingHom.Finite.to_finiteType
+alias _root_.RingHom.Finite.to_finiteType := of_finite
 #align ring_hom.finite.to_finite_type RingHom.Finite.to_finiteType
 
 theorem of_comp_finiteType {f : A →+* B} {g : B →+* C} (h : (g.comp f).FiniteType) :

@@ -89,7 +89,7 @@ theorem X_sub_C_mul_removeFactor (f : K[X]) (hf : f.natDegree ≠ 0) :
   let ⟨g, hg⟩ := factor_dvd_of_natDegree_ne_zero hf
   apply (mul_divByMonic_eq_iff_isRoot
     (R := AdjoinRoot f.factor) (a := AdjoinRoot.root f.factor)).mpr
-  rw [IsRoot.def, eval_map, hg, eval₂_mul, ← hg, AdjoinRoot.eval₂_root, MulZeroClass.zero_mul]
+  rw [IsRoot.def, eval_map, hg, eval₂_mul, ← hg, AdjoinRoot.eval₂_root, zero_mul]
 set_option linter.uppercaseLean3 false in
 #align polynomial.X_sub_C_mul_remove_factor Polynomial.X_sub_C_mul_removeFactor
 
@@ -222,41 +222,16 @@ theorem adjoin_rootSet (n : ℕ) :
 instance (f : K[X]) : IsSplittingField K (SplittingFieldAux f.natDegree f) f :=
   ⟨SplittingFieldAux.splits _ _ rfl, SplittingFieldAux.adjoin_rootSet _ _ rfl⟩
 
-/-- The natural map from `MvPolynomial (f.rootSet (SplittingFieldAux f.natDegree f))`
-to `SplittingFieldAux f.natDegree f` sendind a variable to the corresponding root. -/
-def ofMvPolynomial (f : K[X]) :
-    MvPolynomial (f.rootSet (SplittingFieldAux f.natDegree f)) K →ₐ[K]
-      SplittingFieldAux f.natDegree f :=
-  MvPolynomial.aeval fun i => i.1
-#align polynomial.splitting_field_aux.of_mv_polynomial Polynomial.SplittingFieldAux.ofMvPolynomial
-
-theorem ofMvPolynomial_surjective (f : K[X]) : Function.Surjective (ofMvPolynomial f) := by
-  suffices AlgHom.range (ofMvPolynomial f) = ⊤ by
-    rw [← Set.range_iff_surjective]; rwa [SetLike.ext'_iff] at this
-  rw [ofMvPolynomial, ← Algebra.adjoin_range_eq_range_aeval K, eq_top_iff, ← adjoin_rootSet _ _ rfl]
-  apply Algebra.adjoin_le
-  intro α hα
-  apply Algebra.subset_adjoin
-  exact ⟨⟨α, hα⟩, rfl⟩
-#align polynomial.splitting_field_aux.of_mv_polynomial_surjective Polynomial.SplittingFieldAux.ofMvPolynomial_surjective
-
-/-- The algebra isomorphism between the quotient of
-`MvPolynomial (f.rootSet (SplittingFieldAuxAux f.natDegree f)) K` by the kernel of
-`ofMvPolynomial f` and `SplittingFieldAux f.natDegree f`. It is used to transport all the
-algebraic structures from the latter to `f.SplittingFieldAux`, that is defined as the former. -/
-def algEquivQuotientMvPolynomial (f : K[X]) :
-    (MvPolynomial (f.rootSet (SplittingFieldAux f.natDegree f)) K ⧸
-        RingHom.ker (ofMvPolynomial f).toRingHom) ≃ₐ[K]
-      SplittingFieldAux f.natDegree f :=
-  (Ideal.quotientKerAlgEquivOfSurjective (ofMvPolynomial_surjective f) : _)
-#align polynomial.splitting_field_aux.alg_equiv_quotient_mv_polynomial Polynomial.SplittingFieldAux.algEquivQuotientMvPolynomial
+#noalign polynomial.splitting_field_aux.of_mv_polynomial
+#noalign polynomial.splitting_field_aux.of_mv_polynomial_surjective
+#noalign polynomial.splitting_field_aux.alg_equiv_quotient_mv_polynomial
 
 end SplittingFieldAux
 
 /-- A splitting field of a polynomial. -/
 def SplittingField (f : K[X]) :=
-  MvPolynomial (f.rootSet (SplittingFieldAux f.natDegree f)) K ⧸
-    RingHom.ker (SplittingFieldAux.ofMvPolynomial f).toRingHom
+  MvPolynomial (SplittingFieldAux f.natDegree f) K ⧸
+    RingHom.ker (MvPolynomial.aeval (R := K) id).toRingHom
 #align polynomial.splitting_field Polynomial.SplittingField
 
 namespace SplittingField
@@ -290,7 +265,7 @@ instance isScalarTower {R : Type*} [CommSemiring R] [Algebra R K] :
 /-- The algebra equivalence with `SplittingFieldAux`,
 which we will use to construct the field structure. -/
 def algEquivSplittingFieldAux (f : K[X]) : SplittingField f ≃ₐ[K] SplittingFieldAux f.natDegree f :=
-  SplittingFieldAux.algEquivQuotientMvPolynomial f
+  Ideal.quotientKerAlgEquivOfSurjective fun x => ⟨MvPolynomial.X x, by simp⟩
 #align polynomial.splitting_field.alg_equiv_splitting_field_aux Polynomial.SplittingField.algEquivSplittingFieldAux
 
 instance : Field (SplittingField f) :=
@@ -347,7 +322,7 @@ example {q : ℚ[X]} : algebraInt (SplittingField q) = SplittingField.algebra' q
 
 instance _root_.Polynomial.IsSplittingField.splittingField (f : K[X]) :
     IsSplittingField K (SplittingField f) f :=
-  IsSplittingField.of_algEquiv _ f (SplittingFieldAux.algEquivQuotientMvPolynomial f).symm
+  IsSplittingField.of_algEquiv _ f (algEquivSplittingFieldAux f).symm
 #align polynomial.is_splitting_field.splitting_field Polynomial.IsSplittingField.splittingField
 
 protected theorem splits : Splits (algebraMap K (SplittingField f)) f :=
