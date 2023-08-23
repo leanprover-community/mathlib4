@@ -168,6 +168,43 @@ theorem sort_lt_at_start_of_monotone_iff {α} [LinearOrder α] (m : ℕ) (f : Fi
     (j < Fintype.card {i // f i ≤ a})  ↔ f j ≤ a :=
   ⟨sort_lt_at_start_of_monotone m f a h_sorted j, sort_lt_at_start_of_monotone' _ _ _ h_sorted _⟩
 
+theorem sort_ge_at_start_of_antitone {α} [LinearOrder α] (m : ℕ) (f : Fin m → α) (a : α)
+    (h_sorted : Antitone f)
+    (j : Fin m) :
+    (j < Fintype.card {i // a ≤ f i})  → a ≤ f j := by
+  · contrapose!
+    intro h
+    rw [← Fin.card_Iio, Fintype.card_subtype]
+    refine Finset.card_mono (fun i => Function.mtr ?_)
+    simp_rw [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_Iio, not_lt, not_le]
+    exact fun hij => lt_of_le_of_lt (h_sorted hij) h
+
+theorem sort_ge_at_start_of_antitone' {α} [LinearOrder α] (m : ℕ) (f : Fin m → α) (a : α)
+    (h_sorted : Antitone f)
+    (j : Fin m) :
+    a ≤ f j → (j < Fintype.card {i // a ≤ f i})  := by
+  intro h
+  by_contra' hc
+  let p := fun x : Fin m => a ≤ f x
+  let q := fun x : Fin m => (x < (Fintype.card {i // a ≤ f i}))
+  let q' := fun x : {i // a ≤ f i} => q x
+
+  have he := Fintype.card_congr $ Equiv.sumCompl $ q'
+  have h4 := (Fintype.card_congr (@Equiv.subtypeSubtypeEquivSubtype _ p q
+    (sort_ge_at_start_of_antitone m f a h_sorted _)))
+  have hw : 0 < Fintype.card {j : {x : Fin m // p x} // ¬q' j} := by
+    apply Fintype.card_pos_iff.2 (Nonempty.intro ⟨⟨j, h⟩, not_lt.2 hc⟩)
+  rw [Fintype.card_sum, h4, Fintype.card_fin_lt_nat, add_right_eq_self] at he
+  apply (ne_of_lt hw) he.symm
+  conv_rhs => rw [← Fintype.card_fin m]
+  exact Fintype.card_subtype_le _
+
+theorem sort_ge_at_start_of_anittone_iff {α} [LinearOrder α] (m : ℕ) (f : Fin m → α) (a : α)
+    (h_sorted : Antitone f)
+    (j : Fin m) :
+    (j < Fintype.card {i // a ≤ f i})  ↔ a ≤ f j :=
+  ⟨sort_ge_at_start_of_antitone m f a h_sorted j, sort_ge_at_start_of_antitone' _ _ _ h_sorted _⟩
+
 
 end Tuple
 
