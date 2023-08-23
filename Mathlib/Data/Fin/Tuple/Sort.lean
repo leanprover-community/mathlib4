@@ -170,9 +170,8 @@ theorem sort_lt_at_start_of_monotone_iff {α} [LinearOrder α] (m : ℕ) (f : Fi
 theorem sort_ge_at_start_of_anittone_iff {α} [LinearOrder α] (m : ℕ) (f : Fin m → α) (a : α)
     (h_sorted : Antitone f)
     (j : Fin m) :
-    (j < Fintype.card {i // a ≤ f i})  ↔ a ≤ f j := by
-  haveI h1 := @sort_lt_at_start_of_monotone_iff (OrderDual α) _ m f a
-  exact h1 (fun a b hab => h_sorted hab) j
+    (j < Fintype.card {i // a ≤ f i})  ↔ a ≤ f j :=
+  @sort_lt_at_start_of_monotone_iff (OrderDual α) _ m f a (monotone_toDual_comp_iff.1 h_sorted) j
 
 theorem sort_ge_at_start_of_antitone {α} [LinearOrder α] (m : ℕ) (f : Fin m → α) (a : α)
     (h_sorted : Antitone f)
