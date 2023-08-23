@@ -1308,10 +1308,10 @@ theorem prod_list_count_of_subset [DecidableEq α] [CommMonoid α] (m : List α)
 #align finset.prod_list_count_of_subset Finset.prod_list_count_of_subset
 #align finset.sum_list_count_of_subset Finset.sum_list_count_of_subset
 
-theorem sum_filter_count_eq_countp [DecidableEq α] (p : α → Prop) [DecidablePred p] (l : List α) :
-    ∑ x in l.toFinset.filter p, l.count x = l.countp p := by
-  simp [Finset.sum, sum_map_count_dedup_filter_eq_countp p l]
-#align finset.sum_filter_count_eq_countp Finset.sum_filter_count_eq_countp
+theorem sum_filter_count_eq_countP [DecidableEq α] (p : α → Prop) [DecidablePred p] (l : List α) :
+    ∑ x in l.toFinset.filter p, l.count x = l.countP p := by
+  simp [Finset.sum, sum_map_count_dedup_filter_eq_countP p l]
+#align finset.sum_filter_count_eq_countp Finset.sum_filter_count_eq_countP
 
 open Multiset
 

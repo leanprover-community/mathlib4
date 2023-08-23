@@ -199,13 +199,13 @@ theorem Odd.zpow_pos_iff (hn : Odd n) : 0 < a ^ n ↔ 0 < a := by
   cases' hn with k hk; simpa only [hk, two_mul] using zpow_bit1_pos_iff
 #align odd.zpow_pos_iff Odd.zpow_pos_iff
 
-alias Even.zpow_pos_iff ↔ _ Even.zpow_pos
+alias ⟨_, Even.zpow_pos⟩ := Even.zpow_pos_iff
 #align even.zpow_pos Even.zpow_pos
 
-alias Odd.zpow_neg_iff ↔ _ Odd.zpow_neg
+alias ⟨_, Odd.zpow_neg⟩ := Odd.zpow_neg_iff
 #align odd.zpow_neg Odd.zpow_neg
 
-alias Odd.zpow_nonpos_iff ↔ _ Odd.zpow_nonpos
+alias ⟨_, Odd.zpow_nonpos⟩ := Odd.zpow_nonpos_iff
 #align odd.zpow_nonpos Odd.zpow_nonpos
 
 theorem Even.zpow_abs {p : ℤ} (hp : Even p) (a : α) : |a| ^ p = a ^ p := by
