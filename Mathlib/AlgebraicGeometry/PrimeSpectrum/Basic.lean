@@ -709,7 +709,7 @@ theorem comap_inducing_of_surjective (hf : Surjective f) : Inducing (comap f) wh
           rw [preimage_comap_zeroLocus, Function.Surjective.image_preimage hf, hF]⟩,
         _⟩
     rintro ⟨-, ⟨F, rfl⟩, hF⟩
-    exact ⟨f '' F, hF.symm.trans (preimage_comap_zeroLocus f F)⟩ }
+    exact ⟨f '' F, hF.symm.trans (preimage_comap_zeroLocus f F)⟩
 #align prime_spectrum.comap_inducing_of_surjective PrimeSpectrum.comap_inducing_of_surjective
 
 theorem image_comap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal S) :
