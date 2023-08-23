@@ -10,8 +10,8 @@ import Mathlib.Topology.Category.Profinite.EffectiveEpi
 universe v v₁ u u₁ w
 
 /-
-- The sections `isSheafForPullBackSieve` (PR-ed) and `ProdCoprod` are independent and can be PR-ed
-  separately.
+- The sections `isSheafForPullBackSieve` and `ProdCoprod` are independent and can be PR-ed
+  separately (DONE, awaiting review, see #6750 and #6758).
 - The section `ExtensiveRegular` depends on `isSheafForPullBackSieve` and `ProdCoprod` but does not
   mention `Stonean`, `Profinite` or `CompHaus` explicitly.
 - The code in section `OpenEmbedding` should be added to `Mathlib.Topology.Category.Stonean.Limits`
@@ -142,7 +142,7 @@ end CategoryTheory
 
 end isSheafForPullBackSieve
 
-section ProdCoprod -- TODO: PR
+section ProdCoprod -- This section is PR #6578
 
 open CategoryTheory Opposite Limits
 
