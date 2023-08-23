@@ -159,7 +159,7 @@ theorem monotone_iff_ofFn_sorted : Monotone f ↔ (ofFn f).Sorted (· ≤ ·) :=
 #align list.monotone_iff_of_fn_sorted List.monotone_iff_ofFn_sorted
 
 /-- The list obtained from a monotone tuple is sorted. -/
-alias sorted_le_ofFn_iff ↔ _ _root_.Monotone.ofFn_sorted
+alias ⟨_, _root_.Monotone.ofFn_sorted⟩ := sorted_le_ofFn_iff
 #align list.monotone.of_fn_sorted Monotone.ofFn_sorted
 
 end Monotone

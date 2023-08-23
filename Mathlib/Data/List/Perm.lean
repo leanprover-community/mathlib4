@@ -212,8 +212,8 @@ theorem singleton_perm {a : α} {l : List α} : [a] ~ l ↔ [a] = l :=
   @replicate_perm α 1 a l
 #align list.singleton_perm List.singleton_perm
 
-alias perm_singleton ↔ Perm.eq_singleton _
-alias singleton_perm ↔ Perm.singleton_eq _
+alias ⟨Perm.eq_singleton, _⟩ := perm_singleton
+alias ⟨Perm.singleton_eq, _⟩ := singleton_perm
 
 theorem singleton_perm_singleton {a b : α} : [a] ~ [b] ↔ a = b := by simp
 #align list.singleton_perm_singleton List.singleton_perm_singleton
@@ -669,7 +669,7 @@ theorem subperm_cons (a : α) {l₁ l₂ : List α} : a :: l₁ <+~ a :: l₂ �
     · exact ⟨u, p.cons_inv, s'⟩, fun ⟨l, p, s⟩ => ⟨a :: l, p.cons a, s.cons₂ _⟩⟩
 #align list.subperm_cons List.subperm_cons
 
-alias subperm_cons ↔ subperm.of_cons subperm.cons
+alias ⟨subperm.of_cons, subperm.cons⟩ := subperm_cons
 #align list.subperm.of_cons List.subperm.of_cons
 #align list.subperm.cons List.subperm.cons
 
