@@ -18,12 +18,12 @@ This module defines and proves properties about triangles in simple graphs.
 
 ## Main declarations
 
-* `SimpleGraph.triangleThick`: Predicate for a graph to have enough triangles so that a lot of edges
+* `SimpleGraph.TriangleThick`: Predicate for a graph to have enough triangles so that a lot of edges
   must be removed to remove all triangles. This is the crux of the Triangle Removal Lemma.
 
 ## TODO
 
-* Generalise `triangleThick` to other graphs, to state and prove the Graph Removal Lemma.
+* Generalise `TriangleThick` to other graphs, to state and prove the Graph Removal Lemma.
 -/
 
 
