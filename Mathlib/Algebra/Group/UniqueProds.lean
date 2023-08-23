@@ -252,7 +252,8 @@ theorem of_subsingleton {G : Type*} [Mul G] [Subsingleton G] :
 
 open Finset MulOpposite in
 @[to_additive]
-theorem of_mulOpposite (G : Type*) [Mul G] (h : @UniqueProds Gᵐᵒᵖ (MulOpposite.mul G)) : UniqueProds G :=
+theorem of_mulOpposite (G : Type*) [Mul G] (h : @UniqueProds Gᵐᵒᵖ (MulOpposite.mul G)) :
+    UniqueProds G :=
 ⟨fun hA hB =>
   let f : G ↪ Gᵐᵒᵖ := ⟨op, op_injective⟩
   let ⟨y, yB, x, xA, hxy⟩ := h.uniqueMul_of_nonempty (hB.map (f := f)) (hA.map (f := f))
