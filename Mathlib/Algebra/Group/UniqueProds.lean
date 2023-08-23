@@ -48,6 +48,7 @@ about the grading type and then a generic statement of the form "look at the coe
 The file `Algebra/MonoidAlgebra/NoZeroDivisors` contains several examples of this use.
 -/
 
+--  PR #6752
 open MulOpposite in
 @[to_additive]
 instance {A : Type*} [inst : Mul A] [inst_1 : IsLeftCancelMul A] : IsRightCancelMul Aᵐᵒᵖ :=
@@ -319,7 +320,7 @@ theorem mulHom_image_iff (f : G ≃* H) :
     UniqueProds (∀ i, G i) where
   uniqueMul_of_nonempty {A} := by
     classical
-    haveI := Finset.isWellFounded_ssubset (α := ∀ i, G i) -- why need this?
+    let _ := Finset.isWellFounded_ssubset (α := ∀ i, G i) -- why need this?
     apply IsWellFounded.induction (· ⊂ ·) A; intro A ihA B hA
     apply IsWellFounded.induction (· ⊂ ·) B; intro B ihB hB
     obtain hc | ⟨i, hc⟩ : (A.card ≤ 1 ∧ B.card ≤ 1) ∨
