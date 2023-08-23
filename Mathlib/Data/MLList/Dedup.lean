@@ -19,8 +19,8 @@ namespace MLList
 variable [Monad m] [BEq β] [Hashable β]
 
 /-- Lazily deduplicate a lazy list, using a stored `HashMap`. -/
--- We choose `HashMap` here instead of `RBSet` as the initial application if `Expr`.
-def dedupBy (L : MLList m α) (f : α → m β): MLList m α :=
+-- We choose `HashMap` here instead of `RBSet` as the initial application is `Expr`.
+def dedupBy (L : MLList m α) (f : α → m β) : MLList m α :=
   ((L.liftM : MLList (StateT (HashMap β Unit) m) α) >>= fun a => do
       let b ← f a
       guard !(← get).contains b
