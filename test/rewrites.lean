@@ -4,6 +4,8 @@ import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Algebra.Group.Basic
 
+set_option autoImplicit true
+
 -- To see the (sorted) list of lemmas that `rw?` will try rewriting by, use:
 -- set_option trace.Tactic.rewrites.lemmas true
 
@@ -99,14 +101,13 @@ example : foo x = 1 ↔ ∃ k : ℤ, x = k := by
 
 lemma six_eq_seven : 6 = 7 := sorry
 
+-- This test also verifies that we are removing duplicate results;
+-- it previously also reported `Nat.cast_ofNat`
 /--
 info: Try this: rw [six_eq_seven]
 -- ∀ (x : ℕ), x ≤ 7
 ---
 info: Try this: rw [← @Nat.cast_eq_ofNat]
--- ∀ (x : ℕ), x ≤ ↑6
----
-info: Try this: rw [← @Nat.cast_ofNat]
 -- ∀ (x : ℕ), x ≤ ↑6
 ---
 warning: declaration uses 'sorry'

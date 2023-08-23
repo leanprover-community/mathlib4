@@ -5,6 +5,7 @@ Authors: Scott Morrison
 -/
 import Std.Util.Pickle
 import Std.Data.MLList.Heartbeats
+import Mathlib.Data.MLList.Dedup
 import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.SolveByElim
@@ -166,11 +167,14 @@ def rewrites (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × B
     (goal : MVarId) (target : Expr) (stop_at_rfl : Bool := False) (max : Nat := 20)
     (leavePercentHeartbeats : Nat := 10) : MetaM (List RewriteResult) := do
   let results ← rewritesCore lemmas goal target
+    -- Don't report duplicate results.
+    -- (TODO: we later pretty print results; save them here?)
+    |>.dedupBy (fun r => do pure <| (← ppExpr r.result.eNew).pretty)
+    -- Stop if we find a rewrite after which `with_reducible rfl` would succeed.
+    |>.mapM RewriteResult.computeRfl -- TODO could simply not compute this if `stop_at_rfl` is False
+    |>.takeUpToFirst (fun r => stop_at_rfl && r.rfl? = some true)
     -- Don't use too many heartbeats.
     |>.whileAtLeastHeartbeatsPercent leavePercentHeartbeats
-    -- Stop if we find a rewrite after which `with_reducible rfl` would succeed.
-    |>.mapM RewriteResult.computeRfl -- TODO could simply not compute this if stop_at_rfl is False
-    |>.takeUpToFirst (fun r => stop_at_rfl && r.rfl? = some true)
     -- Bound the number of results.
     |>.takeAsList max
   return match results.filter (fun r => stop_at_rfl && r.rfl? = some true) with

@@ -1528,6 +1528,7 @@ import Mathlib.Data.List.TFAE
 import Mathlib.Data.List.ToFinsupp
 import Mathlib.Data.List.Zip
 import Mathlib.Data.MLList.BestFirst
+import Mathlib.Data.MLList.Dedup
 import Mathlib.Data.MLList.DepthFirst
 import Mathlib.Data.MLList.IO
 import Mathlib.Data.MLList.Split
