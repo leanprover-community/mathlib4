@@ -3,8 +3,8 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
-import Mathlib.Order.Bounds.Basic
 import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Order.Bounds.Basic
 
 #align_import data.set.intervals.unordered_interval from "leanprover-community/mathlib"@"4020ddee5b4580a409bfda7d2f42726ce86ae674"
 

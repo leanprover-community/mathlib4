@@ -3,13 +3,13 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
+import Mathlib.Algebra.Order.Monoid.OrderDual
+import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Init.Data.List.Basic
+import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Mathport.Rename
 import Std.Data.List.Basic
 import Std.Data.List.Lemmas
-import Mathlib.Init.Data.List.Basic
-import Mathlib.Init.Data.List.Lemmas
-import Mathlib.Data.Nat.Order.Basic
-import Mathlib.Algebra.Order.Monoid.OrderDual
 
 #align_import data.vector from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
 

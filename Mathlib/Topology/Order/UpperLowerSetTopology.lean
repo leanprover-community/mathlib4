@@ -3,12 +3,12 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Topology.Homeomorph
-import Mathlib.Topology.Order.Lattice
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Tactic.TFAE
-import Mathlib.Topology.Order.LowerUpperTopology
+import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.Lattice
+import Mathlib.Topology.Order.LowerUpperTopology
 
 /-!
 # UpperSet and LowerSet topologies

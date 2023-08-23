@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Sublists
 import Mathlib.GroupTheory.Subgroup.Basic
 
 #align_import group_theory.free_group from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"

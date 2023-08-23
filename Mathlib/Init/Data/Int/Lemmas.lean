@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 
-import Std.Data.Int.Lemmas
 import Mathlib.Mathport.Rename
+import Std.Data.Int.Lemmas
 
 /-!
 # Align statements for declarations from Std

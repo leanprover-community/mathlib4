@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.CategoryTheory.Linear.Basic
 
 #align_import algebra.category.Module.algebra from "leanprover-community/mathlib"@"1c775cc661988d96c477aa4ca6f7b5641a2a924b"
 

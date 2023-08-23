@@ -3,8 +3,8 @@ Copyright (c) 2022 Yaël Dillies, Sara Rousta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.Hom.CompleteLattice
+import Mathlib.Order.UpperLower.Basic
 
 #align_import order.upper_lower.hom from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 

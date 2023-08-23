@@ -3,8 +3,8 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Order.Basic
 import Mathlib.Algebra.NeZero
+import Mathlib.Order.Basic
 
 #align_import algebra.order.zero_le_one from "leanprover-community/mathlib"@"07fee0ca54c320250c98bacf31ca5f288b2bcbe2"
 

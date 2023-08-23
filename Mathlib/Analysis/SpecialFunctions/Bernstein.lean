@@ -5,8 +5,8 @@ Authors: Scott Morrison
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.RingTheory.Polynomial.Bernstein
-import Mathlib.Topology.ContinuousFunction.Polynomial
 import Mathlib.Topology.ContinuousFunction.Compact
+import Mathlib.Topology.ContinuousFunction.Polynomial
 
 #align_import analysis.special_functions.bernstein from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
 

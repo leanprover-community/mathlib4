@@ -3,10 +3,10 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison, Adam Topaz
 -/
-import Mathlib.Topology.Sheaves.SheafOfFunctions
-import Mathlib.Topology.Sheaves.Stalks
 import Mathlib.Topology.LocalHomeomorph
 import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
+import Mathlib.Topology.Sheaves.SheafOfFunctions
+import Mathlib.Topology.Sheaves.Stalks
 
 #align_import topology.sheaves.local_predicate from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 

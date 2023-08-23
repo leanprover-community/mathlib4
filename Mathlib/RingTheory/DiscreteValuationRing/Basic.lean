@@ -3,11 +3,11 @@ Copyright (c) 2020 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
-import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.LinearAlgebra.AdicCompletion
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Multiplicity
+import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.Valuation.Basic
-import Mathlib.LinearAlgebra.AdicCompletion
 
 #align_import ring_theory.discrete_valuation_ring.basic from "leanprover-community/mathlib"@"c163ec99dfc664628ca15d215fce0a5b9c265b68"
 

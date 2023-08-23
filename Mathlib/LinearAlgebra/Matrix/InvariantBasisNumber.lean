@@ -3,8 +3,8 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.InvariantBasisNumber
+import Mathlib.LinearAlgebra.Matrix.ToLin
 
 #align_import linear_algebra.matrix.invariant_basis_number from "leanprover-community/mathlib"@"843240b048bbb19942c581fd64caecbbe96337be"
 

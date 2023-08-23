@@ -1,6 +1,6 @@
-import Std.Util.ExtendedBinder
-import Std.Tactic.GuardExpr
 import Mathlib.Tactic.Choose
+import Std.Tactic.GuardExpr
+import Std.Util.ExtendedBinder
 
 /-!
 # Tests for the `choose` tactic

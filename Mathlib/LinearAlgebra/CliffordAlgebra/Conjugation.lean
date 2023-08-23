@@ -3,8 +3,8 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
 import Mathlib.Algebra.Module.Opposites
+import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
 
 #align_import linear_algebra.clifford_algebra.conjugation from "leanprover-community/mathlib"@"34020e531ebc4e8aac6d449d9eecbcd1508ea8d0"
 

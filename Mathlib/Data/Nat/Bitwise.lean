@@ -6,8 +6,8 @@ Authors: Markus Himmel
 import Lean.Elab.Tactic
 import Mathlib.Data.List.Basic
 import Mathlib.Data.Nat.Bits
-import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.Order.Lemmas
+import Mathlib.Data.Nat.Size
 import Mathlib.Tactic.Linarith
 
 #align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"

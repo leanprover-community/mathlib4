@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Wieser, Jujian Zhang
 -/
 import Mathlib.Algebra.Divisibility.Prod
-import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 import Mathlib.Data.ZMod.Basic
+import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 import Mathlib.Tactic.DeriveFintype
 
 #align_import homogeneous_prime_not_prime from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"

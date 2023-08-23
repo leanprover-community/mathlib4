@@ -3,9 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 import Mathlib.MeasureTheory.Function.AEEqFun
 import Mathlib.MeasureTheory.Group.Action
-import Mathlib.GroupTheory.GroupAction.DomAct.Basic
+
 /-!
 # Action of `DomMulAct` and `DomAddAct` on `α →ₘ[μ] β`
 

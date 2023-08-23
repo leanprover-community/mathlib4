@@ -3,8 +3,8 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.GroupCat.Limits
+import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.DirectLimit
 
 #align_import algebra.category.Module.limits from "leanprover-community/mathlib"@"c43486ecf2a5a17479a32ce09e4818924145e90e"

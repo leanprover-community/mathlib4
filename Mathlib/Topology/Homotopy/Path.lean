@@ -3,9 +3,9 @@ Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
+import Mathlib.Analysis.Convex.Basic
 import Mathlib.Topology.Homotopy.Basic
 import Mathlib.Topology.PathConnected
-import Mathlib.Analysis.Convex.Basic
 
 #align_import topology.homotopy.path from "leanprover-community/mathlib"@"bb9d1c5085e0b7ea619806a68c5021927cecb2a6"
 

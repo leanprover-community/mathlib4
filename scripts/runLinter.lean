@@ -1,5 +1,5 @@
-import Std.Tactic.Lint
 import Mathlib.Tactic.ToExpr
+import Std.Tactic.Lint
 
 open Lean Core Elab Command Std.Tactic.Lint
 

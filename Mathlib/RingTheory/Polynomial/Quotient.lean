@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, David Kurniadi Angdinata, Devon Tuma, Riccardo Brasca
 -/
 import Mathlib.Data.Polynomial.Div
-import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Polynomial.Basic
 
 #align_import ring_theory.polynomial.quotient from "leanprover-community/mathlib"@"4f840b8d28320b20c87db17b3a6eef3d325fca87"
 

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.Polynomial.Reverse
 import Mathlib.Data.Polynomial.Inductions
+import Mathlib.Data.Polynomial.Reverse
 import Mathlib.RingTheory.Localization.Basic
 
 #align_import data.polynomial.laurent from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"

@@ -1,13 +1,13 @@
-import Mathlib.Tactic.Lift
-import Mathlib.Tactic.PermuteGoals
-import Mathlib.Tactic.Coe
-import Mathlib.Init.Set
-import Mathlib.Order.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
+import Mathlib.Data.PNat.Defs
+import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.List
-import Mathlib.Data.Rat.Defs
-import Mathlib.Data.PNat.Defs
+import Mathlib.Init.Set
+import Mathlib.Order.Basic
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Lift
+import Mathlib.Tactic.PermuteGoals
 
 /-! Some tests of the `lift` tactic. -/
 

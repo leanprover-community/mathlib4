@@ -3,8 +3,8 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Scott Morrison
 -/
-import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.EqToHom
+import Mathlib.CategoryTheory.NatIso
 import Mathlib.Data.Sum.Basic
 
 #align_import category_theory.pi.basic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"

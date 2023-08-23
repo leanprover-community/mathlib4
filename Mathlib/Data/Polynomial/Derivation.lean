@@ -3,9 +3,9 @@ Copyright (c) 2023 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Richard Hill
 -/
+import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Derivative
 import Mathlib.RingTheory.Derivation.Basic
-import Mathlib.Data.Polynomial.AlgebraMap
 
 /-!
 # Derivations of univariate polynomials

@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.NumberTheory.Divisors
-import Mathlib.Data.Nat.Squarefree
-import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Algebra.Invertible
+import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.Data.Nat.GCD.BigOperators
+import Mathlib.Data.Nat.Squarefree
+import Mathlib.NumberTheory.Divisors
 
 #align_import number_theory.arithmetic_function from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 

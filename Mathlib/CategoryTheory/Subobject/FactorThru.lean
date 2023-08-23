@@ -3,8 +3,8 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Scott Morrison
 -/
-import Mathlib.CategoryTheory.Subobject.Basic
 import Mathlib.CategoryTheory.Preadditive.Basic
+import Mathlib.CategoryTheory.Subobject.Basic
 
 #align_import category_theory.subobject.factor_thru from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
 

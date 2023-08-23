@@ -3,8 +3,8 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.LiftingProperties.Basic
 import Mathlib.CategoryTheory.Adjunction.Basic
+import Mathlib.CategoryTheory.LiftingProperties.Basic
 
 #align_import category_theory.lifting_properties.adjunction from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 

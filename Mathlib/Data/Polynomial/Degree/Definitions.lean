@@ -5,10 +5,10 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.MonoidAlgebra.Degree
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Nat.WithBot
-import Mathlib.Data.Polynomial.Monomial
-import Mathlib.Data.Polynomial.Coeff
 import Mathlib.Data.Nat.Cast.WithTop
+import Mathlib.Data.Nat.WithBot
+import Mathlib.Data.Polynomial.Coeff
+import Mathlib.Data.Polynomial.Monomial
 
 #align_import data.polynomial.degree.definitions from "leanprover-community/mathlib"@"808ea4ebfabeb599f21ec4ae87d6dc969597887f"
 

@@ -3,8 +3,8 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Bicategory.Basic
+import Mathlib.CategoryTheory.EqToHom
 
 #align_import category_theory.bicategory.strict from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.CategoryTheory.Equivalence
 import Mathlib.CategoryTheory.EqToHom
+import Mathlib.CategoryTheory.Equivalence
 import Mathlib.Data.ULift
 
 #align_import category_theory.category.ulift from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"

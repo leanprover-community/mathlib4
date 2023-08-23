@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
 -/
 import Mathlib.Algebra.Module.Submodule.Basic
-import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Topology.Algebra.Monoid
 
 #align_import order.filter.zero_and_bounded_at_filter from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 

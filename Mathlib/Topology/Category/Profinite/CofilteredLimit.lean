@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.Topology.Category.Profinite.Basic
-import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.Topology.DiscreteQuotient
 import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
 import Mathlib.Topology.Category.TopCat.Limits.Konig
+import Mathlib.Topology.DiscreteQuotient
+import Mathlib.Topology.LocallyConstant.Basic
 
 #align_import topology.category.Profinite.cofiltered_limit from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 

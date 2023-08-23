@@ -3,10 +3,10 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
-import Mathlib.Tactic.NormNum.Core
-import Mathlib.Tactic.HaveI
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Order.Invertible
+import Mathlib.Tactic.HaveI
+import Mathlib.Tactic.NormNum.Core
 import Mathlib.Util.Qq
 
 /-!

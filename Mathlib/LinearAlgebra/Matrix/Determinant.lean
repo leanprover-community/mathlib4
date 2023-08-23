@@ -3,16 +3,16 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Tim Baanen
 -/
-import Mathlib.Data.Matrix.PEquiv
+import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.Notation
-import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Matrix.PEquiv
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.GroupTheory.Perm.Sign
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Tactic.Ring
 import Mathlib.LinearAlgebra.Alternating
 import Mathlib.LinearAlgebra.Pi
+import Mathlib.Tactic.Ring
 
 #align_import linear_algebra.matrix.determinant from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
 

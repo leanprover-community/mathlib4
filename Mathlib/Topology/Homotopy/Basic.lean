@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
 import Mathlib.Topology.Algebra.Order.ProjIcc
-import Mathlib.Topology.ContinuousFunction.Ordered
 import Mathlib.Topology.CompactOpen
+import Mathlib.Topology.ContinuousFunction.Ordered
 import Mathlib.Topology.UnitInterval
 
 #align_import topology.homotopy.basic from "leanprover-community/mathlib"@"11c53f174270aa43140c0b26dabce5fc4a253e80"

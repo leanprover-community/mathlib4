@@ -6,8 +6,8 @@ Authors: Anatole Dedecker, Eric Wieser
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Normed.Field.InfiniteSum
-import Mathlib.Data.Nat.Choose.Cast
 import Mathlib.Data.Finset.NoncommProd
+import Mathlib.Data.Nat.Choose.Cast
 import Mathlib.Topology.Algebra.Algebra
 
 #align_import analysis.normed_space.exponential from "leanprover-community/mathlib"@"62748956a1ece9b26b33243e2e3a2852176666f5"

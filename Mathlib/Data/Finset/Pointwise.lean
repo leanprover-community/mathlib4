@@ -6,8 +6,8 @@ Authors: Floris van Doorn, Yaël Dillies
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Set.Pointwise.Finite
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Set.Pointwise.ListOfFn
+import Mathlib.Data.Set.Pointwise.SMul
 
 #align_import data.finset.pointwise from "leanprover-community/mathlib"@"eba7871095e834365616b5e43c8c7bb0b37058d0"
 

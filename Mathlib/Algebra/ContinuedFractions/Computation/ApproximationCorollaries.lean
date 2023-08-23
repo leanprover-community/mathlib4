@@ -3,10 +3,10 @@ Copyright (c) 2021 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
+import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
 import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
 import Mathlib.Algebra.Order.Archimedean
-import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Topology.Order.Basic
 
 #align_import algebra.continued_fractions.computation.approximation_corollaries from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"

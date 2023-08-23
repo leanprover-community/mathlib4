@@ -3,8 +3,8 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.FullSubcategory
+import Mathlib.CategoryTheory.NatIso
 
 #align_import category_theory.essential_image from "leanprover-community/mathlib"@"550b58538991c8977703fdeb7c9d51a5aa27df11"
 

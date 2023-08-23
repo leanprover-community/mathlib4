@@ -3,10 +3,10 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Init.Data.List.Instances
-import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.List.Defs
+import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Init.Core
+import Mathlib.Init.Data.List.Instances
 import Std.Data.List.Lemmas
 
 #align_import data.list.basic from "leanprover-community/mathlib"@"9da1b3534b65d9661eb8f42443598a92bbb49211"

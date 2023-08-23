@@ -4,17 +4,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 
-import Mathlib.Init.Data.Nat.Notation
-import Mathlib.Lean.Message
-import Mathlib.Lean.Expr.Basic
 import Mathlib.Data.KVMap
+import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Lean.Expr.Basic
+import Mathlib.Lean.Linter
+import Mathlib.Lean.Message
+import Mathlib.Tactic.RunCmd -- not necessary, but useful for debugging
 import Mathlib.Tactic.Simps.NotationClass
 import Std.Classes.Dvd
+import Std.Data.List.Count
 import Std.Data.String.Basic
 import Std.Util.LibraryNote
-import Mathlib.Tactic.RunCmd -- not necessary, but useful for debugging
-import Mathlib.Lean.Linter
-import Std.Data.List.Count
 
 /-!
 # Simps attribute

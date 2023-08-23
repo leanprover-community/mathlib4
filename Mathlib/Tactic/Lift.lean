@@ -3,9 +3,9 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+import Mathlib.Init.Data.Int.Order
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.PermuteGoals
-import Mathlib.Init.Data.Int.Order
 
 /-!
 # lift tactic

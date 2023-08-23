@@ -3,9 +3,9 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Init.Logic
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Data.Ordering.Basic
+import Mathlib.Init.Logic
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.SplitIfs
 

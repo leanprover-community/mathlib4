@@ -6,9 +6,9 @@ Authors: Tian Chen, Mantas Bakšys
 import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Int.Parity
 import Mathlib.Data.ZMod.Basic
+import Mathlib.Init.Meta.WellFoundedTactics
 import Mathlib.NumberTheory.Padics.PadicVal
 import Mathlib.RingTheory.Ideal.QuotientOperations
-import Mathlib.Init.Meta.WellFoundedTactics
 
 #align_import number_theory.multiplicity from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 

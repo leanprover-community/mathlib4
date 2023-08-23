@@ -3,11 +3,11 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Analysis.NormedSpace.Dual
-import Mathlib.Analysis.NormedSpace.Star.Basic
+import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.InnerProductSpace.Adjoint
-import Mathlib.Algebra.Star.Subalgebra
+import Mathlib.Analysis.NormedSpace.Dual
+import Mathlib.Analysis.NormedSpace.Star.Basic
 
 #align_import analysis.von_neumann_algebra.basic from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 

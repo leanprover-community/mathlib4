@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison
 -/
 import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.CategoryTheory.Subobject.Limits
 import Mathlib.CategoryTheory.GradedObject
+import Mathlib.CategoryTheory.Subobject.Limits
 
 #align_import algebra.homology.homological_complex from "leanprover-community/mathlib"@"88bca0ce5d22ebfd9e73e682e51d60ea13b48347"
 

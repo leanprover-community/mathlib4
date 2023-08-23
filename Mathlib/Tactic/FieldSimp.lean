@@ -6,10 +6,10 @@ Authors: Sébastien Gouëzel, David Renshaw
 
 import Lean.Elab.Tactic.Basic
 import Lean.Meta.Tactic.Simp.Main
-import Std.Lean.Parser
 import Mathlib.Algebra.Group.Units
 import Mathlib.Tactic.NormNum.Core
 import Qq
+import Std.Lean.Parser
 
 /-!
 # `field_simp` tactic

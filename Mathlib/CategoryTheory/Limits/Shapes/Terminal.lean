@@ -3,10 +3,10 @@ Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.PEmpty
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Category.Preorder
+import Mathlib.CategoryTheory.EpiMono
+import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.PEmpty
 
 #align_import category_theory.limits.shapes.terminal from "leanprover-community/mathlib"@"239d882c4fb58361ee8b3b39fb2091320edef10a"
 

@@ -3,8 +3,8 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Probability.Process.HittingTime
 import Mathlib.Probability.Martingale.Basic
+import Mathlib.Probability.Process.HittingTime
 
 #align_import probability.martingale.optional_stopping from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 

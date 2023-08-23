@@ -3,8 +3,8 @@ Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Ring.InjSurj
 
 #align_import algebra.order.field.inj_surj from "leanprover-community/mathlib"@"ee0c179cd3c8a45aa5bffbf1b41d8dbede452865"

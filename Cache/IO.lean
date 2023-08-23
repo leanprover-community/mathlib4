@@ -5,9 +5,9 @@ Authors: Arthur Paulino
 -/
 
 import Lean.Data.HashMap
+import Lean.Data.Json.Printer
 import Lean.Data.RBMap
 import Lean.Data.RBTree
-import Lean.Data.Json.Printer
 
 set_option autoImplicit true
 

@@ -3,10 +3,10 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.DedekindDomain.Basic
-import Mathlib.RingTheory.Valuation.ValuationRing
+import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.Nakayama
+import Mathlib.RingTheory.Valuation.ValuationRing
 
 #align_import ring_theory.discrete_valuation_ring.tfae from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 

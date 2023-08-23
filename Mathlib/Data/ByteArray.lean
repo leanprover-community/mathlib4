@@ -1,5 +1,5 @@
-import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Char
+import Mathlib.Data.Nat.Basic
 import Mathlib.Data.UInt
 
 set_option autoImplicit true

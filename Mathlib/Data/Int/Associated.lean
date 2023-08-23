@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Associated
-import Mathlib.Data.Int.Units
 import Mathlib.Data.Int.Basic
+import Mathlib.Data.Int.Units
 
 #align_import data.int.associated from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 /-!

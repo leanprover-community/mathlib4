@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Combinatorics.SetFamily.Compression.Down
-import Mathlib.Order.UpperLower.Basic
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Order.UpperLower.Basic
 
 #align_import combinatorics.set_family.harris_kleitman from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
 

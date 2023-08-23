@@ -5,8 +5,8 @@ Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.Limits.Presheaf
+import Mathlib.CategoryTheory.Limits.Yoneda
 
 #align_import category_theory.limits.preserves.functor_category from "leanprover-community/mathlib"@"39478763114722f0ec7613cb2f3f7701f9b86c8d"
 

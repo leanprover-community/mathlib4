@@ -3,10 +3,10 @@ Copyright (c) 2019 Scott Morrison All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Control.EquivFunctor
 import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Whiskering
+import Mathlib.Control.EquivFunctor
 
 #align_import category_theory.core from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 

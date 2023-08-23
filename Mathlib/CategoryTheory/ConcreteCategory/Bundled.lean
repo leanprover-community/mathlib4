@@ -3,10 +3,10 @@ Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johannes Hölzl, Reid Barton, Sean Leather
 -/
+import Mathlib.Mathport.Rename
+import Std.Tactic.CoeExt
 import Std.Tactic.Lint.Frontend
 import Std.Tactic.Lint.Misc
-import Std.Tactic.CoeExt
-import Mathlib.Mathport.Rename
 
 #align_import category_theory.concrete_category.bundled from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 

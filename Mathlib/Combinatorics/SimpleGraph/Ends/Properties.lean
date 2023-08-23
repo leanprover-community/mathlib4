@@ -3,8 +3,8 @@ Copyright (c) 2022 Anand Rao, Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anand Rao, Rémi Bottinelli
 -/
-import Mathlib.Combinatorics.SimpleGraph.Ends.Defs
 import Mathlib.CategoryTheory.CofilteredSystem
+import Mathlib.Combinatorics.SimpleGraph.Ends.Defs
 
 #align_import combinatorics.simple_graph.ends.properties from "leanprover-community/mathlib"@"db53863fb135228820ee0b08e8dce9349a3d911b"
 

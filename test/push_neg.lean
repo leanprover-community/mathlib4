@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Author: Alice Laroche, Frédéric Dupuis, Jireh Loreaux
 -/
 
-import Mathlib.Tactic.PushNeg
 import Mathlib.Init.Algebra.Order
+import Mathlib.Tactic.PushNeg
 
 set_option autoImplicit true
 variable {α β : Type} [LinearOrder β] {p q : Prop} {p' q' : α → Prop}

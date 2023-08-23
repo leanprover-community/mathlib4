@@ -3,8 +3,8 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.GroupTheory.Subsemigroup.Centralizer
 import Mathlib.GroupTheory.Submonoid.Center
+import Mathlib.GroupTheory.Subsemigroup.Centralizer
 
 #align_import group_theory.submonoid.centralizer from "leanprover-community/mathlib"@"cc67cd75b4e54191e13c2e8d722289a89e67e4fa"
 

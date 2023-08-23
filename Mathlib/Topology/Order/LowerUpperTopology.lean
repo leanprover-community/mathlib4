@@ -3,9 +3,9 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
+import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Order.Lattice
-import Mathlib.Order.Hom.CompleteLattice
 
 #align_import topology.order.lower_topology from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 

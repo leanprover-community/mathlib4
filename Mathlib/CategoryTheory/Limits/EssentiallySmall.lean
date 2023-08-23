@@ -3,8 +3,8 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.EssentiallySmall
+import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 #align_import category_theory.limits.essentially_small from "leanprover-community/mathlib"@"952e7ee9eaf835f322f2d01ca6cf06ed0ab6d2c5"
 

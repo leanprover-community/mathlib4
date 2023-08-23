@@ -3,10 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Lie.Basic
 import Mathlib.Algebra.Lie.Subalgebra
 import Mathlib.Algebra.Lie.Submodule
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 #align_import algebra.lie.of_associative from "leanprover-community/mathlib"@"f0f3d964763ecd0090c9eb3ae0d15871d08781c4"
 

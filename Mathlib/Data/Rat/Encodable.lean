@@ -3,9 +3,9 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Logic.Encodable.Basic
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Rat.Init
+import Mathlib.Logic.Encodable.Basic
 
 #align_import data.rat.encodable from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 

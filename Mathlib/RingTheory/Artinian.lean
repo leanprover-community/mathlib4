@@ -3,8 +3,8 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.RingTheory.Nakayama
 import Mathlib.Data.SetLike.Fintype
+import Mathlib.RingTheory.Nakayama
 import Mathlib.Tactic.RSuffices
 
 #align_import ring_theory.artinian from "leanprover-community/mathlib"@"210657c4ea4a4a7b234392f70a3a2a83346dfa90"

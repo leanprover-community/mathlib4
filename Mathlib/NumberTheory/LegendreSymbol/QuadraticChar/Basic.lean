@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.Data.Fintype.Parity
-import Mathlib.NumberTheory.LegendreSymbol.ZModChar
 import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.NumberTheory.LegendreSymbol.ZModChar
 
 #align_import number_theory.legendre_symbol.quadratic_char.basic from "leanprover-community/mathlib"@"5b2fe80501ff327b9109fb09b7cc8c325cd0d7d9"
 

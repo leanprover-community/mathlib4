@@ -1,6 +1,7 @@
-import Mathlib.Tactic.Nontriviality
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Nat.Basic
+import Mathlib.Tactic.Nontriviality
+
 -- import Mathlib.Data.Set.Basic
 
 /-! ### Test `nontriviality` with inequality hypotheses -/

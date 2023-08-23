@@ -3,12 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Patrick Stevens
 -/
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.BigOperators.NatAntidiagonal
+import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Tactic.Linarith
-import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Algebra.BigOperators.NatAntidiagonal
 
 #align_import data.nat.choose.sum from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 

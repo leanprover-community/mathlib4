@@ -3,10 +3,11 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Mathport.Rename
 import Mathlib.Init.Data.Nat.Notation
-import Std.Data.Nat.Lemmas
+import Mathlib.Mathport.Rename
 import Std.Data.List.Basic
+import Std.Data.Nat.Lemmas
+
 /-!
 Definitions for `List` not (yet) in `Std`
 -/

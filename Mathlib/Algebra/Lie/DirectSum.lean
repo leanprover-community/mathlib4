@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.DirectSum.Module
+import Mathlib.Algebra.Lie.Basic
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Submodule
-import Mathlib.Algebra.Lie.Basic
 
 #align_import algebra.lie.direct_sum from "leanprover-community/mathlib"@"c0cc689babd41c0e9d5f02429211ffbe2403472a"
 

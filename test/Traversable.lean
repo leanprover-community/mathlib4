@@ -1,5 +1,5 @@
-import Mathlib.Tactic.DeriveTraversable
 import Mathlib.Control.Traversable.Instances
+import Mathlib.Tactic.DeriveTraversable
 
 namespace Testing
 

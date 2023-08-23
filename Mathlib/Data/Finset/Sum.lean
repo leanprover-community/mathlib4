@@ -3,8 +3,8 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Multiset.Sum
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Multiset.Sum
 
 #align_import data.finset.sum from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 

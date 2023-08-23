@@ -6,9 +6,10 @@ Floris van Doorn, E.W.Ayers
 -/
 import Lean
 import Lean.Meta
-import Std.Util.TermUnsafe
 import Mathlib.Lean.Expr.Traverse
 import Mathlib.Util.MemoFix
+import Std.Util.TermUnsafe
+
 namespace Lean.Expr
 /-!
 # ReplaceRec

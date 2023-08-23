@@ -3,8 +3,8 @@ Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Data.Seq.Seq
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Data.Seq.Seq
 
 #align_import algebra.continued_fractions.basic from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 

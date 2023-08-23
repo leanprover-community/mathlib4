@@ -3,8 +3,8 @@ Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
 -/
-import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Iso
+import Mathlib.CategoryTheory.NatTrans
 
 #align_import category_theory.functor.category from "leanprover-community/mathlib"@"8350c34a64b9bc3fc64335df8006bffcadc7baa6"
 

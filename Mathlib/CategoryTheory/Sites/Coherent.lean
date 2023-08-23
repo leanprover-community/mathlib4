@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Sites.Canonical
 import Mathlib.CategoryTheory.Sites.Coverage
 import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 import Mathlib.Data.Fintype.Sigma
+
 /-!
 
 # The Coherent Grothendieck Topology

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.Algebra.IsPrimePow
-import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.NumberTheory.ArithmeticFunction
 
 #align_import number_theory.von_mangoldt from "leanprover-community/mathlib"@"c946d6097a6925ad16d7ec55677bbc977f9846de"
 

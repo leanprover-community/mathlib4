@@ -1,7 +1,7 @@
-import Mathlib.Tactic.Linarith
+import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Order
-import Mathlib.Data.Int.Order.Basic
+import Mathlib.Tactic.Linarith
 
 set_option linter.unusedVariables false
 set_option autoImplicit true

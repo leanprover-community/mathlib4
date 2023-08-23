@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.CharZero.Defs
+import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Data.Nat.Order.Basic
-import Mathlib.Algebra.Group.Opposite
 
 #align_import data.nat.cast.basic from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 

@@ -3,9 +3,9 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.Init.Data.Nat.Bitwise
-import Mathlib.Init.Data.List.Basic
 import Mathlib.Data.Nat.Basic
+import Mathlib.Init.Data.List.Basic
+import Mathlib.Init.Data.Nat.Bitwise
 
 #align_import data.nat.bits from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
 

@@ -1,5 +1,5 @@
-import Mathlib.Mathport.Notation
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Mathport.Notation
 
 set_option autoImplicit true
 

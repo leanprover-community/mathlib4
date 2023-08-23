@@ -6,11 +6,11 @@ Authors: Leonardo de Moura, Mario Carneiro
 notation, basic datatypes and type classes
 -/
 import Mathlib.Mathport.Rename
-import Std.Classes.SetNotation
-import Std.Classes.Dvd
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Tactic.Relation.Trans
+import Std.Classes.Dvd
+import Std.Classes.SetNotation
 
 /-! ### alignments from lean 3 `init.core` -/
 

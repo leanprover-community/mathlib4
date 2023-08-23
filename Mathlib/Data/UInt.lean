@@ -1,8 +1,8 @@
-import Mathlib.Data.Nat.Basic
-import Mathlib.Data.Fin.Basic
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Basic
+import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Nat.Basic
 import Mathlib.Data.ZMod.Defs
 
 lemma UInt8.val_eq_of_lt {a : Nat} : a < UInt8.size -> (ofNat a).val = a := Nat.mod_eq_of_lt

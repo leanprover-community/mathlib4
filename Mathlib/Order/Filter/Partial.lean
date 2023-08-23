@@ -3,8 +3,8 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Basic
 import Mathlib.Data.PFun
+import Mathlib.Order.Filter.Basic
 
 #align_import order.filter.partial from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
 

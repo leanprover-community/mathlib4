@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 
-import Std.Lean.NameMapAttribute
-import Mathlib.Lean.Expr.Basic
 import Lean.Elab.Exception
+import Mathlib.Lean.Expr.Basic
 import Qq.MetaM
+import Std.Lean.NameMapAttribute
 import Std.Tactic.Lint
 
 /-!

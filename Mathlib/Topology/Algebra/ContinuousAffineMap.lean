@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.ContinuousFunction.Basic
 
 #align_import topology.algebra.continuous_affine_map from "leanprover-community/mathlib"@"bd1fc183335ea95a9519a1630bcf901fe9326d83"
 

@@ -3,11 +3,11 @@ Copyright (c) 2021 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Ines Wright, Joachim Breitner
 -/
+import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.GroupTheory.Solvable
-import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.Sylow
-import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Tactic.TFAE
 
 #align_import group_theory.nilpotent from "leanprover-community/mathlib"@"2bbc7e3884ba234309d2a43b19144105a753292e"

@@ -1,8 +1,9 @@
-import Mathlib.Init.Data.Nat.Notation
-import Mathlib.Tactic.Basic
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Init.Function
 import Mathlib.Data.Fintype.Card
+import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Init.Function
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Basic
+
 -- import Mathlib.Data.Matrix.Basic
 
 

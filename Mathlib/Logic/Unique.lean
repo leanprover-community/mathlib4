@@ -3,9 +3,9 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Logic.IsEmpty
-import Mathlib.Init.Logic
 import Mathlib.Init.Data.Fin.Basic
+import Mathlib.Init.Logic
+import Mathlib.Logic.IsEmpty
 import Mathlib.Tactic.Common
 
 #align_import logic.unique from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"

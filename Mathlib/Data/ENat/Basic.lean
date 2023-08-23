@@ -3,10 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Nat.SuccPred
 import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Algebra.Order.Ring.WithTop
+import Mathlib.Algebra.Order.Sub.WithTop
+import Mathlib.Data.Nat.SuccPred
 
 #align_import data.enat.basic from "leanprover-community/mathlib"@"ceb887ddf3344dab425292e497fa2af91498437c"
 

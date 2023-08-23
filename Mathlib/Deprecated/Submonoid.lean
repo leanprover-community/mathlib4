@@ -3,9 +3,9 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard
 -/
-import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Deprecated.Group
+import Mathlib.GroupTheory.Submonoid.Basic
 
 #align_import deprecated.submonoid from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 

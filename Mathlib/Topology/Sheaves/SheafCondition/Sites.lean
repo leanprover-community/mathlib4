@@ -3,9 +3,9 @@ Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
+import Mathlib.CategoryTheory.Sites.DenseSubsite
 import Mathlib.CategoryTheory.Sites.Spaces
 import Mathlib.Topology.Sheaves.Sheaf
-import Mathlib.CategoryTheory.Sites.DenseSubsite
 
 #align_import topology.sheaves.sheaf_condition.sites from "leanprover-community/mathlib"@"d39590fc8728fbf6743249802486f8c91ffe07bc"
 

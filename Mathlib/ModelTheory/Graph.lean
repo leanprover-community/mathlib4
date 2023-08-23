@@ -3,8 +3,8 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.Satisfiability
 import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.ModelTheory.Satisfiability
 
 #align_import model_theory.graph from "leanprover-community/mathlib"@"e56b8fea84d60fe434632b9d3b829ee685fb0c8f"
 

@@ -3,9 +3,9 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.Algebra.Category.MonCat.Basic
+import Mathlib.CategoryTheory.Category.Cat
+import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.Combinatorics.Quiver.SingleObj
 
 #align_import category_theory.single_obj from "leanprover-community/mathlib"@"56adee5b5eef9e734d82272918300fca4f3e7cef"

@@ -3,12 +3,12 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+import Mathlib.Analysis.NormedSpace.Units
+import Mathlib.Data.IsROrC.Basic
 import Mathlib.Topology.Algebra.Algebra
+import Mathlib.Topology.Algebra.Module.CharacterSpace
 import Mathlib.Topology.ContinuousFunction.Compact
 import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Data.IsROrC.Basic
-import Mathlib.Analysis.NormedSpace.Units
-import Mathlib.Topology.Algebra.Module.CharacterSpace
 
 #align_import topology.continuous_function.ideals from "leanprover-community/mathlib"@"c2258f7bf086b17eac0929d635403780c39e239f"
 

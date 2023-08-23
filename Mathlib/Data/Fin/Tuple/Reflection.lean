@@ -3,8 +3,8 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Fin.VecNotation
 import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Data.Fin.VecNotation
 
 #align_import data.fin.tuple.reflection from "leanprover-community/mathlib"@"d95bef0d215ea58c0fd7bbc4b151bf3fe952c095"
 

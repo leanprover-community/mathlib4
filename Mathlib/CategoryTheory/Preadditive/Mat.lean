@@ -5,14 +5,14 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
-import Mathlib.CategoryTheory.Preadditive.Basic
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.Data.Matrix.DMatrix
-import Mathlib.Data.Matrix.Basic
-import Mathlib.CategoryTheory.FintypeCat
-import Mathlib.CategoryTheory.Preadditive.SingleObj
 import Mathlib.Algebra.Opposites
+import Mathlib.CategoryTheory.FintypeCat
+import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.CategoryTheory.Preadditive.Basic
+import Mathlib.CategoryTheory.Preadditive.SingleObj
+import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.DMatrix
 
 #align_import category_theory.preadditive.Mat from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
 

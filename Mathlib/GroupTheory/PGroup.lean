@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
 import Mathlib.Data.ZMod.Basic
-import Mathlib.GroupTheory.Index
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Quotient
+import Mathlib.GroupTheory.Index
 import Mathlib.GroupTheory.Perm.Cycle.Type
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.Tactic.IntervalCases

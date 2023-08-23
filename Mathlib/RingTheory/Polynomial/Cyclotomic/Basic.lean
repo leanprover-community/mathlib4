@@ -5,7 +5,6 @@ Authors: Riccardo Brasca
 -/
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.RingTheory.RootsOfUnity.Complex
 import Mathlib.Data.Polynomial.Lifts
 import Mathlib.Data.Polynomial.Splits
 import Mathlib.Data.ZMod.Algebra
@@ -13,6 +12,7 @@ import Mathlib.FieldTheory.RatFunc
 import Mathlib.FieldTheory.Separable
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.RingTheory.RootsOfUnity.Basic
+import Mathlib.RingTheory.RootsOfUnity.Complex
 
 #align_import ring_theory.polynomial.cyclotomic.basic from "leanprover-community/mathlib"@"7fdeecc0d03cd40f7a165e6cf00a4d2286db599f"
 

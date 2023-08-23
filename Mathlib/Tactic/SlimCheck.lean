@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Scott Morrison
 -/
 
-import Mathlib.Testing.SlimCheck.Testable
 import Mathlib.Data.List.Sort
+import Mathlib.Testing.SlimCheck.Testable
 import Qq
 
 /-!

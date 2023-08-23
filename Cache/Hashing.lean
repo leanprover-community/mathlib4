@@ -5,8 +5,8 @@ Authors: Arthur Paulino
 -/
 
 import Cache.IO
-import Lean.Elab.ParseImportsFast
 import Lake.Build.Trace
+import Lean.Elab.ParseImportsFast
 
 namespace Cache.Hashing
 

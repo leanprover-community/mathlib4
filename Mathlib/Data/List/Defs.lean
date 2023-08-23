@@ -6,11 +6,11 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Control.Functor
 import Mathlib.Data.Nat.Basic
-import Mathlib.Logic.Basic
 import Mathlib.Data.SProd
+import Mathlib.Logic.Basic
 import Mathlib.Util.CompileInductive
-import Std.Tactic.Lint.Basic
 import Std.Data.RBMap.Basic
+import Std.Tactic.Lint.Basic
 
 #align_import data.list.defs from "leanprover-community/mathlib"@"d2d8742b0c21426362a9dacebc6005db895ca963"
 

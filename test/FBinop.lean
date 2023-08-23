@@ -1,7 +1,7 @@
-import Mathlib.Tactic.FBinop
-import Mathlib.Data.Set.Prod
 import Mathlib.Data.Finset.Prod
+import Mathlib.Data.Set.Prod
 import Mathlib.Data.SetLike.Basic
+import Mathlib.Tactic.FBinop
 
 universe u v w
 set_option autoImplicit true

@@ -1,9 +1,10 @@
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Lean.Exception
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.RunCmd
-import Mathlib.Lean.Exception
 import Mathlib.Util.Time
 import Qq.MetaM
+
 open Qq Lean Meta Elab Command ToAdditive
 
 set_option autoImplicit true

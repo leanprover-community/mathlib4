@@ -3,8 +3,8 @@ Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Data.Set.Intervals.OrdConnected
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 #align_import order.complete_lattice_intervals from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 

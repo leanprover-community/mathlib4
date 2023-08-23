@@ -3,8 +3,8 @@ Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Intervals.Basic
 
 #align_import data.set.intervals.surj_on from "leanprover-community/mathlib"@"a59dad53320b73ef180174aae867addd707ef00e"
 

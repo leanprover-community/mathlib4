@@ -6,10 +6,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.IndicatorFunction
-import Mathlib.Topology.Algebra.Group.Basic
-import Mathlib.Order.LiminfLimsup
 import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Filter.CountableInter
+import Mathlib.Order.LiminfLimsup
+import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Order.Basic
 
 #align_import topology.algebra.order.liminf_limsup from "leanprover-community/mathlib"@"52932b3a083d4142e78a15dc928084a22fea9ba0"

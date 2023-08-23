@@ -3,8 +3,8 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 import Mathlib.Geometry.Manifold.LocalInvariantProperties
+import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 
 #align_import geometry.manifold.cont_mdiff from "leanprover-community/mathlib"@"e5ab837fc252451f3eb9124ae6e7b6f57455e7b9"
 

@@ -7,9 +7,9 @@ import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Dynamics.PeriodicPts
-import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.Commutator
 import Mathlib.GroupTheory.Coset
+import Mathlib.GroupTheory.GroupAction.ConjAct
 
 #align_import group_theory.group_action.quotient from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 

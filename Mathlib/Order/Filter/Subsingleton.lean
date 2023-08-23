@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Order.Filter.Bases
 import Mathlib.Order.Filter.Ultrafilter
+
 /-!
 # Subsingleton filters
 

@@ -3,8 +3,8 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Data.Int.LeastGreatest
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 #align_import data.int.conditionally_complete_order from "leanprover-community/mathlib"@"1e05171a5e8cf18d98d9cf7b207540acb044acae"
 

@@ -1,8 +1,8 @@
-import Std.Tactic.GuardMsgs
-import Mathlib.Tactic.Recall
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Data.Complex.Exponential
+import Mathlib.Tactic.Recall
+import Std.Tactic.GuardMsgs
 
 -- Remark: When the test is run by make/CI, this option is not set, so we set it here.
 set_option pp.unicode.fun true

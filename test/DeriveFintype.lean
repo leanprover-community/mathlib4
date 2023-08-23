@@ -1,6 +1,6 @@
-import Mathlib.Tactic.DeriveFintype
-import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Pi
+import Mathlib.Data.Fintype.Prod
+import Mathlib.Tactic.DeriveFintype
 
 set_option autoImplicit true
 namespace tests

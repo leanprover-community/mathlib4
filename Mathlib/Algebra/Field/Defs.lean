@@ -5,8 +5,8 @@ Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 
 import Mathlib.Algebra.Ring.Defs
-import Std.Data.Rat
 import Mathlib.Data.Rat.Init
+import Std.Data.Rat
 
 #align_import algebra.field.defs from "leanprover-community/mathlib"@"2651125b48fc5c170ab1111afd0817c903b1fc6c"
 

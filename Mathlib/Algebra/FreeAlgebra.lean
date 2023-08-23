@@ -5,8 +5,8 @@ Authors: Scott Morrison, Adam Topaz
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.Free
+import Mathlib.Algebra.MonoidAlgebra.Basic
 
 #align_import algebra.free_algebra from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 

@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.AddTorsor
-import Mathlib.Topology.Algebra.Constructions
 import Mathlib.GroupTheory.GroupAction.Prod
 import Mathlib.Topology.Algebra.ConstMulAction
+import Mathlib.Topology.Algebra.Constructions
 
 #align_import topology.algebra.mul_action from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
 

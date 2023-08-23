@@ -3,9 +3,9 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.MeasureTheory.Measure.Doubling
-import Mathlib.MeasureTheory.Covering.Vitali
 import Mathlib.MeasureTheory.Covering.Differentiation
+import Mathlib.MeasureTheory.Covering.Vitali
+import Mathlib.MeasureTheory.Measure.Doubling
 
 #align_import measure_theory.covering.density_theorem from "leanprover-community/mathlib"@"5f6e827d81dfbeb6151d7016586ceeb0099b9655"
 

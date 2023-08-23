@@ -3,8 +3,8 @@ Copyright (c) 2021 Alena Gusakov, Bhavik Mehta, Kyle Miller. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 -/
-import Mathlib.Combinatorics.Hall.Finite
 import Mathlib.CategoryTheory.CofilteredSystem
+import Mathlib.Combinatorics.Hall.Finite
 import Mathlib.Data.Rel
 
 #align_import combinatorics.hall.basic from "leanprover-community/mathlib"@"8195826f5c428fc283510bc67303dd4472d78498"

@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara
 -/
 import Mathlib.Analysis.Analytic.Basic
+import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Calculus.Dslope
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
-import Mathlib.Analysis.Analytic.Uniqueness
 
 #align_import analysis.analytic.isolated_zeros from "leanprover-community/mathlib"@"a3209ddf94136d36e5e5c624b10b2a347cc9d090"
 

@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Invertible
+import Mathlib.Algebra.Lie.Abelian
+import Mathlib.Algebra.Lie.SkewAdjoint
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.DMatrix
-import Mathlib.Algebra.Lie.Abelian
 import Mathlib.LinearAlgebra.Matrix.Trace
-import Mathlib.Algebra.Lie.SkewAdjoint
 import Mathlib.LinearAlgebra.SymplecticGroup
 
 #align_import algebra.lie.classical from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"

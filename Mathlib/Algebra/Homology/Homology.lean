@@ -3,8 +3,8 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.HomologicalComplex
+import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.CategoryTheory.GradedObject
 
 #align_import algebra.homology.homology from "leanprover-community/mathlib"@"618ea3d5c99240cd7000d8376924906a148bf9ff"

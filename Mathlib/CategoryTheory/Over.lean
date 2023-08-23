@@ -3,10 +3,10 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.StructuredArrow
-import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Functor.EpiMono
+import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.CategoryTheory.PUnit
+import Mathlib.CategoryTheory.StructuredArrow
 
 #align_import category_theory.over from "leanprover-community/mathlib"@"8a318021995877a44630c898d0b2bc376fceef3b"
 

@@ -3,23 +3,23 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 -/
-import Mathlib.Init.Data.Nat.Notation
-import Mathlib.Data.String.Defs
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.KVMap
-import Mathlib.Lean.Expr.ReplaceRec
+import Mathlib.Data.String.Defs
+import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Lean.EnvExtension
+import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Meta.Simp
-import Std.Lean.NameMapAttribute
-import Std.Data.Option.Basic
-import Std.Tactic.CoeExt -- just to copy the attribute
-import Std.Tactic.Ext.Attr -- just to copy the attribute
-import Std.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
+import Mathlib.Tactic.Eqns -- just to copy the attribute
 import Mathlib.Tactic.Relation.Rfl -- just to copy the attribute
 import Mathlib.Tactic.Relation.Symm -- just to copy the attribute
 import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
-import Mathlib.Tactic.Eqns -- just to copy the attribute
 import Mathlib.Tactic.Simps.Basic
+import Std.Data.Option.Basic
+import Std.Lean.NameMapAttribute
+import Std.Tactic.CoeExt -- just to copy the attribute
+import Std.Tactic.Ext.Attr -- just to copy the attribute
+import Std.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
 
 /-!
 # The `@[to_additive]` attribute.

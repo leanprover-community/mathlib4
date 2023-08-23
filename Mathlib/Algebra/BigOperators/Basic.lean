@@ -8,9 +8,9 @@ import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Ring.Opposite
+import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Multiset.Powerset
 import Mathlib.Data.Set.Pairwise.Basic
 

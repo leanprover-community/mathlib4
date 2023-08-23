@@ -3,8 +3,8 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.Prod
+import Mathlib.LinearAlgebra.Quotient
 
 #align_import linear_algebra.projection from "leanprover-community/mathlib"@"6d584f1709bedbed9175bd9350df46599bdd7213"
 

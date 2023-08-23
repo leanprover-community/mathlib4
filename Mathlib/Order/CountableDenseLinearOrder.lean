@@ -3,8 +3,8 @@ Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Order.Ideal
 import Mathlib.Data.Finset.Lattice
+import Mathlib.Order.Ideal
 
 #align_import order.countable_dense_linear_order from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
 

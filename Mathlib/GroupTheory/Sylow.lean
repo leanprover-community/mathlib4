@@ -6,8 +6,8 @@ Authors: Chris Hughes, Thomas Browning
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.SetLike.Fintype
 import Mathlib.GroupTheory.GroupAction.ConjAct
-import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.NoncommPiCoprod
+import Mathlib.GroupTheory.PGroup
 import Mathlib.Order.Atoms.Finite
 
 #align_import group_theory.sylow from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"

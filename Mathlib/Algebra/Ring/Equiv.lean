@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Util.AssertExists
-import Mathlib.Algebra.Hom.Equiv.Basic
 
 #align_import algebra.ring.equiv from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 

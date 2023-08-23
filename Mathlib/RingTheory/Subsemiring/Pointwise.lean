@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.GroupRingAction.Basic
-import Mathlib.RingTheory.Subsemiring.Basic
-import Mathlib.GroupTheory.Submonoid.Pointwise
 import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.GroupTheory.Submonoid.Pointwise
+import Mathlib.RingTheory.Subsemiring.Basic
 
 #align_import ring_theory.subsemiring.pointwise from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 

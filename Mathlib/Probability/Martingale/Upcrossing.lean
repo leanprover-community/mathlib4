@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.Data.Set.Intervals.Monotone
-import Mathlib.Probability.Process.HittingTime
 import Mathlib.Probability.Martingale.Basic
+import Mathlib.Probability.Process.HittingTime
 
 #align_import probability.martingale.upcrossing from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
 

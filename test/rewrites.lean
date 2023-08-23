@@ -1,8 +1,8 @@
-import Mathlib.Tactic.Rewrites
-import Mathlib.Data.Nat.Prime
+import Mathlib.Algebra.Group.Basic
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Data.List.Basic
-import Mathlib.Algebra.Group.Basic
+import Mathlib.Data.Nat.Prime
+import Mathlib.Tactic.Rewrites
 
 set_option autoImplicit true
 

@@ -3,9 +3,9 @@ Copyright (c) 2020. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Massot
 -/
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Algebra.Group.Commutator
+import Mathlib.Tactic.FailIfNoProgress
+import Mathlib.Tactic.Ring
 
 #align_import tactic.group from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 

@@ -3,8 +3,8 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.W.Basic
 import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.W.Basic
 
 #align_import examples.prop_encodable from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 

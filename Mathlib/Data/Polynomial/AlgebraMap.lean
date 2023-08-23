@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Algebra.Pi
-import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.Data.Polynomial.Eval
+import Mathlib.RingTheory.Adjoin.Basic
 
 #align_import data.polynomial.algebra_map from "leanprover-community/mathlib"@"e064a7bf82ad94c3c17b5128bbd860d1ec34874e"
 

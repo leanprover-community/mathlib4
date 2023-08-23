@@ -3,13 +3,13 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Init.Logic
-import Mathlib.Init.Function
 import Mathlib.Init.Algebra.Classes
+import Mathlib.Init.Function
+import Mathlib.Init.Logic
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.LeftRight
-import Std.Util.LibraryNote
 import Std.Tactic.Lint.Basic
+import Std.Util.LibraryNote
 
 #align_import logic.basic from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 

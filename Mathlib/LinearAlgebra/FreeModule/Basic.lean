@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.Logic.Small.Basic
-import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
+import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.LinearAlgebra.TensorProductBasis
+import Mathlib.Logic.Small.Basic
 
 #align_import linear_algebra.free_module.basic from "leanprover-community/mathlib"@"4e7e7009099d4a88a750de710909b95487bf0124"
 

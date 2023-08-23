@@ -3,8 +3,8 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
 #align_import measure_theory.function.strongly_measurable.inner from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 

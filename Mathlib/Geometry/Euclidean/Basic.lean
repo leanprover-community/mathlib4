@@ -3,9 +3,9 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
+import Mathlib.Algebra.QuadraticDiscriminant
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Geometry.Euclidean.PerpBisector
-import Mathlib.Algebra.QuadraticDiscriminant
 
 #align_import geometry.euclidean.basic from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
 

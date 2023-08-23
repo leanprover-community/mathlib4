@@ -3,9 +3,9 @@ Copyright (c) 2023 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+import Mathlib.RingTheory.Discriminant
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.RingTheory.Norm
-import Mathlib.RingTheory.Discriminant
 
 #align_import ring_theory.localization.norm from "leanprover-community/mathlib"@"2e59a6de168f95d16b16d217b808a36290398c0a"
 

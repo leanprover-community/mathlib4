@@ -5,8 +5,8 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Nat.Parity
 import Mathlib.Logic.Encodable.Lattice
-import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.Algebra.Star
+import Mathlib.Topology.Algebra.UniformGroup
 
 #align_import topology.algebra.infinite_sum.basic from "leanprover-community/mathlib"@"3b1890e71632be9e3b2086ab512c3259a7e9a3ef"
 

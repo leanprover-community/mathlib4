@@ -3,10 +3,10 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.RepresentationTheory.Rep
 import Mathlib.Algebra.Category.FGModuleCat.Limits
 import Mathlib.CategoryTheory.Preadditive.Schur
 import Mathlib.RepresentationTheory.Basic
+import Mathlib.RepresentationTheory.Rep
 
 #align_import representation_theory.fdRep from "leanprover-community/mathlib"@"19a70dceb9dff0994b92d2dd049de7d84d28112b"
 

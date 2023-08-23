@@ -3,8 +3,8 @@ Copyright (c) 2023 Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
 -/
-import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Tactic.Ring
 
 #align_import data.nat.factorial.double_factorial from "leanprover-community/mathlib"@"7daeaf3072304c498b653628add84a88d0e78767"

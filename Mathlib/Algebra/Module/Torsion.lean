@@ -5,8 +5,8 @@ Authors: Pierre-Alexandre Bazin
 -/
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.Module.BigOperators
-import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.GroupTheory.Torsion
+import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Finiteness
 

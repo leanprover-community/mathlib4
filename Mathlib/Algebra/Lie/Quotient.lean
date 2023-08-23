@@ -3,8 +3,8 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Submodule
 import Mathlib.Algebra.Lie.OfAssociative
+import Mathlib.Algebra.Lie.Submodule
 import Mathlib.LinearAlgebra.Isomorphisms
 
 #align_import algebra.lie.quotient from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"

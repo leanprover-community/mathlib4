@@ -3,8 +3,8 @@ Copyright (c) 2020 Kevin Lacker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker
 -/
-import Mathlib.Tactic.Ring
 import Mathlib.Data.Nat.Prime
+import Mathlib.Tactic.Ring
 
 #align_import imo.imo1959_q1 from "leanprover-community/mathlib"@"5f25c089cb34db4db112556f23c50d12da81b297"
 

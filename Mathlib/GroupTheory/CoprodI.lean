@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Joachim Breitner
 -/
 import Mathlib.Algebra.FreeMonoid.Basic
+import Mathlib.Data.List.Chain
+import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.IsFreeGroup
-import Mathlib.Data.List.Chain
 import Mathlib.SetTheory.Cardinal.Ordinal
-import Mathlib.Data.Set.Pointwise.SMul
 
 #align_import group_theory.free_product from "leanprover-community/mathlib"@"9114ddffa023340c9ec86965e00cdd6fe26fcdf6"
 

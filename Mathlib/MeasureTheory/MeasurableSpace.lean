@@ -5,13 +5,13 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Data.Prod.TProd
+import Mathlib.Data.Set.UnionLift
 import Mathlib.GroupTheory.Coset
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.MeasureTheory.MeasurableSpaceDef
-import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.Filter.CountableSeparatingOn
+import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.LiminfLimsup
-import Mathlib.Data.Set.UnionLift
 
 #align_import measure_theory.measurable_space from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 

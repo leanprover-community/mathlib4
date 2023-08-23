@@ -3,8 +3,8 @@ Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Data.Real.Irrational
 import Mathlib.Data.Rat.Encodable
+import Mathlib.Data.Real.Irrational
 import Mathlib.Topology.MetricSpace.Baire
 
 #align_import topology.instances.irrational from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"

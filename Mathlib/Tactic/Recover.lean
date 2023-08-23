@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Siddhartha Gadgil, Jannis Limperg
 -/
 import Lean
-import Std.Tactic.RCases
 import Mathlib.Tactic.Cache
+import Std.Tactic.RCases
 
 open Lean (HashSet)
 open Lean Meta Elab Tactic

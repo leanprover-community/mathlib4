@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
 import Mathlib.Algebra.Ring.ULift
-import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.Data.MvPolynomial.Funext
+import Mathlib.RingTheory.WittVector.Basic
 
 #align_import ring_theory.witt_vector.is_poly from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 /-!

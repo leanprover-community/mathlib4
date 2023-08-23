@@ -3,9 +3,9 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.Real.Basic
-import Mathlib.Combinatorics.Pigeonhole
 import Mathlib.Algebra.Order.EuclideanAbsoluteValue
+import Mathlib.Combinatorics.Pigeonhole
+import Mathlib.Data.Real.Basic
 
 #align_import number_theory.class_number.admissible_absolute_value from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 

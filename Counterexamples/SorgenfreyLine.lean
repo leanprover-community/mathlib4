@@ -3,12 +3,12 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Instances.Irrational
-import Mathlib.Topology.Algebra.Order.Archimedean
-import Mathlib.Topology.Paracompact
-import Mathlib.Topology.MetricSpace.Metrizable
-import Mathlib.Topology.MetricSpace.EMetricParacompact
 import Mathlib.Data.Set.Intervals.Monotone
+import Mathlib.Topology.Algebra.Order.Archimedean
+import Mathlib.Topology.Instances.Irrational
+import Mathlib.Topology.MetricSpace.EMetricParacompact
+import Mathlib.Topology.MetricSpace.Metrizable
+import Mathlib.Topology.Paracompact
 import Mathlib.Topology.Separation.NotNormal
 
 #align_import sorgenfrey_line from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"

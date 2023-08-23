@@ -3,11 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Std.Tactic.Ext
-import Mathlib.Data.Stream.Defs
-import Mathlib.Logic.Function.Basic
-import Mathlib.Init.Data.List.Basic
 import Mathlib.Data.List.Basic
+import Mathlib.Data.Stream.Defs
+import Mathlib.Init.Data.List.Basic
+import Mathlib.Logic.Function.Basic
+import Std.Tactic.Ext
 
 #align_import data.stream.init from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 

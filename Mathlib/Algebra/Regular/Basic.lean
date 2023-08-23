@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.Commute
-import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.Order.Monoid.Lemmas
 
 #align_import algebra.regular.basic from "leanprover-community/mathlib"@"5cd3c25312f210fec96ba1edb2aebfb2ccf2010f"
 

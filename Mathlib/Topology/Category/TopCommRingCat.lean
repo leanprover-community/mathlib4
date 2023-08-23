@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Algebra.Ring.Basic
+import Mathlib.Topology.Category.TopCat.Basic
 
 #align_import topology.category.TopCommRing from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
 

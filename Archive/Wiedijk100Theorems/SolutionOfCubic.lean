@@ -3,8 +3,8 @@ Copyright (c) 2022 Jeoff Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeoff Lee
 -/
-import Mathlib.Tactic.LinearCombination
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+import Mathlib.Tactic.LinearCombination
 
 #align_import wiedijk_100_theorems.solution_of_cubic from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 

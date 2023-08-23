@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Data.Multiset.Basic
-import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Setoid.Basic
+import Mathlib.Data.Vector.Basic
 import Mathlib.Tactic.ApplyFun
 
 #align_import data.sym.basic from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"

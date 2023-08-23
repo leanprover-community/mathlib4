@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark
 -/
 import Mathlib.Data.Polynomial.Expand
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 import Mathlib.Data.Polynomial.Laurent
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 
 #align_import linear_algebra.matrix.charpoly.coeff from "leanprover-community/mathlib"@"9745b093210e9dac443af24da9dba0f9e2b6c912"
 

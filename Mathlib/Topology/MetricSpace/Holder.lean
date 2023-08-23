@@ -3,8 +3,8 @@ Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Topology.MetricSpace.Lipschitz
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+import Mathlib.Topology.MetricSpace.Lipschitz
 
 #align_import topology.metric_space.holder from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
 

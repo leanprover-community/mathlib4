@@ -1,6 +1,5 @@
-import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linarith
-
+import Mathlib.Tactic.LinearCombination
 
 set_option autoImplicit true
 

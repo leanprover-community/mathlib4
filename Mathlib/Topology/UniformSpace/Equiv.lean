@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Re
 Anatole Dedecker
 -/
 import Mathlib.Topology.Homeomorph
-import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Topology.UniformSpace.Pi
+import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 #align_import topology.uniform_space.equiv from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 

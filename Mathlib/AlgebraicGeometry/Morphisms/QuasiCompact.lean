@@ -3,9 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.AlgebraicGeometry.Limits
 import Mathlib.AlgebraicGeometry.Morphisms.Basic
 import Mathlib.Topology.Spectral.Hom
-import Mathlib.AlgebraicGeometry.Limits
 
 #align_import algebraic_geometry.morphisms.quasi_compact from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 

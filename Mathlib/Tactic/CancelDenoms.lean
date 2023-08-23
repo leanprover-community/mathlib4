@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 
-import Mathlib.Tactic.NormNum
-import Mathlib.Util.SynthesizeUsing
 import Mathlib.Data.Tree
+import Mathlib.Tactic.NormNum
 import Mathlib.Util.Qq
+import Mathlib.Util.SynthesizeUsing
 
 /-!
 # A tactic for canceling numeric denominators

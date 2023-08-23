@@ -6,8 +6,8 @@ Authors: Anne Baanen
 import Mathlib.LinearAlgebra.Dimension
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.Finiteness
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 #align_import linear_algebra.free_module.pid from "leanprover-community/mathlib"@"d87199d51218d36a0a42c66c82d147b5a7ff87b3"
 

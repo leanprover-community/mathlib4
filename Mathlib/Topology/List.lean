@@ -3,8 +3,8 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Topology.Constructions
 import Mathlib.Topology.Algebra.Monoid
+import Mathlib.Topology.Constructions
 
 #align_import topology.list from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 

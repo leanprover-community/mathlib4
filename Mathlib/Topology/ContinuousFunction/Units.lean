@@ -3,8 +3,8 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Algebra.Algebra.Spectrum
+import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Topology.ContinuousFunction.Algebra
 
 #align_import topology.continuous_function.units from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"

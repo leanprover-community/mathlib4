@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
+import Mathlib.Data.Finite.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Set.Functor
-import Mathlib.Data.Finite.Basic
 
 #align_import data.set.finite from "leanprover-community/mathlib"@"7fdd4f3746cb059edfdb5d52cba98f66fce418c0"
 

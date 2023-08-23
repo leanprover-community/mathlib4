@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Scott Morrison
 -/
 import Mathlib.Algebra.Group.Ext
-import Mathlib.CategoryTheory.Simple
-import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Endomorphism
+import Mathlib.CategoryTheory.Linear.Basic
+import Mathlib.CategoryTheory.Simple
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 
 #align_import category_theory.preadditive.schur from "leanprover-community/mathlib"@"58a272265b5e05f258161260dd2c5d247213cbd3"

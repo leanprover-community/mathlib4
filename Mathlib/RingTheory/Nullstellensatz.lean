@@ -3,10 +3,10 @@ Copyright (c) 2021 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
 -/
-import Mathlib.RingTheory.Jacobson
+import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.MvPolynomial
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
+import Mathlib.RingTheory.Jacobson
 
 #align_import ring_theory.nullstellensatz from "leanprover-community/mathlib"@"9556784a5b84697562e9c6acb40500d4a82e675a"
 

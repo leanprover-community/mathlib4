@@ -3,11 +3,11 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
-import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.LinearAlgebra.LinearPMap
+import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.Data.TypeMax -- Porting note: added for universe issues
+import Mathlib.LinearAlgebra.LinearPMap
+import Mathlib.RingTheory.Ideal.Basic
 
 #align_import algebra.module.injective from "leanprover-community/mathlib"@"f8d8465c3c392a93b9ed226956e26dee00975946"
 

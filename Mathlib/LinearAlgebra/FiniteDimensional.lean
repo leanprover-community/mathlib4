@@ -6,8 +6,8 @@ Authors: Chris Hughes
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.FieldTheory.Finiteness
 import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
-import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.ApplyCongr
+import Mathlib.Tactic.IntervalCases
 
 #align_import linear_algebra.finite_dimensional from "leanprover-community/mathlib"@"e95e4f92c8f8da3c7f693c3ec948bcf9b6683f51"
 

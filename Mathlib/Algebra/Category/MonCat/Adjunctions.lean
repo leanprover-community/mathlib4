@@ -5,8 +5,8 @@ Authors: Julian Kuelshammer
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Category.SemigroupCat.Basic
-import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Algebra.FreeMonoid.Basic
+import Mathlib.Algebra.Group.WithOne.Basic
 
 #align_import algebra.category.Mon.adjunctions from "leanprover-community/mathlib"@"4bcba0da3d97399ce99260794213e69ccdf886ee"
 

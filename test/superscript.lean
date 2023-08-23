@@ -1,5 +1,5 @@
-import Mathlib.Util.Superscript
 import Mathlib.Tactic.UnsetOption
+import Mathlib.Util.Superscript
 
 section
 

@@ -5,11 +5,9 @@ Authors: Mario Carneiro
 -/
 import Lean.Elab.Command
 import Lean.Elab.Quotation
-import Std.Tactic.Ext
-import Std.Tactic.RCases
-import Std.Tactic.Where
 import Mathlib.Data.Matrix.Notation
 import Mathlib.Logic.Equiv.LocalEquiv
+import Mathlib.Mathport.Notation
 import Mathlib.Order.Filter.Basic
 import Mathlib.RingTheory.WittVector.IsPoly
 import Mathlib.SetTheory.Game.PGame
@@ -25,9 +23,9 @@ import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Classical
-import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
+import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.Contrapose
@@ -41,8 +39,8 @@ import Mathlib.Tactic.Find
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.InferParam
-import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Inhabit
+import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
@@ -62,6 +60,7 @@ import Mathlib.Tactic.Polyrith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Qify
+import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
@@ -71,7 +70,6 @@ import Mathlib.Tactic.RenameBVar
 import Mathlib.Tactic.Replace
 import Mathlib.Tactic.RestateAxiom
 import Mathlib.Tactic.Ring
-import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.Set
@@ -82,8 +80,8 @@ import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SwapVar
-import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.TFAE
+import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.Trace
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.Use
@@ -91,7 +89,9 @@ import Mathlib.Tactic.WLOG
 import Mathlib.Tactic.Zify
 import Mathlib.Util.Syntax
 import Mathlib.Util.WithWeakNamespace
-import Mathlib.Mathport.Notation
+import Std.Tactic.Ext
+import Std.Tactic.RCases
+import Std.Tactic.Where
 
 -- To fix upstream:
 -- * bracketedExplicitBinders doesn't support optional types

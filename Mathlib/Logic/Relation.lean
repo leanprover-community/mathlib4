@@ -3,9 +3,9 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Relator
-import Mathlib.Init.Propext
 import Mathlib.Init.Data.Quot
+import Mathlib.Init.Propext
+import Mathlib.Logic.Relator
 import Mathlib.Tactic.Common
 
 #align_import logic.relation from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"

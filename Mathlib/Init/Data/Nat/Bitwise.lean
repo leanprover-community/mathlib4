@@ -3,10 +3,10 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init.Data.Nat.Lemmas
 import Init.WFTactics
 import Mathlib.Data.Bool.Basic
 import Mathlib.Init.Data.Bool.Lemmas
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.ZeroOne
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.PermuteGoals

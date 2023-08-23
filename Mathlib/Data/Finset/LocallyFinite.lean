@@ -3,8 +3,8 @@ Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Yaël Dillies
 -/
-import Mathlib.Order.LocallyFinite
 import Mathlib.Data.Set.Intervals.Monoid
+import Mathlib.Order.LocallyFinite
 
 #align_import data.finset.locally_finite from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 

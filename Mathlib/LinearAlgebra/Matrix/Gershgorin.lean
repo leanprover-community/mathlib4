@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
 import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.LinearAlgebra.Determinant
+import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-!
 # Gershgorin's circle theorem

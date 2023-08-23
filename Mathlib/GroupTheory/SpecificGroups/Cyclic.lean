@@ -5,10 +5,10 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Nat.Totient
+import Mathlib.GroupTheory.Exponent
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Subgroup.Simple
 import Mathlib.Tactic.Group
-import Mathlib.GroupTheory.Exponent
 
 #align_import group_theory.specific_groups.cyclic from "leanprover-community/mathlib"@"0f6670b8af2dff699de1c0b4b49039b31bc13c46"
 

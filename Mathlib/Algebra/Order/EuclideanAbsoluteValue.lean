@@ -3,8 +3,8 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.EuclideanDomain.Instances
+import Mathlib.Algebra.Order.AbsoluteValue
 
 #align_import algebra.order.euclidean_absolute_value from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 

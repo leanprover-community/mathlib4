@@ -3,10 +3,10 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
-import Mathlib.Topology.Sheaves.LocalPredicate
-import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
 import Mathlib.AlgebraicGeometry.LocallyRingedSpace
+import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
+import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
+import Mathlib.Topology.Sheaves.LocalPredicate
 
 #align_import algebraic_geometry.projective_spectrum.structure_sheaf from "leanprover-community/mathlib"@"486cb2f3bda4a67557c6285f5bd0c3348c1eea81"
 

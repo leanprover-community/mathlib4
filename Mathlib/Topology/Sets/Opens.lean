@@ -3,12 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Topology.Bases
-import Mathlib.Topology.Homeomorph
-import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Order.CompactlyGenerated
 import Mathlib.Order.Copy
+import Mathlib.Order.Hom.CompleteLattice
+import Mathlib.Topology.Bases
+import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.Homeomorph
 
 #align_import topology.sets.opens from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 

@@ -6,8 +6,8 @@ Authors: Mario Carneiro
 import Lean.Elab
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
-import Std.Data.Option.Basic
 import Std.Data.List.Count
+import Std.Data.Option.Basic
 
 /-! ## Additional utilities in `Lean.MVarId` -/
 

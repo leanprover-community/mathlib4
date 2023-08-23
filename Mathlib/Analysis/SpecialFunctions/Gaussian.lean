@@ -3,11 +3,11 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Analysis.Complex.CauchyIntegral
+import Mathlib.Analysis.Convex.Complex
+import Mathlib.Analysis.Fourier.PoissonSummation
 import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 import Mathlib.Analysis.SpecialFunctions.PolarCoord
-import Mathlib.Analysis.Convex.Complex
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.Fourier.PoissonSummation
 
 #align_import analysis.special_functions.gaussian from "leanprover-community/mathlib"@"7982767093ae38cba236487f9c9dd9cd99f63c16"
 

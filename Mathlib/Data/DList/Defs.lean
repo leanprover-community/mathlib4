@@ -3,9 +3,9 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Std.Data.DList
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Cases
+import Std.Data.DList
 
 #align_import data.dlist from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
 

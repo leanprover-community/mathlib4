@@ -3,12 +3,12 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
+import Mathlib.Data.HashMap
+import Mathlib.Lean.Exception
+import Mathlib.Tactic.CancelDenoms
 import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Zify
-import Mathlib.Tactic.CancelDenoms
-import Mathlib.Lean.Exception
 import Std.Data.RBMap.Basic
-import Mathlib.Data.HashMap
 
 /-!
 # Linarith preprocessing

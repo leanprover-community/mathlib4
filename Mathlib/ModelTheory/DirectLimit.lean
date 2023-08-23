@@ -3,10 +3,10 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Fintype.Order
 import Mathlib.Algebra.DirectLimit
-import Mathlib.ModelTheory.Quotients
+import Mathlib.Data.Fintype.Order
 import Mathlib.ModelTheory.FinitelyGenerated
+import Mathlib.ModelTheory.Quotients
 
 #align_import model_theory.direct_limit from "leanprover-community/mathlib"@"f53b23994ac4c13afa38d31195c588a1121d1860"
 

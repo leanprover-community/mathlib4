@@ -6,8 +6,8 @@ Authors: David Renshaw
 import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Real.Basic
-import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Positivity
 
 #align_import imo.imo2013_q5 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 

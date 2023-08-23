@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Tactic.Monotonicity
-import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.NhdsSet
+import Mathlib.Topology.SubsetProperties
 
 #align_import topology.uniform_space.basic from "leanprover-community/mathlib"@"195fcd60ff2bfe392543bceb0ec2adcdb472db4c"
 

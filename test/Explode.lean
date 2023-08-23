@@ -1,5 +1,6 @@
-import Mathlib.Tactic.Explode
 import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.Explode
+
 set_option linter.unusedVariables false
 open Lean
 

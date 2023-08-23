@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Hom.Group
-import Mathlib.Logic.Equiv.Defs
 import Mathlib.Data.Finite.Defs
+import Mathlib.Logic.Equiv.Defs
 
 #align_import algebra.group.type_tags from "leanprover-community/mathlib"@"2e0975f6a25dd3fbfb9e41556a77f075f6269748"
 

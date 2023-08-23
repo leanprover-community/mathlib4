@@ -6,7 +6,6 @@ Authors: Alex Keizer
 import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Vector.Snoc
 
-
 /-!
   This file establishes a set of normalization lemmas for `map`/`mapAccumr` operations on vectors
 -/

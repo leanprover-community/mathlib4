@@ -3,8 +3,8 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Instances.RealVectorSpace
 import Mathlib.Analysis.NormedSpace.AffineIsometry
+import Mathlib.Topology.Instances.RealVectorSpace
 
 #align_import analysis.normed_space.mazur_ulam from "leanprover-community/mathlib"@"78261225eb5cedc61c5c74ecb44e5b385d13b733"
 

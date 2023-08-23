@@ -5,8 +5,8 @@ Authors: Markus Himmel
 -/
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.Kernels
-import Mathlib.CategoryTheory.Subobject.WellPowered
 import Mathlib.CategoryTheory.Subobject.Limits
+import Mathlib.CategoryTheory.Subobject.WellPowered
 
 #align_import algebra.category.Module.subobject from "leanprover-community/mathlib"@"6d584f1709bedbed9175bd9350df46599bdd7213"
 

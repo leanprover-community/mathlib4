@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
-import Mathlib.Topology.Homotopy.Contractible
-import Mathlib.CategoryTheory.PUnit
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
+import Mathlib.CategoryTheory.PUnit
+import Mathlib.Topology.Homotopy.Contractible
 
 #align_import algebraic_topology.fundamental_groupoid.simply_connected from "leanprover-community/mathlib"@"38341f11ded9e2bc1371eb42caad69ecacf8f541"
 

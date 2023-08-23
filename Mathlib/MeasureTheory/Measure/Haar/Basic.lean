@@ -3,9 +3,9 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Measure.Content
-import Mathlib.MeasureTheory.Group.Prod
 import Mathlib.GroupTheory.Divisible
+import Mathlib.MeasureTheory.Group.Prod
+import Mathlib.MeasureTheory.Measure.Content
 import Mathlib.Topology.Algebra.Group.Compact
 
 #align_import measure_theory.measure.haar.basic from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"

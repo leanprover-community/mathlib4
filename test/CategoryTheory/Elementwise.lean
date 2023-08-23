@@ -1,5 +1,6 @@
-import Std.Tactic.GuardExpr
 import Mathlib.Tactic.CategoryTheory.Elementwise
+import Std.Tactic.GuardExpr
+
 --import Mathlib.Algebra.Category.Mon.Basic
 
 set_option autoImplicit true

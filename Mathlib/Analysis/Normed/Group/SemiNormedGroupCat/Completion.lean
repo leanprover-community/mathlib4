@@ -3,9 +3,9 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Johan Commelin
 -/
+import Mathlib.Analysis.Normed.Group.HomCompletion
 import Mathlib.Analysis.Normed.Group.SemiNormedGroupCat
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.Analysis.Normed.Group.HomCompletion
 
 #align_import analysis.normed.group.SemiNormedGroup.completion from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
 

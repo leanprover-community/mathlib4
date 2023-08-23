@@ -3,8 +3,8 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpace
 import Mathlib.Analysis.Complex.Basic
+import Mathlib.MeasureTheory.Measure.MeasureSpace
 
 #align_import measure_theory.measure.vector_measure from "leanprover-community/mathlib"@"70a4f2197832bceab57d7f41379b2592d1110570"
 

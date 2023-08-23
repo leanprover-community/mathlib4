@@ -3,8 +3,8 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Function
 import Mathlib.Data.List.Basic
+import Mathlib.Data.Set.Function
 import Mathlib.Init.Data.List.Lemmas
 
 #align_import data.list.lemmas from "leanprover-community/mathlib"@"2ec920d35348cb2d13ac0e1a2ad9df0fdf1a76b4"

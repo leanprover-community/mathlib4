@@ -5,8 +5,8 @@ Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lew
 Floris van Doorn, E.W.Ayers, Arthur Paulino
 -/
 import Lean
-import Std.Lean.Expr
 import Std.Data.List.Basic
+import Std.Lean.Expr
 
 /-!
 # Additional operations on Expr and related types

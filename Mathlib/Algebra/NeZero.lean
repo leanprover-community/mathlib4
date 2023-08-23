@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
 
-import Mathlib.Logic.Basic
-import Mathlib.Init.ZeroOne
 import Mathlib.Init.Algebra.Order
+import Mathlib.Init.ZeroOne
+import Mathlib.Logic.Basic
 
 #align_import algebra.ne_zero from "leanprover-community/mathlib"@"f340f229b1f461aa1c8ee11e0a172d0a3b301a4a"
 

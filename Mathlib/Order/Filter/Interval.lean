@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Data.Set.Intervals.OrdConnected
-import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Order.Filter.SmallSets
 
 #align_import order.filter.interval from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 

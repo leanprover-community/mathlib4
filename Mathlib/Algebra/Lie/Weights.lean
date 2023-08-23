@@ -3,11 +3,11 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Nilpotent
-import Mathlib.Algebra.Lie.TensorProduct
+import Mathlib.Algebra.Lie.CartanSubalgebra
 import Mathlib.Algebra.Lie.Character
 import Mathlib.Algebra.Lie.Engel
-import Mathlib.Algebra.Lie.CartanSubalgebra
+import Mathlib.Algebra.Lie.Nilpotent
+import Mathlib.Algebra.Lie.TensorProduct
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 

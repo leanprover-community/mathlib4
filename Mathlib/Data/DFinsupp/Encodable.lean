@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.DFinsupp.Basic
 import Mathlib.Logic.Equiv.List
+
 /-!
 # `Encodable` and `Countable` instances for `Π₀ i, α i`
 

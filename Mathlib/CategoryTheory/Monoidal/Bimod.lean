@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Oleksandr Manzyuk
 -/
 import Mathlib.CategoryTheory.Bicategory.Basic
-import Mathlib.CategoryTheory.Monoidal.Mon_
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
+import Mathlib.CategoryTheory.Monoidal.Mon_
 
 #align_import category_theory.monoidal.Bimod from "leanprover-community/mathlib"@"4698e35ca56a0d4fa53aa5639c3364e0a77f4eba"
 

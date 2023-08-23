@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.CharP.Two
-import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
+import Mathlib.Algebra.NeZero
 import Mathlib.Data.Polynomial.RingDivision
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.FieldTheory.Separable

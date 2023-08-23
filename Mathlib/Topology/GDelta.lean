@@ -3,9 +3,9 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Topology.UniformSpace.Basic
-import Mathlib.Topology.Separation
 import Mathlib.Order.Filter.CountableInter
+import Mathlib.Topology.Separation
+import Mathlib.Topology.UniformSpace.Basic
 
 #align_import topology.G_delta from "leanprover-community/mathlib"@"b9e46fe101fc897fb2e7edaf0bf1f09ea49eb81a"
 

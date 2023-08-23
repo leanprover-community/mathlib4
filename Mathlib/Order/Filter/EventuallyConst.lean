@@ -3,9 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Floris van Doorn
 -/
+import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Order.Filter.Subsingleton
-import Mathlib.Algebra.IndicatorFunction
+
 /-!
 # Functions that are eventually constant along a filter
 

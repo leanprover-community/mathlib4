@@ -3,10 +3,10 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.InjSurj
-import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.LatticeIntervals
 

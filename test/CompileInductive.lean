@@ -1,5 +1,5 @@
-import Mathlib.Util.CompileInductive
 import Mathlib.Data.Fin.Fin2
+import Mathlib.Util.CompileInductive
 
 compile_inductive% Fin2
 

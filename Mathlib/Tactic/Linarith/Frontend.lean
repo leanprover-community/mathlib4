@@ -5,8 +5,8 @@ Authors: Robert Y. Lewis
 -/
 import Mathlib.Control.Basic
 import Mathlib.Data.HashMap
-import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.Linarith.Preprocessing
+import Mathlib.Tactic.Linarith.Verification
 
 /-!
 # `linarith`: solving linear arithmetic goals

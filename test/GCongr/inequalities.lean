@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.SuccessIfFailWithMsg
 
 /-! # Inequality tests for the `gcongr` tactic -/

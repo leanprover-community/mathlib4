@@ -3,8 +3,8 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Init.Data.Sigma.Lex
 import Mathlib.Data.Sigma.Lex
+import Mathlib.Init.Data.Sigma.Lex
 import Mathlib.Order.Antichain
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.WellFounded

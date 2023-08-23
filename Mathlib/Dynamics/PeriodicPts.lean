@@ -5,8 +5,8 @@ Authors: Yury G. Kudryashov
 -/
 import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Data.List.Cycle
-import Mathlib.Data.PNat.Basic
 import Mathlib.Data.Nat.Prime
+import Mathlib.Data.PNat.Basic
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.GroupAction.Group
 

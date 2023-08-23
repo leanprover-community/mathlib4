@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
 import Mathlib.Algebra.BigOperators.Multiset.Basic
-import Mathlib.Data.PNat.Prime
-import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Multiset.Sort
+import Mathlib.Data.Nat.Factors
+import Mathlib.Data.PNat.Prime
 
 #align_import data.pnat.factors from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
 

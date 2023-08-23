@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Int.GCD
 import Mathlib.Data.Int.Order.Lemmas
-import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.NormNum
 
 #align_import data.nat.modeq from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
 

@@ -1,5 +1,5 @@
-import Std.Tactic.GuardExpr
 import Mathlib.Tactic.SimpIntro
+import Std.Tactic.GuardExpr
 
 set_option autoImplicit true
 example : x + 0 = y → x = y := by

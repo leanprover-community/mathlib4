@@ -3,10 +3,10 @@ Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli, Junyan Xu
 -/
-import Mathlib.CategoryTheory.Groupoid.VertexGroup
-import Mathlib.CategoryTheory.Groupoid.Basic
-import Mathlib.CategoryTheory.Groupoid
 import Mathlib.Algebra.Group.Defs
+import Mathlib.CategoryTheory.Groupoid
+import Mathlib.CategoryTheory.Groupoid.Basic
+import Mathlib.CategoryTheory.Groupoid.VertexGroup
 import Mathlib.Data.Set.Lattice
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Order.GaloisConnection

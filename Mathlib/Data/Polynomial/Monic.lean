@@ -3,8 +3,8 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
-import Mathlib.Data.Polynomial.Reverse
 import Mathlib.Algebra.Regular.SMul
+import Mathlib.Data.Polynomial.Reverse
 
 #align_import data.polynomial.monic from "leanprover-community/mathlib"@"cbdf7b565832144d024caa5a550117c6df0204a5"
 

@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
 
-import Mathlib.Order.Monotone.Basic
-import Mathlib.Order.CompleteLattice
-import Mathlib.Order.WithBot
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Logic.Equiv.Fin
+import Mathlib.Order.CompleteLattice
+import Mathlib.Order.Monotone.Basic
+import Mathlib.Order.WithBot
 
 /-!
 # Krull dimension of a preordered set

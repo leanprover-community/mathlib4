@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Data.FunLike.Equiv
-import Mathlib.Logic.Equiv.Basic
 import Mathlib.Data.Pi.Algebra
+import Mathlib.Logic.Equiv.Basic
 
 #align_import algebra.hom.equiv.basic from "leanprover-community/mathlib"@"1ac8d4304efba9d03fa720d06516fac845aa5353"
 

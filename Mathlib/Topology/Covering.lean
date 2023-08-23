@@ -3,8 +3,8 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Topology.IsLocallyHomeomorph
 import Mathlib.Topology.FiberBundle.Basic
+import Mathlib.Topology.IsLocallyHomeomorph
 
 #align_import topology.covering from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 

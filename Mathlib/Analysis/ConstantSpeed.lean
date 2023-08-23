@@ -3,8 +3,8 @@ Copyright (c) 2023 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
 -/
-import Mathlib.Data.Set.Function
 import Mathlib.Analysis.BoundedVariation
+import Mathlib.Data.Set.Function
 
 #align_import analysis.constant_speed from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 

@@ -3,8 +3,8 @@ Copyright (c) 2021 Luke Kershaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Kershaw
 -/
-import Mathlib.Data.Int.Basic
 import Mathlib.CategoryTheory.Shift.Basic
+import Mathlib.Data.Int.Basic
 
 #align_import category_theory.triangulated.basic from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
 

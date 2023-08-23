@@ -5,8 +5,8 @@ Authors: Thomas Browning
 -/
 import Mathlib.Analysis.Calculus.LocalExtr.Polynomial
 import Mathlib.FieldTheory.AbelRuffini
-import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.EisensteinCriterion
+import Mathlib.RingTheory.RootsOfUnity.Minpoly
 
 #align_import wiedijk_100_theorems.abel_ruffini from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 

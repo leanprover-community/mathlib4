@@ -3,8 +3,8 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.ContinuousFunction.Bounded
+import Mathlib.Topology.UrysohnsLemma
 
 #align_import topology.urysohns_bounded from "leanprover-community/mathlib"@"af683b11d1bd89d1e85a03bf1eb5519379aabdc9"
 

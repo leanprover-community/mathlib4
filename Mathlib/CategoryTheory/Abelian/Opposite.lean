@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Abelian.Basic
-import Mathlib.CategoryTheory.Preadditive.Opposite
 import Mathlib.CategoryTheory.Limits.Opposites
+import Mathlib.CategoryTheory.Preadditive.Opposite
 
 #align_import category_theory.abelian.opposite from "leanprover-community/mathlib"@"a5ff45a1c92c278b03b52459a620cfd9c49ebc80"
 

@@ -3,8 +3,8 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Functor.EpiMono
+import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 #align_import category_theory.adjunction.evaluation from "leanprover-community/mathlib"@"937c692d73f5130c7fecd3fd32e81419f4e04eb7"
 

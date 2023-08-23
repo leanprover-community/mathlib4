@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Set.Image
+import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Lattice
 import Mathlib.Order.Max
-import Mathlib.Order.Bounds.Basic
 
 #align_import order.directed from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
 

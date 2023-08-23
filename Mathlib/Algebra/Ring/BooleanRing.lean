@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bryan Gin-ge Chen, Yaël Dillies
 -/
 import Mathlib.Algebra.PUnitInstances
+import Mathlib.Order.Hom.Lattice
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Ring
-import Mathlib.Order.Hom.Lattice
 
 #align_import algebra.ring.boolean_ring from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 

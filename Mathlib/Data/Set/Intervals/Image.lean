@@ -3,8 +3,8 @@ Copyright (c) 2023 Kim Liesinger. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Liesinger
 -/
-import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Intervals.Basic
 
 /-! ### Lemmas about monotone functions on intervals, and intervals in subtypes.
 -/

@@ -3,10 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Sqrt
-import Mathlib.Data.Set.Lattice
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Order.Monoid.MinMax
+import Mathlib.Data.Nat.Sqrt
+import Mathlib.Data.Set.Lattice
 
 #align_import data.nat.pairing from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 

@@ -3,10 +3,10 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.RingTheory.GradedAlgebra.Basic
-import Mathlib.Algebra.GradedMulAction
 import Mathlib.Algebra.DirectSum.Decomposition
+import Mathlib.Algebra.GradedMulAction
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.RingTheory.GradedAlgebra.Basic
 
 #align_import algebra.module.graded_module from "leanprover-community/mathlib"@"59cdeb0da2480abbc235b7e611ccd9a7e5603d7c"
 

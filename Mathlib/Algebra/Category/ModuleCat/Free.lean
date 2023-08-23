@@ -6,10 +6,10 @@ Authors: Dagur Asgeirsson
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 import Mathlib.Algebra.Homology.ShortExact.Preadditive
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
 import Mathlib.LinearAlgebra.Dimension
 import Mathlib.LinearAlgebra.Finrank
+import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
 
 /-!
 # Exact sequences with free modules

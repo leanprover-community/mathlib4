@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Julian Kuelshammer
 -/
 import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Data.Int.ModEq
-import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Data.Set.Intervals.Infinite
+import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Index
 

@@ -7,8 +7,8 @@ import Mathlib.Data.Set.Intervals.Pi
 import Mathlib.Data.Set.Pointwise.Interval
 import Mathlib.Order.Filter.Interval
 import Mathlib.Tactic.TFAE
-import Mathlib.Topology.Support
 import Mathlib.Topology.Algebra.Order.LeftRight
+import Mathlib.Topology.Support
 
 #align_import topology.order.basic from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
 

@@ -1,5 +1,5 @@
-import Mathlib.Tactic.ExtractGoal
 import Mathlib.Data.Nat.Basic
+import Mathlib.Tactic.ExtractGoal
 
 set_option pp.unicode.fun true
 set_option autoImplicit true

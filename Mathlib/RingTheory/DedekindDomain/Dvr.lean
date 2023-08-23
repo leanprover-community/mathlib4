@@ -3,9 +3,9 @@ Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
+import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 import Mathlib.RingTheory.Localization.LocalizationLocalization
 import Mathlib.RingTheory.Localization.Submodule
-import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 
 #align_import ring_theory.dedekind_domain.dvr from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 

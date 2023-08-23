@@ -6,8 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.QuotientGroup
-import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Algebra.Constructions
+import Mathlib.Topology.Algebra.Monoid
 
 #align_import topology.algebra.group.basic from "leanprover-community/mathlib"@"3b1890e71632be9e3b2086ab512c3259a7e9a3ef"
 

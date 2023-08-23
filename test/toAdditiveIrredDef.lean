@@ -1,5 +1,5 @@
-import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Tactic.IrreducibleDef
 
 set_option autoImplicit true
 @[to_additive]

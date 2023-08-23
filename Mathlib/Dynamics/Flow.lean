@@ -3,8 +3,8 @@ Copyright (c) 2020 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo
 -/
-import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Logic.Function.Iterate
+import Mathlib.Topology.Algebra.Group.Basic
 
 #align_import dynamics.flow from "leanprover-community/mathlib"@"717c073262cd9d59b1a1dcda7e8ab570c5b63370"
 

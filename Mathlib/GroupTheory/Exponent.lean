@@ -3,11 +3,11 @@ Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
+import Mathlib.Algebra.GCDMonoid.Finset
+import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.ZMod.Quotient
 import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.Algebra.GCDMonoid.Finset
-import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Tactic.ByContra
 
 #align_import group_theory.exponent from "leanprover-community/mathlib"@"52fa514ec337dd970d71d8de8d0fd68b455a1e54"

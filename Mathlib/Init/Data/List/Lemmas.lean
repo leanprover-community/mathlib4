@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn
 -/
 import Mathlib.Init.Data.List.Basic
-import Mathlib.Init.Function
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Init.Function
 
 /-!
 Lemmas for `List` not (yet) in `Std`

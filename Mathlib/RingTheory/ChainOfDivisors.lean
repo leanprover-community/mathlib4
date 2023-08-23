@@ -3,10 +3,10 @@ Copyright (c) 2021 Paul Lezeau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Paul Lezeau
 -/
+import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Algebra.Squarefree
 import Mathlib.Order.Hom.Bounded
-import Mathlib.Algebra.GCDMonoid.Basic
 
 #align_import ring_theory.chain_of_divisors from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 /-!

@@ -3,9 +3,9 @@ Copyright (c) Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Data.Complex.Exponential
 import Mathlib.Data.Complex.Module
 import Mathlib.Data.Complex.Order
-import Mathlib.Data.Complex.Exponential
 import Mathlib.Data.IsROrC.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.RealVectorSpace

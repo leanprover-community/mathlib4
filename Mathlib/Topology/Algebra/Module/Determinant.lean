@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.Determinant
+import Mathlib.Topology.Algebra.Module.Basic
 
 #align_import topology.algebra.module.determinant from "leanprover-community/mathlib"@"4b262b8463002087e407be07080b91d213361e64"
 

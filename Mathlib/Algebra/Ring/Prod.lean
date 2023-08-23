@@ -3,10 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Chris Hughes, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Data.Int.Cast.Prod
 import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Order.Group.Prod
+import Mathlib.Algebra.Ring.Equiv
+import Mathlib.Data.Int.Cast.Prod
 
 #align_import algebra.ring.prod from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 

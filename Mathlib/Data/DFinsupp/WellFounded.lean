@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.Data.DFinsupp.Lex
-import Mathlib.Order.GameAdd
 import Mathlib.Order.Antisymmetrization
+import Mathlib.Order.GameAdd
 import Mathlib.SetTheory.Ordinal.Basic
 
 #align_import data.dfinsupp.well_founded from "leanprover-community/mathlib"@"e9b8651eb1ad354f4de6be35a38ef31efcd2cfaa"

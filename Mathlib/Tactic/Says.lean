@@ -3,9 +3,9 @@ Copyright (c) 2023 Kim Liesinger. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Liesinger
 -/
+import Qq.Match
 import Std.Data.String.Basic
 import Std.Tactic.GuardMsgs
-import Qq.Match
 
 /-!
 # The `says` tactic combinator.

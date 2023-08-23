@@ -3,14 +3,14 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Lean.Elab.Tactic
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Data.List.FinRange
-import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Sigma.Basic
-import Lean.Elab.Tactic
+import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.GroupTheory.Submonoid.Basic
 
 #align_import algebra.graded_monoid from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 

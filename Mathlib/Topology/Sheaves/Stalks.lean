@@ -3,16 +3,16 @@ Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Justus Springer
 -/
+import Mathlib.Algebra.Category.Ring.Colimits
+import Mathlib.CategoryTheory.Adjunction.Evaluation
+import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Limits.Preserves.Filtered
+import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Sites.Pushforward
+import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Topology.Category.TopCat.OpenNhds
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
-import Mathlib.CategoryTheory.Adjunction.Evaluation
-import Mathlib.CategoryTheory.Limits.Types
-import Mathlib.CategoryTheory.Limits.Preserves.Filtered
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.Tactic.CategoryTheory.Elementwise
-import Mathlib.Algebra.Category.Ring.Colimits
-import Mathlib.CategoryTheory.Sites.Pushforward
 
 #align_import topology.sheaves.stalks from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 

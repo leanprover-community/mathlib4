@@ -3,9 +3,9 @@ Copyright (c) 2022 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Topology.Algebra.Module.CharacterSpace
-import Mathlib.Analysis.NormedSpace.WeakDual
 import Mathlib.Analysis.NormedSpace.Spectrum
+import Mathlib.Analysis.NormedSpace.WeakDual
+import Mathlib.Topology.Algebra.Module.CharacterSpace
 
 #align_import analysis.normed_space.algebra from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
 

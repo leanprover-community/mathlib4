@@ -3,8 +3,8 @@ Copyright © 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Floris van Doorn
 -/
-import Mathlib.Topology.VectorBundle.Basic
 import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Topology.VectorBundle.Basic
 
 #align_import topology.vector_bundle.hom from "leanprover-community/mathlib"@"8905e5ed90859939681a725b00f6063e65096d95"
 

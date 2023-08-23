@@ -3,9 +3,9 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.Topology.Homotopy.Equiv
-import Mathlib.CategoryTheory.Equivalence
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
+import Mathlib.CategoryTheory.Equivalence
+import Mathlib.Topology.Homotopy.Equiv
 
 #align_import algebraic_topology.fundamental_groupoid.induced_maps from "leanprover-community/mathlib"@"e5470580a62bf043e10976760edfe73c913eb71e"
 

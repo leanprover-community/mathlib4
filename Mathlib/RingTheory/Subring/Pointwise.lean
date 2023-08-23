@@ -3,10 +3,10 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.RingTheory.Subring.Basic
-import Mathlib.GroupTheory.Subgroup.Pointwise
-import Mathlib.RingTheory.Subsemiring.Pointwise
 import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.GroupTheory.Subgroup.Pointwise
+import Mathlib.RingTheory.Subring.Basic
+import Mathlib.RingTheory.Subsemiring.Pointwise
 
 #align_import ring_theory.subring.pointwise from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
 import Lean
-import Std
 import Mathlib.Tactic.Cases
+import Std
 
 set_option autoImplicit true
 

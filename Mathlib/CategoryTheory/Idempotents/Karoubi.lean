@@ -3,9 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.Equivalence
 import Mathlib.CategoryTheory.Idempotents.Basic
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Equivalence
 
 #align_import category_theory.idempotents.karoubi from "leanprover-community/mathlib"@"200eda15d8ff5669854ff6bcc10aaf37cb70498f"
 

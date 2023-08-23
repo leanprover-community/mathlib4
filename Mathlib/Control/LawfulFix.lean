@@ -3,10 +3,10 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.Stream.Init
-import Mathlib.Tactic.ApplyFun
 import Mathlib.Control.Fix
+import Mathlib.Data.Stream.Init
 import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Tactic.ApplyFun
 
 #align_import control.lawful_fix from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 

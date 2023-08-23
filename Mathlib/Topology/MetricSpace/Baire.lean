@@ -7,7 +7,6 @@ import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Sets.Compacts
-import Mathlib.Order.Filter.CountableInter
 
 #align_import topology.metric_space.baire from "leanprover-community/mathlib"@"b9e46fe101fc897fb2e7edaf0bf1f09ea49eb81a"
 

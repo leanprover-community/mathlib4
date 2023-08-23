@@ -6,8 +6,8 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.WithZero.Basic
-import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Data.Nat.Cast.Defs
 
 #align_import algebra.order.monoid.with_top from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 

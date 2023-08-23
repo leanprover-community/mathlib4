@@ -3,11 +3,11 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Sign
-import Mathlib.LinearAlgebra.AffineSpace.Combination
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
+import Mathlib.LinearAlgebra.AffineSpace.Combination
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 #align_import linear_algebra.affine_space.independent from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"

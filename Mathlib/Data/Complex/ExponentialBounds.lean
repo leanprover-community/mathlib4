@@ -3,8 +3,8 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Joseph Myers
 -/
-import Mathlib.Data.Complex.Exponential
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+import Mathlib.Data.Complex.Exponential
 
 #align_import data.complex.exponential_bounds from "leanprover-community/mathlib"@"402f8982dddc1864bd703da2d6e2ee304a866973"
 

@@ -3,14 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Order.Filter.Pi
-import Mathlib.Topology.Bases
 import Mathlib.Data.Finset.Order
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.BoolIndicator
+import Mathlib.Order.Filter.Pi
+import Mathlib.Order.Minimal
+import Mathlib.Topology.Bases
 import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.LocallyFinite
-import Mathlib.Order.Minimal
 
 #align_import topology.subset_properties from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
 

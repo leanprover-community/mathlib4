@@ -3,9 +3,9 @@ Copyright (c) 2020 Aaron Anderson, Jalex Stark. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark
 -/
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.Data.Matrix.CharP
+import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 
 #align_import linear_algebra.matrix.charpoly.finite_field from "leanprover-community/mathlib"@"b95b8c7a484a298228805c72c142f6b062eb0d70"
 

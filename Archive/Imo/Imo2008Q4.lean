@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
 -/
 import Mathlib.Data.Real.Basic
-import Mathlib.Data.Real.Sqrt
 import Mathlib.Data.Real.NNReal
+import Mathlib.Data.Real.Sqrt
 import Mathlib.Tactic.LinearCombination
 
 #align_import imo.imo2008_q4 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"

@@ -3,11 +3,11 @@ Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin, Scott Morrison
 -/
-import Mathlib.CategoryTheory.Simple
-import Mathlib.Algebra.Category.ModuleCat.Subobject
 import Mathlib.Algebra.Category.ModuleCat.Algebra
-import Mathlib.RingTheory.SimpleModule
+import Mathlib.Algebra.Category.ModuleCat.Subobject
+import Mathlib.CategoryTheory.Simple
 import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.RingTheory.SimpleModule
 
 #align_import algebra.category.Module.simple from "leanprover-community/mathlib"@"4ed0bcaef698011b0692b93a042a2282f490f6b6"
 

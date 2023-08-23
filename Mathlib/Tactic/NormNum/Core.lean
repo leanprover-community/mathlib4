@@ -3,14 +3,14 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Std.Lean.Parser
-import Std.Lean.Meta.DiscrTree
 import Mathlib.Algebra.Invertible
-import Mathlib.Data.Rat.Cast
-import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Int.Basic
+import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Rat.Cast
 import Mathlib.Tactic.Conv
 import Mathlib.Util.Qq
+import Std.Lean.Meta.DiscrTree
+import Std.Lean.Parser
 
 /-!
 ## `norm_num` core functionality

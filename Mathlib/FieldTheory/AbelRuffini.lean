@@ -3,8 +3,8 @@ Copyright (c) 2020 Thomas Browning and Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
-import Mathlib.GroupTheory.Solvable
 import Mathlib.FieldTheory.PolynomialGaloisGroup
+import Mathlib.GroupTheory.Solvable
 import Mathlib.RingTheory.RootsOfUnity.Basic
 
 #align_import field_theory.abel_ruffini from "leanprover-community/mathlib"@"e3f4be1fcb5376c4948d7f095bec45350bfb9d1a"

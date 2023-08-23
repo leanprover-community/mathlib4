@@ -6,8 +6,8 @@ Authors: Mario Carneiro, Aurélien Saue, Tim Baanen
 import Lean.Elab.Tactic.Basic
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Ring.Basic
-import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Clear!
+import Mathlib.Tactic.NormNum
 import Mathlib.Util.AtomM
 
 /-!

@@ -3,8 +3,8 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 
 #align_import category_theory.limits.shapes.functor_category from "leanprover-community/mathlib"@"024a4231815538ac739f52d08dd20a55da0d6b23"
 

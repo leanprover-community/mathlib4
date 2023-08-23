@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Data.List.MinMax
 import Mathlib.Algebra.Tropical.Basic
+import Mathlib.Data.List.MinMax
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
 
 #align_import algebra.tropical.big_operators from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"

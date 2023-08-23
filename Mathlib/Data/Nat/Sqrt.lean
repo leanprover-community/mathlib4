@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Int.Order.Basic
-import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.ForSqrt
+import Mathlib.Data.Nat.Size
 
 #align_import data.nat.sqrt from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"
 

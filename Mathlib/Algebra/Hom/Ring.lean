@@ -3,11 +3,11 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Jireh Loreaux
 -/
-import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Data.Pi.Algebra
+import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Hom.Units
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Data.Pi.Algebra
 import Mathlib.Data.Set.Image
 
 #align_import algebra.hom.ring from "leanprover-community/mathlib"@"cf9386b56953fb40904843af98b7a80757bbe7f9"

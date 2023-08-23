@@ -3,10 +3,10 @@ Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
 -/
-import Mathlib.Algebra.Module.DedekindDomain
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.Algebra.Module.Projective
 import Mathlib.Algebra.Category.ModuleCat.Biproducts
+import Mathlib.Algebra.Module.DedekindDomain
+import Mathlib.Algebra.Module.Projective
+import Mathlib.LinearAlgebra.FreeModule.PID
 
 #align_import algebra.module.pid from "leanprover-community/mathlib"@"cdc34484a07418af43daf8198beaf5c00324bca8"
 

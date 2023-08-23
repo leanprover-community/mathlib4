@@ -3,8 +3,8 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.RelClasses
 import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Order.RelClasses
 
 #align_import order.bounded from "leanprover-community/mathlib"@"aba57d4d3dae35460225919dcd82fe91355162f9"
 

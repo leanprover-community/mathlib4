@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Category.GroupCat.Preadditive
-import Mathlib.GroupTheory.QuotientGroup
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+import Mathlib.GroupTheory.QuotientGroup
 
 #align_import algebra.category.Group.colimits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 

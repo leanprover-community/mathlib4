@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Lean
-import Std.Tactic.OpenPrivate
-import Std.Data.List.Basic
 import Mathlib.Lean.Expr.Basic
+import Std.Data.List.Basic
+import Std.Tactic.OpenPrivate
 
 /-!
 

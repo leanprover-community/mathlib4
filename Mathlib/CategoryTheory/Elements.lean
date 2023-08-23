@@ -3,9 +3,9 @@ Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.StructuredArrow
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.PUnit
+import Mathlib.CategoryTheory.StructuredArrow
 
 #align_import category_theory.elements from "leanprover-community/mathlib"@"8a318021995877a44630c898d0b2bc376fceef3b"
 

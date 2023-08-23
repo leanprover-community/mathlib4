@@ -6,10 +6,10 @@ Authors: Rémi Bottinelli
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.CategoryTheory.Groupoid
-import Mathlib.Tactic.NthRewrite
 import Mathlib.CategoryTheory.PathCategory
 import Mathlib.CategoryTheory.Quotient
 import Mathlib.Combinatorics.Quiver.Symmetric
+import Mathlib.Tactic.NthRewrite
 
 #align_import category_theory.groupoid.free_groupoid from "leanprover-community/mathlib"@"706d88f2b8fdfeb0b22796433d7a6c1a010af9f2"
 

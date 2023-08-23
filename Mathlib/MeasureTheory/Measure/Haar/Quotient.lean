@@ -3,9 +3,9 @@ Copyright (c) 2022 Alex Kontorovich and Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth
 -/
-import Mathlib.MeasureTheory.Measure.Haar.Basic
-import Mathlib.MeasureTheory.Group.FundamentalDomain
 import Mathlib.Algebra.Group.Opposite
+import Mathlib.MeasureTheory.Group.FundamentalDomain
+import Mathlib.MeasureTheory.Measure.Haar.Basic
 
 #align_import measure_theory.measure.haar.quotient from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 

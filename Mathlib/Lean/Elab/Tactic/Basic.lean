@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Jon Eugster
 -/
 import Mathlib.Lean.Meta
+
 /-!
 # Additions to `Lean.Elab.Tactic.Basic`
 -/

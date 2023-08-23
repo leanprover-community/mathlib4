@@ -3,14 +3,14 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Data.Finite.Set
+import Mathlib.Data.Finset.Order
+import Mathlib.Data.Set.Intervals.OrderIso
 import Mathlib.Order.Atoms
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.RelIso.Set
 import Mathlib.Order.SupIndep
 import Mathlib.Order.Zorn
-import Mathlib.Data.Finset.Order
-import Mathlib.Data.Set.Intervals.OrderIso
-import Mathlib.Data.Finite.Set
 import Mathlib.Tactic.TFAE
 
 #align_import order.compactly_generated from "leanprover-community/mathlib"@"c813ed7de0f5115f956239124e9b30f3a621966f"

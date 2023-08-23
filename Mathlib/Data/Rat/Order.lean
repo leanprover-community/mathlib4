@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Field.Defs
-import Mathlib.Data.Rat.Basic
 import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Data.Rat.Basic
 
 #align_import data.rat.order from "leanprover-community/mathlib"@"a59dad53320b73ef180174aae867addd707ef00e"
 

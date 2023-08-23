@@ -3,13 +3,13 @@ Copyright (c) 2020 Bhavik Mehta, Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Aaron Anderson
 -/
-import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Combinatorics.Partition
-import Mathlib.Data.Nat.Parity
-import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
-import Mathlib.Tactic.IntervalCases
+import Mathlib.Data.Finset.NatAntidiagonal
+import Mathlib.Data.Nat.Parity
+import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.IntervalCases
 
 #align_import wiedijk_100_theorems.partition from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 

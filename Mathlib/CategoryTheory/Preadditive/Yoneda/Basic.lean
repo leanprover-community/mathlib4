@@ -3,10 +3,10 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
+import Mathlib.Algebra.Category.GroupCat.Preadditive
+import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.Preadditive.Opposite
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Algebra.Category.GroupCat.Preadditive
 
 #align_import category_theory.preadditive.yoneda.basic from "leanprover-community/mathlib"@"09f981f72d43749f1fa072deade828d9c1e185bb"
 

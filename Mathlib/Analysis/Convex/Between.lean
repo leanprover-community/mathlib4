@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Data.Set.Intervals.Group
 import Mathlib.Analysis.Convex.Segment
+import Mathlib.Data.Set.Intervals.Group
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 import Mathlib.Tactic.FieldSimp
 

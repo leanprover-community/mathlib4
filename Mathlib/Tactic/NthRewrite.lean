@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
 
-import Lean.Elab.Tactic.Rewrite
 import Lean.Elab.BuiltinTerm
+import Lean.Elab.Tactic.Rewrite
 
 /-!
 # `nth_rewrite` tactic

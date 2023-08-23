@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
 
-import Mathlib.Tactic.Continuity.Init
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Tactic.Continuity.Init
 
 /-!
 # Continuity

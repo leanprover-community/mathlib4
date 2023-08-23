@@ -3,8 +3,8 @@ Copyright (c) 2022 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Junyan Xu
 -/
-import Mathlib.Data.DFinsupp.Order
 import Mathlib.Data.DFinsupp.NeLocus
+import Mathlib.Data.DFinsupp.Order
 import Mathlib.Order.WellFoundedSet
 
 #align_import data.dfinsupp.lex from "leanprover-community/mathlib"@"dde670c9a3f503647fd5bfdf1037bad526d3397a"

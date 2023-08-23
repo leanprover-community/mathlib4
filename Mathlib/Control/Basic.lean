@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Init.Control.Combinators
-import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.CasesM
 
 #align_import control.basic from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 

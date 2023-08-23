@@ -3,11 +3,11 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Analysis.NormedSpace.Exponential
 import Mathlib.Analysis.Matrix
-import Mathlib.LinearAlgebra.Matrix.ZPow
+import Mathlib.Analysis.NormedSpace.Exponential
 import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.LinearAlgebra.Matrix.Symmetric
+import Mathlib.LinearAlgebra.Matrix.ZPow
 import Mathlib.Topology.UniformSpace.Matrix
 
 #align_import analysis.normed_space.matrix_exponential from "leanprover-community/mathlib"@"1e3201306d4d9eb1fd54c60d7c4510ad5126f6f9"

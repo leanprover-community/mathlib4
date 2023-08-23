@@ -3,8 +3,8 @@ Copyright (c) 2022 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+import Mathlib.MeasureTheory.Integral.IntervalIntegral
 
 #align_import measure_theory.integral.exp_decay from "leanprover-community/mathlib"@"d4817f8867c368d6c5571f7379b3888aaec1d95a"
 

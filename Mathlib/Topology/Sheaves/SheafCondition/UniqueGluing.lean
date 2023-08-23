@@ -3,10 +3,10 @@ Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
-import Mathlib.Topology.Sheaves.Forget
 import Mathlib.CategoryTheory.Limits.Shapes.Types
-import Mathlib.Topology.Sheaves.Sheaf
 import Mathlib.CategoryTheory.Types
+import Mathlib.Topology.Sheaves.Forget
+import Mathlib.Topology.Sheaves.Sheaf
 
 #align_import topology.sheaves.sheaf_condition.unique_gluing from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 

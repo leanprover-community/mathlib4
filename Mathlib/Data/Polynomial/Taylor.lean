@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.Polynomial.HasseDeriv
 import Mathlib.Data.Polynomial.Degree.Lemmas
+import Mathlib.Data.Polynomial.HasseDeriv
 
 #align_import data.polynomial.taylor from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 

@@ -3,8 +3,8 @@ Copyright © 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.RingTheory.Derivation.Lie
 import Mathlib.Geometry.Manifold.DerivationBundle
+import Mathlib.RingTheory.Derivation.Lie
 
 #align_import geometry.manifold.algebra.left_invariant_derivation from "leanprover-community/mathlib"@"b608348ffaeb7f557f2fd46876037abafd326ff3"
 

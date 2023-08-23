@@ -3,12 +3,12 @@ Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
 -/
-import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Init.Data.Nat.Bitwise
-import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.Finset.NatAntidiagonal
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Init.Data.Nat.Bitwise
+import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
 

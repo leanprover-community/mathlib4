@@ -3,8 +3,8 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.PUnit
 
 #align_import category_theory.limits.unit from "leanprover-community/mathlib"@"c85d2ff93210de84373ab4c9c6dba2b78494961e"
 

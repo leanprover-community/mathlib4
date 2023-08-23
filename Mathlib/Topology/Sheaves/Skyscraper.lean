@@ -3,9 +3,9 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Junyan Xu
 -/
+import Mathlib.Topology.Sheaves.Functors
 import Mathlib.Topology.Sheaves.PUnit
 import Mathlib.Topology.Sheaves.Stalks
-import Mathlib.Topology.Sheaves.Functors
 
 #align_import topology.sheaves.skyscraper from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 

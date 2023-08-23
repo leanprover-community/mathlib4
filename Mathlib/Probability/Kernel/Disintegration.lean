@@ -3,8 +3,8 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.CondCdf
 import Mathlib.MeasureTheory.Constructions.Polish
+import Mathlib.Probability.Kernel.CondCdf
 import Mathlib.Probability.Kernel.IntegralCompProd
 
 #align_import probability.kernel.disintegration from "leanprover-community/mathlib"@"6315581f5650ffa2fbdbbbedc41243c8d7070981"

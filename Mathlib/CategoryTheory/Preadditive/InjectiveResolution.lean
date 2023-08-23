@@ -3,8 +3,8 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Scott Morrison
 -/
-import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.Algebra.Homology.Single
+import Mathlib.CategoryTheory.Preadditive.Injective
 
 #align_import category_theory.preadditive.injective_resolution from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
