@@ -103,9 +103,17 @@ instance leftCancelSemigroup [RightCancelSemigroup α] : LeftCancelSemigroup α�
     mul_left_cancel := fun _ _ _ H => unop_injective <| mul_right_cancel <| op_injective H }
 
 @[to_additive]
+instance isLeftCancelSemigroup [Mul α] [IsRightCancelMul α] : IsLeftCancelMul αᵐᵒᵖ :=
+⟨fun _ _ _ => (unop_injective <| mul_right_cancel <| op_injective ·)⟩
+
+@[to_additive]
 instance rightCancelSemigroup [LeftCancelSemigroup α] : RightCancelSemigroup αᵐᵒᵖ :=
   { MulOpposite.semigroup α with
     mul_right_cancel := fun _ _ _ H => unop_injective <| mul_left_cancel <| op_injective H }
+
+@[to_additive]
+instance isRightCancelSemigroup [Mul α] [IsLeftCancelMul α] : IsRightCancelMul αᵐᵒᵖ :=
+⟨fun _ _ _ => (unop_injective <| mul_left_cancel <| op_injective ·)⟩
 
 @[to_additive]
 instance commSemigroup [CommSemigroup α] : CommSemigroup αᵐᵒᵖ :=
