@@ -62,6 +62,10 @@ namespace UniqueMul
 
 variable {G H : Type*} [Mul G] [Mul H] {A B : Finset G} {a0 b0 : G}
 
+@[to_additive (attr := nontriviality, simp)]
+theorem of_subsingleton [Subsingleton G] : UniqueMul A B a0 b0 := by simp [UniqueMul]
+
+@[to_additive]
 theorem mt {G} [Mul G] {A B : Finset G} {a0 b0 : G} (h : UniqueMul A B a0 b0) :
     ∀ ⦃a b⦄, a ∈ A → b ∈ B → a ≠ a0 ∨ b ≠ b0 → a * b ≠ a0 * b0 := fun _ _ ha hb k ↦ by
   contrapose! k
@@ -169,6 +173,15 @@ theorem mulHom_map_iff (f : G ↪ H) (mul : ∀ x y, f (x * y) = f x * f y) :
 #align unique_mul.mul_hom_map_iff UniqueMul.mulHom_map_iff
 #align unique_add.add_hom_map_iff UniqueAdd.addHom_map_iff
 
+open Finset MulOpposite in
+@[to_additive]
+theorem of_mulOpposite (h : @UniqueMul Gᵐᵒᵖ (MulOpposite.mul G)
+      (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0)) :
+    UniqueMul A B a0 b0 := by
+  intros a b aA bB ab
+  have := h (mem_map_of_mem _ bB) (mem_map_of_mem _ aA) (by erw [← op_mul, ab, op_mul])
+  simpa [and_comm] using this
+
 end UniqueMul
 
 /-- Let `G` be a Type with addition.  `UniqueSums G` asserts that any two non-empty
@@ -229,3 +242,20 @@ instance (priority := 100) Covariants.to_uniqueProds {A} [Mul A] [LinearOrder A]
         eq_and_eq_of_le_of_le_of_mul_le (Finset.min'_le _ _ ‹_›) (Finset.min'_le _ _ ‹_›) ab.le⟩
 #align covariants.to_unique_prods Covariants.to_uniqueProds
 #align covariants.to_unique_sums Covariants.to_uniqueSums
+
+namespace UniqueProds
+
+@[to_additive (attr := nontriviality, simp)]
+theorem of_subsingleton {G : Type*} [Mul G] [Subsingleton G] :
+    UniqueProds G :=
+⟨fun {A B} ⟨a, hA⟩ ⟨b, hB⟩ ↦ ⟨a, hA, b, hB, by simp⟩⟩
+
+open Finset MulOpposite in
+@[to_additive]
+theorem of_mulOpposite (G : Type*) [Mul G] (h : @UniqueProds Gᵐᵒᵖ (MulOpposite.mul G)) : UniqueProds G :=
+⟨fun hA hB =>
+  let f : G ↪ Gᵐᵒᵖ := ⟨op, op_injective⟩
+  let ⟨y, yB, x, xA, hxy⟩ := h.uniqueMul_of_nonempty (hB.map (f := f)) (hA.map (f := f))
+  ⟨unop x, (mem_map' _).mp xA, unop y, (mem_map' _).mp yB, hxy.of_mulOpposite⟩⟩
+
+end UniqueProds
