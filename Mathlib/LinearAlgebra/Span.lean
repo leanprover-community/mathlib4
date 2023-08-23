@@ -101,7 +101,7 @@ theorem map_span [RingHomSurjective σ₁₂] (f : F) (s : Set M) :
       map_le_iff_le_comap.2 <| span_le.2 fun x hx => subset_span ⟨x, hx, rfl⟩
 #align submodule.map_span Submodule.map_span
 
-alias Submodule.map_span ← _root_.LinearMap.map_span
+alias _root_.LinearMap.map_span := Submodule.map_span
 #align linear_map.map_span LinearMap.map_span
 
 theorem map_span_le [RingHomSurjective σ₁₂] (f : F) (s : Set M) (N : Submodule R₂ M₂) :
@@ -110,7 +110,7 @@ theorem map_span_le [RingHomSurjective σ₁₂] (f : F) (s : Set M) (N : Submod
   exact Iff.rfl
 #align submodule.map_span_le Submodule.map_span_le
 
-alias Submodule.map_span_le ← _root_.LinearMap.map_span_le
+alias _root_.LinearMap.map_span_le := Submodule.map_span_le
 #align linear_map.map_span_le LinearMap.map_span_le
 
 @[simp]
@@ -127,7 +127,7 @@ theorem span_preimage_le (f : F) (s : Set M₂) :
   exact preimage_mono subset_span
 #align submodule.span_preimage_le Submodule.span_preimage_le
 
-alias Submodule.span_preimage_le ← _root_.LinearMap.span_preimage_le
+alias _root_.LinearMap.span_preimage_le := Submodule.span_preimage_le
 #align linear_map.span_preimage_le LinearMap.span_preimage_le
 
 theorem closure_subset_span {s : Set M} : (AddSubmonoid.closure s : Set M) ⊆ span R s :=

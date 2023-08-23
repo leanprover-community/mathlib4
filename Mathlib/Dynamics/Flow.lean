@@ -119,7 +119,7 @@ protected theorem continuous {β : Type*} [TopologicalSpace β] {t : β → τ} 
   ϕ.cont'.comp (ht.prod_mk hf)
 #align flow.continuous Flow.continuous
 
-alias Flow.continuous ← _root_.Continuous.flow
+alias _root_.Continuous.flow := Flow.continuous
 #align continuous.flow Continuous.flow
 
 theorem map_add (t₁ t₂ : τ) (x : α) : ϕ (t₁ + t₂) x = ϕ t₁ (ϕ t₂ x) := ϕ.map_add' _ _ _
