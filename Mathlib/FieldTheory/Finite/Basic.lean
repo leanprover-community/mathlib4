@@ -230,7 +230,7 @@ theorem sum_pow_units [DecidableEq K] (i : ℕ) :
 
 -- TODO Move
 lemma exists_ne_one_iff_not_bot {G : Type*} [Group G]
-    {H : Subgroup G'} :  H ≠ ⊥ ↔ ∃ a : ↥H, a ≠ 1 := by
+    {H : Subgroup G} :  H ≠ ⊥ ↔ ∃ a : ↥H, a ≠ 1 := by
   have := Subgroup.bot_or_exists_ne_one H
   rcases this with h | ⟨x, hx, hx'⟩
   · rw [h]
