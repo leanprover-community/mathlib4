@@ -538,6 +538,25 @@ noncomputable def roots (p : R[X]) : Multiset R :=
   if h : p = 0 then ∅ else Classical.choose (exists_multiset_roots h)
 #align polynomial.roots Polynomial.roots
 
+notation:1023 p ".[" A "]-roots" =>
+  Polynomial.roots (Polynomial.map (algebraMap _ A) p)
+
+open Lean PrettyPrinter.Delaborator SubExpr in
+@[delab app.Polynomial.roots]
+def delabPolynomialRoots : Delab := do
+  let e ← getExpr
+  guard $ e.isAppOfArity' ``Polynomial.roots 4
+  let (A, B) ← withNaryArg 3 do
+    let e ← getExpr
+    guard $ e.isAppOfArity' ``Polynomial.map 6
+    let A ← withNaryArg 4 do
+      let e ← getExpr
+      guard $ e.isAppOfArity' ``algebraMap 5
+      withNaryArg 1 delab
+    let B ← withNaryArg 5 delab
+    pure (A, B)
+  `($B.[$A]-roots)
+
 theorem roots_def [DecidableEq R] (p : R[X]) [Decidable (p = 0)] :
     p.roots = if h : p = 0 then ∅ else Classical.choose (exists_multiset_roots h) := by
   -- porting noteL `‹_›` doesn't work for instance arguments
@@ -920,11 +939,11 @@ If you have a non-separable polynomial, use `Polynomial.roots` for the multiset
 where multiple roots have the appropriate multiplicity. -/
 def rootSet (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] : Set S :=
   haveI := Classical.decEq S
-  (p.map (algebraMap T S)).roots.toFinset
+  p.[S]-roots.toFinset
 #align polynomial.root_set Polynomial.rootSet
 
 theorem rootSet_def (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] [DecidableEq S] :
-    p.rootSet S = (p.map (algebraMap T S)).roots.toFinset := by
+    p.rootSet S = p.[S]-roots.toFinset := by
   rw [rootSet]
   convert rfl
 #align polynomial.root_set_def Polynomial.rootSet_def

@@ -195,8 +195,7 @@ theorem adjoin_rootSet (n : ℕ) :
     ∀ {K : Type u} [Field K],
       ∀ (f : K[X]) (_hfn : f.natDegree = n),
         Algebra.adjoin K
-            (↑(f.map <| algebraMap K <| SplittingFieldAux n f).roots.toFinset :
-              Set (SplittingFieldAux n f)) = ⊤)
+          (f.[SplittingFieldAux n f]-roots.toFinset : Set (SplittingFieldAux n f)) = ⊤)
     n (fun {K} _ f _hf => Algebra.eq_top_iff.2 fun x => Subalgebra.range_le _ ⟨x, rfl⟩)
     fun n ih {K} _ f hfn => by
     have hndf : f.natDegree ≠ 0 := by intro h; rw [h] at hfn; cases hfn

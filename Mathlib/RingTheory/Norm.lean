@@ -128,10 +128,10 @@ theorem PowerBasis.norm_gen_eq_coeff_zero_minpoly (pb : PowerBasis R S) :
 #align algebra.power_basis.norm_gen_eq_coeff_zero_minpoly Algebra.PowerBasis.norm_gen_eq_coeff_zero_minpoly
 
 /-- Given `pb : PowerBasis R S`, then the norm of `pb.gen` is
-`((minpoly R pb.gen).map (algebraMap R F)).roots.prod`. -/
+`(minpoly R pb.gen).[F]-roots.prod`. -/
 theorem PowerBasis.norm_gen_eq_prod_roots [Algebra R F] (pb : PowerBasis R S)
     (hf : (minpoly R pb.gen).Splits (algebraMap R F)) :
-    algebraMap R F (norm R pb.gen) = ((minpoly R pb.gen).map (algebraMap R F)).roots.prod := by
+    algebraMap R F (norm R pb.gen) = (minpoly R pb.gen).[F]-roots.prod := by
   haveI := Module.nontrivial R F
   have := minpoly.monic pb.isIntegral_gen
   rw [PowerBasis.norm_gen_eq_coeff_zero_minpoly, ← pb.natDegree_minpoly, RingHom.map_mul,
@@ -229,7 +229,7 @@ theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_one {x : L} (hx : ¬Is
 theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots (x : L)
     (hf : (minpoly K x).Splits (algebraMap K F)) :
     (algebraMap K F) (norm K (AdjoinSimple.gen K x)) =
-      ((minpoly K x).map (algebraMap K F)).roots.prod := by
+      (minpoly K x).[F]-roots.prod := by
   have injKxL := (algebraMap K⟮x⟯ L).injective
   by_cases hx : IsIntegral K x; swap
   · simp [minpoly.eq_zero hx, IntermediateField.AdjoinSimple.norm_gen_eq_one hx]
@@ -268,7 +268,7 @@ theorem norm_eq_prod_embeddings_gen [Algebra R F] (pb : PowerBasis R S)
 theorem norm_eq_prod_roots [IsSeparable K L] [FiniteDimensional K L] {x : L}
     (hF : (minpoly K x).Splits (algebraMap K F)) :
     algebraMap K F (norm K x) =
-      ((minpoly K x).map (algebraMap K F)).roots.prod ^ finrank K⟮x⟯ L := by
+      (minpoly K x).[F]-roots.prod ^ finrank K⟮x⟯ L := by
   rw [norm_eq_norm_adjoin K x, map_pow, IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots _ hF]
 #align algebra.norm_eq_prod_roots Algebra.norm_eq_prod_roots
 

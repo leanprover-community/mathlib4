@@ -358,7 +358,7 @@ variable {p : F[X]}
 
 theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.IsSplittingField F E]
     (hp : p.Separable) (K : Type*) [Field K] [Algebra F K] [Algebra K E] [IsScalarTower F K E]
-    {x : E} (hx : x ∈ (p.map (algebraMap F E)).roots)
+    {x : E} (hx : x ∈ p.[E]-roots)
     -- these are both implied by `hFE`, but as they carry data this makes the lemma more general
     [Fintype (K →ₐ[F] E)]
     [Fintype (K⟮x⟯.restrictScalars F →ₐ[F] E)] :
@@ -396,7 +396,7 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
     IsGalois F E := by
   haveI hFE : FiniteDimensional F E := Polynomial.IsSplittingField.finiteDimensional E p
   letI := Classical.decEq E
-  let s := (p.map (algebraMap F E)).roots.toFinset
+  let s := p.[E]-roots.toFinset
   have adjoin_root : IntermediateField.adjoin F (s : Set E) = ⊤ := by
     apply IntermediateField.toSubalgebra_injective
     rw [IntermediateField.top_toSubalgebra, ← top_le_iff, ← sp.adjoin_rootSet]
