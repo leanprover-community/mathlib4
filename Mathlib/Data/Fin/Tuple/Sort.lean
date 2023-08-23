@@ -148,33 +148,17 @@ lemma Fintype.card_fin_lt_nat (m g : ℕ) (h : g ≤ m) : Fintype.card {i : Fin 
     fun x => ⟨⟨x, (lt_of_lt_of_le (Fin.is_lt x) h)⟩, x.prop⟩,
     fun x => by simp, fun x => by simp⟩
 
-theorem sort_ge_at_end_of_monotone {α} [LinearOrder α] (m r: ℕ)(f : Fin m → α) (a : α)
+theorem sort_lt_at_start_of_monotone' {α} [LinearOrder α] (m : ℕ)(f : Fin m → α) (a : α)
     (h_sorted : Monotone f)
     (j : Fin m) :
     f j ≤ a → (j < Fintype.card {i // f i ≤ a}) := by
-  -- by_cases hm : m = 0
-  -- · exfalso
-  --   apply (ne_of_lt (Fin.size_pos j)) hm.symm
-  -- by_cases hf : Fintype.card {i // f i ≤ a} = 0
-  -- · intro h
-  --   exfalso
-  --   have : Nonempty {i // f i ≤ a} := by apply Nonempty.intro ⟨j, h⟩
-  --   refine' (ne_of_lt (Fintype.card_pos_iff.2 this)) hf.symm
-  -- by_cases hfm : Fintype.card {i // f i ≤ a} = m
-  -- · contrapose!
-  --   rw [hfm]
-  --   intro h
-  --   exfalso
-  --   refine' (not_lt.2 h) (Fin.is_lt j)
-
-  -- have hm : 1 ≤ m := Nat.pos_of_ne_zero hm
-  -- have hf : 1 ≤ Fintype.card {i // f i ≤ a} := Nat.pos_of_ne_zero hf
   intro h
   by_contra' hc
-  have he := Fintype.card_eq.2 (Nonempty.intro (Equiv.sumCompl (
-      fun x : {i // f i ≤ a} => (x < (Fintype.card {i // f i ≤ a})))))
   let p := fun x : Fin m => f x ≤ a
   let q := fun x : Fin m => (x < (Fintype.card {i // f i ≤ a}))
+
+  have he := Fintype.card_eq.2 $ Nonempty.intro $ Equiv.sumCompl
+    $ fun x : {i // f i ≤ a} => (x < (Fintype.card {i // f i ≤ a}))
   have h4 : Fintype.card {j : {x : Fin m // p x} // q j} = Fintype.card {j // q j} := by
     exact (Fintype.card_eq.2 (Nonempty.intro (@Equiv.subtypeSubtypeEquivSubtype _ p q
       (by apply sort_lt_at_start_of_monotone m f a h_sorted) ) ) )
@@ -184,6 +168,12 @@ theorem sort_ge_at_end_of_monotone {α} [LinearOrder α] (m r: ℕ)(f : Fin m �
   apply (ne_of_lt this) he.symm
   conv_rhs => rw [← Fintype.card_fin m]
   exact Fintype.card_subtype_le _
+
+theorem sort_lt_at_start_of_monotone_iff {α} [LinearOrder α] (m : ℕ) (f : Fin m → α) (a : α)
+    (h_sorted : Monotone f)
+    (j : Fin m) :
+    (j < Fintype.card {i // f i ≤ a})  ↔ f j ≤ a :=
+  ⟨sort_lt_at_start_of_monotone m f a h_sorted j, sort_lt_at_start_of_monotone' _ _ _ h_sorted _⟩
 
 
 end Tuple
