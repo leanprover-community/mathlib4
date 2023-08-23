@@ -731,7 +731,6 @@ def nameDict : String → List String
   | "prehaar"     => ["add", "Prehaar"]
   | "unit"        => ["add", "Unit"]
   | "units"       => ["add", "Units"]
-  | "prods"       => ["sums"]  -- convert `[uU]niqueProds` to `[uU]niqueSums`
   | "rootable"    => ["divisible"]
   | x             => [x]
 
@@ -799,6 +798,10 @@ def fixAbbreviation : List String → List String
   | "ZSmul" :: s                      => "ZSMul" :: fixAbbreviation s -- from `ZPow`
   | "neg" :: "Fun" :: s               => "invFun" :: fixAbbreviation s
   | "Neg" :: "Fun" :: s               => "InvFun" :: fixAbbreviation s
+  | "unique" :: "Mul" :: s            => "uniqueAdd" :: fixAbbreviation s
+  | "Unique" :: "Mul" :: s            => "UniqueAdd" :: fixAbbreviation s
+  | "unique" :: "Prods" :: s          => "uniqueSums" :: fixAbbreviation s
+  | "Unique" :: "Prods" :: s          => "UniqueSums" :: fixAbbreviation s
   | "order" :: "Of" :: s              => "addOrderOf" :: fixAbbreviation s
   | "Order" :: "Of" :: s              => "AddOrderOf" :: fixAbbreviation s
   | "is"::"Of"::"Fin"::"Order"::s     => "isOfFinAddOrder" :: fixAbbreviation s
