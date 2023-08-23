@@ -210,7 +210,9 @@ open Subalgebra AlgHom Function
 /-- This structure is used to prove the existence of a homomorphism from any algebraic extension
 into an algebraic closure -/
 structure SubfieldWithHom where
+  /-- The corresponding `Subalgebra` -/
   carrier : Subalgebra K L
+  /-- The embedding into the algebraically closed field -/
   emb : carrier →ₐ[K] M
 #align lift.subfield_with_hom IsAlgClosed.lift.SubfieldWithHom
 
