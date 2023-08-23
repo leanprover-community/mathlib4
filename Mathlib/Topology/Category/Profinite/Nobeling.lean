@@ -1956,15 +1956,6 @@ open Classical in
 noncomputable
 def Nobeling.ι : S → ({C : Set S // IsClopen C} → Bool) := fun s C => decide (s ∈ C.1)
 
-namespace Profinite
-
-protected -- This is PR #6722
-instance (α : Type*) [TopologicalSpace α] [CompactSpace α] [TotallyDisconnectedSpace α]
-    [T2Space α] : TotallySeparatedSpace α := by
-  rwa [← compact_t2_tot_disc_iff_tot_sep]
-
-end Profinite
-
 open Classical in
 theorem Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
   apply Continuous.closedEmbedding
