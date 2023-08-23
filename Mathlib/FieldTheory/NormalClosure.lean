@@ -134,6 +134,7 @@ lemma normalClosure_mono (h : K ≤ K') : normalClosure F K L ≤ normalClosure 
 variable (F L)
 
 /-- `normalClosure` as a `ClosureOperator`. -/
+@[simps]
 noncomputable def closureOperator : ClosureOperator (IntermediateField F L) where
   toFun := fun K ↦ normalClosure F K L
   monotone' := fun K K' ↦ normalClosure_mono K K'
