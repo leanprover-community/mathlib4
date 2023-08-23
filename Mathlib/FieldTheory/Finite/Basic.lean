@@ -231,19 +231,16 @@ theorem sum_pow_units [DecidableEq K] (i : ℕ) :
 -- TODO Move
 lemma exists_ne_one_iff_not_bot {G : Type*} [Group G]
     {H : Subgroup G} :  H ≠ ⊥ ↔ ∃ a : ↥H, a ≠ 1 := by
-  have := Subgroup.bot_or_exists_ne_one H
-  rcases this with h | ⟨x, hx, hx'⟩
+  rcases Subgroup.bot_or_exists_ne_one H with h | ⟨x, hx, hx'⟩
   · rw [h]
     simp only [ne_eq, not_true, eq_iff_true_of_subsingleton, exists_false]
   · simp only [ne_eq, Subtype.exists, Subgroup.mk_eq_one_iff, exists_prop]
     constructor
     · intro _
-      apply Exists.intro
-      apply And.intro
-      exact hx
-      simp_all only [not_false_eq_true]
-    · intro _ a
-      simp_all only [Subgroup.mem_bot]
+      exact ⟨x, hx, hx'⟩
+    · intro h
+      contrapose! h
+      simp only [h, Subgroup.mem_bot, imp_self, forall_const]
 
 /-- The sum of a nontrivial subgroup of the units of a field is zero. -/
 theorem sum_subgroup_units_zero_of_ne_bot
