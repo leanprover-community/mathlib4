@@ -148,4 +148,3 @@ theorem Differentiable.clog {f : E → ℂ} (h₁ : Differentiable ℂ f)
 #align differentiable.clog Differentiable.clog
 
 end LogDeriv
-

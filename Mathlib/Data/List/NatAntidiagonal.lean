@@ -102,4 +102,3 @@ theorem map_swap_antidiagonal {n : ℕ} :
 end Nat
 
 end List
-

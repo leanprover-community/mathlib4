@@ -386,4 +386,3 @@ theorem card_dvd_exponent_pow_rank' {n : ℕ} (hG : ∀ g : G, g ^ n = 1) :
 #align card_dvd_exponent_nsmul_rank' card_dvd_exponent_nsmul_rank'
 
 end CommGroup
-

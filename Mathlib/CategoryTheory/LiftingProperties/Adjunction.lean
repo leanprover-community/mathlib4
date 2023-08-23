@@ -137,4 +137,3 @@ theorem hasLiftingProperty_iff (adj : G ⊣ F) {A B : C} {X Y : D} (i : A ⟶ B)
 end Adjunction
 
 end CategoryTheory
-

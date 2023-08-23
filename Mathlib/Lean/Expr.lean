@@ -6,5 +6,3 @@ Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lew
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Expr.Traverse
-
-

@@ -9,5 +9,3 @@ Authors: Floris van Doorn, Leonardo de Moura
 -/
 
 notation "ℕ" => Nat
-
-

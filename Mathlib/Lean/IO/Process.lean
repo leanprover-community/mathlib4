@@ -41,5 +41,3 @@ then return the entire content of stdout as a `String` upon completion.
 def runCmdWithInput (cmd : String) (args : Array String)
     (input : String := "") (throwFailure := true) : IO String := do
   return (← runCmdWithInput' cmd args input throwFailure).2.1
-
-

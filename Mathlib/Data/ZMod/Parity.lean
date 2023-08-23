@@ -37,4 +37,3 @@ theorem ne_zero_iff_odd {n : ℕ} : (n : ZMod 2) ≠ 0 ↔ Odd n := by
 #align zmod.ne_zero_iff_odd ZMod.ne_zero_iff_odd
 
 end ZMod
-

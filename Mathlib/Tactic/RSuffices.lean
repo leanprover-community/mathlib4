@@ -24,4 +24,3 @@ syntax (name := rsuffices) "rsuffices"
 macro_rules
 | `(tactic| rsuffices $[$pred]? $[: $foo]? $[:= $bar]?) =>
 `(tactic | (obtain $[$pred]? $[: $foo]? $[:= $bar]?; rotate_left))
-

@@ -223,4 +223,3 @@ theorem ContinuousOn.comp_fract'' {f : α → β} (h : ContinuousOn f I) (hf : f
   ContinuousOn.comp_fract (h.comp continuousOn_snd fun _x hx => (mem_prod.mp hx).2) continuous_id
     fun _ => hf
 #align continuous_on.comp_fract'' ContinuousOn.comp_fract''
-

@@ -663,4 +663,3 @@ theorem fderiv_const_sub (c : F) : fderiv ğ•œ (fun y => c - f y) x = -fderiv ğ
 end Sub
 
 end
-

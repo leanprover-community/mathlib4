@@ -154,4 +154,3 @@ theorem hasDerivWithinAt_forall_lt_or_forall_gt_of_forall_ne {s : Set ℝ} (hs :
   exact (hs.ordConnected.image_hasDerivWithinAt hf).out (mem_image_of_mem f' ha)
     (mem_image_of_mem f' hb) ⟨hma, hmb⟩
 #align has_deriv_within_at_forall_lt_or_forall_gt_of_forall_ne hasDerivWithinAt_forall_lt_or_forall_gt_of_forall_ne
-

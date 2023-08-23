@@ -38,4 +38,3 @@ theorem frequently_odd : ∃ᶠ m : ℕ in atTop, Odd m := by
 #align nat.frequently_odd Nat.frequently_odd
 
 end Nat
-

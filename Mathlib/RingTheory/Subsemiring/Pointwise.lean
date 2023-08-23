@@ -174,4 +174,3 @@ theorem le_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) {S T : Subsemiring R} :
 end GroupWithZero
 
 end Subsemiring
-

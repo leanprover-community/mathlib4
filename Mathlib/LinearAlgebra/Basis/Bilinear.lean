@@ -70,4 +70,3 @@ theorem sum_repr_mul_repr_mul {B : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ} (x y) :
 end AddCommMonoid
 
 end LinearMap
-

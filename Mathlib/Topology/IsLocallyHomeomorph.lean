@@ -131,4 +131,3 @@ protected theorem comp (hg : IsLocallyHomeomorph g) (hf : IsLocallyHomeomorph f)
 #align is_locally_homeomorph.comp IsLocallyHomeomorph.comp
 
 end IsLocallyHomeomorph
-

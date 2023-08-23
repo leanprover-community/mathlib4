@@ -115,4 +115,3 @@ theorem deriv_pi (h : ∀ i, DifferentiableAt 𝕜 (fun x => φ x i) x) :
 #align deriv_pi deriv_pi
 
 end Pi
-

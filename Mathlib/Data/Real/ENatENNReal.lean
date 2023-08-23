@@ -119,4 +119,3 @@ theorem toENNReal_sub (m n : ℕ∞) : ↑(m - n) = (m - n : ℝ≥0∞) :=
 #align enat.coe_ennreal_sub ENat.toENNReal_sub
 
 end ENat
-

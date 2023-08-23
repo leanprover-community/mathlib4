@@ -357,4 +357,3 @@ theorem cancel_left {g : EsakiaHom β γ} {f₁ f₂ : EsakiaHom α β} (hg : In
 #align esakia_hom.cancel_left EsakiaHom.cancel_left
 
 end EsakiaHom
-

@@ -178,4 +178,3 @@ theorem neLocus_self_sub_left : neLocus (f - g) f = g.support := by
 end AddGroup
 
 end Finsupp
-

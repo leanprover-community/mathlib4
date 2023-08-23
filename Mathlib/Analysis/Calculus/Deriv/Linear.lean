@@ -107,4 +107,3 @@ protected theorem LinearMap.derivWithin (hxs : UniqueDiffWithinAt 𝕜 s x) :
 #align linear_map.deriv_within LinearMap.derivWithin
 
 end LinearMap
-

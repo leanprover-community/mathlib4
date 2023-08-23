@@ -119,4 +119,3 @@ theorem deriv_pow'' (hc : DifferentiableAt 𝕜 c x) :
     deriv (fun x => c x ^ n) x = (n : 𝕜) * c x ^ (n - 1) * deriv c x :=
   (hc.hasDerivAt.pow n).deriv
 #align deriv_pow'' deriv_pow''
-

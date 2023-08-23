@@ -162,4 +162,3 @@ theorem cancel_left {g : β →CO γ} {f₁ f₂ : α →CO β} (hg : Injective 
 #align continuous_open_map.cancel_left ContinuousOpenMap.cancel_left
 
 end ContinuousOpenMap
-

@@ -35,4 +35,3 @@ theorem mdifferentiable_coe : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) ((↑) : ℍ �
 #align upper_half_plane.mdifferentiable_coe UpperHalfPlane.mdifferentiable_coe
 
 end UpperHalfPlane
-

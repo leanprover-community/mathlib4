@@ -254,4 +254,3 @@ theorem ODE_solution_unique {v : ℝ → E → E} {K : ℝ≥0} (hv : ∀ t, Lip
     (fun _ _ => trivial) ha
 set_option linter.uppercaseLean3 false in
 #align ODE_solution_unique ODE_solution_unique
-

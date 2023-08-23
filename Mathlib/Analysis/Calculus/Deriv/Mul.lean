@@ -411,4 +411,3 @@ theorem deriv_clm_apply (hc : DifferentiableAt 𝕜 c x) (hu : DifferentiableAt 
 #align deriv_clm_apply deriv_clm_apply
 
 end ClmCompApply
-

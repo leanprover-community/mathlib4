@@ -57,4 +57,3 @@ theorem imo2011_q3 (f : ℝ → ℝ) (hf : ∀ x y, f (x + y) ≤ y * f x + f (f
     rw [hno] at hp
     linarith
 #align imo2011_q3 imo2011_q3
-

@@ -162,4 +162,3 @@ theorem IsPreconnected.eq_of_sq_eq [Field 𝕜] [HasContinuousInv₀ 𝕜] [Cont
 #align is_preconnected.eq_of_sq_eq IsPreconnected.eq_of_sq_eq
 
 end Preconnected
-

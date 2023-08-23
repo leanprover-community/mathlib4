@@ -177,4 +177,3 @@ theorem ContDiff.sqrt (hf : ContDiff ℝ n f) (h : ∀ x, f x ≠ 0) : ContDiff 
 #align cont_diff.sqrt ContDiff.sqrt
 
 end fderiv
-

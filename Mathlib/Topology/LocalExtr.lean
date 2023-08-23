@@ -628,4 +628,3 @@ theorem Filter.EventuallyEq.isLocalExtr_iff {f g : α → β} {a : α} (heq : f 
 #align filter.eventually_eq.is_local_extr_iff Filter.EventuallyEq.isLocalExtr_iff
 
 end Eventually
-

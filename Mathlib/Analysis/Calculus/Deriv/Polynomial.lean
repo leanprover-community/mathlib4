@@ -195,4 +195,3 @@ protected theorem fderivWithin_aeval (hxs : UniqueDiffWithinAt 𝕜 s x) :
 #align polynomial.fderiv_within_aeval Polynomial.fderivWithin_aeval
 
 end Polynomial
-

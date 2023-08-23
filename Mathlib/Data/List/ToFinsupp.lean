@@ -157,4 +157,3 @@ theorem toFinsupp_eq_sum_map_enum_single {R : Type*} [AddMonoid R] (l : List R)
 #align list.to_finsupp_eq_sum_map_enum_single List.toFinsupp_eq_sum_map_enum_single
 
 end List
-

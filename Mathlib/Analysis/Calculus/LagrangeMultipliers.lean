@@ -140,4 +140,3 @@ theorem IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt {ι : Type*} [Finite
   · simpa only [Function.funext_iff, not_and_or, or_comm, Option.exists, Prod.mk_eq_zero, Ne.def,
       not_forall] using hΛ
 #align is_local_extr_on.linear_dependent_of_has_strict_fderiv_at IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt
-

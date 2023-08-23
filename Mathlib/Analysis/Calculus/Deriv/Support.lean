@@ -48,4 +48,3 @@ theorem HasCompactSupport.deriv (hf : HasCompactSupport f) : HasCompactSupport (
 #align has_compact_support.deriv HasCompactSupport.deriv
 
 end Support
-

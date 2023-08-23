@@ -136,4 +136,3 @@ theorem completion.lift_unique {V W : SemiNormedGroupCat} [CompleteSpace W] [Sep
 #align SemiNormedGroup.Completion.lift_unique SemiNormedGroupCat.completion.lift_unique
 
 end SemiNormedGroupCat
-

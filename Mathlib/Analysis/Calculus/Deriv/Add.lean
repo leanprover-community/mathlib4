@@ -375,4 +375,3 @@ theorem deriv_const_sub (c : F) : deriv (fun y => c - f y) x = -deriv f x := by
 #align deriv_const_sub deriv_const_sub
 
 end Sub
-

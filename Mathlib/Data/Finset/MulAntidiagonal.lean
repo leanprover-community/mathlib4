@@ -129,4 +129,3 @@ theorem mulAntidiagonal_min_mul_min {α} [LinearOrderedCancelCommMonoid α] {s t
 #align finset.add_antidiagonal_min_add_min Finset.addAntidiagonal_min_add_min
 
 end Finset
-

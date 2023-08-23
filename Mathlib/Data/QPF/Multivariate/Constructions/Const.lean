@@ -80,4 +80,3 @@ instance mvqpf : @MvQPF _ (Const n A) MvQPF.Const.MvFunctor where
 end Const
 
 end MvQPF
-
