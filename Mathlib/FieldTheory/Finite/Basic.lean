@@ -228,24 +228,10 @@ theorem sum_pow_units [DecidableEq K] (i : ℕ) :
         apply forall_congr'; intro x; simp [Units.ext_iff]
 #align finite_field.sum_pow_units FiniteField.sum_pow_units
 
--- TODO Move
-lemma exists_ne_one_iff_not_bot {G : Type*} [Group G]
-    {H : Subgroup G} :  H ≠ ⊥ ↔ ∃ a : ↥H, a ≠ 1 := by
-  rcases Subgroup.bot_or_exists_ne_one H with h | ⟨x, hx, hx'⟩
-  · rw [h]
-    simp only [ne_eq, not_true, eq_iff_true_of_subsingleton, exists_false]
-  · simp only [ne_eq, Subtype.exists, Subgroup.mk_eq_one_iff, exists_prop]
-    constructor
-    · intro _
-      exact ⟨x, hx, hx'⟩
-    · intro h
-      contrapose! h
-      simp only [h, Subgroup.mem_bot, imp_self, forall_const]
-
 /-- The sum of a nontrivial subgroup of the units of a field is zero. -/
 theorem sum_subgroup_units_zero_of_ne_bot
     {G : Subgroup (Units K)} [Fintype G] (hg : G ≠ ⊥) : ∑ x : G, (x.val : K) = 0 := by
-  rw [exists_ne_one_iff_not_bot] at hg
+  rw [neq_bot_iff_exists_ne_one] at hg
   rcases hg with ⟨a, ha⟩
   -- The action of a on G is injective
   have hinj := mul_right_injective a

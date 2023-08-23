@@ -955,6 +955,19 @@ theorem bot_or_exists_ne_one (H : Subgroup G) : H = ⊥ ∨ ∃ x ∈ H, x ≠ (
 #align subgroup.bot_or_exists_ne_one Subgroup.bot_or_exists_ne_one
 #align add_subgroup.bot_or_exists_ne_zero AddSubgroup.bot_or_exists_ne_zero
 
+@[to_additive]
+lemma neq_bot_iff_exists_ne_one {H : Subgroup G} : H ≠ ⊥ ↔ ∃ a : ↥H, a ≠ 1 := by
+  rcases Subgroup.bot_or_exists_ne_one H with h | ⟨x, hx, hx'⟩
+  · rw [h]
+    simp only [ne_eq, not_true, eq_iff_true_of_subsingleton, exists_false]
+  · simp only [ne_eq, Subtype.exists, Subgroup.mk_eq_one_iff, exists_prop]
+    constructor
+    · intro _
+      exact ⟨x, hx, hx'⟩
+    · intro h
+      contrapose! h
+      simp only [h, Subgroup.mem_bot, imp_self, forall_const]
+
 /-- The inf of two subgroups is their intersection. -/
 @[to_additive "The inf of two `AddSubgroup`s is their intersection."]
 instance : Inf (Subgroup G) :=
