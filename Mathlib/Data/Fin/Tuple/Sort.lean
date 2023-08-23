@@ -119,7 +119,6 @@ theorem sort_lt_at_start_of_monotone {α} [LinearOrder α] (m : ℕ) (f : Fin m 
   refine Finset.card_mono (fun i => Function.mtr ?_)
   simp_rw [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_Iio]
   exact fun hij => (h.trans_le <| h_sorted <| le_of_not_lt hij).not_le
-/- Proofs by Ruben Van de Velde, Eric {Rodriguez and Wieser}, Junyan Xu -/
 
 lemma Fintype.card_eq_subtypeSubtype_comm {α : Type} [Fintype α] (p q : α → Prop)
     [DecidablePred p] [DecidablePred q] : Fintype.card (Subtype fun x => (p x) ∧ (q x)) =
@@ -132,7 +131,7 @@ lemma Fintype.card_inter_eq_card_and {α : Type} [Fintype α] (p q : α → Prop
     [DecidablePred p] [DecidablePred q] : Fintype.card {i : (Subtype fun x => (p x)) // (q i)} =
       Fintype.card (Subtype fun x => (q x) ∧ (p x)) := by
   rw [← Fintype.card_eq_subtypeSubtype_comm p q]
-  refine' Fintype.card_eq.2 (Nonempty.intro ?_)
+  refine Fintype.card_congr ?_
   exact Equiv.subtypeSubtypeEquivSubtypeInter (fun x ↦ p x) q
 
 lemma Fintype.card_fin_lt_nat (m g : ℕ) (h : g ≤ m) : Fintype.card {i : Fin m // i < g } = g := by
