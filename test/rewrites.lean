@@ -4,6 +4,8 @@ import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Algebra.Group.Basic
 
+set_option autoImplicit true
+
 -- To see the (sorted) list of lemmas that `rw?` will try rewriting by, use:
 -- set_option trace.Tactic.rewrites.lemmas true
 
@@ -130,3 +132,9 @@ info: Try this: rw [@AddCommMonoidWithOne.add_comm]
 #guard_msgs in
 example (n : ℕ) : let y := 3; n + y = 3 + n := by
   rw?!
+
+-- Check that the same lemma isn't used multiple times.
+-- This used to report e.g. two redundant copies of `Nat.add_assoc`.
+lemma test (n m : ℕ) : n + m + 1 = m + n + 1 := by
+  rw?
+  rw [add_comm n m]
