@@ -23,13 +23,28 @@ _Conjecture._
 Let `K` be a field, and `G` a torsion-free group. The group ring `K[G]` does not contain
 nontrivial zero divisors, that is, it is a domain.
 
-We formalize in this file the well-known result that if `R` is a field and `A` is a left-ordered
-group, then `R[A]` contains no non-zero zero-divisors.  Some of these assumptions can be trivially
-weakened: below we mention what assumptions are sufficient for the proofs in this file.
+In this file we show that if `R` satisfies `NoZeroDivisors` and `A` is a grading type satisfying
+`UniqueProds A` (resp. `UniqueSums A`), then `MonoidAlgebra R A` (resp. `AddMonoidAlgebra R A`)
+also satisfies `NoZeroDivisors`.
+
+Because of the instances to `UniqueProds/Sums`, we obtain a formalization of the well-known result
+that if `R` is a field and `A` is a left-ordered group, then `R[A]` contains no non-zero
+zero-divisors.
+The actual assumptions on `R` are weaker.
 
 ##  Main results
 
-* `NoZeroDivisors.of_left_ordered` shows that if `R` is a semiring with no non-zero
+* `MonoidAlgebra.mul_apply_mul_eq_mul_of_uniqueMul` and
+  `AddMonoidAlgebra.mul_apply_add_eq_mul_of_uniqueAdd`
+  general sufficient results stating that certain monomials in a product have as coefficient a
+  product of coefficients of the factors.
+* The instance showing that `Semiring R, NoZeroDivisors R, Mul A, UniqueProds A` imply
+  `NoZeroDivisors (MonoidAlgebra R A)`.
+* The instance showing that `Semiring R, NoZeroDivisors R, Add A, UniqueSums A` imply
+  `NoZeroDivisors (AddMonoidAlgebra R A)`.
+
+TODO: move the rest of the docs to UniqueProds?
+ `NoZeroDivisors.of_left_ordered` shows that if `R` is a semiring with no non-zero
   zero-divisors, `A` is a linearly ordered, add right cancel semigroup with strictly monotone
   left addition, then `AddMonoidAlgebra R A` has no non-zero zero-divisors.
 * `NoZeroDivisors.of_right_ordered` shows that if `R` is a semiring with no non-zero
@@ -53,7 +68,7 @@ namespace MonoidAlgebra
 
 /-- The coefficient of a monomial in a product `f * g` that can be reached in at most one way
 as a product of monomials in the supports of `f` and `g` is a product. -/
-theorem mul_apply_mul_eq_mul_of_uniqueAdd [Mul A] {f g : MonoidAlgebra R A} {a0 b0 : A}
+theorem mul_apply_mul_eq_mul_of_uniqueMul [Mul A] {f g : MonoidAlgebra R A} {a0 b0 : A}
     (h : UniqueMul f.support g.support a0 b0) :
     (f * g) (a0 * b0) = f a0 * g b0 := by
   classical
@@ -74,7 +89,7 @@ instance [NoZeroDivisors R] [Mul A] [UniqueProds A] :
       (support_nonempty_iff.mpr ab.1) (support_nonempty_iff.mpr ab.2)
     refine support_nonempty_iff.mp ⟨da * db, ?_⟩
     rw [mem_support_iff] at a0 b0 ⊢
-    exact mul_apply_mul_eq_mul_of_uniqueAdd h ▸ mul_ne_zero a0 b0
+    exact mul_apply_mul_eq_mul_of_uniqueMul h ▸ mul_ne_zero a0 b0
 
 end MonoidAlgebra
 
