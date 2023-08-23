@@ -3,8 +3,10 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+import Mathlib.Data.DFinsupp.Basic
 import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Finsupp.Defs
 
 #align_import algebra.group.unique_prods from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
@@ -268,7 +270,7 @@ variable {G H : Type*} [Mul G] [Mul H]
 theorem of_subsingleton [Subsingleton G] : UniqueProds G :=
   ⟨fun ⟨a, ha⟩ ⟨b, hb⟩ => ⟨a, ha, b, hb, UniqueMul.of_subsingleton⟩⟩
 
-open Finset in
+open Finset
 @[to_additive]
 theorem mulHom_image_of_injective (f : H →ₙ* G) (hf : Function.Injective f) (uG : UniqueProds G) :
     UniqueProds H := by
@@ -285,4 +287,69 @@ theorem mulHom_image_iff (f : G ≃* H) :
     UniqueProds G ↔ UniqueProds H :=
 ⟨mulHom_image_of_injective f.symm f.symm.injective, mulHom_image_of_injective f f.injective⟩
 
+@[to_additive] instance [UniqueProds G] [UniqueProds H] : UniqueProds (G × H) where
+  uniqueMul_of_nonempty {A B} hA hB := by
+    classical
+    obtain ⟨aG, hA, bG, hB, hG⟩ := uniqueMul_of_nonempty (hA.image Prod.fst) (hB.image Prod.fst)
+    rw [mem_image, ← filter_nonempty_iff] at hA hB
+    obtain ⟨aH, hA, bH, hB, hH⟩ := uniqueMul_of_nonempty (hA.image Prod.snd) (hB.image Prod.snd)
+    simp_rw [mem_image, mem_filter] at hA hB
+    refine ⟨(aG, aH), ?_, (bG, bH), ?_, fun a b ha hb he => ?_⟩
+    · obtain ⟨a, ⟨ha, rfl⟩, rfl⟩ := hA; exact ha
+    · obtain ⟨b, ⟨hb, rfl⟩, rfl⟩ := hB; exact hb
+    rw [Prod.ext_iff] at he
+    specialize hG (mem_image.mpr ⟨a, ha, rfl⟩) (mem_image.mpr ⟨b, hb, rfl⟩) he.1
+    specialize hH _ _ he.2
+    all_goals try simp_rw [mem_image, mem_filter]
+    exacts [⟨a, ⟨ha, hG.1⟩, rfl⟩, ⟨b, ⟨hb, hG.2⟩, rfl⟩, ⟨Prod.ext hG.1 hH.1, Prod.ext hG.2 hH.2⟩]
+
+@[to_additive] instance {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, UniqueProds (G i)] :
+    UniqueProds (∀ i, G i) where
+  uniqueMul_of_nonempty {A} := by
+    classical
+    haveI := Finset.isWellFounded_ssubset (α := ∀ i, G i) -- why need this?
+    apply IsWellFounded.induction (· ⊂ ·) A; intro A ihA B hA
+    apply IsWellFounded.induction (· ⊂ ·) B; intro B ihB hB
+    obtain hc | ⟨i, hc⟩ : (A.card ≤ 1 ∧ B.card ≤ 1) ∨
+      ∃ i, (∃ a1 ∈ A, ∃ a2 ∈ A, a1 i ≠ a2 i) ∨ (∃ b1 ∈ B, ∃ b2 ∈ B, b1 i ≠ b2 i)
+    · obtain hA1 | h1A := le_or_lt A.card 1
+      · obtain hB1 | h1B := le_or_lt B.card 1
+        · exact Or.inl ⟨hA1, hB1⟩
+        obtain ⟨b1, h1, b2, h2, hne⟩ := Finset.one_lt_card.mp h1B
+        obtain ⟨i, hne⟩ := Function.ne_iff.mp hne
+        exact Or.inr ⟨i, Or.inr ⟨b1, h1, b2, h2, hne⟩⟩
+      obtain ⟨a1, h1, a2, h2, hne⟩ := Finset.one_lt_card.mp h1A
+      obtain ⟨i, hne⟩ := Function.ne_iff.mp hne
+      exact Or.inr ⟨i, Or.inl ⟨a1, h1, a2, h2, hne⟩⟩
+    · obtain ⟨a0, ha0⟩ := hA; obtain ⟨b0, hb0⟩ := hB
+      simp_rw [Finset.card_le_one_iff] at hc
+      exact ⟨a0, ha0, b0, hb0, fun a b ha hb _ => ⟨hc.1 ha ha0, hc.2 hb hb0⟩⟩
+    obtain ⟨ai, hA, bi, hB, hi⟩ := uniqueMul_of_nonempty (hA.image (· i)) (hB.image (· i))
+    rw [mem_image, ← filter_nonempty_iff] at hA hB
+    let A' := A.filter (· i = ai); let B' := B.filter (· i = bi)
+    obtain ⟨a0, ha0, b0, hb0, hu⟩ : ∃ a0 ∈ A', ∃ b0 ∈ B', UniqueMul A' B' a0 b0
+    · rcases hc with ⟨a1, h1, a2, h2, hne⟩ | ⟨b1, h1, b2, h2, hne⟩
+      · refine ihA _ ⟨A.filter_subset _, fun h => ?_⟩ hA hB
+        obtain rfl | hai := eq_or_ne (a1 i) ai
+        exacts [hne (mem_filter.mp <| h h2).2.symm, hai (mem_filter.mp <| h h1).2]
+      by_cases hA' : A' = A
+      · rw [hA']; refine ihB _ ⟨B.filter_subset _, fun h => ?_⟩ hB
+        obtain rfl | hbi := eq_or_ne (b1 i) bi
+        exacts [hne (mem_filter.mp <| h h2).2.symm, hbi (mem_filter.mp <| h h1).2]
+      exact ihA A' ((A.filter_subset _).ssubset_of_ne hA') hA hB
+    rw [mem_filter] at ha0 hb0
+    refine ⟨a0, ha0.1, b0, hb0.1, fun a b ha hb he => ?_⟩
+    specialize hi (mem_image_of_mem _ ha) (mem_image_of_mem _ hb) ?_
+    · refine (congr_arg (· i) he).trans ?_; rw [← ha0.2, ← hb0.2]; rfl
+    exact hu (mem_filter.mpr ⟨ha, hi.1⟩) (mem_filter.mpr ⟨hb, hi.2⟩) he
+
 end UniqueProds
+
+instance {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, UniqueSums (G i)] :
+    UniqueSums (Π₀ i, G i) :=
+  UniqueSums.addHom_image_of_injective
+    DFinsupp.coeFnAddMonoidHom.toAddHom FunLike.coe_injective inferInstance
+
+instance {ι G} [AddZeroClass G] [UniqueSums G] : UniqueSums (ι →₀ G) :=
+  UniqueSums.addHom_image_of_injective
+    Finsupp.coeFnAddHom.toAddHom FunLike.coe_injective inferInstance

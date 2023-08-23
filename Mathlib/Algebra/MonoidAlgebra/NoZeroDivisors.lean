@@ -122,27 +122,10 @@ instance [NoZeroDivisors R] [Add A] [UniqueSums A] :
 
 end AddMonoidAlgebra
 
-instance {L σ : Type*} [LinearOrder L] [AddGroup L]
-    [ContravariantClass L L (· + ·) (· ≤ ·)]
-    [CovariantClass L L (Function.swap (· + ·)) (· ≤ ·)] :
-    UniqueSums (σ →₀ L) := show UniqueSums (Lex (σ →₀ L)) from
-{ uniqueAdd_of_nonempty := fun {A B} A0 B0 =>
-  --  introduce an arbitrary order on `σ`, the trivial one in this case
-  let _ : PartialOrder σ :=
-  { le := (· = ·)
-    le_refl := fun a ↦ rfl
-    le_trans := fun _ _ _ => Eq.trans
-    le_antisymm := fun a b ab _ => ab }
-  -- Extend the given order to a `LinearOrder`
-  let _ : LinearOrder σ := show LinearOrder (LinearExtension σ) from inferInstance
-  ⟨_, A.max'_mem A0, _, B.max'_mem B0, fun a b aA bB =>
-    (add_eq_add_iff_eq_and_eq (A.le_max' a aA) (B.le_max' b bB)).mp⟩ }
-
 /-- The proof goes via the equivalence `A ≃ₗ[ℚ] (Basis.ofVectorSpaceIndex ℚ A) →₀ ℚ`,
 i.e. choosing a basis.
 Once we have a basis, we use the embedding into sequences of coordinates and all the instances
 that `ℚ` already has.
 -/
 instance [AddCommGroup A] [Module ℚ A] : UniqueSums A :=
-let r := (Basis.ofVectorSpace ℚ A).repr
-UniqueSums.addHom_image_of_injective r r.injective inferInstance
+  UniqueSums.addHom_image_of_injective _ (Basis.ofVectorSpace ℚ A).repr.injective inferInstance
