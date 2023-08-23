@@ -2,6 +2,7 @@ import Mathlib.Condensed.Basic
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
 import Mathlib.CategoryTheory.Preadditive.Projective
 import Mathlib.CategoryTheory.Elementwise
+import Mathlib.CategoryTheory.Functor.InvIsos
 import Mathlib.Topology.Category.Stonean.EffectiveEpi
 import Mathlib.Topology.Category.CompHaus.Limits
 import Mathlib.Topology.Category.Profinite.EffectiveEpi
@@ -150,33 +151,16 @@ section ProdToCoprod
 variable {C : Type _} [Category C] {α : Type} [Finite α]
   (Z : α → C) [HasFiniteProducts C]
 
-@[simps!]
-noncomputable
-def oppositeCofan : Cofan (fun z => op (Z z)) :=
-  Cofan.mk (op <| ∏ Z) fun i => (Pi.π _ i).op
-
-@[simps]
-noncomputable
-def isColimitOppositeCofan : IsColimit (oppositeCofan Z) where
-  desc := fun S =>
-    let e : S.pt.unop ⟶ ∏ Z := Pi.lift fun j => (S.ι.app _).unop
-    e.op
-  fac := fun S j => by
-    dsimp only [oppositeCofan_pt, Functor.const_obj_obj,
-      oppositeCofan_ι_app, Discrete.functor_obj]
-    simp only [← op_comp, limit.lift_π,
-      Fan.mk_pt, Fan.mk_π_app, Quiver.Hom.op_unop]
-  uniq := fun S m hm => by
-    rw [← m.op_unop]
-    congr 1
-    apply limit.hom_ext
-    intro j
-    simpa using congr_arg Quiver.Hom.unop (hm j)
+instance : HasColimit (Discrete.functor fun i ↦ Z i).op :=
+  hasColimit_of_equivalence_comp (Discrete.opposite α).symm
 
 @[simp]
 noncomputable
 def ProdToCoprod : op (∏ Z) ≅ ∐ (fun z => op (Z z)) :=
-  isColimitOppositeCofan Z |>.coconePointUniqueUpToIso <| colimit.isColimit _
+  IsColimit.coconePointUniqueUpToIso (isColimitConeOp _ (productIsProduct fun b ↦ Z b))
+    (colimit.isColimit _) ≪≫ (IsColimit.coconePointsIsoOfEquivalence
+    (coproductIsCoproduct (fun z ↦ op (Z z))) (colimit.isColimit _) (Discrete.opposite α).symm
+    (Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ eqToIso (by rfl)))).symm
 
 end ProdToCoprod
 
@@ -185,10 +169,21 @@ section CoprodToProd
 variable {C : Type _} [Category C] {α : Type} [Finite α]
   (Z : α → C) [HasFiniteCoproducts C]
 
+instance : HasLimit (Discrete.functor fun i ↦ Z i).op :=
+  hasLimitOfEquivalenceComp (Discrete.opposite α).symm
+
+@[simp]
+noncomputable
+def CoprodToProd' : op (∐ Z) ≅ ∏ (fun z => op (Z z)) :=
+  IsLimit.conePointUniqueUpToIso (isLimitCoconeOp _ (coproductIsCoproduct fun b ↦ Z b))
+    (limit.isLimit _) ≪≫ (IsLimit.conePointsIsoOfEquivalence
+    (productIsProduct (fun z ↦ op (Z z))) (limit.isLimit _) (Discrete.opposite α).symm
+    (Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ eqToIso (by rfl)))).symm
+
 @[simps!]
 noncomputable
-def oppositeFan : Fan (fun z => op (Z z)) := by
-  refine' Fan.mk (op <| ∐ Z) fun i => (Sigma.ι _ i).op
+def oppositeFan : Fan (fun z => op (Z z)) :=
+  Fan.mk (op <| ∐ Z) fun i => (Sigma.ι _ i).op
 
 @[simps!]
 noncomputable
