@@ -1463,6 +1463,8 @@ scoped notation "ω_" => λ o ↦ ord <| aleph o
 -/
 scoped notation "ω₁" => ord <| aleph 1
 
+lemma omega_lt_omega1 : ω < ω₁ := ord_aleph0.symm.trans_lt (ord_lt_ord.mpr (aleph0_lt_aleph_one))
+
 section OrdinalIndices
 /-!
 ### Cardinal operations with ordinal indices
