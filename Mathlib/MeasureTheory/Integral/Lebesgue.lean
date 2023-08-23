@@ -350,20 +350,11 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
     have : s x ≠ 0 := by
       refine' mt _ this
       intro h
-<<<<<<< HEAD
       rw [h, mul_zero]
     have : (rs.map c) x < ⨆ n : ℕ, f n x
     · calc (↑(r * s x) : ℝ≥0∞) < ↑(1 * s x) := ENNReal.coe_lt_coe.2 <| by gcongr
         _ = s x := by simp
         _ ≤ ⨆ n : ℕ, f n x := hsf x
-=======
-      rw [h, mul_zero]
-    have : (rs.map c) x < ⨆ n : ℕ, f n x := by
-      refine' lt_of_lt_of_le (ENNReal.coe_lt_coe.2 _) (hsf x)
-      suffices : r * s x < 1 * s x
-      simpa
-      exact mul_lt_mul_of_pos_right ha (pos_iff_ne_zero.2 this)
->>>>>>> origin/master
     rcases lt_iSup_iff.1 this with ⟨i, hi⟩
     exact mem_iUnion.2 ⟨i, le_of_lt hi⟩
   have mono : ∀ r : ℝ≥0∞, Monotone fun n => rs.map c ⁻¹' {r} ∩ { a | r ≤ f n a } := by
