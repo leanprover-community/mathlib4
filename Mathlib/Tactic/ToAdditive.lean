@@ -731,6 +731,7 @@ def nameDict : String → List String
   | "prehaar"     => ["add", "Prehaar"]
   | "unit"        => ["add", "Unit"]
   | "units"       => ["add", "Units"]
+  | "prods"       => ["sums"]  -- convert `[uU]niqueProds` to `[uU]niqueSums`
   | "rootable"    => ["divisible"]
   | x             => [x]
 
