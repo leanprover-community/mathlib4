@@ -46,6 +46,17 @@ should generally be favored over this one. -/
 def HasLineDerivAt (f : E → F) (f' : F) (x : E) (v : E) :=
   HasDerivAt (fun t ↦ f (x + t • v)) f' (0 : 𝕜)
 
+/-- `f` is line-differentiable at the point `x` in the direction `v` in the set `s` if there
+exists `f'` such that `f (x + t v) = f x + t • f' + o (t)` when `t` tends to `0` and `x + t v ∈ s`.
+-/
+def LineDifferentiableWithinAt (f : E → F) (s : Set E) (x : E) (v : E) : Prop :=
+  ∃ f', HasLineDerivWithinAt 𝕜 f f' s x v
+
+/-- `f` is line-differentiable at the point `x` in the direction `v` if there
+exists `f'` such that `f (x + t v) = f x + t • f' + o (t)` when `t` tends to `0`. -/
+def LineDifferentiableAt (f : E → F) (x : E) (v : E) : Prop :=
+  ∃ f', HasLineDerivAt 𝕜 f f' x v
+
 /-- Line derivative of `f` at the point `x` in the direction `v` within the set `s`, if it exists.
 Zero otherwise.
 
@@ -95,6 +106,10 @@ lemma HasLineDerivWithinAt.congr_of_eventuallyEq (hf : HasLineDerivWithinAt 𝕜
       convert nhdsWithin_mono _ (image_preimage_subset F s); simp
     exact this h'f
   filter_upwards [A.continuousWithinAt.preimage_mem_nhdsWithin' B] with t ht using Eq.symm ht
+
+lemma HasLineDerivWithinAt.congr (hf : HasLineDerivWithinAt 𝕜 f f' s x v)
+    (h'f : ∀ y ∈ s, f y = f₁ y) (hx : f x = f₁ x) : HasLineDerivWithinAt 𝕜 f₁ f' s x v :=
+  hf.congr_of_eventuallyEq (eventuallyEq_nhdsWithin_of_eqOn h'f) hx
 
 lemma HasFDerivWithinAt.hasLineDerivMithinAt (hf : HasFDerivWithinAt f L s x) :
     HasLineDerivWithinAt 𝕜 f (L v) s x v := by
