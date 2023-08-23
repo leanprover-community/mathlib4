@@ -197,13 +197,13 @@ theorem cast_subgroup_of_units_card_ne_zero {F : Type} [Field F]
     have hu : orderOf u = p := by rwa [orderOf_units, orderOf_subgroup]
     -- u ^ p = 1 implies (u - 1) ^ p = 0 and hence u = 1 ...
     have h : u = 1 := by
-      rewrite [← sub_left_inj, sub_self 1]
+      rw [← sub_left_inj, sub_self 1]
       apply pow_eq_zero (n := p)
-      rewrite [sub_pow_char (R := F) (p := p) u 1, one_pow, ← hu, pow_orderOf_eq_one]
+      rw [sub_pow_char (R := F) (p := p) u 1, one_pow, ← hu, pow_orderOf_eq_one]
       exact sub_self 1
     -- ... meaning x didn't have order p after all, contradiction
     apply ne_of_lt $ Nat.Prime.one_lt pprime
-    rewrite [← hu, h]
+    rw [← hu, h]
     exact orderOf_one.symm
 
 /-- The sum of `x ^ i` as `x` ranges over the units of a finite field of cardinality `q`
@@ -228,9 +228,10 @@ theorem sum_pow_units [DecidableEq K] (i : ℕ) :
         apply forall_congr'; intro x; simp [Units.ext_iff]
 #align finite_field.sum_pow_units FiniteField.sum_pow_units
 
-lemma exists_ne_one_iff_not_bot {G' : Type*} [Group G']
-    {G : Subgroup G'} :  G ≠ ⊥ ↔ ∃ a : ↥G, a ≠ 1 := by
-  have := Subgroup.bot_or_exists_ne_one G
+-- TODO Move
+lemma exists_ne_one_iff_not_bot {G : Type*} [Group G]
+    {H : Subgroup G'} :  H ≠ ⊥ ↔ ∃ a : ↥H, a ≠ 1 := by
+  have := Subgroup.bot_or_exists_ne_one H
   rcases this with h | ⟨x, hx, hx'⟩
   · rw [h]
     simp only [ne_eq, not_true, eq_iff_true_of_subsingleton, exists_false]
