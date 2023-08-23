@@ -3794,11 +3794,10 @@ instance (priority := 100) sigmaFinite_of_locallyFinite [TopologicalSpace α]
 /-- A measure which is finite on compact sets in a locally compact space is locally finite.
 Not registered as an instance to avoid a loop with the other direction. -/
 theorem isLocallyFiniteMeasure_of_isFiniteMeasureOnCompacts [TopologicalSpace α]
-    [LocallyCompactSpace α] [IsFiniteMeasureOnCompacts μ] : IsLocallyFiniteMeasure μ :=
-  ⟨by
-    intro x
-    rcases exists_compact_mem_nhds x with ⟨K, K_compact, K_mem⟩
-    exact ⟨K, K_mem, K_compact.measure_lt_top⟩⟩
+    [WeaklyLocallyCompactSpace α] [IsFiniteMeasureOnCompacts μ] : IsLocallyFiniteMeasure μ :=
+  ⟨fun x ↦
+    let ⟨K, K_compact, K_mem⟩ := exists_compact_mem_nhds x
+    ⟨K, K_mem, K_compact.measure_lt_top⟩⟩
 #align measure_theory.is_locally_finite_measure_of_is_finite_measure_on_compacts MeasureTheory.isLocallyFiniteMeasure_of_isFiniteMeasureOnCompacts
 
 theorem exists_pos_measure_of_cover [Countable ι] {U : ι → Set α} (hU : ⋃ i, U i = univ)

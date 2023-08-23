@@ -606,17 +606,15 @@ on open sets has infinite mass. -/
 @[to_additive (attr := simp)
 "In a noncompact locally compact additive group, a left-invariant measure which is positive on open
 sets has infinite mass."]
-theorem measure_univ_of_isMulLeftInvariant [LocallyCompactSpace G] [NoncompactSpace G]
+theorem measure_univ_of_isMulLeftInvariant [WeaklyLocallyCompactSpace G] [NoncompactSpace G]
     (μ : Measure G) [IsOpenPosMeasure μ] [μ.IsMulLeftInvariant] : μ univ = ∞ := by
   /- Consider a closed compact set `K` with nonempty interior. For any compact set `L`, one may
     find `g = g (L)` such that `L` is disjoint from `g • K`. Iterating this, one finds
     infinitely many translates of `K` which are disjoint from each other. As they all have the
     same positive mass, it follows that the space has infinite measure. -/
-  obtain ⟨K, hK, Kclosed, Kint⟩ : ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ (1 : G) ∈ interior K := by
-    rcases local_isCompact_isClosed_nhds_of_group (isOpen_univ.mem_nhds (mem_univ (1 : G))) with
-      ⟨K, hK⟩
-    exact ⟨K, hK.1, hK.2.1, hK.2.2.2⟩
-  have K_pos : 0 < μ K := measure_pos_of_nonempty_interior _ ⟨_, Kint⟩
+  obtain ⟨K, hK, Kclosed, K1⟩ : ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ∈ 𝓝 1 :=
+    exists_isCompact_isClosed_nhds_one G
+  have K_pos : 0 < μ K := measure_pos_of_nonempty_interior _ ⟨_, mem_interior_iff_mem_nhds.2 K1⟩
   have A : ∀ L : Set G, IsCompact L → ∃ g : G, Disjoint L (g • K) := fun L hL =>
     exists_disjoint_smul_of_isCompact hL hK
   choose! g hg using A
@@ -705,7 +703,7 @@ instance, to avoid an instance loop.
 
 See Note [lower instance priority]"]
 instance (priority := 100) isLocallyFiniteMeasure_of_isHaarMeasure {G : Type*} [Group G]
-    [MeasurableSpace G] [TopologicalSpace G] [LocallyCompactSpace G] (μ : Measure G)
+    [MeasurableSpace G] [TopologicalSpace G] [WeaklyLocallyCompactSpace G] (μ : Measure G)
     [IsHaarMeasure μ] : IsLocallyFiniteMeasure μ :=
   isLocallyFiniteMeasure_of_isFiniteMeasureOnCompacts
 #align measure_theory.measure.is_locally_finite_measure_of_is_haar_measure MeasureTheory.Measure.isLocallyFiniteMeasure_of_isHaarMeasure
