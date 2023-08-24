@@ -364,8 +364,8 @@ theorem HasDerivWithinAt.mono (h : HasDerivWithinAt f f' t x) (hst : s ⊆ t) :
   HasFDerivWithinAt.mono h hst
 #align has_deriv_within_at.mono HasDerivWithinAt.mono
 
-theorem HasDerivWithinAt.mono_of_mem
-    (h : HasDerivWithinAt f f' t x) (hst : t ∈ 𝓝[s] x) : HasDerivWithinAt f f' s x :=
+theorem HasDerivWithinAt.mono_of_mem (h : HasDerivWithinAt f f' t x) (hst : t ∈ 𝓝[s] x) :
+    HasDerivWithinAt f f' s x :=
   HasFDerivWithinAt.mono_of_mem h hst
 #align has_deriv_within_at.mono_of_mem HasDerivWithinAt.mono_of_mem
 #align has_deriv_within_at.nhds_within HasDerivWithinAt.mono_of_mem
