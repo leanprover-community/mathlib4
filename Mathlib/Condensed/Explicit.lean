@@ -25,6 +25,7 @@ universe v v₁ u u₁ w
 - The section `StoneanExplicitSheaves` is similar to its counterparts for `Profinite` and
   `CompHaus` but additionally depends on sections `OpenEmbedding`, `StoneanProjective` and
   `StoneanPrecoherent`
+- TODO: add the code from `Condensed/Equivalence` in the Copenhagen repo
 -/
 
 section isSheafForPullBackSieve -- This section is PR #6750
