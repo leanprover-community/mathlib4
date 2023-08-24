@@ -130,15 +130,24 @@ noncomputable def rcons (hφ : ∀ i, Function.Injective (φ i))
     · exact p.tail.normalized _ h1 h2
     · simp⟩
 
-
 /-- The equivalence between words and pairs. Given a word, it decomposes it as a pair by removing
 the first letter if it comes from `M i`. Given a pair, it prepends the head to the tail. -/
-def equivPair (hφ : ∀ i, Function.Injective (φ i)) (i) : Word φ n ≃ Pair φ n i where
-  toFun w := _
-  invFun := rcons _ _ hφ
-  left_inv w := _
-  right_inv _ := _
+nonrec def toPair (i) (w : Word φ n) : Pair φ n i :=
+  let p := Word.equivPair i w.toWord
+  { head := p.head,
+    tail := ⟨p.tail, by
+      rintro ⟨i, g⟩ h hn
+      exact w.normalized _
+        (Word.mem_of_mem_equivPair_tail_toList _ h) hn⟩,
+    fstIdx_ne := p.fstIdx_ne }
 
+def summandAction {i : ι} (hφ : ∀ i, Function.Injective (φ i)) :
+    (G i) →* Equiv.Perm (Word φ n) :=
+  let smul : G i → Word φ n → Word φ n :=
+    fun g w => rcons φ n hφ
+      { toPair φ n i w with
+        head := g * (toPair φ n i w).head }
+  { toFun := fun g => _ }
 
 -- noncomputable def normalizeWord : (w : CoprodI.Word G) →
 --     { w' : Word G H φ n // w'.toList.length ≤ w.toList.length }

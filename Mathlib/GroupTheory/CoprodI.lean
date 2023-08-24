@@ -444,6 +444,13 @@ theorem mem_equivPair_tail_toList_iff {i j : ι} {w : Word M} (m : M i) :
       · subst i; simp_all [eq_comm, or_comm]
       · simp_all [Ne.symm hik]
 
+theorem mem_of_mem_equivPair_tail_toList {i j : ι} {w : Word M} (m : M i) :
+    (⟨i, m⟩ ∈ (equivPair j w).tail.toList) → ⟨i, m⟩ ∈ w.toList := by
+  rw [mem_equivPair_tail_toList_iff]
+  rintro (h | h)
+  · exact List.mem_of_mem_tail h
+  · revert h; cases w.toList <;> simp (config := {contextual := true})
+
 theorem equivPair_head {i : ι} {w : Word M} :
     (equivPair i w).head =
       if h : ∃ (h : w.toList ≠ []), (w.toList.head h).1 = i
