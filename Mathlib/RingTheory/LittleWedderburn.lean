@@ -59,8 +59,8 @@ theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ 
   have h1qn : 1 ≤ q ^ n := by rw [← card_D]; exact Fintype.card_pos
   have key := Group.nat_card_center_add_sum_card_noncenter_eq_card (Dˣ)
   simp only [Nat.card_eq_fintype_card] at key
-  rw [Fintype.card_congr (centerUnitsEquivUnitsRingCenter D).toEquiv, Fintype.card_units, ← card_Z,
-    Fintype.card_units, card_D] at key
+  rw [Fintype.card_congr (centerUnitsEquivUnitsRingCenter D).symm.toEquiv,
+      Fintype.card_units, ← card_Z, Fintype.card_units, card_D] at key
   let Φ := cyclotomic n ℤ
   have aux : Φ.eval ↑q ∣ (q : ℤ) ^ n - 1 := by
     simpa only [eval_X, eval_one, eval_pow, eval_sub, coe_evalRingHom] using
