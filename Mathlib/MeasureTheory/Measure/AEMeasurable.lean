@@ -355,7 +355,7 @@ theorem aemeasurable_indicator_iff₀ {s} (hs : NullMeasurableSet s μ) :
 
 /-- A characterization of the a.e.-measurability of the indicator function which takes a constant
 value `b` on a set `A` and `0` elsewhere. -/
-lemma aemeasurable_indicator_const_iff [MeasurableSingletonClass β] (b : β) [NeZero b] :
+lemma aemeasurable_indicator_const_iff {s} [MeasurableSingletonClass β] (b : β) [NeZero b] :
     AEMeasurable (s.indicator (fun _ ↦ b)) μ ↔ NullMeasurableSet s μ := by
   constructor <;> intro h
   · convert h.nullMeasurable (MeasurableSet.singleton (0 : β)).compl
