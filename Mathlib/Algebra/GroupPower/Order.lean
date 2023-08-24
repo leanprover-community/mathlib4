@@ -328,6 +328,7 @@ end CovariantLTSwap
 @[to_additive Left.nsmul_neg_iff]
 theorem Left.pow_lt_one_iff' [CovariantClass M M (· * ·) (· < ·)] {n : ℕ} {x : M} (hn : 0 < n) :
     x ^ n < 1 ↔ x < 1 :=
+  haveI := covariantClass_le_of_lt M M (· * ·)
   pow_lt_one_iff hn.ne'
 #align left.nsmul_neg_iff Left.nsmul_neg_iff
 
@@ -340,6 +341,7 @@ theorem Right.pow_lt_one_iff [CovariantClass M M (swap (· * ·)) (· < ·)] {n 
     (hn : 0 < n) : x ^ n < 1 ↔ x < 1 :=
   ⟨fun H =>
     not_le.mp fun k =>
+      haveI := covariantClass_le_of_lt M M (swap (· * ·))
       H.not_le <| Right.one_le_pow_of_le k,
     Right.pow_lt_one_of_lt hn⟩
 #align right.pow_lt_one_iff Right.pow_lt_one_iff
