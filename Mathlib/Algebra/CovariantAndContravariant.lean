@@ -343,7 +343,7 @@ instance contravariant_swap_of_contravariant [IsSymmOp N N mu]
     [ContravariantClass N N mu r] : ContravariantClass N N (swap mu) r where
   elim := (contravariant_flip_iff N r mu).mpr ContravariantClass.elim
 
-instance covariant_lt_of_covariant_le_of_contravariant_eq [ContravariantClass M N μ (· = ·)]
+theorem covariant_lt_of_covariant_le_of_contravariant_eq [ContravariantClass M N μ (· = ·)]
     [PartialOrder N] [CovariantClass M N μ (· ≤ ·)] : CovariantClass M N μ (· < ·) where
   elim a _ _ bc := (CovariantClass.elim a bc.le).lt_of_ne (bc.ne ∘ ContravariantClass.elim _)
 
