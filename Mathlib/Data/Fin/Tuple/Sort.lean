@@ -143,7 +143,7 @@ theorem lt_card_le_iff_apply_le_of_monotone {α} [LinearOrder α] (m : ℕ) (f :
     simp_rw [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_Iio]
     exact fun hij => (h.trans_le <| h_sorted <| le_of_not_lt hij).not_le
 
-theorem lt_card_ge_iff_apply_ge_of_monotone {α} [LinearOrder α] (m : ℕ) (f : Fin m → α) (a : α)
+theorem lt_card_ge_iff_apply_ge_of_antitone {α} [LinearOrder α] (m : ℕ) (f : Fin m → α) (a : α)
     (h_sorted : Antitone f)
     (j : Fin m) :
     (j < Fintype.card {i // a ≤ f i})  ↔ a ≤ f j :=
