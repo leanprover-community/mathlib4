@@ -168,14 +168,9 @@ def emptyGraph (V : Type u) : SimpleGraph V where Adj _ _ := False
 
 /-- Two vertices are adjacent in the complete bipartite graph on two vertex types
 if and only if they are not from the same side.
-Bipartite graphs in general may be regarded as being subgraphs of one of these.
-
-TODO also introduce complete multi-partite graphs, where the vertex type is a sigma type of an
-indexed family of vertex types
--/
+Any bipartite graph may be regarded as a subgraph of one of these. -/
 @[simps]
-def completeBipartiteGraph (V W : Type*) : SimpleGraph (Sum V W)
-    where
+def completeBipartiteGraph (V W : Type*) : SimpleGraph (Sum V W) where
   Adj v w := v.isLeft ∧ w.isRight ∨ v.isRight ∧ w.isLeft
   symm := by
     intro v w
@@ -184,6 +179,15 @@ def completeBipartiteGraph (V W : Type*) : SimpleGraph (Sum V W)
     intro v
     cases v <;> simp
 #align complete_bipartite_graph completeBipartiteGraph
+
+/-- Two vertices are adjacent in the complete multipartite graph on an indexed family of
+vertex types if and only if they are not from the same type.
+Any graph may be regarded as a subgraph of one of these, with sufficiently many parts. -/
+@[simps]
+def completeMultipartiteGraph {ι : Type*} (V : ι → Type*) : SimpleGraph (Σ i, V i) where
+  Adj v w := v.1 ≠ w.1
+  symm := by intro v w; cases v; cases w; intro e; exact e.symm
+  loopless := by intro v; cases v; simp
 
 namespace SimpleGraph
 
