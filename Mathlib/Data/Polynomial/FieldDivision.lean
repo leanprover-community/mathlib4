@@ -373,7 +373,7 @@ theorem mem_roots_map [CommRing k] [IsDomain k] {f : R →+* k} {x : k} (hp : p 
 theorem rootSet_monomial [CommRing S] [IsDomain S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) {a : R}
     (ha : a ≠ 0) : (monomial n a).rootSet S = {0} := by
   classical
-  rw [rootSet, aroots, map_monomial, roots_monomial ((_root_.map_ne_zero (algebraMap R S)).2 ha),
+  rw [rootSet, aroots_monomial ha,
     Multiset.toFinset_nsmul _ _ hn, Multiset.toFinset_singleton, Finset.coe_singleton]
 #align polynomial.root_set_monomial Polynomial.rootSet_monomial
 
