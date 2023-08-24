@@ -14,23 +14,35 @@ A group `G` has *unique products* if for any two non-empty finite subsets `A, B 
 element `g ∈ A * B` that can be written uniquely as a product of an element of `A` and an element
 of `B`.  We call the formalization this property `UniqueProds`.  Since the condition requires no
 property of the group operation, we define it for a Type simply satisfying `Mul`.  We also
-introduce the analogous "additive" companion, `UniqueSums` and link the two so that `to_additive`
+introduce the analogous "additive" companion, `UniqueSums`, and link the two so that `to_additive`
 converts `UniqueProds` into `UniqueSums`.
 
+A common way of *proving* that a group satisfies the `UniqueProds/Sums` property is by assuming
+the existence of some kind of ordering on the group that is well-behaved with respect to the
+group operation and showing that minima/maxima are the "unique products/sums".
+However, the order is just a convenience and is not part of the `UniqueProds/Sums` setup.
+
 Here you can see several examples of Types that have `UniqueSums/Prods`
-(`infer_instance` uses `Covariants.to_uniqueProds` and `Covariants.to_uniqueSums`).
+(`inferInstance` uses `Covariant.to_uniqueProds_left` and `Covariant.to_uniqueSums_left`).
 ```lean
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.PNat.Basic
 import Mathlib.Algebra.Group.UniqueProds
 
-example : UniqueSums ℕ   := by infer_instance
-example : UniqueSums ℕ+  := by infer_instance
-example : UniqueSums ℤ   := by infer_instance
-example : UniqueSums ℚ   := by infer_instance
-example : UniqueSums ℝ   := by infer_instance
-example : UniqueProds ℕ+ := by infer_instance
+example : UniqueSums ℕ   := inferInstance
+example : UniqueSums ℕ+  := inferInstance
+example : UniqueSums ℤ   := inferInstance
+example : UniqueSums ℚ   := inferInstance
+example : UniqueSums ℝ   := inferInstance
+example : UniqueProds ℕ+ := inferInstance
 ```
+
+## Use in `(Add)MonoidAlgebra`s
+
+`UniqueProds/Sums` allow to decouple certain arguments about `(Add)MonoidAlgebra`s into an argument
+about the grading type and then a generic statement of the form "look at the coefficient of the
+'unique product/sum'".
+The file `Algebra/MonoidAlgebra/NoZeroDivisors` contains several examples of this use.
 -/
 
 
