@@ -288,7 +288,7 @@ theorem covariant_le_of_covariant_lt [PartialOrder N] :
   · exact (h _ bc).le
 #align covariant_le_of_covariant_lt covariant_le_of_covariant_lt
 
-instance covariantClass_le_of_lt [PartialOrder N] [CovariantClass M N μ (· < ·)] :
+theorem covariantClass_le_of_lt [PartialOrder N] [CovariantClass M N μ (· < ·)] :
     CovariantClass M N μ (· ≤ ·) := ⟨covariant_le_of_covariant_lt _ _ _ CovariantClass.elim⟩
 
 theorem contravariant_le_iff_contravariant_lt_and_eq [PartialOrder N] :

@@ -306,6 +306,8 @@ theorem mul_right_cancel'' [ContravariantClass α α (swap (· * ·)) (· ≤ ·
 @[to_additive] lemma mul_le_mul_iff_of_ge [CovariantClass α α (· * ·) (· < ·)]
     [CovariantClass α α (swap (· * ·)) (· < ·)] {a₁ a₂ b₁ b₂ : α} (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) :
     a₂ * b₂ ≤ a₁ * b₁ ↔ a₁ = a₂ ∧ b₁ = b₂ := by
+  haveI := covariantClass_le_of_lt α α (· * ·)
+  haveI := covariantClass_le_of_lt α α (swap (· * ·))
   refine' ⟨fun h ↦ _, by rintro ⟨rfl, rfl⟩; rfl⟩
   simp only [eq_iff_le_not_lt, ha, hb, true_and]
   refine' ⟨fun ha ↦ h.not_lt _, fun hb ↦ h.not_lt _⟩
@@ -316,6 +318,8 @@ theorem mul_right_cancel'' [ContravariantClass α α (swap (· * ·)) (· ≤ ·
 @[to_additive] theorem mul_eq_mul_iff_eq_and_eq [CovariantClass α α (· * ·) (· < ·)]
     [CovariantClass α α (swap (· * ·)) (· < ·)] {a b c d : α} (hac : a ≤ c) (hbd : b ≤ d) :
     a * b = c * d ↔ a = c ∧ b = d := by
+  haveI := covariantClass_le_of_lt α α (· * ·)
+  haveI := covariantClass_le_of_lt α α (swap (· * ·))
   rw [le_antisymm_iff, eq_true (mul_le_mul' hac hbd), true_and, mul_le_mul_iff_of_ge hac hbd]
 #align mul_eq_mul_iff_eq_and_eq mul_eq_mul_iff_eq_and_eqₓ
 #align add_eq_add_iff_eq_and_eq add_eq_add_iff_eq_and_eqₓ
@@ -344,7 +348,9 @@ variable [LinearOrder α] {a b c d : α}
 
 @[to_additive] lemma min_le_max_of_mul_le_mul
     [CovariantClass α α (· * ·) (· < ·)] [CovariantClass α α (swap (· * ·)) (· < ·)]
-    (h : a * b ≤ c * d) : min a b ≤ max c d := Left.min_le_max_of_mul_le_mul h
+    (h : a * b ≤ c * d) : min a b ≤ max c d :=
+  let _ := covariantClass_le_of_lt α α (swap (· * ·))
+  Left.min_le_max_of_mul_le_mul h
 #align min_le_max_of_add_le_add min_le_max_of_add_le_add
 #align min_le_max_of_mul_le_mul min_le_max_of_mul_le_mul
 
