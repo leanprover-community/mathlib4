@@ -1725,6 +1725,15 @@ theorem local_isCompact_isClosed_nhds_of_group [LocallyCompactSpace G] {U : Set 
 #align local_is_compact_is_closed_nhds_of_group local_isCompact_isClosed_nhds_of_group
 #align local_is_compact_is_closed_nhds_of_add_group local_isCompact_isClosed_nhds_of_addGroup
 
+variable (G)
+
+@[to_additive]
+theorem exists_isCompact_isClosed_nhds_one [LocallyCompactSpace G] :
+    ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ∈ 𝓝 1 :=
+  let ⟨_L, Lcomp, L1⟩ := exists_compact_mem_nhds (1 : G)
+  let ⟨K, Kcl, Kcomp, _, K1⟩ := exists_isCompact_isClosed_subset_isCompact_nhds_one Lcomp L1
+  ⟨K, Kcl, Kcomp, K1⟩
+
 end
 
 section
