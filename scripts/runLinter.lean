@@ -1,4 +1,5 @@
 import Std.Tactic.Lint
+import Std.Lean.Util.Path
 import Mathlib.Lean.CoreM
 
 open Lean Core Elab Command Std.Tactic.Lint
@@ -25,7 +26,7 @@ unsafe def main (args : List String) : IO Unit := do
     | IO.eprintln "Usage: runLinter [--update] [Mathlib.Data.Nat]" *> IO.Process.exit 1
   let nolintsFile := "scripts/nolints.json"
   let nolints ← readJsonFile NoLints nolintsFile
-  CoreM.withImportModules [module] (searchPath := compileTimeSearchPath%) do
+  CoreM.withImportModules [module] (searchPath := compile_time_search_path%) do
     let decls ← getDeclsInPackage `Mathlib
     let linters ← getChecks (slow := true) (useOnly := false)
     let results ← lintCore decls linters

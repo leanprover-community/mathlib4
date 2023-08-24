@@ -13,6 +13,7 @@ open Cli Lean System
 
 /-- A custom command-line argument parser that allows either relative paths to Lean files,
 (e.g. `Mathlib/Topology/Basic.lean`) or the module name (e.g. `Mathlib.Topology.Basic`). -/
+-- This is being upstreamed as https://github.com/mhuisi/lean4-cli/pull/15
 instance : ParseableType Name where
   name     := "Name"
   parse? s :=

@@ -3,7 +3,8 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-
+import Std.Lean.Util.Path
+import Mathlib.Lean.CoreM
 import Mathlib.Tactic.ToExpr
 
 /-! # Script to check `undergrad.yaml`, `overview.yaml`, and `100.yaml`
@@ -42,7 +43,7 @@ def processDb (decls : ConstMap) : String × String → IO Bool
     return false
 
 unsafe def main : IO Unit := do
-  CoreM.withImportModules [`Mathlib] (searchPath := compileTimeSearchPath%) do
+  CoreM.withImportModules [`Mathlib] (searchPath := compile_time_search_path%) do
     let decls := (←getEnv).constants
     let results ← databases.mapM (fun p => processDb decls p)
     if results.any id then
