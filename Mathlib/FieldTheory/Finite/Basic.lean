@@ -259,7 +259,7 @@ theorem sum_subgroup_units_zero_of_ne_bot {G : Subgroup Kˣ} [Fintype G] (hg : G
     exfalso
     apply ha
     ext
-    rw [<-sub_eq_zero]
+    rw [←sub_eq_zero]
     exact h
   · -- If the latter, we are done
     exact h
@@ -312,7 +312,7 @@ theorem sum_subgroup_pow_eq_zero {F : Type} [Field F] [Fintype F]
   · exfalso
     apply ha
     ext
-    rw [<-sub_eq_zero]
+    rw [←sub_eq_zero]
     simp_all only [ne_eq, SubmonoidClass.coe_pow, Units.val_pow_eq_pow_val, OneMemClass.coe_one,
       Units.val_one]
   · exact h
