@@ -47,7 +47,7 @@ ERR_DOT = 12 # isolated or low focusing dot
 ERR_SEM = 13 # the substring " ;"
 ERR_WIN = 14 # Windows line endings "\r\n"
 ERR_TWS = 15 # Trailing whitespace
-ERR_COL = 15 # Line starts with a colon
+ERR_COL = 16 # Line starts with a colon
 
 exceptions = []
 
