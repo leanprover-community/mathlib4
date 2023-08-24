@@ -1196,7 +1196,7 @@ theorem count_univ (a : α) : count a Finset.univ.val = 1 :=
 
 /-- If f is a bijection of finite sets, it maps universes into universes. -/
 @[simp]
-theorem Multiset.map_univ_eq_univ_of_bijection (f : α → β) (hf : Function.Bijective f) :
+theorem map_univ_eq_univ_of_bijection (f : α → β) (hf : Function.Bijective f) :
     Multiset.map f (Finset.univ : Finset α).val = univ.val := by
   -- TODO: Note the converse is also true - this should turn into a @[simp] iff lemma
   ext a
