@@ -81,7 +81,7 @@ theorem mul_apply_mul_eq_mul_of_uniqueMul [Mul A] {f g : MonoidAlgebra R A} {a0 
 
 instance [NoZeroDivisors R] [Mul A] [UniqueProds A] :
     NoZeroDivisors (MonoidAlgebra R A) where
-  eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} ab => by
+  eq_zero_or_eq_zero_of_mul_eq_zero {a b} ab := by
     contrapose! ab
     obtain ⟨da, a0, db, b0, h⟩ := UniqueProds.uniqueMul_of_nonempty
       (support_nonempty_iff.mpr ab.1) (support_nonempty_iff.mpr ab.2)
@@ -110,7 +110,7 @@ theorem mul_apply_add_eq_mul_of_uniqueAdd [Add A] {f g : AddMonoidAlgebra R A} {
 
 instance [NoZeroDivisors R] [Add A] [UniqueSums A] :
     NoZeroDivisors (AddMonoidAlgebra R A) where
-  eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} ab => by
+  eq_zero_or_eq_zero_of_mul_eq_zero {a b} ab := by
     contrapose! ab
     obtain ⟨da, a0, db, b0, h⟩ := UniqueSums.uniqueAdd_of_nonempty
       (support_nonempty_iff.mpr ab.1) (support_nonempty_iff.mpr ab.2)
