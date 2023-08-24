@@ -1,4 +1,4 @@
-import Mathlib.Tactic.DefeqTransformations
+import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Init.Logic
 import Std.Tactic.GuardExpr
 

@@ -22,9 +22,9 @@ If `loc?` is none, then transforms the type of target. `m` is provided with an e
 with instantiated metavariables.
 
 `m` *must* transform expressions to defeq expressions.
-If `checkDefEq = true` (the default) then `runDefeqTactic` will throw an error
+If `checkDefEq = true` (the default) then `runDefEqTactic` will throw an error
 if the resulting expression is not definitionally equal to the original expression. -/
-def runDefeqTactic (m : Expr → MetaM Expr)
+def runDefEqTactic (m : Expr → MetaM Expr)
     (loc? : Option (TSyntax ``Parser.Tactic.location))
     (tacticName : String)
     (checkDefEq : Bool := true) :
@@ -38,8 +38,8 @@ def runDefeqTactic (m : Expr → MetaM Expr)
       mvarId.change (checkDefEq := checkDefEq) (← m ty))
     (failed := fun _ => throwError "{tacticName} failed")
 
-/-- Like `Mathlib.Tactic.runDefeqTactic` but for `conv` mode. -/
-def runDefeqConvTactic (m : Expr → MetaM Expr) : TacticM Unit := withMainContext do
+/-- Like `Mathlib.Tactic.runDefEqTactic` but for `conv` mode. -/
+def runDefEqConvTactic (m : Expr → MetaM Expr) : TacticM Unit := withMainContext do
   Conv.changeLhs <| ← m (← instantiateMVars <| ← Conv.getLhs)
 
 
@@ -53,7 +53,7 @@ Weak-head normal form is when the outer-most expression has been fully reduced, 
 may contain subexpressions which have not been reduced.
 -/
 elab "whnf" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
-  runDefeqTactic (checkDefEq := false) whnf loc? "whnf"
+  runDefEqTactic (checkDefEq := false) whnf loc? "whnf"
 
 
 /-! ### `beta_reduce` -/
@@ -67,10 +67,10 @@ This means that whenever there is an applied lambda expression such as
 yielding an expression such as `f y`.
 -/
 elab (name := betaReduceStx) "beta_reduce" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
-  runDefeqTactic (checkDefEq := false) (Core.betaReduce ·) loc? "beta_reduce"
+  runDefEqTactic (checkDefEq := false) (Core.betaReduce ·) loc? "beta_reduce"
 
 @[inherit_doc betaReduceStx]
-elab "beta_reduce" : conv => runDefeqConvTactic (Core.betaReduce ·)
+elab "beta_reduce" : conv => runDefEqConvTactic (Core.betaReduce ·)
 
 
 /-! ### `reduce` -/
@@ -82,7 +82,7 @@ This also exists as a `conv`-mode tactic.
 This does the same transformation as the `#reduce` command.
 -/
 elab "reduce" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
-  runDefeqTactic (reduce · (skipTypes := false) (skipProofs := false)) loc? "reduce"
+  runDefEqTactic (reduce · (skipTypes := false) (skipProofs := false)) loc? "reduce"
 
 
 /-! ### `unfold_let` -/
@@ -116,17 +116,17 @@ syntax (name := unfoldLetStx) "unfold_let" (ppSpace colGt term:max)*
 
 elab_rules : tactic
   | `(tactic| unfold_let $[$loc?]?) =>
-    runDefeqTactic zetaReduce loc? "unfold_let"
+    runDefEqTactic zetaReduce loc? "unfold_let"
   | `(tactic| unfold_let $hs:term* $[$loc?]?) => do
-    runDefeqTactic (unfoldFVars (← getFVarIds hs)) loc? "unfold_let"
+    runDefEqTactic (unfoldFVars (← getFVarIds hs)) loc? "unfold_let"
 
 syntax "unfold_let" (ppSpace colGt term:max)* : conv
 
 @[inherit_doc unfoldLetStx]
 elab_rules : conv
-  | `(conv| unfold_let) => runDefeqConvTactic zetaReduce
+  | `(conv| unfold_let) => runDefEqConvTactic zetaReduce
   | `(conv| unfold_let $hs:term*) => do
-    runDefeqConvTactic (unfoldFVars (← getFVarIds hs))
+    runDefEqConvTactic (unfoldFVars (← getFVarIds hs))
 
 
 /-! ### `unfold_projs` -/
@@ -144,10 +144,10 @@ def unfoldProjs (e : Expr) : MetaM Expr := do
 This also exists as a `conv`-mode tactic.
 -/
 elab (name := unfoldProjsStx) "unfold_projs" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
-  runDefeqTactic unfoldProjs loc? "unfold_projs"
+  runDefEqTactic unfoldProjs loc? "unfold_projs"
 
 @[inherit_doc unfoldProjsStx]
-elab "unfold_projs" : conv => runDefeqConvTactic unfoldProjs
+elab "unfold_projs" : conv => runDefEqConvTactic unfoldProjs
 
 
 /-! ### `eta_reduce` -/
@@ -163,10 +163,10 @@ This also exists as a `conv`-mode tactic.
 For example, `fun x y => f x y` becomes `f` after eta reduction.
 -/
 elab (name := etaReduceStx) "eta_reduce" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
-  runDefeqTactic etaReduceAll loc? "eta_reduce"
+  runDefEqTactic etaReduceAll loc? "eta_reduce"
 
 @[inherit_doc etaReduceStx]
-elab "eta_reduce" : conv => runDefeqConvTactic etaReduceAll
+elab "eta_reduce" : conv => runDefEqConvTactic etaReduceAll
 
 
 /-! ### `eta_expand` -/
@@ -205,10 +205,10 @@ and `f x` becomes `fun y => f x y`.
 This can be useful to turn, for example, a raw `HAdd.hAdd` into `fun x y => x + y`.
 -/
 elab (name := etaExpandStx) "eta_expand" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
-  runDefeqTactic etaExpandAll loc? "eta_expand"
+  runDefEqTactic etaExpandAll loc? "eta_expand"
 
 @[inherit_doc etaExpandStx]
-elab "eta_expand" : conv => runDefeqConvTactic etaExpandAll
+elab "eta_expand" : conv => runDefEqConvTactic etaExpandAll
 
 
 /-! ### `eta_struct` -/
@@ -283,9 +283,9 @@ equal expressions.
 For example, given `x : α × β`, then `(x.1, x.2)` becomes `x` after this transformation.
 -/
 elab (name := etaStructStx) "eta_struct" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
-  runDefeqTactic etaStructAll loc? "eta_struct"
+  runDefEqTactic etaStructAll loc? "eta_struct"
 
 @[inherit_doc etaStructStx]
-elab "eta_struct" : conv => runDefeqConvTactic etaStructAll
+elab "eta_struct" : conv => runDefEqConvTactic etaStructAll
 
 end Mathlib.Tactic
