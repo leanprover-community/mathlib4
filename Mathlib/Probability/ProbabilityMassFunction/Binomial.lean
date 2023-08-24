@@ -10,28 +10,31 @@ import Mathlib.Tactic.FinCases
 /-!
 # The binomial distribution
 
-This file defines the probability mass function of the binomial distribution, and proves
-it to be equal to `Pmf.bernoulli` for `n = 1`.
+This file defines the probability mass function of the binomial distribution.
+
+## Main results
+
+* `binomial_one_eq_bernoulli`: For `n = 1`, it is equal to `Pmf.bernoulli`.
 -/
 
 
 namespace Pmf
 
-/-- The binomial `Pmf`: The probability of that `i` out of `n` coins come up heads if the
-probability of heads is `p`. -/
+/-- The binomial `Pmf`: the probability of observing exactly `i` “heads” in a sequence of `n`
+independent coin tosses, each having probability `p` of coming up “heads”. -/
 noncomputable
 def binomial (p : ENNReal) (h : p ≤ 1) (n : ℕ) : Pmf (Fin (n + 1)) :=
-  .ofFintype (fun i => p^(i : ℕ) * (1-p)^(n - (i : ℕ)) * (n.choose i : ℕ)) (by
+  .ofFintype (fun i => p^(i : ℕ) * (1-p)^((Fin.last n - i) : ℕ) * (n.choose i : ℕ)) (by
     convert (add_pow p (1-p) n).symm
     · rw [Finset.sum_fin_eq_sum_range]
       apply Finset.sum_congr rfl
       intro i hi
       rw [Finset.mem_range] at hi
-      rw [dif_pos hi]
+      rw [dif_pos hi, Fin.last]
     · simp [h])
 
 theorem binomial_apply :
-    binomial p h n i = p^(i : ℕ) * (1-p)^(n - (i : ℕ)) * (n.choose i : ℕ) := rfl
+    binomial p h n i = p^(i : ℕ) * (1-p)^((Fin.last n - i) : ℕ) * (n.choose i : ℕ) := rfl
 
 @[simp]
 theorem binomial_apply_zero : binomial p h n 0 = (1-p)^n := by
