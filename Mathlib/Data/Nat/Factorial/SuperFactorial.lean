@@ -8,7 +8,7 @@ import Mathlib.Data.Nat.Factorial.Basic
 /-!
 # Super factorial
 
-This file defines the super factorial.
+This file defines the super factorial `1! * 2! * 3! * ...* n!`.
 
 ## Main declarations
 
