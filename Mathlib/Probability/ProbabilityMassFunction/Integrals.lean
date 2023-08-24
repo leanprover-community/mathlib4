@@ -18,7 +18,7 @@ It also provides the expected value for specific probability mass functions.
 
 namespace Pmf
 
-open MeasureTheory BigOperators
+open MeasureTheory BigOperators ENNReal
 
 theorem integral_eq_tsum' (α : Type _) [MeasurableSpace α] [MeasurableSingletonClass α] (p : Pmf α)
   (f : α → ℝ) (hf : Integrable (fun a ↦ f a) (p.toMeasure)) :
@@ -52,5 +52,5 @@ theorem integral_eq_sum (α : Type _) [Fintype α] [MeasurableSpace α] [Measura
   congr 1 with x
   rw [Pmf.toMeasure_apply_singleton _ _ (MeasurableSet.singleton x)]
 
-theorem bernoulli_expectation {p : ENNReal} (h : p ≤ 1) :
+theorem bernoulli_expectation {p : ℝ≥0∞} (h : p ≤ 1) :
     ∫ b, cond b 1 0 ∂((bernoulli p h).toMeasure) = p.toReal := by simp [integral_eq_sum]
