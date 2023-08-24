@@ -16,12 +16,14 @@ and `c : M`, then `(.mk c : Mᵈᵐᵃ) • [f]` is represented by the function 
 We also prove basic properties of this action.
 -/
 
+set_option autoImplicit true
+
 open MeasureTheory Filter
 open scoped ENNReal
 
 namespace DomMulAct
 
-variable {M N α E : Type _} [MeasurableSpace M] [MeasurableSpace N]
+variable {M N α E : Type*} [MeasurableSpace M] [MeasurableSpace N]
   [MeasurableSpace α] [NormedAddCommGroup E] {μ : MeasureTheory.Measure α} {p : ℝ≥0∞}
 
 section SMul

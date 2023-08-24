@@ -28,9 +28,9 @@ open BigOperators Affine
 
 section AffineSpace'
 
-variable (k : Type _) {V : Type _} {P : Type _}
+variable (k : Type*) {V : Type*} {P : Type*}
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 open AffineSubspace FiniteDimensional Module
 
@@ -131,7 +131,7 @@ cardinality is one more than that of the finite-dimensional space is
 theorem AffineIndependent.vectorSpan_eq_top_of_card_eq_finrank_add_one [FiniteDimensional k V]
     [Fintype ι] {p : ι → P} (hi : AffineIndependent k p) (hc : Fintype.card ι = finrank k V + 1) :
     vectorSpan k (Set.range p) = ⊤ :=
-  eq_top_of_finrank_eq <| hi.finrank_vectorSpan hc
+  Submodule.eq_top_of_finrank_eq <| hi.finrank_vectorSpan hc
 #align affine_independent.vector_span_eq_top_of_card_eq_finrank_add_one AffineIndependent.vectorSpan_eq_top_of_card_eq_finrank_add_one
 
 variable (k)
@@ -339,7 +339,7 @@ theorem collinear_iff_finrank_le_one {s : Set P} [FiniteDimensional k (vectorSpa
   exact_mod_cast h
 #align collinear_iff_finrank_le_one collinear_iff_finrank_le_one
 
-alias collinear_iff_finrank_le_one ↔ Collinear.finrank_le_one _
+alias ⟨Collinear.finrank_le_one, _⟩ := collinear_iff_finrank_le_one
 #align collinear.finrank_le_one Collinear.finrank_le_one
 
 /-- A subset of a collinear set is collinear. -/
@@ -632,7 +632,7 @@ theorem coplanar_iff_finrank_le_two {s : Set P} [FiniteDimensional k (vectorSpan
   exact_mod_cast h
 #align coplanar_iff_finrank_le_two coplanar_iff_finrank_le_two
 
-alias coplanar_iff_finrank_le_two ↔ Coplanar.finrank_le_two _
+alias ⟨Coplanar.finrank_le_two, _⟩ := coplanar_iff_finrank_le_two
 #align coplanar.finrank_le_two Coplanar.finrank_le_two
 
 /-- A subset of a coplanar set is coplanar. -/
@@ -676,7 +676,7 @@ end AffineSpace'
 
 section DivisionRing
 
-variable {k : Type _} {V : Type _} {P : Type _}
+variable {k : Type*} {V : Type*} {P : Type*}
 
 open AffineSubspace FiniteDimensional Module
 

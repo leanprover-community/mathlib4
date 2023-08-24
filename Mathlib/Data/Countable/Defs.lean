@@ -10,7 +10,7 @@ import Mathlib.Data.Finite.Defs
 /-!
 # Countable types
 
-In this file we define a typeclass saying that a given `Sort _` is countable. See also `Encodable`
+In this file we define a typeclass saying that a given `Sort*` is countable. See also `Encodable`
 for a version that singles out a specific encoding of elements of `α` by natural numbers.
 
 This file also provides a few instances of this typeclass. More instances can be found in other
@@ -65,7 +65,7 @@ theorem countable_iff_exists_surjective [Nonempty α] : Countable α ↔ ∃ f :
   ⟨@exists_surjective_nat _ _, fun ⟨_, hf⟩ ↦ hf.countable⟩
 #align countable_iff_exists_surjective countable_iff_exists_surjective
 
-theorem Countable.of_equiv (α : Sort _) [Countable α] (e : α ≃ β) : Countable β :=
+theorem Countable.of_equiv (α : Sort*) [Countable α] (e : α ≃ β) : Countable β :=
   e.symm.injective.countable
 #align countable.of_equiv Countable.of_equiv
 
@@ -77,7 +77,7 @@ instance {β : Type v} [Countable β] : Countable (ULift.{u} β) :=
   Countable.of_equiv _ Equiv.ulift.symm
 
 /-!
-### Operations on `Sort _`s
+### Operations on `Sort*`s
 -/
 
 

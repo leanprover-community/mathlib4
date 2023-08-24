@@ -19,7 +19,7 @@ norms and `‖y‖ • x = ‖x‖ • y`.
 
 open Real
 
-variable {E : Type _} [SeminormedAddCommGroup E] [NormedSpace ℝ E] {F : Type _}
+variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E] {F : Type _}
   [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 namespace SameRay
@@ -84,7 +84,7 @@ theorem sameRay_iff_inv_norm_smul_eq_of_ne (hx : x ≠ 0) (hy : y ≠ 0) :
     rwa [norm_ne_zero_iff]
 #align same_ray_iff_inv_norm_smul_eq_of_ne sameRay_iff_inv_norm_smul_eq_of_ne
 
-alias sameRay_iff_inv_norm_smul_eq_of_ne ↔ SameRay.inv_norm_smul_eq _
+alias ⟨SameRay.inv_norm_smul_eq, _⟩ := sameRay_iff_inv_norm_smul_eq_of_ne
 #align same_ray.inv_norm_smul_eq SameRay.inv_norm_smul_eq
 
 /-- Two vectors `x y` in a real normed space are on the ray if and only if one of them is zero or

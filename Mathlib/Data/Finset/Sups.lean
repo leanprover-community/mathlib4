@@ -37,7 +37,7 @@ open Function
 
 open SetFamily
 
-variable {α : Type _} [DecidableEq α]
+variable {α : Type*} [DecidableEq α]
 
 namespace Finset
 

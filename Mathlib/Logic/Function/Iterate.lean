@@ -36,6 +36,8 @@ variable {α : Type u} {β : Type v}
 
 namespace Function
 
+open Function (Commute)
+
 variable (f : α → α)
 
 @[simp]
@@ -187,14 +189,14 @@ theorem comp_iterate_pred_of_pos {n : ℕ} (hn : 0 < n) : f ∘ f^[n.pred] = f^[
 #align function.comp_iterate_pred_of_pos Function.comp_iterate_pred_of_pos
 
 /-- A recursor for the iterate of a function. -/
-def Iterate.rec (p : α → Sort _) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) (n : ℕ) :
+def Iterate.rec (p : α → Sort*) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) (n : ℕ) :
     p (f^[n] a) :=
   match n with
   | 0 => ha
   | m+1 => Iterate.rec p h (h _ ha) m
 #align function.iterate.rec Function.Iterate.rec
 
-theorem Iterate.rec_zero (p : α → Sort _) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) :
+theorem Iterate.rec_zero (p : α → Sort*) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) :
     Iterate.rec p h ha 0 = ha :=
   rfl
 #align function.iterate.rec_zero Function.Iterate.rec_zero
@@ -225,7 +227,7 @@ lemma iterate_add_eq_iterate (hf : Injective f) : f^[m + n] a = f^[n] a ↔ f^[m
   Iff.trans (by rw [←iterate_add_apply, Nat.add_comm]) (hf.iterate n).eq_iff
 #align function.iterate_add_eq_iterate Function.iterate_add_eq_iterate
 
-alias iterate_add_eq_iterate ↔ iterate_cancel_of_add _
+alias ⟨iterate_cancel_of_add, _⟩ := iterate_add_eq_iterate
 #align function.iterate_cancel_of_add Function.iterate_cancel_of_add
 
 lemma iterate_cancel (hf : Injective f) (ha : f^[m] a = f^[n] a) : f^[m - n] a = a := by

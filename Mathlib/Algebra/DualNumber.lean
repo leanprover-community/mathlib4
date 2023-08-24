@@ -37,10 +37,10 @@ Rather than duplicating the API of `TrivSqZeroExt`, this file reuses the functio
 -/
 
 
-variable {R : Type _}
+variable {R : Type*}
 
 /-- The type of dual numbers, numbers of the form $a + bε$ where $ε^2 = 0$.-/
-abbrev DualNumber (R : Type _) : Type _ :=
+abbrev DualNumber (R : Type*) : Type _ :=
   TrivSqZeroExt R R
 #align dual_number DualNumber
 
@@ -84,7 +84,7 @@ theorem eps_mul_eps [Semiring R] : (ε * ε : R[ε]) = 0 :=
 
 @[simp]
 theorem inr_eq_smul_eps [MulZeroOneClass R] (r : R) : inr r = (r • ε : R[ε]) :=
-  ext (MulZeroClass.mul_zero r).symm (mul_one r).symm
+  ext (mul_zero r).symm (mul_one r).symm
 #align dual_number.inr_eq_smul_eps DualNumber.inr_eq_smul_eps
 
 /-- For two algebra morphisms out of `R[ε]` to agree, it suffices for them to agree on `ε`. -/
@@ -94,7 +94,7 @@ theorem algHom_ext {A} [CommSemiring R] [Semiring A] [Algebra R A] ⦃f g : R[ε
   algHom_ext' <| LinearMap.ext_ring <| h
 #align dual_number.alg_hom_ext DualNumber.algHom_ext
 
-variable {A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
 /-- A universal property of the dual numbers, providing a unique `R[ε] →ₐ[R] A` for every element
 of `A` which squares to `0`.

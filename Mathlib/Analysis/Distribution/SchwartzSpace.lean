@@ -58,13 +58,13 @@ The implementation of the seminorms is taken almost literally from `ContinuousLi
 Schwartz space, tempered distributions
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 
 open scoped BigOperators Nat
 
-variable {𝕜 𝕜' D E F G : Type _}
+variable {𝕜 𝕜' D E F G : Type*}
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 
@@ -629,7 +629,6 @@ theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f
   · simp only [Finset.le_sup'_iff, le_max_iff]
     right
     exact ⟨N, hN, rfl.le⟩
-  simp_rw [Real.rpow_nat_cast]
   refine' pow_le_pow (by simp only [le_add_iff_nonneg_right, norm_nonneg]) _
   exact Finset.le_sup hN
 #align function.has_temperate_growth.norm_iterated_fderiv_le_uniform_aux Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux
