@@ -86,7 +86,7 @@ lemma maxDegree_mem_support (hp : p ≠ 0) : ofLex p.maxDegree ∈ p.support := 
   rw [maxDegree, he]; exact ht
 
 lemma leadingCoeff_eq_zero : leadingCoeff p = 0 ↔ p = 0 := by
-  refine' ⟨(fun h => _).mtr, fun h => h ▸ leadingCoeff_zero⟩
+  refine ⟨(fun h => ?_).mtr, fun h => h ▸ leadingCoeff_zero⟩
   rw [leadingCoeff, ← Ne, ← mem_support_iff]
   exact maxDegree_mem_support h
 
@@ -106,14 +106,14 @@ lemma coeff_eq_zero_of_maxDegree_lt {t : σ →₀ ℕ} (ht : p.maxDegree < toLe
 lemma IsSymmetric.antitone_maxDegree (hp : p.IsSymmetric) : Antitone (ofLex p.maxDegree) := by
   obtain rfl | h0 := eq_or_ne p 0
   · rw [maxDegree_zero]; exact fun _ _ _ => le_rfl
-  rw [Antitone]; by_contra h; push_neg at h
+  rw [Antitone]; by_contra' h
   obtain ⟨i, j, hle, hlt⟩ := h
   apply (le_maxDegree_of_mem_support (p := p) (t := toLex _) _).not_lt
   pick_goal 3
   · rw [← hp (Equiv.swap i j), mem_support_iff, ofLex_toLex, coeff_rename_mapDomain]
     · rwa [Ne, ← leadingCoeff_eq_zero] at h0
     · apply Equiv.injective
-  refine' ⟨i, fun k hk => _, _⟩
+  refine ⟨i, fun k hk => ?_, ?_⟩
   all_goals dsimp only [Pi.toLex_apply, ofLex_toLex]
   · conv_rhs => rw [← Equiv.swap_apply_of_ne_of_ne hk.ne (hk.trans_le hle).ne]
     rw [Finsupp.mapDomain_apply (Equiv.injective _)]
@@ -133,26 +133,26 @@ lemma maxDegree_le_of_coeff {t : Lex (σ →₀ ℕ)} (ht : ∀ s, t < toLex s �
 
 --lemma maxDegree_lt_of_support {t : Lex (σ →₀ ℕ)} ... 0 < t or p ≠ 0
 
-lemma maxDegree_add_le : (p + q).maxDegree ≤ max p.maxDegree q.maxDegree := by
-  refine' maxDegree_le_of_coeff fun s h => _
-  rw [max_lt_iff] at h
-  rw [coeff_add, coeff_eq_zero_of_maxDegree_lt h.1, coeff_eq_zero_of_maxDegree_lt h.2, add_zero]
+lemma maxDegree_add_le : (p + q).maxDegree ≤ max p.maxDegree q.maxDegree :=
+  maxDegree_le_of_coeff fun s h => by
+    rw [max_lt_iff] at h
+    rw [coeff_add, coeff_eq_zero_of_maxDegree_lt h.1, coeff_eq_zero_of_maxDegree_lt h.2, add_zero]
 -- use general supDegree lemma .. import ...
 
 lemma maxDegree_sum_le {α} {s : Finset α} (f : α → MvPolynomial σ R) {t}
     (h : ∀ i ∈ s, (f i).maxDegree ≤ t) : (∑ i in s, f i).maxDegree ≤ t := by
-  refine' sum_induction f (fun p => maxDegree p ≤ t) _ bot_le h
+  refine sum_induction f (fun p => maxDegree p ≤ t) ?_ bot_le h
   intros p q hp hq; exact maxDegree_add_le.trans (max_le_iff.2 ⟨hp, hq⟩)
 
 lemma maxDegree_sum_lt {α} {s : Finset α} (hs : s.Nonempty) (f : α → MvPolynomial σ R) {t}
     (h : ∀ i ∈ s, (f i).maxDegree < t) : (∑ i in s, f i).maxDegree < t := by
-  refine' sum_induction f (fun p => maxDegree p < t) _ _ h
+  refine sum_induction f (fun p => maxDegree p < t) ?_ ?_ h
   · intros p q hp hq; exact maxDegree_add_le.trans_lt (max_lt_iff.2 ⟨hp, hq⟩)
   · obtain ⟨i, hi⟩ := hs; rw [maxDegree_zero]; exact bot_le.trans_lt (h i hi)
 
 lemma maxDegree_add_eq (h : q.maxDegree < p.maxDegree) :
     (p + q).maxDegree = p.maxDegree := by
-  refine' maxDegree_eq_of_max _ (fun s hs => _)
+  refine maxDegree_eq_of_max ?_ (fun s hs => ?_)
   · rw [mem_support_iff, coeff_add, ← leadingCoeff, coeff_eq_zero_of_maxDegree_lt, add_zero]
     · rw [Ne, leadingCoeff_eq_zero]; rintro rfl; exact not_lt_bot (h.trans_eq maxDegree_zero)
     · exact h
@@ -174,28 +174,27 @@ lemma maxDegree_leadingCoeff_sum_eq {α} (s : Finset α) {a : α} (ha : a ∈ s)
   rw [← s.add_sum_erase _ ha]
   by_cases hs : s.erase a = ∅
   · rw [hs, sum_empty, add_zero]; exact ⟨rfl, rfl⟩
-  have : _; swap; refine' ⟨maxDegree_add_eq this, leadingCoeff_add_eq this⟩
-  refine' maxDegree_sum_lt _ _ <| fun i hi => _
+  have : _; swap; refine ⟨maxDegree_add_eq this, leadingCoeff_add_eq this⟩
+  refine maxDegree_sum_lt ?_ _ <| fun i hi => ?_
   · rw [nonempty_iff_ne_empty]; exact hs
   · rw [mem_erase] at hi; exact h i hi.2 hi.1
 
-lemma ne_zero_of_injOn' {α} {s : Finset α} (f : α → MvPolynomial σ R) (hs : ∃ a ∈ s, f a ≠ 0)
+lemma sum_ne_zero_of_injOn_maxDegree' {α} {s : Finset α} (f : α → MvPolynomial σ R) (hs : ∃ a ∈ s, f a ≠ 0)
     (hd : (s : Set α).InjOn (maxDegree ∘ f)) :
     ∑ a in s, f a ≠ 0 := by
   classical
   simp_rw [← mem_filter (p := fun i => f i ≠ 0)] at hs
   obtain ⟨a, ha, he⟩ := exists_mem_eq_sup _ hs (maxDegree ∘ f)
-  rw [← sum_filter_ne_zero, Ne, ← leadingCoeff_eq_zero,
-      (maxDegree_leadingCoeff_sum_eq _ ha f _).2]
+  rw [← sum_filter_ne_zero, Ne, ← leadingCoeff_eq_zero, (maxDegree_leadingCoeff_sum_eq _ ha f _).2]
   · rw [leadingCoeff_eq_zero]; exact (mem_filter.1 ha).2
-  refine' fun i hi hne => ((le_sup hi).trans_eq he).lt_of_ne (hd.ne _ _ hne)
+  refine fun i hi hne => ((le_sup hi).trans_eq he).lt_of_ne (hd.ne ?_ ?_ hne)
   exacts [(mem_filter.1 hi).1, (mem_filter.1 ha).1]
 
-lemma ne_zero_of_injOn {α} {s : Finset α} (hs : s ≠ ∅) (f : α → MvPolynomial σ R)
+lemma sum_ne_zero_of_injOn_maxDegree {α} {s : Finset α} (hs : s ≠ ∅) (f : α → MvPolynomial σ R)
     (hf : ∀ a ∈ s, f a ≠ 0) (hd : (s : Set α).InjOn (maxDegree ∘ f)) :
     ∑ a in s, f a ≠ 0 := by
   obtain ⟨a, ha⟩ := nonempty_iff_ne_empty.2 hs
-  exact ne_zero_of_injOn' f ⟨a, ha, hf a ha⟩ hd
+  exact sum_ne_zero_of_injOn_maxDegree' f ⟨a, ha, hf a ha⟩ hd
 
 lemma maxDegree_neg {R} [CommRing R] {p : MvPolynomial σ R} : (-p).maxDegree = p.maxDegree := by
   rw [maxDegree, maxDegree, support_neg]
@@ -208,10 +207,10 @@ lemma maxDegree_sub_lt_of_leadingCoeff_eq {R} [CommRing R] {p q : MvPolynomial �
     (hd : p.maxDegree = q.maxDegree) (hc : p.leadingCoeff = q.leadingCoeff) :
     (p - q).maxDegree < p.maxDegree ∨ p = q := by
   by_cases he : p = q; exact Or.inr he
-  refine' Or.inl ((maxDegree_sub_le.trans _).lt_of_ne _)
+  refine Or.inl ((maxDegree_sub_le.trans ?_).lt_of_ne ?_)
   · rw [hd, max_self]
   · rw [← sub_eq_zero, ← leadingCoeff_eq_zero, leadingCoeff] at he
-    refine' fun h => he _
+    refine fun h => he ?_
     rwa [h, coeff_sub, ← leadingCoeff, hd, ← leadingCoeff, sub_eq_zero]
 
 lemma coeff_maxDegree_add_maxDegree :
@@ -291,12 +290,12 @@ lemma accumulate_last {i n m : ℕ} (hin : i < n) (hmi : m = i + 1) (t : Fin n �
   rw [accumulate_apply]
   apply sum_eq_single_of_mem
   · rw [mem_filter]; exact ⟨mem_univ _, le_rfl⟩
-  refine' fun j hij hji => ht j _
+  refine fun j hij hji => ht j ?_
   simp_rw [mem_filter, mem_univ, true_and] at hij
   exact hmi.trans_le (hij.lt_of_ne (Fin.val_ne_iff.2 hji).symm).nat_succ_le
 
 lemma injective_accumulate {n m} (hnm : n ≤ m) : Function.Injective (accumulate n m) := by
-  refine' fun t s he => funext fun i => _
+  refine fun t s he => funext fun i => ?_
   obtain h|h := lt_or_le (i.1 + 1) m
   · have := accumulate_rec i.2 h s
     rwa [← he, accumulate_rec i.2 h t, add_right_cancel_iff] at this
@@ -308,7 +307,7 @@ lemma surjective_accumulate {n m} (hmn : m ≤ n) {s : Fin m → ℕ} (hs : Anti
     accumulate n m (inv_accumulate n m s) = s := funext <| fun ⟨i, hi⟩ => by
   have := Nat.le_pred_of_lt hi
   revert hi
-  refine' Nat.decreasingInduction' (fun i hi _ ih => _) this _
+  refine Nat.decreasingInduction' (fun i hi _ ih => ?_) this ?_
   · intro him
     rw [m.sub_one, Nat.lt_pred_iff] at hi
     rw [accumulate_rec (him.trans_le hmn) hi, ih hi, inv_accumulate, dif_pos him, dif_pos hi]
@@ -338,7 +337,7 @@ lemma esymmAlgHom_apply [Fintype σ] (p : MvPolynomial (Fin n) R) :
 
 lemma rename_esymmAlgHom [Fintype σ] [Fintype τ] (e : σ ≃ τ) :
     (rename_symmetricSubalgebra e).toAlgHom.comp (esymmAlgHom σ R n) = esymmAlgHom τ R n := by
-  refine' algHom_ext (fun i => Subtype.ext _)
+  refine algHom_ext (fun i => Subtype.ext ?_)
   simp_rw [AlgHom.comp_apply, esymmAlgHom, aeval_X]
   exact rename_esymm σ R _ e
 
@@ -379,7 +378,7 @@ lemma maxDegree_monic_esymm [Nontrivial R] {i : ℕ} (him : i < m) :
   simp_rw [maxDegree_monomial _ one_ne_zero, ← Finsupp.indicator_eq_sum_single]
   rw [Ne, eq_comm, ← subset_iff_eq_of_card_le, not_subset] at hne
   · simp_rw [← mem_sdiff] at hne
-    refine' ⟨min' _ hne, let hkm := mem_sdiff.1 (min'_mem _ hne); ⟨fun k hk => _, _⟩⟩
+    refine ⟨min' _ hne, let hkm := mem_sdiff.1 (min'_mem _ hne); ⟨fun k hk => ?_, ?_⟩⟩
     all_goals simp only [Pi.toLex_apply, ofLex_toLex, Finsupp.indicator_apply]
     · have hki := mem_Iic.2 (hk.le.trans <| mem_Iic.1 hkm.1)
       rw [dif_pos hki, dif_pos]
@@ -444,15 +443,15 @@ instance {K} [CommRing K] : AddCommMonoid K := inferInstance
 lemma injective_esymmAlgHom_fin (h : n ≤ m) :
     Function.Injective (esymmAlgHom (Fin m) R n) := by
   rw [injective_iff_map_eq_zero]
-  refine' fun p => (fun hp => _).mtr
+  refine fun p => (fun hp => ?_).mtr
   rw [p.as_sum, map_sum (esymmAlgHom (Fin m) R n), ← Subalgebra.coe_eq_zero,
       AddSubmonoidClass.coe_finset_sum]
-  refine' ne_zero_of_injOn (support_eq_empty.not.2 hp) _ (fun t ht => _) (fun t ht s hs he => _)
+  refine sum_ne_zero_of_injOn_maxDegree (support_eq_empty.not.2 hp) _ (fun t ht => ?_)
+    (fun t ht s hs he => FunLike.ext' <| injective_accumulate h ?_)
   · rw [← esymmAlgHom_monomial, Ne, ← leadingCoeff_eq_zero, leadingCoeff_esymmAlgHom_monomial t h]
     rwa [mem_support_iff] at ht
-  refine' FunLike.ext' (injective_accumulate h _)
-  dsimp only [Function.comp] at he
   rw [mem_coe, mem_support_iff] at ht hs
+  dsimp only [Function.comp] at he
   rwa [← esymmAlgHom_monomial, ← esymmAlgHom_monomial, ← ofLex_inj, FunLike.ext'_iff,
        maxDegree_esymmAlgHom_monomial ht t h, maxDegree_esymmAlgHom_monomial hs s h] at he
 
@@ -463,7 +462,7 @@ lemma injective_esymmAlgHom (hn : n ≤ Fintype.card σ) :
 
 lemma bijective_esymmAlgHom_fin (n : ℕ) :
     Function.Bijective (esymmAlgHom (Fin n) R n) := by
-  refine' ⟨injective_esymmAlgHom_fin R le_rfl, _⟩
+  refine ⟨injective_esymmAlgHom_fin R le_rfl, ?_⟩
   rintro ⟨p, hp⟩; rw [← AlgHom.mem_range]
   obtain rfl | h0 := eq_or_ne p 0; apply Subalgebra.zero_mem
   induction' he : p.maxDegree using WellFoundedLT.induction with t ih generalizing p; subst he
@@ -490,7 +489,7 @@ lemma surjective_esymmAlgHom_fin (h : m ≤ n) :
   · intro p q hp hq; rw [map_add]; exact Subalgebra.add_mem _ hp hq
   · intro p i hp; rw [map_mul]; apply Subalgebra.mul_mem _ hp
     rw [AlgHom.mem_range]
-    refine' ⟨X ⟨i, i.2.trans_le h⟩, _⟩
+    refine ⟨X ⟨i, i.2.trans_le h⟩, ?_⟩
     simp_rw [esymmAlgHom, aeval_X]
 
 lemma surjective_esymmAlgHom (hn : Fintype.card σ ≤ n) :
