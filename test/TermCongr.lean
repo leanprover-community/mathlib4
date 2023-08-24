@@ -32,6 +32,11 @@ example {α β : Sort _} (f g : α → β) (hf : f = g) (x y : α) (hx : x = y) 
 
 end congr_thms
 
+example (f : Nat → Nat) (x y : Nat) (h : x = y) : f x = f y := by
+  have h := congr(f $h) -- if `replace` instead of `have`, like `apply_fun f at h`
+  guard_hyp h :ₛ f x = f y
+  exact h
+
 example (x y : Nat) (h : x = y) : 1 + x = 1 + y := congr(_ + $h)
 
 example (x y : Nat) (h : x = y) : True := by
