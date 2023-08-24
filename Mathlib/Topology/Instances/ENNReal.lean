@@ -1032,16 +1032,19 @@ theorem tsum_add_one_eq_top {f : ℕ → ℝ≥0∞} (hf : ∑' n, f n = ∞) (h
   exact hf.resolve_left hf0
 #align ennreal.tsum_add_one_eq_top ENNReal.tsum_add_one_eq_top
 
+theorem tsum_eq_top_of_infinite_setOf_const_le {ι : Type*} {a : ι → ℝ≥0∞}
+    {ε : ℝ≥0∞} (ε_ne_zero : ε ≠ 0) (hinf : {i : ι | ε ≤ a i}.Infinite) : ∑' i, a i = ∞ :=
+  top_unique <|
+    have := hinf.to_subtype
+    calc ⊤ = ∑' _ : { i | ε ≤ a i }, ε := (tsum_const_eq_top_of_ne_zero ε_ne_zero).symm
+    _ ≤ ∑' i, a i := tsum_le_tsum_of_inj (↑) Subtype.val_injective (fun _ _ => zero_le _)
+      (fun i => i.2) ENNReal.summable ENNReal.summable
+
 /-- A sum of extended nonnegative reals which is finite can have only finitely many terms
 above any positive threshold.-/
 theorem finite_const_le_of_tsum_ne_top {ι : Type*} {a : ι → ℝ≥0∞} (tsum_ne_top : ∑' i, a i ≠ ∞)
-    {ε : ℝ≥0∞} (ε_ne_zero : ε ≠ 0) : { i : ι | ε ≤ a i }.Finite := by
-  by_contra h
-  have := Infinite.to_subtype h
-  refine tsum_ne_top (top_unique ?_)
-  calc ⊤ = ∑' _ : { i | ε ≤ a i }, ε := (tsum_const_eq_top_of_ne_zero ε_ne_zero).symm
-  _ ≤ ∑' i, a i := tsum_le_tsum_of_inj (↑) Subtype.val_injective (fun _ _ => zero_le _)
-    (fun i => i.2) ENNReal.summable ENNReal.summable
+    {ε : ℝ≥0∞} (ε_ne_zero : ε ≠ 0) : { i : ι | ε ≤ a i }.Finite :=
+  not_imp_comm.1 (tsum_eq_top_of_infinite_setOf_const_le ε_ne_zero) tsum_ne_top
 #align ennreal.finite_const_le_of_tsum_ne_top ENNReal.finite_const_le_of_tsum_ne_top
 
 /-- Markov's inequality for `Finset.card` and `tsum` in `ℝ≥0∞`. -/

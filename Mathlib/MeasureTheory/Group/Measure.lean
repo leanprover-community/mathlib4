@@ -805,34 +805,15 @@ group has no atoms.
 This applies in particular to show that an additive Haar measure on a nontrivial finite-dimensional
 real vector space has no atom."]
 instance (priority := 100) IsHaarMeasure.noAtoms [TopologicalGroup G] [BorelSpace G] [T1Space G]
-    [LocallyCompactSpace G] [(𝓝[≠] (1 : G)).NeBot] (μ : Measure G) [μ.IsHaarMeasure] :
+    [WeaklyLocallyCompactSpace G] [(𝓝[≠] (1 : G)).NeBot] (μ : Measure G) [μ.IsHaarMeasure] :
     NoAtoms μ := by
-  suffices H : μ {(1 : G)} ≤ 0; · constructor; simp [le_bot_iff.1 H]
-  obtain ⟨K, K_compact, K_int⟩ : ∃ K : Set G, IsCompact K ∧ (1 : G) ∈ interior K := by
-    rcases exists_compact_subset isOpen_univ (mem_univ (1 : G)) with ⟨K, hK⟩
-    exact ⟨K, hK.1, hK.2.1⟩
-  have K_inf : Set.Infinite K := infinite_of_mem_nhds (1 : G) (mem_interior_iff_mem_nhds.1 K_int)
-  have μKlt : μ K ≠ ∞ := K_compact.measure_lt_top.ne
-  have I : ∀ n : ℕ, μ {(1 : G)} ≤ μ K / n := by
-    intro n
-    obtain ⟨t, tK, tn⟩ : ∃ t : Finset G, ↑t ⊆ K ∧ t.card = n := K_inf.exists_subset_card_eq n
-    have A : μ t ≤ μ K := measure_mono tK
-    have B : μ t = n * μ {(1 : G)} := by
-      rw [← biUnion_of_singleton (t : Set G)]
-      change μ (⋃ x ∈ t, {x}) = n * μ {1}
-      rw [@measure_biUnion_finset G G _ μ t fun i => {i}]
-      · simp only [tn, Finset.sum_const, nsmul_eq_mul, haar_singleton]
-      · intro x _ y _ xy
-        simp only [onFun, xy.symm, mem_singleton_iff, not_false_iff, disjoint_singleton_right]
-      · intro b _; exact measurableSet_singleton b
-    rw [B] at A
-    rwa [ENNReal.le_div_iff_mul_le _ (Or.inr μKlt), mul_comm]
-    right
-    apply (measure_pos_of_nonempty_interior μ ⟨_, K_int⟩).ne'
-  have J : Tendsto (fun n : ℕ => μ K / n) atTop (𝓝 (μ K / ∞)) :=
-    ENNReal.Tendsto.const_div ENNReal.tendsto_nat_nhds_top (Or.inr μKlt)
-  simp only [ENNReal.div_top] at J
-  exact ge_of_tendsto' J I
+  cases eq_or_ne (μ 1) 0 with
+  | inl h => constructor; simpa
+  | inr h =>
+    obtain ⟨K, K_compact, K_nhds⟩ : ∃ K : Set G, IsCompact K ∧ K ∈ 𝓝 1 := exists_compact_mem_nhds 1
+    have K_inf : Set.Infinite K := infinite_of_mem_nhds (1 : G) K_nhds
+    exact absurd (K_inf.meas_eq_top ⟨_, h, fun x _ ↦ (haar_singleton _ _).ge⟩)
+      K_compact.measure_lt_top.ne
 #align measure_theory.measure.is_haar_measure.has_no_atoms MeasureTheory.Measure.IsHaarMeasure.noAtoms
 #align measure_theory.measure.is_add_haar_measure.has_no_atoms MeasureTheory.Measure.IsAddHaarMeasure.noAtoms
 

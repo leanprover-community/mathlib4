@@ -62,6 +62,9 @@ theorem pairwise_disjoint_mono [SemilatticeInf α] [OrderBot α] (hs : Pairwise 
   hs.mono fun i j hij => Disjoint.mono (h i) (h j) hij
 #align pairwise_disjoint.mono pairwise_disjoint_mono
 
+theorem pairwise_disjoint_on_singleton : Pairwise (Disjoint on (singleton : α → Set α)) := fun _ _ ↦
+  disjoint_singleton.2
+
 namespace Set
 
 theorem Pairwise.mono (h : t ⊆ s) (hs : s.Pairwise r) : t.Pairwise r :=
