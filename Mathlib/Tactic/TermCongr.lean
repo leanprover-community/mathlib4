@@ -457,7 +457,7 @@ def CongrResult.defeq (res : CongrResult) : MetaM CongrResult := do
 3. Otherwise throws an error.
 
 Note: `mkAppM` uses `withNewMCtxDepth`, which prevents typeclass inference
-from accidentally specializing `Type _` to `Prop`, which could otherwise happen
+from accidentally specializing `Sort _` to `Prop`, which could otherwise happen
 because there is a `Subsingleton Prop` instance. -/
 def CongrResult.mkDefault (lhs rhs : Expr) : MetaM CongrResult := do
   if ← isDefEq lhs rhs then
