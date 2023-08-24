@@ -329,6 +329,8 @@ variable [LinearOrder α] {a b c d : α}
     [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
     (h : a * b < c * d) : min a b < max c d := by
   simp_rw [min_lt_iff, lt_max_iff]; contrapose! h; exact mul_le_mul' h.1.1 h.2.2
+#align min_lt_max_of_mul_lt_mul min_lt_max_of_mul_lt_mulₓ
+#align min_lt_max_of_add_lt_add min_lt_max_of_add_lt_addₓ
 
 @[to_additive] lemma Left.min_le_max_of_mul_le_mul
     [CovariantClass α α (· * ·) (· < ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
