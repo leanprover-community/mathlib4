@@ -38,11 +38,11 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 and new-style structures. We can revisit this in Lean 4. (After and not during the port!) -/
 /-- A congruence relation on a type with an addition and multiplication is an equivalence relation
 which preserves both. -/
-structure RingCon (R : Type*) [Add R] [Mul R] extends Setoid R where
-  /-- Ring congruence relations are closed under addition -/
-  add' : ∀ {w x y z}, r w x → r y z → r (w + y) (x + z)
-  /-- Ring congruence relations are closed under multiplication -/
-  mul' : ∀ {w x y z}, r w x → r y z → r (w * y) (x * z)
+structure RingCon (R : Type*) [Add R] [Mul R] extends AddCon R, Con R where
+  -- /-- Ring congruence relations are closed under addition -/
+  -- add' : ∀ {w x y z}, r w x → r y z → r (w + y) (x + z)
+  -- /-- Ring congruence relations are closed under multiplication -/
+  -- mul' : ∀ {w x y z}, r w x → r y z → r (w * y) (x * z)
 #align ring_con RingCon
 
 variable {α R : Type*}
@@ -76,15 +76,15 @@ section Basic
 
 variable [Add R] [Mul R] (c : RingCon R)
 
-/-- Every `RingCon` is also an `AddCon` -/
-def toAddCon : AddCon R :=
-  { c with }
-#align ring_con.to_add_con RingCon.toAddCon
+-- /-- Every `RingCon` is also an `AddCon` -/
+-- def toAddCon : AddCon R :=
+  -- { c with }
+-- #align ring_con.to_add_con RingCon.toAddCon
 
-/-- Every `RingCon` is also a `Con` -/
-def toCon : Con R :=
-  { c with }
-#align ring_con.to_con RingCon.toCon
+-- /-- Every `RingCon` is also a `Con` -/
+-- def toCon : Con R :=
+  -- { c with }
+-- #align ring_con.to_con RingCon.toCon
 
 --Porting note: upgrade to `FunLike`
 /-- A coercion from a congruence relation to its underlying binary relation. -/
@@ -93,8 +93,9 @@ instance : FunLike (RingCon R) R fun _ => R → Prop :=
     coe_injective' := fun x y h => by
       rcases x with ⟨⟨x, _⟩, _⟩
       rcases y with ⟨⟨y, _⟩, _⟩
-      have : x = y := h
-      subst x; rfl }
+      congr!
+      rw [Setoid.ext_iff,(show x.Rel = y.Rel from h)]
+      simp}
 
 @[simp]
 theorem rel_eq_coe : c.r = c :=
@@ -121,10 +122,10 @@ protected theorem mul {w x y z} : c w x → c y z → c (w * y) (x * z) :=
   c.mul'
 #align ring_con.mul RingCon.mul
 
-@[simp]
-theorem rel_mk {s : Setoid R} {ha hm a b} : RingCon.mk s ha hm a b ↔ Setoid.r a b :=
-  Iff.rfl
-#align ring_con.rel_mk RingCon.rel_mk
+-- @[simp]
+-- theorem rel_mk {s : Setoid R} {ha hm a b} : RingCon.mk s ha hm a b ↔ Setoid.r a b :=
+--   Iff.rfl
+-- #align ring_con.rel_mk RingCon.rel_mk
 
 instance : Inhabited (RingCon R) :=
   ⟨ringConGen EmptyRelation⟩
@@ -158,8 +159,8 @@ instance : CoeTC R c.Quotient :=
 
 -- Lower the priority since it unifies with any quotient type.
 /-- The quotient by a decidable congruence relation has decidable equality. -/
-instance (priority := 500) [d : ∀ a b, Decidable (c a b)] : DecidableEq c.Quotient := by
-  delta RingCon.Quotient; infer_instance
+instance (priority := 500) [_d : ∀ a b, Decidable (c a b)] : DecidableEq c.Quotient :=
+  inferInstanceAs (DecidableEq (Quotient c.toSetoid))
 
 @[simp]
 theorem quot_mk_eq_coe (x : R) : Quot.mk c x = (x : c.Quotient) :=
