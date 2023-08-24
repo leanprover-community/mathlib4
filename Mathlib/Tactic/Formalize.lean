@@ -63,6 +63,15 @@ def history : List Message :=
 
 open Lean Elab Command
 
+/--
+`#formalize "There are infinitely many prime numbers."` will attempt to use a langauge model
+to write the formalization of your statement in Lean (but not the proof!)
+
+The string must end with a '.' or '?'.
+
+The first time you run `#formalize`
+the help text will explain how to set up a compatible langauge model.
+-/
 elab tk:"#formalize" t:term : command => liftTermElabM do
   let .lit (.strVal s) ← Term.elabTerm t none
     | throwError "#formalize must be followed by a string literal"
