@@ -109,15 +109,23 @@ theorem monotone_sort (f : Fin n → α) : Monotone (f ∘ sort f) := by
   exact (monotone_proj f).comp (graphEquiv₂ f).monotone
 #align tuple.monotone_sort Tuple.monotone_sort
 
-lemma Fintype.card_fin_lt_nat (m g : ℕ) (h : g ≤ m) : Fintype.card {i : Fin m // i < g } = g := by
+end Tuple
+
+theorem Fintype.card_fin_lt_nat (m g : ℕ) (h : g ≤ m) : Fintype.card {i : Fin m // i < g } = g := by
   conv_rhs => rw [← Fintype.card_fin g]
   apply Fintype.card_congr
   exact ⟨ fun x => ⟨x, x.prop⟩, fun x => ⟨⟨x, (lt_of_lt_of_le (Fin.is_lt x) h)⟩, x.prop⟩,
     fun x => by simp, fun x => by simp⟩
 
+namespace Tuple
+
+open List
+
+variable {n : ℕ} {α : Type*}
+
 /-- A sorted tuple with `m` elements and exactly `Fintype.card {i // f i ≤ a}` less than `a`, has
 the elements at the start, and vice versa -/
-theorem lt_card_le_iff_apply_le_of_monotone {α} [PartialOrder α] [DecidableRel (α := α) LE.le]
+theorem lt_card_le_iff_apply_le_of_monotone [PartialOrder α] [DecidableRel (α := α) LE.le]
     {m : ℕ} (f : Fin m → α) (a : α) (h_sorted : Monotone f) (j : Fin m) :
     j < Fintype.card {i // f i ≤ a} ↔ f j ≤ a := by
   suffices h1 : ∀ k : Fin m, (k < Fintype.card {i // f i ≤ a}) → f k ≤ a
@@ -144,18 +152,10 @@ theorem lt_card_le_iff_apply_le_of_monotone {α} [PartialOrder α] [DecidableRel
     apply h
     exact (h_sorted (le_of_not_lt hij)).trans hia
 
-theorem lt_card_ge_iff_apply_ge_of_antitone {α} [PartialOrder α] [DecidableRel (α := α) LE.le]
+theorem lt_card_ge_iff_apply_ge_of_antitone [PartialOrder α] [DecidableRel (α := α) LE.le]
     {m : ℕ} (f : Fin m → α) (a : α) (h_sorted : Antitone f) (j : Fin m) :
     j < Fintype.card {i // a ≤ f i} ↔ a ≤ f j :=
   lt_card_le_iff_apply_le_of_monotone _ (OrderDual.toDual a) h_sorted.dual_right j
-
-end Tuple
-
-namespace Tuple
-
-open List
-
-variable {n : ℕ} {α : Type*}
 
 /-- If two permutations of a tuple `f` are both monotone, then they are equal. -/
 theorem unique_monotone [PartialOrder α] {f : Fin n → α} {σ τ : Equiv.Perm (Fin n)}
