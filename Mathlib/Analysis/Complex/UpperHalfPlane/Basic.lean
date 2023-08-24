@@ -168,9 +168,9 @@ theorem linear_ne_zero (cd : Fin 2 → ℝ) (z : ℍ) (h : cd ≠ 0) : (cd 0 : �
   have : cd 0 = 0 := by
     -- we will need this twice
     apply_fun Complex.im at h
-    simpa only [z.im_ne_zero, Complex.add_im, add_zero, coe_im, MulZeroClass.zero_mul, or_false_iff,
+    simpa only [z.im_ne_zero, Complex.add_im, add_zero, coe_im, zero_mul, or_false_iff,
       Complex.ofReal_im, Complex.zero_im, Complex.mul_im, mul_eq_zero] using h
-  simp only [this, MulZeroClass.zero_mul, Complex.ofReal_zero, zero_add, Complex.ofReal_eq_zero]
+  simp only [this, zero_mul, Complex.ofReal_zero, zero_add, Complex.ofReal_eq_zero]
     at h
   ext i
   fin_cases i <;> assumption
@@ -180,13 +180,13 @@ theorem denom_ne_zero (g : GL(2, ℝ)⁺) (z : ℍ) : denom g z ≠ 0 := by
   intro H
   have DET := (mem_glpos _).1 g.prop
   have hz := z.prop
-  simp only [GeneralLinearGroup.det_apply_val] at DET
+  simp only [GeneralLinearGroup.val_det_apply] at DET
   have H1 : (↑ₘg 1 0 : ℝ) = 0 ∨ z.im = 0 := by simpa [num, denom] using congr_arg Complex.im H
   cases' H1 with H1
-  · simp only [H1, Complex.ofReal_zero, denom, MulZeroClass.zero_mul, zero_add,
+  · simp only [H1, Complex.ofReal_zero, denom, zero_mul, zero_add,
       Complex.ofReal_eq_zero] at H
     rw [Matrix.det_fin_two (↑ₘg : Matrix (Fin 2) (Fin 2) ℝ)] at DET
-    simp only [H, H1, MulZeroClass.mul_zero, sub_zero, lt_self_iff_false] at DET
+    simp only [H, H1, mul_zero, sub_zero, lt_self_iff_false] at DET
   · change z.im > 0 at hz
     linarith
 #align upper_half_plane.denom_ne_zero UpperHalfPlane.denom_ne_zero
@@ -219,7 +219,7 @@ def smulAux (g : GL(2, ℝ)⁺) (z : ℍ) : ℍ :=
     rw [smulAux'_im]
     convert mul_pos ((mem_glpos _).1 g.prop)
         (div_pos z.im_pos (Complex.normSq_pos.mpr (denom_ne_zero g z))) using 1
-    simp only [GeneralLinearGroup.det_apply_val]
+    simp only [GeneralLinearGroup.val_det_apply]
     ring
 #align upper_half_plane.smul_aux UpperHalfPlane.smulAux
 
@@ -227,7 +227,7 @@ theorem denom_cocycle (x y : GL(2, ℝ)⁺) (z : ℍ) :
     denom (x * y) z = denom x (smulAux y z) * denom y z := by
   change _ = (_ * (_ / _) + _) * _
   field_simp [denom_ne_zero]
-  simp only [Matrix.mul, dotProduct, Fin.sum_univ_succ, denom, num, Subgroup.coe_mul,
+  simp only [Matrix.mul_apply, dotProduct, Fin.sum_univ_succ, denom, num, Subgroup.coe_mul,
     GeneralLinearGroup.coe_mul, Fintype.univ_ofSubsingleton, Fin.mk_zero, Finset.sum_singleton,
     Fin.succ_zero_eq_one, Complex.ofReal_add, Complex.ofReal_mul]
   ring
@@ -239,7 +239,7 @@ theorem mul_smul' (x y : GL(2, ℝ)⁺) (z : ℍ) : smulAux (x * y) z = smulAux 
   change _ / _ = (_ * (_ / _) + _) / _
   rw [denom_cocycle]
   field_simp [denom_ne_zero]
-  simp only [Matrix.mul, dotProduct, Fin.sum_univ_succ, num, denom, Subgroup.coe_mul,
+  simp only [Matrix.mul_apply, dotProduct, Fin.sum_univ_succ, num, denom, Subgroup.coe_mul,
     GeneralLinearGroup.coe_mul, Fintype.univ_ofSubsingleton, Fin.mk_zero, Finset.sum_singleton,
     Fin.succ_zero_eq_one, Complex.ofReal_add, Complex.ofReal_mul]
   ring
@@ -404,7 +404,7 @@ theorem c_mul_im_sq_le_normSq_denom (z : ℍ) (g : SL(2, ℝ)) :
 nonrec theorem SpecialLinearGroup.im_smul_eq_div_normSq :
     (g • z).im = z.im / Complex.normSq (denom g z) := by
   convert im_smul_eq_div_normSq g z
-  simp only [GeneralLinearGroup.det_apply_val, coe_GLPos_coe_GL_coe_matrix,
+  simp only [GeneralLinearGroup.val_det_apply, coe_GLPos_coe_GL_coe_matrix,
     Int.coe_castRingHom, (g : SL(2, ℝ)).prop, one_mul, coe']
 #align upper_half_plane.special_linear_group.im_smul_eq_div_norm_sq UpperHalfPlane.SpecialLinearGroup.im_smul_eq_div_normSq
 
@@ -479,7 +479,7 @@ theorem modular_T_zpow_smul (z : ℍ) (n : ℤ) : ModularGroup.T ^ n • z = (n 
   -- Porting note: added `coeToGL` and merged `rw` and `simp`
   simp [coeToGL, ModularGroup.coe_T_zpow,
     of_apply, cons_val_zero, algebraMap.coe_one, Complex.ofReal_one, one_mul, cons_val_one,
-    head_cons, algebraMap.coe_zero, MulZeroClass.zero_mul, zero_add, div_one]
+    head_cons, algebraMap.coe_zero, zero_mul, zero_add, div_one]
 #align upper_half_plane.modular_T_zpow_smul UpperHalfPlane.modular_T_zpow_smul
 
 theorem modular_T_smul (z : ℍ) : ModularGroup.T • z = (1 : ℝ) +ᵥ z := by

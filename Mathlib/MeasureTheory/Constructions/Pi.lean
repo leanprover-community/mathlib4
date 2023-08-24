@@ -317,7 +317,6 @@ theorem pi_pi_aux [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) (hs : ∀ 
   · rw [Measure.pi, toMeasure_apply _ _ (MeasurableSet.pi countable_univ fun i _ => hs i)]
     apply OuterMeasure.pi_pi_le
   · haveI : Encodable ι := Fintype.toEncodable ι
-    rw [← pi'_pi μ s]
     simp_rw [← pi'_pi μ s, Measure.pi,
       toMeasure_apply _ _ (MeasurableSet.pi countable_univ fun i _ => hs i)]
     suffices (pi' μ).toOuterMeasure ≤ OuterMeasure.pi fun i => (μ i).toOuterMeasure by exact this _
