@@ -160,6 +160,7 @@ annotated with information necessary to generate a congruence lemma. -/
 def elabCHole (h : Syntax) (forLhs : Bool) (expectedType? : Option Expr) : Term.TermElabM Expr := do
   let pf ← Term.elabTerm h none
   let pfTy ← inferType pf
+  -- Ensure that `pfTy` is a proposition
   unless ← isDefEq (← inferType pfTy) (.sort .zero) do
     throwError "Hole has type{indentD pfTy}\nbut is expected to be a Prop"
   if let some (_, lhs, _, rhs) ← sides? pfTy then
@@ -199,7 +200,7 @@ def processAntiquot (t : Term) (expand : Term → Term.TermElabM Term) : Term.Te
   return ⟨t'⟩
 
 /-- Given the pattern `t` in `congr(t)`, elaborate it for the given side
-by relpacing antiquotations with `cHole%` terms, and ensure the elaborated term
+by replacing antiquotations with `cHole%` terms, and ensure the elaborated term
 is of the expected type. -/
 def elaboratePattern (t : Term) (expectedType? : Option Expr) (forLhs : Bool) :
     Term.TermElabM Expr :=
@@ -218,8 +219,10 @@ of the LHS and RHS are equal or not.
 This function is a wrapper around `Lean.Meta.mkHCongrWithArity`.
 It transforms the resulting congruence lemma by trying to automatically prove hypotheses
 using subsingleton lemmas, and if they are so provable they are recorded with `.subsingletonInst`.
-Note that this is slightly abusing this kind since (1) it might not be for a `Decidable` instance
-and (2) it might not even be for an instance. -/
+Note that this is slightly abusing `.subsingletonInst` since
+(1) the argument might not be for a `Decidable` instance and
+(2) the argument might not even be an instance. -/
+-- TODO lift this into a utility file, along with supporting `Congr! functions.
 def mkHCongrWithArity' (f : Expr) (numArgs : Nat) : MetaM CongrTheorem := do
   let thm ← mkHCongrWithArity f numArgs
   process thm thm.type thm.argKinds.toList #[] #[] #[]
@@ -453,8 +456,9 @@ def CongrResult.defeq (res : CongrResult) : MetaM CongrResult := do
 3. Tries `proof_irrel_heq` as another effort to avoid doing congruence on proofs.
 3. Otherwise throws an error.
 
-Note: `mkAppM` uses `withNewMCtxDepth`, which prevents `Prop` specialization.
-Otherwise the `Subsingleton Prop` instance could apply for example. -/
+Note: `mkAppM` uses `withNewMCtxDepth`, which prevents typeclass inference
+from accidentally specializing `Type _` to `Prop`, which could otherwise happen
+because there is a `Subsingleton Prop` instance. -/
 def CongrResult.mkDefault (lhs rhs : Expr) : MetaM CongrResult := do
   if ← isDefEq lhs rhs then
     return {lhs, rhs, pf? := none}
@@ -462,7 +466,7 @@ def CongrResult.mkDefault (lhs rhs : Expr) : MetaM CongrResult := do
     return CongrResult.mk' lhs rhs pf
   else if let some pf ← (observing? <| mkAppM ``proof_irrel_heq #[lhs, rhs]) then
     return CongrResult.mk' lhs rhs pf
-  throwError "Could not generated congruence between{indentD lhs}\nand{indentD rhs}"
+  throwError "Could not generate congruence between{indentD lhs}\nand{indentD rhs}"
 
 /-- Does `CongrResult.mkDefault` but makes sure there are no lingering congruence holes. -/
 def CongrResult.mkDefault' (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM CongrResult := do
@@ -507,7 +511,7 @@ def mkCongrOfCHole? (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM (Option Co
 
 /-- Walks along both `lhs` and `rhs` simultaneously to create a congruence lemma between them.
 
-Where they are desyncronized, we fall back to the base case (using `CongrResult.mkDefault'`)
+Where they are desynchronized, we fall back to the base case (using `CongrResult.mkDefault'`)
 since it's likely due to unification with the expected type,
 from `_` placeholders or implicit arguments being filled in. -/
 partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
@@ -525,7 +529,7 @@ partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
     return res
   if (hasCHole mvarCounterSaved lhs).isNone && (hasCHole mvarCounterSaved rhs).isNone then
     -- It's safe to fastforward if the lhs and rhs are defeq and have no congruence holes.
-    -- This is more conservative than necessary since congruence holes might be inside proofs.
+    -- This is more conservative than necessary since congruence holes might only be inside proofs.
     if ← isDefEq lhs rhs then
       return {lhs, rhs, pf? := none}
   if ← (isProof lhs <||> isProof rhs) then
