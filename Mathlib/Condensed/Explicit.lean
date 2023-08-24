@@ -142,93 +142,6 @@ end CategoryTheory
 
 end isSheafForPullBackSieve
 
-section ProdCoprod -- This section is PR #6578
-
-open CategoryTheory Opposite Limits
-
-section ProdToCoprod
-
-variable {C : Type _} [Category C] {α : Type} [Finite α]
-  (Z : α → C) [HasFiniteProducts C]
-
-instance : HasColimit (Discrete.functor fun i ↦ Z i).op :=
-  hasColimit_of_equivalence_comp (Discrete.opposite α).symm
-
-@[simp]
-noncomputable
-def ProdToCoprod : op (∏ Z) ≅ ∐ (fun z => op (Z z)) :=
-  IsColimit.coconePointUniqueUpToIso (isColimitConeOp _ (productIsProduct fun b ↦ Z b))
-    (colimit.isColimit _) ≪≫ (IsColimit.coconePointsIsoOfEquivalence
-    (coproductIsCoproduct (fun z ↦ op (Z z))) (colimit.isColimit _) (Discrete.opposite α).symm
-    (Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ eqToIso (by rfl)))).symm
-
-end ProdToCoprod
-
-section CoprodToProd
-
-variable {C : Type _} [Category C] {α : Type} (Z : α → C) [HasCoproduct Z]
-
-instance : HasLimit (Discrete.functor fun i ↦ Z i).op :=
-  HasLimit.mk
-    { cone := (colimit.cocone (Discrete.functor fun i ↦ Z i)).op
-      isLimit := isLimitCoconeOp _ (colimit.isColimit _) }
-
-def op_iso_op : (Discrete.opposite α).inverse ⋙ (Discrete.functor fun i ↦ Z i).op ≅
-    Discrete.functor (fun z ↦ op (Z z)) :=
-  (Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl))
-
-instance : HasLimit ((Discrete.opposite α).inverse ⋙ (Discrete.functor fun i ↦ Z i).op) :=
-  hasLimitEquivalenceComp (Discrete.opposite α).symm
-
-instance : HasProduct (fun z ↦ op (Z z)) := hasLimitOfIso (op_iso_op Z)
-
-@[simp]
-noncomputable
-def CoprodToProd : op (∐ Z) ≅ ∏ (fun z => op (Z z)) :=
-  IsLimit.conePointUniqueUpToIso (isLimitCoconeOp _ (coproductIsCoproduct fun b ↦ Z b))
-    (limit.isLimit _) ≪≫ (IsLimit.conePointsIsoOfEquivalence
-    (productIsProduct (fun z ↦ op (Z z))) (limit.isLimit _) (Discrete.opposite α).symm
-    (Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl))).symm
-
-lemma CoprodToProdInvComp.ι (b : α) : ((CoprodToProd Z).inv ≫ (Sigma.ι (fun a => Z a) b).op) =
-    Pi.π (fun a => op (Z a)) b := by
-  dsimp only [CoprodToProd]
-  simp only [Iso.trans_inv]
-  have := IsLimit.conePointUniqueUpToIso_inv_comp
-    (isLimitCoconeOp _ (coproductIsCoproduct fun b ↦ Z b)) (limit.isLimit _) (op ⟨b⟩)
-  dsimp at this
-  rw [Category.assoc, this]
-  simp only [limit.cone_x, Fan.mk_pt, Equivalence.symm_functor, Discrete.natIsoFunctor,
-    Functor.comp_obj, Functor.op_obj, Iso.symm_inv, IsLimit.conePointsIsoOfEquivalence_hom,
-    Equivalence.symm_inverse, Cones.equivalenceOfReindexing_functor, Iso.trans_hom, Iso.symm_hom,
-    isoWhiskerLeft_inv, Iso.trans_inv, whiskerLeft_comp, Cones.whiskering_obj, limit.isLimit_lift,
-    limit.lift_π, Cones.postcompose_obj_pt, Cone.whisker_pt, Cones.postcompose_obj_π,
-    Cone.whisker_π, Category.assoc, NatTrans.comp_app, Functor.const_obj_obj, unop_op,
-    Discrete.functor_obj, whiskerLeft_app, Fan.mk_π_app, Discrete.opposite_functor_obj_as,
-    Discrete.natIso_inv_app, Iso.refl_inv, Equivalence.invFunIdAssoc_hom_app, Functor.id_obj,
-    Functor.op_map, Discrete.functor_map_id, op_id]
-  simp only [Discrete.functor, Function.comp_apply, id_eq, Discrete.opposite_functor_obj_as,
-    unop_op, Functor.comp_obj, Functor.op_obj, Discrete.opposite, Functor.id_obj,
-    Functor.comp_obj, Functor.leftOp_obj, Discrete.functor_obj, unop_op, Discrete.functor,
-    Function.comp_apply, id_eq, CategoryTheory.Equivalence.mk, Function.comp_apply, unop_op,
-    Functor.leftOp_obj, Category.comp_id]
-
-variable {X : C} (π : (a : α) → Z a ⟶ X)
-
-lemma descOpCompCoprodToProd {X : C} (π : (a : α) → Z a ⟶ X) :
-    (Sigma.desc π).op ≫ (CoprodToProd Z).hom = Pi.lift (fun a => Quiver.Hom.op (π a)) := by
-  rw [← Iso.eq_comp_inv (CoprodToProd Z)]
-  congr
-  refine' Sigma.hom_ext (f := Z) _ _ (fun a => _)
-  rw [← Category.assoc, colimit.ι_desc, ← Quiver.Hom.unop_op (Sigma.ι Z a), ← unop_comp,
-    CoprodToProdInvComp.ι, ← unop_comp]
-  simp only [Cofan.mk_pt, Cofan.mk_ι_app, Pi.lift, Pi.π, limit.lift_π, Fan.mk_pt, Fan.mk_π_app,
-    Quiver.Hom.unop_op]
-
-end CoprodToProd
-
-end ProdCoprod
-
 section ExtensiveRegular
 
 section HasPullbackOfRightMono
@@ -414,7 +327,7 @@ def fromFirst {α : Type} [Fintype α] {Z : α → C} {X : C} {π : (a : α) →
   haveI : PreservesLimit (Discrete.functor fun a => op (Z a)) F := by
     haveI := (hF.preserves α); infer_instance
   comparisoninv hS F ≫ ((Limits.PreservesProduct.iso F (fun a => op <| Z a)).inv ≫
-    F.map (CoprodToProd Z).inv ≫ F.map (inv (Sigma.desc π).op))
+    F.map (opCoproductIsoProduct Z).inv ≫ F.map (inv (Sigma.desc π).op))
 
 lemma piCompInvdesc {α : Type} [Fintype α] {Z : α → C} {X : C} (π : (a : α) → Z a ⟶ X)
     (HIso : IsIso (Sigma.desc π)) (a : α) : π a ≫ inv (Sigma.desc π) = Sigma.ι _ a := by
@@ -437,7 +350,7 @@ lemma isSheafForDagurSieveIsIsoFork {X : C} {S : Presieve X} (hS : S ∈ Extensi
   · unfold fromFirst
     simp only [← Category.assoc]
     rw [Functor.map_inv, IsIso.comp_inv_eq, Category.id_comp, ← Functor.mapIso_inv,
-      Iso.comp_inv_eq, Functor.mapIso_hom, Iso.comp_inv_eq, ← Functor.map_comp, descOpCompCoprodToProd]
+      Iso.comp_inv_eq, Functor.mapIso_hom, Iso.comp_inv_eq, ← Functor.map_comp, desc_op_comp_opCoproductIsoProduct_hom]
     have : F.map (Pi.lift fun a => (π a).op) ≫ (PreservesProduct.iso F fun a => op (Z a)).hom =
       Pi.lift (fun a => F.map ((Sigma.ι Z a ≫ (Sigma.desc π)).op)) := by simp --this can be a general lemma
     erw [this]
@@ -458,7 +371,7 @@ lemma isSheafForDagurSieveIsIsoFork {X : C} {S : Presieve X} (hS : S ∈ Extensi
     unfold fromFirst
     simp only [Category.assoc]
     rw [← Functor.map_comp, ← op_inv, ← op_comp, ← ha, v.snd hS, piCompInvdesc,
-      ← Functor.map_comp, CoprodToProdInvComp.ι, @PreservesProduct.isoInvCompMap _ _ _ _ F _ _ _ _ (_) a]
+      ← Functor.map_comp, opCoproductIsoProduct_inv_comp_ι, @PreservesProduct.isoInvCompMap _ _ _ _ F _ _ _ _ (_) a]
     simp only [comparisoninv, op_id, limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
     erw [F.map_id, Category.comp_id]
 
