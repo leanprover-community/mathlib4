@@ -1807,9 +1807,9 @@ theorem integral_countable [MeasurableSingletonClass α] (f : α → ℝ)
   have hf' : Integrable (fun (x : s) => f x) (Measure.comap Subtype.val μ) := by
     rw [← map_comap_subtype_coe, integrable_map_measure] at hf
     apply hf
-    exact Integrable.aestronglyMeasurable hf
-    exact Measurable.aemeasurable measurable_subtype_coe
-    exact Countable.measurableSet hs
+    · exact Integrable.aestronglyMeasurable hf
+    · exact Measurable.aemeasurable measurable_subtype_coe
+    · exact Countable.measurableSet hs
   rw [set_integral_eq_subtype' hs.measurableSet, integral_countable' hf']
   congr 1 with a : 1
   rw [Measure.comap_apply Subtype.val Subtype.coe_injective
