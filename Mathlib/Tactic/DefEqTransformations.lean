@@ -120,9 +120,9 @@ elab_rules : tactic
   | `(tactic| unfold_let $hs:term* $[$loc?]?) => do
     runDefEqTactic (unfoldFVars (← getFVarIds hs)) loc? "unfold_let"
 
+@[inherit_doc unfoldLetStx]
 syntax "unfold_let" (ppSpace colGt term:max)* : conv
 
-@[inherit_doc unfoldLetStx]
 elab_rules : conv
   | `(conv| unfold_let) => runDefEqConvTactic zetaReduce
   | `(conv| unfold_let $hs:term*) => do
@@ -250,6 +250,9 @@ def etaStruct? (e : Expr) (tryWhnfR : Bool := true) : MetaM (Option Expr) := do
       return x
   return none
 where
+  /-- Check to see if there's an argument at some index `i`
+  such that it's the `i`th projection of a some expression.
+  Returns the expression. -/
   findProj (fVal : ConstructorVal) (args : Array Expr) (m : Expr → MetaM Expr) :
       MetaM (LOption Expr) := do
     for i in [0 : fVal.numFields] do
@@ -263,8 +266,7 @@ where
     return .undef
 
 /-- Finds all occurrences of expressions of the form `S.mk x.1 ... x.n` where `S.mk`
-is a structure constructor and replaces them by `x`.
--/
+is a structure constructor and replaces them by `x`. -/
 def etaStructAll (e : Expr) : MetaM Expr :=
   transform e fun node => do
     if let some node' ← etaStruct? node then
