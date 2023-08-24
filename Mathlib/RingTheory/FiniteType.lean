@@ -479,7 +479,7 @@ variable [AddMonoid M]
 
 /-- If a set `S` generates an additive monoid `M`, then the image of `M` generates, as algebra,
 `AddMonoidAlgebra R M`. -/
-theorem freeAlgebra_lift_of_surjective_of_closure [AddMonoid M] [CommSemiring R] {S : Set M}
+theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
     (hS : closure S = ⊤) :
     Function.Surjective
       (FreeAlgebra.lift R fun s : S => of' R M ↑s : FreeAlgebra R S → AddMonoidAlgebra R M) := by
@@ -657,7 +657,7 @@ variable [Monoid M]
 
 /-- If a set `S` generates an additive monoid `M`, then the image of `M` generates, as algebra,
 `AddMonoidAlgebra R M`. -/
-theorem freeAlgebra_lift_of_surjective_of_closure [AddMonoid M] [CommSemiring R] {S : Set M}
+theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
     (hS : closure S = ⊤) :
     Function.Surjective
       (FreeAlgebra.lift R fun s : S => of R M ↑s : FreeAlgebra R S → MonoidAlgebra R M) := by
