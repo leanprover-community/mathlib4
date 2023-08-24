@@ -34,6 +34,16 @@ class Functor.Linear {C D : Type*} [Category C] [Category D] [Preadditive C] [Pr
   map_smul : ∀ {X Y : C} (f : X ⟶ Y) (r : R), F.map (r • f) = r • F.map f := by aesop_cat
 #align category_theory.functor.linear CategoryTheory.Functor.Linear
 
+lemma Functor.linear_iff {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
+    [CategoryTheory.Linear R C] [CategoryTheory.Linear R D] (F : C ⥤ D) [F.Additive] :
+    Functor.Linear R F ↔ ∀ (X : C) (r : R), F.map (r • 𝟙 X) = r • 𝟙 (F.obj X) := by
+  constructor
+  · intro h X r
+    rw [h.map_smul, F.map_id]
+  · refine' fun h => ⟨fun {X Y} f r => _⟩
+    have : r • f = (r • 𝟙 X) ≫ f := by simp
+    rw [this, F.map_comp, h, Linear.smul_comp, Category.id_comp]
+
 section Linear
 
 namespace Functor
@@ -54,7 +64,18 @@ instance : Linear R (𝟭 C) where
 instance {E : Type*} [Category E] [Preadditive E] [CategoryTheory.Linear R E] (G : D ⥤ E)
     [Additive G] [Linear R G] : Linear R (F ⋙ G) where
 
-variable (R)
+variable (R) {F}
+
+lemma linear_of_iso {G : C ⥤ D} (e : F ≅ G) [F.Additive] [F.Linear R] :
+    have : G.Additive := additive_of_iso e
+    G.Linear R := by
+  have : G.Additive := additive_of_iso e
+  exact
+    { map_smul := fun {X Y} f r => by
+        simp only [← NatIso.naturality_1 e (r • f), F.map_smul, Linear.smul_comp,
+          NatTrans.naturality, Linear.comp_smul, Iso.inv_hom_id_app_assoc] }
+
+variable (F)
 
 /-- `F.mapLinearMap` is an `R`-linear map whose underlying function is `F.map`. -/
 @[simps]

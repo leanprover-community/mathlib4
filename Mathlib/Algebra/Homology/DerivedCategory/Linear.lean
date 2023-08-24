@@ -1,6 +1,7 @@
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
 import Mathlib.Algebra.Homology.Linear
 import Mathlib.CategoryTheory.Localization.Linear
+import Mathlib.CategoryTheory.Shift.Linear
 
 open CategoryTheory Category Limits Pretriangulated ZeroObject Preadditive
 
@@ -20,6 +21,10 @@ instance : Functor.Linear R (DerivedCategory.Qh : _ ⥤ DerivedCategory C) :=
 
 instance : Functor.Linear R (DerivedCategory.Q : _ ⥤ DerivedCategory C) := by
   dsimp [Q]
+  infer_instance
+
+instance (n : ℤ) : (shiftFunctor (DerivedCategory C) n).Linear R := by
+  dsimp [DerivedCategory]
   infer_instance
 
 end DerivedCategory

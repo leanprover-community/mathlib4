@@ -47,6 +47,35 @@ noncomputable instance : Functor.Linear R W.Q' := Localization.functor_linear R 
 
 end
 
+section
+
+variable {E : Type _} [Category E]
+  (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
+  [Preadditive C] [Preadditive D] [Preadditive E]
+  [L.Additive]
+  (R : Type _) [Ring R]
+  [Linear R C] [Linear R D] [Linear R E] [L.Linear R]
+
+lemma functor_linear_iff (F : C ⥤ E) (G : D ⥤ E) [Lifting L W F G]
+    [F.Additive] [G.Additive] :
+    F.Linear R ↔ G.Linear R := by
+  constructor
+  · intro
+    have : (L ⋙ G).Linear R := Functor.linear_of_iso R (Lifting.iso L W F G).symm
+    have : EssSurj L := Localization.essSurj L W
+    rw [Functor.linear_iff]
+    intro X r
+    have e := L.objObjPreimageIso X
+    have : r • 𝟙 X = e.inv ≫ (r • 𝟙 _) ≫ e.hom := by simp
+    rw [this, G.map_comp, G.map_comp, ← L.map_id, ← L.map_smul, ← Functor.comp_map,
+      (L ⋙ G).map_smul, Functor.map_id, Linear.smul_comp, Linear.comp_smul]
+    dsimp
+    rw [Category.id_comp, ← G.map_comp, e.inv_hom_id, G.map_id]
+  · intro
+    exact Functor.linear_of_iso R (Lifting.iso L W F G)
+
+end
+
 end Localization
 
 end CategoryTheory

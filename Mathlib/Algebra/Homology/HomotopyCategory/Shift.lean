@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Homology.HomotopyCategory
+import Mathlib.Algebra.Homology.Linear
 import Mathlib.Algebra.Homology.HomotopyCategory.Epsilon
 import Mathlib.CategoryTheory.Shift.Quotient
 import Mathlib.Tactic.Linarith
@@ -80,8 +81,11 @@ instance : HasShift (CochainComplex C ℤ) ℤ := hasShiftMk _ _
     add := fun n₁ n₂ => shiftFunctorAdd' C n₁ n₂ _ rfl }
 
 instance (n : ℤ) :
-    (CategoryTheory.shiftFunctor (HomologicalComplex C (ComplexShape.up ℤ)) n).Additive :=
+    (CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).Additive :=
   (inferInstance : (CochainComplex.shiftFunctor C n).Additive)
+
+instance {R : Type _} [Ring R] [CategoryTheory.Linear R C] (n : ℤ) :
+    (CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).Linear R where
 
 variable {C}
 
@@ -319,5 +323,16 @@ instance (n : ℤ) : (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n)
     have e := (quotient C (ComplexShape.up ℤ)).commShiftIso n
     exact Functor.additive_of_iso e
   apply Functor.additive_of_full_essSurj_comp (quotient _ _ )
+
+instance {R : Type _} [Ring R] [CategoryTheory.Linear R C] (n : ℤ) :
+    (CategoryTheory.shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n).Linear R where
+  map_smul := by
+    rintro ⟨X⟩ ⟨Y⟩ f r
+    obtain ⟨f, rfl⟩ := (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map_surjective f
+    rw [← Functor.map_smul]
+    erw [← NatIso.naturality_1 ((HomotopyCategory.quotient _ _).commShiftIso n) f,
+      ← NatIso.naturality_1 ((HomotopyCategory.quotient _ _).commShiftIso n) (r • f)]
+    simp only [Functor.comp_obj, Functor.comp_map, Functor.map_smul,
+      Linear.smul_comp, Linear.comp_smul]
 
 end HomotopyCategory

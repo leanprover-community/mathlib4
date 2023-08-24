@@ -193,6 +193,53 @@ lemma additive_of_preserves_finite_products
   have : PreservesLimitsOfShape (Discrete PEmpty) F := PreservesFiniteProducts.preserves _
   exact F.additive_of_preserves_binary_products
 
+section
+
+variable {J : Type _} [Fintype J] {X : J → C} (c : Fan X) (hc : IsLimit c)
+  [DecidableEq J]
+
+@[simps]
+def biconeOfLimitCone : Bicone X where
+  pt := c.pt
+  π j := c.proj j
+  ι j := by exact hc.lift (Fan.mk (X j) (fun i => if h : j = i then eqToHom (by rw [h]) else 0))
+  ι_π i j := by
+    erw [IsLimit.fac]
+    dsimp
+    congr
+
+def isBilimitBiconeOfLimitCone : (biconeOfLimitCone c hc).IsBilimit :=
+  isBilimitOfTotal _ (hc.hom_ext (fun ⟨j⟩ => by
+    rw [Preadditive.sum_comp, Category.id_comp, Finset.sum_eq_single j]
+    · change _ ≫ (biconeOfLimitCone c hc).π j = _
+      rw [Category.assoc, Bicone.ι_π, dif_pos rfl, eqToHom_refl, Category.comp_id]
+      rfl
+    · intro i _ hi
+      dsimp
+      simp only [Category.assoc, IsLimit.fac, Fan.mk_pt, Fan.mk_π_app, dif_neg hi, comp_zero]
+    · intro h
+      simp at h ))
+
+end
+
+instance (priority := 100) preservesFiniteProductsOfAdditive [Additive F] :
+    PreservesFiniteProducts F where
+  preserves J _ :=
+    { preservesLimit := fun {K} => by
+        have : PreservesLimit (Discrete.functor (K.obj ∘ Discrete.mk)) F := by
+          refine' ⟨fun {c : Fan _} hc => _⟩
+          have : DecidableEq J := by
+            classical
+            infer_instance
+          let e : Discrete.functor (F.obj ∘ K.obj ∘ Discrete.mk) ≅
+              Discrete.functor (K.obj ∘ Discrete.mk) ⋙ F :=
+            Discrete.natIso (fun j => Iso.refl _)
+          refine' (IsLimit.postcomposeInvEquiv e _).1
+            (IsLimit.ofIsoLimit
+              (isBilimitOfPreserves F (isBilimitBiconeOfLimitCone c hc)).isLimit
+                (Cones.ext (Iso.refl _) (by aesop_cat)))
+        exact preservesLimitOfIsoDiagram _ Discrete.natIsoFunctor.symm}
+
 end
 
 end

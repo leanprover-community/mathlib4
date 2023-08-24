@@ -84,6 +84,57 @@ lemma liftNatTrans_add (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E) [Lifting L 
 
 end
 
+section
+-- should be moved
+
+variable (J : Type _)
+
+noncomputable def preservesLimitsOfShapeDiscreteOfComp (F : C ⥤ D) (G : D ⥤ E) [EssSurj F]
+    [PreservesLimitsOfShape (Discrete J) F] [HasLimitsOfShape (Discrete J) C]
+    [PreservesLimitsOfShape (Discrete J) (F ⋙ G)] :
+    PreservesLimitsOfShape (Discrete J) G where
+  preservesLimit {K} := by
+    let U : J → C := fun j => F.objPreimage (K.obj ⟨j⟩)
+    let e : Discrete.functor U ⋙ F ≅ K := Discrete.natIso (fun _ => F.objObjPreimageIso _)
+    have : PreservesLimit (Discrete.functor U ⋙ F) G := by
+      let c := Limits.getLimitCone (Discrete.functor U)
+      exact preservesLimitOfPreservesLimitCone (isLimitOfPreserves F c.2) (isLimitOfPreserves (F ⋙ G) c.2)
+    exact preservesLimitOfIsoDiagram G e
+
+lemma preservesFiniteProductsOfComp (F : C ⥤ D) (G : D ⥤ E) [EssSurj F] [HasFiniteProducts C]
+    [PreservesFiniteProducts F] [PreservesFiniteProducts (F ⋙ G)] :
+    PreservesFiniteProducts G where
+  preserves J _ := by
+    have : PreservesLimitsOfShape (Discrete J) F := PreservesFiniteProducts.preserves _
+    have : PreservesLimitsOfShape (Discrete J) (F ⋙ G)  := PreservesFiniteProducts.preserves _
+    exact preservesLimitsOfShapeDiscreteOfComp J F G
+
+end
+
+section
+
+variable (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
+  [Preadditive C] [Preadditive D] [Preadditive E]
+  [HasFiniteProducts C] [HasFiniteProducts D] [HasFiniteProducts E]
+  [L.Additive] [PreservesFiniteProducts L]
+
+lemma functor_additive_iff (F : C ⥤ E) (G : D ⥤ E) [Lifting L W F G] :
+    F.Additive ↔ G.Additive := by
+  constructor
+  · intro
+    have : EssSurj L := Localization.essSurj L W
+    have : PreservesFiniteProducts (L ⋙ G) := by
+      constructor
+      intro J _
+      have : PreservesLimitsOfShape (Discrete J) F := PreservesFiniteProducts.preserves _
+      exact preservesLimitsOfShapeOfNatIso (Lifting.iso L W F G).symm
+    have : PreservesFiniteProducts G := preservesFiniteProductsOfComp L G
+    exact Functor.additive_of_preserves_finite_products G
+  · intro
+    exact Functor.additive_of_iso (Lifting.iso L W F G)
+
+end
+
 end Localization
 
 end CategoryTheory

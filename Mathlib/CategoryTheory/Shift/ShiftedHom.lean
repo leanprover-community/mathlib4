@@ -1,6 +1,7 @@
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.Algebra.GradedHMul
+import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 namespace CategoryTheory
 
@@ -125,6 +126,31 @@ instance {X₁ X₂ X₃ X₄ : C} : IsAssocGradedHMul (ShiftedHom M X₁ X₂)
     dsimp
     rw [← NatTrans.naturality_assoc]
     rfl
+
+section Linear
+
+variable {R : Type*} [Ring R] [Preadditive C] [Linear R C]
+
+instance (X Y : C) (n : M) : Module R (ShiftedHom M X Y n) := by
+  dsimp [ShiftedHom]
+  infer_instance
+
+variable [∀ (a : M), (shiftFunctor C a).Additive]
+  [∀ (a : M), Functor.Linear R (shiftFunctor C a)]
+
+lemma γhmul_smul {p q n : M} (α : ShiftedHom M X Y p) (x : R)
+    (β : ShiftedHom M Y Z q) (hpq : p + q = n) :
+    α •[hpq] (x • β) = x • (α •[hpq] β) := by
+  rw [γhmul_eq, γhmul_eq, Functor.map_smul,
+    Linear.smul_comp, Linear.comp_smul]
+
+@[simp]
+lemma smul_γhmul {p q n : M} (x : R) (α : ShiftedHom M X Y p)
+    (β : ShiftedHom M Y Z q) (hpq : p + q = n) :
+    (x • α) •[hpq] β = x • (α •[hpq] β) := by
+  rw [γhmul_eq, γhmul_eq, Linear.smul_comp]
+
+end Linear
 
 end ShiftedHom
 

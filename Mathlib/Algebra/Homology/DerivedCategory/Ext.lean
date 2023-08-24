@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Homology.DerivedCategory.TStructure
+import Mathlib.Algebra.Homology.DerivedCategory.Linear
 import Mathlib.CategoryTheory.Shift.ShiftedHom
 import Mathlib.Algebra.Homology.HomotopyCategory.Epsilon
 
@@ -8,8 +9,8 @@ open CategoryTheory Category Preadditive DerivedCategory Limits Pretriangulated
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
-attribute [instance] MorphismProperty.HasLocalization.standard
---variable [HasDerivedCategory.{v} C]
+--attribute [instance] MorphismProperty.HasLocalization.standard
+variable [HasDerivedCategory.{w} C]
 
 namespace CategoryTheory
 
@@ -17,17 +18,26 @@ namespace Abelian
 
 variable (X Y Z : C) (n : ℕ)
 
-structure newExt : Type _ :=
-  hom : ShiftedHom ℤ ((singleFunctor _ 0).obj X) ((singleFunctor _ 0).obj Y) n
+def newExt : Type w :=
+  ShiftedHom ℤ ((singleFunctor _ 0).obj X) ((singleFunctor _ 0).obj Y) n
 
 namespace newExt
 
 variable {X Y Z n}
 
-lemma hom_injective (e₁ e₂ : newExt X Y n) (h : e₁.hom = e₂.hom) : e₁ = e₂ := by
-  cases e₁
-  cases e₂
-  simpa using h
+@[pp_dot]
+def hom (e : newExt X Y n) :
+  ShiftedHom ℤ ((singleFunctor _ 0).obj X) ((singleFunctor _ 0).obj Y) n := e
+
+def mk (f : ShiftedHom ℤ ((singleFunctor _ 0).obj X) ((singleFunctor _ 0).obj Y) n) :
+    newExt X Y n := f
+
+@[simp]
+lemma mk_hom
+    (f : ShiftedHom ℤ ((singleFunctor _ 0).obj X) ((singleFunctor _ 0).obj Y) n) :
+    (mk f).hom = f := rfl
+
+lemma hom_injective (e₁ e₂ : newExt X Y n) (h : e₁.hom = e₂.hom) : e₁ = e₂ := h
 
 lemma ext_iff (e₁ e₂ : newExt X Y n) : e₁ = e₂ ↔ e₁.hom = e₂.hom := by
   constructor
@@ -37,18 +47,9 @@ lemma ext_iff (e₁ e₂ : newExt X Y n) : e₁ = e₂ ↔ e₁.hom = e₂.hom :
 
 lemma mk_surjective (e : newExt X Y n) : ∃ (f : _), e = mk f := ⟨e.hom, rfl⟩
 
-variable (X Y n)
-
-def newExtEquiv :
-  newExt X Y n ≃ ShiftedHom ℤ ((singleFunctor _ 0).obj X) ((singleFunctor _ 0).obj Y) n where
-  toFun e := e.hom
-  invFun f := mk f
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
-
-variable {X Y n}
-
-noncomputable instance : AddCommGroup (newExt X Y n) := Equiv.addCommGroup (newExtEquiv X Y n)
+noncomputable instance : AddCommGroup (newExt X Y n) := by
+  dsimp only [newExt]
+  infer_instance
 
 @[simp]
 lemma add_hom (x y : newExt X Y n) : (x + y).hom = x.hom + y.hom := rfl
@@ -82,11 +83,12 @@ noncomputable def ofHomAddEquiv : (X ⟶ Y) ≃+ newExt X Y 0 where
   left_inv f := by
     apply (singleFunctor C 0).map_injective
     simp only [Functor.image_preimage, ofHom, ShiftedHom.mk₀, assoc, Iso.inv_hom_id_app,
-      Functor.id_obj, comp_id]
+      Functor.id_obj, comp_id, mk_hom]
   right_inv g := by
     apply hom_injective
     dsimp only [ofHom, ShiftedHom.mk₀]
-    rw [Functor.image_preimage, assoc, Iso.hom_inv_id_app, comp_id]
+    simp only [Functor.image_preimage, assoc, Iso.hom_inv_id_app,
+      comp_id, mk_hom]
   map_add' x y := by
     apply hom_injective
     simp [ofHom]
@@ -189,6 +191,72 @@ noncomputable def newExtFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ Ab where
     { app := fun Y => AddCommGroupCat.ofHom (AddMonoidHom.mk'
         (fun α => (show newExt X₁.unop Y n from α) •[add_zero n] (newExt.ofHom g.unop))
         (fun _ _ => newExt.add_γhmul _ _ _ _)) }
+
+section Linear
+
+namespace newExt
+
+section
+
+variable {R : Type*} [Ring R] {M : Type*} [AddCommGroup M] [Module R M]
+
+lemma Module.zsmul_smul (a : ℤ) (b : R) (m : M) :
+    a • (b • m) = (a • b) • m := by
+  let φ₁ : ℤ →+ M :=
+    { toFun := fun a => a • (b • m)
+      map_zero' := by simp
+      map_add' := fun a₁ a₂ => by simp only [add_zsmul] }
+  let φ₂ : ℤ →+ M :=
+    { toFun := fun a => (a • b) • m
+      map_zero' := by simp
+      map_add' := fun a₁ a₂ => by simp only [add_smul] }
+  change φ₁ a = φ₂ a
+  congr
+  ext
+  simp
+
+lemma Module.smul_zsmul (a : R) (b : ℤ) (m : M) :
+    a • (b • m) = (b • a) • m := by
+  let φ₁ : ℤ →+ M :=
+    { toFun := fun b => a • (b • m)
+      map_zero' := by simp
+      map_add' := fun b₁ b₂ => by simp only [add_smul, smul_add] }
+  let φ₂ : ℤ →+ M :=
+    { toFun := fun b => (b • a) • m
+      map_zero' := by simp
+      map_add' := fun b₁ b₂ => by simp only [add_smul] }
+  change φ₁ b = φ₂ b
+  congr
+  ext
+  simp
+
+end
+
+variable {R : Type*} [Ring R] [Linear R C]
+
+noncomputable instance : Module R (newExt X Y n) := by
+  dsimp only [newExt]
+  infer_instance
+
+@[simp]
+lemma smul_hom (a : R) (x : newExt X Y n) :
+    (a • x).hom = a • x.hom := rfl
+
+lemma smul_γhmul (a : R) {p q n : ℕ} (α : newExt Y Z p) (β : newExt X Y q) (hpq : p + q = n) :
+    (a • α) •[hpq] β = a • (α •[hpq] β) := by
+  apply hom_injective
+  simp only [γhmul_hom, smul_hom, ShiftedHom.γhmul_smul,
+    Module.smul_zsmul, Module.zsmul_smul]
+
+lemma γhmul_smul {p q n : ℕ} (α : newExt Y Z p) (a : R) (β : newExt X Y q) (hpq : p + q = n) :
+    α •[hpq] (a • β) = a • (α •[hpq] β) := by
+  apply hom_injective
+  simp only [γhmul_hom, smul_hom, ShiftedHom.smul_γhmul,
+    Module.smul_zsmul, Module.zsmul_smul]
+
+end newExt
+
+end Linear
 
 end Abelian
 
