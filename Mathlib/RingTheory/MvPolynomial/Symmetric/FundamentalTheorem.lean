@@ -24,7 +24,6 @@ Endow the (monic) monomials in the multivariate polynomial ring `MvPolynomial (F
 the lexicographic order on `Fin n →₀ ℕ`, which is a (linear) well order.
 
 
-
 later we transfer the result from `Fin n` to `σ`.
 
 
@@ -442,7 +441,7 @@ variable (R) [Fintype σ] [CommRing R]
 instance {K} [CommRing K] : AddCommMonoid K := inferInstance
 
 /- May also holds for cancellative CommSemiring, not sure. -/
-lemma injective_esymmAlgHom_Fin (h : n ≤ m) :
+lemma injective_esymmAlgHom_fin (h : n ≤ m) :
     Function.Injective (esymmAlgHom (Fin m) R n) := by
   rw [injective_iff_map_eq_zero]
   refine' fun p => (fun hp => _).mtr
@@ -460,11 +459,11 @@ lemma injective_esymmAlgHom_Fin (h : n ≤ m) :
 lemma injective_esymmAlgHom (hn : n ≤ Fintype.card σ) :
     Function.Injective (esymmAlgHom σ R n) := by
   rw [← rename_esymmAlgHom (Fintype.equivFin σ).symm, AlgHom.coe_comp]
-  exact (AlgEquiv.injective _).comp (injective_esymmAlgHom_Fin R hn)
+  exact (AlgEquiv.injective _).comp (injective_esymmAlgHom_fin R hn)
 
-lemma bijective_esymmAlgHom_Fin (n : ℕ) :
+lemma bijective_esymmAlgHom_fin (n : ℕ) :
     Function.Bijective (esymmAlgHom (Fin n) R n) := by
-  refine' ⟨injective_esymmAlgHom_Fin R le_rfl, _⟩
+  refine' ⟨injective_esymmAlgHom_fin R le_rfl, _⟩
   rintro ⟨p, hp⟩; rw [← AlgHom.mem_range]
   obtain rfl | h0 := eq_or_ne p 0; apply Subalgebra.zero_mem
   induction' he : p.maxDegree using WellFoundedLT.induction with t ih generalizing p; subst he
@@ -482,9 +481,9 @@ lemma bijective_esymmAlgHom_Fin (n : ℕ) :
     apply sub_add_cancel p
   · rw [leadingCoeff_esymmAlgHom_monomial t le_rfl]
 
-lemma surjective_esymmAlgHom_Fin (h : m ≤ n) :
+lemma surjective_esymmAlgHom_fin (h : m ≤ n) :
     Function.Surjective (esymmAlgHom (Fin m) R n) := fun p => by
-  obtain ⟨q, rfl⟩ := (bijective_esymmAlgHom_Fin R m).2 p
+  obtain ⟨q, rfl⟩ := (bijective_esymmAlgHom_fin R m).2 p
   rw [← AlgHom.mem_range]
   apply q.induction_on
   · intro r; rw [← algebraMap_eq, AlgHom.commutes]; apply Subalgebra.algebraMap_mem
@@ -497,7 +496,7 @@ lemma surjective_esymmAlgHom_Fin (h : m ≤ n) :
 lemma surjective_esymmAlgHom (hn : Fintype.card σ ≤ n) :
     Function.Surjective (esymmAlgHom σ R n) := by
   rw [← rename_esymmAlgHom (Fintype.equivFin σ).symm, AlgHom.coe_comp]
-  exact (AlgEquiv.surjective _).comp (surjective_esymmAlgHom_Fin R hn)
+  exact (AlgEquiv.surjective _).comp (surjective_esymmAlgHom_fin R hn)
 
 noncomputable def equiv_symmetricSubalgebra (hn : Fintype.card σ = n) :
     MvPolynomial (Fin n) R ≃ₐ[R] symmetricSubalgebra σ R :=
