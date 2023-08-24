@@ -1367,6 +1367,9 @@ theorem lt_sub_one_iff {n : ℕ} {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
     mod_eq_of_lt ((lt_succ_self _).trans hk)]
 #align fin.lt_sub_one_iff Fin.lt_sub_one_iff
 
+set_option trace.profiler true in
+set_option profiler true in
+set_option synthInstance.maxHeartbeats 30000 in
 @[simp]
 theorem le_sub_one_iff {n : ℕ} {k : Fin (n + 1)} : k ≤ k - 1 ↔ k = 0 := by
   cases n
