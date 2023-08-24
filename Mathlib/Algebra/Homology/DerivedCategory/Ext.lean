@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 import Mathlib.CategoryTheory.Shift.ShiftedHom
+import Mathlib.Algebra.Homology.HomotopyCategory.Epsilon
 
 universe w v u
 
@@ -106,13 +107,13 @@ variable {X Y}
 -- of Yoneda Ext, see Verdier, proposition III 3.2.5
 noncomputable instance : HasGradedHMul (newExt Y Z) (newExt X Y) (newExt X Z) where
   γhmul' p q r h α β :=
-    mk (CochainComplex.ε (p * q) • β.hom •[show q + (p : ℤ) = r by
+    mk (((p * q : ℕ) : ℤ).negOnePow • β.hom •[show q + (p : ℤ) = r by
       rw [← h, Nat.cast_add, add_comm]] α.hom)
 
 @[simp]
 lemma γhmul_hom {p q n : ℕ} (α : newExt Y Z p) (β : newExt X Y q) (hpq : p + q = n) :
   (α •[hpq] β).hom =
-    CochainComplex.ε (p * q) • β.hom •[by rw [← hpq, Nat.cast_add, add_comm]] α.hom := rfl
+    ((p * q : ℕ) : ℤ).negOnePow • β.hom •[by rw [← hpq, Nat.cast_add, add_comm]] α.hom := rfl
 
 noncomputable example {p q n : ℕ} (α : newExt Y Z p) (β : newExt X Y q) (hpq : p + q = n) :
     newExt X Z n := α •[hpq] β
@@ -138,7 +139,7 @@ lemma one_γhmul {n : ℕ} (β : newExt X Y n) :
   apply hom_injective
   dsimp
   rw [one_hom]
-  simp only [zero_mul, CochainComplex.ε_0, Int.ofNat_zero, one_smul]
+  simp only [zero_mul, Int.negOnePow_zero, Int.ofNat_zero, one_smul]
   apply ShiftedHom.γhmul_one'
 
 @[simp]
@@ -147,7 +148,7 @@ lemma γhmul_one {n : ℕ} (α : newExt X Y n) :
   apply hom_injective
   dsimp
   rw [one_hom]
-  simp only [mul_zero, CochainComplex.ε_0, Int.ofNat_zero, one_smul]
+  simp only [mul_zero, Int.negOnePow_zero, Int.ofNat_zero, one_smul]
   apply ShiftedHom.one_γhmul'
 
 instance {X₁ X₂ X₃ X₄ : C} : IsAssocGradedHMul (newExt X₃ X₄)
@@ -157,7 +158,7 @@ instance {X₁ X₂ X₃ X₄ : C} : IsAssocGradedHMul (newExt X₃ X₄)
     apply hom_injective
     rw [γhmul_hom, γhmul_hom, γhmul_hom, γhmul_hom]
     simp only [ShiftedHom.zsmul_γhmul, ShiftedHom.γhmul_zsmul, smul_smul,
-      ← CochainComplex.ε_add]
+      ← Int.negOnePow_add]
     congr 1
     . congr 1
       simp only [← h₁₂, ← h₂₃, Nat.cast_add, add_mul, mul_add]
@@ -170,7 +171,7 @@ lemma ofHom_comp (f : X ⟶ Y) (g : Y ⟶ Z) :
     ofHom (f ≫ g) = ofHom g •[add_zero 0] ofHom f := by
   apply hom_injective
   dsimp [ofHom]
-  simp only [Functor.map_comp, mul_zero, CochainComplex.ε_0, ShiftedHom.mk₀_comp, one_smul]
+  simp only [Functor.map_comp, mul_zero, Int.negOnePow_zero, ShiftedHom.mk₀_comp, one_smul]
 
 end newExt
 
@@ -220,7 +221,7 @@ noncomputable def extClass : newExt S.X₃ S.X₁ 1 :=
 lemma extClass_γhmul : hS.extClass •[add_zero 1] (newExt.ofHom S.g) = 0 := by
   apply newExt.hom_injective
   dsimp [extClass]
-  simp only [mul_zero, CochainComplex.ε_0, one_smul]
+  simp only [mul_zero, Int.negOnePow_zero, one_smul]
   erw [ShiftedHom.mk₀_γhmul]
   exact comp_dist_triangle_mor_zero₂₃ _ (hS.singleTriangle_distinguished)
 
@@ -230,8 +231,8 @@ lemma γhmul_extClass : (newExt.ofHom S.f) •[zero_add 1] hS.extClass = 0 := by
   have eq := comp_dist_triangle_mor_zero₃₁ _ (hS.singleTriangle_distinguished)
   rw [ShiftedHom.γhmul_eq]
   dsimp [newExt.ofHom, ShiftedHom.mk₀] at eq ⊢
-  simp only [mul_one, CochainComplex.ε_0, shiftFunctorZero'_eq_shiftFunctorZero, Functor.map_comp, assoc, one_smul,
-    reassoc_of% eq, zero_comp]
+  simp only [mul_one, Functor.map_comp, assoc, reassoc_of% eq, zero_comp, Nat.cast_zero,
+    Int.negOnePow_zero, one_smul]
 
 /- needs refactor as the signs have been changed...
 lemma covariant_newExt_exact₁ {A : C} {n₁ : ℕ}

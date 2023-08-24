@@ -14,7 +14,12 @@ lemma Limits.hasZeroObject_of_additive_functor {C D : Type _} [Category C] [Cate
 
 namespace Localization
 
-variable {C D : Type _} [Category C] [Category D] [HasFiniteProducts C]
+variable {C D E : Type _} [Category C] [Category D] [Category E]
+
+section
+
+variable
+  [HasFiniteProducts C]
   (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] [HasFiniteProducts D]
   [PreservesFiniteProducts L]
 
@@ -55,6 +60,27 @@ variable [W.HasLocalization] [HasFiniteProducts W.Localization'] [PreservesFinit
 noncomputable instance : Preadditive W.Localization' := preadditive W.Q' W
 
 noncomputable instance : W.Q'.Additive := Functor.additive_of_preserves_finite_products _
+
+end
+
+end
+
+section
+
+variable (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
+
+lemma liftNatTrans_zero (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E) [Lifting L W F₁ F₁'] [Lifting L W F₂ F₂']
+    [HasZeroMorphisms E] :
+    liftNatTrans L W F₁ F₂ F₁' F₂' 0 = 0 :=
+  natTrans_ext L W _ _ (fun X => by simp)
+
+variable [Preadditive E]
+
+lemma liftNatTrans_add (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E) [Lifting L W F₁ F₁'] [Lifting L W F₂ F₂']
+    (τ τ' : F₁ ⟶ F₂) :
+    liftNatTrans L W F₁ F₂ F₁' F₂' (τ + τ') =
+      liftNatTrans L W F₁ F₂ F₁' F₂' τ + liftNatTrans L W F₁ F₂ F₁' F₂' τ' :=
+  natTrans_ext L W _ _ (fun X => by simp)
 
 end
 

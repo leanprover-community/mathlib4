@@ -218,6 +218,7 @@ import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.Ext
 import Mathlib.Algebra.Homology.DerivedCategory.IsLE
+import Mathlib.Algebra.Homology.DerivedCategory.Linear
 import Mathlib.Algebra.Homology.DerivedCategory.SpectralObject
 import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 import Mathlib.Algebra.Homology.DerivedCategory.TruncGE
@@ -243,6 +244,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
 import Mathlib.Algebra.Homology.HomotopyCategory.SpectralObject
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.ImageToKernel
+import Mathlib.Algebra.Homology.Linear
 import Mathlib.Algebra.Homology.LocalCohomology
 import Mathlib.Algebra.Homology.ModuleCat
 import Mathlib.Algebra.Homology.Opposite
@@ -950,6 +952,9 @@ import Mathlib.CategoryTheory.Category.QuivCat
 import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.Category.TwoP
 import Mathlib.CategoryTheory.Category.ULift
+import Mathlib.CategoryTheory.Center.Basic
+import Mathlib.CategoryTheory.Center.Linear
+import Mathlib.CategoryTheory.Center.Localization
 import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.CategoryTheory.Closed.Functor
 import Mathlib.CategoryTheory.Closed.FunctorCategory
@@ -1129,6 +1134,7 @@ import Mathlib.CategoryTheory.Localization.Construction
 import Mathlib.CategoryTheory.Localization.Equivalence
 import Mathlib.CategoryTheory.Localization.FiniteProducts
 import Mathlib.CategoryTheory.Localization.HasLocalization
+import Mathlib.CategoryTheory.Localization.Linear
 import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 import Mathlib.CategoryTheory.Localization.Opposite
 import Mathlib.CategoryTheory.Localization.Pi
@@ -1219,6 +1225,7 @@ import Mathlib.CategoryTheory.Products.Associator
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Products.Bifunctor
 import Mathlib.CategoryTheory.Quotient
+import Mathlib.CategoryTheory.Quotient.Linear
 import Mathlib.CategoryTheory.Quotient.Preadditive
 import Mathlib.CategoryTheory.RespectsIso
 import Mathlib.CategoryTheory.Shift.Basic
