@@ -42,15 +42,15 @@ example {a b c d : ℕ} :
   sorry
   sorry
 
-example {a b : ℕ} (h : a = b) : (λ y : ℕ => ∀ z, a + a = z) = (λ x => ∀ z, b + a = z) := by
-  congrm λ x => ∀ w, ?_ + a = w
+example {a b : ℕ} (h : a = b) : (fun y : ℕ => ∀ z, a + a = z) = (fun x => ∀ z, b + a = z) := by
+  congrm fun x => ∀ w, ?_ + a = w
   -- ⊢ a = b
   exact h
 ```
 
 The `congrm` command is a convenient frontend to `congr(...)` congruence quotations.
 If the goal is an equality, `congrm e` is equivalent to `refine congr(e')` where `e'` is
-from replacing each placeholder `?m` by `$(?m)`.
+built from `e` by replacing each placeholder `?m` by `$(?m)`.
 The pattern `e` is allowed to contain `$(...)` expressions to immediately substitute
 equality proofs into the congruence, just like for congruence quotations.
 -/

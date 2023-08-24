@@ -20,11 +20,13 @@ The implementation strategy is the following:
 
 1. The pattern is elaborated twice, once with each hole replaced by the LHS
    and again with each hole replaced by the RHS. We do not force the hole to
-   have any particular type while elaborating, but whenever we can figure out
-   a LHS or a RHS we unify.
+   have any particular type while elaborating, but if the hole has a type
+   with an obvious LHS or RHS, then we propagate this information outward.
    We use `Mathlib.Tactic.TermCongr.cHole` with metadata for these replacements
    to hold onto the hole itself.
-2. Once these are elaborated, we unify against the LHS and RHS of the target type.
+2. Once the pattern has been elaborated twice,
+   we unify them against the respective LHS and RHS of the target type
+   if the target has a type with an obvious LHS and RHS.
    This can fill in some metavariables and help typeclass inference make progress.
 3. Then we simultaneously walk along the elaborated LHS and RHS expressions
    to generate a congruence.

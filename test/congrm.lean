@@ -21,8 +21,8 @@ example {a b c d : ℕ} :
     guard_target = c + a.pred = c + d.pred
     sorry
 
-example {a b : ℕ} (h : a = b) : (λ y : ℕ => ∀ z, a + a = z) = (λ x => ∀ z, b + a = z) := by
-  congrm λ x => ∀ w, ?_ + a = w
+example {a b : ℕ} (h : a = b) : (fun y : ℕ => ∀ z, a + a = z) = (fun x => ∀ z, b + a = z) := by
+  congrm fun x => ∀ w, ?_ + a = w
   guard_hyp x : ℕ
   guard_hyp w : ℕ
   exact h
@@ -47,12 +47,12 @@ example (f : α → α → Prop) (h : ∀ a b, f a b ↔ True) :
   exact h x y
 
 example {a b : ℕ} (h : a = b) : (fun y : ℕ => y + a) = (fun x => x + b) := by
-  congrm λ x => ?_
+  congrm fun x => ?_
   guard_target = x + a = x + b
   rw [h]
 
 example {a b : ℕ} (h : a = b) : (fun y : ℕ => y + a) = (fun x => x + b) := by
-  congrm λ (x : ℕ) => x + ?_
+  congrm fun (x : ℕ) => x + ?_
   exact h
 
 example (a b : ℕ) (h : a = b) (f : ℕ → ℕ) : f a = f b := by
@@ -92,7 +92,7 @@ example {f : ℕ → Prop} :
   · guard_target =ₛ 8 + 1 = 2 + 7; simp
 
 example {a b : ℕ} (h : a = b) : (fun _ : ℕ => ∀ z, a + a = z) = (fun _ => ∀ z, b + a = z) := by
-  congrm λ x => ∀ w, ?_ + a = w
+  congrm fun x => ∀ w, ?_ + a = w
   exact h
 
 example (a b c : ℕ) (h : b = c) : a = b ↔ a = c := by
@@ -114,10 +114,18 @@ example (α : Nat → Type) (f : (x : Nat) → α x) (h : i = j) : HEq (f i) (f 
 
 def foo (n : Nat) : Nat := 1 + n
 
+@[irreducible] def foo' (n : Nat) : Nat := 1 + n
+
 -- Unfolding
 example (n m : Nat) (h : n = m) : foo (2 + n) = foo (2 + m) := by
   congrm 1 + (2 + ?_)
   exact h
+
+-- Fails unfolding irreducible
+example (n m : Nat) (h : n = m) : foo' (2 + n) = foo' (2 + m) := by
+  fail_if_success congrm 1 + (2 + ?_)
+  cases h
+  rfl
 
 -- Reflexive relations
 example (a b : Nat) (h : a = b) : 1 + a ≤ 1 + b := by
