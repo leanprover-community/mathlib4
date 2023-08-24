@@ -175,8 +175,8 @@ theorem mulHom_map_iff (f : G ↪ H) (mul : ∀ x y, f (x * y) = f x * f y) :
 
 open Finset MulOpposite in
 @[to_additive]
-theorem of_mulOpposite (h : @UniqueMul Gᵐᵒᵖ (MulOpposite.mul G)
-      (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0)) :
+theorem of_mulOpposite
+    (h : UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0)) :
     UniqueMul A B a0 b0 := by
   intros a b aA bB ab
   have := h (mem_map_of_mem _ bB) (mem_map_of_mem _ aA) (by erw [← op_mul, ab, op_mul])
@@ -209,10 +209,8 @@ attribute [to_additive UniqueSums] UniqueProds
 namespace Multiplicative
 
 instance {M} [Add M] [UniqueSums M] : UniqueProds (Multiplicative M) where
-  uniqueMul_of_nonempty {A} {B} hA hB := by
-    let A' : Finset M := A
-    have hA' : A'.Nonempty := hA
-    obtain ⟨a0, hA0, b0, hB0, J⟩ := UniqueSums.uniqueAdd_of_nonempty hA' hB
+  uniqueMul_of_nonempty {A B} hA hB := by
+    obtain ⟨a0, hA0, b0, hB0, J⟩ := UniqueSums.uniqueAdd_of_nonempty (G := M) hA hB
     exact ⟨ofAdd a0, hA0, ofAdd b0, hB0, fun a b aA bB H ↦ J aA bB H⟩
 
 end Multiplicative
@@ -220,10 +218,8 @@ end Multiplicative
 namespace Additive
 
 instance {M} [Mul M] [UniqueProds M] : UniqueSums (Additive M) where
-  uniqueAdd_of_nonempty {A} {B} hA hB := by
-    let A' : Finset M := A
-    have hA' : A'.Nonempty := hA
-    obtain ⟨a0, hA0, b0, hB0, J⟩ := UniqueProds.uniqueMul_of_nonempty hA' hB
+  uniqueAdd_of_nonempty {A B} hA hB := by
+    obtain ⟨a0, hA0, b0, hB0, J⟩ := UniqueProds.uniqueMul_of_nonempty (G := M) hA hB
     exact ⟨ofMul a0, hA0, ofMul b0, hB0, fun a b aA bB H ↦ J aA bB H⟩
 
 end Additive
@@ -237,9 +233,9 @@ is 'very monotone', then `A` also has `UniqueSums`."]
 instance (priority := 100) Covariants.to_uniqueProds {A} [Mul A] [LinearOrder A]
     [CovariantClass A A (· * ·) (· ≤ ·)] [CovariantClass A A (Function.swap (· * ·)) (· < ·)]
     [ContravariantClass A A (· * ·) (· ≤ ·)] : UniqueProds A where
-      uniqueMul_of_nonempty {A} {B} hA hB :=
-        ⟨_, A.min'_mem ‹_›, _, B.min'_mem ‹_›, fun a b ha hb ab ↦
-        eq_and_eq_of_le_of_le_of_mul_le (Finset.min'_le _ _ ‹_›) (Finset.min'_le _ _ ‹_›) ab.le⟩
+  uniqueMul_of_nonempty {A B} hA hB :=
+    ⟨_, A.min'_mem ‹_›, _, B.min'_mem ‹_›, fun a b ha hb ab ↦
+      eq_and_eq_of_le_of_le_of_mul_le (Finset.min'_le _ _ ‹_›) (Finset.min'_le _ _ ‹_›) ab.le⟩
 #align covariants.to_unique_prods Covariants.to_uniqueProds
 #align covariants.to_unique_sums Covariants.to_uniqueSums
 
@@ -248,15 +244,15 @@ namespace UniqueProds
 @[to_additive (attr := nontriviality, simp)]
 theorem of_subsingleton {G : Type*} [Mul G] [Subsingleton G] :
     UniqueProds G :=
-⟨fun {A B} ⟨a, hA⟩ ⟨b, hB⟩ ↦ ⟨a, hA, b, hB, by simp⟩⟩
+  ⟨fun {A B} ⟨a, hA⟩ ⟨b, hB⟩ ↦ ⟨a, hA, b, hB, by simp⟩⟩
 
 open Finset MulOpposite in
 @[to_additive]
-theorem of_mulOpposite (G : Type*) [Mul G] (h : @UniqueProds Gᵐᵒᵖ (MulOpposite.mul G)) :
+theorem of_mulOpposite (G : Type*) [Mul G] (h : UniqueProds Gᵐᵒᵖ) :
     UniqueProds G :=
-⟨fun hA hB =>
-  let f : G ↪ Gᵐᵒᵖ := ⟨op, op_injective⟩
-  let ⟨y, yB, x, xA, hxy⟩ := h.uniqueMul_of_nonempty (hB.map (f := f)) (hA.map (f := f))
-  ⟨unop x, (mem_map' _).mp xA, unop y, (mem_map' _).mp yB, hxy.of_mulOpposite⟩⟩
+  ⟨fun hA hB =>
+    let f : G ↪ Gᵐᵒᵖ := ⟨op, op_injective⟩
+    let ⟨y, yB, x, xA, hxy⟩ := h.uniqueMul_of_nonempty (hB.map (f := f)) (hA.map (f := f))
+    ⟨unop x, (mem_map' _).mp xA, unop y, (mem_map' _).mp yB, hxy.of_mulOpposite⟩⟩
 
 end UniqueProds
