@@ -112,7 +112,7 @@ theorem antidiagonal.fst_le {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagon
   rwa [mem_antidiagonal, eq_comm] at hlk
 #align finset.nat.antidiagonal.fst_le Finset.Nat.antidiagonal.fst_le
 
-theorem antidiagonal.fst_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.1 < (n + 1) :=
+theorem antidiagonal.fst_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.1 < n + 1 :=
   Nat.lt_succ_of_le $ antidiagonal.fst_le hlk
 
 theorem antidiagonal.snd_le {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.2 ≤ n := by
@@ -121,7 +121,7 @@ theorem antidiagonal.snd_le {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagon
   rwa [mem_antidiagonal, eq_comm, add_comm] at hlk
 #align finset.nat.antidiagonal.snd_le Finset.Nat.antidiagonal.snd_le
 
-theorem antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.2 < (n + 1) :=
+theorem antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.2 < n + 1 :=
   Nat.lt_succ_of_le $ antidiagonal.snd_le hlk
 
 theorem filter_fst_eq_antidiagonal (n m : ℕ) :
