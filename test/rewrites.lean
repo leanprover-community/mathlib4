@@ -148,3 +148,12 @@ info: Try this: rw [f_eq]
 lemma test : f n = f m := by
   rw?
   rw [f_eq, f_eq]
+
+-- Check that we can rewrite by local hypotheses.
+/--
+info: Try this: rw [h]
+-- "no goals"
+-/
+#guard_msgs in
+example (h : 1 = 2) : 2 = 1 := by
+  rw?!
