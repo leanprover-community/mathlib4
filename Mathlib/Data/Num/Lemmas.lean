@@ -1344,8 +1344,8 @@ theorem cast_succ [AddGroupWithOne α] (n) : ((succ n : ZNum) : α) = n + 1 := b
 
 @[simp, norm_cast]
 theorem mul_to_int : ∀ m n, ((m * n : ZNum) : ℤ) = m * n
-  | 0, a => by cases a <;> exact (MulZeroClass.zero_mul _).symm
-  | b, 0 => by cases b <;> exact (MulZeroClass.mul_zero _).symm
+  | 0, a => by cases a <;> exact (zero_mul _).symm
+  | b, 0 => by cases b <;> exact (mul_zero _).symm
   | pos a, pos b => PosNum.cast_mul a b
   | pos a, neg b => show -↑(a * b) = ↑a * -↑b by rw [PosNum.cast_mul, neg_mul_eq_mul_neg]
   | neg a, pos b => show -↑(a * b) = -↑a * ↑b by rw [PosNum.cast_mul, neg_mul_eq_neg_mul]

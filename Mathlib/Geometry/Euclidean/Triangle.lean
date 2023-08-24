@@ -94,10 +94,10 @@ theorem norm_eq_of_angle_sub_eq_angle_sub_rev_of_angle_ne_pi {x y : V}
       real_inner_self_eq_norm_mul_norm, mul_sub_right_distrib, mul_sub_right_distrib,
       mul_self_mul_inv, mul_self_mul_inv, sub_eq_sub_iff_sub_eq_sub, ← mul_sub_left_distrib] at h
     by_cases hx0 : x = 0
-    · rw [hx0, norm_zero, inner_zero_left, MulZeroClass.zero_mul, zero_sub, neg_eq_zero] at h
+    · rw [hx0, norm_zero, inner_zero_left, zero_mul, zero_sub, neg_eq_zero] at h
       rw [hx0, norm_zero, h]
     · by_cases hy0 : y = 0
-      · rw [hy0, norm_zero, inner_zero_right, MulZeroClass.zero_mul, sub_zero] at h
+      · rw [hy0, norm_zero, inner_zero_right, zero_mul, sub_zero] at h
         rw [hy0, norm_zero, h]
       · rw [inv_sub_inv (fun hz => hx0 (norm_eq_zero.1 hz)) fun hz => hy0 (norm_eq_zero.1 hz), ←
           neg_sub, ← mul_div_assoc, mul_comm, mul_div_assoc, ← mul_neg_one] at h
@@ -281,7 +281,7 @@ theorem dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle (
   · exact (vsub_sub_vsub_cancel_right p1 p3 p2).symm
 #align euclidean_geometry.dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle EuclideanGeometry.dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle
 
-alias dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle ← law_cos
+alias law_cos := dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle
 #align euclidean_geometry.law_cos EuclideanGeometry.law_cos
 
 /-- **Isosceles Triangle Theorem**: Pons asinorum, angle-at-point form. -/
@@ -365,7 +365,7 @@ theorem dist_mul_of_eq_angle_of_dist_mul (a b c a' b' c' : P) (r : ℝ) (h : ∠
     _ = (r * dist a c) ^ 2 := by simp [pow_two, ← law_cos a b c, mul_pow]; ring
   by_cases hab₁ : a = b
   · have hab'₁ : a' = b' := by
-      rw [← dist_eq_zero, hab, dist_eq_zero.mpr hab₁, MulZeroClass.mul_zero r]
+      rw [← dist_eq_zero, hab, dist_eq_zero.mpr hab₁, mul_zero r]
     rw [hab₁, hab'₁, dist_comm b' c', dist_comm b c, hcb]
   · have h1 : 0 ≤ r * dist a b := by rw [← hab]; exact dist_nonneg
     have h2 : 0 ≤ r := nonneg_of_mul_nonneg_left h1 (dist_pos.mpr hab₁)

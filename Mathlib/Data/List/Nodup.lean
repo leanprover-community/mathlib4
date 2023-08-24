@@ -178,7 +178,7 @@ theorem nthLe_index_of [DecidableEq α] {l : List α} (H : Nodup l) (n h) :
 theorem nodup_iff_count_le_one [DecidableEq α] {l : List α} : Nodup l ↔ ∀ a, count a l ≤ 1 :=
   nodup_iff_sublist.trans <|
     forall_congr' fun a =>
-      have : [a, a] <+ l ↔ 1 < count a l := (@le_count_iff_replicate_sublist _ _ _ 2 _).symm
+      have : replicate 2 a <+ l ↔ 1 < count a l := (le_count_iff_replicate_sublist ..).symm
       (not_congr this).trans not_lt
 #align list.nodup_iff_count_le_one List.nodup_iff_count_le_one
 
@@ -194,7 +194,7 @@ theorem nodup_replicate (a : α) : ∀ {n : ℕ}, Nodup (replicate n a) ↔ n �
 @[simp]
 theorem count_eq_one_of_mem [DecidableEq α] {a : α} {l : List α} (d : Nodup l) (h : a ∈ l) :
     count a l = 1 :=
-  _root_.le_antisymm (nodup_iff_count_le_one.1 d a) (Nat.succ_le_of_lt (count_pos.2 h))
+  _root_.le_antisymm (nodup_iff_count_le_one.1 d a) (Nat.succ_le_of_lt (count_pos_iff_mem.2 h))
 #align list.count_eq_one_of_mem List.count_eq_one_of_mem
 
 theorem count_eq_of_nodup [DecidableEq α] {a : α} {l : List α} (d : Nodup l) :
@@ -275,7 +275,7 @@ theorem nodup_attach {l : List α} : Nodup (attach l) ↔ Nodup l :=
     Nodup.of_map Subtype.val ((attach_map_val l).symm ▸ h)⟩
 #align list.nodup_attach List.nodup_attach
 
-alias nodup_attach ↔ Nodup.of_attach Nodup.attach
+alias ⟨Nodup.of_attach, Nodup.attach⟩ := nodup_attach
 #align list.nodup.attach List.Nodup.attach
 #align list.nodup.of_attach List.Nodup.of_attach
 
