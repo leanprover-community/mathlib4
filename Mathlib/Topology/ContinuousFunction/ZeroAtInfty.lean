@@ -188,7 +188,7 @@ theorem zero_apply [Zero β] : (0 : C₀(α, β)) x = 0 :=
 
 instance instMul [MulZeroClass β] [ContinuousMul β] : Mul C₀(α, β) :=
   ⟨fun f g =>
-    ⟨f * g, by simpa only [MulZeroClass.mul_zero] using (zero_at_infty f).mul (zero_at_infty g)⟩⟩
+    ⟨f * g, by simpa only [mul_zero] using (zero_at_infty f).mul (zero_at_infty g)⟩⟩
 
 @[simp]
 theorem coe_mul [MulZeroClass β] [ContinuousMul β] (f g : C₀(α, β)) : ⇑(f * g) = f * g :=
