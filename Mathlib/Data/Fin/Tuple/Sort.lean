@@ -117,7 +117,7 @@ lemma Fintype.card_fin_lt_nat (m g : ℕ) (h : g ≤ m) : Fintype.card {i : Fin 
 
 /-- A sorted tuple with `m` elements and exactly `Fintype.card {i // f i ≤ a}` less than `a`, has
 the elements at the start, and vice versa -/
-theorem sort_lt_at_start_of_monotone_iff {α} [LinearOrder α] (m : ℕ) (f : Fin m → α) (a : α)
+theorem lt_card_le_iff_apply_le_of_monotone {α} [LinearOrder α] (m : ℕ) (f : Fin m → α) (a : α)
     (h_sorted : Monotone f)
     (j : Fin m) :
     (j < Fintype.card {i // f i ≤ a})  ↔ f j ≤ a := by
