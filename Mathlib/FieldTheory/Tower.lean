@@ -126,7 +126,7 @@ theorem finrank_mul_finrank [FiniteDimensional F K] : finrank F K * finrank K A 
   by_cases hA : FiniteDimensional K A
   · replace hA : FiniteDimensional K A := hA -- porting note: broken instance cache
     rw [finrank_mul_finrank']
-  · rw [finrank_of_infinite_dimensional hA, MulZeroClass.mul_zero, finrank_of_infinite_dimensional]
+  · rw [finrank_of_infinite_dimensional hA, mul_zero, finrank_of_infinite_dimensional]
     exact mt (@right F K A _ _ _ _ _ _ _) hA
 #align finite_dimensional.finrank_mul_finrank FiniteDimensional.finrank_mul_finrank
 

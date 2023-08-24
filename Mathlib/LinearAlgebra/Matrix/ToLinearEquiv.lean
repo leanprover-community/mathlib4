@@ -123,7 +123,7 @@ theorem exists_mulVec_eq_zero_iff_aux {K : Type*} [DecidableEq n] [Field K] {M :
     have : Function.Injective (Matrix.toLin' M) := by
       simpa only [← LinearMap.ker_eq_bot, ker_toLin'_eq_bot_iff, not_imp_not] using h
     have :
-      M ⬝
+      M *
           LinearMap.toMatrix'
             ((LinearEquiv.ofInjectiveEndo (Matrix.toLin' M) this).symm : (n → K) →ₗ[K] n → K) =
         1 := by
@@ -163,7 +163,7 @@ theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq n] [Comm
             ((algebraMap A K).mapMatrix M).mulVec (algebraMap _ K b • v) i := ?_
         _ = 0 := ?_
         _ = algebraMap A K 0 := (RingHom.map_zero _).symm
-      · simp_rw [RingHom.map_mulVec, mulVec, dotProduct, Function.comp_apply, hf, Subtype.coe_mk,
+      · simp_rw [RingHom.map_mulVec, mulVec, dotProduct, Function.comp_apply, hf,
           RingHom.mapMatrix_apply, Pi.smul_apply, smul_eq_mul, Algebra.smul_def]
       · rw [mulVec_smul, mul_eq, Pi.smul_apply, Pi.zero_apply, smul_zero]
 #align matrix.exists_mul_vec_eq_zero_iff' Matrix.exists_mulVec_eq_zero_iff'
@@ -191,7 +191,7 @@ theorem nondegenerate_iff_det_ne_zero {A : Type*} [DecidableEq n] [CommRing A] [
     simpa only [dotProduct_mulVec, dotProduct_single, mul_one] using hv (Pi.single i 1)
 #align matrix.nondegenerate_iff_det_ne_zero Matrix.nondegenerate_iff_det_ne_zero
 
-alias nondegenerate_iff_det_ne_zero ↔ Nondegenerate.det_ne_zero Nondegenerate.of_det_ne_zero
+alias ⟨Nondegenerate.det_ne_zero, Nondegenerate.of_det_ne_zero⟩ := nondegenerate_iff_det_ne_zero
 #align matrix.nondegenerate.det_ne_zero Matrix.Nondegenerate.det_ne_zero
 #align matrix.nondegenerate.of_det_ne_zero Matrix.Nondegenerate.of_det_ne_zero
 

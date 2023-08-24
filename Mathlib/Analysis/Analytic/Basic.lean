@@ -815,7 +815,7 @@ theorem HasFPowerSeriesOnBall.tendstoUniformlyOn {r' : ℝ≥0} (hf : HasFPowerS
   refine' Metric.tendstoUniformlyOn_iff.2 fun ε εpos => _
   have L : Tendsto (fun n => (C : ℝ) * a ^ n) atTop (𝓝 ((C : ℝ) * 0)) :=
     tendsto_const_nhds.mul (tendsto_pow_atTop_nhds_0_of_lt_1 ha.1.le ha.2)
-  rw [MulZeroClass.mul_zero] at L
+  rw [mul_zero] at L
   refine' (L.eventually (gt_mem_nhds εpos)).mono fun n hn y hy => _
   rw [dist_eq_norm]
   exact (hp y hy n).trans_lt hn
@@ -1082,7 +1082,6 @@ section
 
 variable (p : FormalMultilinearSeries 𝕜 E F) {x y : E} {r R : ℝ≥0}
 
-set_option synthInstance.maxHeartbeats 100000 in
 /-- A term of `FormalMultilinearSeries.changeOriginSeries`.
 
 Given a formal multilinear series `p` and a point `x` in its ball of convergence,

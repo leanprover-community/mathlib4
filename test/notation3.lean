@@ -1,6 +1,8 @@
 import Mathlib.Mathport.Notation
 import Mathlib.Init.Data.Nat.Lemmas
 
+set_option autoImplicit true
+
 namespace Test
 
 -- set_option trace.notation3 true
