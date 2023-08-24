@@ -118,23 +118,21 @@ lemma Fintype.card_fin_lt_nat (m g : ℕ) (h : g ≤ m) : Fintype.card {i : Fin 
 /-- A sorted tuple with `m` elements and exactly `Fintype.card {i // f i ≤ a}` less than `a`, has
 the elements at the start, and vice versa -/
 theorem lt_card_le_iff_apply_le_of_monotone {α} [PartialOrder α] [DecidableRel (α := α) LE.le]
-    (m : ℕ) (f : Fin m → α) (a : α)
-    (h_sorted : Monotone f)
-    (j : Fin m) :
-    (j < Fintype.card {i // f i ≤ a})  ↔ f j ≤ a := by
+    {m : ℕ} (f : Fin m → α) (a : α) (h_sorted : Monotone f) (j : Fin m) :
+    j < Fintype.card {i // f i ≤ a} ↔ f j ≤ a := by
   suffices h1 : ∀ k : Fin m, (k < Fintype.card {i // f i ≤ a}) → f k ≤ a
   refine ⟨h1 j, ?_⟩
   · intro h
     by_contra' hc
-    let p := fun x : Fin m => f x ≤ a
-    let q := fun x : Fin m => (x < (Fintype.card {i // f i ≤ a}))
-    let q' := fun x : {i // f i ≤ a} => q x
+    let p (x : Fin m) := f x ≤ a
+    let q (x : Fin m) := x < Fintype.card {i // f i ≤ a}
+    let q' (x : {i // f i ≤ a}) := q x
     have hw : 0 < Fintype.card {j : {x : Fin m // f x ≤ a} // ¬q' j} :=
       Fintype.card_pos_iff.2 (Nonempty.intro ⟨⟨j, h⟩, not_lt.2 hc⟩)
-    have he := Fintype.card_congr $ Equiv.sumCompl $ q'
+    have he := Fintype.card_congr <| Equiv.sumCompl <| q'
     have h4 := (Fintype.card_congr (@Equiv.subtypeSubtypeEquivSubtype _ p q (h1 _)))
     rw [Fintype.card_sum, h4, Fintype.card_fin_lt_nat, add_right_eq_self] at he
-    apply (ne_of_lt hw) he.symm
+    · exact hw.ne he.symm
     conv_rhs => rw [← Fintype.card_fin m]
     exact Fintype.card_subtype_le _
   · intro _ h
@@ -147,12 +145,9 @@ theorem lt_card_le_iff_apply_le_of_monotone {α} [PartialOrder α] [DecidableRel
     exact (h_sorted (le_of_not_lt hij)).trans hia
 
 theorem lt_card_ge_iff_apply_ge_of_antitone {α} [PartialOrder α] [DecidableRel (α := α) LE.le]
-    (m : ℕ) (f : Fin m → α) (a : α)
-    (h_sorted : Antitone f)
-    (j : Fin m) :
-    (j < Fintype.card {i // a ≤ f i})  ↔ a ≤ f j :=
-  lt_card_le_iff_apply_le_of_monotone m (OrderDual.toDual ∘ f)
-    (OrderDual.toDual a) h_sorted.dual_right j
+    {m : ℕ} (f : Fin m → α) (a : α) (h_sorted : Antitone f) (j : Fin m) :
+    j < Fintype.card {i // a ≤ f i} ↔ a ≤ f j :=
+  lt_card_le_iff_apply_le_of_monotone _ (OrderDual.toDual a) h_sorted.dual_right j
 
 end Tuple
 
