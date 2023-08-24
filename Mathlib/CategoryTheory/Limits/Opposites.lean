@@ -423,7 +423,7 @@ def opCoproductIsoProduct : op (∐ Z) ≅ ∏ (fun z => op (Z z)) :=
     (Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl))).symm
 
 lemma opCoproductIsoProduct_inv_comp_ι (b : α) :
-    ((opCoproductIsoProduct Z).inv ≫ (Sigma.ι (fun a => Z a) b).op) =
+    (opCoproductIsoProduct Z).inv ≫ (Sigma.ι (fun a => Z a) b).op =
     Pi.π (fun a => op (Z a)) b := by
   dsimp only [opCoproductIsoProduct]
   simp only [Iso.trans_inv]
@@ -478,7 +478,7 @@ def opProductIsoCoproduct : op (∏ Z) ≅ ∐  (fun z => op (Z z)) :=
     (coproductIsCoproduct (fun z ↦ op (Z z))) (colimit.isColimit _) (Discrete.opposite α).symm
     (Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl))).symm
 
-lemma π_comp_opProductIsoCoproduct (b : α) : ((Pi.π Z b).op ≫ (opProductIsoCoproduct Z).hom) =
+lemma π_comp_opProductIsoCoproduct (b : α) : (Pi.π Z b).op ≫ (opProductIsoCoproduct Z).hom =
     Sigma.ι (fun a => op (Z a)) b := by
   dsimp only [opProductIsoCoproduct]
   simp only [Iso.trans_hom]
