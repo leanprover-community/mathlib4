@@ -15,7 +15,7 @@ variable (R : Type w) [Ring R] {C : Type u₁} [Category.{v₁} C] {D : Type u�
   [L.Additive] [Linear R C]
 
 noncomputable def linear : Linear R D := Linear.ofRingMorphism
-  ((Center.localizationRingMorphism L W).comp (Linear.toCenter R C))
+  ((CatCenter.localizationRingMorphism L W).comp (Linear.toCatCenter R C))
 
 lemma functor_linear :
     letI := linear R L W
@@ -23,9 +23,9 @@ lemma functor_linear :
   letI := linear R L W
   exact
     { map_smul := fun {X Y} f r => by
-        change L.map (r • f) = ((Linear.toCenter R C r).localization L W).app (L.obj X) ≫ L.map f
-        simp only [Center.localization_app, ← L.map_comp,
-          Functor.id_obj, Linear.toCenter_apply_app, Linear.smul_comp, Category.id_comp] }
+        change L.map (r • f) = ((Linear.toCatCenter R C r).localization L W).app (L.obj X) ≫ L.map f
+        simp only [CatCenter.localization_app, ← L.map_comp,
+          Functor.id_obj, Linear.toCatCenter_apply_app, Linear.smul_comp, Category.id_comp] }
 
 section
 

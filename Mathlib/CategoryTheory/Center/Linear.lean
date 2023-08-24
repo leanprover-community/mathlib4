@@ -13,12 +13,12 @@ namespace Linear
 variable (R : Type w) [Ring R] (C : Type u) [Category.{v} C] [Preadditive C]
 
 @[simps]
-def toCenter [Linear R C] : R →+* Center C where
+def toCatCenter [Linear R C] : R →+* CatCenter C where
   toFun a :=
     { app := fun X => a • 𝟙 X }
   map_one' := by aesop_cat
   map_mul' a b := by
-    rw [Center.mul_comm]
+    rw [CatCenter.mul_comm]
     ext X
     dsimp
     rw [Linear.smul_comp, Linear.comp_smul, smul_smul, comp_id]
@@ -31,7 +31,7 @@ def toCenter [Linear R C] : R →+* Center C where
 section
 
 variable {R C}
-variable (φ : R →+* Center C) (X Y : C)
+variable (φ : R →+* CatCenter C) (X Y : C)
 
 def smulOfRingMorphism : SMul R (X ⟶ Y) where
   smul a f := (φ a).app X ≫ f
