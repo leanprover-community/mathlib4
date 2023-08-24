@@ -127,9 +127,14 @@ def rewriteLemmas : DiscrTreeCache (Name × Bool × Nat) := cachedData.cache
 
 /-- Data structure recording a potential rewrite to report from the `rw?` tactic. -/
 structure RewriteResult where
+  /-- The lemma we rewrote by.
+  This is `Expr`, not just a `Name`, as it may be a local hypothesis. -/
   expr : Expr
+  /-- `True` if we rewrote backwards (i.e. with `rw [← h]`). -/
   symm : Bool
+  /-- The "weight" of the rewrite. This is calculated based on how specific the rewrite rule was. -/
   weight : Nat
+  /-- The result from the `rw` tactic. -/
   result : Meta.RewriteResult
   /-- Can the new goal in `result` be closed by `with_reducible rfl`? -/
   -- This is an `Option` so that it can be computed lazily.
