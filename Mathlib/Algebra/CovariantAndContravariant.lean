@@ -354,10 +354,11 @@ theorem contravariant_le_of_contravariant_eq_and_lt [PartialOrder N]
     ⟨ContravariantClass.elim, ContravariantClass.elim⟩
 
 /- TODO:
-  redefine `IsLeftCancel N mu` as `ContravariantClass N N mu (· = ·)` reducibly,
-  redefine `IsRightCancel N mu` as `ContravariantClass N N (flip mu) (· = ·)` reducibly,
-  redefine `IsLeftCancelMul` using `IsLeftCancel` reducibly,
-  then the following four instances (actually eight) can be removed. -/
+  redefine `IsLeftCancel N mu` as abbrev of `ContravariantClass N N mu (· = ·)`,
+  redefine `IsRightCancel N mu` as abbrev of `ContravariantClass N N (flip mu) (· = ·)`,
+  redefine `IsLeftCancelMul` as abbrev of `IsLeftCancel`,
+  then the following four instances (actually eight) can be removed in favor of the above two. -/
+
 @[to_additive]
 instance IsLeftCancelMul.covariant_mul_lt_of_covariant_mul_le [Mul N] [IsLeftCancelMul N]
     [PartialOrder N] [CovariantClass N N (· * ·) (· ≤ ·)] :
