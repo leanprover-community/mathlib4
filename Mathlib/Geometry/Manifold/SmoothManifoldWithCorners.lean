@@ -352,7 +352,7 @@ protected theorem locally_compact [LocallyCompactSpace E] (I : ModelWithCorners 
   refine' locallyCompactSpace_of_hasBasis this _
   rintro x s ⟨-, hsc⟩
   exact (hsc.inter_right I.closed_range).image I.continuous_symm
-#align model_with_corners.locally_compact ModelWithCorners.locally_compact
+#align model_with_corners.locally_compact ModelWithCorners.locallyCompactSpace
 
 open TopologicalSpace
 
