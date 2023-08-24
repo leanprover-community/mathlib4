@@ -164,7 +164,7 @@ theorem eventually_smallSets_forall {p : α → Prop} :
   simpa only [inf_top_eq, eventually_top] using @eventually_smallSets_eventually α l ⊤ p
 #align filter.eventually_small_sets_forall Filter.eventually_smallSets_forall
 
-alias eventually_smallSets_forall ↔ Eventually.of_smallSets Eventually.smallSets
+alias ⟨Eventually.of_smallSets, Eventually.smallSets⟩ := eventually_smallSets_forall
 #align filter.eventually.of_small_sets Filter.Eventually.of_smallSets
 #align filter.eventually.small_sets Filter.Eventually.smallSets
 
