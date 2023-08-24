@@ -1197,7 +1197,7 @@ theorem count_univ (a : α) : count a Finset.univ.val = 1 :=
 /-- If f is a bijection of finite sets, it maps universes into universes. -/
 @[simp]
 theorem map_univ_eq_univ_of_bijection (f : α → β) (hf : Function.Bijective f) :
-    Multiset.map f (Finset.univ : Finset α).val = univ.val := by
+    map f (Finset.univ : Finset α).val = univ.val := by
   -- TODO: Note the converse is also true - this should turn into a @[simp] iff lemma
   ext a
   rw [Function.bijective_iff_has_inverse] at hf
@@ -1205,10 +1205,10 @@ theorem map_univ_eq_univ_of_bijection (f : α → β) (hf : Function.Bijective f
   have ha : a = f (f_inv a) := by
     unfold Function.RightInverse Function.LeftInverse at hf_inv'
     simp [hf_inv']
-  simp only [mem_val, mem_univ, not_true, Multiset.count_univ, Multiset.mem_map, true_and,
+  simp only [mem_val, mem_univ, not_true, count_univ, mem_map, true_and,
       Subtype.exists, not_exists]
-  rw [ha, Multiset.count_map_eq_count']
-  simp only [mem_val, mem_univ, not_true, Multiset.count_univ]
+  rw [ha, count_map_eq_count']
+  simp only [mem_val, mem_univ, not_true, count_univ]
   exact Function.LeftInverse.injective hf_inv
 
 end Multiset
