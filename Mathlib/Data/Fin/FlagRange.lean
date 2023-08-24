@@ -10,7 +10,7 @@ import Mathlib.Data.Fin.Basic
 /-!
 # Range of `f : Fin (n + 1) → α` as a `Flag`
 
-Let `f : Fin (n + 1) → α` be an `(n + 1)`-tuple such that
+Let `f : Fin (n + 1) → α` be an `(n + 1)`-tuple `(f₀, …, fₙ)` such that
 - `f₀ = ⊥` and `fₙ = ⊤`;
 - `fₖ₊₁` weakly covers `fₖ` for all `0 ≤ k < n`;
   this means that `fₖ ≤ fₖ₊₁` and there is no `c` such that `fₖ<c<fₖ₊₁`.
@@ -23,7 +23,7 @@ open Set
 
 variable {α : Type _} [PartialOrder α] [BoundedOrder α] {n : ℕ} {f : Fin (n + 1) → α}
 
-/- Let `f : Fin (n + 1) → α` be an `(n + 1)`-tuple such that
+/- Let `f : Fin (n + 1) → α` be an `(n + 1)`-tuple `(f₀, …, fₙ)` such that
 - `f₀ = ⊥` and `fₙ = ⊤`;
 - `fₖ₊₁` weakly covers `fₖ` for all `0 ≤ k < n`;
   this means that `fₖ ≤ fₖ₊₁` and there is no `c` such that `fₖ<c<fₖ₊₁`.
@@ -42,7 +42,7 @@ theorem IsMaxChain.range_fin_of_covby (h0 : f 0 = ⊥) (hlast : f (.last n) = �
     rw [range_subset_iff] at hbt
     exact (htc.lt_of_le (hbt k.succ) hx (h _)).resolve_right ((hcovby k).2 ihk)
 
-/- Let `f : Fin (n + 1) → α` be an `(n + 1)`-tuple such that
+/- Let `f : Fin (n + 1) → α` be an `(n + 1)`-tuple `(f₀, …, fₙ)` such that
 - `f₀ = ⊥` and `fₙ = ⊤`;
 - `fₖ₊₁` weakly covers `fₖ` for all `0 ≤ k < n`;
   this means that `fₖ ≤ fₖ₊₁` and there is no `c` such that `fₖ<c<fₖ₊₁`.

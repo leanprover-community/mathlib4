@@ -69,6 +69,7 @@ section CommRing
 
 variable {R M : Type _} [CommRing R] [AddCommGroup M] [Module R M] {n : ℕ}
 
+@[simp]
 theorem flag_le_ker_coord_iff [Nontrivial R] (b : Basis (Fin n) R M) {k : Fin (n + 1)} {l : Fin n} :
     b.flag k ≤ LinearMap.ker (b.coord l) ↔ k ≤ l.castSucc := by
   simp [flag_le_iff, Finsupp.single_apply_eq_zero, imp_false, imp_not_comm]
