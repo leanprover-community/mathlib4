@@ -172,12 +172,8 @@ Any bipartite graph may be regarded as a subgraph of one of these. -/
 @[simps]
 def completeBipartiteGraph (V W : Type*) : SimpleGraph (Sum V W) where
   Adj v w := v.isLeft ∧ w.isRight ∨ v.isRight ∧ w.isLeft
-  symm := by
-    intro v w
-    cases v <;> cases w <;> simp
-  loopless := by
-    intro v
-    cases v <;> simp
+  symm v w := by cases v <;> cases w <;> simp
+  loopless v := by cases v <;> simp
 #align complete_bipartite_graph completeBipartiteGraph
 
 /-- Two vertices are adjacent in the complete multipartite graph on an indexed family of
@@ -186,8 +182,8 @@ Any graph may be regarded as a subgraph of one of these, with sufficiently many 
 @[simps]
 def completeMultipartiteGraph {ι : Type*} (V : ι → Type*) : SimpleGraph (Σ i, V i) where
   Adj v w := v.1 ≠ w.1
-  symm := by intro v w; cases v; cases w; intro e; exact e.symm
-  loopless := by intro v; cases v; simp
+  symm v w := by cases v; cases w; intro e; exact e.symm
+  loopless v := by cases v; simp
 
 namespace SimpleGraph
 
