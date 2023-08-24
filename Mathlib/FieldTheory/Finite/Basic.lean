@@ -233,27 +233,21 @@ theorem sum_subgroup_units_zero_of_ne_bot {G : Subgroup Kˣ} [Fintype G] (hg : G
     ∑ x : G, (x.val : K) = 0 := by
   rw [Subgroup.ne_bot_iff_exists_ne_one] at hg
   rcases hg with ⟨a, ha⟩
-  -- The action of a on G is injective
+  -- The action of a on G as an embedding
   have hinj := mul_right_injective a
+  let a_mul_emb : G ↪ G := ⟨(a * ·), hinj⟩
+  -- let a_mul_emb : G ↪ G := by exact mulRightEmbedding a -- TODO factor this? In library?
   -- ... and leaves G unchanged
-  have h_unchanged :
-    Finset.map
-        { toFun := fun x : ↥G => a * x
-          inj' := hinj } Finset.univ =
-      Finset.univ :=
-    by simp
+  have h_unchanged : Finset.univ.map a_mul_emb = Finset.univ := by simp
   -- Therefore the sum of x over a G is the sum of a x over G
-  have h_sum_map :=
-    Finset.sum_map (@Finset.univ (↥G) _) ⟨fun x : ↥G => (a : ↥G) * (x : ↥G), hinj⟩ fun x : ↥G =>
-      (x.val : K)
+  have h_sum_map := Finset.univ.sum_map a_mul_emb fun x => ((x : Kˣ) : K)
   -- ... and the former is the sum of x over G.
   -- By algebraic manipulation, we have Σ G, x = ∑ G, a x = a ∑ G, x
   rw [h_unchanged, Function.Embedding.coeFn_mk] at h_sum_map
   simp_rw [Subgroup.coe_mul, Units.val_mul, ← Finset.mul_sum] at h_sum_map
   -- thus one of (a - 1) or ∑ G, x is zero
-  have hzero : (a.val.val - 1 : K) * ∑ x : ↥G, x.val.val = 0 := by
-    rw [sub_mul, ← h_sum_map, one_mul, sub_self]
-  rw [mul_eq_zero] at hzero
+  have hzero : (((a : Kˣ) : K) - 1) = 0 ∨ ∑ x : ↥G, ((x : Kˣ) : K) = 0 := by
+    rw [←mul_eq_zero, sub_mul, ← h_sum_map, one_mul, sub_self]
   rcases hzero with h | h
   · -- If the former, we reach contradiction from a ≠ 1
     exfalso
