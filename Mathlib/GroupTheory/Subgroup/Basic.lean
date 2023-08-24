@@ -935,7 +935,7 @@ theorem nontrivial_iff_exists_ne_one (H : Subgroup G) : Nontrivial H ↔ ∃ x �
 #align add_subgroup.nontrivial_iff_exists_ne_zero AddSubgroup.nontrivial_iff_exists_ne_zero
 
 @[to_additive]
-theorem exists_ne_one_of_nontrivial {H : Subgroup G} [H_nontrivial : Nontrivial H] :
+theorem exists_ne_one_of_nontrivial {H : Subgroup G} [Nontrivial H] :
     ∃ x : G, x ∈ H ∧ x ≠ 1 := by
   rwa [←Subgroup.nontrivial_iff_exists_ne_one]
 
