@@ -143,24 +143,20 @@ example : toProfinite ⋙ profiniteToCompHaus = toCompHaus :=
   rfl
 
 /-- Construct an isomorphism from a homeomorphism. -/
-@[simps hom inv]
-def isoOfHomeo {X Y : Stonean} (f : X ≃ₜ Y) : X ≅ Y where
-  hom := ⟨f, f.continuous⟩
-  inv := ⟨f.symm, f.symm.continuous⟩
-  hom_inv_id := by
-    ext x
-    exact f.symm_apply_apply x
-  inv_hom_id := by
-    ext x
-    exact f.apply_symm_apply x
+@[simps! hom inv]
+noncomputable
+def isoOfHomeo {X Y : Stonean} (f : X ≃ₜ Y) : X ≅ Y :=
+  @asIso _ _ _ _ ⟨f, f.continuous⟩
+  (@isIso_of_reflects_iso _ _ _ _ _ _ _ toCompHaus (IsIso.of_iso (CompHaus.isoOfHomeo f)) _)
 
 /-- Construct a homeomorphism from an isomorphism. -/
 @[simps!]
-def homeoOfIso {X Y : Stonean} (f : X ≅ Y) : X ≃ₜ Y := Profinite.homeoOfIso (toProfinite.mapIso f)
+def homeoOfIso {X Y : Stonean} (f : X ≅ Y) : X ≃ₜ Y := CompHaus.homeoOfIso (toCompHaus.mapIso f)
 
 /-- The equivalence between isomorphisms in `Stonean` and homeomorphisms
 of topological spaces. -/
-@[simps]
+@[simps!]
+noncomputable
 def isoEquivHomeo {X Y : Stonean} : (X ≅ Y) ≃ (X ≃ₜ Y) where
   toFun := homeoOfIso
   invFun := isoOfHomeo
