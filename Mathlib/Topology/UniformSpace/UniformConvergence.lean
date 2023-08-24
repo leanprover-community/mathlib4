@@ -112,8 +112,9 @@ theorem tendstoUniformlyOn_iff_tendstoUniformlyOnFilter :
   simp
 #align tendsto_uniformly_on_iff_tendsto_uniformly_on_filter tendstoUniformlyOn_iff_tendstoUniformlyOnFilter
 
-alias tendstoUniformlyOn_iff_tendstoUniformlyOnFilter ↔
-  TendstoUniformlyOn.tendstoUniformlyOnFilter TendstoUniformlyOnFilter.tendstoUniformlyOn
+
+alias ⟨TendstoUniformlyOn.tendstoUniformlyOnFilter, TendstoUniformlyOnFilter.tendstoUniformlyOn⟩ :=
+  tendstoUniformlyOn_iff_tendstoUniformlyOnFilter
 #align tendsto_uniformly_on.tendsto_uniformly_on_filter TendstoUniformlyOn.tendstoUniformlyOnFilter
 #align tendsto_uniformly_on_filter.tendsto_uniformly_on TendstoUniformlyOnFilter.tendstoUniformlyOn
 
