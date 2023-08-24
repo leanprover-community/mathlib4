@@ -36,9 +36,11 @@
   {"git":
    {"url": "https://github.com/leanprover-community/llm",
     "subDir?": null,
-    "rev": "f2538034fb9643642ec5ac161b6c0bbcd5ad0050",
+    "rev": "91fbab9edd6c8bd4ed7a496aee172ab92c369aea",
+    "opts": {},
     "name": "llm",
-    "inputRev?": "main"}},
+    "inputRev?": "main",
+    "inherited": false}},
   {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
