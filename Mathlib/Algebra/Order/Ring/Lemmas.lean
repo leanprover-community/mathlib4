@@ -313,9 +313,10 @@ theorem MulPosMono.toMulPosReflectLT [MulPosMono α] : MulPosReflectLT α :=
   ⟨(covariant_le_iff_contravariant_lt _ _ _).1 CovariantClass.elim⟩
 #align mul_pos_mono.to_mul_pos_reflect_lt MulPosMono.toMulPosReflectLT
 
-/- Currently, only one in four of the above are made instances; we could consider making
+/- TODO: Currently, only one in four of the above are made instances; we could consider making
   both directions of `covariant_le_iff_contravariant_lt` and `covariant_lt_iff_contravariant_le`
-  instances, then all of the above become redundant instances. -/
+  instances, then all of the above become redundant instances, but there are performance issues. -/
+
 theorem posMulMono_iff_posMulReflectLT : PosMulMono α ↔ PosMulReflectLT α :=
   ⟨@PosMulMono.toPosMulReflectLT _ _ _ _, @PosMulReflectLT.toPosMulMono _ _ _ _⟩
 #align pos_mul_mono_iff_pos_mul_reflect_lt posMulMono_iff_posMulReflectLT
@@ -486,19 +487,14 @@ theorem mulPosReflectLT_iff_contravariant_pos :
 -- but implicit argument handling causes that to break
 -- see Note [lower instance priority]
 instance (priority := 100) PosMulStrictMono.toPosMulMono [PosMulStrictMono α] : PosMulMono α :=
-  posMulMono_iff_covariant_pos.2 <|
-    ⟨fun a _ _ h => StrictMono.monotone (fun _ _ h' => mul_lt_mul_of_pos_left h' a.prop) h⟩
-  -- covariantClass_le_of_lt _ _ _
-  -- doesn't work due to difference between α≥0 and α>0; need to use one of the lemmas above
-  -- should we make the lemmas instances?
+  posMulMono_iff_covariant_pos.2 (covariantClass_le_of_lt _ _ _)
 #align pos_mul_strict_mono.to_pos_mul_mono PosMulStrictMono.toPosMulMono
 
 -- Porting note: mathlib3 proofs would look like `StrictMono.monotone <| @CovariantClass.elim ..`
 -- but implicit argument handling causes that to break
 -- see Note [lower instance priority]
 instance (priority := 100) MulPosStrictMono.toMulPosMono [MulPosStrictMono α] : MulPosMono α :=
-  mulPosMono_iff_covariant_pos.2 <|
-    ⟨fun a _ _ h => StrictMono.monotone (fun _ _ h' => mul_lt_mul_of_pos_right h' a.prop) h⟩
+  mulPosMono_iff_covariant_pos.2 (covariantClass_le_of_lt _ _ _)
 #align mul_pos_strict_mono.to_mul_pos_mono MulPosStrictMono.toMulPosMono
 
 -- see Note [lower instance priority]
