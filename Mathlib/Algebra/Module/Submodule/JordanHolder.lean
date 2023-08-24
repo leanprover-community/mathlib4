@@ -148,16 +148,14 @@ private lemma interList_qf_aux (i : Fin s.length) :
   IsSimpleModule.equiv_punit_sum_equiv_of_equiv_submodule' (R := R) (m := s.qf i)
     (e := s.interList_qf_equiv N i)
 
-set_option maxHeartbeats 500000 in
+set_option maxHeartbeats 800000 in
 lemma eq_or_interList_qf_is_simple_module (i : Fin s.length) :
-  s.interList_get_succ N i = s.interList_get N i ∨
-  IsSimpleModule R (s.interList_qf N i) := by
-  obtain ⟨⟨e⟩⟩|⟨⟨e⟩⟩ := s.interList_qf_aux N i
+    s.interList_get_succ N i = s.interList_get N i ∨ IsSimpleModule R (s.interList_qf N i) := by
+  obtain ⟨⟨e⟩⟩ | ⟨⟨e⟩⟩ := s.interList_qf_aux N i
   · left
     have uniq_qf : Nonempty (Unique (s.interList_qf N i)) := ⟨Equiv.unique e.toEquiv⟩
     delta interList_qf quot at uniq_qf
     replace uniq_qf := Submodule.unique_quotient_iff_forall_mem.mp uniq_qf
-
     ext x : 1; fconstructor
     · intro hx
       have uniq_qf' := @uniq_qf ⟨x, hx⟩
@@ -166,15 +164,23 @@ lemma eq_or_interList_qf_is_simple_module (i : Fin s.length) :
     · intro hx; exact s.interList_get_le_get_succ N i hx
   · right; exact IsSimpleModule.congr e
 
-set_option maxHeartbeats 6000000 in
+set_option maxHeartbeats 6400000 in
 lemma interList_get_eq_succ_or_covby (i : Fin s.length) :
     s.interList_get N i = s.interList_get_succ N i ∨
     s.interList_get N i ⋖ s.interList_get_succ N i := by
-  rcases s.eq_or_interList_qf_is_simple_module N i with (h|h)
+  rcases s.eq_or_interList_qf_is_simple_module N i with (h | h)
   · left; rw [h]
   · right
     delta interList_qf quot at h
     rw [covby_iff_quot_is_simple]
     convert h
+    exact s.interList_get_le_get_succ N i
+
+lemma interList_wcovby (i : Fin s.length) :
+    s.interList_get N i ⩿ s.interList_get_succ N i :=
+wcovby_iff_covby_or_eq.mpr $ Or.symm $ s.interList_get_eq_succ_or_covby N i
+
+lemma interList_chain'_wcovby : (s.interList N).Chain' (. ⩿ .) :=
+List.chain'_iff_get.mpr $ λ i h ↦ s.interList_wcovby N ⟨i, by simpa [s.interList_length] using h⟩
 
 end CompositionSeries
