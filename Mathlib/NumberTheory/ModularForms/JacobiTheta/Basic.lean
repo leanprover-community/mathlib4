@@ -90,7 +90,7 @@ theorem jacobiTheta_S_smul (τ : ℍ) :
   unfold jacobiTheta
   rw [UpperHalfPlane.modular_S_smul, UpperHalfPlane.coe_mk]
   have ha : 0 < (-I * τ).re := by
-    rw [neg_mul, neg_re, mul_re, I_re, I_im, MulZeroClass.zero_mul, one_mul, zero_sub, neg_neg]
+    rw [neg_mul, neg_re, mul_re, I_re, I_im, zero_mul, one_mul, zero_sub, neg_neg]
     exact τ.im_pos
   have ha' : (-I * τ) ^ (1 / 2 : ℂ) ≠ 0 := by
     rw [Ne.def, cpow_eq_zero_iff]
@@ -118,7 +118,7 @@ theorem hasSum_nat_jacobiTheta {z : ℂ} (hz : 0 < im z) :
   have := (summable_exp_mul_sq hz).hasSum.sum_nat_of_sum_int
   rw [← @hasSum_nat_add_iff' ℂ _ _ _ _ 1] at this
   simp_rw [Finset.sum_range_one, Int.cast_neg, Int.cast_ofNat, Nat.cast_zero, neg_zero,
-    Int.cast_zero, sq (0 : ℂ), MulZeroClass.mul_zero, MulZeroClass.zero_mul, neg_sq, ← mul_two,
+    Int.cast_zero, sq (0 : ℂ), mul_zero, zero_mul, neg_sq, ← mul_two,
     Complex.exp_zero, add_sub_assoc, (by norm_num : (1 : ℂ) - 1 * 2 = -1), ← sub_eq_add_neg,
     Nat.cast_add, Nat.cast_one] at this
   convert this.div_const 2 using 1

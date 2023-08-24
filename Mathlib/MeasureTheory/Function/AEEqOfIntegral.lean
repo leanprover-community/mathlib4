@@ -270,7 +270,8 @@ theorem ae_nonneg_of_forall_set_integral_nonneg_of_stronglyMeasurable (hfm : Str
   by_contra h
   refine' (lt_self_iff_false (∫ x in s, f x ∂μ)).mp (h_int_gt.trans_lt _)
   refine' (mul_neg_iff.mpr (Or.inr ⟨hb_neg, _⟩)).trans_le _
-  swap; · simp_rw [Measure.restrict_restrict hs]; exact hf_zero s hs mus
+  swap
+  · exact hf_zero s hs mus
   refine' ENNReal.toReal_nonneg.lt_of_ne fun h_eq => h _
   cases' (ENNReal.toReal_eq_zero_iff _).mp h_eq.symm with hμs_eq_zero hμs_eq_top
   · exact hμs_eq_zero

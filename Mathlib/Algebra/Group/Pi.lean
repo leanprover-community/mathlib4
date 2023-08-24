@@ -523,12 +523,12 @@ theorem Pi.single_mul [∀ i, MulZeroClass <| f i] (i : I) (x y : f i) :
 
 theorem Pi.single_mul_left_apply [∀ i, MulZeroClass <| f i] (a : f i) :
     Pi.single i (a * x i) j = Pi.single i a j * x j :=
-  (Pi.apply_single (fun i => (· * x i)) (fun _ => MulZeroClass.zero_mul _) _ _ _).symm
+  (Pi.apply_single (fun i => (· * x i)) (fun _ => zero_mul _) _ _ _).symm
 #align pi.single_mul_left_apply Pi.single_mul_left_apply
 
 theorem Pi.single_mul_right_apply [∀ i, MulZeroClass <| f i] (a : f i) :
     Pi.single i (x i * a) j = x j * Pi.single i a j :=
-  (Pi.apply_single (fun i => (· * ·) (x i)) (fun _ => MulZeroClass.mul_zero _) _ _ _).symm
+  (Pi.apply_single (fun i => (· * ·) (x i)) (fun _ => mul_zero _) _ _ _).symm
 #align pi.single_mul_right_apply Pi.single_mul_right_apply
 
 theorem Pi.single_mul_left [∀ i, MulZeroClass <| f i] (a : f i) :

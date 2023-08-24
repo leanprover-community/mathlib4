@@ -3,6 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Init.Align
 import Mathlib.Topology.LocalHomeomorph
 
 #align_import geometry.manifold.charted_space from "leanprover-community/mathlib"@"431589bce478b2229eba14b14a283250428217db"
@@ -108,6 +109,8 @@ can be several model spaces for a given topological space. For instance, a compl
 In the locale `Manifold`, we denote the composition of local homeomorphisms with `≫ₕ`, and the
 composition of local equivs with `≫`.
 -/
+
+set_option autoImplicit true
 
 
 noncomputable section

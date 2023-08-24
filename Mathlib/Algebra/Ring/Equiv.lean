@@ -3,6 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
+import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Logic.Equiv.Set
@@ -401,6 +402,12 @@ protected def op {α β} [Add α] [Mul α] [Add β] [Mul β] :
 protected def unop {α β} [Add α] [Mul α] [Add β] [Mul β] : αᵐᵒᵖ ≃+* βᵐᵒᵖ ≃ (α ≃+* β) :=
   RingEquiv.op.symm
 #align ring_equiv.unop RingEquiv.unop
+
+/-- A ring is isomorphic to the opposite of its opposite. -/
+@[simps!]
+def opOp (R : Type*) [Add R] [Mul R] : R ≃+* Rᵐᵒᵖᵐᵒᵖ where
+  __ := MulEquiv.opOp R
+  map_add' _ _ := rfl
 
 section NonUnitalCommSemiring
 
@@ -864,24 +871,34 @@ theorem symm_trans_self (e : R ≃+* S) : e.symm.trans e = RingEquiv.refl S :=
   ext e.right_inv
 #align ring_equiv.symm_trans_self RingEquiv.symm_trans_self
 
+end RingEquiv
+
+namespace MulEquiv
+
 /-- If two rings are isomorphic, and the second doesn't have zero divisors,
 then so does the first. -/
-protected theorem noZeroDivisors {A : Type*} (B : Type*) [Ring A] [Ring B] [NoZeroDivisors B]
-    (e : A ≃+* B) : NoZeroDivisors A :=
-  { eq_zero_or_eq_zero_of_mul_eq_zero := fun {x y} hxy => by
-      have : e x * e y = 0 := by rw [← e.map_mul, hxy, e.map_zero]
-      simpa using eq_zero_or_eq_zero_of_mul_eq_zero this }
-#align ring_equiv.no_zero_divisors RingEquiv.noZeroDivisors
+protected theorem noZeroDivisors {A : Type*} (B : Type*) [MulZeroClass A] [MulZeroClass B]
+    [NoZeroDivisors B] (e : A ≃* B) : NoZeroDivisors A :=
+  e.injective.noZeroDivisors e (map_zero e) (map_mul e)
+#noalign ring_equiv.no_zero_divisors
 
 /-- If two rings are isomorphic, and the second is a domain, then so is the first. -/
-protected theorem isDomain {A : Type*} (B : Type*) [Ring A] [Ring B] [IsDomain B] (e : A ≃+* B) :
-    IsDomain A := by
-  haveI : Nontrivial A := ⟨⟨e.symm 0, e.symm 1, e.symm.injective.ne zero_ne_one⟩⟩
-  haveI := e.noZeroDivisors B
-  exact NoZeroDivisors.to_isDomain _
-#align ring_equiv.is_domain RingEquiv.isDomain
+protected theorem isDomain {A : Type*} (B : Type*) [Semiring A] [Semiring B] [IsDomain B]
+    (e : A ≃* B) : IsDomain A :=
+  { e.injective.isLeftCancelMulZero e (map_zero e) (map_mul e),
+    e.injective.isRightCancelMulZero e (map_zero e) (map_mul e) with
+    exists_pair_ne := ⟨e.symm 0, e.symm 1, e.symm.injective.ne zero_ne_one⟩ }
+#noalign ring_equiv.is_domain
 
-end RingEquiv
+protected theorem isField {A : Type*} (B : Type*) [Semiring A] [Semiring B] (hB : IsField B)
+    (e : A ≃* B) : IsField A where
+  exists_pair_ne := have ⟨x, y, h⟩ := hB.exists_pair_ne; ⟨e.symm x, e.symm y, e.symm.injective.ne h⟩
+  mul_comm := fun x y => e.injective <| by rw [map_mul, map_mul, hB.mul_comm]
+  mul_inv_cancel := fun h => by
+    obtain ⟨a', he⟩ := hB.mul_inv_cancel ((e.injective.ne h).trans_eq <| map_zero e)
+    exact ⟨e.symm a', e.injective <| by rw [map_mul, map_one, e.apply_symm_apply, he]⟩
+
+end MulEquiv
 
 -- guard against import creep
 assert_not_exists Fintype

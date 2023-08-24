@@ -1,7 +1,7 @@
 import Mathlib.Tactic.RestateAxiom
 
 structure A :=
-  (x : ℕ)
+  (x : Nat)
   (a' : x = 1 := by rfl)
   (borp : x = 2 := by rfl)
 

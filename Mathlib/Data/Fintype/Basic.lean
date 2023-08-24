@@ -675,10 +675,10 @@ theorem toFinset_subset [Fintype s] {t : Finset α} : s.toFinset ⊆ t ↔ s ⊆
   rw [← Finset.coe_subset, coe_toFinset]
 #align set.to_finset_subset Set.toFinset_subset
 
-alias toFinset_subset_toFinset ↔ _ toFinset_mono
+alias ⟨_, toFinset_mono⟩ := toFinset_subset_toFinset
 #align set.to_finset_mono Set.toFinset_mono
 
-alias toFinset_ssubset_toFinset ↔ _ toFinset_strict_mono
+alias ⟨_, toFinset_strict_mono⟩ := toFinset_ssubset_toFinset
 #align set.to_finset_strict_mono Set.toFinset_strict_mono
 
 @[simp]

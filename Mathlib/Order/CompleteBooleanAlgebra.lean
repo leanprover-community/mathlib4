@@ -50,6 +50,8 @@ distributive lattice.
 * [Francis Borceux, *Handbook of Categorical Algebra III*][borceux-vol3]
 -/
 
+set_option autoImplicit true
+
 
 open Function Set
 
@@ -601,6 +603,9 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit := by
   (intros; trivial)
 
 instance completeBooleanAlgebra : CompleteBooleanAlgebra PUnit := inferInstance
+
+instance completeLinearOrder : CompleteLinearOrder PUnit :=
+  { PUnit.completeBooleanAlgebra, PUnit.linearOrder with }
 
 @[simp]
 theorem sSup_eq : sSup s = unit :=

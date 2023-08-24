@@ -152,7 +152,7 @@ theorem tendsto_normSq_coprime_pair :
     · show (z : ℂ).im⁻¹ * ((z : ℂ) * conj (f c)).im = c 1
       rw [f_def, RingHom.map_add, RingHom.map_mul, mul_add, mul_left_comm, mul_conj, conj_ofReal,
         conj_ofReal, ← ofReal_mul, add_im, ofReal_im, zero_add, inv_mul_eq_iff_eq_mul₀ hz]
-      simp only [ofReal_im, ofReal_re, mul_im, zero_add, MulZeroClass.mul_zero]
+      simp only [ofReal_im, ofReal_re, mul_im, zero_add, mul_zero]
   have hf' : ClosedEmbedding f := by
     have := @LinearEquiv.closedEmbedding_of_injective ℝ _ (Fin 2 → ℝ) _ _ ℂ _ _ _ f
     exact this hf
@@ -223,13 +223,13 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
   · simp only [mulVec, dotProduct, Fin.sum_univ_two, coe_matrix_coe,
       Int.coe_castRingHom, lcRow0_apply, Function.comp_apply, cons_val_zero, lcRow0Extend_apply,
       LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLinear,
-      planeConformalMatrix_val, neg_neg, mulVecLin_apply, cons_val_one, head_cons, of_apply,
+      val_planeConformalMatrix, neg_neg, mulVecLin_apply, cons_val_one, head_cons, of_apply,
       Fin.mk_zero, Fin.mk_one]
   · convert congr_arg (fun n : ℤ => (-n : ℝ)) g.det_coe.symm using 1
     simp only [mulVec, dotProduct, Fin.sum_univ_two, Matrix.det_fin_two, Function.comp_apply,
       Subtype.coe_mk, lcRow0Extend_apply, cons_val_zero,
       LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLinear,
-      planeConformalMatrix_val, mulVecLin_apply, cons_val_one, head_cons, map_apply, neg_mul,
+      val_planeConformalMatrix, mulVecLin_apply, cons_val_one, head_cons, map_apply, neg_mul,
       Int.cast_sub, Int.cast_mul, neg_sub, of_apply, Fin.mk_zero, Fin.mk_one]
     ring
   · rfl
@@ -245,13 +245,12 @@ theorem smul_eq_lcRow0_add {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) (hg 
   have nonZ1 : (p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2 ≠ 0 := by exact_mod_cast hp.sq_add_sq_ne_zero
   have : ((↑) : ℤ → ℝ) ∘ p ≠ 0 := fun h => hp.ne_zero (by ext i; simpa using congr_fun h i)
   have nonZ2 : (p 0 : ℂ) * z + p 1 ≠ 0 := by simpa using linear_ne_zero _ z this
-  -- Porting note: `SMul.smul, smulAux, smulAux'` are required to unfold `SMul.smul` in `sl_moeb`.
-  field_simp [nonZ1, nonZ2, denom_ne_zero, SMul.smul, smulAux, smulAux', num]
+  field_simp [nonZ1, nonZ2, denom_ne_zero, num]
   rw [(by simp :
     (p 1 : ℂ) * z - p 0 = (p 1 * z - p 0) * ↑(Matrix.det (↑g : Matrix (Fin 2) (Fin 2) ℤ)))]
   rw [← hg, det_fin_two]
   simp only [Int.coe_castRingHom, coe_matrix_coe, Int.cast_mul, ofReal_int_cast, map_apply, denom,
-    Int.cast_sub, coe_GLPos_coe_GL_coe_matrix]
+    Int.cast_sub, coe_GLPos_coe_GL_coe_matrix, coe'_apply_complex]
   ring
 #align modular_group.smul_eq_lc_row0_add ModularGroup.smul_eq_lcRow0_add
 
@@ -319,8 +318,7 @@ theorem exists_row_one_eq_and_min_re {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0
 #align modular_group.exists_row_one_eq_and_min_re ModularGroup.exists_row_one_eq_and_min_re
 
 theorem coe_T_zpow_smul_eq {n : ℤ} : (↑(T ^ n • z) : ℂ) = z + n := by
-  -- Porting note: This line is required due to `SMul.smul` in `sl_moeb`.
-  erw [sl_moeb, UpperHalfPlane.coe_smul]
+  rw [sl_moeb, UpperHalfPlane.coe_smul]
   simp [coe_T_zpow, denom, num, -map_zpow]
 #align modular_group.coe_T_zpow_smul_eq ModularGroup.coe_T_zpow_smul_eq
 
@@ -377,9 +375,7 @@ theorem g_eq_of_c_eq_one (hc : (↑ₘg) 1 0 = 1) : g = T ^ (↑ₘg) 0 0 * S * 
 set_option maxHeartbeats 250000 in
 /-- If `1 < |z|`, then `|S • z| < 1`. -/
 theorem normSq_S_smul_lt_one (h : 1 < normSq z) : normSq ↑(S • z) < 1 := by
-  -- Porting note: `SMul.smul, smulAux, smulAux'` are required to unfold `SMul.smul` in `sl_moeb`.
-  simpa [coe_S, SMul.smul, smulAux, smulAux', num, denom]
-    using (inv_lt_inv z.normSq_pos zero_lt_one).mpr h
+  simpa [coe_S, num, denom] using (inv_lt_inv z.normSq_pos zero_lt_one).mpr h
 #align modular_group.norm_sq_S_smul_lt_one ModularGroup.normSq_S_smul_lt_one
 
 /-- If `|z| < 1`, then applying `S` strictly decreases `im`. -/
@@ -390,7 +386,7 @@ theorem im_lt_im_S_smul (h : normSq z < 1) : z.im < (S • z).im := by
     nlinarith
   convert this
   simp only [SpecialLinearGroup.im_smul_eq_div_normSq]
-  field_simp [normSq_denom_ne_zero, normSq_ne_zero, S, denom]
+  simp [denom, coe_S]
 #align modular_group.im_lt_im_S_smul ModularGroup.im_lt_im_S_smul
 
 /-- The standard (closed) fundamental domain of the action of `SL(2,ℤ)` on `ℍ`. -/
@@ -428,8 +424,7 @@ theorem one_lt_normSq_T_zpow_smul (hz : z ∈ 𝒟ᵒ) (n : ℤ) : 1 < normSq (T
   have hz₁ : 1 < z.re * z.re + z.im * z.im := hz.1
   have hzn := Int.nneg_mul_add_sq_of_abs_le_one n (abs_two_mul_re_lt_one_of_mem_fdo hz).le
   have : 1 < (z.re + ↑n) * (z.re + ↑n) + z.im * z.im := by linarith
-  -- Porting note: `SMul.smul, smulAux, smulAux'` are required to unfold `SMul.smul` in `sl_moeb`.
-  simpa [coe_T_zpow, normSq, SMul.smul, smulAux, smulAux', num, denom, -map_zpow]
+  simpa [coe_T_zpow, normSq, num, denom, -map_zpow]
 #align modular_group.one_lt_norm_sq_T_zpow_smul ModularGroup.one_lt_normSq_T_zpow_smul
 
 theorem eq_zero_of_mem_fdo_of_T_zpow_mem_fdo {n : ℤ} (hz : z ∈ 𝒟ᵒ) (hg : T ^ n • z ∈ 𝒟ᵒ) :
