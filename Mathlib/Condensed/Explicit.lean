@@ -1,11 +1,9 @@
-import Mathlib.Condensed.Basic
-import Mathlib.CategoryTheory.Sites.SheafOfTypes
-import Mathlib.CategoryTheory.Preadditive.Projective
-import Mathlib.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.Functor.InvIsos
-import Mathlib.Topology.Category.Stonean.EffectiveEpi
-import Mathlib.Topology.Category.CompHaus.Limits
+import Mathlib.CategoryTheory.Preadditive.Projective
+import Mathlib.CategoryTheory.Sites.SheafOfTypes
+import Mathlib.Condensed.Basic
 import Mathlib.Topology.Category.Profinite.EffectiveEpi
+import Mathlib.Topology.Category.Stonean.EffectiveEpi
 
 universe v v₁ u u₁ w
 
