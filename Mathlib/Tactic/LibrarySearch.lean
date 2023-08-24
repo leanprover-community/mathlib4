@@ -6,7 +6,7 @@ Authors: Gabriel Ebner, Scott Morrison
 import Std.Util.Pickle
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.SolveByElim
-import Mathlib.Data.MLList.Heartbeats
+import Std.Data.MLList.Heartbeats
 
 /-!
 # Library search

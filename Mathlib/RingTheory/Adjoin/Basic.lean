@@ -23,21 +23,22 @@ adjoin, algebra
 -/
 
 
-universe u v w
+universe uR uS uA uB
 
 open Pointwise
 
 open Submodule Subsemiring
 
-variable {R : Type u} {A : Type v} {B : Type w}
+variable {R : Type uR} {S : Type uS} {A : Type uA} {B : Type uB}
 
 namespace Algebra
 
 section Semiring
 
-variable [CommSemiring R] [Semiring A] [Semiring B]
+variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
 
-variable [Algebra R A] [Algebra R B] {s t : Set A}
+variable [Algebra R S] [Algebra R A] [Algebra S A] [Algebra R B] [IsScalarTower R S A]
+variable {s t : Set A}
 
 theorem subset_adjoin : s ⊆ adjoin R s :=
   Algebra.gc.le_u_l s
@@ -292,6 +293,49 @@ theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
   Algebra.subset_adjoin (Set.mem_singleton_iff.mpr rfl)
 #align algebra.self_mem_adjoin_singleton Algebra.self_mem_adjoin_singleton
 
+variable (A) in
+theorem adjoin_algebraMap (s : Set S) :
+    adjoin R (algebraMap S A '' s) = (adjoin R s).map (IsScalarTower.toAlgHom R S A) :=
+  adjoin_image R (IsScalarTower.toAlgHom R S A) s
+#align algebra.adjoin_algebra_map Algebra.adjoin_algebraMap
+
+theorem adjoin_algebraMap_image_union_eq_adjoin_adjoin (s : Set S) (t : Set A) :
+    adjoin R (algebraMap S A '' s ∪ t) = (adjoin (adjoin R s) t).restrictScalars R :=
+  le_antisymm
+    (closure_mono <|
+      Set.union_subset (Set.range_subset_iff.2 fun r => Or.inl ⟨algebraMap R (adjoin R s) r,
+        (IsScalarTower.algebraMap_apply _ _ _ _).symm⟩)
+        (Set.union_subset_union_left _ fun _ ⟨_x, hx, hxs⟩ => hxs ▸ ⟨⟨_, subset_adjoin hx⟩, rfl⟩))
+    (closure_le.2 <|
+      Set.union_subset (Set.range_subset_iff.2 fun x => adjoin_mono (Set.subset_union_left _ _) <|
+        Algebra.adjoin_algebraMap R A s ▸ ⟨x, x.prop, rfl⟩)
+        (Set.Subset.trans (Set.subset_union_right _ _) subset_adjoin))
+
+theorem adjoin_adjoin_of_tower (s : Set A) : adjoin S (adjoin R s : Set A) = adjoin S s := by
+  apply le_antisymm (adjoin_le _)
+  · exact adjoin_mono subset_adjoin
+  · change adjoin R s ≤ (adjoin S s).restrictScalars R
+    refine' adjoin_le _
+    -- porting note: unclear why this was broken
+    have : (Subalgebra.restrictScalars R (adjoin S s) : Set A) = adjoin S s := rfl
+    rw [this]
+    exact subset_adjoin
+#align algebra.adjoin_adjoin_of_tower Algebra.adjoin_adjoin_of_tower
+
+@[simp]
+theorem adjoin_top :
+    adjoin (⊤ : Subalgebra R S) t = (adjoin S t).restrictScalars (⊤ : Subalgebra R S) :=
+  let equivTop : Subalgebra (⊤ : Subalgebra R S) A ≃o Subalgebra S A :=
+    { toFun := fun s => { s with algebraMap_mem' := fun r => s.algebraMap_mem ⟨r, trivial⟩ }
+      invFun := fun s => s.restrictScalars _
+      left_inv := fun _ => SetLike.coe_injective rfl
+      right_inv := fun _ => SetLike.coe_injective rfl
+      map_rel_iff' := @fun _ _ => Iff.rfl }
+  le_antisymm
+    (adjoin_le <| show t ⊆ adjoin S t from subset_adjoin)
+    (equivTop.symm_apply_le.mpr <|
+      adjoin_le <| show t ⊆ adjoin (⊤ : Subalgebra R S) t from subset_adjoin)
+
 end Semiring
 
 section CommSemiring
@@ -303,14 +347,8 @@ variable [Algebra R A] {s t : Set A}
 variable (R s t)
 
 theorem adjoin_union_eq_adjoin_adjoin :
-    adjoin R (s ∪ t) = (adjoin (adjoin R s) t).restrictScalars R :=
-  le_antisymm
-    (closure_mono <|
-      Set.union_subset (Set.range_subset_iff.2 fun r => Or.inl ⟨algebraMap R (adjoin R s) r, rfl⟩)
-        (Set.union_subset_union_left _ fun _x hxs => ⟨⟨_, subset_adjoin hxs⟩, rfl⟩))
-    (closure_le.2 <|
-      Set.union_subset (Set.range_subset_iff.2 fun x => adjoin_mono (Set.subset_union_left _ _) x.2)
-        (Set.Subset.trans (Set.subset_union_right _ _) subset_adjoin))
+    adjoin R (s ∪ t) = (adjoin (adjoin R s) t).restrictScalars R := by
+  simpa using adjoin_algebraMap_image_union_eq_adjoin_adjoin R s t
 #align algebra.adjoin_union_eq_adjoin_adjoin Algebra.adjoin_union_eq_adjoin_adjoin
 
 theorem adjoin_union_coe_submodule :
@@ -319,18 +357,6 @@ theorem adjoin_union_coe_submodule :
   rw [adjoin_eq_span, adjoin_eq_span, adjoin_eq_span, span_mul_span]
   congr 1 with z; simp [Submonoid.closure_union, Submonoid.mem_sup, Set.mem_mul]
 #align algebra.adjoin_union_coe_submodule Algebra.adjoin_union_coe_submodule
-
-theorem adjoin_adjoin_of_tower [Semiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
-    (s : Set B) : adjoin A (adjoin R s : Set B) = adjoin A s := by
-  apply le_antisymm (adjoin_le _)
-  · exact adjoin_mono subset_adjoin
-  · change adjoin R s ≤ (adjoin A s).restrictScalars R
-    refine' adjoin_le _
-    -- porting note: unclear why this was broken
-    have : (Subalgebra.restrictScalars R (adjoin A s) : Set B) = adjoin A s := rfl
-    rw [this]
-    exact subset_adjoin
-#align algebra.adjoin_adjoin_of_tower Algebra.adjoin_adjoin_of_tower
 
 variable {R}
 
@@ -428,23 +454,3 @@ theorem ext_of_adjoin_eq_top {s : Set A} (h : adjoin R s = ⊤) ⦃φ₁ φ₂ :
 #align alg_hom.ext_of_adjoin_eq_top AlgHom.ext_of_adjoin_eq_top
 
 end AlgHom
-
-section ClosureEquivAdjoin
-
-/-- The `ℕ`-algebra equivalence between `Subsemiring.closure s` and `Algebra.adjoin ℕ s` given
-by the identity map. -/
-def Subsemiring.closureEquivAdjoinNat {R : Type*} [Semiring R] (s : Set R) :
-    Subsemiring.closure s ≃ₐ[ℕ] Algebra.adjoin ℕ s :=
-  Subalgebra.equivOfEq (subalgebraOfSubsemiring <| Subsemiring.closure s) _ <|
-    le_antisymm (closure_le.mpr subset_adjoin) (adjoin_le subset_closure)
-
-/-- The `ℤ`-algebra equivalence between `Subring.closure s` and `Algebra.adjoin ℤ s` given by
-the identity map. -/
-def Subring.closureEquivAdjoinInt {R : Type*} [Ring R] (s : Set R) :
-    Subring.closure s ≃ₐ[ℤ] Algebra.adjoin ℤ s :=
-  Subalgebra.equivOfEq (subalgebraOfSubring <| Subring.closure s) _ <|
-    -- Lean is less smart here, probably because of the `with` definition of `subalgebraOfSubring`
-    le_antisymm (closure_le.mpr subset_adjoin : _ ≤ (adjoin ℤ s).toSubring)
-      (adjoin_le subset_closure)
-
-  end ClosureEquivAdjoin
