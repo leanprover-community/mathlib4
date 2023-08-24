@@ -161,7 +161,7 @@ theorem measure_eq_iInf (s : Set α) : μ s = ⨅ (t) (_ : s ⊆ t) (_ : Measura
   `nonempty_measurable_superset`. -/
 theorem measure_eq_iInf' (μ : Measure α) (s : Set α) :
     μ s = ⨅ t : { t // s ⊆ t ∧ MeasurableSet t }, μ t := by
-  simp_rw [iInf_subtype, iInf_and, Subtype.coe_mk, ← measure_eq_iInf]
+  simp_rw [iInf_subtype, iInf_and, ← measure_eq_iInf]
 #align measure_theory.measure_eq_infi' MeasureTheory.measure_eq_iInf'
 
 theorem measure_eq_inducedOuterMeasure :
@@ -323,6 +323,9 @@ theorem measure_union_lt_top_iff : μ (s ∪ t) < ∞ ↔ μ s < ∞ ∧ μ t < 
 theorem measure_union_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s ∪ t) ≠ ∞ :=
   (measure_union_lt_top hs.lt_top ht.lt_top).ne
 #align measure_theory.measure_union_ne_top MeasureTheory.measure_union_ne_top
+
+theorem measure_symmDiff_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s ∆ t) ≠ ∞ :=
+  ne_top_of_le_ne_top (measure_union_ne_top hs ht) <| measure_mono symmDiff_subset_union
 
 @[simp]
 theorem measure_union_eq_top_iff : μ (s ∪ t) = ∞ ↔ μ s = ∞ ∨ μ t = ∞ :=
@@ -573,7 +576,7 @@ theorem measure_mono_ae (H : s ≤ᵐ[μ] t) : μ s ≤ μ t :=
     _ = μ t := by rw [ae_le_set.1 H, add_zero]
 #align measure_theory.measure_mono_ae MeasureTheory.measure_mono_ae
 
-alias measure_mono_ae ← _root_.Filter.EventuallyLE.measure_le
+alias _root_.Filter.EventuallyLE.measure_le := measure_mono_ae
 #align filter.eventually_le.measure_le Filter.EventuallyLE.measure_le
 
 /-- If two sets are equal modulo a set of measure zero, then `μ s = μ t`. -/
@@ -581,7 +584,7 @@ theorem measure_congr (H : s =ᵐ[μ] t) : μ s = μ t :=
   le_antisymm H.le.measure_le H.symm.le.measure_le
 #align measure_theory.measure_congr MeasureTheory.measure_congr
 
-alias measure_congr ← _root_.Filter.EventuallyEq.measure_eq
+alias _root_.Filter.EventuallyEq.measure_eq := measure_congr
 #align filter.eventually_eq.measure_eq Filter.EventuallyEq.measure_eq
 
 theorem measure_mono_null_ae (H : s ≤ᵐ[μ] t) (ht : μ t = 0) : μ s = 0 :=

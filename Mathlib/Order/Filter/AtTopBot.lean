@@ -24,6 +24,8 @@ In this file we define the filters
 Then we prove many lemmas like “if `f → +∞`, then `f ± c → +∞`”.
 -/
 
+set_option autoImplicit true
+
 variable {ι ι' α β γ : Type*}
 
 open Set
@@ -1336,16 +1338,16 @@ theorem tendsto_atBot_atBot_iff_of_monotone [Nonempty α] [SemilatticeInf α] [P
     ⟨fun h => h a (le_refl a), fun h _a' ha' => le_trans (hf ha') h⟩
 #align filter.tendsto_at_bot_at_bot_iff_of_monotone Filter.tendsto_atBot_atBot_iff_of_monotone
 
-alias tendsto_atTop_atTop_of_monotone ← _root_.Monotone.tendsto_atTop_atTop
+alias _root_.Monotone.tendsto_atTop_atTop := tendsto_atTop_atTop_of_monotone
 #align monotone.tendsto_at_top_at_top Monotone.tendsto_atTop_atTop
 
-alias tendsto_atBot_atBot_of_monotone ← _root_.Monotone.tendsto_atBot_atBot
+alias _root_.Monotone.tendsto_atBot_atBot := tendsto_atBot_atBot_of_monotone
 #align monotone.tendsto_at_bot_at_bot Monotone.tendsto_atBot_atBot
 
-alias tendsto_atTop_atTop_iff_of_monotone ← _root_.Monotone.tendsto_atTop_atTop_iff
+alias _root_.Monotone.tendsto_atTop_atTop_iff := tendsto_atTop_atTop_iff_of_monotone
 #align monotone.tendsto_at_top_at_top_iff Monotone.tendsto_atTop_atTop_iff
 
-alias tendsto_atBot_atBot_iff_of_monotone ← _root_.Monotone.tendsto_atBot_atBot_iff
+alias _root_.Monotone.tendsto_atBot_atBot_iff := tendsto_atBot_atBot_iff_of_monotone
 #align monotone.tendsto_at_bot_at_bot_iff Monotone.tendsto_atBot_atBot_iff
 
 theorem comap_embedding_atTop [Preorder β] [Preorder γ] {e : β → γ}
@@ -1398,7 +1400,7 @@ theorem tendsto_atTop_finset_of_monotone [Preorder β] {f : β → Finset α} (h
   exact (eventually_ge_atTop b).mono fun b' hb' => (Finset.singleton_subset_iff.2 hb).trans (h hb')
 #align filter.tendsto_at_top_finset_of_monotone Filter.tendsto_atTop_finset_of_monotone
 
-alias tendsto_atTop_finset_of_monotone ← _root_.Monotone.tendsto_atTop_finset
+alias _root_.Monotone.tendsto_atTop_finset := tendsto_atTop_finset_of_monotone
 #align monotone.tendsto_at_top_finset Monotone.tendsto_atTop_finset
 
 -- porting note: add assumption `DecidableEq β` so that the lemma applies to any instance
@@ -1829,6 +1831,39 @@ theorem exists_seq_tendsto (f : Filter α) [IsCountablyGenerated f] [NeBot f] :
   choose x hx using fun n => Filter.nonempty_of_mem (h.mem n)
   exact ⟨x, h.tendsto hx⟩
 #align filter.exists_seq_tendsto Filter.exists_seq_tendsto
+
+theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type*) [SemilatticeSup α] [Nonempty α]
+    [(atTop : Filter α).IsCountablyGenerated] :
+    ∃ xs : ℕ → α, Monotone xs ∧ Tendsto xs atTop atTop := by
+  haveI h_ne_bot : (atTop : Filter α).NeBot := atTop_neBot
+  obtain ⟨ys, h⟩ := exists_seq_tendsto (atTop : Filter α)
+  let xs : ℕ → α := fun n => Finset.sup' (Finset.range (n + 1)) Finset.nonempty_range_succ ys
+  have h_mono : Monotone xs := by
+    intro i j hij
+    rw [Finset.sup'_le_iff]
+    intro k hk
+    refine' Finset.le_sup'_of_le _ _ le_rfl
+    rw [Finset.mem_range] at hk ⊢
+    exact hk.trans_le (add_le_add_right hij _)
+  refine' ⟨xs, h_mono, _⟩
+  · refine' tendsto_atTop_atTop_of_monotone h_mono _
+    have : ∀ a : α, ∃ n : ℕ, a ≤ ys n := by
+      rw [tendsto_atTop_atTop] at h
+      intro a
+      obtain ⟨i, hi⟩ := h a
+      exact ⟨i, hi i le_rfl⟩
+    intro a
+    obtain ⟨i, hi⟩ := this a
+    refine' ⟨i, hi.trans _⟩
+    refine' Finset.le_sup'_of_le _ _ le_rfl
+    rw [Finset.mem_range_succ_iff]
+#align exists_seq_monotone_tendsto_at_top_at_top Filter.exists_seq_monotone_tendsto_atTop_atTop
+
+theorem exists_seq_antitone_tendsto_atTop_atBot (α : Type*) [SemilatticeInf α] [Nonempty α]
+    [h2 : (atBot : Filter α).IsCountablyGenerated] :
+    ∃ xs : ℕ → α, Antitone xs ∧ Tendsto xs atTop atBot :=
+  @exists_seq_monotone_tendsto_atTop_atTop αᵒᵈ _ _ h2
+#align exists_seq_antitone_tendsto_at_top_at_bot Filter.exists_seq_antitone_tendsto_atTop_atBot
 
 /-- An abstract version of continuity of sequentially continuous functions on metric spaces:
 if a filter `k` is countably generated then `Tendsto f k l` iff for every sequence `u`

@@ -77,6 +77,8 @@ machinery, e.g., `simp only [true_and]` or `simp only [forall_const]` can help w
 `p = fun _ ↦ True`.
 -/
 
+set_option autoImplicit true
+
 
 open Set Filter
 
@@ -706,7 +708,7 @@ theorem disjoint_principal_principal {s t : Set α} : Disjoint (𝓟 s) (𝓟 t)
   rw [← subset_compl_iff_disjoint_left, disjoint_principal_left, mem_principal]
 #align filter.disjoint_principal_principal Filter.disjoint_principal_principal
 
-alias disjoint_principal_principal ↔ _ _root_.Disjoint.filter_principal
+alias ⟨_, _root_.Disjoint.filter_principal⟩ := disjoint_principal_principal
 #align disjoint.filter_principal Disjoint.filter_principal
 
 @[simp]

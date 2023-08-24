@@ -14,7 +14,6 @@ import Mathlib.Order.Filter.Basic
 import Mathlib.RingTheory.WittVector.IsPoly
 import Mathlib.SetTheory.Game.PGame
 import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyCongr
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.ApplyWith
@@ -35,6 +34,7 @@ import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
+import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
@@ -126,8 +126,6 @@ open Lean Parser.Tactic
 /- N -/ syntax (name := abstract) "abstract" (ppSpace ident)? ppSpace tacticSeq : tactic
 
 /- B -/ syntax (name := cc) "cc" : tactic
-
-/- M -/ syntax (name := unfoldProjs) "unfold_projs" (config)? (location)? : tactic
 
 /- S -/ syntax (name := rsimp) "rsimp" : tactic
 /- S -/ syntax (name := compVal) "comp_val" : tactic

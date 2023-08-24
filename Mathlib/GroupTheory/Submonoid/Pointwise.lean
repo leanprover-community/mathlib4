@@ -23,7 +23,7 @@ and the actions
 
 which matches the action of `Set.mulActionSet`.
 
-These are all available in the `pointwise` locale.
+These are all available in the `Pointwise` locale.
 
 Additionally, it provides various degrees of monoid structure:
 * `AddSubmonoid.one`
