@@ -109,8 +109,8 @@ theorem monotone_sort (f : Fin n → α) : Monotone (f ∘ sort f) := by
   exact (monotone_proj f).comp (graphEquiv₂ f).monotone
 #align tuple.monotone_sort Tuple.monotone_sort
 
-/-- A sorted tuple with `m` elements and exactly `Fintype.card {i // f i ≤ a}` less than a has the
-elements at the start `≤ a` -/
+/-- A sorted tuple with `m` elements and exactly `Fintype.card {i // f i ≤ a}` less than `a` has the
+elements at the start -/
 theorem sort_lt_at_start_of_monotone {α} [LinearOrder α] (m : ℕ) (f : Fin m → α) (a : α)
     (h_sorted : Monotone f)
     (j : Fin m) (h : j < Fintype.card {i // f i ≤ a}) :
