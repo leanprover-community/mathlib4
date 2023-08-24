@@ -34,16 +34,12 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 -/
 
 
-/- Note: we can't extend both `AddCon R` and `MulCon R` in Lean 3 due to interactions between old-
-and new-style structures. We can revisit this in Lean 4. (After and not during the port!) -/
 /-- A congruence relation on a type with an addition and multiplication is an equivalence relation
 which preserves both. -/
 structure RingCon (R : Type*) [Add R] [Mul R] extends AddCon R, Con R where
-  -- /-- Ring congruence relations are closed under addition -/
-  -- add' : ∀ {w x y z}, r w x → r y z → r (w + y) (x + z)
-  -- /-- Ring congruence relations are closed under multiplication -/
-  -- mul' : ∀ {w x y z}, r w x → r y z → r (w * y) (x * z)
 #align ring_con RingCon
+
+attribute [inherit_doc RingCon] RingCon.toCon RingCon.toAddCon
 
 variable {α R : Type*}
 
@@ -62,8 +58,7 @@ inductive RingConGen.Rel [Add R] [Mul R] (r : R → R → Prop) : R → R → Pr
 
 /-- The inductively defined smallest ring congruence relation containing a given binary
     relation. -/
-def ringConGen [Add R] [Mul R] (r : R → R → Prop) : RingCon R
-    where
+def ringConGen [Add R] [Mul R] (r : R → R → Prop) : RingCon R where
   r := RingConGen.Rel r
   iseqv := ⟨RingConGen.Rel.refl, @RingConGen.Rel.symm _ _ _ _, @RingConGen.Rel.trans _ _ _ _⟩
   add' := RingConGen.Rel.add
@@ -76,16 +71,6 @@ section Basic
 
 variable [Add R] [Mul R] (c : RingCon R)
 
--- /-- Every `RingCon` is also an `AddCon` -/
--- def toAddCon : AddCon R :=
-  -- { c with }
--- #align ring_con.to_add_con RingCon.toAddCon
-
--- /-- Every `RingCon` is also a `Con` -/
--- def toCon : Con R :=
-  -- { c with }
--- #align ring_con.to_con RingCon.toCon
-
 --Porting note: upgrade to `FunLike`
 /-- A coercion from a congruence relation to its underlying binary relation. -/
 instance : FunLike (RingCon R) R fun _ => R → Prop :=
@@ -97,7 +82,6 @@ instance : FunLike (RingCon R) R fun _ => R → Prop :=
       rw [Setoid.ext_iff,(show x.Rel = y.Rel from h)]
       simp}
 
-@[simp]
 theorem rel_eq_coe : c.r = c :=
   rfl
 #align ring_con.rel_eq_coe RingCon.rel_eq_coe
@@ -121,11 +105,6 @@ protected theorem add {w x y z} : c w x → c y z → c (w + y) (x + z) :=
 protected theorem mul {w x y z} : c w x → c y z → c (w * y) (x * z) :=
   c.mul'
 #align ring_con.mul RingCon.mul
-
--- @[simp]
--- theorem rel_mk {s : Setoid R} {ha hm a b} : RingCon.mk s ha hm a b ↔ Setoid.r a b :=
---   Iff.rfl
--- #align ring_con.rel_mk RingCon.rel_mk
 
 instance : Inhabited (RingCon R) :=
   ⟨ringConGen EmptyRelation⟩
