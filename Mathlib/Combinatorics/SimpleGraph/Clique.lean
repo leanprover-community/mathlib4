@@ -153,7 +153,7 @@ section CliqueFree
 
 variable {m n : ℕ}
 
-/-- `G.clique_free n` means that `G` has no `n`-cliques. -/
+/-- `G.CliqueFree n` means that `G` has no `n`-cliques. -/
 def CliqueFree (n : ℕ) : Prop :=
   ∀ t, ¬G.IsNClique n t
 #align simple_graph.clique_free SimpleGraph.CliqueFree
@@ -220,13 +220,24 @@ theorem CliqueFree.anti (h : G ≤ H) : H.CliqueFree n → G.CliqueFree n :=
   forall_imp fun _ ↦ mt <| IsNClique.mono h
 #align simple_graph.clique_free.anti SimpleGraph.CliqueFree.anti
 
-/-- See `simple_graph.clique_free_chromatic_number_succ` for a tighter bound. -/
+/-- See `SimpleGraph.cliqueFree_of_chromaticNumber_lt` for a tighter bound. -/
 theorem cliqueFree_of_card_lt [Fintype α] (hc : card α < n) : G.CliqueFree n := by
   by_contra h
   refine' Nat.lt_le_antisymm hc _
   rw [cliqueFree_iff, not_isEmpty_iff] at h
   simpa only [Fintype.card_fin] using Fintype.card_le_of_embedding h.some.toEmbedding
 #align simple_graph.clique_free_of_card_lt SimpleGraph.cliqueFree_of_card_lt
+
+/-- A complete `r`-partite graph has no `r + 1`-cliques. -/
+theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι → Type*) :
+    (completeMultipartiteGraph V).CliqueFree (Fintype.card ι + 1) := fun t => by
+  rw [isNClique_iff, and_comm, not_and]
+  intro hc
+  obtain ⟨v, w, hn, he⟩ := exists_ne_map_eq_of_card_lt (fun k : t => k.1.1) (by simp [hc])
+  simp only [IsClique, Set.Pairwise, not_forall]
+  use v, v.2, w, w.2
+  simp only [exists_prop, comap_Adj, he, SimpleGraph.irrefl, and_true]
+  contrapose! hn; rw [Subtype.mk.injEq]; exact hn
 
 end CliqueFree
 
