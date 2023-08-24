@@ -23,9 +23,6 @@ import Mathlib.Tactic.Ring
 
 -/
 
-set_option autoImplicit true
-
-
 variable {R R₂ K M M₂ V S : Type*}
 
 namespace Submodule
@@ -155,7 +152,7 @@ theorem span_induction {p : M → Prop} (h : x ∈ span R s) (Hs : ∀ x ∈ s, 
 
 /-- An induction principle for span membership. This is a version of `Submodule.span_induction`
 for binary predicates. -/
-theorem span_induction₂ {p : M → M → Prop} (ha : a ∈ Submodule.span R s)
+theorem span_induction₂ {p : M → M → Prop} {a b : M} (ha : a ∈ Submodule.span R s)
     (hb : b ∈ Submodule.span R s) (Hs : ∀ x ∈ s, ∀ y ∈ s, p x y)
     (H0_left : ∀ y, p 0 y) (H0_right : ∀ x, p x 0)
     (Hadd_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ + x₂) y)
