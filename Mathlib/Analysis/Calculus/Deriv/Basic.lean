@@ -364,10 +364,11 @@ theorem HasDerivWithinAt.mono (h : HasDerivWithinAt f f' t x) (hst : s ⊆ t) :
   HasFDerivWithinAt.mono h hst
 #align has_deriv_within_at.mono HasDerivWithinAt.mono
 
-theorem HasDerivWithinAt.mono_of_mem (h : HasDerivWithinAt f f' t x) (hst : t ∈ 𝓝[s] x) :
-    HasDerivWithinAt f f' s x :=
+theorem HasDerivWithinAt.mono_of_mem
+    (h : HasDerivWithinAt f f' t x) (hst : t ∈ 𝓝[s] x) : HasDerivWithinAt f f' s x :=
   HasFDerivWithinAt.mono_of_mem h hst
 #align has_deriv_within_at.mono_of_mem HasDerivWithinAt.mono_of_mem
+#align has_deriv_within_at.nhds_within HasDerivWithinAt.mono_of_mem
 
 theorem HasDerivAt.hasDerivAtFilter (h : HasDerivAt f f' x) (hL : L ≤ 𝓝 x) :
     HasDerivAtFilter f f' x L :=
@@ -410,11 +411,6 @@ theorem HasDerivWithinAt.union (hs : HasDerivWithinAt f f' s x) (ht : HasDerivWi
     HasDerivWithinAt f f' (s ∪ t) x :=
   hs.hasFDerivWithinAt.union ht.hasFDerivWithinAt
 #align has_deriv_within_at.union HasDerivWithinAt.union
-
-theorem HasDerivWithinAt.nhdsWithin (h : HasDerivWithinAt f f' s x) (ht : s ∈ 𝓝[t] x) :
-    HasDerivWithinAt f f' t x :=
-  (hasDerivWithinAt_inter' ht).1 (h.mono (inter_subset_right _ _))
-#align has_deriv_within_at.nhds_within HasDerivWithinAt.nhdsWithin
 
 theorem HasDerivWithinAt.hasDerivAt (h : HasDerivWithinAt f f' s x) (hs : s ∈ 𝓝 x) :
     HasDerivAt f f' x :=
