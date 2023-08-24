@@ -701,9 +701,8 @@ def equiv (f : F[X]) (hf : f ≠ 0) :
     (AdjoinRoot f →ₐ[F] L) ≃ { x // x ∈ f.aroots L } :=
   (powerBasis hf).liftEquiv'.trans
     ((Equiv.refl _).subtypeEquiv fun x => by
-      rw [powerBasis_gen, minpoly_root hf, aroots_def, Polynomial.map_mul, roots_mul,
-        Polynomial.map_C, roots_C, add_zero, Equiv.refl_apply]
-      rw [← Polynomial.map_mul]; exact map_monic_ne_zero (monic_mul_leadingCoeff_inv hf))
+      rw [powerBasis_gen, minpoly_root hf, aroots_mul, aroots_C, add_zero, Equiv.refl_apply]
+      exact (monic_mul_leadingCoeff_inv hf).ne_zero)
 #align adjoin_root.equiv AdjoinRoot.equiv
 
 end Field

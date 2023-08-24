@@ -99,10 +99,9 @@ theorem mul (f g : F[X]) (hf : f ≠ 0) (hg : g ≠ 0) [IsSplittingField F K f]
   ⟨(IsScalarTower.algebraMap_eq F K L).symm ▸
       splits_mul _ (splits_comp_of_splits _ _ (splits K f))
         ((splits_map_iff _ _).1 (splits L <| g.map <| algebraMap F K)), by
-    rw [rootSet, aroots, Polynomial.map_mul,
-      roots_mul (mul_ne_zero (map_ne_zero hf : f.map (algebraMap F L) ≠ 0) (map_ne_zero hg)),
+    rw [rootSet, aroots_mul (mul_ne_zero hf hg),
       Multiset.toFinset_add, Finset.coe_union, Algebra.adjoin_union_eq_adjoin_adjoin,
-      IsScalarTower.algebraMap_eq F K L, ← map_map,
+      aroots_def, aroots_def, IsScalarTower.algebraMap_eq F K L, ← map_map,
       roots_map (algebraMap K L) ((splits_id_iff_splits <| algebraMap F K).2 <| splits K f),
       Multiset.toFinset_map, Finset.coe_image, Algebra.adjoin_algebraMap, ← rootSet, adjoin_rootSet,
       Algebra.map_top, IsScalarTower.adjoin_range_toAlgHom, ← map_map, ← rootSet, adjoin_rootSet,

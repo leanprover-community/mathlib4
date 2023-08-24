@@ -1091,6 +1091,7 @@ theorem Lifts.exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ �
 #align intermediate_field.lifts.exists_upper_bound IntermediateField.Lifts.exists_upper_bound
 
 set_option maxHeartbeats 350000 in
+set_option synthInstance.maxHeartbeats 35000 in
 -- Porting note: instance `alg` added by hand. The proof is very slow.
 /-- Extend a lift `x : Lifts F E K` to an element `s : E` whose conjugates are all in `K` -/
 noncomputable def Lifts.liftOfSplits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
@@ -1100,15 +1101,16 @@ noncomputable def Lifts.liftOfSplits (x : Lifts F E K) {s : E} (h1 : IsIntegral 
     splits_of_splits_of_dvd _ (map_ne_zero (minpoly.ne_zero h1))
      ((splits_map_iff _ _).mpr (by convert h2; exact RingHom.ext fun y => x.2.commutes y))
       (minpoly.dvd_map_of_isScalarTower _ _ _)
-  let alg : Algebra {y // y ∈ x.fst} {y // y ∈ restrictScalars F {z // z ∈ x.fst}⟮s⟯} :=
+  letI : Algebra {y // y ∈ x.fst} {y // y ∈ restrictScalars F {z // z ∈ x.fst}⟮s⟯} :=
     {z // z ∈ x.fst}⟮s⟯.toSubalgebra.algebra
+  letI := x.2.toRingHom.toAlgebra
   ⟨x.1⟮s⟯.restrictScalars F,
     (@algHomEquivSigma F x.1 (x.1⟮s⟯.restrictScalars F) K _ _ _ _ _ _ _
           (IntermediateField.algebra x.1⟮s⟯) (IsScalarTower.of_algebraMap_eq fun _ => rfl)).invFun
       ⟨x.2,
-        (@algHomAdjoinIntegralEquiv x.1 _ E _ _ s K _ x.2.toRingHom.toAlgebra h3).invFun
+        (@algHomAdjoinIntegralEquiv x.1 _ E _ _ s K _ _ h3).invFun
           ⟨rootOfSplits x.2.toRingHom key (ne_of_gt (minpoly.degree_pos h3)), by
-            rw [mem_roots (map_ne_zero (minpoly.ne_zero h3)), IsRoot, ← eval₂_eq_eval_map]
+            rw [mem_aroots, and_iff_right (minpoly.ne_zero h3)]
             exact map_rootOfSplits x.2.toRingHom key (ne_of_gt (minpoly.degree_pos h3))⟩⟩⟩
 #align intermediate_field.lifts.lift_of_splits IntermediateField.Lifts.liftOfSplits
 
@@ -1130,7 +1132,7 @@ theorem Lifts.le_lifts_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
         have I2 := (ne_of_gt (minpoly.degree_pos I1))
         have I3 : rootOfSplits (AlgHom.toRingHom x.2) key (ne_of_gt (minpoly.degree_pos I1)) ∈
             (minpoly x.1 s).aroots K := by
-          rw [mem_roots (map_ne_zero (minpoly.ne_zero I1)), IsRoot, ← eval₂_eq_eval_map]
+          rw [mem_aroots, and_iff_right (minpoly.ne_zero I1)]
           exact map_rootOfSplits x.2.toRingHom key (ne_of_gt (minpoly.degree_pos I1))
         let φ : x.1⟮s⟯ →ₐ[x.1] K := ((algHomAdjoinIntegralEquiv x.1 I1).invFun
           ⟨rootOfSplits (AlgHom.toRingHom x.2) key I2, I3⟩)

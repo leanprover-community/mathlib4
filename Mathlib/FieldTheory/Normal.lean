@@ -215,8 +215,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
     apply splits_of_splits_of_dvd (algebraMap C E) (map_ne_zero (minpoly.ne_zero Hz))
     · rw [splits_map_iff, ← algebraMap_eq F C E]
       exact
-        splits_of_splits_of_dvd _ hp hFEp.splits
-          (minpoly.dvd F z (Eq.trans (eval₂_eq_eval_map _) ((mem_roots (map_ne_zero hp)).mp hz1)))
+        splits_of_splits_of_dvd _ hp hFEp.splits (minpoly.dvd F z (mem_aroots.mp hz1).2)
     · apply minpoly.dvd
       rw [← hz2, aeval_def, eval₂_map, ← algebraMap_eq F C D, algebraMap_eq F E D, ← hom_eval₂, ←
         aeval_def, minpoly.aeval F z, RingHom.map_zero]
