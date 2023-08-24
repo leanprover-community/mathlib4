@@ -1187,12 +1187,29 @@ end Trunc
 
 namespace Multiset
 
-variable [Fintype α] [DecidableEq α]
+variable [Fintype α] [DecidableEq α] [Fintype β] [DecidableEq β]
 
 @[simp]
 theorem count_univ (a : α) : count a Finset.univ.val = 1 :=
   count_eq_one_of_mem Finset.univ.nodup (Finset.mem_univ _)
 #align multiset.count_univ Multiset.count_univ
+
+/-- If f is a bijection of finite sets, it maps universes into universes. -/
+@[simp]
+theorem Multiset.map_univ_eq_univ_of_bijection (f : α → β) (hf : Function.Bijective f) :
+    Multiset.map f (Finset.univ : Finset α).val = univ.val := by
+  -- TODO: Note the converse is also true - this should turn into a @[simp] iff lemma
+  ext a
+  rw [Function.bijective_iff_has_inverse] at hf
+  rcases hf with ⟨f_inv, hf_inv, hf_inv'⟩
+  have ha : a = f (f_inv a) := by
+    unfold Function.RightInverse Function.LeftInverse at hf_inv'
+    simp [hf_inv']
+  simp only [mem_val, mem_univ, not_true, Multiset.count_univ, Multiset.mem_map, true_and,
+      Subtype.exists, not_exists]
+  rw [ha, Multiset.count_map_eq_count']
+  simp only [mem_val, mem_univ, not_true, Multiset.count_univ]
+  exact Function.LeftInverse.injective hf_inv
 
 end Multiset
 

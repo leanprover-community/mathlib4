@@ -271,45 +271,7 @@ theorem sum_subgroup_units
 
 theorem Fintype.exists_unique_iff_card_one {α} [Fintype α] (p : α → Prop) [DecidablePred p] :
     (∃! a : α, p a) ↔ (Finset.univ.filter p).card = 1 := by
-  constructor
-  · sorry
-  · sorry
-
-/-- If f is a bijection of finite sets, it maps the multiset univ into the other.
-TODO the converse is also true - turn this into a simp iff-/
-@[simp]
-theorem Multiset.map_univ_eq_univ_of_bijection {α β : Type} [Fintype α] [Fintype β] [DecidableEq α]
-  [DecidableEq β]
-    (f : α → β) (hf : Function.Bijective f) :
-    Multiset.map f (Finset.univ : Finset α).val = univ.val := by
-  ext a_1
-  simp only [mem_val, mem_univ, not_true, Multiset.count_univ, Multiset.mem_map, true_and,
-      Subtype.exists, not_exists]
-  rw [Function.bijective_iff_has_inverse] at hf
-  rcases hf with ⟨f_inv, hf_inv, hf_inv'⟩
-  have ha_1 : a_1 = f (f_inv a_1) := by
-    unfold Function.RightInverse Function.LeftInverse at hf_inv'
-    simp [hf_inv']
-  rw [ha_1, Multiset.count_map_eq_count']
-  simp only [mem_val, mem_univ, not_true, Multiset.count_univ]
-  exact Function.LeftInverse.injective hf_inv
-
-
--- @[simp]
--- theorem Multiset.map_univ_eq_univ_iff_bijection {α β : Type} [Fintype α] [Fintype β] [DecidableEq β] (f : α → β) :
---     Multiset.map f (Finset.univ : Finset α).val = univ.val ↔ Function.Bijective f := by
---   simp_rw [Function.bijective_iff_existsUnique]
---   -- sorry
---   constructor
---   -- aesop
---   · intro h b
---     rw [Fintype.exists_unique_iff_card_one]
-
-
---     sorry
---   · intro h
---     apply Multiset.map_univ_eq_univ_of_bijection
-
+  sorry
 
 theorem sum_subgroup_pow_eq_zero {F : Type} [Field F] [Fintype F]
     [DecidableEq F] {G : Subgroup Fˣ} [Fintype G] {k : ℕ} (k_pos : 0 < k)
