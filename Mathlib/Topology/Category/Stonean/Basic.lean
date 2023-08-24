@@ -155,14 +155,17 @@ def isoOfHomeo {X Y : Stonean} (f : X ≃ₜ Y) : X ≅ Y where
     exact f.apply_symm_apply x
 
 /-- Construct a homeomorphism from an isomorphism. -/
+@[simps!]
+def homeoOfIso {X Y : Stonean} (f : X ≅ Y) : X ≃ₜ Y := Profinite.homeoOfIso (toProfinite.mapIso f)
+
+/-- The equivalence between isomorphisms in `Stonean` and homeomorphisms
+of topological spaces. -/
 @[simps]
-def homeoOfIso {X Y : Stonean} (f : X ≅ Y) : X ≃ₜ Y where
-  toFun := f.1
-  invFun := f.2
-  left_inv x := Iso.hom_inv_id_apply f x -- why doesn't `simp` work?
-  right_inv x := Iso.inv_hom_id_apply f x -- why doesn't `simp` work?
-  continuous_toFun := f.hom.continuous
-  continuous_invFun := f.inv.continuous
+def isoEquivHomeo {X Y : Stonean} : (X ≅ Y) ≃ (X ≃ₜ Y) where
+  toFun := homeoOfIso
+  invFun := isoOfHomeo
+  left_inv f := by ext; rfl
+  right_inv f := by ext; rfl
 
 /-- Every Stonean space is projective in `CompHaus` -/
 instance (X : Stonean) : Projective X.compHaus where

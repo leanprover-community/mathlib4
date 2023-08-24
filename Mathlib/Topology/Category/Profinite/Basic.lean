@@ -349,14 +349,8 @@ def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y where
 #align Profinite.iso_of_homeo Profinite.isoOfHomeo
 
 /-- Construct a homeomorphism from an isomorphism. -/
-@[simps]
-def homeoOfIso (f : X ≅ Y) : X ≃ₜ Y where
-  toFun := f.hom
-  invFun := f.inv
-  left_inv x := by simp
-  right_inv x := by simp
-  continuous_toFun := f.hom.continuous
-  continuous_invFun := f.inv.continuous
+@[simps!]
+def homeoOfIso (f : X ≅ Y) : X ≃ₜ Y := CompHaus.homeoOfIso (profiniteToCompHaus.mapIso f)
 #align Profinite.homeo_of_iso Profinite.homeoOfIso
 
 /-- The equivalence between isomorphisms in `Profinite` and homeomorphisms
