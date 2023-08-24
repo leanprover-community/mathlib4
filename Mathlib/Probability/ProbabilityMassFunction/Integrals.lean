@@ -20,9 +20,9 @@ namespace Pmf
 
 open MeasureTheory BigOperators
 
-theorem integral_eq_tsum' [MeasurableSpace α] [MeasurableSingletonClass α] (p : Pmf α)
+theorem integral_eq_tsum' (α : Type _) [MeasurableSpace α] [MeasurableSingletonClass α] (p : Pmf α)
   (f : α → ℝ) (hf : Integrable (fun a ↦ f a) (p.toMeasure)) :
-  ∫ a, f a ∂(p.toMeasure) = ∑' a, f a * (p a).toReal := calc
+    ∫ a, f a ∂(p.toMeasure) = ∑' a, f a * (p a).toReal := calc
   _ = ∫ a in p.support, f a ∂(p.toMeasure) := by rw [restrict_toMeasure_support p]
   _ = ∑' (a : ↑(support p)), f a * (p.toMeasure {a.val}).toReal := by
     apply integral_countable f p.support_countable
@@ -38,18 +38,19 @@ theorem integral_eq_tsum' [MeasurableSpace α] [MeasurableSingletonClass α] (p 
     simp [ENNReal.toReal_eq_zero_iff]
     tauto
 
-theorem integral_eq_tsum [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (p : Pmf α)
-  (f : α → ℝ) (hf : Integrable (fun a ↦ f a) p.toMeasure) :
-  ∫ a, f a ∂(p.toMeasure) = ∑' a, f a * (p a).toReal := by
+theorem integral_eq_tsum (α : Type _) [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α]
+  (p : Pmf α) (f : α → ℝ) (hf : Integrable (fun a ↦ f a) p.toMeasure) :
+    ∫ a, f a ∂(p.toMeasure) = ∑' a, f a * (p a).toReal := by
   rw [integral_countable' hf]
   congr 1 with x
   rw [Pmf.toMeasure_apply_singleton _ _ (MeasurableSet.singleton x)]
 
-theorem integral_eq_sum [Fintype α] [MeasurableSpace α] [MeasurableSingletonClass α] (p : Pmf α)
-  (f : α → ℝ) : ∫ a, f a ∂(p.toMeasure) = ∑ a, f a * (p a).toReal := by
+theorem integral_eq_sum (α : Type _) [Fintype α] [MeasurableSpace α] [MeasurableSingletonClass α]
+  (p : Pmf α) (f : α → ℝ) :
+    ∫ a, f a ∂(p.toMeasure) = ∑ a, f a * (p a).toReal := by
   rw [integral_fintype _ (integrable_of_fintype _ f)]
   congr 1 with x
   rw [Pmf.toMeasure_apply_singleton _ _ (MeasurableSet.singleton x)]
 
 theorem bernoulli_expectation {p : ENNReal} (h : p ≤ 1) :
-  ∫ b, cond b 1 0 ∂((bernoulli p h).toMeasure) = p.toReal := by simp [integral_eq_sum]
+    ∫ b, cond b 1 0 ∂((bernoulli p h).toMeasure) = p.toReal := by simp [integral_eq_sum]
