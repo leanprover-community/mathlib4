@@ -1607,6 +1607,7 @@ import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Data.Nat.Factorial.Cast
 import Mathlib.Data.Nat.Factorial.DoubleFactorial
+import Mathlib.Data.Nat.Factorial.SuperFactorial
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.Data.Nat.Factors
@@ -1639,7 +1640,6 @@ import Mathlib.Data.Nat.Sqrt
 import Mathlib.Data.Nat.SqrtNormNum
 import Mathlib.Data.Nat.Squarefree
 import Mathlib.Data.Nat.SuccPred
-import Mathlib.Data.Nat.SuperFactorial.Basic
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.Nat.Units
 import Mathlib.Data.Nat.Upto
