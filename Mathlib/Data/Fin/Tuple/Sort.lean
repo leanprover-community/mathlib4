@@ -109,70 +109,45 @@ theorem monotone_sort (f : Fin n → α) : Monotone (f ∘ sort f) := by
   exact (monotone_proj f).comp (graphEquiv₂ f).monotone
 #align tuple.monotone_sort Tuple.monotone_sort
 
-/-- A sorted tuple with `m` elements and exactly `Fintype.card {i // f i ≤ a}` less than `a` has the
-elements at the start -/
-theorem sort_lt_at_start_of_monotone {α} [LinearOrder α] (m : ℕ) (f : Fin m → α) (a : α)
-    (h_sorted : Monotone f)
-    (j : Fin m) (h : j < Fintype.card {i // f i ≤ a}) :
-    f j ≤ a := by
-  contrapose! h
-  rw [← Fin.card_Iio, Fintype.card_subtype]
-  refine Finset.card_mono (fun i => Function.mtr ?_)
-  simp_rw [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_Iio]
-  exact fun hij => (h.trans_le <| h_sorted <| le_of_not_lt hij).not_le
-
 lemma Fintype.card_fin_lt_nat (m g : ℕ) (h : g ≤ m) : Fintype.card {i : Fin m // i < g } = g := by
   conv_rhs => rw [← Fintype.card_fin g]
   apply Fintype.card_congr
   exact ⟨ fun x => ⟨x, x.prop⟩, fun x => ⟨⟨x, (lt_of_lt_of_le (Fin.is_lt x) h)⟩, x.prop⟩,
     fun x => by simp, fun x => by simp⟩
 
-/--In sorted tuple with `m` elements and with `Fintype.card {i // f i ≤ a}` elements less than `a`,
- all the `· ≤ a` appear the start of a sorted tuple -/
-theorem sort_lt_at_start_of_monotone' {α} [LinearOrder α] (m : ℕ)(f : Fin m → α) (a : α)
-    (h_sorted : Monotone f)
-    (j : Fin m) :
-    f j ≤ a → (j < Fintype.card {i // f i ≤ a}) := by
-  intro h
-  by_contra' hc
-  let p := fun x : Fin m => f x ≤ a
-  let q := fun x : Fin m => (x < (Fintype.card {i // f i ≤ a}))
-  let q' := fun x : {i // f i ≤ a} => q x
-
-  have he := Fintype.card_congr $ Equiv.sumCompl $ q'
-  have h4 := (Fintype.card_congr (@Equiv.subtypeSubtypeEquivSubtype _ p q
-    (sort_lt_at_start_of_monotone m f a h_sorted _)))
-  have hw : 0 < Fintype.card {j : {x : Fin m // p x} // ¬q' j} :=
-    Fintype.card_pos_iff.2 (Nonempty.intro ⟨⟨j, h⟩, not_lt.2 hc⟩)
-
-  rw [Fintype.card_sum, h4, Fintype.card_fin_lt_nat, add_right_eq_self] at he
-  apply (ne_of_lt hw) he.symm
-  conv_rhs => rw [← Fintype.card_fin m]
-  exact Fintype.card_subtype_le _
-
+/-- A sorted tuple with `m` elements and exactly `Fintype.card {i // f i ≤ a}` less than `a`, has
+the elements at the start, and vice versa -/
 theorem sort_lt_at_start_of_monotone_iff {α} [LinearOrder α] (m : ℕ) (f : Fin m → α) (a : α)
     (h_sorted : Monotone f)
     (j : Fin m) :
-    (j < Fintype.card {i // f i ≤ a})  ↔ f j ≤ a :=
-  ⟨sort_lt_at_start_of_monotone m f a h_sorted j, sort_lt_at_start_of_monotone' _ _ _ h_sorted _⟩
+    (j < Fintype.card {i // f i ≤ a})  ↔ f j ≤ a := by
+  suffices h1 : ∀ k : Fin m, (k < Fintype.card {i // f i ≤ a}) → f k ≤ a
+  refine ⟨h1 j, ?_⟩
+  · intro h
+    by_contra' hc
+    let p := fun x : Fin m => f x ≤ a
+    let q := fun x : Fin m => (x < (Fintype.card {i // f i ≤ a}))
+    let q' := fun x : {i // f i ≤ a} => q x
+    have hw : 0 < Fintype.card {j : {x : Fin m // f x ≤ a} // ¬q' j} :=
+      Fintype.card_pos_iff.2 (Nonempty.intro ⟨⟨j, h⟩, not_lt.2 hc⟩)
+    have he := Fintype.card_congr $ Equiv.sumCompl $ q'
+    have h4 := (Fintype.card_congr (@Equiv.subtypeSubtypeEquivSubtype _ p q (h1 _)))
+    rw [Fintype.card_sum, h4, Fintype.card_fin_lt_nat, add_right_eq_self] at he
+    apply (ne_of_lt hw) he.symm
+    conv_rhs => rw [← Fintype.card_fin m]
+    exact Fintype.card_subtype_le _
+  · intro _ h
+    contrapose! h
+    rw [← Fin.card_Iio, Fintype.card_subtype]
+    refine Finset.card_mono (fun i => Function.mtr ?_)
+    simp_rw [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_Iio]
+    exact fun hij => (h.trans_le <| h_sorted <| le_of_not_lt hij).not_le
 
 theorem sort_ge_at_start_of_anittone_iff {α} [LinearOrder α] (m : ℕ) (f : Fin m → α) (a : α)
     (h_sorted : Antitone f)
     (j : Fin m) :
     (j < Fintype.card {i // a ≤ f i})  ↔ a ≤ f j :=
   @sort_lt_at_start_of_monotone_iff (OrderDual α) _ m f a (monotone_toDual_comp_iff.1 h_sorted) j
-
-theorem sort_ge_at_start_of_antitone {α} [LinearOrder α] (m : ℕ) (f : Fin m → α) (a : α)
-    (h_sorted : Antitone f)
-    (j : Fin m) :
-    (j < Fintype.card {i // a ≤ f i})  → a ≤ f j :=
-  (sort_ge_at_start_of_anittone_iff _ f a h_sorted j).1
-
-theorem sort_ge_at_start_of_antitone' {α} [LinearOrder α] (m : ℕ) (f : Fin m → α) (a : α)
-    (h_sorted : Antitone f)
-    (j : Fin m) :
-    a ≤ f j → (j < Fintype.card {i // a ≤ f i})  :=
-  (sort_ge_at_start_of_anittone_iff _ f a h_sorted j).2
 
 end Tuple
 
