@@ -3,7 +3,7 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Basis
 import Mathlib.Data.Fin.FlagRange
 
 /-!
@@ -34,7 +34,7 @@ theorem flag_zero (b : Basis (Fin n) R M) : b.flag 0 = ⊥ := by simp [flag]
 theorem flag_last (b : Basis (Fin n) R M) : b.flag (.last n) = ⊤ := by
   simp [flag, Fin.castSucc_lt_last]
 
-theorem flag_le_iff (b : Basis (Fin n) R M) :
+theorem flag_le_iff (b : Basis (Fin n) R M) {k p} :
     b.flag k ≤ p ↔ ∀ i : Fin n, i.castSucc < k → b i ∈ p :=
   span_le.trans ball_image_iff
 
@@ -69,14 +69,14 @@ section CommRing
 
 variable {R M : Type _} [CommRing R] [AddCommGroup M] [Module R M] {n : ℕ}
 
-theorem flag_le_ker_dual_iff [Nontrivial R] (b : Basis (Fin n) R M) {k : Fin (n + 1)} {l : Fin n} :
-    b.flag k ≤ LinearMap.ker (b.dualBasis l) ↔ k ≤ l.castSucc := by
+theorem flag_le_ker_coord_iff [Nontrivial R] (b : Basis (Fin n) R M) {k : Fin (n + 1)} {l : Fin n} :
+    b.flag k ≤ LinearMap.ker (b.coord l) ↔ k ≤ l.castSucc := by
   simp [flag_le_iff, Finsupp.single_apply_eq_zero, imp_false, imp_not_comm]
 
-theorem flag_le_ker_dual (b : Basis (Fin n) R M) {k : Fin (n + 1)} {l : Fin n}
-    (h : k ≤ l.castSucc) : b.flag k ≤ LinearMap.ker (b.dualBasis l) := by
+theorem flag_le_ker_coord (b : Basis (Fin n) R M) {k : Fin (n + 1)} {l : Fin n}
+    (h : k ≤ l.castSucc) : b.flag k ≤ LinearMap.ker (b.coord l) := by
   nontriviality R
-  exact b.flag_le_ker_dual_iff.2 h
+  exact b.flag_le_ker_coord_iff.2 h
 
 end CommRing
 

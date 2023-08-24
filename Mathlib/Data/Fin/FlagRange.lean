@@ -10,20 +10,24 @@ import Mathlib.Data.Fin.Basic
 /-!
 # Range of `f : Fin (n + 1) → α` as a `Flag`
 
-If `f : Fin (n + 1) → α` sends `0` to `⊥`, `Fin.last n` to `⊤`,
-and `f (Fin.castSucc k) ⩿ f (Fin.succ k)` for all `k : Fin n`,
-then the range of `f` is a maximal chain.
+Let `f : Fin (n + 1) → α` be an `(n + 1)`-tuple such that
+- `f₀ = ⊥` and `fₙ = ⊤`;
+- `fₖ₊₁` weakly covers `fₖ` for all `0 ≤ k < n`;
+  this means that `fₖ ≤ fₖ₊₁` and there is no `c` such that `fₖ<c<fₖ₊₁`.
+Then the range of `f` is a maximal chain.
 
 We formulate this result in terms of `IsMaxChain` and `Flag`.
 -/
 
 open Set
 
-variable {α : Type _} [PartialOrder α] [BoundedOrder α] {f : Fin (n + 1) → α}
+variable {α : Type _} [PartialOrder α] [BoundedOrder α] {n : ℕ} {f : Fin (n + 1) → α}
 
-/- If `f : Fin (n + 1) → α` sends `0` to `⊥`, `Fin.last n` to `⊤`,
-and `f (Fin.castSucc k) ⩿ f (Fin.succ k)` for all `k : Fin n`,
-then the range of `f` is a maximal chain. -/
+/- Let `f : Fin (n + 1) → α` be an `(n + 1)`-tuple such that
+- `f₀ = ⊥` and `fₙ = ⊤`;
+- `fₖ₊₁` weakly covers `fₖ` for all `0 ≤ k < n`;
+  this means that `fₖ ≤ fₖ₊₁` and there is no `c` such that `fₖ<c<fₖ₊₁`.
+Then the range of `f` is a maximal chain. -/
 theorem IsMaxChain.range_fin_of_covby (h0 : f 0 = ⊥) (hlast : f (.last n) = ⊤)
     (hcovby : ∀ k : Fin n, f k.castSucc ⩿ f k.succ) :
     IsMaxChain (· ≤ ·) (range f) := by
@@ -38,9 +42,11 @@ theorem IsMaxChain.range_fin_of_covby (h0 : f 0 = ⊥) (hlast : f (.last n) = �
     rw [range_subset_iff] at hbt
     exact (htc.lt_of_le (hbt k.succ) hx (h _)).resolve_right ((hcovby k).2 ihk)
 
-/- If `f : Fin (n + 1) → α` sends `0` to `⊥`, `Fin.last n` to `⊤`,
-and `f (Fin.castSucc k) ⩿ f (Fin.succ k)` for all `k : Fin n`,
-then the range of `f` is a `Flag α`. -/
+/- Let `f : Fin (n + 1) → α` be an `(n + 1)`-tuple such that
+- `f₀ = ⊥` and `fₙ = ⊤`;
+- `fₖ₊₁` weakly covers `fₖ` for all `0 ≤ k < n`;
+  this means that `fₖ ≤ fₖ₊₁` and there is no `c` such that `fₖ<c<fₖ₊₁`.
+Then the range of `f` is a `Flag α`. -/
 @[simps]
 def Flag.rangeFin (f : Fin (n + 1) → α) (h0 : f 0 = ⊥) (hlast : f (.last n) = ⊤)
     (hcovby : ∀ k : Fin n, f k.castSucc ⩿ f k.succ) : Flag α where
@@ -48,6 +54,6 @@ def Flag.rangeFin (f : Fin (n + 1) → α) (h0 : f 0 = ⊥) (hlast : f (.last n)
   Chain' := (IsMaxChain.range_fin_of_covby h0 hlast hcovby).1
   max_chain' := (IsMaxChain.range_fin_of_covby h0 hlast hcovby).2
 
-@[simp] theorem Flag.mem_rangeFin {h0 hlast hcovby} :
+@[simp] theorem Flag.mem_rangeFin {x h0 hlast hcovby} :
     x ∈ rangeFin f h0 hlast hcovby ↔ ∃ k, f k = x :=
   Iff.rfl
