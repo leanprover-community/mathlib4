@@ -378,6 +378,18 @@ theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
     exact Word.ext _ _ h
 #align free_product.word.rcons_inj Monoid.CoprodI.Word.rcons_inj
 
+theorem mem_rcons_toList_iff {i j : ι} (p : Pair M i) (m : M j) :
+    ⟨_, m⟩ ∈ (rcons p).toList ↔ ⟨_, m⟩ ∈ p.tail.toList ∨
+      m ≠ 1 ∧ (∃ h : i = j, m = h ▸ p.head) := by
+  simp [rcons]
+  by_cases hij : i = j
+  · subst i
+    by_cases hm : m = p.head
+    · subst m
+      split_ifs <;> simp_all
+    · split_ifs <;> simp_all
+  · split_ifs <;> simp_all [Ne.symm hij]
+
 variable [DecidableEq ι]
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -414,6 +426,38 @@ theorem equivPair_eq_of_fstIdx_ne {i} {w : Word M} (h : fstIdx w ≠ some i) :
   (equivPair i).apply_eq_iff_eq_symm_apply.mpr <| Eq.symm (dif_pos rfl)
 #align free_product.word.equiv_pair_eq_of_fst_idx_ne Monoid.CoprodI.Word.equivPair_eq_of_fstIdx_ne
 
+theorem mem_equivPair_tail_toList_iff {i j : ι} {w : Word M} (m : M i) :
+    (⟨i, m⟩ ∈ (equivPair j w).tail.toList) ↔ ⟨i, m⟩ ∈ w.toList.tail
+      ∨ i ≠ j ∧ ∃ h : w.toList ≠ [], w.toList.head h = ⟨i, m⟩ := by
+  simp [equivPair, equivPairAux, mkAux]
+  rcases w with ⟨w, -, -⟩
+  cases w with
+  | nil => simp
+  | cons head tail =>
+    simp
+    rcases head with ⟨k, m₃⟩
+    split_ifs
+    · subst j
+      simp; tauto
+    · simp
+      by_cases hik : i = k
+      · subst i; simp_all [eq_comm, or_comm]
+      · simp_all [Ne.symm hik]
+
+theorem equivPair_head {i : ι} {w : Word M} :
+    (equivPair i w).head =
+      if h : ∃ (h : w.toList ≠ []), (w.toList.head h).1 = i
+      then h.snd ▸ (w.toList.head h.1).2
+      else 1 := by
+  simp [equivPair, equivPairAux, mkAux]
+  rcases w with ⟨w, -, -⟩
+  cases w with
+  | nil => simp
+  | cons head tail =>
+    by_cases hi : i = head.fst
+    · subst hi; simp
+    · simp [hi, Ne.symm hi]
+
 instance summandAction (i) : MulAction (M i) (Word M) where
   smul m w := rcons { equivPair i w with head := m * (equivPair i w).head }
   one_smul w := by
@@ -427,10 +471,32 @@ instance summandAction (i) : MulAction (M i) (Word M) where
 instance : MulAction (CoprodI M) (Word M) :=
   MulAction.ofEndHom (lift fun _ => MulAction.toEndHom)
 
+theorem smul_def (i) (w : Word M) (m : M i) :
+    m • w = rcons { equivPair i w with head := m * (equivPair i w).head } :=
+  rfl
+
 theorem of_smul_def (i) (w : Word M) (m : M i) :
     of m • w = rcons { equivPair i w with head := m * (equivPair i w).head } :=
   rfl
 #align free_product.word.of_smul_def Monoid.CoprodI.Word.of_smul_def
+
+theorem mem_smul_iff {i j : ι} {m₁ : M i} {w : Word M} {m₂ : M j} :
+    ⟨_, m₁⟩ ∈ (m₂ • w).toList ↔
+      ⟨i, m₁⟩ ∈ w.toList.tail
+      ∨ (¬i = j ∧ ∃ h : w.toList ≠ [], w.toList.head h = ⟨i, m₁⟩)
+      ∨ (m₁ ≠ 1 ∧ ∃ (hij : j = i), m₁ = hij ▸
+        (m₂ * (if h : ∃ (h : w.toList ≠ []), (w.toList.head h).1 = j
+          then h.snd ▸ (w.toList.head h.1).2
+          else 1))) := by
+  rw [smul_def, mem_rcons_toList_iff, mem_equivPair_tail_toList_iff,
+    equivPair_head, or_assoc]
+
+theorem mem_smul_iff_of_ne {i j : ι} (hij : i ≠ j) {m₁ : M i} {w : Word M} {m₂ : M j} :
+    ⟨_, m₁⟩ ∈ (m₂ • w).toList ↔ ⟨i, m₁⟩ ∈ w.toList := by
+  rw [mem_smul_iff]
+  simp [hij, Ne.symm hij]
+  rcases w with ⟨w, -, -⟩
+  cases w <;> simp [or_comm, eq_comm]
 
 theorem cons_eq_smul {i} {m : M i} {ls h1 h2} :
     Word.mk (⟨i, m⟩::ls) h1 h2 = of m • mkAux ls h1 h2 := by

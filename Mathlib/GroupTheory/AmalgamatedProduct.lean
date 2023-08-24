@@ -81,11 +81,25 @@ theorem normalizeSingle_snd_eq_of_rightCosetEquivalence
   simp [normalizeSingle]
   congr
 
+theorem rightCosetEquivalence_normalizeSingle_snd {i : ι} {g : G i} :
+    RightCosetEquivalence (φ i).range g (normalizeSingle φ g).2 := by
+  let s : Set (G i) := (φ i).range *r g
+  have hs : s.Nonempty := ⟨g, mem_own_rightCoset _ _⟩
+  rw [RightCosetEquivalence, rightCoset_eq_iff]
+  exact (mem_rightCoset_iff _).1 (Classical.choose_spec hs)
+
 theorem normalizeSingle_fst_mul_normalizeSingle_snd
     {i : ι} {g : G i} : ((normalizeSingle φ g).1 : G i) * (normalizeSingle φ g).2 = g :=
   let s : Set (G i) := (φ i).range *r g
   let hs : s.Nonempty := ⟨g, mem_own_rightCoset _ _⟩
   inv_mul_eq_of_eq_mul (Classical.choose_spec (Classical.choose_spec hs)).2.symm
+
+@[simp]
+theorem normalizeSingle_normalizeSingle_snd {i : ι} (g : G i) :
+    (normalizeSingle φ (normalizeSingle φ g).2).2 = (normalizeSingle φ g).2 :=
+  normalizeSingle_snd_eq_of_rightCosetEquivalence
+     _ (rightCosetEquivalence_normalizeSingle_snd φ).symm
+
 
 variable (n : ι)
 
@@ -102,37 +116,28 @@ structure Pair (i : ι) where
   /-- The index first letter of tail of a `Pair M i` is not equal to `i` -/
   fstIdx_ne : tail.fstIdx ≠ some i
 
-/- To define the action of each `G i` on `Word`, we define `rcons`, which defines
-the action of `G i` on words whose head is not in `G i`. We normalize everything
-as a product  -/
-#print Word.equivPair
-
 variable [DecidableEq ι] [∀ i, DecidableEq (G i)]
 
-def rcons (hφ : ∀ i, Function.Injective (φ i))
+noncomputable def rcons (hφ : ∀ i, Function.Injective (φ i))
     {i : ι} (p : Pair φ n i) : Word φ n :=
-  let ⟨h, g⟩ := normalizeSingle φ p.head
-  let w : CoprodI.Word G := CoprodI.Word.rcons ⟨g, p.tail.toWord, p.3⟩
-  ⟨(rangeEquiv hφ i n h : G n) • w, by
-    -- rintro ⟨j, k⟩ h1 h2
-    -- dsimp [normalizeSingle]
-    -- change _ ∈ (CoprodI.Word.rcons _).toList at h1
-    -- dsimp [Word.rcons] at h1
-    -- split_ifs at h1 with hg1 h2
-    -- · subst g
-    --   simp
-
-
-    ⟩
+  let g := normalizeSingle φ p.head
+  let w : CoprodI.Word G := CoprodI.Word.rcons ⟨g.2, p.tail.toWord, p.3⟩
+  ⟨(rangeEquiv hφ i n g.1 : G n) • w, by
+    rintro ⟨j, g'⟩ h1 h2
+    rw [Word.mem_smul_iff_of_ne h2, Word.mem_rcons_toList_iff] at h1
+    dsimp only at h1 ⊢
+    rcases h1 with h1 | ⟨h1, rfl, rfl⟩
+    · exact p.tail.normalized _ h1 h2
+    · simp⟩
 
 
 /-- The equivalence between words and pairs. Given a word, it decomposes it as a pair by removing
 the first letter if it comes from `M i`. Given a pair, it prepends the head to the tail. -/
-def equivPair (i) : Word φ n ≃ Pair φ n i where
+def equivPair (hφ : ∀ i, Function.Injective (φ i)) (i) : Word φ n ≃ Pair φ n i where
   toFun w := _
-  invFun := rcons
-  left_inv w := (equivPairAux i w).property
-  right_inv _ := rcons_inj (equivPairAux i _).property
+  invFun := rcons _ _ hφ
+  left_inv w := _
+  right_inv _ := _
 
 
 -- noncomputable def normalizeWord : (w : CoprodI.Word G) →
