@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 
+import Mathlib.Data.List.PartialOrder
 import Mathlib.Order.JordanHolder
-import Mathlib.Order.RelSeries
 import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.RingTheory.SimpleModule
 
 /-!
@@ -172,7 +171,8 @@ lemma interList_get_succ_eq_get_of_equiv_punit (i : Fin s.length)
 /-- the `i`-th element of `s ⊓ N` is either equal to the `i+1`-st element of `s ⊓ N` or
   the `i`-th quotient factor is a simple module. -/
 noncomputable def eq_or_interList_qf_is_simple_module (i : Fin s.length) :
-    Inhabited (s.interList_get_succ N i = s.interList_get N i) ⊕ Inhabited (IsSimpleModule R (s.interList_qf N i)) :=
+    Inhabited (s.interList_get_succ N i = s.interList_get N i) ⊕
+    Inhabited (IsSimpleModule R (s.interList_qf N i)) :=
   match (s.interList_qf_aux N i) with
   | Sum.inl e => Sum.inl ⟨s.interList_get_succ_eq_get_of_equiv_punit N i e⟩
   | Sum.inr e => Sum.inr ⟨IsSimpleModule.congr e⟩
@@ -255,5 +255,66 @@ match (s.eq_sum_interList_qf_equiv_qf N i) with
     have := Fin.ext_iff.mp $ h.nodup.get_inj_iff.mp e
     norm_num at this
 | Sum.inr e => e
+
+lemma eq_interList_get_of_head_eq_bot_and_interList_nodup (s0 : s.head = ⊥)
+  (h : (s.interList N).Nodup) (i : Fin $ s.length + 1) :
+  s i = Submodule.map N.subtype ((s.interList N).get $ i.cast (s.interList_length N).symm) := by
+  classical
+  have inter_chain := List.chain'_covby_of_chain'_wcovby_of_nodup _ (s.interList_chain'_wcovby N) h
+  rcases i with ⟨i, hi⟩
+  induction i with | zero => ?_ | succ i ih => ?_
+  · simp only [Nat.zero_eq, Fin.castSucc_mk, Fin.mk_zero]
+    rw [show s 0 = _ from s0, eq_comm, eq_bot_iff]
+    rintro - ⟨y, hy, rfl⟩
+    simpa [SetLike.mem_coe, show (s.interList N).get (Fin.cast (s.interList_length N).symm 0) =
+      Submodule.comap N.subtype (N ⊓ s.head) from s.interList_head_eq N, s0, inf_bot_eq,
+      Submodule.comap_bot, LinearMap.mem_ker] using hy
+
+  change i + 1 < _ at hi
+  have ih' := ih ((lt_add_one _).trans hi) -- s i = N ⊓ s i
+  have ih'' : s ⟨i, (lt_add_one _).trans hi⟩ = N ⊓ s ⟨i, (lt_add_one _).trans hi⟩
+  · erw [ih']; rw [eq_comm, inf_eq_right]
+    rintro _ ⟨y, hy, rfl⟩
+    simp only [Fin.cast_mk, SetLike.mem_coe] at hy
+    rw [s.interList_get_eq_aux N i ((lt_add_one _).trans hi), Submodule.mem_comap] at hy
+    exact hy.1
+  have si_le : s ⟨i, (lt_add_one _).trans hi⟩ ≤ N
+  · rw [ih'']; exact inf_le_left
+
+  rw [List.chain'_iff_get] at inter_chain
+  have h1 := inter_chain i (by
+    rw [interList_length, Nat.add_succ_sub_one, add_zero]
+    exact Nat.succ_lt_succ_iff.mp $ hi)
+  -- N ⊓ s i ⋖ N ⊓ s (i + 1) as N-submodule
+
+  have le1 : N ⊓ s ⟨i, (lt_add_one _).trans hi⟩ ≤ N ⊓ s ⟨i + 1, hi⟩
+  · simp only [ge_iff_le, le_inf_iff, inf_le_left, true_and]
+    refine le_trans inf_le_right (s.strictMono.monotone $ by norm_num)
+
+  have covby2 : s ⟨i, (lt_add_one _).trans hi⟩ ⋖ s ⟨i + 1, hi⟩
+  · refine s.step ⟨i, by linarith only [hi]⟩
+
+  rw [← ih''] at le1
+  obtain (H|H) := covby2.eq_or_eq le1 inf_le_right
+  · have eq2 : (s.interList N).get ⟨i + 1, by rw [s.interList_length]; exact hi⟩ =
+      (s.interList N).get ⟨i, by rw [s.interList_length]; exact (lt_add_one _).trans hi⟩
+    · refine le_antisymm ?_ h1.le
+      rw [s.interList_get_eq_aux N _ hi, s.interList_get_eq_aux N _ ((lt_add_one _).trans hi)]
+      refine Submodule.comap_mono ?_
+      simp only [ge_iff_le, le_inf_iff, inf_le_left, true_and]
+      rw [H]
+    have : IsIrrefl (Submodule R N) (. ≠ .)
+    · fconstructor; intro _ r; exact r rfl
+    have : i + 1 = i := Fin.ext_iff.mp $ h.nodup.get_inj_iff.mp eq2
+    norm_num at this
+  · rw [← H]
+    ext1 x
+    simp only [ge_iff_le, Submodule.mem_inf, Fin.cast_mk, Submodule.mem_map, Submodule.coeSubtype,
+      Subtype.exists, exists_and_right, exists_eq_right]
+    rw [s.interList_get_eq_aux N _ hi]
+    fconstructor
+    · rintro ⟨hx1, hx2⟩
+      refine ⟨hx1, ⟨hx1, hx2⟩⟩
+    · rintro ⟨hy0, ⟨-, hy1⟩⟩; exact ⟨hy0, hy1⟩
 
 end CompositionSeries
