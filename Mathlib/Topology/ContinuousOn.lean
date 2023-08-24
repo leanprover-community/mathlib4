@@ -28,6 +28,8 @@ equipped with the subspace topology.
 
 -/
 
+set_option autoImplicit true
+
 
 open Set Filter Function Topology Filter
 
@@ -605,7 +607,7 @@ theorem continuousOn_iff_continuous_restrict {f : α → β} {s : Set α} :
 #align continuous_on_iff_continuous_restrict continuousOn_iff_continuous_restrict
 
 -- porting note: 2 new lemmas
-alias continuousOn_iff_continuous_restrict ↔ ContinuousOn.restrict _
+alias ⟨ContinuousOn.restrict, _⟩ := continuousOn_iff_continuous_restrict
 
 theorem ContinuousOn.restrict_mapsTo {f : α → β} {s : Set α} {t : Set β} (hf : ContinuousOn f s)
     (ht : MapsTo f s t) : Continuous (ht.restrict f s t) :=
@@ -767,7 +769,7 @@ theorem continuousWithinAt_insert_self {f : α → β} {x : α} {s : Set α} :
     true_and_iff]
 #align continuous_within_at_insert_self continuousWithinAt_insert_self
 
-alias continuousWithinAt_insert_self ↔ _ ContinuousWithinAt.insert_self
+alias ⟨_, ContinuousWithinAt.insert_self⟩ := continuousWithinAt_insert_self
 #align continuous_within_at.insert_self ContinuousWithinAt.insert_self
 
 theorem ContinuousWithinAt.diff_iff {f : α → β} {s t : Set α} {x : α}

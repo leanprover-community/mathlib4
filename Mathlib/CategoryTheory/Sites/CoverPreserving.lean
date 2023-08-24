@@ -133,7 +133,7 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
     over it since `StructuredArrow W u` is cofiltered.
     Then, it suffices to prove that it is compatible when restricted onto `u(c'.X.right)`.
     -/
-  let c' := IsCofiltered.cone (StructuredArrowCone.toDiagram c ⋙ StructuredArrow.pre _ _ _)
+  let c' := IsCofiltered.cone (c.toStructuredArrow ⋙ StructuredArrow.pre _ _ _)
   have eq₁ : f₁ = (c'.pt.hom ≫ G.map (c'.π.app left).right) ≫ eqToHom (by simp) := by
     erw [← (c'.π.app left).w]
     dsimp

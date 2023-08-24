@@ -211,7 +211,7 @@ theorem hasStrictDerivAt_iff_hasStrictFDerivAt :
   Iff.rfl
 #align has_strict_deriv_at_iff_has_strict_fderiv_at hasStrictDerivAt_iff_hasStrictFDerivAt
 
-alias hasStrictDerivAt_iff_hasStrictFDerivAt ↔ HasStrictDerivAt.hasStrictFDerivAt _
+alias ⟨HasStrictDerivAt.hasStrictFDerivAt, _⟩ := hasStrictDerivAt_iff_hasStrictFDerivAt
 #align has_strict_deriv_at.has_strict_fderiv_at HasStrictDerivAt.hasStrictFDerivAt
 
 /-- Expressing `HasDerivAt f f' x` in terms of `HasFDerivAt` -/
@@ -220,7 +220,7 @@ theorem hasDerivAt_iff_hasFDerivAt {f' : F} :
   Iff.rfl
 #align has_deriv_at_iff_has_fderiv_at hasDerivAt_iff_hasFDerivAt
 
-alias hasDerivAt_iff_hasFDerivAt ↔ HasDerivAt.hasFDerivAt _
+alias ⟨HasDerivAt.hasFDerivAt, _⟩ := hasDerivAt_iff_hasFDerivAt
 #align has_deriv_at.has_fderiv_at HasDerivAt.hasFDerivAt
 
 theorem derivWithin_zero_of_not_differentiableWithinAt (h : ¬DifferentiableWithinAt 𝕜 f s x) :
@@ -311,7 +311,7 @@ theorem hasDerivWithinAt_congr_set {s t : Set 𝕜} (h : s =ᶠ[𝓝 x] t) :
   hasFDerivWithinAt_congr_set h
 #align has_deriv_within_at_congr_set hasDerivWithinAt_congr_set
 
-alias hasDerivWithinAt_congr_set ↔ HasDerivWithinAt.congr_set _
+alias ⟨HasDerivWithinAt.congr_set, _⟩ := hasDerivWithinAt_congr_set
 #align has_deriv_within_at.congr_set HasDerivWithinAt.congr_set
 
 @[simp]
@@ -326,7 +326,7 @@ theorem hasDerivWithinAt_Ioi_iff_Ici [PartialOrder 𝕜] :
   rw [← Ici_diff_left, hasDerivWithinAt_diff_singleton]
 #align has_deriv_within_at_Ioi_iff_Ici hasDerivWithinAt_Ioi_iff_Ici
 
-alias hasDerivWithinAt_Ioi_iff_Ici ↔ HasDerivWithinAt.Ici_of_Ioi HasDerivWithinAt.Ioi_of_Ici
+alias ⟨HasDerivWithinAt.Ici_of_Ioi, HasDerivWithinAt.Ioi_of_Ici⟩ := hasDerivWithinAt_Ioi_iff_Ici
 #align has_deriv_within_at.Ici_of_Ioi HasDerivWithinAt.Ici_of_Ioi
 #align has_deriv_within_at.Ioi_of_Ici HasDerivWithinAt.Ioi_of_Ici
 
@@ -336,7 +336,7 @@ theorem hasDerivWithinAt_Iio_iff_Iic [PartialOrder 𝕜] :
   rw [← Iic_diff_right, hasDerivWithinAt_diff_singleton]
 #align has_deriv_within_at_Iio_iff_Iic hasDerivWithinAt_Iio_iff_Iic
 
-alias hasDerivWithinAt_Iio_iff_Iic ↔ HasDerivWithinAt.Iic_of_Iio HasDerivWithinAt.Iio_of_Iic
+alias ⟨HasDerivWithinAt.Iic_of_Iio, HasDerivWithinAt.Iio_of_Iic⟩ := hasDerivWithinAt_Iio_iff_Iic
 #align has_deriv_within_at.Iic_of_Iio HasDerivWithinAt.Iic_of_Iio
 #align has_deriv_within_at.Iio_of_Iic HasDerivWithinAt.Iio_of_Iic
 
@@ -345,7 +345,7 @@ theorem HasDerivWithinAt.Ioi_iff_Ioo [LinearOrder 𝕜] [OrderClosedTopology �
   hasFDerivWithinAt_inter <| Iio_mem_nhds h
 #align has_deriv_within_at.Ioi_iff_Ioo HasDerivWithinAt.Ioi_iff_Ioo
 
-alias HasDerivWithinAt.Ioi_iff_Ioo ↔ HasDerivWithinAt.Ioi_of_Ioo HasDerivWithinAt.Ioo_of_Ioi
+alias ⟨HasDerivWithinAt.Ioi_of_Ioo, HasDerivWithinAt.Ioo_of_Ioi⟩ := HasDerivWithinAt.Ioi_iff_Ioo
 #align has_deriv_within_at.Ioi_of_Ioo HasDerivWithinAt.Ioi_of_Ioo
 #align has_deriv_within_at.Ioo_of_Ioi HasDerivWithinAt.Ioo_of_Ioi
 

@@ -49,9 +49,9 @@ theorem hasSum_expSeries_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) {c s 
     simp_rw [norm_zero] at hc
     convert hc using 1
     ext (_ | n) : 1
-    · rw [pow_zero, Nat.zero_eq, MulZeroClass.mul_zero, pow_zero, Nat.factorial_zero, Nat.cast_one,
+    · rw [pow_zero, Nat.zero_eq, mul_zero, pow_zero, Nat.factorial_zero, Nat.cast_one,
         div_one, one_mul, Pi.single_eq_same, coe_one]
-    · rw [zero_pow (mul_pos two_pos (Nat.succ_pos _)), MulZeroClass.mul_zero, zero_div,
+    · rw [zero_pow (mul_pos two_pos (Nat.succ_pos _)), mul_zero, zero_div,
         Pi.single_eq_of_ne n.succ_ne_zero, coe_zero]
   simp_rw [expSeries_apply_eq]
   have hq2 : q ^ 2 = -normSq q := sq_eq_neg_normSq.mpr hq
@@ -124,7 +124,7 @@ theorem normSq_exp (q : ℍ[ℝ]) : normSq (exp ℝ q) = exp ℝ q.re ^ 2 :=
       obtain hv | hv := eq_or_ne ‖q.im‖ 0
       · simp [hv]
       rw [normSq_add, normSq_smul, star_smul, coe_mul_eq_smul, smul_re, smul_re, star_re, im_re,
-        smul_zero, smul_zero, MulZeroClass.mul_zero, add_zero, div_pow, normSq_coe,
+        smul_zero, smul_zero, mul_zero, add_zero, div_pow, normSq_coe,
         normSq_eq_norm_mul_self, ← sq, div_mul_cancel _ (pow_ne_zero _ hv)]
     _ = exp ℝ q.re ^ 2 := by rw [Real.cos_sq_add_sin_sq, mul_one]
 

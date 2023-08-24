@@ -67,6 +67,10 @@ theorem mk_mem_prod (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t :=
   ⟨ha, hb⟩
 #align set.mk_mem_prod Set.mk_mem_prod
 
+theorem Subsingleton.prod (hs : s.Subsingleton) (ht : t.Subsingleton) :
+    (s ×ˢ t).Subsingleton := fun _x hx _y hy ↦
+  Prod.ext (hs hx.1 hy.1) (ht hx.2 hy.2)
+
 noncomputable instance decidableMemProd [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)] :
     DecidablePred (· ∈ s ×ˢ t) := fun _ => And.decidable
 #align set.decidable_mem_prod Set.decidableMemProd
@@ -567,10 +571,10 @@ theorem offDiag_eq_empty : s.offDiag = ∅ ↔ s.Subsingleton := by
   rw [← not_nonempty_iff_eq_empty, ← not_nontrivial_iff, offDiag_nonempty.not]
 #align set.off_diag_eq_empty Set.offDiag_eq_empty
 
-alias offDiag_nonempty ↔ _ Nontrivial.offDiag_nonempty
+alias ⟨_, Nontrivial.offDiag_nonempty⟩ := offDiag_nonempty
 #align set.nontrivial.off_diag_nonempty Set.Nontrivial.offDiag_nonempty
 
-alias offDiag_nonempty ↔ _ Subsingleton.offDiag_eq_empty
+alias ⟨_, Subsingleton.offDiag_eq_empty⟩ := offDiag_nonempty
 #align set.subsingleton.off_diag_eq_empty Set.Subsingleton.offDiag_eq_empty
 
 variable (s t)
@@ -665,6 +669,10 @@ theorem empty_pi (s : ∀ i, Set (α i)) : pi ∅ s = univ := by
   ext
   simp [pi]
 #align set.empty_pi Set.empty_pi
+
+theorem subsingleton_univ_pi (ht : ∀ i, (t i).Subsingleton) :
+    (univ.pi t).Subsingleton := fun _f hf _g hg ↦ funext fun i ↦
+  (ht i) (hf _ <| mem_univ _) (hg _ <| mem_univ _)
 
 @[simp]
 theorem pi_univ (s : Set ι) : (pi s fun i => (univ : Set (α i))) = univ :=

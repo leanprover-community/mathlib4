@@ -48,6 +48,8 @@ Indeed, since trivializations only have meaning on their base sets (taking junk 
 type of linear trivializations is not even particularly well-behaved.
 -/
 
+set_option autoImplicit true
+
 
 open TopologicalSpace Filter Set Bundle Function
 
