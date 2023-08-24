@@ -49,50 +49,98 @@ variable {α β : Type*}
 
 end prelim
 
-variable {ι X Y α β : Type*} [TopologicalSpace X] [UniformSpace α] [UniformSpace β]
+variable {ι X Y α β : Type*} [TopologicalSpace X] [u : UniformSpace α] [UniformSpace β]
 variable {F : ι → X → α} {G : ι → β → α}
 
+-- It's a bit inconsitent to use `Pi.uniformSpace` here but `⨅` in `comap_uniformOnFun_eq`,
+-- but I also believe I wrote the most useful versions in each case. What should I do?
 theorem Equicontinuous.comap_uniformFun_eq [CompactSpace X] (hF : Equicontinuous F) :
-    (UniformFun.uniformSpace X α).comap (UniformFun.ofFun ∘ F) =
-    ⨅ x, ‹UniformSpace α›.comap (eval x ∘ F) := by
-  let F' := UniformFun.ofFun ∘ F
-  refine le_antisymm (le_iInf fun x ↦ UniformSpace.comap_mono (UniformFun.uniformContinuous_eval α x)) ?_
+    (UniformFun.uniformSpace X α).comap F =
+    (Pi.uniformSpace _).comap F := by
+  -- The `≤` inequality is trivial
+  refine le_antisymm (UniformSpace.comap_mono UniformFun.uniformContinuous_toFun) ?_
+  -- A bit of rewriting to get a nice intermediate statement.
   change comap _ _ ≤ comap _ _
   simp_rw [Pi.uniformity, Filter.comap_iInf, comap_comap, Function.comp]
-  refine ((UniformFun.hasBasis_uniformity X α).comap (Prod.map F' F')).ge_iff.mpr ?_
+  refine ((UniformFun.hasBasis_uniformity X α).comap (Prod.map F F)).ge_iff.mpr ?_
+  -- TODO: what are the names used in Bourbaki for the sets?
+  -- Core of the proof: we need to show that, for any entourage `U` in `α`,
+  -- the set `𝐓(U) := {(i,j) : ι × ι | ∀ x : X, (F i x, F j x) ∈ U}` belongs to the filter
+  -- `⨅ x, comap ((i,j) ↦ (F i x, F j x)) (𝓤 α)`.
+  -- In other words, we have to show that it contains a finite intersection of
+  -- sets of the form `𝐒(V, x) := {(i,j) : ι × ι | (F i x, F j x) ∈ V}` for some
+  -- `x : X` and `V ∈ 𝓤 α`.
   intro U hU
+  -- We will do an `ε/3` argument, so we start by choosing a symmetric entourage `V ∈ 𝓤 α`
+  -- such that `V ○ V ○ V ⊆ U`.
   rcases comp_comp_symm_mem_uniformity_sets hU with ⟨V, hV, Vsymm, hVU⟩
-  let Ω : X → Set X := λ x => {y | ∀ i, (F i x, F i y) ∈ V}
-  rcases CompactSpace.elim_nhds_subcover Ω (λ x => hF x V hV) with ⟨S, Scover⟩
-  have : (⋂ s ∈ S, {ij : ι × ι | (F ij.1 s, F ij.2 s) ∈ V}) ⊆
-      (Prod.map F' F') ⁻¹' UniformFun.gen X α U := by
+  -- Set `Ω x := {y | ∀ i, (F i x, F i y) ∈ V}`. The equicontinuity of `F` guarantees that
+  -- each `Ω x` is a neighborhood of `x`.
+  let Ω x : Set X := {y | ∀ i, (F i x, F i y) ∈ V}
+  -- Hence, by compactness of `X`, we can find some `A ⊆ X` finite such that the `Ω a`s for `a ∈ A`
+  -- still cover `X`.
+  rcases CompactSpace.elim_nhds_subcover Ω (fun x ↦ hF x V hV) with ⟨A, Acover⟩
+  -- We now claim that `⋂ a ∈ A, 𝐒(V, a) ⊆ 𝐓(U)`.
+  have : (⋂ a ∈ A, {ij : ι × ι | (F ij.1 a, F ij.2 a) ∈ V}) ⊆
+      (Prod.map F F) ⁻¹' UniformFun.gen X α U := by
+    -- Given `(i, j) ∈ ⋂ a ∈ A, 𝐒(V, a)` and `x : X`, we have to prove that `(F i x, F j x) ∈ U`.
     rintro ⟨i, j⟩ hij x
     rw [mem_iInter₂] at hij
-    rcases mem_iUnion₂.mp (Scover.symm.subset <| mem_univ x) with ⟨s, hs, hsx⟩
+    -- We know that `x ∈ Ω a` for some `a ∈ A`, so that both `(F i x, F i a)` and `(F j a, F j x)`
+    -- are in `V`.
+    rcases mem_iUnion₂.mp (Acover.symm.subset <| mem_univ x) with ⟨a, ha, hax⟩
+    -- Since `(i, j) ∈ 𝐒(V, a)` we also have `(F i a, F j a) ∈ V`, and finally we get
+    -- `(F i x, F j x) ∈ V ○ V ○ V ⊆ U`.
     exact hVU (prod_mk_mem_compRel (prod_mk_mem_compRel
-      (Vsymm.mk_mem_comm.mp (hsx i)) (hij s hs)) (hsx j))
+      (Vsymm.mk_mem_comm.mp (hax i)) (hij a ha)) (hax j))
+  -- This completes the proof.
   exact mem_of_superset
-    (S.iInter_mem_sets.mpr fun x _ ↦ mem_iInf_of_mem x <| preimage_mem_comap hV) this
+    (A.iInter_mem_sets.mpr fun x _ ↦ mem_iInf_of_mem x <| preimage_mem_comap hV) this
 
-theorem Equicontinuous.uniformInducing_pi [UniformSpace ι] [CompactSpace X]
+theorem Equicontinuous.uniformInducing_pi_of_uniformFun [UniformSpace ι] [CompactSpace X]
     (hF : Equicontinuous F) (F_ind : UniformInducing (UniformFun.ofFun ∘ F)) :
     UniformInducing F := by
-  rw [uniformInducing_iff']
+  rw [uniformInducing_iff_uniformSpace, ← F_ind.comap_uniformSpace]
+  exact hF.comap_uniformFun_eq.symm
 
-lemma Equicontinuous.comap_uniformOnFun_eq_comap_pi {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
-    (hF : ∀ K ∈ 𝔖, Equicontinuous ((K.restrict : (X → α) → (K → α)) ∘ F)) :
+lemma Equicontinuous.comap_uniformOnFun_eq {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
+    (hF : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F)) :
     (UniformOnFun.uniformSpace X α 𝔖).comap F =
-      (⨅ K ∈ 𝔖, ⨅ x ∈ K, ‹UniformSpace α›.comap (eval x)).comap F := by
-  rw [UniformOnFun.uniformSpace]
-  simp_rw [UniformSpace.comap_iInf, ← UniformSpace.comap_comap]
-  refine iInf_congr (λ K => iInf_congr $ λ hK => ?_)
-  haveI : CompactSpace K := isCompact_iff_compactSpace.mp (h𝔖 K hK)
-  simp_rw [theorem1 (hF K hK), UniformSpace.comap_comap,
-            Pi.uniformSpace, UniformSpace.ofCoreEq_toCore, UniformSpace.comap_iInf, iInf_subtype]
-  refine iInf_congr (λ x => iInf_congr $ λ hx => congr_arg _ ?_)
-  rw [← UniformSpace.comap_comap]
-  exact congr_fun (congr_arg _ rfl) _
+    (Pi.uniformSpace _).comap ((⋃₀ 𝔖).restrict ∘ F) := by
+  -- Recall that the uniform structure on `X →ᵤ[𝔖] α` is the one induced by all the maps
+  -- `K.restrict : (X →ᵤ[𝔖] α) → (K →ᵤ α)` for `K ∈ 𝔖`.
+  have : ∀ K ∈ 𝔖, (UniformFun.uniformSpace K α).comap (K.restrict ∘ F) =
+      (Pi.uniformSpace _).comap (K.restrict ∘ F) := fun K hK ↦ by
+    have : CompactSpace K := isCompact_iff_compactSpace.mp (h𝔖 K hK)
+    exact (hF K hK).comap_uniformFun_eq
+  simp [UniformOnFun.uniformSpace, Pi.uniformSpace_eq, UniformSpace.comap_iInf,
+    ← UniformSpace.comap_comap, iInf_congr fun K ↦ iInf_congr fun hK ↦ this K hK, iInf_subtype]
+  --simp_rw [UniformSpace.comap_iInf, ← UniformSpace.comap_comap]
+  --refine iInf_congr fun K ↦ iInf_congr fun hK ↦ ?_
+  --have : CompactSpace K := isCompact_iff_compactSpace.mp (h𝔖 K hK)
+  --simp_rw [(hF K hK).comap_uniformFun_eq, UniformSpace.comap_comap,
+  --          Pi.uniformSpace_eq, UniformSpace.comap_iInf, iInf_subtype, ← UniformSpace.comap_comap]
+  --exact iInf_congr fun x ↦ iInf_congr fun hx ↦ congr_arg _ rfl
 
+theorem Equicontinuous.uniformInducing_pi_of_uniformOnFun' [UniformSpace ι] [CompactSpace X]
+    {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
+    (hF : ∀ K ∈ 𝔖, Equicontinuous ((K.restrict : (X → α) → (K → α)) ∘ F))
+    (F_ind : UniformInducing (UniformOnFun.ofFun 𝔖 ∘ F)) :
+    UniformInducing (((⋃₀ 𝔖).restrict : (X → α) → (⋃₀ 𝔖 → α)) ∘ F) := by
+  rw [uniformInducing_iff_uniformSpace, ← F_ind.comap_uniformSpace]
+  refine Eq.trans ?_ (Equicontinuous.comap_uniformOnFun_eq h𝔖 hF).symm
+  simp_rw [Pi.uniformSpace_eq, UniformSpace.comap_iInf, iInf_subtype, ← iInf_sUnion,
+    ← UniformSpace.comap_comap]
+  exact iInf_congr fun x ↦ iInf_congr fun hx ↦ congr_arg _ rfl
+
+theorem Equicontinuous.uniformInducing_pi_of_uniformOnFun [UniformSpace ι] [CompactSpace X]
+    {𝔖 : Set (Set X)} (𝔖_covers : ⋃₀ 𝔖 = univ) (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
+    (hF : ∀ K ∈ 𝔖, Equicontinuous ((K.restrict : (X → α) → (K → α)) ∘ F))
+    (F_ind : UniformInducing (UniformOnFun.ofFun 𝔖 ∘ F)) :
+    UniformInducing F := by
+  rw [uniformInducing_iff_uniformSpace, ← F_ind.comap_uniformSpace]
+  refine Eq.trans ?_ (Equicontinuous.comap_uniformOnFun_eq h𝔖 hF).symm
+  simp_rw [Pi.uniformSpace_eq, ← iInf_sUnion, 𝔖_covers, iInf_univ]
 
 #exit
 
