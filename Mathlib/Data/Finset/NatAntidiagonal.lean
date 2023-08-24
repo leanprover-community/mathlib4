@@ -221,7 +221,7 @@ def antidiagonal_equiv_fin (n : ℕ) : antidiagonal n ≃ Fin (n + 1) where
     rw [mem_antidiagonal, add_comm, tsub_add_cancel_iff_le]
     exact Nat.le_of_lt_succ h⟩
   left_inv := by rintro ⟨⟨i, j⟩, h⟩; ext; rfl
-  right_inv := fun x ↦ rfl
+  right_inv x := rfl
 
 end Nat
 
