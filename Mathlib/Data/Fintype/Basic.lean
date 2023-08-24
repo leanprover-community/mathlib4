@@ -1205,9 +1205,7 @@ theorem map_univ_eq_univ_of_bijection (f : α → β) (hf : Function.Bijective f
   have ha : a = f (f_inv a) := by
     unfold Function.RightInverse Function.LeftInverse at hf_inv'
     simp [hf_inv']
-  simp only [mem_val, mem_univ, not_true, count_univ, mem_map, true_and,
-      Subtype.exists, not_exists]
-  rw [ha, count_map_eq_count']
+  rw [count_univ, ha, count_map_eq_count']
   simp only [mem_val, mem_univ, not_true, count_univ]
   exact Function.LeftInverse.injective hf_inv
 
