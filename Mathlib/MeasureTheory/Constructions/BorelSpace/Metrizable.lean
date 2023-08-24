@@ -189,7 +189,7 @@ lemma measurableSet_of_tendsto_indicator [NeBot L] (As_mble : ∀ i, MeasurableS
 
 /-- If the indicator functions of a.e.-measurable sets `Aᵢ` converge a.e. to the indicator function
 of a set `A` along a nontrivial countably generated filter, then `A` is also a.e.-measurable. -/
-lemma nullMeasurableSet_of_tendsto_indicator [NeBot L] (μ : Measure α)
+lemma nullMeasurableSet_of_tendsto_indicator [NeBot L] {μ : Measure α}
     (As_mble : ∀ i, NullMeasurableSet (As i) μ)
     (h_lim : ∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (1 : α → ℝ≥0∞) x)
       L (𝓝 (A.indicator 1 x))) :

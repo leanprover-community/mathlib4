@@ -2116,7 +2116,7 @@ variable {ι : Type _} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set
 /-- If the indicators of measurable sets `Aᵢ` tend pointwise almost everywhere to the indicator
 of a measurable set `A` and we eventually have `Aᵢ ⊆ B` for some set `B` of finite measure, then
 the measures of `Aᵢ` tend to the measure of `A`. -/
-lemma tendsto_measure_of_ae_tendsto_indicator (μ : Measure α) (A_mble : MeasurableSet A)
+lemma tendsto_measure_of_ae_tendsto_indicator {μ : Measure α} (A_mble : MeasurableSet A)
     (As_mble : ∀ i, MeasurableSet (As i)) {B : Set α} (B_mble : MeasurableSet B)
     (B_finmeas : μ B ≠ ∞) (As_le_B : ∀ᶠ i in L, As i ⊆ B)
     (h_lim : ∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (1 : α → ℝ≥0∞) x)
@@ -2135,7 +2135,7 @@ lemma tendsto_measure_of_ae_tendsto_indicator (μ : Measure α) (A_mble : Measur
 almost everywhere to the indicator of a measurable set `A`, then the measures `μ Aᵢ` tend to
 the measure `μ A`. -/
 lemma tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure [IsCountablyGenerated L]
-    (μ : Measure α) [IsFiniteMeasure μ] (A_mble : MeasurableSet A)
+    {μ : Measure α} [IsFiniteMeasure μ] (A_mble : MeasurableSet A)
     (As_mble : ∀ i, MeasurableSet (As i))
     (h_lim : ∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (1 : α → ℝ≥0∞) x)
       L (𝓝 (A.indicator 1 x))) :
@@ -2146,7 +2146,7 @@ lemma tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure [IsCountablyGen
 /-- If the indicators of measurable sets `Aᵢ` tend pointwise to the indicator of a set `A`
 and we eventually have `Aᵢ ⊆ B` for some set `B` of finite measure, then the measures of `Aᵢ`
 tend to the measure of `A`. -/
-lemma tendsto_measure_of_tendsto_indicator [NeBot L] (μ : Measure α)
+lemma tendsto_measure_of_tendsto_indicator [NeBot L] {μ : Measure α}
     (As_mble : ∀ i, MeasurableSet (As i)) {B : Set α} (B_mble : MeasurableSet B)
     (B_finmeas : μ B ≠ ∞) (As_le_B : ∀ᶠ i in L, As i ⊆ B)
     (h_lim : Tendsto (fun i ↦ (As i).indicator (1 : α → ℝ≥0∞)) L (𝓝 (A.indicator 1))) :
