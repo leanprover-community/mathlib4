@@ -1054,7 +1054,7 @@ theorem le_smul_iff : h ≤ f • g ↔ ∀ ⦃s⦄, s ∈ f → ∀ ⦃t⦄, t 
 #align filter.le_vadd_iff Filter.le_vadd_iff
 
 @[to_additive]
-instance covariant_smul : CovariantClass (Filter α) (Filter β) (· • ·) LE.le :=
+instance covariant_smul : CovariantClass (Filter α) (Filter β) HSMul.hSMul LE.le :=
   ⟨fun _ _ _ => map₂_mono_left⟩
 #align filter.covariant_smul Filter.covariant_smul
 #align filter.covariant_vadd Filter.covariant_vadd
@@ -1226,7 +1226,7 @@ theorem smul_filter_le_smul_filter (hf : f₁ ≤ f₂) : a • f₁ ≤ a • f
 #align filter.vadd_filter_le_vadd_filter Filter.vadd_filter_le_vadd_filter
 
 @[to_additive]
-instance covariant_smul_filter : CovariantClass α (Filter β) (· • ·) LE.le :=
+instance covariant_smul_filter : CovariantClass α (Filter β) HSMul.hSMul LE.le :=
   ⟨fun _ => @map_mono β β _⟩
 #align filter.covariant_smul_filter Filter.covariant_smul_filter
 #align filter.covariant_vadd_filter Filter.covariant_vadd_filter
