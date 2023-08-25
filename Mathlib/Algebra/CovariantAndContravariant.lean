@@ -163,8 +163,8 @@ theorem Group.covariant_iff_contravariant [Group N] :
 #align add_group.covariant_iff_contravariant AddGroup.covariant_iff_contravariant
 
 @[to_additive]
-instance (priority := 100) Group.covconv [Group N] [CovariantClass N N (· * ·) r] :
-    ContravariantClass N N (· * ·) r :=
+instance (priority := 100) Group.covconv [Group N] [CovariantClass N N HMul.hMul r] :
+    ContravariantClass N N HMul.hMul r :=
   ⟨Group.covariant_iff_contravariant.mp CovariantClass.elim⟩
 
 @[to_additive]
@@ -180,8 +180,8 @@ theorem Group.covariant_swap_iff_contravariant_swap [Group N] :
 
 
 @[to_additive]
-instance (priority := 100) Group.covconv_swap [Group N] [CovariantClass N N (swap (· * ·)) r] :
-    ContravariantClass N N (swap (· * ·)) r :=
+instance (priority := 100) Group.covconv_swap [Group N] [CovariantClass N N (swap HMul.hMul) r] :
+    ContravariantClass N N (swap HMul.hMul) r :=
   ⟨Group.covariant_swap_iff_contravariant_swap.mp CovariantClass.elim⟩
 
 
@@ -261,7 +261,7 @@ theorem Monotone.covariant_of_const [CovariantClass M N μ (· ≤ ·)] (hf : Mo
 
 /-- Same as `Monotone.covariant_of_const`, but with the constant on the other side of
 the operator.  E.g., `∀ (m : ℕ), Monotone f → Monotone (fun n ↦ f (n + m))`. -/
-theorem Monotone.covariant_of_const' {μ : N → N → N} [CovariantClass N N (swap μ) (· ≤ ·)]
+theorem Monotone.covariant_of_const' {μ : N → N → N} [CovariantClass N N (swap μ) LE.le]
     (hf : Monotone f) (m : N) : Monotone fun n ↦ f (μ n m) :=
   fun _ _ x ↦ hf (@Covariant.monotone_of_const _ _ (swap μ) _ _ m _ _ x)
 #align monotone.covariant_of_const' Monotone.covariant_of_const'
@@ -273,7 +273,7 @@ theorem Antitone.covariant_of_const [CovariantClass M N μ (· ≤ ·)] (hf : An
 #align antitone.covariant_of_const Antitone.covariant_of_const
 
 /-- Dual of `Monotone.covariant_of_const'` -/
-theorem Antitone.covariant_of_const' {μ : N → N → N} [CovariantClass N N (swap μ) (· ≤ ·)]
+theorem Antitone.covariant_of_const' {μ : N → N → N} [CovariantClass N N (swap μ) LE.le]
     (hf : Antitone f) (m : N) : Antitone fun n ↦ f (μ n m) :=
   hf.comp_monotone <| @Covariant.monotone_of_const _ _ (swap μ) _ _ m
 #align antitone.covariant_of_const' Antitone.covariant_of_const'

@@ -530,13 +530,13 @@ protected theorem le_div_iff : h ≤ f / g ↔ ∀ ⦃s⦄, s ∈ f → ∀ ⦃t
 #align filter.le_sub_iff Filter.le_sub_iff
 
 @[to_additive]
-instance covariant_div : CovariantClass (Filter α) (Filter α) (· / ·) (· ≤ ·) :=
+instance covariant_div : CovariantClass (Filter α) (Filter α) HDiv.hDiv LE.le :=
   ⟨fun _ _ _ => map₂_mono_left⟩
 #align filter.covariant_div Filter.covariant_div
 #align filter.covariant_sub Filter.covariant_sub
 
 @[to_additive]
-instance covariant_swap_div : CovariantClass (Filter α) (Filter α) (swap (· / ·)) (· ≤ ·) :=
+instance covariant_swap_div : CovariantClass (Filter α) (Filter α) (swap HDiv.hDiv) LE.le :=
   ⟨fun _ _ _ => map₂_mono_right⟩
 #align filter.covariant_swap_div Filter.covariant_swap_div
 #align filter.covariant_swap_sub Filter.covariant_swap_sub
