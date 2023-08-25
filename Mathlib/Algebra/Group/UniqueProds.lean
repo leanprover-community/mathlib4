@@ -235,11 +235,11 @@ theorem of_mulOpposite (h : @UniqueProds Gᵐᵒᵖ (MulOpposite.mul G)) :
 /-- This instance asserts that if `G` has a right-cancellative multiplication, a linear order,
   and multiplication is strictly monotone w.r.t. the second argument, then `G` has `UniqueProds`. -/
 @[to_additive
-  "This instance asserts that if `A` has a right-cancellative addition, a linear order,
-  and addition is strictly monotone w.r.t. the second argument, then `A` has `UniqueSums`." ]
-instance (priority := 100) of_Covariant_right {A} [Mul A] [IsRightCancelMul A]
-    [LinearOrder A] [CovariantClass A A (· * ·) (· < ·)] :
-    UniqueProds A where
+  "This instance asserts that if `G` has a right-cancellative addition, a linear order,
+  and addition is strictly monotone w.r.t. the second argument, then `G` has `UniqueSums`." ]
+instance (priority := 100) of_Covariant_right [IsRightCancelMul G]
+    [LinearOrder G] [CovariantClass G G (· * ·) (· < ·)] :
+    UniqueProds G where
   uniqueMul_of_nonempty {A B} hA hB := by
     obtain ⟨a0, b0, ha0, hb0, he⟩ := Finset.mem_mul.mp (Finset.max'_mem _ <| hA.mul hB)
     refine ⟨a0, ha0, b0, hb0, fun a b ha hb he' => ?_⟩
