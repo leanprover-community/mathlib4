@@ -3,6 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Init.Align
 import Mathlib.Topology.LocalHomeomorph
 
 #align_import geometry.manifold.charted_space from "leanprover-community/mathlib"@"431589bce478b2229eba14b14a283250428217db"
@@ -599,7 +600,7 @@ theorem ChartedSpace.secondCountable_of_sigma_compact [SecondCountableTopology H
 
 /-- If a topological space admits an atlas with locally compact charts, then the space itself
 is locally compact. -/
-theorem ChartedSpace.locallyCompact [LocallyCompactSpace H] : LocallyCompactSpace M := by
+theorem ChartedSpace.locallyCompactSpace [LocallyCompactSpace H] : LocallyCompactSpace M := by
   have : ∀ x : M, (𝓝 x).HasBasis
       (fun s ↦ s ∈ 𝓝 (chartAt H x x) ∧ IsCompact s ∧ s ⊆ (chartAt H x).target)
       fun s ↦ (chartAt H x).symm '' s := fun x ↦ by
@@ -609,7 +610,7 @@ theorem ChartedSpace.locallyCompact [LocallyCompactSpace H] : LocallyCompactSpac
   refine locallyCompactSpace_of_hasBasis this ?_
   rintro x s ⟨_, h₂, h₃⟩
   exact h₂.image_of_continuousOn ((chartAt H x).continuousOn_symm.mono h₃)
-#align charted_space.locally_compact ChartedSpace.locallyCompact
+#align charted_space.locally_compact ChartedSpace.locallyCompactSpace
 
 /-- If a topological space admits an atlas with locally connected charts, then the space itself is
 locally connected. -/
