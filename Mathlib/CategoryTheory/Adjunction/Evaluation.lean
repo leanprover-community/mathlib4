@@ -2,14 +2,11 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.adjunction.evaluation
-! leanprover-community/mathlib commit 937c692d73f5130c7fecd3fd32e81419f4e04eb7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Functor.EpiMono
+
+#align_import category_theory.adjunction.evaluation from "leanprover-community/mathlib"@"937c692d73f5130c7fecd3fd32e81419f4e04eb7"
 
 /-!
 

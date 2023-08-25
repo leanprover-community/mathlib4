@@ -2,14 +2,11 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module linear_algebra.affine_space.basis
-! leanprover-community/mathlib commit 2de9c37fa71dde2f1c6feff19876dd6a7b1519f0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.AffineSpace.Independent
 import Mathlib.LinearAlgebra.Basis
+
+#align_import linear_algebra.affine_space.basis from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
 
 /-!
 # Affine bases and barycentric coordinates
@@ -58,7 +55,7 @@ structure AffineBasis (ι : Type u₁) (k : Type u₂) {V : Type u₃} (P : Type
   protected tot' : affineSpan k (range toFun) = ⊤
 #align affine_basis AffineBasis
 
-variable {ι ι' k V P : Type _} [AddCommGroup V] [AffineSpace V P]
+variable {ι ι' k V P : Type*} [AddCommGroup V] [AffineSpace V P]
 
 namespace AffineBasis
 

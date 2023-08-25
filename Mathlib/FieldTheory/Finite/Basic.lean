@@ -2,15 +2,12 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Joey van Langen, Casper Putz
-
-! This file was ported from Lean 3 source module field_theory.finite.basic
-! leanprover-community/mathlib commit 12a85fac627bea918960da036049d611b1a3ee43
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.Separable
 import Mathlib.RingTheory.IntegralDomain
 import Mathlib.Tactic.ApplyFun
+
+#align_import field_theory.finite.basic from "leanprover-community/mathlib"@"12a85fac627bea918960da036049d611b1a3ee43"
 
 /-!
 # Finite fields
@@ -25,7 +22,7 @@ cyclic group, as well as the fact that every finite integral domain is a field
 
 ## Main results
 
-1. `Fintype.card_units`: The unit group of a finite field is has cardinality `q - 1`.
+1. `Fintype.card_units`: The unit group of a finite field has cardinality `q - 1`.
 2. `sum_pow_units`: The sum of `x^i`, where `x` ranges over the units of `K`, is
    - `q-1` if `q-1 ∣ i`
    - `0`   otherwise
@@ -46,7 +43,7 @@ diamonds, as `Fintype` carries data.
 -/
 
 
-variable {K : Type _} {R : Type _}
+variable {K : Type*} {R : Type*}
 
 -- mathport name: exprq
 local notation "q" => Fintype.card K
@@ -184,7 +181,7 @@ theorem forall_pow_eq_one_iff (i : ℕ) : (∀ x : Kˣ, x ^ i = 1) ↔ q - 1 ∣
 
 /-- The sum of `x ^ i` as `x` ranges over the units of a finite field of cardinality `q`
 is equal to `0` unless `(q - 1) ∣ i`, in which case the sum is `q - 1`. -/
-theorem sum_pow_units [Fintype Kˣ] (i : ℕ) :
+theorem sum_pow_units [DecidableEq K] (i : ℕ) :
     (∑ x : Kˣ, (x ^ i : K)) = if q - 1 ∣ i then -1 else 0 := by
   let φ : Kˣ →* K :=
     { toFun := fun x => x ^ i
@@ -228,7 +225,7 @@ open Polynomial
 
 section
 
-variable (K' : Type _) [Field K'] {p n : ℕ}
+variable (K' : Type*) [Field K'] {p n : ℕ}
 
 theorem X_pow_card_sub_X_natDegree_eq (hp : 1 < p) : (X ^ p - X : K'[X]).natDegree = p := by
   have h1 : (X : K'[X]).degree < (X ^ p : K'[X]).degree := by
@@ -275,7 +272,7 @@ theorem roots_X_pow_card_sub_X : roots (X ^ q - X : K[X]) = Finset.univ.val := b
     rw [separable_def]
     convert isCoprime_one_right.neg_right (R := K[X]) using 1
     rw [derivative_sub, derivative_X, derivative_X_pow, CharP.cast_card_eq_zero K, C_0,
-      MulZeroClass.zero_mul, zero_sub]
+      zero_mul, zero_sub]
 set_option linter.uppercaseLean3 false in
 #align finite_field.roots_X_pow_card_sub_X FiniteField.roots_X_pow_card_sub_X
 
@@ -348,7 +345,7 @@ theorem Nat.sq_add_sq_modEq (p : ℕ) [Fact p.Prime] (x : ℕ) :
 
 namespace CharP
 
-theorem sq_add_sq (R : Type _) [CommRing R] [IsDomain R] (p : ℕ) [NeZero p] [CharP R p] (x : ℤ) :
+theorem sq_add_sq (R : Type*) [CommRing R] [IsDomain R] (p : ℕ) [NeZero p] [CharP R p] (x : ℤ) :
     ∃ a b : ℕ, ((a : R) ^ 2 + (b : R) ^ 2) = x := by
   haveI := char_is_prime_of_pos R p
   obtain ⟨a, b, hab⟩ := ZMod.sq_add_sq p x
@@ -384,7 +381,7 @@ theorem Nat.ModEq.pow_totient {x n : ℕ} (h : Nat.coprime x n) : x ^ φ n ≡ 1
 
 section
 
-variable {V : Type _} [Fintype K] [DivisionRing K] [AddCommGroup V] [Module K V]
+variable {V : Type*} [Fintype K] [DivisionRing K] [AddCommGroup V] [Module K V]
 
 -- should this go in a namespace?
 -- finite_dimensional would be natural,
@@ -468,7 +465,7 @@ section
 
 namespace FiniteField
 
-variable {F : Type _} [Field F]
+variable {F : Type*} [Field F]
 
 section Finite
 

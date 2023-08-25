@@ -2,14 +2,11 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.star.pi
-! leanprover-community/mathlib commit 9abfa6f0727d5adc99067e325e15d1a9de17fd8e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Algebra.Ring.Pi
+
+#align_import algebra.star.pi from "leanprover-community/mathlib"@"9abfa6f0727d5adc99067e325e15d1a9de17fd8e"
 
 /-!
 # `star` on pi types
@@ -73,7 +70,7 @@ theorem update_star [∀ i, Star (f i)] [DecidableEq I] (h : ∀ i : I, f i) (i 
   funext fun j => (apply_update (fun _ => star) h i a j).symm
 #align function.update_star Function.update_star
 
-theorem star_sum_elim {I J α : Type _} (x : I → α) (y : J → α) [Star α] :
+theorem star_sum_elim {I J α : Type*} (x : I → α) (y : J → α) [Star α] :
     star (Sum.elim x y) = Sum.elim (star x) (star y) := by
   ext x; cases x <;> simp only [Pi.star_apply, Sum.elim_inl, Sum.elim_inr]
 #align function.star_sum_elim Function.star_sum_elim

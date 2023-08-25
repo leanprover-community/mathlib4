@@ -2,13 +2,10 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Devon Tuma
-
-! This file was ported from Lean 3 source module probability.probability_mass_function.constructions
-! leanprover-community/mathlib commit 4ac69b290818724c159de091daa3acd31da0ee6d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.ProbabilityMassFunction.Monad
+
+#align_import probability.probability_mass_function.constructions from "leanprover-community/mathlib"@"4ac69b290818724c159de091daa3acd31da0ee6d"
 
 /-!
 # Specific Constructions of Probability Mass Functions
@@ -33,7 +30,7 @@ namespace Pmf
 
 noncomputable section
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 open Classical BigOperators NNReal ENNReal
 
@@ -126,7 +123,7 @@ theorem monad_seq_eq_seq {α β : Type _} (q : Pmf (α → β)) (p : Pmf α) : q
 theorem seq_apply : (seq q p) b = ∑' (f : α → β) (a : α), if b = f a then q f * p a else 0 := by
   simp only [seq, mul_boole, bind_apply, pure_apply]
   refine' tsum_congr fun f => ENNReal.tsum_mul_left.symm.trans (tsum_congr fun a => _)
-  simpa only [MulZeroClass.mul_zero] using mul_ite (b = f a) (q f) (p a) 0
+  simpa only [mul_zero] using mul_ite (b = f a) (q f) (p a) 0
 #align pmf.seq_apply Pmf.seq_apply
 
 @[simp]
@@ -278,7 +275,7 @@ theorem filter_apply (a : α) :
 #align pmf.filter_apply Pmf.filter_apply
 
 theorem filter_apply_eq_zero_of_not_mem {a : α} (ha : a ∉ s) : (p.filter s h) a = 0 := by
-  rw [filter_apply, Set.indicator_apply_eq_zero.mpr fun ha' => absurd ha' ha, MulZeroClass.zero_mul]
+  rw [filter_apply, Set.indicator_apply_eq_zero.mpr fun ha' => absurd ha' ha, zero_mul]
 #align pmf.filter_apply_eq_zero_of_not_mem Pmf.filter_apply_eq_zero_of_not_mem
 
 theorem mem_support_filter_iff {a : α} : a ∈ (p.filter s h).support ↔ a ∈ s ∧ a ∈ p.support :=

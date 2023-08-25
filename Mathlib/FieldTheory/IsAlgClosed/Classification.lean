@@ -2,17 +2,14 @@
 Copyright (c) 2022 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module field_theory.is_alg_closed.classification
-! leanprover-community/mathlib commit 0723536a0522d24fc2f159a096fb3304bef77472
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.AlgebraicIndependent
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.Data.Polynomial.Cardinal
 import Mathlib.Data.MvPolynomial.Cardinal
 import Mathlib.Data.ZMod.Algebra
+
+#align_import field_theory.is_alg_closed.classification from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
 /-!
 # Classification of Algebraically closed fields
@@ -90,15 +87,15 @@ section Classification
 
 noncomputable section
 
-variable {R L K : Type _} [CommRing R]
+variable {R L K : Type*} [CommRing R]
 
 variable [Field K] [Algebra R K]
 
 variable [Field L] [Algebra R L]
 
-variable {ι : Type _} (v : ι → K)
+variable {ι : Type*} (v : ι → K)
 
-variable {κ : Type _} (w : κ → L)
+variable {κ : Type*} (w : κ → L)
 
 variable (hv : AlgebraicIndependent R v)
 
@@ -210,13 +207,10 @@ private theorem ringEquivOfCardinalEqOfCharP (p : ℕ) [Fact p.Prime] [CharP K p
 
 /-- Two uncountable algebraically closed fields are isomorphic
 if they have the same cardinality and the same characteristic. -/
-@[nolint defLemma]
 theorem ringEquivOfCardinalEqOfCharEq (p : ℕ) [CharP K p] [CharP L p] (hK : ℵ₀ < #K)
     (hKL : #K = #L) : Nonempty (K ≃+* L) := by
   rcases CharP.char_is_prime_or_zero K p with (hp | hp)
   · haveI : Fact p.Prime := ⟨hp⟩
-    letI : Algebra (ZMod p) K := ZMod.algebra _ _
-    letI : Algebra (ZMod p) L := ZMod.algebra _ _
     exact ringEquivOfCardinalEqOfCharP p hK hKL
   · simp only [hp] at *
     letI : CharZero K := CharP.charP_to_charZero K

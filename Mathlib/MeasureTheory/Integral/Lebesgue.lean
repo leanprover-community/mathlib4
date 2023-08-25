@@ -2,15 +2,14 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module measure_theory.integral.lebesgue
-! leanprover-community/mathlib commit bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.MeasureTheory.Function.SimpleFunc
 import Mathlib.MeasureTheory.Measure.MutuallySingular
+import Mathlib.MeasureTheory.Measure.Count
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
+
+#align_import measure_theory.integral.lebesgue from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 
 /-!
 # Lower Lebesgue integral for `ℝ≥0∞`-valued functions
@@ -31,6 +30,7 @@ We introduce the following notation for the lower Lebesgue integral of a functio
 
 -/
 
+set_option autoImplicit true
 
 noncomputable section
 
@@ -44,46 +44,10 @@ open Classical Topology BigOperators NNReal ENNReal MeasureTheory
 
 namespace MeasureTheory
 
-section MoveThis
-
-variable {α : Type _} {mα : MeasurableSpace α} {a : α} {s : Set α}
-
--- todo after the port: move to measure_theory/measure/measure_space
-theorem restrict_dirac' (hs : MeasurableSet s) [Decidable (a ∈ s)] :
-    (Measure.dirac a).restrict s = if a ∈ s then Measure.dirac a else 0 := by
-  ext1 t ht
-  classical
-    simp only [Measure.restrict_apply ht, Measure.dirac_apply' _ (ht.inter hs), Set.indicator_apply,
-      Set.mem_inter_iff, Pi.one_apply]
-    by_cases has : a ∈ s
-    · simp only [has, and_true_iff, if_true]
-      split_ifs with hat
-      · rw [Measure.dirac_apply_of_mem hat]
-      · simp only [Measure.dirac_apply' _ ht, Set.indicator_apply, hat, if_false]
-    · simp only [has, and_false_iff, if_false, Measure.coe_zero, Pi.zero_apply]
-#align measure_theory.restrict_dirac' MeasureTheory.restrict_dirac'
-
--- todo after the port: move to measure_theory/measure/measure_space
-theorem restrict_dirac [MeasurableSingletonClass α] [Decidable (a ∈ s)] :
-    (Measure.dirac a).restrict s = if a ∈ s then Measure.dirac a else 0 := by
-  ext1 t ht
-  classical
-    simp only [Measure.restrict_apply ht, Measure.dirac_apply a, Set.indicator_apply,
-      Set.mem_inter_iff, Pi.one_apply]
-    by_cases has : a ∈ s
-    · simp only [has, and_true_iff, if_true]
-      split_ifs with hat
-      · rw [Measure.dirac_apply_of_mem hat]
-      · simp only [Measure.dirac_apply' _ ht, Set.indicator_apply, hat, if_false]
-    · simp only [has, and_false_iff, if_false, Measure.coe_zero, Pi.zero_apply]
-#align measure_theory.restrict_dirac MeasureTheory.restrict_dirac
-
-end MoveThis
-
 -- mathport name: «expr →ₛ »
 local infixr:25 " →ₛ " => SimpleFunc
 
-variable {α β γ δ : Type _}
+variable {α β γ δ : Type*}
 
 section Lintegral
 
@@ -263,25 +227,25 @@ theorem exists_simpleFunc_forall_lintegral_sub_lt_of_pos {f : α → ℝ≥0∞}
   rfl
 #align measure_theory.exists_simple_func_forall_lintegral_sub_lt_of_pos MeasureTheory.exists_simpleFunc_forall_lintegral_sub_lt_of_pos
 
-theorem iSup_lintegral_le {ι : Sort _} (f : ι → α → ℝ≥0∞) :
+theorem iSup_lintegral_le {ι : Sort*} (f : ι → α → ℝ≥0∞) :
     ⨆ i, ∫⁻ a, f i a ∂μ ≤ ∫⁻ a, ⨆ i, f i a ∂μ := by
   simp only [← iSup_apply]
   exact (monotone_lintegral μ).le_map_iSup
 #align measure_theory.supr_lintegral_le MeasureTheory.iSup_lintegral_le
 
-theorem iSup₂_lintegral_le {ι : Sort _} {ι' : ι → Sort _} (f : ∀ i, ι' i → α → ℝ≥0∞) :
+theorem iSup₂_lintegral_le {ι : Sort*} {ι' : ι → Sort*} (f : ∀ i, ι' i → α → ℝ≥0∞) :
     ⨆ (i) (j), ∫⁻ a, f i j a ∂μ ≤ ∫⁻ a, ⨆ (i) (j), f i j a ∂μ := by
   convert (monotone_lintegral μ).le_map_iSup₂ f with a
   simp only [iSup_apply]
 #align measure_theory.supr₂_lintegral_le MeasureTheory.iSup₂_lintegral_le
 
-theorem le_iInf_lintegral {ι : Sort _} (f : ι → α → ℝ≥0∞) :
+theorem le_iInf_lintegral {ι : Sort*} (f : ι → α → ℝ≥0∞) :
     ∫⁻ a, ⨅ i, f i a ∂μ ≤ ⨅ i, ∫⁻ a, f i a ∂μ := by
   simp only [← iInf_apply]
   exact (monotone_lintegral μ).map_iInf_le
 #align measure_theory.le_infi_lintegral MeasureTheory.le_iInf_lintegral
 
-theorem le_iInf₂_lintegral {ι : Sort _} {ι' : ι → Sort _} (f : ∀ i, ι' i → α → ℝ≥0∞) :
+theorem le_iInf₂_lintegral {ι : Sort*} {ι' : ι → Sort*} (f : ∀ i, ι' i → α → ℝ≥0∞) :
     ∫⁻ a, ⨅ (i) (h : ι' i), f i h a ∂μ ≤ ⨅ (i) (h : ι' i), ∫⁻ a, f i h a ∂μ := by
   convert(monotone_lintegral μ).map_iInf₂_le f with a
   simp only [iInf_apply]
@@ -387,7 +351,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
     have : s x ≠ 0 := by
       refine' mt _ this
       intro h
-      rw [h, MulZeroClass.mul_zero]
+      rw [h, mul_zero]
     have : (rs.map c) x < ⨆ n : ℕ, f n x := by
       refine' lt_of_lt_of_le (ENNReal.coe_lt_coe.2 _) (hsf x)
       suffices : r * s x < 1 * s x
@@ -791,19 +755,27 @@ theorem lintegral_indicator₀ (f : α → ℝ≥0∞) {s : Set α} (hs : NullMe
     Measure.restrict_congr_set hs.toMeasurable_ae_eq]
 #align measure_theory.lintegral_indicator₀ MeasureTheory.lintegral_indicator₀
 
-theorem lintegral_indicator_const {s : Set α} (hs : MeasurableSet s) (c : ℝ≥0∞) :
+theorem lintegral_indicator_const₀ {s : Set α} (hs : NullMeasurableSet s μ) (c : ℝ≥0∞) :
     ∫⁻ a, s.indicator (fun _ => c) a ∂μ = c * μ s := by
-  rw [lintegral_indicator _ hs, set_lintegral_const]
+  rw [lintegral_indicator₀ _ hs, set_lintegral_const]
+
+theorem lintegral_indicator_const {s : Set α} (hs : MeasurableSet s) (c : ℝ≥0∞) :
+    ∫⁻ a, s.indicator (fun _ => c) a ∂μ = c * μ s :=
+  lintegral_indicator_const₀ hs.nullMeasurableSet c
 #align measure_theory.lintegral_indicator_const MeasureTheory.lintegral_indicator_const
 
 theorem set_lintegral_eq_const {f : α → ℝ≥0∞} (hf : Measurable f) (r : ℝ≥0∞) :
     ∫⁻ x in { x | f x = r }, f x ∂μ = r * μ { x | f x = r } := by
   have : ∀ᵐ x ∂μ, x ∈ { x | f x = r } → f x = r := ae_of_all μ fun _ hx => hx
   rw [set_lintegral_congr_fun _ this]
-  dsimp
   rw [lintegral_const, Measure.restrict_apply MeasurableSet.univ, Set.univ_inter]
   exact hf (measurableSet_singleton r)
 #align measure_theory.set_lintegral_eq_const MeasureTheory.set_lintegral_eq_const
+
+@[simp]
+theorem lintegral_indicator_one (hs : MeasurableSet s) : ∫⁻ a, s.indicator 1 a ∂μ = μ s :=
+  (lintegral_indicator_const hs _).trans $ one_mul _
+#align measure_theory.lintegral_indicator_one MeasureTheory.lintegral_indicator_one
 
 /-- A version of **Markov's inequality** for two functions. It doesn't follow from the standard
 Markov's inequality because we only assume measurability of `g`, not `f`. -/
@@ -839,13 +811,29 @@ theorem mul_meas_ge_le_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) (ε
   mul_meas_ge_le_lintegral₀ hf.aemeasurable ε
 #align measure_theory.mul_meas_ge_le_lintegral MeasureTheory.mul_meas_ge_le_lintegral
 
-theorem lintegral_eq_top_of_measure_eq_top_pos {f : α → ℝ≥0∞} (hf : AEMeasurable f μ)
-    (hμf : 0 < μ { x | f x = ∞ }) : ∫⁻ x, f x ∂μ = ∞ :=
+theorem lintegral_eq_top_of_measure_eq_top_ne_zero {f : α → ℝ≥0∞} (hf : AEMeasurable f μ)
+    (hμf : μ {x | f x = ∞} ≠ 0) : ∫⁻ x, f x ∂μ = ∞ :=
   eq_top_iff.mpr <|
     calc
-      ∞ = ∞ * μ { x | ∞ ≤ f x } := by simp [mul_eq_top, hμf.ne.symm]
+      ∞ = ∞ * μ { x | ∞ ≤ f x } := by simp [mul_eq_top, hμf]
       _ ≤ ∫⁻ x, f x ∂μ := mul_meas_ge_le_lintegral₀ hf ∞
-#align measure_theory.lintegral_eq_top_of_measure_eq_top_pos MeasureTheory.lintegral_eq_top_of_measure_eq_top_pos
+#align measure_theory.lintegral_eq_top_of_measure_eq_top_ne_zero MeasureTheory.lintegral_eq_top_of_measure_eq_top_ne_zero
+
+theorem setLintegral_eq_top_of_measure_eq_top_ne_zero (hf : AEMeasurable f (μ.restrict s))
+    (hμf : μ ({x ∈ s | f x = ∞}) ≠ 0) : ∫⁻ x in s, f x ∂μ = ∞ :=
+  lintegral_eq_top_of_measure_eq_top_ne_zero hf $
+    mt (eq_bot_mono $ by rw [←setOf_inter_eq_sep]; exact Measure.le_restrict_apply _ _) hμf
+#align measure_theory.set_lintegral_eq_top_of_measure_eq_top_ne_zero MeasureTheory.setLintegral_eq_top_of_measure_eq_top_ne_zero
+
+theorem measure_eq_top_of_lintegral_ne_top (hf : AEMeasurable f μ) (hμf : ∫⁻ x, f x ∂μ ≠ ∞) :
+    μ {x | f x = ∞} = 0 :=
+  of_not_not fun h => hμf <| lintegral_eq_top_of_measure_eq_top_ne_zero hf h
+#align measure_theory.measure_eq_top_of_lintegral_ne_top MeasureTheory.measure_eq_top_of_lintegral_ne_top
+
+theorem measure_eq_top_of_setLintegral_ne_top (hf : AEMeasurable f (μ.restrict s))
+    (hμf : ∫⁻ x in s, f x ∂μ ≠ ∞) : μ ({x ∈ s | f x = ∞}) = 0 :=
+  of_not_not fun h => hμf $ setLintegral_eq_top_of_measure_eq_top_ne_zero hf h
+#align measure_theory.measure_eq_top_of_set_lintegral_ne_top MeasureTheory.measure_eq_top_of_setLintegral_ne_top
 
 /-- **Markov's inequality** also known as **Chebyshev's first inequality**. -/
 theorem meas_ge_le_lintegral_div {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0)
@@ -1367,7 +1355,7 @@ theorem MeasurePreserving.set_lintegral_comp_emb {mb : MeasurableSpace β} {ν :
 
 section DiracAndCount
 
-instance (priority := 10) _root_.MeasurableSpace.Top.measurableSingletonClass {α : Type _} :
+instance (priority := 10) _root_.MeasurableSpace.Top.measurableSingletonClass {α : Type*} :
     @MeasurableSingletonClass α (⊤ : MeasurableSpace α) :=
   @MeasurableSingletonClass.mk α (⊤ : MeasurableSpace α) <|
     fun _ => MeasurableSpace.measurableSet_top
@@ -1537,7 +1525,7 @@ theorem set_lintegral_lt_top_of_isCompact [TopologicalSpace α] [OpensMeasurable
   set_lintegral_lt_top_of_bddAbove hs hf.measurable (hsc.image hf).bddAbove
 #align measure_theory.set_lintegral_lt_top_of_is_compact MeasureTheory.set_lintegral_lt_top_of_isCompact
 
-theorem _root_.IsFiniteMeasure.lintegral_lt_top_of_bounded_to_eNNReal {α : Type _}
+theorem _root_.IsFiniteMeasure.lintegral_lt_top_of_bounded_to_eNNReal {α : Type*}
     [MeasurableSpace α] (μ : Measure α) [μ_fin : IsFiniteMeasure μ] {f : α → ℝ≥0∞}
     (f_bdd : ∃ c : ℝ≥0, ∀ x, f x ≤ c) : ∫⁻ x, f x ∂μ < ∞ := by
   cases' f_bdd with c hc
@@ -1585,7 +1573,7 @@ theorem withDensity_add_measure {m : MeasurableSpace α} (μ ν : Measure α) (f
   simp only [withDensity_apply f hs, restrict_add, lintegral_add_measure, Measure.add_apply]
 #align measure_theory.with_density_add_measure MeasureTheory.withDensity_add_measure
 
-theorem withDensity_sum {ι : Type _} {m : MeasurableSpace α} (μ : ι → Measure α) (f : α → ℝ≥0∞) :
+theorem withDensity_sum {ι : Type*} {m : MeasurableSpace α} (μ : ι → Measure α) (f : α → ℝ≥0∞) :
     (sum μ).withDensity f = sum fun n => (μ n).withDensity f := by
   ext1 s hs
   simp_rw [sum_apply _ hs, withDensity_apply f hs, restrict_sum μ hs, lintegral_sum_measure]
@@ -1817,7 +1805,7 @@ theorem lintegral_withDensity_eq_lintegral_mul₀' {μ : Measure α} {f : α →
         filter_upwards [ae_restrict_mem M]
         intro x hx
         simp only [Classical.not_not, mem_setOf_eq, mem_compl_iff] at hx
-        simp only [hx, MulZeroClass.zero_mul, Pi.mul_apply]
+        simp only [hx, zero_mul, Pi.mul_apply]
     _ = ∫⁻ a : α, (f * g) a ∂μ := by
       apply lintegral_congr_ae
       filter_upwards [hf.ae_eq_mk]
@@ -1859,7 +1847,7 @@ theorem lintegral_withDensity_eq_lintegral_mul_non_measurable (μ : Measure α) 
   intro x h'x
   rcases eq_or_ne (f x) 0 with (hx | hx)
   · have := hi x
-    simp only [hx, MulZeroClass.zero_mul, Pi.mul_apply, nonpos_iff_eq_zero] at this
+    simp only [hx, zero_mul, Pi.mul_apply, nonpos_iff_eq_zero] at this
     simp [this]
   · apply le_of_eq _
     dsimp
@@ -1955,7 +1943,7 @@ theorem lintegral_trim_ae {μ : Measure α} (hm : m ≤ m0) {f : α → ℝ≥0�
 
 section SigmaFinite
 
-variable {E : Type _} [NormedAddCommGroup E] [MeasurableSpace E] [OpensMeasurableSpace E]
+variable {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [OpensMeasurableSpace E]
 
 theorem univ_le_of_forall_fin_meas_le {μ : Measure α} (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     (C : ℝ≥0∞) {f : Set α → ℝ≥0∞} (hf : ∀ s, MeasurableSet[m] s → μ s ≠ ∞ → f s ≤ C)
@@ -2046,7 +2034,7 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
       ENNReal.coe_indicator, Function.const_apply] at hL
     have c_ne_zero : c ≠ 0 := by
       intro hc
-      simp only [hc, ENNReal.coe_zero, MulZeroClass.zero_mul, not_lt_zero] at hL
+      simp only [hc, ENNReal.coe_zero, zero_mul, not_lt_zero] at hL
     have : L / c < μ s := by
       rwa [ENNReal.div_lt_iff, mul_comm]
       · simp only [c_ne_zero, Ne.def, coe_eq_zero, not_false_iff, true_or_iff]
@@ -2123,5 +2111,64 @@ theorem exists_absolutelyContinuous_isFiniteMeasure {m : MeasurableSpace α} (μ
 #align measure_theory.exists_absolutely_continuous_is_finite_measure MeasureTheory.exists_absolutelyContinuous_isFiniteMeasure
 
 end SigmaFinite
+
+section TendstoIndicator
+
+variable {α : Type _} [MeasurableSpace α] {A : Set α}
+variable {ι : Type _} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set α}
+
+/-- If the indicators of measurable sets `Aᵢ` tend pointwise almost everywhere to the indicator
+of a measurable set `A` and we eventually have `Aᵢ ⊆ B` for some set `B` of finite measure, then
+the measures of `Aᵢ` tend to the measure of `A`. -/
+lemma tendsto_measure_of_ae_tendsto_indicator {μ : Measure α} (A_mble : MeasurableSet A)
+    (As_mble : ∀ i, MeasurableSet (As i)) {B : Set α} (B_mble : MeasurableSet B)
+    (B_finmeas : μ B ≠ ∞) (As_le_B : ∀ᶠ i in L, As i ⊆ B)
+    (h_lim : ∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (1 : α → ℝ≥0∞) x)
+      L (𝓝 (A.indicator 1 x))) :
+    Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) := by
+  simp_rw [← MeasureTheory.lintegral_indicator_one A_mble,
+           ← MeasureTheory.lintegral_indicator_one (As_mble _)]
+  refine tendsto_lintegral_filter_of_dominated_convergence (B.indicator (1 : α → ℝ≥0∞))
+          (eventually_of_forall ?_) ?_ ?_ h_lim
+  · exact fun i ↦ Measurable.indicator measurable_const (As_mble i)
+  · filter_upwards [As_le_B] with i hi
+    exact eventually_of_forall (fun x ↦ indicator_le_indicator_of_subset hi (by simp) x)
+  · rwa [← lintegral_indicator_one B_mble] at B_finmeas
+
+/-- If `μ` is a finite measure and the indicators of measurable sets `Aᵢ` tend pointwise
+almost everywhere to the indicator of a measurable set `A`, then the measures `μ Aᵢ` tend to
+the measure `μ A`. -/
+lemma tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure [IsCountablyGenerated L]
+    {μ : Measure α} [IsFiniteMeasure μ] (A_mble : MeasurableSet A)
+    (As_mble : ∀ i, MeasurableSet (As i))
+    (h_lim : ∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (1 : α → ℝ≥0∞) x)
+      L (𝓝 (A.indicator 1 x))) :
+    Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) :=
+  tendsto_measure_of_ae_tendsto_indicator L A_mble As_mble MeasurableSet.univ
+    (measure_ne_top μ univ) (eventually_of_forall (fun i ↦ subset_univ (As i))) h_lim
+
+/-- If the indicators of measurable sets `Aᵢ` tend pointwise to the indicator of a set `A`
+and we eventually have `Aᵢ ⊆ B` for some set `B` of finite measure, then the measures of `Aᵢ`
+tend to the measure of `A`. -/
+lemma tendsto_measure_of_tendsto_indicator [NeBot L] {μ : Measure α}
+    (As_mble : ∀ i, MeasurableSet (As i)) {B : Set α} (B_mble : MeasurableSet B)
+    (B_finmeas : μ B ≠ ∞) (As_le_B : ∀ᶠ i in L, As i ⊆ B)
+    (h_lim : Tendsto (fun i ↦ (As i).indicator (1 : α → ℝ≥0∞)) L (𝓝 (A.indicator 1))) :
+    Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) := by
+  apply tendsto_measure_of_ae_tendsto_indicator L ?_ As_mble B_mble B_finmeas As_le_B
+  · exact eventually_of_forall (by simpa only [tendsto_pi_nhds] using h_lim)
+  · exact measurableSet_of_tendsto_indicator L As_mble h_lim
+
+/-- If `μ` is a finite measure and the indicators of measurable sets `Aᵢ` tend pointwise to
+the indicator of a set `A`, then the measures `μ Aᵢ` tend to the measure `μ A`. -/
+lemma tendsto_measure_of_tendsto_indicator_of_isFiniteMeasure [NeBot L]
+    (μ : Measure α) [IsFiniteMeasure μ] (As_mble : ∀ i, MeasurableSet (As i))
+    (h_lim : Tendsto (fun i ↦ (As i).indicator (1 : α → ℝ≥0∞)) L (𝓝 (A.indicator 1))) :
+    Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) := by
+  apply tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure L ?_ As_mble
+  · exact eventually_of_forall (by simpa only [tendsto_pi_nhds] using h_lim)
+  · exact measurableSet_of_tendsto_indicator L As_mble h_lim
+
+end TendstoIndicator -- section
 
 end MeasureTheory

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module topology.bornology.basic
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Cofinite
+
+#align_import topology.bornology.basic from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # Basic theory of bornology
@@ -44,12 +41,12 @@ it is intended for regular use as a filter on `α`.
 
 open Set Filter
 
-variable {ι α β : Type _}
+variable {ι α β : Type*}
 
 /-- A **bornology** on a type `α` is a filter of cobounded sets which contains the cofinite filter.
 Such spaces are equivalently specified by their bounded sets, see `Bornology.ofBounded`
 and `Bornology.ext_iff_isBounded`-/
-class Bornology (α : Type _) where
+class Bornology (α : Type*) where
   /-- The filter of cobounded sets in a bornology. This is a field of the structure, but one
   should always prefer `Bornology.cobounded` because it makes the `α` argument explciit. -/
   cobounded' : Filter α
@@ -64,12 +61,12 @@ fields explicit, we have to define these separately, prove the `ext` lemmas manu
 initialize new `simps` projections. -/
 
 /-- The filter of cobounded sets in a bornology. -/
-def Bornology.cobounded (α : Type _) [Bornology α] : Filter α := Bornology.cobounded'
+def Bornology.cobounded (α : Type*) [Bornology α] : Filter α := Bornology.cobounded'
 #align bornology.cobounded Bornology.cobounded
 
-alias Bornology.cobounded ← Bornology.Simps.cobounded
+alias Bornology.Simps.cobounded := Bornology.cobounded
 
-lemma Bornology.le_cofinite (α : Type _) [Bornology α] : cobounded α ≤ cofinite :=
+lemma Bornology.le_cofinite (α : Type*) [Bornology α] : cobounded α ≤ cofinite :=
 Bornology.le_cofinite'
 #align bornology.le_cofinite Bornology.le_cofinite
 
@@ -92,7 +89,7 @@ lemma Bornology.ext_iff (t t' : Bornology α) :
 /-- A constructor for bornologies by specifying the bounded sets,
 and showing that they satisfy the appropriate conditions. -/
 @[simps]
-def Bornology.ofBounded {α : Type _} (B : Set (Set α))
+def Bornology.ofBounded {α : Type*} (B : Set (Set α))
     (empty_mem : ∅ ∈ B)
     (subset_mem : ∀ s₁ (_ : s₁ ∈ B) s₂, s₂ ⊆ s₁ → s₂ ∈ B)
     (union_mem : ∀ s₁ (_ : s₁ ∈ B) s₂ (_ : s₂ ∈ B), s₁ ∪ s₂ ∈ B)
@@ -115,7 +112,7 @@ def Bornology.ofBounded {α : Type _} (B : Set (Set α))
 /-- A constructor for bornologies by specifying the bounded sets,
 and showing that they satisfy the appropriate conditions. -/
 @[simps!]
-def Bornology.ofBounded' {α : Type _} (B : Set (Set α))
+def Bornology.ofBounded' {α : Type*} (B : Set (Set α))
     (empty_mem : ∅ ∈ B)
     (subset_mem : ∀ s₁ (_ : s₁ ∈ B) s₂, s₂ ⊆ s₁ → s₂ ∈ B)
     (union_mem : ∀ s₁ (_ : s₁ ∈ B) s₂ (_ : s₂ ∈ B), s₁ ∪ s₂ ∈ B)
@@ -162,11 +159,11 @@ theorem isCobounded_compl_iff : IsCobounded sᶜ ↔ IsBounded s :=
   Iff.rfl
 #align bornology.is_cobounded_compl_iff Bornology.isCobounded_compl_iff
 
-alias isBounded_compl_iff ↔ IsBounded.of_compl IsCobounded.compl
+alias ⟨IsBounded.of_compl, IsCobounded.compl⟩ := isBounded_compl_iff
 #align bornology.is_bounded.of_compl Bornology.IsBounded.of_compl
 #align bornology.is_cobounded.compl Bornology.IsCobounded.compl
 
-alias isCobounded_compl_iff ↔ IsCobounded.of_compl IsBounded.compl
+alias ⟨IsCobounded.of_compl, IsBounded.compl⟩ := isCobounded_compl_iff
 #align bornology.is_cobounded.of_compl Bornology.IsCobounded.of_compl
 #align bornology.is_bounded.compl Bornology.IsBounded.compl
 
@@ -320,7 +317,7 @@ def Bornology.cofinite : Bornology α
 #align bornology.cofinite Bornology.cofinite
 
 /-- A space with a `Bornology` is a **bounded space** if `Set.univ : Set α` is bounded. -/
-class BoundedSpace (α : Type _) [Bornology α] : Prop where
+class BoundedSpace (α : Type*) [Bornology α] : Prop where
   /-- The `Set.univ` is bounded. -/
   bounded_univ : Bornology.IsBounded (univ : Set α)
 #align bounded_space BoundedSpace

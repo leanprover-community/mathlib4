@@ -2,15 +2,12 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module analysis.normed_space.banach
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Baire
 import Mathlib.Analysis.NormedSpace.OperatorNorm
 import Mathlib.Analysis.NormedSpace.AffineIsometry
+
+#align_import analysis.normed_space.banach from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Banach open mapping theorem
@@ -24,8 +21,8 @@ open Function Metric Set Filter Finset Classical Topology BigOperators NNReal
 
 open LinearMap (range ker)
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F] (f : E →L[𝕜] F)
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] (f : E →L[𝕜] F)
 
 namespace ContinuousLinearMap
 
@@ -229,7 +226,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
     rw [tendsto_iff_norm_tendsto_zero]
     simp only [sub_zero]
     refine' squeeze_zero (fun _ => norm_nonneg _) hnle _
-    rw [← MulZeroClass.zero_mul ‖y‖]
+    rw [← zero_mul ‖y‖]
     refine' (_root_.tendsto_pow_atTop_nhds_0_of_lt_1 _ _).mul tendsto_const_nhds <;> norm_num
   have feq : f x = y - 0 := tendsto_nhds_unique L₁ L₂
   rw [sub_zero] at feq
@@ -266,7 +263,7 @@ protected theorem quotientMap (surj : Surjective f) : QuotientMap f :=
   (f.isOpenMap surj).to_quotientMap f.continuous surj
 #align continuous_linear_map.quotient_map ContinuousLinearMap.quotientMap
 
-theorem _root_.AffineMap.isOpenMap {P Q : Type _} [MetricSpace P] [NormedAddTorsor E P]
+theorem _root_.AffineMap.isOpenMap {P Q : Type*} [MetricSpace P] [NormedAddTorsor E P]
     [MetricSpace Q] [NormedAddTorsor F Q] (f : P →ᵃ[𝕜] Q) (hf : Continuous f)
     (surj : Surjective f) : IsOpenMap f :=
   AffineMap.isOpenMap_linear_iff.mp <|

@@ -2,13 +2,10 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.group.basic
-! leanprover-community/mathlib commit a07d750983b94c530ab69a726862c2ab6802b38c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
+
+#align_import algebra.group.basic from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
 
 /-!
 # Basic lemmas about semigroups, monoids, and groups
@@ -23,7 +20,7 @@ open Function
 
 universe u
 
-variable {α β G : Type _}
+variable {α β G : Type*}
 
 section Semigroup
 
@@ -817,10 +814,10 @@ theorem div_eq_one : a / b = 1 ↔ a = b :=
 #align div_eq_one div_eq_one
 #align sub_eq_zero sub_eq_zero
 
-alias div_eq_one ↔ _ div_eq_one_of_eq
+alias ⟨_, div_eq_one_of_eq⟩ := div_eq_one
 #align div_eq_one_of_eq div_eq_one_of_eq
 
-alias sub_eq_zero ↔ _ sub_eq_zero_of_eq
+alias ⟨_, sub_eq_zero_of_eq⟩ := sub_eq_zero
 #align sub_eq_zero_of_eq sub_eq_zero_of_eq
 
 @[to_additive]
@@ -977,7 +974,7 @@ theorem div_mul_cancel'' (a b : G) : a / (a * b) = b⁻¹ := by rw [← inv_div,
 
 -- This lemma is in the `simp` set under the name `mul_inv_cancel_comm_assoc`,
 -- along with the additive version `add_neg_cancel_comm_assoc`,
--- defined  in `Algebra.Group.Commute`
+-- defined in `Algebra.Group.Commute`
 @[to_additive]
 theorem mul_mul_inv_cancel'_right (a b : G) : a * (b * a⁻¹) = b := by
   rw [← div_eq_mul_inv, mul_div_cancel'_right a b]

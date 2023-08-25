@@ -2,14 +2,11 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
-
-! This file was ported from Lean 3 source module data.stream.defs
-! leanprover-community/mathlib commit 39af7d3bf61a98e928812dbc3e16f4ea8b795ca3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Data.Nat.Notation
+
+#align_import data.stream.defs from "leanprover-community/mathlib"@"39af7d3bf61a98e928812dbc3e16f4ea8b795ca3"
 
 /-!
 # Definition of `Stream'` and functions on streams
@@ -18,6 +15,8 @@ A stream `Stream' α` is an infinite sequence of elements of `α`. One can also 
 infinite list. In this file we define `Stream'` and some functions that take and/or return streams.
 Note that we already have `Stream` to represent a similar object, hence the awkward naming.
 -/
+
+set_option autoImplicit true
 
 /-- A stream `Stream' α` is an infinite sequence of elements of `α`. -/
 def Stream' (α : Type u) := ℕ → α

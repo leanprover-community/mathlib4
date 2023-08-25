@@ -2,14 +2,11 @@
 Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.roots_of_unity.minpoly
-! leanprover-community/mathlib commit 7fdeecc0d03cd40f7a165e6cf00a4d2286db599f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.RootsOfUnity.Basic
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
+
+#align_import ring_theory.roots_of_unity.minpoly from "leanprover-community/mathlib"@"7fdeecc0d03cd40f7a165e6cf00a4d2286db599f"
 
 /-!
 # Minimal polynomial of roots of unity
@@ -32,7 +29,7 @@ namespace IsPrimitiveRoot
 
 section CommRing
 
-variable {n : ℕ} {K : Type _} [CommRing K] {μ : K} (h : IsPrimitiveRoot μ n)
+variable {n : ℕ} {K : Type*} [CommRing K] {μ : K} (h : IsPrimitiveRoot μ n)
 
 /-- `μ` is integral over `ℤ`. -/
 -- Porting note: `hpos` was in the `variable` line, with an `omit` in mathlib3 just after this
@@ -64,8 +61,7 @@ set_option linter.uppercaseLean3 false in
 theorem separable_minpoly_mod {p : ℕ} [Fact p.Prime] (hdiv : ¬p ∣ n) :
     Separable (map (Int.castRingHom (ZMod p)) (minpoly ℤ μ)) := by
   have hdvd : map (Int.castRingHom (ZMod p)) (minpoly ℤ μ) ∣ X ^ n - 1 := by
-    simp [Polynomial.map_pow, map_X, Polynomial.map_one, Polynomial.map_sub]
-    convert  RingHom.map_dvd (mapRingHom (Int.castRingHom (ZMod p)))
+    convert RingHom.map_dvd (mapRingHom (Int.castRingHom (ZMod p)))
         (minpoly_dvd_x_pow_sub_one h)
     simp only [map_sub, map_pow, coe_mapRingHom, map_X, map_one]
   refine' Separable.of_dvd (separable_X_pow_sub_C 1 _ one_ne_zero) hdvd

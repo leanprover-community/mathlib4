@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module category_theory.category.Twop
-! leanprover-community/mathlib commit c8ab806ef73c20cab1d87b5157e43a82c205f28e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Bipointed
 import Mathlib.Data.TwoPointing
+
+#align_import category_theory.category.Twop from "leanprover-community/mathlib"@"c8ab806ef73c20cab1d87b5157e43a82c205f28e"
 
 /-!
 # The category of two-pointed types
@@ -27,7 +24,7 @@ open CategoryTheory Option
 
 universe u
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 set_option linter.uppercaseLean3 false
 
@@ -39,20 +36,20 @@ structure TwoP : Type (u + 1) where
 
 namespace TwoP
 
-instance : CoeSort TwoP (Type _) :=
+instance : CoeSort TwoP (Type*) :=
   ⟨TwoP.X⟩
 
 /-- Turns a two-pointing into a two-pointed type. -/
-def of {X : Type _} (toTwoPointing : TwoPointing X) : TwoP :=
+def of {X : Type*} (toTwoPointing : TwoPointing X) : TwoP :=
   ⟨X, toTwoPointing⟩
 #align Twop.of TwoP.of
 
 @[simp]
-theorem coe_of {X : Type _} (toTwoPointing : TwoPointing X) : ↥(of toTwoPointing) = X :=
+theorem coe_of {X : Type*} (toTwoPointing : TwoPointing X) : ↥(of toTwoPointing) = X :=
   rfl
 #align Twop.coe_of TwoP.coe_of
 
-alias of ← _root_.TwoPointing.TwoP
+alias _root_.TwoPointing.TwoP := of
 #align two_pointing.Twop TwoPointing.TwoP
 
 instance : Inhabited TwoP :=

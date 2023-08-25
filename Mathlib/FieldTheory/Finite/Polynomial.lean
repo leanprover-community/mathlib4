@@ -2,17 +2,14 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module field_theory.finite.polynomial
-! leanprover-community/mathlib commit 5aa3c1de9f3c642eac76e11071c852766f220fd0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Data.MvPolynomial.Expand
 import Mathlib.FieldTheory.Finite.Basic
+
+#align_import field_theory.finite.polynomial from "leanprover-community/mathlib"@"5aa3c1de9f3c642eac76e11071c852766f220fd0"
 
 /-!
 ## Polynomials over finite fields
@@ -21,7 +18,7 @@ import Mathlib.FieldTheory.Finite.Basic
 
 namespace MvPolynomial
 
-variable {σ : Type _}
+variable {σ : Type*}
 
 /-- A polynomial over the integers is divisible by `n : ℕ`
 if and only if it is zero over `ZMod n`. -/
@@ -59,7 +56,7 @@ open scoped BigOperators Classical
 
 open Set LinearMap Submodule
 
-variable {K : Type _} {σ : Type _}
+variable {K : Type*} {σ : Type*}
 
 section Indicator
 

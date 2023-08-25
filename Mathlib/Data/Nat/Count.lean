@@ -2,14 +2,11 @@
 Copyright (c) 2021 Vladimir Goryachev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Scott Morrison, Eric Rodriguez
-
-! This file was ported from Lean 3 source module data.nat.count
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Tactic.Ring
+
+#align_import data.nat.count from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Counting on ℕ
@@ -34,12 +31,12 @@ variable [DecidablePred p]
 
 /-- Count the number of naturals `k < n` satisfying `p k`. -/
 def count (n : ℕ) : ℕ :=
-  (List.range n).countp p
+  (List.range n).countP p
 #align nat.count Nat.count
 
 @[simp]
 theorem count_zero : count p 0 = 0 := by
-  rw [count, List.range_zero, List.countp, List.countp.go]
+  rw [count, List.range_zero, List.countP, List.countP.go]
 #align nat.count_zero Nat.count_zero
 
 /-- A fintype instance for the set relevant to `Nat.count`. Locally an instance in locale `count` -/
@@ -55,7 +52,7 @@ scoped[Count] attribute [instance] Nat.CountSet.fintype
 open Count
 
 theorem count_eq_card_filter_range (n : ℕ) : count p n = ((range n).filter p).card := by
-  rw [count, List.countp_eq_length_filter]
+  rw [count, List.countP_eq_length_filter]
   rfl
 #align nat.count_eq_card_filter_range Nat.count_eq_card_filter_range
 
@@ -114,10 +111,10 @@ theorem count_succ_eq_count_iff {n : ℕ} : count p (n + 1) = count p n ↔ ¬p 
   by_cases h : p n <;> simp [h, count_succ]
 #align nat.count_succ_eq_count_iff Nat.count_succ_eq_count_iff
 
-alias count_succ_eq_succ_count_iff ↔ _ count_succ_eq_succ_count
+alias ⟨_, count_succ_eq_succ_count⟩ := count_succ_eq_succ_count_iff
 #align nat.count_succ_eq_succ_count Nat.count_succ_eq_succ_count
 
-alias count_succ_eq_count_iff ↔ _ count_succ_eq_count
+alias ⟨_, count_succ_eq_count⟩ := count_succ_eq_count_iff
 #align nat.count_succ_eq_count Nat.count_succ_eq_count
 
 theorem count_le_cardinal (n : ℕ) : (count p n : Cardinal) ≤ Cardinal.mk { k | p k } := by

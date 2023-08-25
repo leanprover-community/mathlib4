@@ -2,17 +2,14 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison, Adam Topaz
-
-! This file was ported from Lean 3 source module algebraic_topology.simplex_category
-! leanprover-community/mathlib commit e8ac6315bcfcbaf2d19a046719c3b553206dac75
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Linarith
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Order.Category.NonemptyFinLinOrdCat
 import Mathlib.CategoryTheory.Functor.ReflectsIso
+
+#align_import algebraic_topology.simplex_category from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
 /-! # The simplex category
 
@@ -88,7 +85,7 @@ theorem mk_len (n : SimplexCategory) : ([n.len] : SimplexCategory) = n :=
 #align simplex_category.mk_len SimplexCategory.mk_len
 
 /-- A recursor for `SimplexCategory`. Use it as `induction Δ using SimplexCategory.rec`. -/
-protected def rec {F : ∀ _ : SimplexCategory, Sort _} (h : ∀ n : ℕ, F [n]) : ∀ X, F X := fun n =>
+protected def rec {F : ∀ _ : SimplexCategory, Sort*} (h : ∀ n : ℕ, F [n]) : ∀ X, F X := fun n =>
   h n.len
 #align simplex_category.rec SimplexCategory.rec
 
@@ -218,8 +215,6 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
     δ i ≫ δ j.succ = δ j ≫ δ (Fin.castSucc i) := by
   ext k
   dsimp [δ, Fin.succAbove]
-  simp only [OrderEmbedding.toOrderHom_coe, OrderEmbedding.coe_ofStrictMono, Function.comp_apply,
-    SimplexCategory.Hom.toOrderHom_mk, OrderHom.comp_coe]
   rcases i with ⟨i, _⟩
   rcases j with ⟨j, _⟩
   rcases k with ⟨k, _⟩
@@ -228,7 +223,7 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
 
 theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j) :
     δ i ≫ δ j =
-      δ (j.pred <| Fin.vne_of_ne fun (hj : j = 0) => by simp [hj, Fin.not_lt_zero] at H) ≫
+      δ (j.pred <| fun (hj : j = 0) => by simp [hj, Fin.not_lt_zero] at H) ≫
         δ (Fin.castSucc i) := by
   rw [← δ_comp_δ]
   · rw [Fin.succ_pred]
@@ -282,7 +277,8 @@ theorem δ_comp_σ_self {n} {i : Fin (n + 1)} :
   dsimp [σ, δ, Fin.predAbove, Fin.succAbove]
   simp [Fin.lt_iff_val_lt_val, Fin.ite_val, Fin.dite_val]
   split_ifs
-  all_goals try simp <;> linarith
+  any_goals simp
+  all_goals linarith
 #align simplex_category.δ_comp_σ_self SimplexCategory.δ_comp_σ_self
 
 @[reassoc]
@@ -299,7 +295,6 @@ theorem δ_comp_σ_succ {n} {i : Fin (n + 1)} : δ i.succ ≫ σ i = 𝟙 ([n] :
   rcases i with ⟨i, _⟩
   rcases j with ⟨j, _⟩
   dsimp [δ, σ, Fin.succAbove, Fin.predAbove]
-  simp only [Fin.mk_lt_mk]
   split_ifs <;> simp <;> simp at * <;> linarith
 #align simplex_category.δ_comp_σ_succ SimplexCategory.δ_comp_σ_succ
 
@@ -328,7 +323,7 @@ theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSu
 @[reassoc]
 theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i) :
     δ i ≫ σ j = σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le))) ≫
-      δ (i.pred <| Fin.vne_of_ne fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) := by
+      δ (i.pred <| fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) := by
   rw [← δ_comp_σ_of_gt]
   · simp
   · rw [Fin.castSucc_castLT, ← Fin.succ_lt_succ_iff, Fin.succ_pred]
@@ -386,7 +381,7 @@ instance : Faithful skeletalFunctor.{v} where
   map_injective {_ _ f g} h := by
     ext x : 3
     apply ULift.up_injective.{v}
-    change (skeletalFunctor.{v}.map f) ⟨x⟩  = (skeletalFunctor.map g) ⟨x⟩
+    change (skeletalFunctor.{v}.map f) ⟨x⟩ = (skeletalFunctor.map g) ⟨x⟩
     rw [h]
 
 instance : EssSurj skeletalFunctor.{v} where
@@ -525,7 +520,7 @@ instance {n : ℕ} {i : Fin (n + 2)} : Mono (δ i) := by
 instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
   rw [epi_iff_surjective]
   intro b
-  simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_fun_mk]
+  simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk]
   by_cases b ≤ i
   · use b
     rw [Fin.predAbove_below i b (by simpa only [Fin.coe_eq_castSucc] using h)]
@@ -602,7 +597,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
   use δ i.succ ≫ θ
   ext1; ext1; ext1 x
   simp only [Hom.toOrderHom_mk, Function.comp_apply, OrderHom.comp_coe, Hom.comp,
-    smallCategory_comp, σ, mkHom, OrderHom.coe_fun_mk]
+    smallCategory_comp, σ, mkHom, OrderHom.coe_mk]
   by_cases h' : x ≤ Fin.castSucc i
   · rw [Fin.predAbove_below i x h']
     have eq := Fin.castSucc_castPred (gt_of_gt_of_ge (Fin.castSucc_lt_last i) h')
@@ -612,7 +607,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
     · rwa [eq, ← Fin.le_castSucc_iff]
     rw [eq]
   · simp only [not_le] at h'
-    let y := x.pred <| Fin.vne_of_ne (by rintro (rfl : x = 0); simp at h')
+    let y := x.pred <| by rintro (rfl : x = 0); simp at h'
     have hy : x = y.succ := (Fin.succ_pred x _).symm
     rw [hy] at h' ⊢
     rw [Fin.predAbove_above i y.succ h', Fin.pred_succ]
@@ -675,7 +670,7 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
     simp only [Hom.toOrderHom_mk, Function.comp_apply, OrderHom.comp_coe, Hom.comp,
       smallCategory_comp]
     by_cases h' : θ.toOrderHom x ≤ i
-    · simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_fun_mk]
+    · simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk]
       rw [Fin.predAbove_below (Fin.castPred i) (θ.toOrderHom x)
           (by simpa [Fin.castSucc_castPred h] using h')]
       dsimp [δ]
@@ -688,7 +683,7 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
       rw [Fin.castSucc_castPred]
       apply lt_of_le_of_lt h' h
     · simp only [not_le] at h'
-      simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_fun_mk,
+      simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk,
         Fin.predAbove_above (Fin.castPred i) (θ.toOrderHom x)
           (by simpa only [Fin.castSucc_castPred h] using h')]
       dsimp [δ]

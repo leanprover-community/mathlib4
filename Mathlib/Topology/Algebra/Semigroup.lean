@@ -2,13 +2,10 @@
 Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
-
-! This file was ported from Lean 3 source module topology.algebra.semigroup
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Separation
+
+#align_import topology.algebra.semigroup from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Idempotents in topological semigroups
@@ -70,8 +67,7 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
     convert
       @IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed _ _ _ hcnemp.coe_sort
         ((↑) : c → Set M) ?_ ?_ ?_ ?_
-    · simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq]
-      exact Set.sInter_eq_iInter
+    · exact Set.sInter_eq_iInter
     · refine' DirectedOn.directed_val (IsChain.directedOn hc.symm)
     exacts [fun i => (hcs i.prop).2.1, fun i => (hcs i.prop).1.isCompact, fun i => (hcs i.prop).1]
   · rw [Set.mem_sInter]

@@ -2,13 +2,10 @@
 Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.qpf.univariate.basic
-! leanprover-community/mathlib commit 14b69e9f3c16630440a2cbd46f1ddad0d561dee7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.PFunctor.Univariate.M
+
+#align_import data.qpf.univariate.basic from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
 /-!
 
@@ -416,7 +413,6 @@ def Cofix.dest : Cofix F → F (Cofix F) :=
         intro x y h
         exact ⟨r, pr, h⟩
       rw [← Quot.factor_mk_eq _ _ this]
-      dsimp
       conv =>
         lhs
         rw [comp_map, ← abs_map, pr rxy, abs_map, ← comp_map])
@@ -499,7 +495,7 @@ theorem Cofix.bisim (r : Cofix F → Cofix F → Prop)
   apply h'
 #align qpf.cofix.bisim Qpf.Cofix.bisim
 
-theorem Cofix.bisim' {α : Type _} (Q : α → Prop) (u v : α → Cofix F)
+theorem Cofix.bisim' {α : Type*} (Q : α → Prop) (u v : α → Cofix F)
     (h : ∀ x, Q x → ∃ a f f', Cofix.dest (u x) = abs ⟨a, f⟩ ∧ Cofix.dest (v x) = abs ⟨a, f'⟩ ∧
       ∀ i, ∃ x', Q x' ∧ f i = u x' ∧ f' i = v x') :
     ∀ x, Q x → u x = v x := fun x Qx =>

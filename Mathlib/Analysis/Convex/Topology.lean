@@ -2,17 +2,14 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.convex.topology
-! leanprover-community/mathlib commit 0e3aacdc98d25e0afe035c452d876d28cbffaa7e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Strict
 import Mathlib.Topology.PathConnected
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.Module.Basic
+
+#align_import analysis.convex.topology from "leanprover-community/mathlib"@"0e3aacdc98d25e0afe035c452d876d28cbffaa7e"
 
 /-!
 # Topological properties of convex sets
@@ -29,13 +26,13 @@ assert_not_exists Norm
 
 open Metric Set Pointwise Convex
 
-variable {ι 𝕜 E : Type _}
+variable {ι 𝕜 E : Type*}
 
 theorem Real.convex_iff_isPreconnected {s : Set ℝ} : Convex ℝ s ↔ IsPreconnected s :=
   convex_iff_ordConnected.trans isPreconnected_iff_ordConnected.symm
 #align real.convex_iff_is_preconnected Real.convex_iff_isPreconnected
 
-alias Real.convex_iff_isPreconnected ↔ _ IsPreconnected.convex
+alias ⟨_, IsPreconnected.convex⟩ := Real.convex_iff_isPreconnected
 #align is_preconnected.convex IsPreconnected.convex
 
 /-! ### Standard simplex -/

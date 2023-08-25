@@ -2,11 +2,6 @@
 Copyright (c) 2020 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Calle Sönne
-
-! This file was ported from Lean 3 source module topology.category.Profinite.basic
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.Connected
@@ -15,6 +10,8 @@ import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Monad.Limits
 import Mathlib.CategoryTheory.FintypeCat
+
+#align_import topology.category.Profinite.basic from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
 /-!
 # The category of Profinite Types
@@ -65,7 +62,7 @@ namespace Profinite
 /-- Construct a term of `Profinite` from a type endowed with the structure of a
 compact, Hausdorff and totally disconnected topological space.
 -/
-def of (X : Type _) [TopologicalSpace X] [CompactSpace X] [T2Space X]
+def of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
     [TotallyDisconnectedSpace X] : Profinite :=
   ⟨⟨⟨X, inferInstance⟩⟩⟩
 #align Profinite.of Profinite.of
@@ -85,7 +82,7 @@ instance hasForget₂ : HasForget₂ Profinite TopCat :=
   InducedCategory.hasForget₂ _
 #align Profinite.has_forget₂ Profinite.hasForget₂
 
-instance : CoeSort Profinite (Type _) :=
+instance : CoeSort Profinite (Type*) :=
   ⟨fun X => X.toCompHaus⟩
 
 -- Porting note: This lemma was not needed in mathlib3
@@ -123,7 +120,7 @@ instance {X : Profinite} : T2Space ((forget Profinite).obj X) := by
 
 -- Porting note: removed, as it is a syntactic tautology.
 -- @[simp]
--- theorem coe_toCompHaus {X : Profinite} : (X.toCompHaus : Type _) = (X : Type _) :=
+-- theorem coe_toCompHaus {X : Profinite} : (X.toCompHaus : Type*) = (X : Type*) :=
 --   rfl
 -- #align Profinite.coe_to_CompHaus Profinite.coe_toCompHaus
 
@@ -250,7 +247,7 @@ end DiscreteTopology
 end Profinite
 
 namespace Profinite
--- set_option pp.universes true
+
 -- TODO the following construction of limits could be generalised
 -- to allow diagrams in lower universes.
 /-- An explicit limit cone for a functor `F : J ⥤ Profinite`, defined in terms of
@@ -339,41 +336,27 @@ instance forget_reflectsIsomorphisms : ReflectsIsomorphisms (forget Profinite) :
 #align Profinite.forget_reflects_isomorphisms Profinite.forget_reflectsIsomorphisms
 
 /-- Construct an isomorphism from a homeomorphism. -/
-@[simps hom inv]
-def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y where
-  hom := ⟨f, f.continuous⟩
-  inv := ⟨f.symm, f.symm.continuous⟩
-  hom_inv_id := by
-    ext x
-    exact f.symm_apply_apply x
-  inv_hom_id := by
-    ext x
-    exact f.apply_symm_apply x
+@[simps! hom inv]
+noncomputable
+def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y :=
+  @asIso _ _ _ _ ⟨f, f.continuous⟩ (@isIso_of_reflects_iso _ _ _ _ _ _ _ profiniteToCompHaus
+    (IsIso.of_iso (CompHaus.isoOfHomeo f)) _)
 #align Profinite.iso_of_homeo Profinite.isoOfHomeo
 
 /-- Construct a homeomorphism from an isomorphism. -/
-@[simps]
-def homeoOfIso (f : X ≅ Y) : X ≃ₜ Y where
-  toFun := f.hom
-  invFun := f.inv
-  left_inv x := by simp
-  right_inv x := by simp
-  continuous_toFun := f.hom.continuous
-  continuous_invFun := f.inv.continuous
+@[simps!]
+def homeoOfIso (f : X ≅ Y) : X ≃ₜ Y := CompHaus.homeoOfIso (profiniteToCompHaus.mapIso f)
 #align Profinite.homeo_of_iso Profinite.homeoOfIso
 
 /-- The equivalence between isomorphisms in `Profinite` and homeomorphisms
 of topological spaces. -/
-@[simps]
+@[simps!]
+noncomputable
 def isoEquivHomeo : (X ≅ Y) ≃ (X ≃ₜ Y) where
   toFun := homeoOfIso
   invFun := isoOfHomeo
-  left_inv f := by
-    ext
-    rfl
-  right_inv f := by
-    ext
-    rfl
+  left_inv f := by ext; rfl
+  right_inv f := by ext; rfl
 #align Profinite.iso_equiv_homeo Profinite.isoEquivHomeo
 
 theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by

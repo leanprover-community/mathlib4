@@ -2,17 +2,14 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.limits.constructions.equalizers
-! leanprover-community/mathlib commit 3424a5932a77dcec2c177ce7d805acace6149299
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+
+#align_import category_theory.limits.constructions.equalizers from "leanprover-community/mathlib"@"3424a5932a77dcec2c177ce7d805acace6149299"
 
 /-!
 # Constructing equalizers from pullbacks and binary products.
@@ -55,7 +52,7 @@ abbrev pullbackFst (F : WalkingParallelPair ⥤ C) :
 
 theorem pullbackFst_eq_pullback_snd (F : WalkingParallelPair ⥤ C) : pullbackFst F = pullback.snd :=
   by convert (eq_whisker pullback.condition Limits.prod.fst :
-      (_ : constructEqualizer F ⟶  F.obj WalkingParallelPair.zero) = _) <;> simp
+      (_ : constructEqualizer F ⟶ F.obj WalkingParallelPair.zero) = _) <;> simp
 #align category_theory.limits.has_equalizers_of_has_pullbacks_and_binary_products.pullback_fst_eq_pullback_snd CategoryTheory.Limits.HasEqualizersOfHasPullbacksAndBinaryProducts.pullbackFst_eq_pullback_snd
 
 /-- Define the equalizing cone -/
@@ -66,7 +63,7 @@ def equalizerCone (F : WalkingParallelPair ⥤ C) : Cone F :=
       (by
         conv_rhs => rw [pullbackFst_eq_pullback_snd]
         convert (eq_whisker pullback.condition Limits.prod.snd :
-          (_ : constructEqualizer F ⟶  F.obj WalkingParallelPair.one) = _) using 1 <;> simp))
+          (_ : constructEqualizer F ⟶ F.obj WalkingParallelPair.one) = _) using 1 <;> simp))
 #align category_theory.limits.has_equalizers_of_has_pullbacks_and_binary_products.equalizer_cone CategoryTheory.Limits.HasEqualizersOfHasPullbacksAndBinaryProducts.equalizerCone
 
 /-- Show the equalizing cone is a limit -/
@@ -154,7 +151,7 @@ abbrev pushoutInl (F : WalkingParallelPair ⥤ C) :
 
 theorem pushoutInl_eq_pushout_inr (F : WalkingParallelPair ⥤ C) : pushoutInl F = pushout.inr := by
   convert (whisker_eq Limits.coprod.inl pushout.condition :
-    (_ : F.obj _ ⟶  constructCoequalizer _) = _) <;> simp
+    (_ : F.obj _ ⟶ constructCoequalizer _) = _) <;> simp
 #align category_theory.limits.has_coequalizers_of_has_pushouts_and_binary_coproducts.pushout_inl_eq_pushout_inr CategoryTheory.Limits.HasCoequalizersOfHasPushoutsAndBinaryCoproducts.pushoutInl_eq_pushout_inr
 
 /-- Define the equalizing cocone -/
@@ -164,7 +161,7 @@ def coequalizerCocone (F : WalkingParallelPair ⥤ C) : Cocone F :=
     (Cofork.ofπ (pushoutInl F) (by
         conv_rhs => rw [pushoutInl_eq_pushout_inr]
         convert (whisker_eq Limits.coprod.inr pushout.condition
-          : (_ : F.obj _ ⟶  constructCoequalizer _) = _) using 1 <;> simp))
+          : (_ : F.obj _ ⟶ constructCoequalizer _) = _) using 1 <;> simp))
 #align category_theory.limits.has_coequalizers_of_has_pushouts_and_binary_coproducts.coequalizer_cocone CategoryTheory.Limits.HasCoequalizersOfHasPushoutsAndBinaryCoproducts.coequalizerCocone
 
 /-- Show the equalizing cocone is a colimit -/

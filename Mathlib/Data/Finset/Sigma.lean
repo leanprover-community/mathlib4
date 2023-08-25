@@ -2,14 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module data.finset.sigma
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Set.Sigma
+
+#align_import data.finset.sigma from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Finite sets in a sigma type
@@ -33,13 +30,13 @@ is computable and universe-polymorphic.
 
 open Function Multiset
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 namespace Finset
 
 section Sigma
 
-variable {α : ι → Type _} {β : Type _} (s s₁ s₂ : Finset ι) (t t₁ t₂ : ∀ i, Finset (α i))
+variable {α : ι → Type*} {β : Type*} (s s₁ s₂ : Finset ι) (t t₁ t₂ : ∀ i, Finset (α i))
 
 /-- `s.sigma t` is the finset of dependent pairs `⟨i, a⟩` such that `i ∈ s` and `a ∈ t i`. -/
 protected def sigma : Finset (Σi, α i) :=
@@ -116,7 +113,7 @@ end Sigma
 
 section SigmaLift
 
-variable {α β γ : ι → Type _} [DecidableEq ι]
+variable {α β γ : ι → Type*} [DecidableEq ι]
 
 /-- Lifts maps `α i → β i → Finset (γ i)` to a map `Σ i, α i → Σ i, β i → Finset (Σ i, γ i)`. -/
 def sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Sigma α) (b : Sigma β) :

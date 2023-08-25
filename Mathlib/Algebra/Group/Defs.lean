@@ -2,17 +2,14 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.group.defs
-! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 
 import Mathlib.Init.ZeroOne
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Common
+
+#align_import algebra.group.defs from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -44,6 +41,8 @@ actions and register the following instances:
 
 -/
 
+set_option autoImplicit true
+
 open Function
 
 /--
@@ -69,18 +68,18 @@ attribute [notation_class nsmul Simps.nsmulArgs]  HSMul
 attribute [notation_class zsmul Simps.zsmulArgs]  HSMul
 
 /-- Type class for the `+ᵥ` notation. -/
-class VAdd (G : Type _) (P : Type _) where
+class VAdd (G : Type*) (P : Type _) where
   vadd : G → P → P
 #align has_vadd VAdd
 
 /-- Type class for the `-ᵥ` notation. -/
-class VSub (G : outParam (Type _)) (P : Type _) where
+class VSub (G : outParam (Type*)) (P : Type*) where
   vsub : P → P → G
 #align has_vsub VSub
 
 /-- Typeclass for types with a scalar multiplication operation, denoted `•` (`\bu`) -/
 @[to_additive (attr := ext)]
-class SMul (M : Type _) (α : Type _) where
+class SMul (M : Type*) (α : Type _) where
   smul : M → α → α
 #align has_smul SMul
 
@@ -102,7 +101,7 @@ attribute [to_additive existing (reorder := 1 2)] instHPow
 
 universe u
 
-variable {G : Type _}
+variable {G : Type*}
 
 /-- Class of types that have an inversion operation. -/
 @[to_additive, notation_class]
@@ -366,6 +365,14 @@ class LeftCancelSemigroup (G : Type u) extends Semigroup G where
 #align left_cancel_semigroup.ext_iff LeftCancelSemigroup.ext_iff
 #align left_cancel_semigroup.ext LeftCancelSemigroup.ext
 
+library_note "lower cancel priority" /--
+We lower the priority of inheriting from cancellative structures.
+This attemts to avoid expensive checks involving bundling and unbundling with the `IsDomain` class.
+since `IsDomain` already depends on `Semiring`, we can synthesize that one first.
+Zulip discussion: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Why.20is.20.60simpNF.60.20complaining.20here.3F
+-/
+attribute [instance 75] LeftCancelSemigroup.toSemigroup -- See note [lower cancel priority]
+
 /-- An `AddLeftCancelSemigroup` is an additive semigroup such that
 `a + b = a + c` implies `b = c`. -/
 @[ext]
@@ -374,6 +381,8 @@ class AddLeftCancelSemigroup (G : Type u) extends AddSemigroup G where
 #align add_left_cancel_semigroup AddLeftCancelSemigroup
 #align add_left_cancel_semigroup.ext AddLeftCancelSemigroup.ext
 #align add_left_cancel_semigroup.ext_iff AddLeftCancelSemigroup.ext_iff
+
+attribute [instance 75] AddLeftCancelSemigroup.toAddSemigroup -- See note [lower cancel priority]
 
 attribute [to_additive] LeftCancelSemigroup
 
@@ -394,6 +403,8 @@ class RightCancelSemigroup (G : Type u) extends Semigroup G where
 #align right_cancel_semigroup.ext_iff RightCancelSemigroup.ext_iff
 #align right_cancel_semigroup.ext RightCancelSemigroup.ext
 
+attribute [instance 75] RightCancelSemigroup.toSemigroup -- See note [lower cancel priority]
+
 /-- An `AddRightCancelSemigroup` is an additive semigroup such that
 `a + b = c + b` implies `a = c`. -/
 @[ext]
@@ -402,6 +413,8 @@ class AddRightCancelSemigroup (G : Type u) extends AddSemigroup G where
 #align add_right_cancel_semigroup AddRightCancelSemigroup
 #align add_right_cancel_semigroup.ext_iff AddRightCancelSemigroup.ext_iff
 #align add_right_cancel_semigroup.ext AddRightCancelSemigroup.ext
+
+attribute [instance 75] AddRightCancelSemigroup.toAddSemigroup -- See note [lower cancel priority]
 
 attribute [to_additive] RightCancelSemigroup
 
@@ -469,7 +482,7 @@ variable {M : Type u}
 -- use `x * npowRec n x` and not `npowRec n x * x` in the definition to make sure that
 -- definitional unfolding of `npowRec` is blocked, to avoid deep recursion issues.
 /-- The fundamental power operation in a monoid. `npowRec n a = a*a*...*a` n times.
-Use instead `a ^ n`,  which has better definitional behavior. -/
+Use instead `a ^ n`, which has better definitional behavior. -/
 def npowRec [One M] [Mul M] : ℕ → M → M
   | 0, _ => 1
   | n + 1, a => a * npowRec n a
@@ -579,6 +592,9 @@ class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = x + nsmul n x := by intros; rfl
 #align add_monoid AddMonoid
 
+attribute [instance 150] AddSemigroup.toAdd
+attribute [instance 50] AddZeroClass.toAdd
+
 #align add_monoid.nsmul_zero' AddMonoid.nsmul_zero
 #align add_monoid.nsmul_succ' AddMonoid.nsmul_succ
 
@@ -599,11 +615,11 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
 -- Bug #660
 attribute [to_additive existing] Monoid.toMulOneClass
 
-@[default_instance high] instance Monoid.Pow {M : Type _} [Monoid M] : Pow M ℕ :=
+@[default_instance high] instance Monoid.Pow {M : Type*} [Monoid M] : Pow M ℕ :=
   ⟨fun x n ↦ Monoid.npow n x⟩
 #align monoid.has_pow Monoid.Pow
 
-instance AddMonoid.SMul {M : Type _} [AddMonoid M] : SMul ℕ M :=
+instance AddMonoid.SMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
   ⟨AddMonoid.nsmul⟩
 #align add_monoid.has_smul_nat AddMonoid.SMul
 
@@ -611,7 +627,7 @@ attribute [to_additive existing SMul] Monoid.Pow
 
 section
 
-variable {M : Type _} [Monoid M]
+variable {M : Type*} [Monoid M]
 
 @[to_additive (attr := simp) nsmul_eq_smul]
 theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
@@ -665,10 +681,14 @@ is useful to define the sum over the empty set, so `AddLeftCancelSemigroup` is n
 class AddLeftCancelMonoid (M : Type u) extends AddLeftCancelSemigroup M, AddMonoid M
 #align add_left_cancel_monoid AddLeftCancelMonoid
 
+attribute [instance 75] AddLeftCancelMonoid.toAddMonoid -- See note [lower cancel priority]
+
 /-- A monoid in which multiplication is left-cancellative. -/
 @[to_additive]
 class LeftCancelMonoid (M : Type u) extends LeftCancelSemigroup M, Monoid M
 #align left_cancel_monoid LeftCancelMonoid
+
+attribute [instance 75] LeftCancelMonoid.toMonoid -- See note [lower cancel priority]
 
 attribute [to_additive existing] LeftCancelMonoid.toMonoid
 
@@ -682,10 +702,14 @@ is useful to define the sum over the empty set, so `AddRightCancelSemigroup` is 
 class AddRightCancelMonoid (M : Type u) extends AddRightCancelSemigroup M, AddMonoid M
 #align add_right_cancel_monoid AddRightCancelMonoid
 
+attribute [instance 75] AddRightCancelMonoid.toAddMonoid -- See note [lower cancel priority]
+
 /-- A monoid in which multiplication is right-cancellative. -/
 @[to_additive]
 class RightCancelMonoid (M : Type u) extends RightCancelSemigroup M, Monoid M
 #align right_cancel_monoid RightCancelMonoid
+
+attribute [instance 75] RightCancelMonoid.toMonoid -- See note [lower cancel priority]
 
 attribute [to_additive existing] RightCancelMonoid.toMonoid
 
@@ -710,10 +734,14 @@ attribute [to_additive existing] CancelMonoid.toRightCancelMonoid
 class AddCancelCommMonoid (M : Type u) extends AddLeftCancelMonoid M, AddCommMonoid M
 #align add_cancel_comm_monoid AddCancelCommMonoid
 
+attribute [instance 75] AddCancelCommMonoid.toAddCommMonoid -- See note [lower cancel priority]
+
 /-- Commutative version of `CancelMonoid`. -/
 @[to_additive]
 class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
 #align cancel_comm_monoid CancelCommMonoid
+
+attribute [instance 75] CancelCommMonoid.toCommMonoid -- See note [lower cancel priority]
 
 attribute [to_additive existing] CancelCommMonoid.toCommMonoid
 
@@ -737,15 +765,15 @@ instance (priority := 100) CancelMonoid.toIsCancelMul (M : Type u) [CancelMonoid
 end CancelMonoid
 
 /-- The fundamental power operation in a group. `zpowRec n a = a*a*...*a` n times, for integer `n`.
-Use instead `a ^ n`,  which has better definitional behavior. -/
-def zpowRec {M : Type _} [One M] [Mul M] [Inv M] : ℤ → M → M
+Use instead `a ^ n`, which has better definitional behavior. -/
+def zpowRec {M : Type*} [One M] [Mul M] [Inv M] : ℤ → M → M
   | Int.ofNat n, a => npowRec n a
   | Int.negSucc n, a => (npowRec n.succ a)⁻¹
 #align zpow_rec zpowRec
 
 /-- The fundamental scalar multiplication in an additive group. `zpowRec n a = a+a+...+a` n
 times, for integer `n`. Use instead `n • a`, which has better definitional behavior. -/
-def zsmulRec {M : Type _} [Zero M] [Add M] [Neg M] : ℤ → M → M
+def zsmulRec {M : Type*} [Zero M] [Add M] [Neg M] : ℤ → M → M
   | Int.ofNat n, a => nsmulRec n a
   | Int.negSucc n, a => -nsmulRec n.succ a
 #align zsmul_rec zsmulRec
@@ -755,14 +783,14 @@ attribute [to_additive existing] zpowRec
 section InvolutiveInv
 
 /-- Auxiliary typeclass for types with an involutive `Neg`. -/
-class InvolutiveNeg (A : Type _) extends Neg A where
+class InvolutiveNeg (A : Type*) extends Neg A where
   neg_neg : ∀ x : A, - -x = x
 
 #align has_involutive_neg InvolutiveNeg
 
 /-- Auxiliary typeclass for types with an involutive `Inv`. -/
 @[to_additive]
-class InvolutiveInv (G : Type _) extends Inv G where
+class InvolutiveInv (G : Type*) extends Inv G where
   inv_inv : ∀ x : G, x⁻¹⁻¹ = x
 
 #align has_involutive_inv InvolutiveInv
@@ -951,7 +979,7 @@ theorem div_eq_mul_inv (a b : G) : a / b = a * b⁻¹ :=
 #align div_eq_mul_inv div_eq_mul_inv
 #align sub_eq_add_neg sub_eq_add_neg
 
-alias div_eq_mul_inv ← division_def
+alias division_def := div_eq_mul_inv
 #align division_def division_def
 
 end DivInvMonoid
@@ -959,23 +987,23 @@ end DivInvMonoid
 section InvOneClass
 
 /-- Typeclass for expressing that `-0 = 0`. -/
-class NegZeroClass (G : Type _) extends Zero G, Neg G where
+class NegZeroClass (G : Type*) extends Zero G, Neg G where
   neg_zero : -(0 : G) = 0
 #align neg_zero_class NegZeroClass
 
 /-- A `SubNegMonoid` where `-0 = 0`. -/
-class SubNegZeroMonoid (G : Type _) extends SubNegMonoid G, NegZeroClass G
+class SubNegZeroMonoid (G : Type*) extends SubNegMonoid G, NegZeroClass G
 #align sub_neg_zero_monoid SubNegZeroMonoid
 
 /-- Typeclass for expressing that `1⁻¹ = 1`. -/
 @[to_additive]
-class InvOneClass (G : Type _) extends One G, Inv G where
+class InvOneClass (G : Type*) extends One G, Inv G where
   inv_one : (1 : G)⁻¹ = 1
 #align inv_one_class InvOneClass
 
 /-- A `DivInvMonoid` where `1⁻¹ = 1`. -/
 @[to_additive SubNegZeroMonoid]
-class DivInvOneMonoid (G : Type _) extends DivInvMonoid G, InvOneClass G
+class DivInvOneMonoid (G : Type*) extends DivInvMonoid G, InvOneClass G
 #align div_inv_one_monoid DivInvOneMonoid
 
 -- FIXME: `to_additive` is not operating on the second parent. (#660)
@@ -1049,6 +1077,9 @@ attribute [to_additive existing] DivisionCommMonoid.toCommMonoid
 
 There is also a division operation `/` such that `a / b = a * b⁻¹`,
 with a default so that `a / b = a * b⁻¹` holds by definition.
+
+Use `Group.ofLeftAxioms` or `Group.ofRightAxioms` to define a group structure
+on a type with the minumum proof obligations.
 -/
 class Group (G : Type u) extends DivInvMonoid G where
   mul_left_inv : ∀ a : G, a⁻¹ * a = 1
@@ -1058,6 +1089,9 @@ class Group (G : Type u) extends DivInvMonoid G where
 
 There is also a binary operation `-` such that `a - b = a + -b`,
 with a default so that `a - b = a + -b` holds by definition.
+
+Use `AddGroup.ofLeftAxioms` or `AddGroup.ofRightAxioms` to define an
+additive group structure on a type with the minumum proof obligations.
 -/
 class AddGroup (A : Type u) extends SubNegMonoid A where
   add_left_neg : ∀ a : A, -a + a = 0
@@ -1138,7 +1172,7 @@ instance (priority := 100) Group.toCancelMonoid : CancelMonoid G :=
 end Group
 
 @[to_additive]
-theorem Group.toDivInvMonoid_injective {G : Type _} :
+theorem Group.toDivInvMonoid_injective {G : Type*} :
     Function.Injective (@Group.toDivInvMonoid G) := by rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
 #align group.to_div_inv_monoid_injective Group.toDivInvMonoid_injective
 #align add_group.to_sub_neg_add_monoid_injective AddGroup.toSubNegAddMonoid_injective

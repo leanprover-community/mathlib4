@@ -2,14 +2,11 @@
 Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
-
-! This file was ported from Lean 3 source module number_theory.cyclotomic.discriminant
-! leanprover-community/mathlib commit 3e068ece210655b7b9a9477c3aff38a492400aa1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 import Mathlib.RingTheory.Discriminant
+
+#align_import number_theory.cyclotomic.discriminant from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
 /-!
 # Discriminant of cyclotomic fields
@@ -26,7 +23,7 @@ We compute the discriminant of a `p ^ n`-th cyclotomic extension.
 
 universe u v
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Algebra Polynomial Nat IsPrimitiveRoot PowerBasis
 
@@ -104,7 +101,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
       derivative_sub, derivative_one, sub_zero, derivative_X_pow, C_eq_nat_cast, ← PNat.pow_coe,
       hζ.minpoly_eq_cyclotomic_of_irreducible hirr] at H
     replace H := congr_arg (fun P => aeval ζ P) H
-    simp only [aeval_add, aeval_mul, minpoly.aeval, MulZeroClass.zero_mul, add_zero, aeval_nat_cast,
+    simp only [aeval_add, aeval_mul, minpoly.aeval, zero_mul, add_zero, aeval_nat_cast,
       _root_.map_sub, aeval_one, aeval_X_pow] at H
     replace H := congr_arg (Algebra.norm K) H
     have hnorm : (norm K) (ζ ^ (p : ℕ) ^ k - 1) = (p : K) ^ (p : ℕ) ^ k := by
@@ -156,7 +153,7 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact (
       minpoly.eq_X_sub_C_of_algebraMap_inj _ (algebraMap K L).injective, natDegree_X_sub_C]
     simp only [traceMatrix, map_one, one_pow, Matrix.det_unique, traceForm_apply, mul_one]
     rw [← (algebraMap K L).map_one, trace_algebraMap, finrank _ hirr]
-    simp; norm_num
+    norm_num
   · by_cases hk : p ^ (k + 1) = 2
     · have coe_two : 2 = ((2 : ℕ+) : ℕ) := rfl
       have hp : p = 2 := by
@@ -170,7 +167,6 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact (
       rw [add_left_eq_self] at hk
       rw [hp, hk] at hζ; norm_num at hζ; rw [← coe_two] at hζ
       rw [coe_basis, powerBasis_gen]; simp only [hp, hk]; norm_num
-      rw [← coe_two, totient_two, show 1 / 2 = 0 by rfl, _root_.pow_zero]
       -- Porting note: the goal at this point is `(discr K fun i ↦ ζ ^ ↑i) = 1`.
       -- This `simp_rw` is needed so the next `rw` can rewrite the type of `i` from
       -- `Fin (natDegree (minpoly K ζ))` to `Fin 1`

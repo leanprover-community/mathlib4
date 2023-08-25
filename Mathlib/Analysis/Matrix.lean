@@ -2,15 +2,12 @@
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Eric Wieser
-
-! This file was ported from Lean 3 source module analysis.matrix
-! leanprover-community/mathlib commit 46b633fd842bef9469441c0209906f6dddd2b4f5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.NormedSpace.PiLp
 import Mathlib.Analysis.InnerProductSpace.PiL2
+
+#align_import analysis.matrix from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
 /-!
 # Matrices as a normed space
@@ -46,7 +43,7 @@ These are not declared as instances because there are several natural choices fo
 of a matrix.
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 
 noncomputable section
@@ -55,7 +52,7 @@ open scoped BigOperators NNReal Matrix
 
 namespace Matrix
 
-variable {R l m n α β : Type _} [Fintype l] [Fintype m] [Fintype n]
+variable {R l m n α β : Type*} [Fintype l] [Fintype m] [Fintype n]
 
 /-! ### The elementwise supremum norm -/
 
@@ -119,9 +116,8 @@ theorem norm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, ‖f a‖ =
 #align matrix.norm_map_eq Matrix.norm_map_eq
 
 @[simp]
-theorem nnnorm_transpose (A : Matrix m n α) : ‖Aᵀ‖₊ = ‖A‖₊ := by
-  simp_rw [Pi.nnnorm_def]
-  exact Finset.sup_comm _ _ _
+theorem nnnorm_transpose (A : Matrix m n α) : ‖Aᵀ‖₊ = ‖A‖₊ :=
+  Finset.sup_comm _ _ _
 #align matrix.nnnorm_transpose Matrix.nnnorm_transpose
 
 @[simp]
@@ -307,7 +303,7 @@ section NonUnitalSeminormedRing
 variable [NonUnitalSeminormedRing α]
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (k j) -/
-theorem linfty_op_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A ⬝ B‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
+theorem linfty_op_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
   simp_rw [linfty_op_nnnorm_def, Matrix.mul_apply]
   calc
     (Finset.univ.sup fun i => ∑ k, ‖∑ j, A i j * B j k‖₊) ≤
@@ -325,7 +321,7 @@ theorem linfty_op_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A ⬝ 
       rfl
 #align matrix.linfty_op_nnnorm_mul Matrix.linfty_op_nnnorm_mul
 
-theorem linfty_op_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A ⬝ B‖ ≤ ‖A‖ * ‖B‖ :=
+theorem linfty_op_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖ ≤ ‖A‖ * ‖B‖ :=
   linfty_op_nnnorm_mul _ _
 #align matrix.linfty_op_norm_mul Matrix.linfty_op_norm_mul
 
@@ -547,7 +543,7 @@ section IsROrC
 
 variable [IsROrC α]
 
-theorem frobenius_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A ⬝ B‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
+theorem frobenius_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
   simp_rw [frobenius_nnnorm_def, Matrix.mul_apply]
   rw [← NNReal.mul_rpow, @Finset.sum_comm _ n m, Finset.sum_mul_sum, Finset.sum_product]
   refine' NNReal.rpow_le_rpow _ one_half_pos.le
@@ -563,7 +559,7 @@ theorem frobenius_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A ⬝ 
     NNReal.rpow_two] using this
 #align matrix.frobenius_nnnorm_mul Matrix.frobenius_nnnorm_mul
 
-theorem frobenius_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A ⬝ B‖ ≤ ‖A‖ * ‖B‖ :=
+theorem frobenius_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖ ≤ ‖A‖ * ‖B‖ :=
   frobenius_nnnorm_mul A B
 #align matrix.frobenius_norm_mul Matrix.frobenius_norm_mul
 

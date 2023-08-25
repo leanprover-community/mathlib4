@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.clique
-! leanprover-community/mathlib commit cd7f0626a0b04be1dda223a26123313514a55fb4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Data.Finset.Pairwise
+
+#align_import combinatorics.simple_graph.clique from "leanprover-community/mathlib"@"cd7f0626a0b04be1dda223a26123313514a55fb4"
 
 /-!
 # Graph cliques
@@ -35,7 +32,7 @@ open Finset Fintype
 
 namespace SimpleGraph
 
-variable {α : Type _} (G H : SimpleGraph α)
+variable {α : Type*} (G H : SimpleGraph α)
 
 /-! ### Cliques -/
 
@@ -88,7 +85,7 @@ theorem isClique_bot_iff : (⊥ : SimpleGraph α).IsClique s ↔ (s : Set α).Su
   Set.pairwise_bot_iff
 #align simple_graph.is_clique_bot_iff SimpleGraph.isClique_bot_iff
 
-alias isClique_bot_iff ↔ IsClique.subsingleton _
+alias ⟨IsClique.subsingleton, _⟩ := isClique_bot_iff
 #align simple_graph.is_clique.subsingleton SimpleGraph.IsClique.subsingleton
 
 end Clique
@@ -254,7 +251,7 @@ theorem cliqueSet_eq_empty_iff : G.cliqueSet n = ∅ ↔ G.CliqueFree n := by
   simp_rw [CliqueFree, Set.eq_empty_iff_forall_not_mem, mem_cliqueSet_iff]
 #align simple_graph.clique_set_eq_empty_iff SimpleGraph.cliqueSet_eq_empty_iff
 
-alias cliqueSet_eq_empty_iff ↔ _ CliqueFree.cliqueSet
+alias ⟨_, CliqueFree.cliqueSet⟩ := cliqueSet_eq_empty_iff
 #align simple_graph.clique_free.clique_set SimpleGraph.CliqueFree.cliqueSet
 
 --attribute [protected] CliqueFree.cliqueSet -- porting note: removed
@@ -298,7 +295,7 @@ theorem cliqueFinset_eq_empty_iff : G.cliqueFinset n = ∅ ↔ G.CliqueFree n :=
   simp_rw [CliqueFree, eq_empty_iff_forall_not_mem, mem_cliqueFinset_iff]
 #align simple_graph.clique_finset_eq_empty_iff SimpleGraph.cliqueFinset_eq_empty_iff
 
-alias cliqueFinset_eq_empty_iff ↔ _ CliqueFree.cliqueFinset
+alias ⟨_, CliqueFree.cliqueFinset⟩ := cliqueFinset_eq_empty_iff
 #align simple_graph.clique_free.clique_finset SimpleGraph.CliqueFree.cliqueFinset
 
 --attribute [protected] CliqueFree.cliqueFinset -- porting note: removed

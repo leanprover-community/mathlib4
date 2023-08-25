@@ -2,14 +2,11 @@
 Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.integral.integrable_on
-! leanprover-community/mathlib commit 8b8ba04e2f326f3f7cf24ad129beda58531ada61
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Function.L1Space
 import Mathlib.Analysis.NormedSpace.IndicatorFunction
+
+#align_import measure_theory.integral.integrable_on from "leanprover-community/mathlib"@"8b8ba04e2f326f3f7cf24ad129beda58531ada61"
 
 /-! # Functions integrable on a set and at a filter
 
@@ -30,7 +27,7 @@ open Set Filter TopologicalSpace MeasureTheory Function
 
 open scoped Classical Topology Interval BigOperators Filter ENNReal MeasureTheory
 
-variable {α β E F : Type _} [MeasurableSpace α]
+variable {α β E F : Type*} [MeasurableSpace α]
 
 section
 
@@ -49,7 +46,7 @@ theorem stronglyMeasurableAt_bot {f : α → β} : StronglyMeasurableAtFilter f 
 
 protected theorem StronglyMeasurableAtFilter.eventually (h : StronglyMeasurableAtFilter f l μ) :
     ∀ᶠ s in l.smallSets, AEStronglyMeasurable f (μ.restrict s) :=
-  (eventually_small_sets' fun _ _ => AEStronglyMeasurable.mono_set).2 h
+  (eventually_smallSets' fun _ _ => AEStronglyMeasurable.mono_set).2 h
 #align strongly_measurable_at_filter.eventually StronglyMeasurableAtFilter.eventually
 
 protected theorem StronglyMeasurableAtFilter.filter_mono (h : StronglyMeasurableAtFilter f l μ)
@@ -400,8 +397,27 @@ theorem Integrable.integrableAtFilter (h : Integrable f μ) (l : Filter α) :
 
 protected theorem IntegrableAtFilter.eventually (h : IntegrableAtFilter f l μ) :
     ∀ᶠ s in l.smallSets, IntegrableOn f s μ :=
-  Iff.mpr (eventually_small_sets' fun _s _t hst ht => ht.mono_set hst) h
+  Iff.mpr (eventually_smallSets' fun _s _t hst ht => ht.mono_set hst) h
 #align measure_theory.integrable_at_filter.eventually MeasureTheory.IntegrableAtFilter.eventually
+
+protected theorem IntegrableAtFilter.add {f g : α → E}
+    (hf : IntegrableAtFilter f l μ) (hg : IntegrableAtFilter g l μ) :
+    IntegrableAtFilter (f + g) l μ := by
+  rcases hf with ⟨s, sl, hs⟩
+  rcases hg with ⟨t, tl, ht⟩
+  refine ⟨s ∩ t, inter_mem sl tl, ?_⟩
+  exact (hs.mono_set (inter_subset_left _ _)).add (ht.mono_set (inter_subset_right _ _))
+
+protected theorem IntegrableAtFilter.neg {f : α → E} (hf : IntegrableAtFilter f l μ) :
+    IntegrableAtFilter (-f) l μ := by
+  rcases hf with ⟨s, sl, hs⟩
+  exact ⟨s, sl, hs.neg⟩
+
+protected theorem IntegrableAtFilter.sub {f g : α → E}
+    (hf : IntegrableAtFilter f l μ) (hg : IntegrableAtFilter g l μ) :
+    IntegrableAtFilter (f - g) l μ := by
+  rw [sub_eq_add_neg]
+  exact hf.add hg.neg
 
 theorem IntegrableAtFilter.filter_mono (hl : l ≤ l') (hl' : IntegrableAtFilter f l' μ) :
     IntegrableAtFilter f l μ :=
@@ -431,7 +447,7 @@ theorem IntegrableAtFilter.inf_ae_iff {l : Filter α} :
   exact fun ⟨hv, ht⟩ => ⟨hv, ⟨ht, hx⟩⟩
 #align measure_theory.integrable_at_filter.inf_ae_iff MeasureTheory.IntegrableAtFilter.inf_ae_iff
 
-alias IntegrableAtFilter.inf_ae_iff ↔ IntegrableAtFilter.of_inf_ae _
+alias ⟨IntegrableAtFilter.of_inf_ae, _⟩ := IntegrableAtFilter.inf_ae_iff
 #align measure_theory.integrable_at_filter.of_inf_ae MeasureTheory.IntegrableAtFilter.of_inf_ae
 
 /-- If `μ` is a measure finite at filter `l` and `f` is a function such that its norm is bounded
@@ -456,8 +472,8 @@ theorem Measure.FiniteAtFilter.integrableAtFilter_of_tendsto_ae {l : Filter α}
       hf.norm.isBoundedUnder_le).of_inf_ae
 #align measure_theory.measure.finite_at_filter.integrable_at_filter_of_tendsto_ae MeasureTheory.Measure.FiniteAtFilter.integrableAtFilter_of_tendsto_ae
 
-alias Measure.FiniteAtFilter.integrableAtFilter_of_tendsto_ae ←
-  _root_.Filter.Tendsto.integrableAtFilter_ae
+alias _root_.Filter.Tendsto.integrableAtFilter_ae :=
+  Measure.FiniteAtFilter.integrableAtFilter_of_tendsto_ae
 #align filter.tendsto.integrable_at_filter_ae Filter.Tendsto.integrableAtFilter_ae
 
 theorem Measure.FiniteAtFilter.integrableAtFilter_of_tendsto {l : Filter α}
@@ -466,8 +482,8 @@ theorem Measure.FiniteAtFilter.integrableAtFilter_of_tendsto {l : Filter α}
   hμ.integrableAtFilter hfm hf.norm.isBoundedUnder_le
 #align measure_theory.measure.finite_at_filter.integrable_at_filter_of_tendsto MeasureTheory.Measure.FiniteAtFilter.integrableAtFilter_of_tendsto
 
-alias Measure.FiniteAtFilter.integrableAtFilter_of_tendsto ←
-  _root_.Filter.Tendsto.integrableAtFilter
+alias _root_.Filter.Tendsto.integrableAtFilter :=
+  Measure.FiniteAtFilter.integrableAtFilter_of_tendsto
 #align filter.tendsto.integrable_at_filter Filter.Tendsto.integrableAtFilter
 
 theorem integrable_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (support g))
@@ -600,7 +616,7 @@ theorem Continuous.stronglyMeasurableAtFilter [TopologicalSpace α] [OpensMeasur
 
 /-- If a function is continuous on a measurable set `s`, then it is measurable at the filter
   `𝓝[s] x` for all `x`. -/
-theorem ContinuousOn.stronglyMeasurableAtFilter_nhdsWithin {α β : Type _} [MeasurableSpace α]
+theorem ContinuousOn.stronglyMeasurableAtFilter_nhdsWithin {α β : Type*} [MeasurableSpace α]
     [TopologicalSpace α] [OpensMeasurableSpace α] [TopologicalSpace β] [PseudoMetrizableSpace β]
     [SecondCountableTopologyEither α β] {f : α → β} {s : Set α} {μ : Measure α}
     (hf : ContinuousOn f s) (hs : MeasurableSet s) (x : α) :

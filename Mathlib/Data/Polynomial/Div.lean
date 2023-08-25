@@ -2,16 +2,13 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
-
-! This file was ported from Lean 3 source module data.polynomial.div
-! leanprover-community/mathlib commit e1e7190efdcefc925cb36f257a8362ef22944204
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Inductions
 import Mathlib.Data.Polynomial.Monic
 import Mathlib.RingTheory.Multiplicity
+
+#align_import data.polynomial.div from "leanprover-community/mathlib"@"e1e7190efdcefc925cb36f257a8362ef22944204"
 
 /-!
 # Division of univariate polynomials
@@ -245,7 +242,7 @@ theorem modByMonic_eq_sub_mul_div :
     else by
       unfold modByMonic divByMonic divModByMonicAux
       dsimp
-      rw [dif_pos hq, if_neg h, dif_pos hq, if_neg h, MulZeroClass.mul_zero, sub_zero]
+      rw [dif_pos hq, if_neg h, dif_pos hq, if_neg h, mul_zero, sub_zero]
   termination_by modByMonic_eq_sub_mul_div p q hq => p
 #align polynomial.mod_by_monic_eq_sub_mul_div Polynomial.modByMonic_eq_sub_mul_div
 
@@ -256,7 +253,7 @@ theorem modByMonic_add_div (p : R[X]) {q : R[X]} (hq : Monic q) : p %ₘ q + q *
 theorem divByMonic_eq_zero_iff [Nontrivial R] (hq : Monic q) : p /ₘ q = 0 ↔ degree p < degree q :=
   ⟨fun h => by
     have := modByMonic_add_div p hq;
-      rwa [h, MulZeroClass.mul_zero, add_zero, modByMonic_eq_self_iff hq] at this,
+      rwa [h, mul_zero, add_zero, modByMonic_eq_self_iff hq] at this,
     fun h => by
     have : ¬degree q ≤ degree p := not_le_of_gt h
     unfold divByMonic divModByMonicAux; dsimp; rw [dif_pos hq, if_neg (mt And.left this)]⟩
@@ -394,7 +391,7 @@ theorem dvd_iff_modByMonic_eq_zero (hq : Monic q) : p %ₘ q = 0 ↔ q ∣ p :=
     have hrpq0 : leadingCoeff (r - p /ₘ q) ≠ 0 := fun h =>
       hpq0 <|
         leadingCoeff_eq_zero.1
-          (by rw [hmod, leadingCoeff_eq_zero.1 h, MulZeroClass.mul_zero, leadingCoeff_zero])
+          (by rw [hmod, leadingCoeff_eq_zero.1 h, mul_zero, leadingCoeff_zero])
     have hlc : leadingCoeff q * leadingCoeff (r - p /ₘ q) ≠ 0 := by rwa [Monic.def.1 hq, one_mul]
     rw [degree_mul' hlc, degree_eq_natDegree hq.ne_zero,
       degree_eq_natDegree (mt leadingCoeff_eq_zero.2 hrpq0)] at this
@@ -425,7 +422,7 @@ theorem modByMonic_X_sub_C_eq_C_eval (p : R[X]) (a : R) : p %ₘ (X - C a) = C (
   nontriviality R
   have h : (p %ₘ (X - C a)).eval a = p.eval a := by
     rw [modByMonic_eq_sub_mul_div _ (monic_X_sub_C a), eval_sub, eval_mul, eval_sub, eval_X,
-      eval_C, sub_self, MulZeroClass.zero_mul, sub_zero]
+      eval_C, sub_self, zero_mul, sub_zero]
   have : degree (p %ₘ (X - C a)) < 1 :=
     degree_X_sub_C a ▸ degree_modByMonic_lt p (monic_X_sub_C a)
   have : degree (p %ₘ (X - C a)) ≤ 0 := by
@@ -440,7 +437,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem mul_divByMonic_eq_iff_isRoot : (X - C a) * (p /ₘ (X - C a)) = p ↔ IsRoot p a :=
   ⟨fun h => by
-    rw [← h, IsRoot.def, eval_mul, eval_sub, eval_X, eval_C, sub_self, MulZeroClass.zero_mul],
+    rw [← h, IsRoot.def, eval_mul, eval_sub, eval_X, eval_C, sub_self, zero_mul],
     fun h : p.eval a = 0 => by
     conv_rhs =>
         rw [← modByMonic_add_div p (monic_X_sub_C a)]
@@ -478,7 +475,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem eval₂_modByMonic_eq_self_of_root [CommRing S] {f : R →+* S} {p q : R[X]} (hq : q.Monic)
     {x : S} (hx : q.eval₂ f x = 0) : (p %ₘ q).eval₂ f x = p.eval₂ f x := by
-  rw [modByMonic_eq_sub_mul_div p hq, eval₂_sub, eval₂_mul, hx, MulZeroClass.zero_mul, sub_zero]
+  rw [modByMonic_eq_sub_mul_div p hq, eval₂_sub, eval₂_mul, hx, zero_mul, sub_zero]
 #align polynomial.eval₂_mod_by_monic_eq_self_of_root Polynomial.eval₂_modByMonic_eq_self_of_root
 
 theorem sum_modByMonic_coeff (hq : q.Monic) {n : ℕ} (hn : q.degree ≤ n) :

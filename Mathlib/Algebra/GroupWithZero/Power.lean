@@ -2,14 +2,11 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module algebra.group_with_zero.power
-! leanprover-community/mathlib commit 46a64b5b4268c594af770c44d9e502afc6a515cb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Data.Int.Bitwise
+
+#align_import algebra.group_with_zero.power from "leanprover-community/mathlib"@"46a64b5b4268c594af770c44d9e502afc6a515cb"
 
 /-!
 # Powers of elements of groups with an adjoined zero element
@@ -21,7 +18,7 @@ This generalises the integer power function on a division ring.
 
 section GroupWithZero
 
-variable {G₀ : Type _} [GroupWithZero G₀] {a : G₀} {m n : ℕ}
+variable {G₀ : Type*} [GroupWithZero G₀] {a : G₀} {m n : ℕ}
 
 section NatPow
 
@@ -57,7 +54,7 @@ section ZPow
 
 open Int
 
-variable {G₀ : Type _} [GroupWithZero G₀]
+variable {G₀ : Type*} [GroupWithZero G₀]
 
 -- Porting note: removed `attribute [local ematch] le_of_lt`
 
@@ -190,7 +187,7 @@ end ZPow
 
 section
 
-variable {G₀ : Type _} [CommGroupWithZero G₀]
+variable {G₀ : Type*} [CommGroupWithZero G₀]
 
 theorem div_sq_cancel (a b : G₀) : a ^ 2 * b / a = a * b := by
   by_cases ha : a = 0
@@ -203,7 +200,7 @@ end
 /-- If a monoid homomorphism `f` between two `GroupWithZero`s maps `0` to `0`, then it maps `x^n`,
 `n : ℤ`, to `(f x)^n`. -/
 @[simp]
-theorem map_zpow₀ {F G₀ G₀' : Type _} [GroupWithZero G₀] [GroupWithZero G₀']
+theorem map_zpow₀ {F G₀ G₀' : Type*} [GroupWithZero G₀] [GroupWithZero G₀']
     [MonoidWithZeroHomClass F G₀ G₀'] (f : F) (x : G₀) (n : ℤ) : f (x ^ n) = f x ^ n :=
   map_zpow' f (map_inv₀ f) x n
 #align map_zpow₀ map_zpow₀
