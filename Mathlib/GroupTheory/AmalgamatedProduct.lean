@@ -119,6 +119,13 @@ structure Pair (i : ι) where
 
 variable [DecidableEq ι] [∀ i, DecidableEq (G i)]
 
+theorem Word.ext {w₁ w₂ : Word φ} (i : ι)
+    (h : φ i w₁.left • w₁.toWord = φ i w₂.left • w₂.toWord) :
+    w₁ = w₂ := by
+  cases w₁
+  cases w₂
+  simp
+
 noncomputable def rcons {i : ι} (p : Pair φ i) : Word φ :=
   { toWord := (normalizeSingle φ p.head).2 • p.tail.toWord,
     left := p.tail.left * (normalizeSingle φ p.head).1,
@@ -144,8 +151,15 @@ noncomputable def toPair (i) (w : Word φ) : Pair φ i :=
       normalized := fun _ _ h =>
         w.normalized _ _ (Word.mem_of_mem_equivPair_tail_toList _ h) } }
 
-noncomputable def summandAction {i : ι} (g : G i) (w : Word φ) : Word φ :=
-  rcons φ { toPair φ i w with head := g * (toPair φ i w).head }
+noncomputable def summandAction {i : ι} : MulAction (G i) (Word φ) :=
+  { smul := fun g w => rcons φ { toPair φ i w with head := g * (toPair φ i w).head }
+    one_smul := sorry
+    mul_smul := by
+      intro g₁ g₂ w
+      simp only [instHSMul]
+      simp [rcons, toPair]
+
+  }
 
 
 
