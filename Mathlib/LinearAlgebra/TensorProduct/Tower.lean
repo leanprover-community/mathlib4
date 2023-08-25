@@ -49,9 +49,9 @@ namespace TensorProduct
 
 namespace AlgebraTensorModule
 
-universe uR uA uB uM uN uP uQ
+universe uR uA uB uM uN uP uQ uP' uQ'
 variable {R : Type uR} {A : Type uA} {B : Type uB}
-variable {M : Type uM} {N : Type uN} {P : Type uP} {Q : Type uQ}
+variable {M : Type uM} {N : Type uN} {P : Type uP} {Q : Type uQ} {P' : Type uP'} {Q' : Type uQ'}
 
 open LinearMap
 open Algebra (lsmul)
@@ -69,6 +69,11 @@ variable [AddCommMonoid P] [Module R P] [Module A P] [Module B P]
 variable [IsScalarTower R A P] [IsScalarTower R B P] [SMulCommClass A B P]
 
 variable [AddCommMonoid Q] [Module R Q]
+
+variable [AddCommMonoid P'] [Module R P'] [Module A P'] [Module B P']
+variable [IsScalarTower R A P'] [IsScalarTower R B P'] [SMulCommClass A B P']
+
+variable [AddCommMonoid Q'] [Module R Q']
 
 theorem smul_eq_lsmul_rTensor (a : A) (x : M ⊗[R] N) : a • x = (lsmul R R M a).rTensor N x :=
   rfl
@@ -196,6 +201,20 @@ def map (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[A] P ⊗[R] 
 @[simp] theorem map_tmul (f : M →ₗ[A] P) (g : N →ₗ[R] Q) (m : M) (n : N) :
     map f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
   rfl
+
+@[simp]
+theorem map_id : map (id : M →ₗ[A] M) (id : N →ₗ[R] N) = .id :=
+  ext fun _ _ => rfl
+
+theorem map_comp (f₂ : P →ₗ[A] P') (f₁ : M →ₗ[A] P) (g₂ : Q →ₗ[R] Q') (g₁ : N →ₗ[R] Q) :
+    map (f₂.comp f₁) (g₂.comp g₁) = (map f₂ g₂).comp (map f₁ g₁) :=
+  ext fun _ _ => rfl
+
+@[simp]
+theorem map_one : map (1 : M →ₗ[A] M) (1 : N →ₗ[R] N) = 1 := map_id
+
+theorem map_mul (f₂ : M →ₗ[A] M) (f₁ : M →ₗ[A] M) (g₂ : N →ₗ[R] N) (g₁ : N →ₗ[R] N) :
+    map (f₂ * f₁) (g₂ * g₁) = map f₂ g₂ * map f₁ g₁ := map_comp _ _ _ _
 
 theorem map_add_left (f₁ f₂ : M →ₗ[A] P) (g : N →ₗ[R] Q) :
     map (f₁ + f₂) g = map f₁ g + map f₂ g := by
