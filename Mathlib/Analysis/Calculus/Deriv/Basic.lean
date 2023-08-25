@@ -512,10 +512,11 @@ theorem derivWithin_inter (ht : t ∈ 𝓝 x) : derivWithin f (s ∩ t) x = deri
   rw [fderivWithin_inter ht]
 #align deriv_within_inter derivWithin_inter
 
-theorem derivWithin_of_open (hs : IsOpen s) (hx : x ∈ s) : derivWithin f s x = deriv f x := by
-  unfold derivWithin
-  rw [fderivWithin_of_open hs hx]
-  rfl
+theorem derivWithin_of_mem_nhds (h : s ∈ 𝓝 x) : derivWithin f s x = deriv f x := by
+  simp only [derivWithin, deriv, fderivWithin_of_mem_nhds h]
+
+theorem derivWithin_of_open (hs : IsOpen s) (hx : x ∈ s) : derivWithin f s x = deriv f x :=
+  derivWithin_of_mem_nhds (hs.mem_nhds hx)
 #align deriv_within_of_open derivWithin_of_open
 
 theorem deriv_mem_iff {f : 𝕜 → F} {s : Set F} {x : 𝕜} :
@@ -583,15 +584,28 @@ theorem HasDerivWithinAt.congr_of_eventuallyEq (h : HasDerivWithinAt f f' s x)
   HasDerivAtFilter.congr_of_eventuallyEq h h₁ hx
 #align has_deriv_within_at.congr_of_eventually_eq HasDerivWithinAt.congr_of_eventuallyEq
 
+theorem Filter.EventuallyEq.hasDerivWithinAt_iff (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
+    HasDerivWithinAt f₁ f' s x ↔ HasDerivWithinAt f f' s x :=
+  ⟨fun h' ↦ h'.congr_of_eventuallyEq h₁.symm hx.symm, fun h' ↦ h'.congr_of_eventuallyEq h₁ hx⟩
+
 theorem HasDerivWithinAt.congr_of_eventuallyEq_of_mem (h : HasDerivWithinAt f f' s x)
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) : HasDerivWithinAt f₁ f' s x :=
   h.congr_of_eventuallyEq h₁ (h₁.eq_of_nhdsWithin hx)
 #align has_deriv_within_at.congr_of_eventually_eq_of_mem HasDerivWithinAt.congr_of_eventuallyEq_of_mem
 
+theorem Filter.EventuallyEq.hasDerivWithinAt_iff_of_mem (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) :
+    HasDerivWithinAt f₁ f' s x ↔ HasDerivWithinAt f f' s x :=
+  ⟨fun h' ↦ h'.congr_of_eventuallyEq_of_mem h₁.symm hx,
+  fun h' ↦ h'.congr_of_eventuallyEq_of_mem h₁ hx⟩
+
 theorem HasDerivAt.congr_of_eventuallyEq (h : HasDerivAt f f' x) (h₁ : f₁ =ᶠ[𝓝 x] f) :
     HasDerivAt f₁ f' x :=
   HasDerivAtFilter.congr_of_eventuallyEq h h₁ (mem_of_mem_nhds h₁ : _)
 #align has_deriv_at.congr_of_eventually_eq HasDerivAt.congr_of_eventuallyEq
+
+theorem Filter.EventuallyEq.hasDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) :
+    HasDerivAt f₀ f' x ↔ HasDerivAt f₁ f' x :=
+  ⟨fun h' ↦ h'.congr_of_eventuallyEq h.symm, fun h' ↦ h'.congr_of_eventuallyEq h⟩
 
 theorem Filter.EventuallyEq.derivWithin_eq (hs : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
     derivWithin f₁ s x = derivWithin f s x := by
