@@ -39,7 +39,11 @@ which preserves both. -/
 structure RingCon (R : Type*) [Add R] [Mul R] extends Con R, AddCon R where
 #align ring_con RingCon
 
-attribute [inherit_doc RingCon] RingCon.toCon RingCon.toAddCon
+/-- The induced multiplicative congruence from a `RingCon`. -/
+add_decl_doc RingCon.toCon
+
+/-- The induced additive congruence from a `RingCon`. -/
+add_decl_doc RingCon.toAddCon
 
 variable {α R : Type*}
 
@@ -82,6 +86,7 @@ instance : FunLike (RingCon R) R fun _ => R → Prop :=
       rw [Setoid.ext_iff,(show x.Rel = y.Rel from h)]
       simp}
 
+@[simp]
 theorem rel_eq_coe : c.r = c :=
   rfl
 #align ring_con.rel_eq_coe RingCon.rel_eq_coe
@@ -108,6 +113,10 @@ protected theorem mul {w x y z} : c w x → c y z → c (w * y) (x * z) :=
 
 instance : Inhabited (RingCon R) :=
   ⟨ringConGen EmptyRelation⟩
+
+@[simp]
+theorem rel_mk {s : Con R} {h a b} : RingCon.mk s h a b ↔ @Setoid.r _ s.toSetoid a b :=
+  Iff.rfl
 
 end Basic
 
