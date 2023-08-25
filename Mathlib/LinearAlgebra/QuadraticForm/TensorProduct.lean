@@ -39,6 +39,8 @@ Note this is heterobasic; the quadratic form on the left can take values in a la
 the one on the right. -/
 def tensorDistrib : QuadraticForm A M₁ ⊗[R] QuadraticForm R M₂ →ₗ[A] QuadraticForm A (M₁ ⊗[R] M₂) :=
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
+  -- while `letI`s would produce a better term than `let`, they would make this already-slow
+  -- definition even slower.
   let toQ := BilinForm.toQuadraticFormLinearMap A A (M₁ ⊗[R] M₂)
   let tmulB := BilinForm.tensorDistrib R A (M₁ := M₁) (M₂ := M₂)
   let toB := AlgebraTensorModule.map
