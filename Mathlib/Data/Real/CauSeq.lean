@@ -9,6 +9,7 @@ import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.Init.Align
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Ring
 
@@ -33,6 +34,7 @@ This is a concrete implementation that is useful for simplicity and computabilit
 sequence, cauchy, abs val, absolute value
 -/
 
+set_option autoImplicit true
 
 open IsAbsoluteValue
 

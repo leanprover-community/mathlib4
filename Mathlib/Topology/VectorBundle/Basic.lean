@@ -54,6 +54,7 @@ notes" section of `Mathlib.Topology.FiberBundle.Basic`.
 Vector bundle
 -/
 
+set_option autoImplicit true
 
 noncomputable section
 

@@ -10,6 +10,8 @@ import Mathlib.Algebra.Order.Sub.Basic
 # Products of `OrderedSub` types.
 -/
 
+set_option autoImplicit true
+
 instance Prod.orderedSub
     [Preorder α] [Add α] [Sub α] [OrderedSub α] [Sub β] [Preorder β] [Add β] [OrderedSub β] :
     OrderedSub (α × β) where

@@ -71,7 +71,7 @@ theorem finite_def {s : Set α} : s.Finite ↔ Nonempty (Fintype s) :=
   ⟨fun ⟨h⟩ => ⟨h⟩, fun ⟨h⟩ => ⟨h⟩⟩
 #align set.finite_def Set.finite_def
 
-alias finite_def ↔ Finite.nonempty_fintype _
+alias ⟨Finite.nonempty_fintype, _⟩ := finite_def
 #align set.finite.nonempty_fintype Set.Finite.nonempty_fintype
 
 theorem finite_coe_iff {s : Set α} : Finite s ↔ s.Finite := by
@@ -148,7 +148,7 @@ theorem not_infinite {s : Set α} : ¬s.Infinite ↔ s.Finite :=
   not_not
 #align set.not_infinite Set.not_infinite
 
-alias not_infinite ↔ _ Finite.not_infinite
+alias ⟨_, Finite.not_infinite⟩ := not_infinite
 #align set.finite.not_infinite Set.Finite.not_infinite
 
 attribute [simp] Finite.not_infinite
@@ -224,10 +224,10 @@ protected theorem toFinset_ssubset_toFinset : hs.toFinset ⊂ ht.toFinset ↔ s 
   simp only [← Finset.coe_ssubset, Finite.coe_toFinset]
 #align set.finite.to_finset_ssubset_to_finset Set.Finite.toFinset_ssubset_toFinset
 
-alias Finite.toFinset_subset_toFinset ↔ _ toFinset_mono
+alias ⟨_, toFinset_mono⟩ := Finite.toFinset_subset_toFinset
 #align set.finite.to_finset_mono Set.Finite.toFinset_mono
 
-alias Finite.toFinset_ssubset_toFinset ↔ _ toFinset_strictMono
+alias ⟨_, toFinset_strictMono⟩ := Finite.toFinset_ssubset_toFinset
 #align set.finite.to_finset_strict_mono Set.Finite.toFinset_strictMono
 
 -- Porting note: attribute [protected] doesn't work
@@ -727,7 +727,7 @@ theorem finite_univ_iff : (@univ α).Finite ↔ Finite α :=
   finite_coe_iff.symm.trans (Equiv.Set.univ α).finite_iff
 #align set.finite_univ_iff Set.finite_univ_iff
 
-alias finite_univ_iff ↔ _root_.Finite.of_finite_univ _
+alias ⟨_root_.Finite.of_finite_univ, _⟩ := finite_univ_iff
 #align finite.of_finite_univ Finite.of_finite_univ
 
 theorem Finite.union {s t : Set α} (hs : s.Finite) (ht : t.Finite) : (s ∪ t).Finite := by
@@ -1289,7 +1289,7 @@ theorem infinite_coe_iff {s : Set α} : Infinite s ↔ s.Infinite :=
 #align set.infinite_coe_iff Set.infinite_coe_iff
 
 -- porting note: something weird happened here
-alias infinite_coe_iff ↔ _ Infinite.to_subtype
+alias ⟨_, Infinite.to_subtype⟩ := infinite_coe_iff
 #align set.infinite.to_subtype Set.Infinite.to_subtype
 
 /-- Embedding of `ℕ` into an infinite set. -/
@@ -1332,7 +1332,7 @@ theorem infinite_image_iff {s : Set α} {f : α → β} (hi : InjOn f s) :
   not_congr <| finite_image_iff hi
 #align set.infinite_image_iff Set.infinite_image_iff
 
-alias infinite_image_iff ↔ _ Infinite.image
+alias ⟨_, Infinite.image⟩ := infinite_image_iff
 #align set.infinite.image Set.Infinite.image
 
 -- Porting note: attribute [protected] doesn't work

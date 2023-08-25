@@ -68,7 +68,8 @@ file `SetToL1`).
 3. Propositions connecting the Bochner integral with the integral on `ℝ≥0∞`-valued functions,
    which is called `lintegral` and has the notation `∫⁻`.
 
-  * `integral_eq_lintegral_max_sub_lintegral_min` : `∫ x, f x ∂μ = ∫⁻ x, f⁺ x ∂μ - ∫⁻ x, f⁻ x ∂μ`,
+  * `integral_eq_lintegral_pos_part_sub_lintegral_neg_part` :
+    `∫ x, f x ∂μ = ∫⁻ x, f⁺ x ∂μ - ∫⁻ x, f⁻ x ∂μ`,
     where `f⁺` is the positive part of `f` and `f⁻` is the negative part of `f`.
   * `integral_eq_lintegral_of_nonneg_ae`          : `0 ≤ᵐ[μ] f → ∫ x, f x ∂μ = ∫⁻ x, f x ∂μ`
 
@@ -90,11 +91,11 @@ of the related results, like `Lp.induction` for functions in `Lp`), which allows
 something for an arbitrary integrable function.
 
 Another method is using the following steps.
-See `integral_eq_lintegral_max_sub_lintegral_min` for a complicated example, which proves that
-`∫ f = ∫⁻ f⁺ - ∫⁻ f⁻`, with the first integral sign being the Bochner integral of a real-valued
+See `integral_eq_lintegral_pos_part_sub_lintegral_neg_part` for a complicated example, which proves
+that `∫ f = ∫⁻ f⁺ - ∫⁻ f⁻`, with the first integral sign being the Bochner integral of a real-valued
 function `f : α → ℝ`, and second and third integral sign being the integral on `ℝ≥0∞`-valued
-functions (called `lintegral`). The proof of `integral_eq_lintegral_max_sub_lintegral_min` is
-scattered in sections with the name `posPart`.
+functions (called `lintegral`). The proof of `integral_eq_lintegral_pos_part_sub_lintegral_neg_part`
+is scattered in sections with the name `posPart`.
 
 Here are the usual steps of proving that a property `p`, say `∫ f = ∫⁻ f⁺ - ∫⁻ f⁻`, holds for all
 functions :
@@ -387,7 +388,7 @@ theorem integral_eq_lintegral' {f : α →ₛ E} {g : E → ℝ≥0∞} (hf : In
     rw [smul_eq_mul, toReal_mul, mul_comm, Function.comp_apply]
   · rintro a -
     by_cases a0 : a = 0
-    · rw [a0, hg0, MulZeroClass.zero_mul]; exact WithTop.zero_ne_top
+    · rw [a0, hg0, zero_mul]; exact WithTop.zero_ne_top
     · apply mul_ne_top (ht a) (hf'.meas_preimage_singleton_ne_zero a0).ne
   · simp [hg0]
 #align measure_theory.simple_func.integral_eq_lintegral' MeasureTheory.SimpleFunc.integral_eq_lintegral'
@@ -1263,7 +1264,7 @@ theorem integral_nonpos {f : α → ℝ} (hf : f ≤ 0) : ∫ a, f a ∂μ ≤ 0
 theorem integral_eq_zero_iff_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f) (hfi : Integrable f μ) :
     ∫ x, f x ∂μ = 0 ↔ f =ᵐ[μ] 0 := by
   simp_rw [integral_eq_lintegral_of_nonneg_ae hf hfi.1, ENNReal.toReal_eq_zero_iff,
-    ← ENNReal.not_lt_top, ← hasFiniteIntegral_iff_ofReal hf, hfi.2, not_true, or_false_iff]
+    ← ENNReal.not_lt_top, ← hasFiniteIntegral_iff_ofReal hf, hfi.2, or_false_iff]
   -- Porting note: split into parts, to make `rw` and `simp` work
   rw [lintegral_eq_zero_iff']
   · rw [← hf.le_iff_eq, Filter.EventuallyEq, Filter.EventuallyLE]
@@ -1538,7 +1539,7 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AES
   · intro n
     filter_upwards with x
     rfl
-  · simp_rw [← coe_nnnorm, ← NNReal.coe_tsum]
+  · simp_rw [← NNReal.coe_tsum]
     rw [aestronglyMeasurable_iff_aemeasurable]
     apply AEMeasurable.coe_nnreal_real
     apply AEMeasurable.nnreal_tsum
@@ -1632,10 +1633,15 @@ theorem MeasurePreserving.integral_comp {β} {_ : MeasurableSpace β} {f : α �
   h₁.map_eq ▸ (h₂.integral_map g).symm
 #align measure_theory.measure_preserving.integral_comp MeasureTheory.MeasurePreserving.integral_comp
 
-theorem set_integral_eq_subtype {α} [MeasureSpace α] {s : Set α} (hs : MeasurableSet s)
-    (f : α → G) : ∫ x in s, f x = ∫ x : s, f x := by
+theorem set_integral_eq_subtype' {α} [MeasurableSpace α] {μ : Measure α} {s : Set α}
+    (hs : MeasurableSet s) (f : α → G) :
+    ∫ x in s, f x ∂μ =
+      ∫ x : s, f (x : α) ∂(Measure.comap Subtype.val μ):= by
   rw [← map_comap_subtype_coe hs]
   exact (MeasurableEmbedding.subtype_coe hs).integral_map _
+
+theorem set_integral_eq_subtype {α} [MeasureSpace α] {s : Set α} (hs : MeasurableSet s)
+    (f : α → G) : ∫ x in s, f x = ∫ x : s, f x := set_integral_eq_subtype' hs f
 #align measure_theory.set_integral_eq_subtype MeasureTheory.set_integral_eq_subtype
 
 @[simp]
@@ -1776,6 +1782,58 @@ theorem integral_mul_le_Lp_mul_Lq_of_nonneg {p q : ℝ} (hpq : p.IsConjugateExpo
 set_option linter.uppercaseLean3 false in
 #align measure_theory.integral_mul_le_Lp_mul_Lq_of_nonneg MeasureTheory.integral_mul_le_Lp_mul_Lq_of_nonneg
 
+theorem integral_countable' [Countable α] [MeasurableSingletonClass α] {μ : Measure α} {f : α → ℝ}
+    (hf : Integrable f μ) :
+    ∫ a, f a ∂μ = ∑' a, f a * (μ {a}).toReal := by
+  rw [← Measure.sum_smul_dirac μ] at hf
+  rw [← Measure.sum_smul_dirac μ, integral_sum_measure hf]
+  congr 1 with a : 1
+  rw [integral_smul_measure, integral_dirac, mul_comm, smul_eq_mul, Measure.sum_smul_dirac]
+
+theorem integral_singleton' {μ : Measure α} {f : α → ℝ} (hf : StronglyMeasurable f) (a : α) :
+    ∫ a in {a}, f a ∂μ = f a * (μ {a}).toReal := by
+  simp only [Measure.restrict_singleton, integral_smul_measure, integral_dirac' f a hf, smul_eq_mul,
+     mul_comm]
+
+theorem integral_singleton [MeasurableSingletonClass α] {μ : Measure α} (f : α → ℝ) (a : α) :
+    ∫ a in {a}, f a ∂μ = f a * (μ {a}).toReal := by
+  simp only [Measure.restrict_singleton, integral_smul_measure, integral_dirac, smul_eq_mul,
+     mul_comm]
+
+theorem integral_countable [MeasurableSingletonClass α] (f : α → ℝ)
+    {s : Set α} (hs : s.Countable) (hf : Integrable f (μ.restrict s)) :
+    ∫ a in s, f a ∂μ = ∑' a : s, f a * (μ {(a : α)}).toReal := by
+  have hi : Countable { x // x ∈ s } := Iff.mpr countable_coe_iff hs
+  have hf' : Integrable (fun (x : s) => f x) (Measure.comap Subtype.val μ) := by
+    rw [← map_comap_subtype_coe, integrable_map_measure] at hf
+    apply hf
+    · exact Integrable.aestronglyMeasurable hf
+    · exact Measurable.aemeasurable measurable_subtype_coe
+    · exact Countable.measurableSet hs
+  rw [set_integral_eq_subtype' hs.measurableSet, integral_countable' hf']
+  congr 1 with a : 1
+  rw [Measure.comap_apply Subtype.val Subtype.coe_injective
+    (fun s' hs' => MeasurableSet.subtype_image (Countable.measurableSet hs) hs') _
+    (MeasurableSet.singleton a)]
+  simp
+
+theorem integral_finset [MeasurableSingletonClass α] (s : Finset α) (f : α → ℝ)
+    (hf : Integrable f (μ.restrict s)) :
+    ∫ x in s, f x ∂μ = ∑ x in s, f x * (μ {x}).toReal := by
+  rw [integral_countable _ s.countable_toSet hf, ← Finset.tsum_subtype']
+
+theorem integral_fintype [MeasurableSingletonClass α] [Fintype α] (f : α → ℝ)
+    (hf : Integrable f μ) :
+    ∫ x, f x ∂μ = ∑ x, f x * (μ {x}).toReal := by
+  -- NB: Integrable f does not follow from Fintype, because the measure itself could be non-finite
+  rw [← integral_finset .univ , Finset.coe_univ, Measure.restrict_univ]
+  simp only [Finset.coe_univ, Measure.restrict_univ, hf]
+
+theorem integral_unique [Unique α] (f : α → ℝ) : ∫ x, f x ∂μ = f default * (μ univ).toReal :=
+  calc
+    ∫ x, f x ∂μ = ∫ _, f default ∂μ := by congr with x; congr; exact Unique.uniq _ x
+    _ = f default * (μ univ).toReal := by rw [integral_const, smul_eq_mul, mul_comm]
+
 end Properties
 
 section IntegralTrim
@@ -1887,7 +1945,7 @@ theorem snorm_one_le_of_le {r : ℝ≥0} {f : α → ℝ} (hfint : Integrable f 
     (hf : ∀ᵐ ω ∂μ, f ω ≤ r) : snorm f 1 μ ≤ 2 * μ Set.univ * r := by
   by_cases hr : r = 0
   · suffices f =ᵐ[μ] 0 by
-      rw [snorm_congr_ae this, snorm_zero, hr, ENNReal.coe_zero, MulZeroClass.mul_zero]
+      rw [snorm_congr_ae this, snorm_zero, hr, ENNReal.coe_zero, mul_zero]
     rw [hr] at hf
     norm_cast at hf
     -- Porting note: two lines above were

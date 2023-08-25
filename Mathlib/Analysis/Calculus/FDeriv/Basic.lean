@@ -116,6 +116,8 @@ derivative, differentiable, Fréchet, calculus
 
 -/
 
+set_option autoImplicit true
+
 open Filter Asymptotics ContinuousLinearMap Set Metric
 
 open Topology Classical NNReal Filter Asymptotics ENNReal
@@ -355,6 +357,7 @@ theorem HasFDerivWithinAt.mono_of_mem (h : HasFDerivWithinAt f f' t x) (hst : t 
     HasFDerivWithinAt f f' s x :=
   h.mono <| nhdsWithin_le_iff.mpr hst
 #align has_fderiv_within_at.mono_of_mem HasFDerivWithinAt.mono_of_mem
+#align has_fderiv_within_at.nhds_within HasFDerivWithinAt.mono_of_mem
 
 nonrec theorem HasFDerivWithinAt.mono (h : HasFDerivWithinAt f f' t x) (hst : s ⊆ t) :
     HasFDerivWithinAt f f' s x :=
@@ -385,7 +388,7 @@ theorem hasFDerivWithinAt_univ : HasFDerivWithinAt f f' univ x ↔ HasFDerivAt f
   rfl
 #align has_fderiv_within_at_univ hasFDerivWithinAt_univ
 
-alias hasFDerivWithinAt_univ ↔ HasFDerivWithinAt.hasFDerivAt_of_univ _
+alias ⟨HasFDerivWithinAt.hasFDerivAt_of_univ, _⟩ := hasFDerivWithinAt_univ
 #align has_fderiv_within_at.has_fderiv_at_of_univ HasFDerivWithinAt.hasFDerivAt_of_univ
 
 theorem hasFDerivWithinAt_insert {y : E} :
@@ -398,7 +401,7 @@ theorem hasFDerivWithinAt_insert {y : E} :
   simp_rw [nhdsWithin_insert_of_ne h, self_mem_nhdsWithin]
 #align has_fderiv_within_at_insert hasFDerivWithinAt_insert
 
-alias hasFDerivWithinAt_insert ↔ HasFDerivWithinAt.of_insert HasFDerivWithinAt.insert'
+alias ⟨HasFDerivWithinAt.of_insert, HasFDerivWithinAt.insert'⟩ := hasFDerivWithinAt_insert
 #align has_fderiv_within_at.of_insert HasFDerivWithinAt.of_insert
 #align has_fderiv_within_at.insert' HasFDerivWithinAt.insert'
 
@@ -486,11 +489,6 @@ theorem HasFDerivWithinAt.union (hs : HasFDerivWithinAt f f' s x)
   simp only [HasFDerivWithinAt, nhdsWithin_union]
   exact hs.sup ht
 #align has_fderiv_within_at.union HasFDerivWithinAt.union
-
-protected theorem HasFDerivWithinAt.nhdsWithin (h : HasFDerivWithinAt f f' s x) (ht : s ∈ 𝓝[t] x) :
-    HasFDerivWithinAt f f' t x :=
-  (hasFDerivWithinAt_inter' ht).1 (h.mono (inter_subset_right _ _))
-#align has_fderiv_within_at.nhds_within HasFDerivWithinAt.nhdsWithin
 
 theorem HasFDerivWithinAt.hasFDerivAt (h : HasFDerivWithinAt f f' s x) (hs : s ∈ 𝓝 x) :
     HasFDerivAt f f' x := by

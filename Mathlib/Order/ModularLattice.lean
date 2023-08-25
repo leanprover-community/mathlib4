@@ -104,10 +104,10 @@ theorem covby_sup_of_inf_covby_of_inf_covby_right : a ⊓ b ⋖ a → a ⊓ b �
   exact fun ha hb => covby_sup_of_inf_covby_of_inf_covby_left hb ha
 #align covby_sup_of_inf_covby_of_inf_covby_right covby_sup_of_inf_covby_of_inf_covby_right
 
-alias covby_sup_of_inf_covby_of_inf_covby_left ← Covby.sup_of_inf_of_inf_left
+alias Covby.sup_of_inf_of_inf_left := covby_sup_of_inf_covby_of_inf_covby_left
 #align covby.sup_of_inf_of_inf_left Covby.sup_of_inf_of_inf_left
 
-alias covby_sup_of_inf_covby_of_inf_covby_right ← Covby.sup_of_inf_of_inf_right
+alias Covby.sup_of_inf_of_inf_right := covby_sup_of_inf_covby_of_inf_covby_right
 #align covby.sup_of_inf_of_inf_right Covby.sup_of_inf_of_inf_right
 
 instance : IsWeakLowerModularLattice (OrderDual α) :=
@@ -128,10 +128,10 @@ theorem inf_covby_of_covby_sup_of_covby_sup_right : a ⋖ a ⊔ b → b ⋖ a �
   exact fun ha hb => inf_covby_of_covby_sup_of_covby_sup_left hb ha
 #align inf_covby_of_covby_sup_of_covby_sup_right inf_covby_of_covby_sup_of_covby_sup_right
 
-alias inf_covby_of_covby_sup_of_covby_sup_left ← Covby.inf_of_sup_of_sup_left
+alias Covby.inf_of_sup_of_sup_left := inf_covby_of_covby_sup_of_covby_sup_left
 #align covby.inf_of_sup_of_sup_left Covby.inf_of_sup_of_sup_left
 
-alias inf_covby_of_covby_sup_of_covby_sup_right ← Covby.inf_of_sup_of_sup_right
+alias Covby.inf_of_sup_of_sup_right := inf_covby_of_covby_sup_of_covby_sup_right
 #align covby.inf_of_sup_of_sup_right Covby.inf_of_sup_of_sup_right
 
 instance : IsWeakUpperModularLattice (OrderDual α) :=
@@ -152,10 +152,10 @@ theorem covby_sup_of_inf_covby_right : a ⊓ b ⋖ b → a ⋖ a ⊔ b := by
   exact covby_sup_of_inf_covby_left
 #align covby_sup_of_inf_covby_right covby_sup_of_inf_covby_right
 
-alias covby_sup_of_inf_covby_left ← Covby.sup_of_inf_left
+alias Covby.sup_of_inf_left := covby_sup_of_inf_covby_left
 #align covby.sup_of_inf_left Covby.sup_of_inf_left
 
-alias covby_sup_of_inf_covby_right ← Covby.sup_of_inf_right
+alias Covby.sup_of_inf_right := covby_sup_of_inf_covby_right
 #align covby.sup_of_inf_right Covby.sup_of_inf_right
 
 -- See note [lower instance priority]
@@ -182,10 +182,10 @@ theorem inf_covby_of_covby_sup_right : b ⋖ a ⊔ b → a ⊓ b ⋖ a := by
   exact inf_covby_of_covby_sup_left
 #align inf_covby_of_covby_sup_right inf_covby_of_covby_sup_right
 
-alias inf_covby_of_covby_sup_left ← Covby.inf_of_sup_left
+alias Covby.inf_of_sup_left := inf_covby_of_covby_sup_left
 #align covby.inf_of_sup_left Covby.inf_of_sup_left
 
-alias inf_covby_of_covby_sup_right ← Covby.inf_of_sup_right
+alias Covby.inf_of_sup_right := inf_covby_of_covby_sup_right
 #align covby.inf_of_sup_right Covby.inf_of_sup_right
 
 -- See note [lower instance priority]

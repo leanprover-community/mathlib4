@@ -67,6 +67,8 @@ so don't hesitate to have a look!
 * [Stacks: Characterizing proper maps](https://stacks.math.columbia.edu/tag/005M)
 -/
 
+set_option autoImplicit true
+
 open Filter Topology Function Set
 open Prod (fst snd)
 
@@ -248,7 +250,7 @@ theorem isProperMap_iff_isCompact_preimage [T2Space Y] [LocallyCompactSpace Y] :
     have : 𝒰 ≤ 𝓟 (f ⁻¹' K) := by
       simpa only [← comap_principal, ← tendsto_iff_comap] using
         hy.mono_right (le_principal_iff.mpr hKy)
-  -- By compactness of `(f ⁻¹' K)`, `𝒰` converges to some `x ∈ f ⁻¹' K`.
+  -- By compactness of `f ⁻¹' K`, `𝒰` converges to some `x ∈ f ⁻¹' K`.
     rcases (H.2 hK).ultrafilter_le_nhds _ this with ⟨x, -, hx⟩
   -- Finally, `f` tends to `f x` along `𝒰` by continuity, thus `f x = y`.
     refine ⟨x, tendsto_nhds_unique ((H.1.tendsto _).comp hx) hy, hx⟩
@@ -300,7 +302,7 @@ theorem isProperMap_iff_isClosedMap_filter {X : Type u} {Y : Type v} [Topologica
   -- the closed set `(f × id) '' F`, thus the limit `(y, 𝒰)` also belongs to that set.
       this.mem_of_tendsto (hy.prod_mk_nhds (Filter.tendsto_pure_self (𝒰 : Filter X)))
         (eventually_of_forall fun x ↦ ⟨⟨x, pure x⟩, subset_closure rfl, rfl⟩)
-  -- The above shows that `(y, 𝒰) = (f x, 𝒰)`, for some `x : X` such that `(f x, 𝒰) ∈ F`.
+  -- The above shows that `(y, 𝒰) = (f x, 𝒰)`, for some `x : X` such that `(x, 𝒰) ∈ F`.
     rcases this with ⟨⟨x, _⟩, hx, ⟨_, _⟩⟩
   -- We already know that `f x = y`, so to finish the proof we just have to check that `𝒰` tends
   -- to `x`. So, for `U ∈ 𝓝 x` arbitrary, let's show that `U ∈ 𝒰`. Since `𝒰` is a ultrafilter,

@@ -84,7 +84,7 @@ theorem v_sq_scalar (m : M) : v Q m * v Q m = algebraMap _ _ (Q m) :=
 theorem neg_e0_mul_v (m : M) : -(e0 Q * v Q m) = v Q m * e0 Q := by
   refine' neg_eq_of_add_eq_zero_right ((ι_mul_ι_add_swap _ _).trans _)
   dsimp [QuadraticForm.polar]
-  simp only [add_zero, MulZeroClass.mul_zero, mul_one, zero_add, neg_zero, QuadraticForm.map_zero,
+  simp only [add_zero, mul_zero, mul_one, zero_add, neg_zero, QuadraticForm.map_zero,
     add_sub_cancel, sub_self, map_zero, zero_sub]
 #align clifford_algebra.equiv_even.neg_e0_mul_v CliffordAlgebra.EquivEven.neg_e0_mul_v
 
@@ -241,7 +241,7 @@ def equivEven : CliffordAlgebra Q ≃ₐ[R] CliffordAlgebra.even (Q' Q) :=
 /-- The representation of the clifford conjugate (i.e. the reverse of the involute) in the even
 subalgebra is just the reverse of the representation. -/
 theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
-    ↑(toEven Q (reverse (Q := Q) (involute x))) =
+    ↑(toEven Q (reverse (involute x))) =
       reverse (Q := Q' Q) (toEven Q x : CliffordAlgebra (Q' Q)) := by
   induction x using CliffordAlgebra.induction
   case h_grade0 r => simp only [AlgHom.commutes, Subalgebra.coe_algebraMap, reverse.commutes]
