@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 
-import Mathlib.Data.List.PartialOrderType
+import Mathlib.Order.ListOnPartialOrderTypes
 import Mathlib.Order.JordanHolder
 import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.RingTheory.SimpleModule
