@@ -1514,6 +1514,7 @@ import Mathlib.Data.List.NodupEquivFin
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Palindrome
+import Mathlib.Data.List.PartialOrderType
 import Mathlib.Data.List.Perm
 import Mathlib.Data.List.Permutation
 import Mathlib.Data.List.Prime
