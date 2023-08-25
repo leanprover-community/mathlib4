@@ -105,7 +105,7 @@ theorem size_shiftLeft' {b m n} (h : shiftLeft' b m n ≠ 0) :
     Nat.eq_zero_of_le_zero
       (le_of_not_gt fun hn => ne_of_gt (pow_lt_pow_of_lt_right (by decide) hn) this)
   rfl
-#align nat.size_shiftLeft' Nat.size_shiftLeft'
+#align nat.size_shiftl' Nat.size_shiftLeft'
 
 -- TODO: decide whether `Nat.shiftLeft_eq` (which rewrites the LHS into a power) should be a simp
 -- lemma; it was not in mathlib3. Until then, tell the simpNF linter to ignore the issue.
