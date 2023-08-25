@@ -248,13 +248,13 @@ variable {α : Type*} {M N μ} [Preorder α] [Preorder N]
 variable {f : N → α}
 
 /-- The partial application of a constant to a covariant operator is monotone. -/
-theorem Covariant.monotone_of_const [CovariantClass M N μ (· ≤ ·)] (m : M) : Monotone (μ m) :=
+theorem Covariant.monotone_of_const [CovariantClass M N μ LE.le] (m : M) : Monotone (μ m) :=
   fun _ _ ha ↦ CovariantClass.elim m ha
 #align covariant.monotone_of_const Covariant.monotone_of_const
 
 /-- A monotone function remains monotone when composed with the partial application
 of a covariant operator. E.g., `∀ (m : ℕ), Monotone f → Monotone (fun n ↦ f (m + n))`. -/
-theorem Monotone.covariant_of_const [CovariantClass M N μ (· ≤ ·)] (hf : Monotone f) (m : M) :
+theorem Monotone.covariant_of_const [CovariantClass M N μ LE.le] (hf : Monotone f) (m : M) :
     Monotone fun n ↦ f (μ m n) :=
   fun _ _ x ↦ hf (Covariant.monotone_of_const m x)
 #align monotone.covariant_of_const Monotone.covariant_of_const
@@ -267,7 +267,7 @@ theorem Monotone.covariant_of_const' {μ : N → N → N} [CovariantClass N N (s
 #align monotone.covariant_of_const' Monotone.covariant_of_const'
 
 /-- Dual of `Monotone.covariant_of_const` -/
-theorem Antitone.covariant_of_const [CovariantClass M N μ (· ≤ ·)] (hf : Antitone f) (m : M) :
+theorem Antitone.covariant_of_const [CovariantClass M N μ LE.le] (hf : Antitone f) (m : M) :
     Antitone fun n ↦ f (μ m n) :=
   hf.comp_monotone <| Covariant.monotone_of_const m
 #align antitone.covariant_of_const Antitone.covariant_of_const
