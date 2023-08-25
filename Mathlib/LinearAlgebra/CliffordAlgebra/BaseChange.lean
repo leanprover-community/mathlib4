@@ -178,7 +178,7 @@ theorem toBaseChange_reverse (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.bas
       TensorProduct.map LinearMap.id (reverse (Q := Q)) (toBaseChange A Q x) := by
   have := FunLike.congr_fun (toBaseChange_comp_reverseOp A Q) x
   refine (congr_arg unop this).trans ?_; clear this
-  refine (TensorProduct.AlgebraTensorModule.map_comp_map _ _ _ _ _).trans ?_
+  refine (LinearMap.congr_fun (TensorProduct.AlgebraTensorModule.map_comp _ _ _ _).symm _).trans ?_
   erw [reverse, AlgHom.toLinearMap_toOpposite,
     TensorProduct.AlgebraTensorModule.map_apply]
 
