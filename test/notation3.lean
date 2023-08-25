@@ -2,6 +2,7 @@ import Std.Tactic.GuardMsgs
 import Mathlib.Mathport.Notation
 import Mathlib.Init.Data.Nat.Lemmas
 
+set_option pp.unicode.fun true
 set_option autoImplicit true
 
 namespace Test
