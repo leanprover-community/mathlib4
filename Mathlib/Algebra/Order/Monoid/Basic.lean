@@ -58,7 +58,7 @@ See also `OrderIso.mulLeft` when working in an ordered group. -/
       "The order embedding sending `b` to `a + b`, for some fixed `a`.
        See also `OrderIso.addLeft` when working in an additive ordered group."]
 def OrderEmbedding.mulLeft {α : Type*} [Mul α] [LinearOrder α]
-    [CovariantClass α α (· * ·) (· < ·)] (m : α) : α ↪o α :=
+    [CovariantClass α α HMul.hMul LT.lt] (m : α) : α ↪o α :=
   OrderEmbedding.ofStrictMono (fun n => m * n) fun _ _ w => mul_lt_mul_left' w m
 #align order_embedding.mul_left OrderEmbedding.mulLeft
 #align order_embedding.add_left OrderEmbedding.addLeft
@@ -71,7 +71,7 @@ See also `OrderIso.mulRight` when working in an ordered group. -/
       "The order embedding sending `b` to `b + a`, for some fixed `a`.
        See also `OrderIso.addRight` when working in an additive ordered group."]
 def OrderEmbedding.mulRight {α : Type*} [Mul α] [LinearOrder α]
-    [CovariantClass α α (swap (· * ·)) (· < ·)] (m : α) : α ↪o α :=
+    [CovariantClass α α (swap HMul.hMul) LT.lt] (m : α) : α ↪o α :=
   OrderEmbedding.ofStrictMono (fun n => n * m) fun _ _ w => mul_lt_mul_right' w m
 #align order_embedding.mul_right OrderEmbedding.mulRight
 #align order_embedding.add_right OrderEmbedding.addRight
@@ -80,8 +80,8 @@ def OrderEmbedding.mulRight {α : Type*} [Mul α] [LinearOrder α]
 
 @[to_additive]
 theorem eq_and_eq_of_le_of_le_of_mul_le [Mul α] [LinearOrder α]
-    [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (Function.swap (· * ·)) (· < ·)]
-    [ContravariantClass α α (· * ·) (· ≤ ·)] {a b a0 b0 : α} (ha : a0 ≤ a) (hb : b0 ≤ b)
+    [CovariantClass α α HMul.hMul LE.le] [CovariantClass α α (Function.swap HMul.hMul) LT.lt]
+    [ContravariantClass α α HMul.hMul LE.le] {a b a0 b0 : α} (ha : a0 ≤ a) (hb : b0 ≤ b)
     (ab : a * b ≤ a0 * b0) : a = a0 ∧ b = b0 := by
   haveI := Mul.to_covariantClass_right α
   have ha' : ¬a0 * b0 < a * b → ¬a0 < a := mt (mul_lt_mul_of_lt_of_le · hb)

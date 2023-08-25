@@ -326,54 +326,54 @@ theorem contravariant_flip_mul_iff [CommSemigroup N] :
 
 @[to_additive]
 instance contravariant_mul_lt_of_covariant_mul_le [Mul N] [LinearOrder N]
-    [CovariantClass N N (· * ·) (· ≤ ·)] : ContravariantClass N N (· * ·) (· < ·) where
+    [CovariantClass N N HMul.hMul LE.le] : ContravariantClass N N HMul.hMul LT.lt where
   elim := (covariant_le_iff_contravariant_lt N N (· * ·)).mp CovariantClass.elim
 
 @[to_additive]
 instance covariant_mul_lt_of_contravariant_mul_le [Mul N] [LinearOrder N]
-    [ContravariantClass N N (· * ·) (· ≤ ·)] : CovariantClass N N (· * ·) (· < ·) where
+    [ContravariantClass N N HMul.hMul LE.le] : CovariantClass N N HMul.hMul LT.lt where
   elim := (covariant_lt_iff_contravariant_le N N (· * ·)).mpr ContravariantClass.elim
 
 @[to_additive]
 instance covariant_swap_mul_le_of_covariant_mul_le [CommSemigroup N] [LE N]
-    [CovariantClass N N (· * ·) (· ≤ ·)] : CovariantClass N N (swap (· * ·)) (· ≤ ·) where
+    [CovariantClass N N HMul.hMul LE.le] : CovariantClass N N (swap HMul.hMul) LE.le where
   elim := (covariant_flip_mul_iff N (· ≤ ·)).mpr CovariantClass.elim
 
 @[to_additive]
 instance contravariant_swap_mul_le_of_contravariant_mul_le [CommSemigroup N] [LE N]
-    [ContravariantClass N N (· * ·) (· ≤ ·)] : ContravariantClass N N (swap (· * ·)) (· ≤ ·) where
+    [ContravariantClass N N HMul.hMul LE.le] : ContravariantClass N N (swap HMul.hMul) LE.le where
   elim := (contravariant_flip_mul_iff N (· ≤ ·)).mpr ContravariantClass.elim
 
 @[to_additive]
 instance contravariant_swap_mul_lt_of_contravariant_mul_lt [CommSemigroup N] [LT N]
-    [ContravariantClass N N (· * ·) (· < ·)] : ContravariantClass N N (swap (· * ·)) (· < ·) where
+    [ContravariantClass N N HMul.hMul LT.lt] : ContravariantClass N N (swap HMul.hMul) LT.lt where
   elim := (contravariant_flip_mul_iff N (· < ·)).mpr ContravariantClass.elim
 
 @[to_additive]
 instance covariant_swap_mul_lt_of_covariant_mul_lt [CommSemigroup N] [LT N]
-    [CovariantClass N N (· * ·) (· < ·)] : CovariantClass N N (swap (· * ·)) (· < ·) where
+    [CovariantClass N N HMul.hMul LT.lt] : CovariantClass N N (swap HMul.hMul) LT.lt where
   elim := (covariant_flip_mul_iff N (· < ·)).mpr CovariantClass.elim
 
 @[to_additive]
 instance LeftCancelSemigroup.covariant_mul_lt_of_covariant_mul_le [LeftCancelSemigroup N]
-    [PartialOrder N] [CovariantClass N N (· * ·) (· ≤ ·)] :
-    CovariantClass N N (· * ·) (· < ·) where
+    [PartialOrder N] [CovariantClass N N HMul.hMul LE.le] :
+    CovariantClass N N HMul.hMul LT.lt where
   elim a b c bc := by
     cases' lt_iff_le_and_ne.mp bc with bc cb
     exact lt_iff_le_and_ne.mpr ⟨CovariantClass.elim a bc, (mul_ne_mul_right a).mpr cb⟩
 
 @[to_additive]
 instance RightCancelSemigroup.covariant_swap_mul_lt_of_covariant_swap_mul_le
-    [RightCancelSemigroup N] [PartialOrder N] [CovariantClass N N (swap (· * ·)) (· ≤ ·)] :
-    CovariantClass N N (swap (· * ·)) (· < ·) where
+    [RightCancelSemigroup N] [PartialOrder N] [CovariantClass N N (swap HMul.hMul) LE.le] :
+    CovariantClass N N (swap HMul.hMul) LT.lt where
   elim a b c bc := by
     cases' lt_iff_le_and_ne.mp bc with bc cb
     exact lt_iff_le_and_ne.mpr ⟨CovariantClass.elim a bc, (mul_ne_mul_left a).mpr cb⟩
 
 @[to_additive]
 instance LeftCancelSemigroup.contravariant_mul_le_of_contravariant_mul_lt [LeftCancelSemigroup N]
-    [PartialOrder N] [ContravariantClass N N (· * ·) (· < ·)] :
-    ContravariantClass N N (· * ·) (· ≤ ·) where
+    [PartialOrder N] [ContravariantClass N N HMul.hMul LT.lt] :
+    ContravariantClass N N HMul.hMul LE.le where
   elim a b c bc := by
     cases' le_iff_eq_or_lt.mp bc with h h
     · exact ((mul_right_inj a).mp h).le
@@ -381,8 +381,8 @@ instance LeftCancelSemigroup.contravariant_mul_le_of_contravariant_mul_lt [LeftC
 
 @[to_additive]
 instance RightCancelSemigroup.contravariant_swap_mul_le_of_contravariant_swap_mul_lt
-    [RightCancelSemigroup N] [PartialOrder N] [ContravariantClass N N (swap (· * ·)) (· < ·)] :
-    ContravariantClass N N (swap (· * ·)) (· ≤ ·) where
+    [RightCancelSemigroup N] [PartialOrder N] [ContravariantClass N N (swap HMul.hMul) LT.lt] :
+    ContravariantClass N N (swap HMul.hMul) LE.le where
   elim a b c bc := by
     cases' le_iff_eq_or_lt.mp bc with h h
     · exact ((mul_left_inj a).mp h).le

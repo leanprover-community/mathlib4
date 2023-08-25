@@ -84,7 +84,7 @@ theorem Right.exists_add_of_mem_support_single_mul [AddRightCancelSemigroup A]
 /-- If `R` is a semiring with no non-trivial zero-divisors and `A` is a left-ordered add right
 cancel semigroup, then `AddMonoidAlgebra R A` also contains no non-zero zero-divisors. -/
 theorem NoZeroDivisors.of_left_ordered [NoZeroDivisors R] [AddRightCancelSemigroup A]
-    [LinearOrder A] [CovariantClass A A (· + ·) (· < ·)] : NoZeroDivisors (AddMonoidAlgebra R A) :=
+    [LinearOrder A] [CovariantClass A A HAdd.hAdd LT.lt] : NoZeroDivisors (AddMonoidAlgebra R A) :=
   ⟨@fun f g fg => by
     contrapose! fg
     let gmin : A := g.support.min' (support_nonempty_iff.mpr fg.2)
@@ -108,7 +108,7 @@ theorem NoZeroDivisors.of_left_ordered [NoZeroDivisors R] [AddRightCancelSemigro
           · rw [support_mul_single _ _ (fun y => by rw [mul_one] : ∀ y : R, y * 1 = 0 ↔ _)]
             simpa only [Finset.mem_map, addRightEmbedding_apply, add_left_inj, exists_prop,
               exists_eq_right]
-        · haveI : CovariantClass A A (· + ·) (· ≤ ·) := Add.to_covariantClass_left A
+        · haveI : CovariantClass A A HAdd.hAdd LE.le := Add.to_covariantClass_left A
           exact add_le_add_left (Finset.min'_le _ _ cg) _
       · refine' lt_of_le_of_lt (_ : _ ≤ b + gmin) _
         · apply Finset.min'_le
@@ -122,7 +122,7 @@ theorem NoZeroDivisors.of_left_ordered [NoZeroDivisors R] [AddRightCancelSemigro
 /-- If `R` is a semiring with no non-trivial zero-divisors and `A` is a right-ordered add left
 cancel semigroup, then `AddMonoidAlgebra R A` also contains no non-zero zero-divisors. -/
 theorem NoZeroDivisors.of_right_ordered [NoZeroDivisors R] [AddLeftCancelSemigroup A]
-    [LinearOrder A] [CovariantClass A A (Function.swap (· + ·)) (· < ·)] :
+    [LinearOrder A] [CovariantClass A A (Function.swap HAdd.hAdd) LT.lt] :
     NoZeroDivisors (AddMonoidAlgebra R A) :=
   ⟨@fun f g fg => by
     contrapose! fg
@@ -154,7 +154,7 @@ theorem NoZeroDivisors.of_right_ordered [NoZeroDivisors R] [AddLeftCancelSemigro
           · rw [support_single_mul _ _ (fun y => by rw [one_mul] : ∀ y : R, 1 * y = 0 ↔ _)]
             simpa only [Finset.mem_map, addLeftEmbedding_apply, add_right_inj, exists_prop,
               exists_eq_right]
-        · haveI : CovariantClass A A (Function.swap (· + ·)) (· ≤ ·) :=
+        · haveI : CovariantClass A A (Function.swap HAdd.hAdd) LE.le :=
             Add.to_covariantClass_right A
           exact add_le_add_right (Finset.min'_le _ _ bf) _⟩
 #align add_monoid_algebra.no_zero_divisors.of_right_ordered AddMonoidAlgebra.NoZeroDivisors.of_right_ordered

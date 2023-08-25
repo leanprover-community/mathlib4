@@ -913,14 +913,14 @@ variable {β : Type*} [TopologicalSpace β]
 
 @[to_additive]
 instance covariant_class_mul_le_left [PartialOrder β] [Mul β] [ContinuousMul β]
-  [CovariantClass β β (· * ·) (· ≤ ·)] :
-  CovariantClass C(α, β) C(α, β) (· * ·) (· ≤ ·) :=
+  [CovariantClass β β HMul.hMul LE.le] :
+  CovariantClass C(α, β) C(α, β) HMul.hMul LE.le :=
 ⟨fun _ _ _ hg₁₂ x => mul_le_mul_left' (hg₁₂ x) _⟩
 
 @[to_additive]
 instance covariant_class_mul_le_right [PartialOrder β] [Mul β] [ContinuousMul β]
-  [CovariantClass β β (Function.swap (· * ·)) (· ≤ ·)] :
-  CovariantClass C(α, β) C(α, β) (Function.swap (· * ·)) (· ≤ ·) :=
+  [CovariantClass β β (Function.swap HMul.hMul) LE.le] :
+  CovariantClass C(α, β) C(α, β) (Function.swap HMul.hMul) LE.le :=
 ⟨fun _ _ _ hg₁₂ x => mul_le_mul_right' (hg₁₂ x) _⟩
 
 end Lattice

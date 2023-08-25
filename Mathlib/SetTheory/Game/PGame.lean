@@ -1753,11 +1753,11 @@ private theorem add_le_add_right' : ∀ {x y z : PGame}, x ≤ y → x + z ≤ y
         Or.inr ⟨@toRightMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), add_le_add_right' h⟩
 termination_by _ x y z => (x, y, z)
 
-instance covariantClass_swap_add_le : CovariantClass PGame PGame (swap (· + ·)) (· ≤ ·) :=
+instance covariantClass_swap_add_le : CovariantClass PGame PGame (swap HAdd.hAdd) LE.le :=
   ⟨fun _ _ _ => add_le_add_right'⟩
 #align pgame.covariant_class_swap_add_le PGame.covariantClass_swap_add_le
 
-instance covariantClass_add_le : CovariantClass PGame PGame (· + ·) (· ≤ ·) :=
+instance covariantClass_add_le : CovariantClass PGame PGame HAdd.hAdd LE.le :=
   ⟨fun x _ _ h => (add_comm_le.trans (add_le_add_right h x)).trans add_comm_le⟩
 #align pgame.covariant_class_add_le PGame.covariantClass_add_le
 
@@ -1782,11 +1782,11 @@ theorem add_lf_add_left {y z : PGame} (h : y ⧏ z) (x) : x + y ⧏ x + z := by
   apply add_lf_add_right h
 #align pgame.add_lf_add_left PGame.add_lf_add_left
 
-instance covariantClass_swap_add_lt : CovariantClass PGame PGame (swap (· + ·)) (· < ·) :=
+instance covariantClass_swap_add_lt : CovariantClass PGame PGame (swap HAdd.hAdd) LT.lt :=
   ⟨fun x _ _ h => ⟨add_le_add_right h.1 x, add_lf_add_right h.2 x⟩⟩
 #align pgame.covariant_class_swap_add_lt PGame.covariantClass_swap_add_lt
 
-instance covariantClass_add_lt : CovariantClass PGame PGame (· + ·) (· < ·) :=
+instance covariantClass_add_lt : CovariantClass PGame PGame HAdd.hAdd LT.lt :=
   ⟨fun x _ _ h => ⟨add_le_add_left h.1 x, add_lf_add_left h.2 x⟩⟩
 #align pgame.covariant_class_add_lt PGame.covariantClass_add_lt
 

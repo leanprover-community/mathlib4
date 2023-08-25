@@ -210,8 +210,8 @@ is 'very monotone', then `A` also has `UniqueProds`. -/
       "This instance asserts that if `A` has an addition, a linear order, and addition
 is 'very monotone', then `A` also has `UniqueSums`."]
 instance (priority := 100) Covariants.to_uniqueProds {A} [Mul A] [LinearOrder A]
-    [CovariantClass A A (· * ·) (· ≤ ·)] [CovariantClass A A (Function.swap (· * ·)) (· < ·)]
-    [ContravariantClass A A (· * ·) (· ≤ ·)] : UniqueProds A where
+    [CovariantClass A A HMul.hMul LE.le] [CovariantClass A A (Function.swap HMul.hMul) LT.lt]
+    [ContravariantClass A A HMul.hMul LE.le] : UniqueProds A where
       uniqueMul_of_nonempty {A} {B} hA hB :=
         ⟨_, A.min'_mem ‹_›, _, B.min'_mem ‹_›, fun a b ha hb ab ↦
         eq_and_eq_of_le_of_le_of_mul_le (Finset.min'_le _ _ ‹_›) (Finset.min'_le _ _ ‹_›) ab.le⟩
