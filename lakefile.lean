@@ -56,22 +56,22 @@ lean_lib Cache where
 lean_exe cache where
   root := `Cache.Main
 
--- lean_lib MathlibExtras where
---   roots := #[`MathlibExtras]
---
--- lean_lib Archive where
---   roots := #[`Archive]
---
--- lean_lib Counterexamples where
---   roots := #[`Counterexamples]
---
--- lean_lib ImportGraph where
---   roots := #[`ImportGraph]
---
--- lean_exe graph where
---   root := `ImportGraph.Main
---   supportInterpreter := true
---
--- /-- Additional documentation in the form of modules that only contain module docstrings. -/
--- lean_lib docs where
---   roots := #[`docs]
+lean_lib MathlibExtras where
+  roots := #[`MathlibExtras]
+
+lean_lib Archive where
+  roots := #[`Archive]
+
+lean_lib Counterexamples where
+  roots := #[`Counterexamples]
+
+lean_lib ImportGraph where
+  roots := #[`ImportGraph]
+
+lean_exe graph where
+  root := `ImportGraph.Main
+  supportInterpreter := true
+
+/-- Additional documentation in the form of modules that only contain module docstrings. -/
+lean_lib docs where
+  roots := #[`docs]
