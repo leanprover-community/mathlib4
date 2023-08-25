@@ -7,7 +7,6 @@ Authors: Chris Hughes
 import Mathlib.GroupTheory.CoprodI
 import Mathlib.GroupTheory.QuotientGroup
 
-
 variable {ι : Type*} (G : ι → Type*) [∀ i, Group (G i)] (H : Type*) [Group H]
   (φ : ∀ i, H →* G i) {K : Type*} [Group K]
 
@@ -64,25 +63,22 @@ noncomputable def rangeEquiv (h : ∀ i, Function.Injective (φ i)) (i j) :
 
 open Coset
 
-
 variable [Inhabited ι]
 
 variable (φ)
 
 variable (hφ : ∀ i, Function.Injective (φ i))
 
-noncomputable def normalizeSingle [DecidableEq ι]
-    {i : ι} (g : G i) [Decidable (g ∈ (φ i).range)] : Σ (j : ι), G j :=
+noncomputable def normalizeSingle {i : ι} (g : G i) : Σ (j : ι), G j :=
   letI := Classical.propDecidable
   if hg : g ∈ (φ i).range
   then ⟨default, rangeEquiv hφ i default ⟨g, hg⟩⟩
   else ⟨i, g⟩
 
-theorem normalizeSingle_fst_eq_iff [DecidableEq ι]
-    {i : ι} (g : G i) [Decidable (g ∈ (φ i).range)] :
+theorem normalizeSingle_fst_eq_iff {i : ι} (g : G i) :
     (normalizeSingle φ hφ g).1 = default ↔
-      i ≠ default → (normalizeSingle φ hφ g) = ⟨i, g⟩
-      → g ∈ (φ i).range := by
+      i ≠ default → (normalizeSingle φ hφ g) = ⟨i, g⟩ →
+      g ∈ (φ i).range := by
   rw [normalizeSingle]
   split_ifs with h
   · simp only [ne_eq, MonoidHom.mem_range, true_iff] at h
@@ -105,8 +101,7 @@ structure Pair (i : ι) where
 
 variable [DecidableEq ι] [∀ i, DecidableEq (G i)]
 
-noncomputable def rcons {i : ι} (hφ : ∀ i, Function.Injective (φ i))
-    [∀ i g, Decidable (g ∈ (φ i).range)] (p : Pair φ i) : Word φ :=
+noncomputable def rcons {i : ι} (p : Pair φ i) : Word φ :=
   { toWord := (normalizeSingle φ hφ p.head).2 • p.tail.toWord,
     normalized := by
       intro j g₂ hg₂ hrange
@@ -117,11 +112,8 @@ noncomputable def rcons {i : ι} (hφ : ∀ i, Function.Injective (φ i))
         · exact p.tail.normalized _ _ (List.mem_of_mem_tail hg₂) hrange
         · have := p.fstIdx_ne
           rw [normalizeSingle_fst_eq_iff, Sigma.ext_iff, and_imp]
-          intro hin hnorm _
-          rw [Option.mem_def] at hm'
-          apply_fun Option.map Sigma.fst at hm'
-          rw [Word.fstIdx] at this
-          simp_all
+          intros
+          simp_all [Word.fstIdx]
         · rw [normalizeSingle_fst_eq_iff, Sigma.ext_iff, and_imp]
           intro _ _ _
           cases hg₂.2
