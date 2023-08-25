@@ -194,11 +194,12 @@ theorem shiftl'_false : ∀ n, shiftl' false m n = m <<< n
       rw [Nat.mul_comm, Nat.mul_assoc, ← pow_succ]; simp
     simp [shiftl', bit_val, shiftl'_false, this]
 
+/-- Std4 takes the unprimed name for `Nat.shiftLeft_eq m n : m <<< n = m * 2 ^ n`. -/
 @[simp]
-lemma shiftLeft_eq' {m n : Nat} : shiftLeft m n = m <<< n := rfl
+lemma shiftLeft_eq' (m n : Nat) : shiftLeft m n = m <<< n := rfl
 
 @[simp]
-lemma shiftRight_eq {m n : Nat} : shiftRight m n = m >>> n := rfl
+lemma shiftRight_eq (m n : Nat) : shiftRight m n = m >>> n := rfl
 
 theorem shiftLeft_zero (m) : m <<< 0 = m := rfl
 
