@@ -1299,7 +1299,7 @@ lemma map_le_of_subsingleton (f : V ↪ W) [Subsingleton V] : G.map f ≤ G' := 
 
 /-- Given a family of vertex types indexed by `ι`, pulling back from `⊤ : SimpleGraph ι`
 yields the complete multipartite graph on the family.
-Any graph may be regarded as a subgraph of one of these, with sufficiently many parts. -/
+Two vertices are adjacent if and only if their indices are not equal. -/
 abbrev completeMultipartiteGraph {ι : Type*} (V : ι → Type*) : SimpleGraph (Σ i, V i) :=
   SimpleGraph.comap Sigma.fst ⊤
 

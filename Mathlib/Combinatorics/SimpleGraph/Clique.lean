@@ -228,16 +228,14 @@ theorem cliqueFree_of_card_lt [Fintype α] (hc : card α < n) : G.CliqueFree n :
   simpa only [Fintype.card_fin] using Fintype.card_le_of_embedding h.some.toEmbedding
 #align simple_graph.clique_free_of_card_lt SimpleGraph.cliqueFree_of_card_lt
 
-/-- A complete `r`-partite graph has no `r + 1`-cliques. -/
-theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι → Type*) :
-    (completeMultipartiteGraph V).CliqueFree (Fintype.card ι + 1) := fun t => by
-  rw [isNClique_iff, and_comm, not_and]
-  intro hc
-  obtain ⟨v, w, hn, he⟩ := exists_ne_map_eq_of_card_lt (fun k : t => k.1.1) (by simp [hc])
-  simp only [IsClique, Set.Pairwise, not_forall]
-  use v, v.2, w, w.2
-  simp only [exists_prop, comap_Adj, he, SimpleGraph.irrefl, and_true]
-  contrapose! hn; rw [Subtype.mk.injEq]; exact hn
+/-- A complete `r`-partite graph has no `n`-cliques for `r < n`. -/
+theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι → Type*)
+    (hc : card ι < n) : (completeMultipartiteGraph V).CliqueFree n := by
+  rw [cliqueFree_iff, isEmpty_iff]
+  intro f
+  obtain ⟨v, w, hn, he⟩ := exists_ne_map_eq_of_card_lt (Sigma.fst ∘ f) (by simp [hc])
+  rw [← top_adj, ← f.map_adj_iff, comap_Adj, top_adj] at hn
+  exact absurd he hn
 
 end CliqueFree
 
