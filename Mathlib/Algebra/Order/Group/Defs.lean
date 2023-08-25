@@ -46,7 +46,7 @@ attribute [to_additive] OrderedCommGroup
 
 @[to_additive]
 instance OrderedCommGroup.to_covariantClass_left_le (α : Type u) [OrderedCommGroup α] :
-    CovariantClass α α (· * ·) (· ≤ ·) where
+    CovariantClass α α HMul.hMul LE.le where
       elim a b c bc := OrderedCommGroup.mul_le_mul_left b c bc a
 #align ordered_comm_group.to_covariant_class_left_le OrderedCommGroup.to_covariantClass_left_le
 #align ordered_add_comm_group.to_covariant_class_left_le OrderedAddCommGroup.to_covariantClass_left_le
@@ -69,7 +69,7 @@ example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap HAdd
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
 theorem OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCommGroup α] :
-    ContravariantClass α α (· * ·) (· ≤ ·) where
+    ContravariantClass α α HMul.hMul LE.le where
       elim a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
 #align ordered_comm_group.to_contravariant_class_left_le OrderedCommGroup.to_contravariantClass_left_le
 #align ordered_add_comm_group.to_contravariant_class_left_le OrderedAddCommGroup.to_contravariantClass_left_le
@@ -80,7 +80,7 @@ theorem OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCom
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
 theorem OrderedCommGroup.to_contravariantClass_right_le (α : Type u) [OrderedCommGroup α] :
-    ContravariantClass α α (swap (· * ·)) (· ≤ ·) where
+    ContravariantClass α α (swap HMul.hMul) LE.le where
       elim a b c bc := by simpa using mul_le_mul_right' bc a⁻¹
 #align ordered_comm_group.to_contravariant_class_right_le OrderedCommGroup.to_contravariantClass_right_le
 #align ordered_add_comm_group.to_contravariant_class_right_le OrderedAddCommGroup.to_contravariantClass_right_le
