@@ -1150,17 +1150,38 @@ theorem Measurable.isLUB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g'
     (hf : ∀ i, Measurable (f i))
     {s : Set δ} (hs : MeasurableSet s) (hg : ∀ b ∈ s, IsLUB { a | ∃ i, f i b = a } (g b))
     (hg' : EqOn g g' sᶜ) (g'_meas : Measurable g') : Measurable g := by
-  let f' : ι → δ → α := fun i ↦ s.piecewise (f i) g'
-  suffices ∀ b, IsLUB { a | ∃ i, f' i b = a } (g b) from
-    Measurable.isLUB (fun i ↦ Measurable.piecewise hs (hf i) g'_meas) this
-  intro b
-  by_cases hb : b ∈ s
-
-
-
-
-#exit
-
+  rcases isEmpty_or_nonempty ι with hι|⟨⟨i⟩⟩
+  · rcases eq_empty_or_nonempty s with rfl|⟨x, hx⟩
+    · convert g'_meas
+      ext x
+      simp only [compl_empty] at hg'
+      exact hg' (mem_univ x)
+    · have A : ∀ b ∈ s, IsBot (g b) := by simpa using hg
+      have B : ∀ b ∈ s, g b = g x := by
+        intro b hb
+        apply le_antisymm (A b hb (g x)) (A x hx (g b))
+      have : g = s.piecewise (fun _y ↦ g x) g' := by
+        ext b
+        by_cases hb : b ∈ s
+        · simp [hb, B]
+        · simp [hb, hg' hb]
+      rw [this]
+      exact Measurable.piecewise hs measurable_const g'_meas
+  · set f' : ι → δ → α := fun i ↦ s.piecewise (f i) g' with hf'
+    suffices ∀ b, IsLUB { a | ∃ i, f' i b = a } (g b) from
+      Measurable.isLUB (fun i ↦ Measurable.piecewise hs (hf i) g'_meas) this
+    intro b
+    by_cases hb : b ∈ s
+    · have A : ∀ i, f' i b = f i b := fun i ↦ by simp [hf', hb]
+      simpa [A] using hg b hb
+    · have A : ∀ i, f' i b = g' b := fun i ↦ by simp [hf', hb]
+      have : {a | ∃ (_i : ι), g' b = a} = {g' b} := by
+        apply Subset.antisymm
+        · rintro a ⟨j, rfl⟩
+          simp only [mem_singleton_iff]
+        · rintro a rfl
+          exact ⟨i, rfl⟩
+      simp [A, this, hg' hb, isLUB_singleton]
 
 private theorem AEMeasurable.is_lub_of_nonempty {ι} (hι : Nonempty ι) {μ : Measure δ} [Countable ι]
     {f : ι → δ → α} {g : δ → α} (hf : ∀ i, AEMeasurable (f i) μ)
