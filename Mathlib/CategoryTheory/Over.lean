@@ -576,7 +576,7 @@ variable {S : Type u₂} [Category.{v₂} S]
 /-- Given `X : T`, to upgrade a functor `F : S ⥤ T` to a functor `S ⥤ Over X`, it suffices to
     provide maps `F.obj Y ⟶ X` for all `Y` making the obvious triangles involving all `F.map g`
     commute. -/
-@[simps!]
+@[simps! obj_left map_left]
 def toOver (F : S ⥤ T) (X : T) (f : (Y : S) → F.obj Y ⟶ X)
     (h : ∀ {Y Z : S} (g : Y ⟶ Z), F.map g ≫ f Z = f Y) : S ⥤ Over X :=
   F.toCostructuredArrow (𝟭 _) X f h
@@ -595,6 +595,7 @@ lemma toOver_comp_forget (F : S ⥤ T) (X : T) (f : (Y : S) → F.obj Y ⟶ X)
 /-- Given `X : T`, to upgrade a functor `F : S ⥤ T` to a functor `S ⥤ Under X`, it suffices to
     provide maps `X ⟶ F.obj Y` for all `Y` making the obvious triangles involving all `F.map g`
     commute.  -/
+@[simps! obj_right map_right]
 def toUnder (F : S ⥤ T) (X : T) (f : (Y : S) → X ⟶ F.obj Y)
     (h : ∀ {Y Z : S} (g : Y ⟶ Z), f Y ≫ F.map g = f Z) : S ⥤ Under X :=
   F.toStructuredArrow X (𝟭 _) f h
@@ -605,6 +606,7 @@ def toUnderCompForget (F : S ⥤ T) (X : T) (f : (Y : S) → X ⟶ F.obj Y)
     (h : ∀ {Y Z : S} (g : Y ⟶ Z), f Y ≫ F.map g = f Z) : F.toUnder X f h ⋙ Under.forget _ ≅ F :=
   Iso.refl _
 
+@[simp]
 lemma toUnder_comp_forget (F : S ⥤ T) (X : T) (f : (Y : S) → X ⟶ F.obj Y)
     (h : ∀ {Y Z : S} (g : Y ⟶ Z), f Y ≫ F.map g = f Z) : F.toUnder X f h ⋙ Under.forget _ = F :=
   rfl
