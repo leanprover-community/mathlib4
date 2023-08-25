@@ -168,21 +168,12 @@ def emptyGraph (V : Type u) : SimpleGraph V where Adj _ _ := False
 
 /-- Two vertices are adjacent in the complete bipartite graph on two vertex types
 if and only if they are not from the same side.
-Bipartite graphs in general may be regarded as being subgraphs of one of these.
-
-TODO also introduce complete multi-partite graphs, where the vertex type is a sigma type of an
-indexed family of vertex types
--/
+Any bipartite graph may be regarded as a subgraph of one of these. -/
 @[simps]
-def completeBipartiteGraph (V W : Type*) : SimpleGraph (Sum V W)
-    where
+def completeBipartiteGraph (V W : Type*) : SimpleGraph (Sum V W) where
   Adj v w := v.isLeft ∧ w.isRight ∨ v.isRight ∧ w.isLeft
-  symm := by
-    intro v w
-    cases v <;> cases w <;> simp
-  loopless := by
-    intro v
-    cases v <;> simp
+  symm v w := by cases v <;> cases w <;> simp
+  loopless v := by cases v <;> simp
 #align complete_bipartite_graph completeBipartiteGraph
 
 namespace SimpleGraph
@@ -1305,6 +1296,12 @@ lemma le_comap_of_subsingleton (f : V → W) [Subsingleton V] : G ≤ G'.comap f
 
 lemma map_le_of_subsingleton (f : V ↪ W) [Subsingleton V] : G.map f ≤ G' := by
   rw [map_le_iff_le_comap]; apply le_comap_of_subsingleton
+
+/-- Given a family of vertex types indexed by `ι`, pulling back from `⊤ : SimpleGraph ι`
+yields the complete multipartite graph on the family.
+Two vertices are adjacent if and only if their indices are not equal. -/
+abbrev completeMultipartiteGraph {ι : Type*} (V : ι → Type*) : SimpleGraph (Σ i, V i) :=
+  SimpleGraph.comap Sigma.fst ⊤
 
 /-! ## Induced graphs -/
 
