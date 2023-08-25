@@ -1420,7 +1420,7 @@ theorem hereditarily_iff : Hereditarily p x ↔ p x ∧ ∀ y ∈ x, Hereditaril
   rw [← Hereditarily]
 #align Set.hereditarily_iff ZFSet.hereditarily_iff
 
-alias hereditarily_iff ↔ Hereditarily.def _
+alias ⟨Hereditarily.def, _⟩ := hereditarily_iff
 #align Set.hereditarily.def ZFSet.Hereditarily.def
 
 theorem Hereditarily.self (h : x.Hereditarily p) : p x :=
