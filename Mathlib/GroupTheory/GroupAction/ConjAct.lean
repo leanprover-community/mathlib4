@@ -384,6 +384,7 @@ variable [Monoid M]
 
 /-- The stabilizer of `Mˣ` acting on itself by conjugation at `x : Mˣ` is exactly the
 units of the centralizer of `x : M`. -/
+@[simps!]
 def unitsCentralizerEquiv (x : Mˣ) :
     (Submonoid.centralizer ({↑x} : Set M))ˣ ≃* MulAction.stabilizer (ConjAct Mˣ) x :=
   MulEquiv.symm

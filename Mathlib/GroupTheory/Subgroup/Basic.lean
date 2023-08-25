@@ -2077,13 +2077,16 @@ theorem center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
 #align add_subgroup.center_to_add_submonoid AddSubgroup.center_toAddSubmonoid
 
 /-- For a group with zero, the center of the units is the same as the units of the center. -/
+@[simps!]
 def centerUnitsEquivUnitsCenter (G₀ : Type*) [GroupWithZero G₀] :
     Subgroup.center (G₀ˣ) ≃* (Submonoid.center G₀)ˣ where
   toFun := MonoidHom.toHomUnits <|
-    ⟨⟨fun u ↦ ⟨(u : G₀ˣ), fun r ↦ by
-      rcases eq_or_ne r 0 with (rfl | hr)
-      · rw [mul_zero, zero_mul]
-      exact congrArg Units.val <| u.2 <| Units.mk0 r hr⟩, rfl⟩, fun _ _ ↦ rfl⟩
+    { toFun := fun u ↦ ⟨(u : G₀ˣ), fun r ↦ by
+        rcases eq_or_ne r 0 with (rfl | hr)
+        · rw [mul_zero, zero_mul]
+        exact congrArg Units.val <| u.2 <| Units.mk0 r hr⟩
+      map_one' := rfl
+      map_mul' := fun _ _ ↦ rfl }
   invFun u := unitsCenterToCenterUnits G₀ u
   left_inv _ := by ext; rfl
   right_inv _ := by ext; rfl
