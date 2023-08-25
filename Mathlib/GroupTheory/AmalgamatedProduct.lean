@@ -63,21 +63,25 @@ noncomputable def rangeEquiv (h : ∀ i, Function.Injective (φ i)) (i j) :
 
 open Coset
 
-variable [Inhabited ι]
-
 variable (φ)
 
 variable (hφ : ∀ i, Function.Injective (φ i))
 
-noncomputable def normalizeSingle {i : ι} (g : G i) : Σ (j : ι), G j :=
+noncomputable def normalizeSingle (n : ι) {i : ι} (g : G i) : Σ (j : ι), G j :=
   letI := Classical.propDecidable
   if hg : g ∈ (φ i).range
-  then ⟨default, rangeEquiv hφ i default ⟨g, hg⟩⟩
+  then ⟨n, rangeEquiv hφ i n ⟨g, hg⟩⟩
   else ⟨i, g⟩
 
-theorem normalizeSingle_fst_eq_iff {i : ι} (g : G i) :
-    (normalizeSingle φ hφ g).1 = default ↔
-      i ≠ default → (normalizeSingle φ hφ g) = ⟨i, g⟩ →
+@[simp]
+theorem normalizeSingle_self {n : ι} (g : G n) :
+    normalizeSingle φ hφ n g = ⟨n, g⟩ := by
+  rw [normalizeSingle]
+  split_ifs <;> simp [rangeEquiv]
+
+theorem normalizeSingle_fst_eq_iff {n i : ι} (g : G i) :
+    (normalizeSingle φ hφ n g).1 = n ↔
+      i ≠ n → (normalizeSingle φ hφ n g) = ⟨i, g⟩ →
       g ∈ (φ i).range := by
   rw [normalizeSingle]
   split_ifs with h
@@ -86,23 +90,23 @@ theorem normalizeSingle_fst_eq_iff {i : ι} (g : G i) :
   · simp_all (config := { contextual := true }) [iff_iff_implies_and_implies, imp_false]
 
 
-structure Word extends CoprodI.Word G where
-  normalized : ∀ i g, ⟨i, g⟩ ∈ toList → g ∈ (φ i).range → i = default
+structure Word (n : ι) extends CoprodI.Word G where
+  normalized : ∀ i g, ⟨i, g⟩ ∈ toList → g ∈ (φ i).range → i = n
 
 open List
 
 /- Inspired by a similar structure in `CoprodI` -/
-structure Pair (i : ι) where
+structure Pair (n i : ι) where
   head : G i
   /-- The remaining letters of the word, excluding the first letter -/
-  tail : Word φ
+  tail : Word φ n
   /-- The index first letter of tail of a `Pair M i` is not equal to `i` -/
   fstIdx_ne : tail.fstIdx ≠ some i
 
 variable [DecidableEq ι] [∀ i, DecidableEq (G i)]
 
-noncomputable def rcons {i : ι} (p : Pair φ i) : Word φ :=
-  { toWord := (normalizeSingle φ hφ p.head).2 • p.tail.toWord,
+noncomputable def rcons {n i : ι} (p : Pair φ n i) : Word φ n :=
+  { toWord := (normalizeSingle φ hφ n p.head).2 • p.tail.toWord,
     normalized := by
       intro j g₂ hg₂ hrange
       rw [Word.mem_smul_iff] at hg₂
@@ -118,6 +122,16 @@ noncomputable def rcons {i : ι} (p : Pair φ i) : Word φ :=
           intro _ _ _
           cases hg₂.2
           convert hrange <;> simp_all [HEq.symm] }
+
+noncomputable def toPair {n : ι} (i) (w : Word φ n) : Pair φ n i :=
+  let p := Word.equivPair i w.toWord
+  ⟨p.1, ⟨p.2, fun _ _ hg => w.normalized _ _
+    (Word.mem_of_mem_equivPair_tail_toList _ hg)⟩, p.fstIdx_ne⟩
+
+noncomputable def summandAction {n i : ι} (g : G i) (w : Word φ n) : Word φ n :=
+  rcons φ hφ { toPair φ i w with head := g * (toPair φ i w).head }
+
+
 
 end Word
 
