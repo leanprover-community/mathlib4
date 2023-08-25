@@ -255,7 +255,7 @@ def pullback.isLimit  : IsLimit (pullback.cone f hi) :=
     (fun _ => pullback.lift_snd _ _ _ _ _)
     (fun _ _ hm => pullback.hom_ext _ _ _ _ (hm .left))
 
-instance HasPullbackOpenEmbedding : HasPullback f i :=
+lemma HasPullbackOpenEmbedding : HasPullback f i :=
   ⟨pullback.cone f hi, pullback.isLimit f hi⟩
 
 section Isos
