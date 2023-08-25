@@ -93,7 +93,7 @@ structure IteratedExtCategory (X₁ X₂ : C) (n : ℕ) where
   K : CochainComplex C ℤ
   hK₀ : K.IsStrictlyGE 0
   hK₁ : K.IsStrictlyLE (n+2)
-  hK (n : ℤ) : IsZero (K.homology n)
+  hK (n : ℤ) : K.ExactAt n --IsZero (K.homology n)
   iso₁ : K.X (n+2) ≅ X₁
   iso₂ : K.X 0 ≅ X₂
 
@@ -106,6 +106,25 @@ inductive YonedaExt' (X₁ X₂ : C) : ℕ → Type _
 namespace IteratedExtCategory
 
 variable {X₁ X₂ : C} {n : ℕ} (E : IteratedExtCategory X₁ X₂ n)
+
+lemma hK' (i : ℤ) : IsZero (E.K.homology i) := by
+  rw [E.K.isZero_homology_iff i]
+  exact E.hK i
+
+lemma epi_d (i j : ℤ) (hij : i + 1 = j) (hm : i = n + 1) :
+    Epi (E.K.d i j) := by
+  have h := E.hK j
+  rw [E.K.exactAt_iff' i j (j+1) (by simp; linarith) (by simp),
+    ShortComplex.exact_iff_epi] at h; swap
+  · exact (E.K.isZero_of_isStrictlyLE (n+2) _ (by linarith)).eq_of_tgt _ _
+  exact h
+
+lemma mono_d : Mono (E.K.d 0 1) := by
+  have h := E.hK 0
+  rw [E.K.exactAt_iff' (-1) 0 1 (by simp) (by simp),
+    ShortComplex.exact_iff_mono] at h; swap
+  · exact (E.K.isZero_of_isStrictlyGE 0 _ (by linarith)).eq_of_src _ _
+  exact h
 
 --X₂                                                    X₁
 --K.X 0 ⟶ K.X 1 ⟶ K.X 2 ⟶ ..... ⟶ K.X n ⟶ K.X (n+1) ⟶ K.X (n+2)
@@ -194,7 +213,7 @@ lemma isZero_homology_ZToX₁ (d : ℤ) (hd : d ≠ 0) :
     apply isZero_Z_X_of_ge
     linarith
   . have hd' : d + 1 ≠ 1 := fun _ => hd (by linarith)
-    refine' IsZero.of_iso (E.hK (d+n+1)) (ShortComplex.homologyMapIso
+    refine' IsZero.of_iso (E.hK' (d+n+1)) (ShortComplex.homologyMapIso
       ((HomologicalComplex.natIsoSc' C (ComplexShape.up ℤ) (d-1) d (d+1)
         (by simp) (by simp)).app E.Z ≪≫ _ ≪≫
         ((HomologicalComplex.natIsoSc' C (ComplexShape.up ℤ) (d+n) (d+n+1) (d+n+2)
@@ -216,7 +235,7 @@ noncomputable def shortComplex : ShortComplex C where
 
 lemma shortComplex_exact : E.shortComplex.Exact := by
   rw [ShortComplex.exact_iff_isZero_homology]
-  refine' IsZero.of_iso (E.hK (n+1)) (ShortComplex.homologyMapIso
+  refine' IsZero.of_iso (E.hK' (n+1)) (ShortComplex.homologyMapIso
     (_ ≪≫ (HomologicalComplex.natIsoSc' C (ComplexShape.up ℤ) n (n+1) (n+2)
       (by simp) (by simp ; linarith)).symm.app _))
   refine' ShortComplex.isoMk (by exact Z.XIso E (-1) n (by linarith) (by linarith))
@@ -236,7 +255,7 @@ instance : Epi E.shortComplex.g := by
         (by simp only [CochainComplex.prev] ; linarith)
         (by simp only [CochainComplex.next] ; linarith)).app E.K) _
     rw [ShortComplex.exact_iff_isZero_homology]
-    apply E.hK
+    apply E.hK'
   rw [ShortComplex.exact_iff_epi _
     (IsZero.eq_of_tgt (E.K.isZero_of_isStrictlyLE  (n+2) _ (by linarith)) _ _)] at h
   exact h
@@ -316,11 +335,107 @@ def compKXIso (i : ℤ) (j : ℤ) (hi : n'+2 ≤ i) (hij : j + n' + 1 = i) :
     intro
     linarith)
 
-/-def compK : CochainComplex C ℤ where
+def compKd (i j : ℤ) : compKX E E' i ⟶ compKX E E' j :=
+  if hij : i + 1 = j then
+    if h₁ : i ≤ n' then
+      (compKXIso' E E' i (by linarith)).hom ≫ E'.K.d i j ≫
+        (compKXIso' E E' j (by linarith)).inv
+    else
+      if h₂ : n'+2 ≤ i then
+        (compKXIso E E' i (i - n' - 1) h₂ (by linarith)).hom ≫ E.K.d _ _ ≫
+          (compKXIso E E' j (j - n' - 1) (by linarith) (by linarith)).inv
+      else
+        (compKXIso' E E' i (by linarith)).hom ≫
+          E'.K.d i (n'+2) ≫ E'.iso₁.hom ≫ E.iso₂.inv ≫ E.K.d 0 1 ≫
+          (compKXIso E E' j 1 (by linarith) (by linarith)).inv
+  else 0
+
+lemma compKd_shape (i j : ℤ) (hij : ¬ i+1=j) :
+    compKd E E' i j = 0 := by
+  dsimp only [compKd]
+  rw [dif_neg hij]
+
+lemma compKd_eq_d' (i j : ℤ) (hij : i + 1 = j) (hi : i ≤ n') :
+    compKd E E' i j = (compKXIso' E E' i (by linarith)).hom ≫ E'.K.d i j ≫
+      (compKXIso' E E' j (by linarith)).inv := by
+  dsimp [compKd]
+  rw [dif_pos hij, dif_pos hi]
+
+lemma compKd_eq_d (i j : ℤ) (hij : i + 1 = j) (hi : n'+2 ≤ i) (i' j' : ℤ) (hi' : i' + n' + 1 = i) (hj' : j' + n' + 1 = j) :
+    compKd E E' i j = (compKXIso E E' i i' hi (by linarith)).hom ≫ E.K.d _ _ ≫
+      (compKXIso E E' j j' (by linarith) (by linarith)).inv := by
+  obtain rfl : i' = i - n' -1 := by linarith
+  obtain rfl : j' = j - n' -1 := by linarith
+  dsimp [compKd]
+  rw [dif_pos hij, dif_neg (by linarith), dif_pos hi]
+
+lemma compKd_eq_d'_comp_d (i j : ℤ) (hij : i + 1 = j) (hi : i = n' + 1) :
+    compKd E E' i j = (compKXIso' E E' i (by linarith)).hom ≫
+      E'.K.d i (n'+2) ≫ E'.iso₁.hom ≫ E.iso₂.inv ≫ E.K.d 0 1 ≫
+      (compKXIso E E' j 1 (by linarith) (by linarith)).inv := by
+  dsimp [compKd]
+  rw [dif_pos (by linarith), dif_neg (by linarith), dif_neg (by linarith)]
+
+lemma compKd_comp_d' (i j k : ℤ) (hij : i + 1 = j) (hjk : j + 1 = k) :
+    compKd E E' i j ≫ compKd E E' j k = 0 := by
+  by_cases hj : j ≤ n'
+  · rw [compKd_eq_d' E E' i j hij (by linarith), compKd_eq_d' E E' j k hjk (by linarith)]
+    simp
+  · by_cases hi : n'+2 ≤ i
+    · rw [compKd_eq_d E E' i j hij (by linarith) (i - n' -1) (j - n' -1)
+          (by linarith) (by linarith),
+        compKd_eq_d E E' j k hjk (by linarith) (j - n' -1) (k - n' -1)
+          (by linarith) (by linarith)]
+      simp
+    · have hi₁ : i ≤ n' + 1 := by linarith
+      cases (show n' ≤ i by linarith).eq_or_lt
+      · rw [compKd_eq_d' E E' i j hij (by linarith),
+          compKd_eq_d'_comp_d E E' j k hjk (by linarith)]
+        simp
+      · rw [compKd_eq_d'_comp_d E E' i j hij (by linarith),
+          compKd_eq_d E E' j k hjk (by linarith) 1 2 (by linarith) (by linarith)]
+        simp
+
+@[simps]
+def compK : CochainComplex C ℤ where
   X := compKX E E'
-  d := sorry
-  shape := sorry
-  d_comp_d' := sorry
+  d := compKd E E'
+  shape := compKd_shape E E'
+  d_comp_d' := compKd_comp_d' E E'
+
+@[simps]
+def compShortComplex₄ : ShortComplex₄ C where
+  f := (compK E E').d n' (n'+1)
+  g := (compK E E').d (n'+1) (n'+2)
+  h := (compK E E').d (n'+2) (n'+3)
+  zero₁ := compKd_comp_d' _ _ _ _ _ (by linarith) (by linarith)
+  zero₂ := compKd_comp_d' _ _ _ _ _ (by linarith) (by linarith)
+
+def compShortComplex₄Iso :
+  (compShortComplex₄ E E') ≅
+    ShortComplex₄.connectShortComplex
+      (E'.K.sc' n' (n'+1) (n'+2)) (E.K.sc' 0 1 2) (E'.iso₁ ≪≫ E.iso₂.symm) _ rfl := by
+  refine' ShortComplex₄.isoMk
+    (compKXIso' E E' n' (by linarith))
+    (compKXIso' E E' (n'+1) (by linarith))
+    (compKXIso E E' (n'+2) 1 (by linarith) (by linarith))
+    (compKXIso E E' (n'+3) 2 (by linarith) (by linarith)) _ _ _
+  · simp [compKd_eq_d' E E' n' (n'+1) (by linarith) (by linarith)]
+  · simp [compKd_eq_d'_comp_d E E' (n'+1) (n'+2) (by linarith) (by linarith)]
+  · simp [compKd_eq_d E E' (n'+2) (n'+3) (by linarith) (by linarith)
+      1 2 (by linarith) (by linarith)]
+
+lemma compShortComplex₄_exact :
+    (compShortComplex₄ E E').Exact := by
+  rw [ShortComplex₄.exact_iff_of_iso (compShortComplex₄Iso E E')]
+  have : Epi (E'.K.sc' n' (n' + 1) (n' + 2)).g :=
+    E'.epi_d (n'+1) (n'+2) (by linarith) (by linarith)
+  have : Mono (E.K.sc' 0 1 2).f := E.mono_d
+  apply ShortComplex₄.connectShortComplex_exact
+  · rw [← E'.K.exactAt_iff' n' (n'+1) (n'+2) (by simp) (by simp; linarith)]
+    exact E'.hK _
+  · rw [← E.K.exactAt_iff' 0 1 2 (by simp) (by simp)]
+    exact E.hK _
 
 def comp : IteratedExtCategory X₁ X₃ n'' where
   K := compK E E'
@@ -329,11 +444,43 @@ def comp : IteratedExtCategory X₁ X₃ n'' where
   hK₁ := ⟨fun i hi =>
     IsZero.of_iso (E.K.isZero_of_isStrictlyLE (n+2) (i - n' - 1) (by linarith))
       (compKXIso E E' i (i - n' - 1) (by linarith) (by linarith))⟩
-  hK := sorry
+  hK i := by
+    by_cases i ≤ n'
+    · have e : (compK E E').sc' (i-1) i (i+1) ≅ E'.K.sc' (i-1) i (i+1) := by
+        refine' ShortComplex.isoMk (compKXIso' E E' (i-1) (by linarith))
+          (compKXIso' E E' i (by linarith))
+          (compKXIso' E E' (i+1) (by linarith)) _ _
+        · simp [compKd_eq_d' E E' (i-1) i (by linarith) (by linarith)]
+        · simp [compKd_eq_d' E E' i (i+1) (by linarith) (by linarith)]
+      rw [(compK E E').exactAt_iff' (i-1) i (i+1) (by simp) (by simp),
+        ShortComplex.exact_iff_of_iso e,
+        ← E'.K.exactAt_iff' (i-1) i (i+1) (by simp) (by simp)]
+      exact E'.hK i
+    · by_cases n' + 3 ≤ i
+      · obtain ⟨j, hj⟩ : ∃ (j : ℤ), j = i-n'-1 := ⟨_, rfl⟩
+        have e : (compK E E').sc' (i-1) i (i+1) ≅ E.K.sc' (j-1) j (j+1) := by
+          refine' ShortComplex.isoMk
+            (compKXIso E E' (i-1) (j-1) (by linarith) (by linarith))
+            (compKXIso E E' i j (by linarith) (by linarith))
+            (compKXIso E E' (i+1) (j+1) (by linarith) (by linarith)) _ _
+          · simp [compKd_eq_d E E' (i-1) i (by linarith) (by linarith)
+              (j-1) j (by linarith) (by linarith)]
+          · simp [compKd_eq_d E E' i (i+1) (by linarith) (by linarith)
+              j (j+1) (by linarith) (by linarith)]
+        rw [(compK E E').exactAt_iff' (i-1) i (i+1) (by simp) (by simp),
+          ShortComplex.exact_iff_of_iso e,
+          ← E.K.exactAt_iff' (j-1) j (j+1) (by simp) (by simp)]
+        exact E.hK j
+      · obtain rfl | _ := (show n' +1 ≤ i by linarith).eq_or_lt
+        · rw [(compK E E').exactAt_iff' n' (n'+1) (n'+2) (by simp) (by simp; linarith)]
+          exact (compShortComplex₄_exact E E').exact₂
+        · obtain rfl : i = n' + 2 := by linarith
+          rw [(compK E E').exactAt_iff' (n'+1) (n'+2) (n'+3) (by simp; linarith) (by simp; linarith)]
+          exact (compShortComplex₄_exact E E').exact₃
   iso₁ := compKXIso E E' (n'' + 2) (n+2) (by linarith) (by
       simp only [← hn'', Nat.cast_add, Nat.cast_one]
       linarith) ≪≫ E.iso₁
-  iso₂ := compKXIso' E E' 0 (by linarith) ≪≫ E'.iso₂-/
+  iso₂ := compKXIso' E E' 0 (by linarith) ≪≫ E'.iso₂
 
 end composition
 

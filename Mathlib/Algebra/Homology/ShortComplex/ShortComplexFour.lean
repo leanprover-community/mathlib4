@@ -2,7 +2,7 @@ import Mathlib.Algebra.Homology.ShortComplex.Exact
 
 namespace CategoryTheory
 
-open Limits
+open Limits Category
 
 variable (C : Type _) [Category C]
 
@@ -87,6 +87,21 @@ def homMk {S₁ S₂ : ShortComplex₄ C} (τ₁ : S₁.X₁ ⟶ S₂.X₁) (τ�
     (φ₁₂ ≫ φ₂₃).τ₄ = φ₁₂.τ₄ ≫ φ₂₃.τ₄ := rfl
 
 attribute [simp] comp_τ₁ comp_τ₂ comp_τ₃ comp_τ₄
+
+/-- A constructor for isomorphisms in `ShortComplex₄ C`. -/
+@[simps]
+def isoMk {S₁ S₂ : ShortComplex₄ C} (e₁ : S₁.X₁ ≅ S₂.X₁) (e₂ : S₁.X₂ ≅ S₂.X₂)
+    (e₃ : S₁.X₃ ≅ S₂.X₃) (e₄ : S₁.X₄ ≅ S₂.X₄) (commf : e₁.hom ≫ S₂.f = S₁.f ≫ e₂.hom)
+    (commg : e₂.hom ≫ S₂.g = S₁.g ≫ e₃.hom) (commh : e₃.hom ≫ S₂.h = S₁.h ≫ e₄.hom) :
+    S₁ ≅ S₂ where
+  hom := homMk e₁.hom e₂.hom e₃.hom e₄.hom commf commg commh
+  inv := homMk e₁.inv e₂.inv e₃.inv e₄.inv
+    (by rw [← cancel_mono e₂.hom, assoc, ← commf, assoc,
+      Iso.inv_hom_id, comp_id, Iso.inv_hom_id_assoc])
+    (by rw [← cancel_mono e₃.hom, assoc, ← commg, assoc,
+      Iso.inv_hom_id, comp_id, Iso.inv_hom_id_assoc])
+    (by rw [← cancel_mono e₄.hom, assoc, ← commh, assoc,
+      Iso.inv_hom_id, comp_id, Iso.inv_hom_id_assoc])
 
 instance : Zero (S₁ ⟶ S₂) := ⟨{ τ₁ := 0, τ₂ := 0, τ₃ := 0, τ₄ := 0 }⟩
 
@@ -192,9 +207,45 @@ def shortComplex₁ : ShortComplex C :=
 def shortComplex₂ : ShortComplex C :=
   ShortComplex.mk _ _ S.zero₂
 
+variable (C)
+
+@[simps]
+def shortComplex₁Functor : ShortComplex₄ C ⥤ ShortComplex C where
+  obj := shortComplex₁
+  map f :=
+    { τ₁ := f.τ₁
+      τ₂ := f.τ₂
+      τ₃ := f.τ₃ }
+
+@[simps]
+def shortComplex₂Functor : ShortComplex₄ C ⥤ ShortComplex C where
+  obj := shortComplex₂
+  map f :=
+    { τ₁ := f.τ₂
+      τ₂ := f.τ₃
+      τ₃ := f.τ₄ }
+
+variable {C}
+
 structure Exact : Prop where
   exact₂ : S.shortComplex₁.Exact
   exact₃ : S.shortComplex₂.Exact
+
+lemma exact_iff : S.Exact ↔ S.shortComplex₁.Exact ∧ S.shortComplex₂.Exact := by
+  constructor
+  · intro h
+    exact ⟨h.exact₂, h.exact₃⟩
+  · intro ⟨h₁, h₂⟩
+    exact ⟨h₁, h₂⟩
+
+lemma exact_iff_of_iso {S₁ S₂ : ShortComplex₄ C} (e : S₁ ≅ S₂) :
+    S₁.Exact ↔ S₂.Exact := by
+  let e₁ : S₁.shortComplex₁ ≅ S₂.shortComplex₁ :=
+    (shortComplex₁Functor C).mapIso e
+  let e₂ : S₁.shortComplex₂ ≅ S₂.shortComplex₂ :=
+    (shortComplex₂Functor C).mapIso e
+  simp only [exact_iff, ShortComplex.exact_iff_of_iso e₁,
+    ShortComplex.exact_iff_of_iso e₂]
 
 namespace Exact
 
@@ -313,7 +364,7 @@ lemma epi_cokerToKer' (hS : S.shortComplex₂.Exact) :
   have := h.exact_iff_epi_f'.1 hS
   have fac : cc.π ≫ S.cokerToKer' cc kf hcc hkf = h.f' := by
     rw [← cancel_mono h.i, h.f'_i, ShortComplex.Exact.leftHomologyDataOfIsLimitKernelFork_i,
-      Category.assoc, cokerToKer'_fac, shortComplex₂_f]
+      assoc, cokerToKer'_fac, shortComplex₂_f]
   exact epi_of_epi_fac fac
 
 lemma mono_cokerToKer' (hS : S.shortComplex₁.Exact) :
