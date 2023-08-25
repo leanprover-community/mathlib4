@@ -487,7 +487,7 @@ theorem of_smul_def (i) (w : Word M) (m : M i) :
   rfl
 #align free_product.word.of_smul_def Monoid.CoprodI.Word.of_smul_def
 
-theorem mem_smul_iff {i j : ι} {m₁ : M i} {w : Word M} {m₂ : M j} :
+theorem mem_smul_iff' {i j : ι} {m₁ : M i} {w : Word M} {m₂ : M j} :
     ⟨_, m₁⟩ ∈ (m₂ • w).toList ↔
       ⟨i, m₁⟩ ∈ w.toList.tail
       ∨ (¬i = j ∧ ∃ h : w.toList ≠ [], w.toList.head h = ⟨i, m₁⟩)
@@ -500,10 +500,45 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {w : Word M} {m₂ : M j} :
 
 theorem mem_smul_iff_of_ne {i j : ι} (hij : i ≠ j) {m₁ : M i} {w : Word M} {m₂ : M j} :
     ⟨_, m₁⟩ ∈ (m₂ • w).toList ↔ ⟨i, m₁⟩ ∈ w.toList := by
-  rw [mem_smul_iff]
+  rw [mem_smul_iff']
   simp [hij, Ne.symm hij]
   rcases w with ⟨w, -, -⟩
   cases w <;> simp [or_comm, eq_comm]
+
+theorem mem_smul_iff {i j : ι} {m₁ : M i} {w : Word M} {m₂ : M j} :
+    ⟨_, m₁⟩ ∈ (m₂ • w).toList ↔
+      (¬i = j ∧ ⟨i, m₁⟩ ∈ w.toList)
+      ∨ (m₁ ≠ 1 ∧ ∃ (hij : i = j),(⟨i, m₁⟩ ∈ w.toList.tail) ∨
+        (∃ m', ⟨j, m'⟩ ∈ w.toList.head? ∧ m₁ = hij ▸ (m₂ * m')) ∨
+        (w.fstIdx ≠ some j ∧ m₁ = hij ▸ m₂)) := by
+  by_cases hij : i = j
+  · subst i
+    rw [mem_smul_iff']
+    simp only [not_true, ne_eq, false_and, exists_prop, true_and, false_or]
+    by_cases hw : ⟨j, m₁⟩ ∈ w.toList.tail
+    · simp [hw, show m₁ ≠ 1 from w.ne_one _ (List.mem_of_mem_tail hw)]
+    · simp only [hw, false_or, Option.mem_def, ne_eq, and_congr_right_iff]
+      intro hm1
+      split_ifs with h
+      · rcases h with ⟨hnil, rfl⟩
+        simp only [List.head?_eq_head _ hnil, Option.some.injEq, ne_eq]
+        constructor
+        · rintro rfl
+          exact Or.inl ⟨_, rfl, rfl⟩
+        · rintro (⟨_, h, rfl⟩ | hm')
+          · simp [Sigma.ext_iff] at h
+            subst h
+            rfl
+          · simp only [fstIdx, Option.map_eq_some', Sigma.exists,
+              exists_and_right, exists_eq_right, not_exists, ne_eq] at hm'
+            exact (hm'.1 (w.toList.head hnil).2 (by rw [List.head?_eq_head])).elim
+      · revert h
+        simp [fstIdx]
+        cases w.toList
+        · simp
+        · simp (config := {contextual := true}) [Sigma.ext_iff]
+  · rw [mem_smul_iff_of_ne hij]
+    simp [hij, Ne.symm hij]
 
 theorem cons_eq_smul {i} {m : M i} {ls h1 h2} :
     Word.mk (⟨i, m⟩::ls) h1 h2 = of m • mkAux ls h1 h2 := by

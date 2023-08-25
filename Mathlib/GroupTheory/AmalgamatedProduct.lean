@@ -66,45 +66,57 @@ open Coset
 
 variable (φ)
 
-noncomputable def normalizeSingle {i : ι} (g : G i) : (φ i).range × G i :=
-  let s : Set (G i) := (φ i).range *r g
-  have hs : s.Nonempty := ⟨g, mem_own_rightCoset _ _⟩
-  let g' := Classical.choose hs
-  have g'_spec : g' ∈ (φ i).range *r g := Classical.choose_spec hs
-  let h' := Classical.choose g'_spec
-  have h'_spec : h' ∈ (φ i).range ∧ h' * g = g' := Classical.choose_spec g'_spec
-  ⟨⟨h'⁻¹, inv_mem h'_spec.1⟩, g'⟩
+variable (hφ : ∀ i, Function.Injective (φ i))
 
-theorem normalizeSingle_snd_eq_of_rightCosetEquivalence
-    {i : ι} {g₁ g₂ : G i} (hg : RightCosetEquivalence (φ i).range g₁ g₂) :
-    (normalizeSingle φ g₁).2 = (normalizeSingle φ g₂).2 := by
-  simp [normalizeSingle]
-  congr
+noncomputable def normalizeSingle2 [DecidableEq ι] (n : ι)
+    {i : ι} (g : G i) [Decidable (g ∈ (φ i).range)] : Σ (j : ι), G j :=
+  letI := Classical.propDecidable
+  if hg : g ∈ (φ i).range
+  then ⟨n, rangeEquiv hφ i n ⟨g, hg⟩⟩
+  else ⟨i, g⟩
 
-theorem rightCosetEquivalence_normalizeSingle_snd {i : ι} {g : G i} :
-    RightCosetEquivalence (φ i).range g (normalizeSingle φ g).2 := by
-  let s : Set (G i) := (φ i).range *r g
-  have hs : s.Nonempty := ⟨g, mem_own_rightCoset _ _⟩
-  rw [RightCosetEquivalence, rightCoset_eq_iff]
-  exact (mem_rightCoset_iff _).1 (Classical.choose_spec hs)
+theorem normalizeSingle2_fst_eq_iff [DecidableEq ι] (n : ι)
+    {i : ι} (g : G i) [Decidable (g ∈ (φ i).range)] :
+    (normalizeSingle2 φ hφ n g).1 = n ↔
+      i ≠ n → (normalizeSingle2 φ hφ n g) = ⟨i, g⟩
+      → g ∈ (φ i).range := by
+  rw [normalizeSingle2]
+  split_ifs with h
+  · simp only [ne_eq, MonoidHom.mem_range, true_iff] at h
+    simp_all
+  · simp_all (config := { contextual := true }) [iff_iff_implies_and_implies, imp_false]
 
-theorem normalizeSingle_fst_mul_normalizeSingle_snd
-    {i : ι} {g : G i} : ((normalizeSingle φ g).1 : G i) * (normalizeSingle φ g).2 = g :=
-  let s : Set (G i) := (φ i).range *r g
-  let hs : s.Nonempty := ⟨g, mem_own_rightCoset _ _⟩
-  inv_mul_eq_of_eq_mul (Classical.choose_spec (Classical.choose_spec hs)).2.symm
 
-@[simp]
-theorem normalizeSingle_normalizeSingle_snd {i : ι} (g : G i) :
-    (normalizeSingle φ (normalizeSingle φ g).2).2 = (normalizeSingle φ g).2 :=
-  normalizeSingle_snd_eq_of_rightCosetEquivalence
-     _ (rightCosetEquivalence_normalizeSingle_snd φ).symm
+-- theorem normalizeSingle_snd_eq_of_rightCosetEquivalence
+--     {i : ι} {g₁ g₂ : G i} (hg : RightCosetEquivalence (φ i).range g₁ g₂) :
+--     (normalizeSingle φ g₁).2 = (normalizeSingle φ g₂).2 := by
+--   simp [normalizeSingle]
+--   congr
+
+-- theorem rightCosetEquivalence_normalizeSingle_snd {i : ι} {g : G i} :
+--     RightCosetEquivalence (φ i).range g (normalizeSingle φ g).2 := by
+--   let s : Set (G i) := (φ i).range *r g
+--   have hs : s.Nonempty := ⟨g, mem_own_rightCoset _ _⟩
+--   rw [RightCosetEquivalence, rightCoset_eq_iff]
+--   exact (mem_rightCoset_iff _).1 (Classical.choose_spec hs)
+
+-- theorem normalizeSingle_fst_mul_normalizeSingle_snd
+--     {i : ι} {g : G i} : ((normalizeSingle φ g).1 : G i) * (normalizeSingle φ g).2 = g :=
+--   let s : Set (G i) := (φ i).range *r g
+--   let hs : s.Nonempty := ⟨g, mem_own_rightCoset _ _⟩
+--   inv_mul_eq_of_eq_mul (Classical.choose_spec (Classical.choose_spec hs)).2.symm
+
+-- @[simp]
+-- theorem normalizeSingle_normalizeSingle_snd {i : ι} (g : G i) :
+--     (normalizeSingle φ (normalizeSingle φ g).2).2 = (normalizeSingle φ g).2 :=
+--   normalizeSingle_snd_eq_of_rightCosetEquivalence
+--      _ (rightCosetEquivalence_normalizeSingle_snd φ).symm
 
 
 variable (n : ι)
 
 structure Word extends CoprodI.Word G where
-  normalized : ∀ x ∈ toList, x.1 ≠ n → (normalizeSingle φ x.2).2 = x.2
+  normalized : ∀ i g, ⟨i, g⟩ ∈ toList → g ∈ (φ i).range → i = n
 
 open List
 
@@ -117,6 +129,63 @@ structure Pair (i : ι) where
   fstIdx_ne : tail.fstIdx ≠ some i
 
 variable [DecidableEq ι] [∀ i, DecidableEq (G i)]
+
+noncomputable def rcons {i : ι} (hφ : ∀ i, Function.Injective (φ i))
+    [∀ i g, Decidable (g ∈ (φ i).range)] (p : Pair φ n i) : Word φ n :=
+  { toWord := (normalizeSingle2 φ hφ n p.head).2 • p.tail.toWord,
+    normalized := by
+      intro j g₂ hg₂ hrange
+      rw [Word.mem_smul_iff] at hg₂
+      rcases hg₂ with ⟨_, hg₂⟩ | ⟨hg1, rfl, hg₂⟩
+      · exact p.tail.normalized _ _ hg₂ hrange
+      · rcases hg₂ with hg₂ | ⟨m', hm', rfl⟩ | hg₂
+        · exact p.tail.normalized _ _ (List.mem_of_mem_tail hg₂) hrange
+        · have := p.fstIdx_ne
+          rw [normalizeSingle2_fst_eq_iff, Sigma.ext_iff, and_imp]
+          intro hin hnorm _
+          dsimp at hrange
+          rw [Option.mem_def] at hm'
+          apply_fun Option.map Sigma.fst at hm'
+          rw [Word.fstIdx] at this
+          simp_all
+        · rw [normalizeSingle2_fst_eq_iff, Sigma.ext_iff, and_imp]
+          intro _ _ _
+          cases hg₂.2
+          convert hrange <;> simp_all [HEq.symm] }
+
+
+#print List.head?
+noncomputable def smul {i : ι} (hφ : ∀ i, Function.Injective (φ i))
+    (g : G i) [∀ i g, Decidable (g ∈ (φ i).range)] (w : Word φ n) : Word φ n :=
+  let g' := normalizeSingle2 φ hφ n g
+  ⟨ (normalizeSingle2 φ hφ n (g * (Word.equivPair i w.toWord).head)).2 •
+      (Word.equivPair i w.toWord).tail, by
+    rintro j g₂ hg₂ hrange
+    dsimp at *
+    rw [Word.mem_smul_iff] at hg₂
+    rcases hg₂ with ⟨hji, hg₂⟩ | ⟨hg1, rfl, hg₂⟩
+    · have := Word.mem_of_mem_equivPair_tail_toList _ hg₂
+      exact w.normalized _ _ this hrange
+    · rcases hg₂ with hg₂ | ⟨m', hm', rfl⟩ | hg₂
+      · have := w.normalized _ _
+           (Word.mem_of_mem_equivPair_tail_toList _
+             (List.mem_of_mem_tail hg₂)) hrange
+        exact this
+      · dsimp at *
+        by_cases hin : i = n
+        · subst hin
+          simp [normalizeSingle2]
+          split_ifs <;> simp
+        · have := w.toWord.fstIdx_ne
+      · simp at hg₂
+        cases (hg₂ g₂).2
+        refine w.normalized _ _ ?_ hrange
+        simp
+
+
+      ⟩
+
+
 
 noncomputable def rcons (hφ : ∀ i, Function.Injective (φ i))
     {i : ι} (p : Pair φ n i) : Word φ n :=
