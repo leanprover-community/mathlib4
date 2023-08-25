@@ -186,8 +186,8 @@ scoped syntax (name := bigsum) "∑ " extBinders ("with " term)? ", " term:67 : 
   where `x` ranges over the finite domain of `f`.
 - `∏ x ∈ s, f x` is notation for `Finset.prod s f`. It is the product of `f x`,
   where `x` ranges over the finite set `s` (either a `Finset` or a `Set` with a `Fintype` instance).
-- `∏ x ∈ s with p x, f x` is notation for `Finset.sum (Finset.filter p s) f`.
-- `∏ (x ∈ s) (y ∈ t), f x y` is notation for `Finset.sum (s ×ˢ t) (fun ⟨x, y⟩ ↦ f x y)`.
+- `∏ x ∈ s with p x, f x` is notation for `Finset.prod (Finset.filter p s) f`.
+- `∏ (x ∈ s) (y ∈ t), f x y` is notation for `Finset.prod (s ×ˢ t) (fun ⟨x, y⟩ ↦ f x y)`.
 
 Notation: `"∏" extBinders* ("with" term)? "," term` -/
 scoped syntax (name := bigprod) "∏ " extBinders ("with " term)? ", " term:67 : term
