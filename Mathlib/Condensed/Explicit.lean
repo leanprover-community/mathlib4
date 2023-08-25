@@ -15,7 +15,7 @@ universe v v₁ u u₁ w
 - The code in section `OpenEmbedding` should be added to `Mathlib.Topology.Category.Stonean.Limits`
   in a separate PR and does not depend on any of the previous stuff in this file
   (DONE, awaiting review, see #6771 and #6774).
-- The section `StoneanPullback` can be PR-ed.
+- The section `StoneanPullback` can be PR-ed (DONE, see #6779 (awaiting review)).
 - The section `StoneanProjective` can be removed once #5808 is merged. (DONE)
 - The section `StoneanPrecoherent` can be removed once #6725 is merged. (DONE)
 - The sections `CompHausExplicitSheaves` and `ProfiniteExplicitSheaves` are identical except for
@@ -432,21 +432,9 @@ end Stonean
 
 end OpenEmbedding
 
-section StoneanPullback -- TODO: PR
+section StoneanPullback -- This section is PR #6779
 
 open CategoryTheory Limits
-
-lemma clopen_extremallyDisconnected {X : Stonean} {U : Set X} (hU : IsClopen U) :
-    ExtremallyDisconnected U := by
-  constructor
-  intro V hV
-  have hV' : IsOpen (Subtype.val '' V) := hU.1.openEmbedding_subtype_val.isOpenMap V hV
-  have := ExtremallyDisconnected.open_closure _ hV'
-  rw [hU.2.closedEmbedding_subtype_val.closure_image_eq V] at this
-  suffices hhU : closure V = Subtype.val ⁻¹' (Subtype.val '' (closure V))
-  · rw [hhU]
-    exact isOpen_induced this
-  exact ((closure V).preimage_image_eq Subtype.coe_injective).symm
 
 def OpenEmbeddingConePt {X Y Z : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : OpenEmbedding i) :
     Stonean where
@@ -636,18 +624,6 @@ lemma HasPullbackOpenEmbedding {X Y Z : Stonean.{u}} (f : X ⟶ Z) {i : Y ⟶ Z}
   use OpenEmbeddingCone f hi
   exact Stonean.OpenEmbeddingLimitCone f hi
 
-instance : HasPullbackOfIsIsodesc Stonean := by
-  constructor
-  intro X Z α f Y i _ _ _ a
-  apply HasPullbackOpenEmbedding
-  have h₁ : OpenEmbedding (Sigma.desc i) :=
-    (Stonean.homeoOfIso (asIso (Sigma.desc i))).openEmbedding
-  have h₂ : OpenEmbedding (Sigma.ι Y a) := Stonean.openEmbedding_ι _ _
-  have := OpenEmbedding.comp h₁ h₂
-  erw [← CategoryTheory.coe_comp (Sigma.ι Y a) (Sigma.desc i)] at this
-  simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app] at this
-  assumption
-
 section Isos
 
 variable {X Y Z : Stonean.{u}} (f : X ⟶ Z) {i : Y ⟶ Z}  (hi : OpenEmbedding i) [HasPullback f i]
@@ -686,6 +662,40 @@ end Isos
 end Stonean
 
 end StoneanPullback
+
+section -- TODO: PR
+
+open CategoryTheory Limits
+
+namespace Stonean
+
+lemma clopen_extremallyDisconnected {X : Stonean} {U : Set X} (hU : IsClopen U) :
+    ExtremallyDisconnected U := by
+  constructor
+  intro V hV
+  have hV' : IsOpen (Subtype.val '' V) := hU.1.openEmbedding_subtype_val.isOpenMap V hV
+  have := ExtremallyDisconnected.open_closure _ hV'
+  rw [hU.2.closedEmbedding_subtype_val.closure_image_eq V] at this
+  suffices hhU : closure V = Subtype.val ⁻¹' (Subtype.val '' (closure V))
+  · rw [hhU]
+    exact isOpen_induced this
+  exact ((closure V).preimage_image_eq Subtype.coe_injective).symm
+
+instance : HasPullbackOfIsIsodesc Stonean := by
+  constructor
+  intro X Z α f Y i _ _ _ a
+  apply HasPullbackOpenEmbedding
+  have h₁ : OpenEmbedding (Sigma.desc i) :=
+    (Stonean.homeoOfIso (asIso (Sigma.desc i))).openEmbedding
+  have h₂ : OpenEmbedding (Sigma.ι Y a) := Stonean.openEmbedding_ι _ _
+  have := OpenEmbedding.comp h₁ h₂
+  erw [← CategoryTheory.coe_comp (Sigma.ι Y a) (Sigma.desc i)] at this
+  simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app] at this
+  assumption
+
+end Stonean
+
+end
 
 section CompHausExplicitSheaves
 
