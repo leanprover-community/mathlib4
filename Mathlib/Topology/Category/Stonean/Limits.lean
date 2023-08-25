@@ -227,7 +227,7 @@ lemma pullback.lift_snd {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : Op
   ext z
   have := congr_fun (FunLike.ext'_iff.mp w.symm) z
   have h : i (b z) = f (a z) := this
-  suffices : b z = (Homeomorph.ofEmbedding i hi.toEmbedding).symm (⟨f (a z), by rw [← h] ; simp⟩)
+  suffices : b z = (Homeomorph.ofEmbedding i hi.toEmbedding).symm (⟨f (a z), by rw [← h]; simp⟩)
   · exact this.symm
   apply_fun (Homeomorph.ofEmbedding i hi.toEmbedding)
   simpa only [Homeomorph.ofEmbedding, Homeomorph.homeomorph_mk_coe, Equiv.ofInjective_apply,
