@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 
-import Mathlib.Data.List.PartialOrder
+import Mathlib.Data.List.PartialOrderType
 import Mathlib.Order.JordanHolder
 import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.RingTheory.SimpleModule
@@ -396,3 +396,26 @@ lemma exists_compositionSeries_with_smaller_length_of_lt_top
   apply Nat.sub_lt_right_of_lt_add (H := ineq2) (h := ineq1)
 
 end CompositionSeries
+
+section defs
+
+variable (R M)
+
+/-- the length of a module `M` is infinite if `M` does not have a composition series of the form
+  `0 ⋖ M₁ ⋖ ... ⋖ Mₙ ⋖ M`, and is the length of its composition series. By Jordan-Hölder theorem,
+  this definition is well defined for all tis composition series has the same length. -/
+
+noncomputable def moduleLength : WithTop ℕ :=
+  if h : ∃ (s : CompositionSeries (Submodule R M)) (s0 : s.head = ⊥) (slast : s.last = ⊤)
+  then h.choose.length
+  else ⊤
+
+variable {R M}
+
+lemma moduleLength_eq_compositionSeries_length
+    (s : CompositionSeries (Submodule R M)) (s0 : s.head = ⊥) (slast : s.last = ⊤) :
+    moduleLength R M = s.length := by
+
+
+
+end defs
