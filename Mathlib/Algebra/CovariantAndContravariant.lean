@@ -98,6 +98,14 @@ for all `m ∈ M` and all elements `n₁, n₂ ∈ N`, if the relation `r` holds
 obtained from `(n₁, n₂)` by acting upon it by `m`.
 
 If `m : M` and `h : r n₁ n₂`, then `CovariantClass.elim m h : r (μ m n₁) (μ m n₂)`.
+
+*Note:*  if using this class for an operation like addition or multiplication, please,
+use it in the form `CovariantClass M M HMul.hMul LE.le` and likewise with `HAdd.hAdd, LT.lt...`.
+In particular, the `H`eterogenous is important!
+This avoids eta-expansion of the deprecated spelling `(· * ·)`.
+
+This is only relevant until [Issue #2267](https://github.com/leanprover/lean4/pull/2267) gets
+merged.
 -/
 class CovariantClass : Prop where
   /-- For all `m ∈ M` and all elements `n₁, n₂ ∈ N`, if the relation `r` holds for the pair
@@ -116,6 +124,14 @@ pair `(μ m n₁, μ m n₂)` obtained from `(n₁, n₂)` by acting upon it by 
 `r` also holds for the pair `(n₁, n₂)`.
 
 If `m : M` and `h : r (μ m n₁) (μ m n₂)`, then `ContravariantClass.elim m h : r n₁ n₂`.
+
+*Note:*  if using this class for an operation like addition or multiplication, please,
+use it in the form `ContravariantClass M M HMul.hMul LE.le` and likewise with `HAdd.hAdd, LT.lt...`.
+In particular, the `H`eterogenous is important!
+This avoids eta-expansion of the deprecated spelling `(· * ·)`.
+
+This is only relevant until [Issue #2267](https://github.com/leanprover/lean4/pull/2267) gets
+merged.
 -/
 class ContravariantClass : Prop where
   /-- For all `m ∈ M` and all elements `n₁, n₂ ∈ N`, if the relation `r` holds for the
