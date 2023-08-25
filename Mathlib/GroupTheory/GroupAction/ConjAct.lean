@@ -384,18 +384,17 @@ variable [Monoid M]
 
 /-- The stabilizer of `Mˣ` acting on itself by conjugation at `x : Mˣ` is exactly the
 units of the centralizer of `x : M`. -/
-@[simps!]
+@[simps! apply_coe_val symm_apply_val_coe]
 def unitsCentralizerEquiv (x : Mˣ) :
     (Submonoid.centralizer ({↑x} : Set M))ˣ ≃* MulAction.stabilizer (ConjAct Mˣ) x :=
   MulEquiv.symm
   { toFun := MonoidHom.toHomUnits <|
-      ⟨⟨fun u ↦
-        ⟨↑(ConjAct.ofConjAct u.1 : Mˣ), by
+      { toFun := fun u ↦ ⟨↑(ConjAct.ofConjAct u.1 : Mˣ), by
           rintro x ⟨rfl⟩
           have : (u : ConjAct Mˣ) • x = x := u.2
           rwa [ConjAct.smul_def, mul_inv_eq_iff_eq_mul, Units.ext_iff, eq_comm] at this⟩,
-        rfl⟩,
-      fun a b ↦ rfl⟩
+        map_one' := rfl,
+        map_mul' := fun a b ↦ rfl }
     invFun := fun u ↦
       ⟨ConjAct.toConjAct (Units.map (Submonoid.centralizer ({↑x} : Set M)).subtype u), by
       change _ • _ = _

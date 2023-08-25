@@ -2077,7 +2077,7 @@ theorem center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
 #align add_subgroup.center_to_add_submonoid AddSubgroup.center_toAddSubmonoid
 
 /-- For a group with zero, the center of the units is the same as the units of the center. -/
-@[simps!]
+@[simps! apply_val_coe symm_apply_coe_val]
 def centerUnitsEquivUnitsCenter (G₀ : Type*) [GroupWithZero G₀] :
     Subgroup.center (G₀ˣ) ≃* (Submonoid.center G₀)ˣ where
   toFun := MonoidHom.toHomUnits <|
