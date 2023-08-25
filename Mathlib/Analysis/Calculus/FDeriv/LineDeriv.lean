@@ -220,174 +220,47 @@ theorem LineDifferentiableAt.lineDifferentiableWithinAt (h : LineDifferentiableA
 theorem lineDerivWithin_of_mem_nhds (h : s ∈ 𝓝 x) :
     lineDerivWithin 𝕜 f s x v = lineDeriv 𝕜 f x v := by
   apply derivWithin_of_mem_nhds
-  simp [h]
-
-#exit
-
+  apply (Continuous.continuousAt _).preimage_mem_nhds (by simpa using h)
+  continuity
 
 @[simp]
-theorem lineDerivWithin_univ : lineDerivWithin 𝕜 f univ = lineDeriv 𝕜 f :=
-  funext fun _ => lineDerivWithin_of_mem_nhds univ_mem
+theorem lineDerivWithin_univ : lineDerivWithin 𝕜 f univ x v = lineDeriv 𝕜 f x v :=
+  lineDerivWithin_of_mem_nhds univ_mem
 
-theorem lineDerivWithin_of_open (hs : IsOpen s) (hx : x ∈ s) : lineDerivWithin 𝕜 f s x = lineDeriv 𝕜 f x :=
+theorem lineDerivWithin_of_open (hs : IsOpen s) (hx : x ∈ s) :
+    lineDerivWithin 𝕜 f s x v = lineDeriv 𝕜 f x v :=
   lineDerivWithin_of_mem_nhds (hs.mem_nhds hx)
 
-theorem lineDerivWithin_eq_lineDeriv (hs : UniqueDiffWithinAt 𝕜 s x) (h : LineDifferentiableAt 𝕜 f x v) :
-    lineDerivWithin 𝕜 f s x = lineDeriv 𝕜 f x := by
-  rw [← lineDerivWithin_univ]
-  exact lineDerivWithin_subset (subset_univ _) hs h.differentiableWithinAt
-
-#exit
-
-
-theorem Asymptotics.IsBigO.hasLineDerivAt {x₀ : E} {n : ℕ} (h : f =O[𝓝 x₀] fun x => ‖x - x₀‖ ^ n)
-    (hn : 1 < n) : HasLineDerivAt 𝕜 f (0 : E →L[𝕜] F) x₀ := by
-  rw [← nhdsWithin_univ] at h
-  exact (h.hasLineDerivWithinAt (mem_univ _) hn).hasLineDerivAt_of_univ
-set_option linter.uppercaseLean3 false in
-#align asymptotics.is_O.has_lineDeriv_at Asymptotics.IsBigO.hasLineDerivAt
-
-nonrec theorem HasLineDerivWithinAt.isBigO {f : E → F} {s : Set E} {x₀ : E} {f' : E →L[𝕜] F}
-    (h : HasLineDerivWithinAt f f' s x₀) : (fun x => f x - f x₀) =O[𝓝[s] x₀] fun x => x - x₀ := by
-  simpa only [sub_add_cancel] using h.isBigO.add (isBigO_sub f' (𝓝[s] x₀) x₀)
-set_option linter.uppercaseLean3 false in
-#align has_lineDeriv_within_at.is_O HasLineDerivWithinAt.isBigO
-
-nonrec theorem HasLineDerivAt.isBigO {f : E → F} {x₀ : E} {f' : E →L[𝕜] F} (h : HasLineDerivAt 𝕜 f f' x v₀) :
-    (fun x => f x - f x₀) =O[𝓝 x₀] fun x => x - x₀ := by
-  simpa only [sub_add_cancel] using h.isBigO.add (isBigO_sub f' (𝓝 x₀) x₀)
-set_option linter.uppercaseLean3 false in
-#align has_lineDeriv_at.is_O HasLineDerivAt.isBigO
-
-end LineDerivProperties
-
-section Continuous
-
-/-! ### Deducing continuity from differentiability -/
-
-
-theorem HasLineDerivAtFilter.tendsto_nhds (hL : L ≤ 𝓝 x) (h : HasLineDerivAtFilter f f' x L) :
-    Tendsto f L (𝓝 (f x)) := by
-  have : Tendsto (fun x' => f x' - f x) L (𝓝 0) := by
-    refine' h.isBigO_sub.trans_tendsto (Tendsto.mono_left _ hL)
-    rw [← sub_self x]
-    exact tendsto_id.sub tendsto_const_nhds
-  have := this.add (@tendsto_const_nhds _ _ _ (f x) _)
-  rw [zero_add (f x)] at this
-  exact this.congr (by simp only [sub_add_cancel, eq_self_iff_true, forall_const])
-#align has_lineDeriv_at_filter.tendsto_nhds HasLineDerivAtFilter.tendsto_nhds
-
-theorem HasLineDerivWithinAt.continuousWithinAt (h : HasLineDerivWithinAt f f' s x) :
-    ContinuousWithinAt f s x :=
-  HasLineDerivAtFilter.tendsto_nhds inf_le_left h
-#align has_lineDeriv_within_at.continuous_within_at HasLineDerivWithinAt.continuousWithinAt
-
-theorem HasLineDerivAt.continuousAt (h : HasLineDerivAt 𝕜 f f' x v) : ContinuousAt f x :=
-  HasLineDerivAtFilter.tendsto_nhds le_rfl h
-#align has_lineDeriv_at.continuous_at HasLineDerivAt.continuousAt
-
-theorem LineDifferentiableWithinAt.continuousWithinAt (h : LineDifferentiableWithinAt 𝕜 f s x) :
-    ContinuousWithinAt f s x :=
-  let ⟨_, hf'⟩ := h
-  hf'.continuousWithinAt
-#align differentiable_within_at.continuous_within_at LineDifferentiableWithinAt.continuousWithinAt
-
-theorem LineDifferentiableAt.continuousAt (h : LineDifferentiableAt 𝕜 f x v) : ContinuousAt f x :=
-  let ⟨_, hf'⟩ := h
-  hf'.continuousAt
-#align differentiable_at.continuous_at LineDifferentiableAt.continuousAt
-
-theorem LineDifferentiableOn.continuousOn (h : LineDifferentiableOn 𝕜 f s) : ContinuousOn f s := fun x hx =>
-  (h x hx).continuousWithinAt
-#align differentiable_on.continuous_on LineDifferentiableOn.continuousOn
-
-theorem LineDifferentiable.continuous (h : LineDifferentiable 𝕜 f) : Continuous f :=
-  continuous_iff_continuousAt.2 fun x => (h x).continuousAt
-#align differentiable.continuous LineDifferentiable.continuous
-
-protected theorem HasStrictLineDerivAt.continuousAt (hf : HasStrictLineDerivAt f f' x) :
-    ContinuousAt f x :=
-  hf.hasLineDerivAt.continuousAt
-#align has_strict_lineDeriv_at.continuous_at HasStrictLineDerivAt.continuousAt
-
-theorem HasStrictLineDerivAt.isBigO_sub_rev {f' : E ≃L[𝕜] F}
-    (hf : HasStrictLineDerivAt f (f' : E →L[𝕜] F) x) :
-    (fun p : E × E => p.1 - p.2) =O[𝓝 (x, x)] fun p : E × E => f p.1 - f p.2 :=
-  ((f'.isBigO_comp_rev _ _).trans (hf.trans_isBigO (f'.isBigO_comp_rev _ _)).right_isBigO_add).congr
-    (fun _ => rfl) fun _ => sub_add_cancel _ _
-set_option linter.uppercaseLean3 false in
-#align has_strict_lineDeriv_at.is_O_sub_rev HasStrictLineDerivAt.isBigO_sub_rev
-
-theorem HasLineDerivAtFilter.isBigO_sub_rev (hf : HasLineDerivAtFilter f f' x L) {C}
-    (hf' : AntilipschitzWith C f') : (fun x' => x' - x) =O[L] fun x' => f x' - f x :=
-  have : (fun x' => x' - x) =O[L] fun x' => f' (x' - x) :=
-    isBigO_iff.2 ⟨C, eventually_of_forall fun _ => ZeroHomClass.bound_of_antilipschitz f' hf' _⟩
-  (this.trans (hf.trans_isBigO this).right_isBigO_add).congr (fun _ => rfl) fun _ =>
-    sub_add_cancel _ _
-set_option linter.uppercaseLean3 false in
-#align has_lineDeriv_at_filter.is_O_sub_rev HasLineDerivAtFilter.isBigO_sub_rev
-
-end Continuous
 
 section congr
 
 /-! ### congr properties of the derivative -/
-theorem hasLineDerivWithinAt_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
-    HasLineDerivWithinAt f f' s x ↔ HasLineDerivWithinAt f f' t x :=
-  calc
-    HasLineDerivWithinAt f f' s x ↔ HasLineDerivWithinAt f f' (s \ {y}) x :=
-      (hasLineDerivWithinAt_diff_singleton _).symm
-    _ ↔ HasLineDerivWithinAt f f' (t \ {y}) x := by
-      suffices 𝓝[s \ {y}] x = 𝓝[t \ {y}] x by simp only [HasLineDerivWithinAt, this]
-      simpa only [set_eventuallyEq_iff_inf_principal, ← nhdsWithin_inter', diff_eq,
-        inter_comm] using h
-    _ ↔ HasLineDerivWithinAt f f' t x := hasLineDerivWithinAt_diff_singleton _
-#align has_lineDeriv_within_at_congr_set' hasLineDerivWithinAt_congr_set'
 
 theorem hasLineDerivWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
-    HasLineDerivWithinAt f f' s x ↔ HasLineDerivWithinAt f f' t x :=
-  hasLineDerivWithinAt_congr_set' x <| h.filter_mono inf_le_left
-#align has_lineDeriv_within_at_congr_set hasLineDerivWithinAt_congr_set
+    HasLineDerivWithinAt 𝕜 f f' s x v ↔ HasLineDerivWithinAt 𝕜 f f' t x v := by
+  apply hasDerivWithinAt_congr_set
+  let F := fun (t : 𝕜) ↦ x + t • v
+  have B : ContinuousAt F 0 := by apply Continuous.continuousAt; continuity
+  have : s =ᶠ[𝓝 (F 0)] t := by convert h; simp
+  exact B.preimage_mem_nhds this
 
-theorem differentiableWithinAt_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
-    LineDifferentiableWithinAt 𝕜 f s x ↔ LineDifferentiableWithinAt 𝕜 f t x :=
-  exists_congr fun _ => hasLineDerivWithinAt_congr_set' _ h
-#align differentiable_within_at_congr_set' differentiableWithinAt_congr_set'
+theorem lineDifferentiableWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
+    LineDifferentiableWithinAt 𝕜 f s x v ↔ LineDifferentiableWithinAt 𝕜 f t x v :=
+  ⟨fun h' ↦ ((hasLineDerivWithinAt_congr_set h).1
+    h'.hasLineDerivWithinAt).lineDifferentiableWithinAt,
+  fun h' ↦ ((hasLineDerivWithinAt_congr_set h.symm).1
+    h'.hasLineDerivWithinAt).lineDifferentiableWithinAt⟩
 
-theorem differentiableWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
-    LineDifferentiableWithinAt 𝕜 f s x ↔ LineDifferentiableWithinAt 𝕜 f t x :=
-  exists_congr fun _ => hasLineDerivWithinAt_congr_set h
-#align differentiable_within_at_congr_set differentiableWithinAt_congr_set
+theorem lineDerivWithin_congr_set (h : s =ᶠ[𝓝 x] t) :
+    lineDerivWithin 𝕜 f s x v = lineDerivWithin 𝕜 f t x v := by
+  apply derivWithin_congr_set
+  let F := fun (t : 𝕜) ↦ x + t • v
+  have B : ContinuousAt F 0 := by apply Continuous.continuousAt; continuity
+  have : s =ᶠ[𝓝 (F 0)] t := by convert h; simp
+  exact B.preimage_mem_nhds this
 
-theorem lineDerivWithin_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
-    lineDerivWithin 𝕜 f s x = lineDerivWithin 𝕜 f t x := by
-  simp only [lineDerivWithin, hasLineDerivWithinAt_congr_set' y h]
-#align lineDeriv_within_congr_set' lineDerivWithin_congr_set'
 
-theorem lineDerivWithin_congr_set (h : s =ᶠ[𝓝 x] t) : lineDerivWithin 𝕜 f s x = lineDerivWithin 𝕜 f t x :=
-  lineDerivWithin_congr_set' x <| h.filter_mono inf_le_left
-#align lineDeriv_within_congr_set lineDerivWithin_congr_set
-
-theorem lineDerivWithin_eventually_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
-    lineDerivWithin 𝕜 f s =ᶠ[𝓝 x] lineDerivWithin 𝕜 f t :=
-  (eventually_nhds_nhdsWithin.2 h).mono fun _ => lineDerivWithin_congr_set' y
-#align lineDeriv_within_eventually_congr_set' lineDerivWithin_eventually_congr_set'
-
-theorem lineDerivWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) :
-    lineDerivWithin 𝕜 f s =ᶠ[𝓝 x] lineDerivWithin 𝕜 f t :=
-  lineDerivWithin_eventually_congr_set' x <| h.filter_mono inf_le_left
-#align lineDeriv_within_eventually_congr_set lineDerivWithin_eventually_congr_set
-
-theorem Filter.EventuallyEq.hasStrictLineDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) (h' : ∀ y, f₀' y = f₁' y) :
-    HasStrictLineDerivAt f₀ f₀' x ↔ HasStrictLineDerivAt f₁ f₁' x := by
-  refine' isLittleO_congr ((h.prod_mk_nhds h).mono _) (eventually_of_forall fun _ => _root_.rfl)
-  rintro p ⟨hp₁, hp₂⟩
-  simp only [*]
-#align filter.eventually_eq.has_strict_lineDeriv_at_iff Filter.EventuallyEq.hasStrictLineDerivAt_iff
-
-theorem HasStrictLineDerivAt.congr_lineDeriv (h : HasStrictLineDerivAt f f' x) (h' : f' = g') :
-    HasStrictLineDerivAt f g' x :=
-  h' ▸ h
+#exit
 
 theorem HasLineDerivAt.congr_lineDeriv (h : HasLineDerivAt 𝕜 f f' x v) (h' : f' = g') : HasLineDerivAt 𝕜 f g' x :=
   h' ▸ h
