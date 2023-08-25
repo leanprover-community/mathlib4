@@ -11,7 +11,7 @@ universe v v₁ u u₁ w
 - The sections `isSheafForPullBackSieve` and `ProdCoprod` are independent and can be PR-ed
   separately (DONE, see #6750 (awaiting review) and #6758 (merged)).
 - The section `ExtensiveRegular` depends on section `isSheafForPullBackSieve` but does not
-  mention `Stonean`, `Profinite` or `CompHaus` explicitly. TODO: PR (depending on #6758)
+  mention `Stonean`, `Profinite` or `CompHaus` explicitly. TODO: PR (depending on #6750)
 - The code in section `OpenEmbedding` should be added to `Mathlib.Topology.Category.Stonean.Limits`
   in a separate PR and does not depend on any of the previous stuff in this file
   (DONE, see #6771 (merged) and #6774 (awaiting review)).
