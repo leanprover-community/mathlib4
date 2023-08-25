@@ -57,7 +57,7 @@ noncomputable section
 
 open scoped Topology BigOperators MeasureTheory ENNReal NNReal
 
-variable {α β γ δ : Type _} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
+variable {α β γ δ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
   [MeasurableSpace δ]
 
 namespace ProbabilityTheory
@@ -126,7 +126,7 @@ theorem measure_mem_eq (h : IdentDistrib f g μ ν) {s : Set γ} (hs : Measurabl
     Measure.map_apply_of_aemeasurable h.aemeasurable_snd hs, h.map_eq]
 #align probability_theory.ident_distrib.measure_mem_eq ProbabilityTheory.IdentDistrib.measure_mem_eq
 
-alias measure_mem_eq ← measure_preimage_eq
+alias measure_preimage_eq := measure_mem_eq
 #align probability_theory.ident_distrib.measure_preimage_eq ProbabilityTheory.IdentDistrib.measure_preimage_eq
 
 theorem ae_snd (h : IdentDistrib f g μ ν) {p : γ → Prop} (pmeas : MeasurableSet {x | p x})
@@ -305,12 +305,12 @@ section UniformIntegrable
 
 open TopologicalSpace
 
-variable {E : Type _} [MeasurableSpace E] [NormedAddCommGroup E] [BorelSpace E]
+variable {E : Type*} [MeasurableSpace E] [NormedAddCommGroup E] [BorelSpace E]
   [SecondCountableTopology E] {μ : Measure α} [IsFiniteMeasure μ]
 
 /-- This lemma is superseded by `Memℒp.uniformIntegrable_of_identDistrib` which only requires
 `AEStronglyMeasurable`. -/
-theorem Memℒp.uniformIntegrable_of_identDistrib_aux {ι : Type _} {f : ι → α → E} {j : ι} {p : ℝ≥0∞}
+theorem Memℒp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → α → E} {j : ι} {p : ℝ≥0∞}
     (hp : 1 ≤ p) (hp' : p ≠ ∞) (hℒp : Memℒp (f j) p μ) (hfmeas : ∀ i, StronglyMeasurable (f i))
     (hf : ∀ i, IdentDistrib (f i) (f j) μ μ) : UniformIntegrable f p μ := by
   refine' uniformIntegrable_of' hp hp' hfmeas fun ε hε => _
@@ -332,7 +332,7 @@ theorem Memℒp.uniformIntegrable_of_identDistrib_aux {ι : Type _} {f : ι → 
 #align probability_theory.mem_ℒp.uniform_integrable_of_ident_distrib_aux ProbabilityTheory.Memℒp.uniformIntegrable_of_identDistrib_aux
 
 /-- A sequence of identically distributed Lᵖ functions is p-uniformly integrable. -/
-theorem Memℒp.uniformIntegrable_of_identDistrib {ι : Type _} {f : ι → α → E} {j : ι} {p : ℝ≥0∞}
+theorem Memℒp.uniformIntegrable_of_identDistrib {ι : Type*} {f : ι → α → E} {j : ι} {p : ℝ≥0∞}
     (hp : 1 ≤ p) (hp' : p ≠ ∞) (hℒp : Memℒp (f j) p μ) (hf : ∀ i, IdentDistrib (f i) (f j) μ μ) :
     UniformIntegrable f p μ := by
   have hfmeas : ∀ i, AEStronglyMeasurable (f i) μ := fun i =>

@@ -21,7 +21,7 @@ The results are repeated for `AddUnits` and `VAdd` where relevant.
 -/
 
 
-variable {G H M N : Type _} {α : Type _}
+variable {G H M N : Type*} {α : Type*}
 
 namespace Units
 
@@ -62,7 +62,7 @@ instance [Monoid M] [Zero α] [SMulZeroClass M α] :
   smul := (· • ·)
   smul_zero m := smul_zero (m : M)
 
-instance [Monoid M] [AddZeroClass α] [DistribSMul M α] :
+instance instDistribSMulUnits [Monoid M] [AddZeroClass α] [DistribSMul M α] :
     DistribSMul Mˣ α where smul_add m := smul_add (m : M)
 
 instance [Monoid M] [AddMonoid α] [DistribMulAction M α] : DistribMulAction Mˣ α :=

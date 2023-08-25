@@ -92,7 +92,7 @@ theorem spanEval_ne_top : spanEval k ≠ ⊤ := by
   · exact zero_ne_one hv
   intro j hj
   rw [smul_eq_mul, AlgHom.map_mul, toSplittingField_evalXSelf (s := v.support) hj,
-    MulZeroClass.mul_zero]
+    mul_zero]
 #align algebraic_closure.span_eval_ne_top AlgebraicClosure.spanEval_ne_top
 
 /-- A random maximal ideal that contains `spanEval k` -/
@@ -358,17 +358,17 @@ instance instIsAlgClosed : IsAlgClosed (AlgebraicClosure k) :=
   IsAlgClosed.of_exists_root _ fun _ => exists_root k
 #align algebraic_closure.is_alg_closed AlgebraicClosure.instIsAlgClosed
 
-instance instAlgebra {R : Type _} [CommSemiring R] [alg : Algebra R k] :
+instance instAlgebra {R : Type*} [CommSemiring R] [alg : Algebra R k] :
     Algebra R (AlgebraicClosure k) :=
   ((ofStep k 0).comp (@algebraMap _ _ _ _ alg)).toAlgebra
 
-theorem algebraMap_def {R : Type _} [CommSemiring R] [alg : Algebra R k] :
+theorem algebraMap_def {R : Type*} [CommSemiring R] [alg : Algebra R k] :
     algebraMap R (AlgebraicClosure k) = (ofStep k 0 : k →+* _).comp (@algebraMap _ _ _ _ alg) :=
   rfl
 #align algebraic_closure.algebra_map_def AlgebraicClosure.algebraMap_def
 
 
-instance {R S : Type _} [CommSemiring R] [CommSemiring S] [Algebra R S] [Algebra S k] [Algebra R k]
+instance {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [Algebra S k] [Algebra R k]
     [IsScalarTower R S k] : IsScalarTower R S (AlgebraicClosure k) := by
   apply IsScalarTower.of_algebraMap_eq _
   intro x

@@ -81,7 +81,7 @@ example (P₁ P₂ P₃ : ℕ → Prop) (H : ∀ n, [P₁ n, P₂ n, P₃ n].TFA
   forall_tfae [_, _, _] H
 ```
 -/
-theorem forall_tfae {α : Type _} (l : List (α → Prop)) (H : ∀ a : α, (l.map (fun p ↦ p a)).TFAE) :
+theorem forall_tfae {α : Type*} (l : List (α → Prop)) (H : ∀ a : α, (l.map (fun p ↦ p a)).TFAE) :
     (l.map (fun p ↦ ∀ a, p a)).TFAE := by
   simp_rw [TFAE, List.forall_mem_map_iff]
   intros p₁ hp₁ p₂ hp₂
@@ -100,7 +100,7 @@ example (P₁ P₂ P₃ : ℕ → Prop) (H : ∀ n, [P₁ n, P₂ n, P₃ n].TFA
   exists_tfae [_, _, _] H
 ```
 -/
-theorem exists_tfae {α : Type _} (l : List (α → Prop)) (H : ∀ a : α, (l.map (fun p ↦ p a)).TFAE) :
+theorem exists_tfae {α : Type*} (l : List (α → Prop)) (H : ∀ a : α, (l.map (fun p ↦ p a)).TFAE) :
     (l.map (fun p ↦ ∃ a, p a)).TFAE := by
   simp_rw [TFAE, List.forall_mem_map_iff]
   intros p₁ hp₁ p₂ hp₂

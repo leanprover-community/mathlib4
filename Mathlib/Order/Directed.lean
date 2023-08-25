@@ -57,7 +57,7 @@ theorem directedOn_iff_directed {s} : @DirectedOn α r s ↔ Directed r (Subtype
   simp [Directed, DirectedOn]; refine' ball_congr fun x _ => by simp [And.comm, and_assoc]
 #align directed_on_iff_directed directedOn_iff_directed
 
-alias directedOn_iff_directed ↔ DirectedOn.directed_val _
+alias ⟨DirectedOn.directed_val, _⟩ := directedOn_iff_directed
 #align directed_on.directed_coe DirectedOn.directed_val
 
 theorem directedOn_range {f : ι → α} : Directed r f ↔ DirectedOn r (Set.range f) := by
@@ -65,7 +65,7 @@ theorem directedOn_range {f : ι → α} : Directed r f ↔ DirectedOn r (Set.ra
 #align directed_on_range directedOn_range
 
 -- porting note: This alias was misplaced in `order/compactly_generated.lean` in mathlib3
-alias directedOn_range ↔ Directed.directedOn_range _
+alias ⟨Directed.directedOn_range, _⟩ := directedOn_range
 #align directed.directed_on_range Directed.directedOn_range
 
 -- porting note: `attribute [protected]` doesn't work
@@ -169,7 +169,7 @@ theorem IsTotal.directed [IsTotal α r] (f : ι → α) : Directed r f := fun i 
 
 /-- `IsDirected α r` states that for any elements `a`, `b` there exists an element `c` such that
 `r a c` and `r b c`. -/
-class IsDirected (α : Type _) (r : α → α → Prop) : Prop where
+class IsDirected (α : Type*) (r : α → α → Prop) : Prop where
   /-- For every pair of elements `a` and `b` there is a `c` such that `r a c` and `r b c` -/
   directed (a b : α) : ∃ c, r a c ∧ r b c
 #align is_directed IsDirected
