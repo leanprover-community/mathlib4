@@ -103,7 +103,7 @@ theorem map_id : map (MonoidHom.id M) = MonoidHom.id Mˣ := by ext; rfl
 /-- Coercion `Mˣ → M` as a monoid homomorphism. -/
 @[to_additive "Coercion `AddUnits M → M` as an AddMonoid homomorphism."]
 def coeHom : Mˣ →* M :=
-  ⟨⟨Units.val, val_one⟩, val_mul⟩
+  ⟨⟨⟩, Units.val, val_one, val_mul⟩
 #align units.coe_hom Units.coeHom
 #align add_units.coe_hom AddUnits.coeHom
 
