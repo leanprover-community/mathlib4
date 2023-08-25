@@ -53,7 +53,7 @@ variable (R : Type u) (A : Type v) (B : Type w) (C : Type w₁)
 /-- A morphism respecting addition, multiplication, and scalar multiplication. When these arise from
 algebra structures, this is the same as a not-necessarily-unital morphism of algebras. -/
 structure NonUnitalAlgHom [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
-  [NonUnitalNonAssocSemiring B] [DistribMulAction R B] extends A →+[R] B, A →ₙ* B
+  [NonUnitalNonAssocSemiring B] [DistribMulAction R B] extends FunLikeFlatHack._, A →+[R] B, A →ₙ* B
 #align non_unital_alg_hom NonUnitalAlgHom
 
 @[inherit_doc NonUnitalAlgHom]
@@ -68,7 +68,7 @@ attribute [nolint docBlame] NonUnitalAlgHom.toMulHom
 from `A` to `B`.  -/
 class NonUnitalAlgHomClass (F : Type*) (R : outParam (Type*)) (A : outParam (Type*))
   (B : outParam (Type*)) [Monoid R] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
-  [DistribMulAction R A] [DistribMulAction R B] extends DistribMulActionHomClass F R A B,
+  [DistribMulAction R A] [DistribMulAction R B] extends FunLikeFlatHack._, DistribMulActionHomClass F R A B,
   MulHomClass F A B
 #align non_unital_alg_hom_class NonUnitalAlgHomClass
 
