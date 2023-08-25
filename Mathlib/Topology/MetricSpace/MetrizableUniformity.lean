@@ -241,7 +241,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
   -- Porting note: without the next line, `uniformity_basis_dist_pow` ends up introducing some
   -- `Subtype.val` applications instead of `NNReal.toReal`.
   rw [mem_Ioo, ← NNReal.coe_lt_coe, ← NNReal.coe_lt_coe] at hr
-  refine' ⟨I, uniformSpace_eq <| (uniformity_basis_dist_pow hr.1 hr.2).ext hB.toHasBasis _ _⟩
+  refine' ⟨I, UniformSpace.ext <| (uniformity_basis_dist_pow hr.1 hr.2).ext hB.toHasBasis _ _⟩
   · refine' fun n hn => ⟨n, hn, fun x hx => (hdist_le _ _).trans_lt _⟩
     rwa [← NNReal.coe_pow, NNReal.coe_lt_coe, ← not_le, hle_d, Classical.not_not, Prod.mk.eta]
   · refine' fun n _ => ⟨n + 1, trivial, fun x hx => _⟩

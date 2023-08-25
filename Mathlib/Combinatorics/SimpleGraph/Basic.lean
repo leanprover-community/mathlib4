@@ -508,10 +508,10 @@ theorem edgeSet_injective : Injective (edgeSet : SimpleGraph V → Set (Sym2 V))
   (edgeSetEmbedding V).injective
 #align simple_graph.edge_set_injective SimpleGraph.edgeSet_injective
 
-alias edgeSet_subset_edgeSet ↔ _ edgeSet_mono
+alias ⟨_, edgeSet_mono⟩ := edgeSet_subset_edgeSet
 #align simple_graph.edge_set_mono SimpleGraph.edgeSet_mono
 
-alias edgeSet_ssubset_edgeSet ↔ _ edgeSet_strict_mono
+alias ⟨_, edgeSet_strict_mono⟩ := edgeSet_ssubset_edgeSet
 #align simple_graph.edge_set_strict_mono SimpleGraph.edgeSet_strict_mono
 
 attribute [mono] edgeSet_mono edgeSet_strict_mono
@@ -915,10 +915,10 @@ theorem edgeFinset_subset_edgeFinset : G₁.edgeFinset ⊆ G₂.edgeFinset ↔ G
 theorem edgeFinset_ssubset_edgeFinset : G₁.edgeFinset ⊂ G₂.edgeFinset ↔ G₁ < G₂ := by simp
 #align simple_graph.edge_finset_ssubset_edge_finset SimpleGraph.edgeFinset_ssubset_edgeFinset
 
-alias edgeFinset_subset_edgeFinset ↔ _ edgeFinset_mono
+alias ⟨_, edgeFinset_mono⟩ := edgeFinset_subset_edgeFinset
 #align simple_graph.edge_finset_mono SimpleGraph.edgeFinset_mono
 
-alias edgeFinset_ssubset_edgeFinset ↔ _ edgeFinset_strict_mono
+alias ⟨_, edgeFinset_strict_mono⟩ := edgeFinset_ssubset_edgeFinset
 #align simple_graph.edge_finset_strict_mono SimpleGraph.edgeFinset_strict_mono
 
 attribute [mono] edgeFinset_mono edgeFinset_strict_mono
@@ -1216,7 +1216,7 @@ theorem deleteFar_iff :
       card_le_of_subset hs] using h (G.deleteEdges_le s) hG
 #align simple_graph.delete_far_iff SimpleGraph.deleteFar_iff
 
-alias deleteFar_iff ↔ DeleteFar.le_card_sub_card _
+alias ⟨DeleteFar.le_card_sub_card, _⟩ := deleteFar_iff
 #align simple_graph.delete_far.le_card_sub_card SimpleGraph.DeleteFar.le_card_sub_card
 
 theorem DeleteFar.mono (h : G.DeleteFar p r₂) (hr : r₁ ≤ r₂) : G.DeleteFar p r₁ := fun _ hs hG =>

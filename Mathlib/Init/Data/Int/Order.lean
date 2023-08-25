@@ -26,7 +26,7 @@ theorem le.elim {a b : ℤ} (h : a ≤ b) {P : Prop} (h' : ∀ n : ℕ, a + ↑n
   Exists.elim (le.dest h) h'
 #align int.le.elim Int.le.elim
 
-alias ofNat_le ↔ le_of_ofNat_le_ofNat ofNat_le_ofNat_of_le
+alias ⟨le_of_ofNat_le_ofNat, ofNat_le_ofNat_of_le⟩ := ofNat_le
 #align int.coe_nat_le_coe_nat_of_le Int.ofNat_le_ofNat_of_le
 #align int.le_of_coe_nat_le_coe_nat Int.le_of_ofNat_le_ofNat
 #align int.coe_nat_le_coe_nat_iff Int.ofNat_le
@@ -38,7 +38,7 @@ theorem lt.elim {a b : ℤ} (h : a < b) {P : Prop} (h' : ∀ n : ℕ, a + ↑(Na
   Exists.elim (lt.dest h) h'
 #align int.lt.elim Int.lt.elim
 
-alias ofNat_lt ↔ lt_of_ofNat_lt_ofNat ofNat_lt_ofNat_of_lt
+alias ⟨lt_of_ofNat_lt_ofNat, ofNat_lt_ofNat_of_lt⟩ := ofNat_lt
 #align int.coe_nat_lt_coe_nat_iff Int.ofNat_lt
 #align int.lt_of_coe_nat_lt_coe_nat Int.lt_of_ofNat_lt_ofNat
 #align int.coe_nat_lt_coe_nat_of_lt Int.ofNat_lt_ofNat_of_lt
