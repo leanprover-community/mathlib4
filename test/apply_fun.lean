@@ -133,7 +133,7 @@ example {n : Type} [Fintype n] {X : Type} [Semiring X]
   apply_fun f at h
   -- check that our β-reduction didn't mess things up:
   -- (previously `apply_fun` was producing `f (A.mul B) = f 0`)
-  guard_hyp h : f (A * B) = f 0
+  guard_hyp h :ₛ f (A * B) = f 0
   exact h
 
 -- TODO
