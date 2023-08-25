@@ -598,11 +598,11 @@ theorem reflTransGen_swap : ReflTransGen (swap r) a b ↔ ReflTransGen r b a :=
   ⟨ReflTransGen.swap, ReflTransGen.swap⟩
 #align relation.refl_trans_gen_swap Relation.reflTransGen_swap
 
-lemma reflGen_transGen : ReflGen (TransGen r) = ReflTransGen r := by
+@[simp] lemma reflGen_transGen : ReflGen (TransGen r) = ReflTransGen r := by
   ext x y
   simp_rw [reflTransGen_iff_eq_or_transGen, reflGen_iff]
 
-lemma transGen_reflGen : TransGen (ReflGen r) = ReflTransGen r := by
+@[simp] lemma transGen_reflGen : TransGen (ReflGen r) = ReflTransGen r := by
   ext x y
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · simpa [reflTransGen_idem]
@@ -611,10 +611,10 @@ lemma transGen_reflGen : TransGen (ReflGen r) = ReflTransGen r := by
     · exact .single .refl
     · exact TransGen.mono (fun _ _ ↦ .single) h
 
-lemma reflTransGen_reflGen : ReflTransGen (ReflGen r) = ReflTransGen r := by
+@[simp] lemma reflTransGen_reflGen : ReflTransGen (ReflGen r) = ReflTransGen r := by
   simp only [←transGen_reflGen, reflGen_eq_self reflexive_reflGen]
 
-lemma reflTransGen_transGen : ReflTransGen (TransGen r) = ReflTransGen r := by
+@[simp] lemma reflTransGen_transGen : ReflTransGen (TransGen r) = ReflTransGen r := by
   simp only [←reflGen_transGen, transGen_idem]
 
 lemma reflTransGen_eq_transGen (hr : Reflexive r) :
