@@ -626,10 +626,7 @@ theorem dense_closure {s : Set α} : Dense (closure s) ↔ Dense s := by
   rw [Dense, Dense, closure_closure]
 #align dense_closure dense_closure
 
--- porting note: todo: use `alias` + `@[protected]`
-protected lemma Dense.closure {s : Set α} (h : Dense s) : Dense (closure s) :=
-  dense_closure.2 h
-
+protected alias ⟨_, Dense.closure⟩ := dense_closure
 alias ⟨Dense.of_closure, _⟩ := dense_closure
 #align dense.of_closure Dense.of_closure
 #align dense.closure Dense.closure

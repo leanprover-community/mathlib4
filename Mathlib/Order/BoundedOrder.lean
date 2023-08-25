@@ -623,10 +623,9 @@ section SemilatticeInf
 
 variable [SemilatticeInf α]
 
--- Porting note: was `hP.dual_left`
 theorem exists_le_and_iff_exists {P : α → Prop} {x₀ : α} (hP : Antitone P) :
     (∃ x, x ≤ x₀ ∧ P x) ↔ ∃ x, P x :=
-  exists_ge_and_iff_exists <| Antitone.dual_left hP
+  exists_ge_and_iff_exists <| hP.dual_left
 #align exists_le_and_iff_exists exists_le_and_iff_exists
 
 end SemilatticeInf

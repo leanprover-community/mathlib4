@@ -1747,16 +1747,10 @@ theorem isIrreducible_iff_closure {s : Set α} : IsIrreducible (closure s) ↔ I
   and_congr closure_nonempty_iff isPreirreducible_iff_closure
 #align is_irreducible_iff_closure isIrreducible_iff_closure
 
--- porting note: todo: use `alias` + `@[protected]`
-protected lemma IsPreirreducible.closure {s : Set α} (h : IsPreirreducible s) :
-    IsPreirreducible (closure s) :=
-  isPreirreducible_iff_closure.2 h
+protected alias ⟨_, IsPreirreducible.closure⟩ := isPreirreducible_iff_closure
 #align is_preirreducible.closure IsPreirreducible.closure
 
--- porting note: todo: use `alias` + `@[protected]`
-protected lemma IsIrreducible.closure {s : Set α} (h : IsIrreducible s) :
-    IsIrreducible (closure s) :=
-  isIrreducible_iff_closure.2 h
+protected alias ⟨_, IsIrreducible.closure⟩ := isIrreducible_iff_closure
 #align is_irreducible.closure IsIrreducible.closure
 
 theorem exists_preirreducible (s : Set α) (H : IsPreirreducible s) :
