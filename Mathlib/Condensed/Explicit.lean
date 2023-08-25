@@ -11,10 +11,10 @@ universe v v₁ u u₁ w
 - The sections `isSheafForPullBackSieve` and `ProdCoprod` are independent and can be PR-ed
   separately (DONE, see #6750 (awaiting review) and #6758 (merged)).
 - The section `ExtensiveRegular` depends on section `isSheafForPullBackSieve` but does not
-  mention `Stonean`, `Profinite` or `CompHaus` explicitly.
+  mention `Stonean`, `Profinite` or `CompHaus` explicitly. TODO: PR (depending on #6758)
 - The code in section `OpenEmbedding` should be added to `Mathlib.Topology.Category.Stonean.Limits`
   in a separate PR and does not depend on any of the previous stuff in this file
-  (DONE, awaiting review, see #6771 and #6774).
+  (DONE, see #6771 (merged) and #6774 (awaiting review)).
 - The section `StoneanPullback` can be PR-ed (DONE, see #6779 (awaiting review)).
 - The section `StoneanProjective` can be removed once #5808 is merged. (DONE)
 - The section `StoneanPrecoherent` can be removed once #6725 is merged. (DONE)
@@ -399,21 +399,11 @@ end Coverage
 
 end ExtensiveRegular
 
-section OpenEmbedding -- This section is PR's #6771 and #6774
+section OpenEmbedding -- This section is PR #6774
 
 open CategoryTheory Limits
 
 namespace Stonean
-
-/-- Construct a homeomorphism from an isomorphism. -/
-@[simps]
-def homeoOfIso {X Y : Stonean} (f : X ≅ Y) : X ≃ₜ Y where
-  toFun := f.1
-  invFun := f.2
-  left_inv x := Iso.hom_inv_id_apply f x -- why doesn't `simp` work?
-  right_inv x := Iso.inv_hom_id_apply f x -- why doesn't `simp` work?
-  continuous_toFun := f.hom.continuous
-  continuous_invFun := f.inv.continuous
 
 lemma finiteCoproduct.ιOpenEmbedding {α : Type} [Fintype α] (Z : α → Stonean.{u}) (a : α) :
     OpenEmbedding (finiteCoproduct.ι Z a) := by
