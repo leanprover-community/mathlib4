@@ -64,9 +64,6 @@ namespace UniqueMul
 
 variable {G H : Type*} [Mul G] [Mul H] {A B : Finset G} {a0 b0 : G}
 
-@[to_additive (attr := nontriviality, simp)]
-theorem of_subsingleton [Subsingleton G] : UniqueMul A B a0 b0 := by simp [UniqueMul]
-
 @[to_additive]
 theorem mt {G} [Mul G] {A B : Finset G} {a0 b0 : G} (h : UniqueMul A B a0 b0) :
     ∀ ⦃a b⦄, a ∈ A → b ∈ B → a ≠ a0 ∨ b ≠ b0 → a * b ≠ a0 * b0 := fun _ _ ha hb k ↦ by
@@ -223,9 +220,11 @@ end Additive
 
 namespace UniqueProds
 
+variable {G H : Type*} [Mul G] [Mul H]
+
 open Finset MulOpposite in
 @[to_additive]
-theorem of_mulOpposite (G : Type*) [Mul G] (h : @UniqueProds Gᵐᵒᵖ (MulOpposite.mul G)) :
+theorem of_mulOpposite (h : @UniqueProds Gᵐᵒᵖ (MulOpposite.mul G)) :
     UniqueProds G :=
 ⟨fun hA hB =>
   let f : G ↪ Gᵐᵒᵖ := ⟨op, op_injective⟩
@@ -233,8 +232,8 @@ theorem of_mulOpposite (G : Type*) [Mul G] (h : @UniqueProds Gᵐᵒᵖ (MulOppo
   ⟨unop x, (mem_map' _).mp xA, unop y, (mem_map' _).mp yB, hxy.of_mulOpposite⟩⟩
 
 -- see Note [lower instance priority]
-/-- This instance asserts that if `A` has a right-cancellative multiplication, a linear order,
-  and multiplication is strictly monotone w.r.t. the second argument, then `A` has `UniqueProds`. -/
+/-- This instance asserts that if `G` has a right-cancellative multiplication, a linear order,
+  and multiplication is strictly monotone w.r.t. the second argument, then `G` has `UniqueProds`. -/
 @[to_additive
   "This instance asserts that if `A` has a right-cancellative addition, a linear order,
   and addition is strictly monotone w.r.t. the second argument, then `A` has `UniqueSums`." ]
@@ -253,26 +252,20 @@ instance (priority := 100) of_Covariant_right {A} [Mul A] [IsRightCancelMul A]
 
 open MulOpposite in
 -- see Note [lower instance priority]
-/-- This instance asserts that if `A` has a left-cancellative multiplication, a linear order,
-  and multiplication is strictly monotone w.r.t. the first argument, then `A` has `UniqueProds`. -/
+/-- This instance asserts that if `G` has a left-cancellative multiplication, a linear order,
+  and multiplication is strictly monotone w.r.t. the first argument, then `G` has `UniqueProds`. -/
 @[to_additive
-  "This instance asserts that if `A` has a left-cancellative addition, a linear order,
-  and addition is strictly monotone w.r.t. the first argument, then `A` has `UniqueSums`." ]
-instance (priority := 100) of_Covariant_left {A} [Mul A] [IsLeftCancelMul A]
-    [LinearOrder A] [CovariantClass A A (Function.swap (· * ·)) (· < ·)] :
-    UniqueProds A :=
-let _ := LinearOrder.lift' (unop : Aᵐᵒᵖ → A) unop_injective
-let _ : CovariantClass Aᵐᵒᵖ Aᵐᵒᵖ (· * ·) (· < ·) :=
+  "This instance asserts that if `G` has a left-cancellative addition, a linear order,
+  and addition is strictly monotone w.r.t. the first argument, then `G` has `UniqueSums`." ]
+instance (priority := 100) of_Covariant_left [IsLeftCancelMul G]
+    [LinearOrder G] [CovariantClass G G (Function.swap (· * ·)) (· < ·)] :
+    UniqueProds G :=
+let _ := LinearOrder.lift' (unop : Gᵐᵒᵖ → G) unop_injective
+let _ : CovariantClass Gᵐᵒᵖ Gᵐᵒᵖ (· * ·) (· < ·) :=
 { elim := fun _ _ _ bc =>
-          have : StrictMono (unop (α := A)) := fun _ _ => id
-          mul_lt_mul_right' (α := A) bc (unop _) }
-of_mulOpposite _ of_Covariant_right
-
-variable {G H : Type*} [Mul G] [Mul H]
-
-@[to_additive (attr := nontriviality, simp)]
-theorem of_subsingleton [Subsingleton G] : UniqueProds G :=
-  ⟨fun ⟨a, ha⟩ ⟨b, hb⟩ => ⟨a, ha, b, hb, UniqueMul.of_subsingleton⟩⟩
+          have : StrictMono (unop (α := G)) := fun _ _ => id
+          mul_lt_mul_right' (α := G) bc (unop _) }
+of_mulOpposite of_Covariant_right
 
 open Finset
 @[to_additive]
