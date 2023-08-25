@@ -86,10 +86,13 @@ instance : FunLike (RingCon R) R fun _ => R → Prop :=
       rw [Setoid.ext_iff,(show x.Rel = y.Rel from h)]
       simp}
 
-@[simp]
 theorem rel_eq_coe : c.r = c :=
   rfl
 #align ring_con.rel_eq_coe RingCon.rel_eq_coe
+
+@[simp]
+theorem toCon_coe_eq_coe : (c.toCon : R → R → Prop) = c :=
+  rfl
 
 protected theorem refl (x) : c x x :=
   c.refl' x
