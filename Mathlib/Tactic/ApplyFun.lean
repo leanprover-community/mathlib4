@@ -87,8 +87,8 @@ def maybeProveInjective (ginj : Expr) (using? : Option Expr) : MetaM Bool := do
 
 -- for simplicity of the implementation below it is helpful
 -- to have the forward direction of these lemmas
-alias OrderIso.le_iff_le ↔ ApplyFun.le_of_le _
-alias OrderIso.lt_iff_lt ↔ ApplyFun.lt_of_lt _
+alias ⟨ApplyFun.le_of_le, _⟩ := OrderIso.le_iff_le
+alias ⟨ApplyFun.lt_of_lt, _⟩ := OrderIso.lt_iff_lt
 
 /-- Apply a function to the main goal. -/
 def applyFunTarget (f : Term) (using? : Option Expr) (g : MVarId) : TacticM (List MVarId) := do
