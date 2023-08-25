@@ -20,9 +20,16 @@ class FunctionalCalculus (H : outParam (Type _)) {F A : Type _} [FunLike H F (fu
 
 namespace FunctionalCalculus
 
+set_option linter.unusedVariables false in -- we want `hfc` to be a named instance.
 def fc {H F A : Type _} [FunLike H F (fun _ ↦ A)] (f : F) (a : A)
-    [FunctionalCalculus H f a] : H :=
+    [hfc : FunctionalCalculus H f a] : H :=
   FunctionalCalculus.toHom f a
+
+@[ext]
+lemma FunctionalCalculus.ext {H F A : Type _} [FunLike H F (fun _ ↦ A)] {f : F} {a : A}
+    (fc₁ fc₂ : FunctionalCalculus H f a) (h : fc (hfc := fc₁) = fc (hfc := fc₂)) :
+    fc₁ = fc₂ := by
+  cases fc₁; cases fc₂; congr
 
 @[simp]
 lemma map_point {H F A : Type _} [FunLike H F (fun _ ↦ A)] {f : F} {a : A}
@@ -82,8 +89,7 @@ class MapsSpectrum {H F R A : Type _} [CommSemiring R] [Ring A] [Algebra R A]
 
 class UniqueFunctionalCalculus {H F A : Type _} [FunLike H F (fun _ ↦ A)]
     {f : F} {a : A} (p : FunctionalCalculus H f a → Prop) where
-  fc_eq : ∀ fc₁ fc₂ : FunctionalCalculus H f a,
-    p fc₁ → p fc₂ → @fc _ _ _ _ _ _ fc₁ = @fc _ _ _ _ _ _ fc₂
+  fc_eq : ∀ fc₁ fc₂ : FunctionalCalculus H f a, p fc₁ → p fc₂ → fc₁ = fc₂
 
 variable {𝕜 A : Type _} [IsROrC 𝕜] [Ring A] [StarRing A] [Algebra 𝕜 A] [TopologicalSpace A]
     [StarModule 𝕜 A]
@@ -95,5 +101,24 @@ instance {𝕜 A : Type _} [IsROrC 𝕜] [Ring A] [StarRing A] [Algebra 𝕜 A] 
     UniqueFunctionalCalculus
       (fun φ : FunctionalCalculus (C(spectrum 𝕜 a, 𝕜) →⋆ₐ[𝕜] A)
         (Polynomial.toContinuousMapOnAlgHom (spectrum 𝕜 a) (X : 𝕜[X])) a ↦ Continuous φ.toHom) where
-  fc_eq := fun fc₁ fc₂ h₁ h₂ ↦
+  fc_eq := fun fc₁ fc₂ h₁ h₂ ↦ FunctionalCalculus.ext _ _ <|
     ContinuousMap.starAlgHom_ext_map_X h₁ h₂ <| fc₁.map_point'.trans fc₂.map_point'.symm
+
+class ContinuousFunctionalCalculus [CommSemiring R] [StarRing R] [TopologicalSpace R]
+    [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A] [Algebra R A] [TopologicalSpace A]
+    [StarModule R A] (a : A) extends
+    FunctionalCalculus (C(spectrum R a, R) →⋆ₐ[R] A) ((X : R[X]).toContinuousMapOn (spectrum R a)) a
+    where
+  /-- A continuous functional calculus is a closed embedding. -/
+  hom_closedEmbedding : ClosedEmbedding toHom
+  /-- A continuous functional calculus satisfies the spectral mapping property. -/
+  hom_map_spectrum : ∀ f, spectrum R (toHom f) = Set.range f
+
+#exit
+
+
+instance {𝕜 A : Type _} [IsROrC 𝕜] [Ring A] [StarRing A] [Algebra 𝕜 A] [TopologicalSpace A]
+    [StarModule 𝕜 A] [T2Space A] {a : A} [CompactSpace (spectrum 𝕜 a)] (f : C(spectrum 𝕜 a, 𝕜))
+    [fc₁ : FunctionalCalculus (C(spectrum 𝕜 a, 𝕜) →⋆ₐ[𝕜] A)
+      (Polynomial.toContinuousMapOnAlgHom (spectrum 𝕜 a) (X : 𝕜[X])) a]
+    [fc₂ : FunctionalCalculus (C(𝕜, 𝕜) →⋆ₐ[𝕜] A) ] :
