@@ -404,18 +404,31 @@ variable (R M)
 /-- the length of a module `M` is infinite if `M` does not have a composition series of the form
   `0 ⋖ M₁ ⋖ ... ⋖ Mₙ ⋖ M`, and is the length of its composition series. By Jordan-Hölder theorem,
   this definition is well defined for all tis composition series has the same length. -/
-
 noncomputable def moduleLength : WithTop ℕ :=
-  if h : ∃ (s : CompositionSeries (Submodule R M)) (s0 : s.head = ⊥) (slast : s.last = ⊤)
+  have : Decidable (∃ (s : CompositionSeries (Submodule R M)), s.head = ⊥ ∧ s.last = ⊤) :=
+    Classical.dec _
+  if h : ∃ (s : CompositionSeries (Submodule R M)), s.head = ⊥ ∧ s.last = ⊤
   then h.choose.length
   else ⊤
 
 variable {R M}
 
-lemma moduleLength_eq_compositionSeries_length
-    (s : CompositionSeries (Submodule R M)) (s0 : s.head = ⊥) (slast : s.last = ⊤) :
+lemma moduleLength_eq_compositionSeries_length (s0 : s.head = ⊥) (slast : s.last = ⊤) :
     moduleLength R M = s.length := by
+  delta moduleLength
+  split_ifs with h <;> dsimp
+  · refine WithTop.coe_eq_coe.mpr $ (CompositionSeries.jordan_holder _ _ ?_ ?_).length_eq
+    · rw [show s.bot = _ from s0, show h.choose.bot = _ from h.choose_spec.1]
+    · rw [show s.top = _ from slast, show h.choose.top = _ from h.choose_spec.2]
+  · exact (h ⟨_, s0, slast⟩).elim
 
-
+lemma module_length_lt_of_proper_submodule
+  (s0 : s 0 = ⊥) (s_last : s ⟨s.length, lt_add_one _⟩ = ⊤) (hN : N < ⊤) :
+  moduleLength R N < moduleLength R M := by
+  obtain ⟨x, x0, xlast, xlen⟩ := s.exists_compositionSeries_with_smaller_length_of_lt_top
+    N s0 s_last hN
+  rw [moduleLength_eq_compositionSeries_length x x0 xlast,
+    moduleLength_eq_compositionSeries_length s s0 s_last]
+  exact WithTop.coe_lt_coe.mpr xlen
 
 end defs
