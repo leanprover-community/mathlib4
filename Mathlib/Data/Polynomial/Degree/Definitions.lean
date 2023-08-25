@@ -225,7 +225,7 @@ theorem natDegree_lt_iff_degree_lt (hp : p ≠ 0) : p.natDegree < n ↔ p.degree
   WithBot.unbot'_lt_iff <| degree_eq_bot.not.mpr hp
 #align polynomial.nat_degree_lt_iff_degree_lt Polynomial.natDegree_lt_iff_degree_lt
 
-alias natDegree_le_iff_degree_le ↔ ..
+alias ⟨degree_le_of_natDegree_le, natDegree_le_of_degree_le⟩ := natDegree_le_iff_degree_le
 #align polynomial.degree_le_of_nat_degree_le Polynomial.degree_le_of_natDegree_le
 #align polynomial.nat_degree_le_of_degree_le Polynomial.natDegree_le_of_degree_le
 

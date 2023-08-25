@@ -209,7 +209,7 @@ def mapIdxM' {α} (f : ℕ → α → m PUnit) (as : List α) : m PUnit :=
 end mapIdxM
 
 #align list.lookmap List.lookmap
-#align list.countp List.countp
+#align list.countp List.countP
 #align list.count List.count
 #align list.is_prefix List.isPrefix
 #align list.is_suffix List.isSuffix

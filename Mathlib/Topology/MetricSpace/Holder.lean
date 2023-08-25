@@ -84,7 +84,7 @@ theorem holderOnWith_one {C : ℝ≥0} {f : X → Y} {s : Set X} :
   simp only [HolderOnWith, LipschitzOnWith, NNReal.coe_one, ENNReal.rpow_one]
 #align holder_on_with_one holderOnWith_one
 
-alias holderOnWith_one ↔ _ LipschitzOnWith.holderOnWith
+alias ⟨_, LipschitzOnWith.holderOnWith⟩ := holderOnWith_one
 #align lipschitz_on_with.holder_on_with LipschitzOnWith.holderOnWith
 
 @[simp]
@@ -92,7 +92,7 @@ theorem holderWith_one {C : ℝ≥0} {f : X → Y} : HolderWith C 1 f ↔ Lipsch
   holderOnWith_univ.symm.trans <| holderOnWith_one.trans lipschitz_on_univ
 #align holder_with_one holderWith_one
 
-alias holderWith_one ↔ _ LipschitzWith.holderWith
+alias ⟨_, LipschitzWith.holderWith⟩ := holderWith_one
 #align lipschitz_with.holder_with LipschitzWith.holderWith
 
 theorem holderWith_id : HolderWith 1 1 (id : X → X) :=
