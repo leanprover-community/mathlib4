@@ -409,7 +409,7 @@ theorem iff_preimage_eq : e.IsImage s t ↔ e.source ∩ e ⁻¹' t = e.source �
   simp only [IsImage, ext_iff, mem_inter_iff, mem_preimage, and_congr_right_iff]
 #align local_equiv.is_image.iff_preimage_eq LocalEquiv.IsImage.iff_preimage_eq
 
-alias iff_preimage_eq ↔ preimage_eq of_preimage_eq
+alias ⟨preimage_eq, of_preimage_eq⟩ := iff_preimage_eq
 #align local_equiv.is_image.of_preimage_eq LocalEquiv.IsImage.of_preimage_eq
 #align local_equiv.is_image.preimage_eq LocalEquiv.IsImage.preimage_eq
 
@@ -417,7 +417,7 @@ theorem iff_symm_preimage_eq : e.IsImage s t ↔ e.target ∩ e.symm ⁻¹' s = 
   symm_iff.symm.trans iff_preimage_eq
 #align local_equiv.is_image.iff_symm_preimage_eq LocalEquiv.IsImage.iff_symm_preimage_eq
 
-alias iff_symm_preimage_eq ↔ symm_preimage_eq of_symm_preimage_eq
+alias ⟨symm_preimage_eq, of_symm_preimage_eq⟩ := iff_symm_preimage_eq
 #align local_equiv.is_image.of_symm_preimage_eq LocalEquiv.IsImage.of_symm_preimage_eq
 #align local_equiv.is_image.symm_preimage_eq LocalEquiv.IsImage.symm_preimage_eq
 

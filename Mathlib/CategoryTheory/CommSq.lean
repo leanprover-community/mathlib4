@@ -85,7 +85,7 @@ theorem map_commSq (s : CommSq f g h i) : CommSq (F.map f) (F.map g) (F.map h) (
 
 end Functor
 
-alias Functor.map_commSq ← CommSq.map
+alias CommSq.map := Functor.map_commSq
 #align category_theory.comm_sq.map CategoryTheory.CommSq.map
 
 namespace CommSq

@@ -225,7 +225,7 @@ theorem natDegree_lt_iff_degree_lt (hp : p ≠ 0) : p.natDegree < n ↔ p.degree
   WithBot.unbot'_lt_iff <| degree_eq_bot.not.mpr hp
 #align polynomial.nat_degree_lt_iff_degree_lt Polynomial.natDegree_lt_iff_degree_lt
 
-alias natDegree_le_iff_degree_le ↔ ..
+alias ⟨degree_le_of_natDegree_le, natDegree_le_of_degree_le⟩ := natDegree_le_iff_degree_le
 #align polynomial.degree_le_of_nat_degree_le Polynomial.degree_le_of_natDegree_le
 #align polynomial.nat_degree_le_of_degree_le Polynomial.natDegree_le_of_degree_le
 
@@ -1282,17 +1282,29 @@ end Semiring
 
 section NontrivialSemiring
 
-variable [Semiring R] [Nontrivial R] {p q : R[X]}
+variable [Semiring R] [Nontrivial R] {p q : R[X]} (n : ℕ)
 
 @[simp]
-theorem degree_X_pow (n : ℕ) : degree ((X : R[X]) ^ n) = n := by
+theorem degree_X_pow : degree ((X : R[X]) ^ n) = n := by
   rw [X_pow_eq_monomial, degree_monomial _ (one_ne_zero' R)]
 #align polynomial.degree_X_pow Polynomial.degree_X_pow
 
 @[simp]
-theorem natDegree_X_pow (n : ℕ) : natDegree ((X : R[X]) ^ n) = n :=
+theorem natDegree_X_pow : natDegree ((X : R[X]) ^ n) = n :=
   natDegree_eq_of_degree_eq_some (degree_X_pow n)
 #align polynomial.nat_degree_X_pow Polynomial.natDegree_X_pow
+
+@[simp] lemma natDegree_mul_X (hp : p ≠ 0) : natDegree (p * X) = natDegree p + 1 := by
+  rw [natDegree_mul' (by simpa), natDegree_X]
+
+@[simp] lemma natDegree_X_mul (hp : p ≠ 0) : natDegree (X * p) = natDegree p + 1 := by
+  rw [commute_X p, natDegree_mul_X hp]
+
+@[simp] lemma natDegree_mul_X_pow (hp : p ≠ 0) : natDegree (p * X ^ n) = natDegree p + n := by
+  rw [natDegree_mul' (by simpa), natDegree_X_pow]
+
+@[simp] lemma natDegree_X_pow_mul (hp : p ≠ 0) : natDegree (X ^ n * p) = natDegree p + n := by
+  rw [commute_X_pow, natDegree_mul_X_pow n hp]
 
 --  This lemma explicitly does not require the `Nontrivial R` assumption.
 theorem natDegree_X_pow_le {R : Type*} [Semiring R] (n : ℕ) : (X ^ n : R[X]).natDegree ≤ n := by
