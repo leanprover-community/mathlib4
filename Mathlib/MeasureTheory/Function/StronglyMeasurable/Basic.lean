@@ -64,25 +64,6 @@ open MeasureTheory Filter TopologicalSpace Function Set MeasureTheory.Measure
 
 open ENNReal Topology MeasureTheory NNReal BigOperators
 
-/-- The typeclass `SecondCountableTopologyEither α β` registers the fact that at least one of
-the two spaces has second countable topology. This is the right assumption to ensure that continuous
-maps from `α` to `β` are strongly measurable. -/
-class SecondCountableTopologyEither (α β : Type*) [TopologicalSpace α] [TopologicalSpace β] :
-  Prop where
-  /-- The projection out of `SecondCountableTopologyEither` -/
-  out : SecondCountableTopology α ∨ SecondCountableTopology β
-#align second_countable_topology_either SecondCountableTopologyEither
-
-instance (priority := 100) secondCountableTopologyEither_of_left (α β : Type*) [TopologicalSpace α]
-    [TopologicalSpace β] [SecondCountableTopology α] : SecondCountableTopologyEither α β
-    where out := Or.inl (by infer_instance)
-#align second_countable_topology_either_of_left secondCountableTopologyEither_of_left
-
-instance (priority := 100) secondCountableTopologyEither_of_right (α β : Type*)
-    [TopologicalSpace α] [TopologicalSpace β] [SecondCountableTopology β] :
-    SecondCountableTopologyEither α β where out := Or.inr (by infer_instance)
-#align second_countable_topology_either_of_right secondCountableTopologyEither_of_right
-
 variable {α β γ ι : Type*} [Countable ι]
 
 namespace MeasureTheory

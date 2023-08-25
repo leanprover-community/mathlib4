@@ -124,8 +124,7 @@ theorem mulHom_preimage (f : G →ₙ* H) (hf : Function.Injective f) (a0 b0 : G
     UniqueMul (A.preimage f (Set.injOn_of_injective hf _))
       (B.preimage f (Set.injOn_of_injective hf _)) a0 b0 := by
   intro a b ha hb ab
-  rw [← hf.eq_iff, ← hf.eq_iff]
-  rw [← hf.eq_iff, map_mul, map_mul] at ab
+  simp only [← hf.eq_iff, map_mul] at ab ⊢
   exact u (Finset.mem_preimage.mp ha) (Finset.mem_preimage.mp hb) ab
 #align unique_mul.mul_hom_preimage UniqueMul.mulHom_preimage
 #align unique_add.add_hom_preimage UniqueAdd.addHom_preimage
@@ -139,17 +138,14 @@ See `UniqueMul.mulHom_map_iff` for a version with swapped bundling. -/
 See `UniqueAdd.addHom_map_iff` for a version with swapped bundling."]
 theorem mulHom_image_iff [DecidableEq H] (f : G →ₙ* H) (hf : Function.Injective f) :
     UniqueMul (A.image f) (B.image f) (f a0) (f b0) ↔ UniqueMul A B a0 b0 := by
-  refine' ⟨fun h ↦ _, fun h ↦ _⟩
-  · intro a b ha hb ab
-    rw [← hf.eq_iff, ← hf.eq_iff]
-    rw [← hf.eq_iff, map_mul, map_mul] at ab
-    exact h (Finset.mem_image.mpr ⟨_, ha, rfl⟩) (Finset.mem_image.mpr ⟨_, hb, rfl⟩) ab
-  · intro a b aA bB ab
-    obtain ⟨a, ha, rfl⟩ : ∃ a' ∈ A, f a' = a := Finset.mem_image.mp aA
-    obtain ⟨b, hb, rfl⟩ : ∃ b' ∈ B, f b' = b := Finset.mem_image.mp bB
-    rw [hf.eq_iff, hf.eq_iff]
-    rw [← map_mul, ← map_mul, hf.eq_iff] at ab
-    exact h ha hb ab
+  simp_rw [UniqueMul, Finset.mem_image]
+  refine' ⟨fun h a b ha hb ab ↦ _, fun h ↦ _⟩
+  · rw [← hf.eq_iff, map_mul, map_mul] at ab
+    have := h ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩ ab
+    exact ⟨hf this.1, hf this.2⟩
+  · rintro _ _ ⟨a, aA, rfl⟩ ⟨b, bB, rfl⟩ ab
+    simp only [← map_mul, hf.eq_iff] at ab ⊢
+    exact h aA bB ab
 #align unique_mul.mul_hom_image_iff UniqueMul.mulHom_image_iff
 #align unique_add.add_hom_image_iff UniqueAdd.addHom_image_iff
 
@@ -196,22 +192,14 @@ attribute [to_additive UniqueSums] UniqueProds
 namespace Multiplicative
 
 instance {M} [Add M] [UniqueSums M] : UniqueProds (Multiplicative M) where
-  uniqueMul_of_nonempty {A} {B} hA hB := by
-    let A' : Finset M := A
-    have hA' : A'.Nonempty := hA
-    obtain ⟨a0, hA0, b0, hB0, J⟩ := UniqueSums.uniqueAdd_of_nonempty hA' hB
-    exact ⟨ofAdd a0, hA0, ofAdd b0, hB0, fun a b aA bB H ↦ J aA bB H⟩
+  uniqueMul_of_nonempty := UniqueSums.uniqueAdd_of_nonempty (G := M)
 
 end Multiplicative
 
 namespace Additive
 
 instance {M} [Mul M] [UniqueProds M] : UniqueSums (Additive M) where
-  uniqueAdd_of_nonempty {A} {B} hA hB := by
-    let A' : Finset M := A
-    have hA' : A'.Nonempty := hA
-    obtain ⟨a0, hA0, b0, hB0, J⟩ := UniqueProds.uniqueMul_of_nonempty hA' hB
-    exact ⟨ofMul a0, hA0, ofMul b0, hB0, fun a b aA bB H ↦ J aA bB H⟩
+  uniqueAdd_of_nonempty := UniqueProds.uniqueMul_of_nonempty (G := M)
 
 end Additive
 
