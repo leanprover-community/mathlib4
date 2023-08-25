@@ -127,15 +127,15 @@ Limits.IsColimit.coconePointUniqueUpToIso
   (finiteCoproduct.isColimit' X) (Limits.colimit.isColimit _)
 
 /-- The inclusion maps into the explicit finite coproduct are open embeddings. -/
-lemma finiteCoproduct.ιOpenEmbedding {α : Type} [Fintype α] (Z : α → Stonean.{u}) (a : α) :
+lemma finiteCoproduct.openEmbedding_ι {α : Type} [Fintype α] (Z : α → Stonean.{u}) (a : α) :
     OpenEmbedding (finiteCoproduct.ι Z a) := by
   exact openEmbedding_sigmaMk (σ := fun a => (Z a))
 
 /-- The inclusion maps into the abstract finite coproduct are open embeddings. -/
-lemma openEmbedding_ι {α : Type} [Fintype α] (Z : α → Stonean.{u}) (a : α) :
+lemma Sigma.openEmbedding_ι {α : Type} [Fintype α] (Z : α → Stonean.{u}) (a : α) :
     OpenEmbedding (Sigma.ι Z a) := by
   refine' OpenEmbedding.of_comp _ (homeoOfIso (coproductIsoCoproduct Z).symm).openEmbedding _
-  convert finiteCoproduct.ιOpenEmbedding Z a
+  convert finiteCoproduct.openEmbedding_ι Z a
   ext x
   change ((Sigma.ι Z a) ≫ (coproductIsoCoproduct Z).inv) x = _
   simp only [coproductIsoCoproduct, colimit.comp_coconePointUniqueUpToIso_inv,
