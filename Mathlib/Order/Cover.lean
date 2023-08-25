@@ -493,6 +493,23 @@ theorem covby_insert {x : α} {s : Set α} (hx : x ∉ s) : s ⋖ insert x s :=
 
 end Set
 
+section Relation
+
+open Relation
+
+lemma wcovby_eq_reflGen_covby [PartialOrder α] : ((· : α) ⩿ ·) = ReflGen (· ⋖ ·) := by
+  ext x y; simp_rw [wcovby_iff_eq_or_covby, @eq_comm _ x, reflGen_iff]
+
+lemma transGen_wcovby_eq_reflTransGen_covby [PartialOrder α] :
+    TransGen ((· : α) ⩿ ·) = ReflTransGen (· ⋖ ·) := by
+  rw [wcovby_eq_reflGen_covby, transGen_reflGen]
+
+lemma reflTransGen_wcovby_eq_reflTransGen_covby [PartialOrder α] :
+    ReflTransGen ((· : α) ⩿ ·) = ReflTransGen (· ⋖ ·) := by
+  rw [wcovby_eq_reflGen_covby, reflTransGen_reflGen]
+
+end Relation
+
 namespace Prod
 
 variable [PartialOrder α] [PartialOrder β] {a a₁ a₂ : α} {b b₁ b₂ : β} {x y : α × β}
