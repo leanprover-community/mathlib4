@@ -118,6 +118,12 @@ elab (name := finsetStx) "finset% " t:term : term => do
   else
     return x
 
+open Lean.Elab.Term.Quotation in
+/-- `quot_precheck` for the `finset%` syntax. -/
+@[quot_precheck BigOperators.finsetStx] def precheckFinsetStx : Precheck
+  | `(finset% $t) => precheck t
+  | _ => Elab.throwUnsupportedSyntax
+
 /-- Collects additional binder/Finset pairs for the given `extBinder`.
 Note: this is not extensible at the moment, unlike the usual `extBinder` expansions. -/
 def processExtBinder (processed : (Array (TSyntax ``binderIdent × Term)))
