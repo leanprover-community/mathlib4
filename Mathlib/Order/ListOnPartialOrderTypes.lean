@@ -90,7 +90,7 @@ lemma dedup_getLast_eq_getLast_of_chain'_wcovby [DecidableEq α] [PartialOrder �
   · have ne_nil2 : (y :: l').dedup ≠ []
     · exact List.dedup_ne_nil_of_ne_nil _ l_ne_nil
     obtain ⟨x, l, hl⟩ : ∃ (x : α) (l : List α), x :: l = (y :: l').dedup
-    . set L := dedup (y :: l'); clear_value L
+    · set L := dedup (y :: l'); clear_value L
       induction L with | nil => ?_ | cons y l' _ => ?_
       · cases ne_nil2 rfl
       · exact ⟨_, _, rfl⟩

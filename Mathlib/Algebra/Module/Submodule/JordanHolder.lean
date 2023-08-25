@@ -401,34 +401,118 @@ section defs
 
 variable (R M)
 
+/-- A module with finite length is a module with a composition series starting with 0 and ending
+  with itself. -/
+class FiniteLengthModule where
+  /-- A finite length module admits a composition series `s`. -/
+  compositionSeries : CompositionSeries (Submodule R M)
+  /-- the leftest element is the 0 submodule -/
+  head_eq : compositionSeries.head = ⊥
+  /-- the rightest element is the whole thing -/
+  last_eq : compositionSeries.last = ⊤
+
+/-- A module with finite length is a module with a composition series starting with 0 and ending
+  with itself. -/
+class IsFiniteLengthModule : Prop where
+  /-- A module with finite length is a module with a composition series starting with 0 and ending
+  with itself. -/
+  finite : Nonempty (FiniteLengthModule R M)
+
+variable [∀ (M : Type _) [AddCommGroup M] [Module R M], Decidable $ IsFiniteLengthModule R M]
+
+
 /-- the length of a module `M` is infinite if `M` does not have a composition series of the form
   `0 ⋖ M₁ ⋖ ... ⋖ Mₙ ⋖ M`, and is the length of its composition series. By Jordan-Hölder theorem,
   this definition is well defined for all tis composition series has the same length. -/
 noncomputable def moduleLength : WithTop ℕ :=
-  have : Decidable (∃ (s : CompositionSeries (Submodule R M)), s.head = ⊥ ∧ s.last = ⊤) :=
-    Classical.dec _
-  if h : ∃ (s : CompositionSeries (Submodule R M)), s.head = ⊥ ∧ s.last = ⊤
-  then h.choose.length
+  if h : IsFiniteLengthModule R M
+  then h.finite.some.compositionSeries.length
   else ⊤
 
 variable {R M}
 
-lemma moduleLength_eq_compositionSeries_length (s0 : s.head = ⊥) (slast : s.last = ⊤) :
+lemma _root_.CompositionSeries.moduleLength_eq_length (s0 : s.head = ⊥) (slast : s.last = ⊤) :
     moduleLength R M = s.length := by
   delta moduleLength
-  split_ifs with h <;> dsimp
+  split_ifs with h
   · refine WithTop.coe_eq_coe.mpr $ (CompositionSeries.jordan_holder _ _ ?_ ?_).length_eq
-    · rw [show s.bot = _ from s0, show h.choose.bot = _ from h.choose_spec.1]
-    · rw [show s.top = _ from slast, show h.choose.top = _ from h.choose_spec.2]
+    · rw [show s.bot = _ from s0, show h.finite.some.compositionSeries.bot = _ from
+        h.finite.some.head_eq]
+    · rw [show s.top = _ from slast, show h.finite.some.compositionSeries.top = _ from
+        h.finite.some.last_eq]
   · exact (h ⟨_, s0, slast⟩).elim
 
-lemma module_length_lt_of_proper_submodule
-  (s0 : s 0 = ⊥) (s_last : s ⟨s.length, lt_add_one _⟩ = ⊤) (hN : N < ⊤) :
+lemma moduleLength_lt_of_proper_submodule
+  (s0 : s 0 = ⊥) (slast : s.last = ⊤) (hN : N < ⊤) :
   moduleLength R N < moduleLength R M := by
   obtain ⟨x, x0, xlast, xlen⟩ := s.exists_compositionSeries_with_smaller_length_of_lt_top
-    N s0 s_last hN
-  rw [moduleLength_eq_compositionSeries_length x x0 xlast,
-    moduleLength_eq_compositionSeries_length s s0 s_last]
+    N s0 slast hN
+  rw [x.moduleLength_eq_length x0 xlast, s.moduleLength_eq_length s0 slast]
   exact WithTop.coe_lt_coe.mpr xlen
+
+/-- transport a composition series across a linear equivalence -/
+@[simps!]
+def _root_.CompositionSeries.congr
+    {M' : Type _} [AddCommGroup M'] [Module R M'] (e : M ≃ₗ[R] M') :
+    CompositionSeries (Submodule R M') :=
+  s.map _ (Submodule.map e) $ λ x y (h : x ⋖ y) ↦ by
+    refine ⟨⟨?_, ?_⟩, ?_⟩
+    · rintro _ ⟨a, ha, rfl⟩; exact ⟨a, h.1.1 ha, rfl⟩
+    · have H := h.1.2
+      contrapose! H
+      rintro b hb
+      obtain ⟨a, ha, ha'⟩ := H $ show e b ∈ y.map e from ⟨b, hb, rfl⟩
+      simp only [EmbeddingLike.apply_eq_iff_eq] at ha'
+      rwa [← ha']
+    · intro z hz r
+      refine h.2 (c := Submodule.map e.symm z) ⟨λ a ha ↦ ⟨e a, hz.1 ⟨_, ha, rfl⟩, e.3 _⟩, ?_⟩
+        ⟨?_, ?_⟩
+      · obtain ⟨m, hm1, hm2⟩ := SetLike.not_le_iff_exists.mp hz.2
+        obtain ⟨n, -, rfl⟩ := r.1 hm1
+        contrapose! hm2
+        specialize hm2 $ show n ∈ _ from ⟨e n, hm1, e.3 _⟩
+        exact ⟨_, hm2, rfl⟩
+      · rintro _ ⟨a, ha, rfl⟩
+        obtain ⟨b, hb1, rfl⟩ := r.1 ha
+        rwa [show e.symm (e b) = b from e.3 b]
+      · have r' := r.2
+        contrapose! r'
+        rintro _ ⟨a, ha, rfl⟩
+        obtain ⟨b, hb, rfl⟩ := r' ha
+        rwa [show e (e.symm b) = b from e.4 _]
+
+/-- finite length modules are preserved under linear isomorphisms -/
+def finiteLengthModule_congr {M' : Type _} [AddCommGroup M'] [Module R M']
+    (e : M ≃ₗ[R] M') [h : FiniteLengthModule R M] : FiniteLengthModule R M' where
+  compositionSeries := h.compositionSeries.congr e
+  head_eq := by
+    rw [CompositionSeries.congr, RelSeries.head, RelSeries.map]
+    simp only [Function.comp_apply]
+    rw [show h.compositionSeries 0 = _ from h.head_eq, Submodule.map_bot]
+  last_eq := by
+    rw [CompositionSeries.congr, RelSeries.last, RelSeries.map]
+    simp only [Function.comp_apply]
+    rw [show h.compositionSeries _ = _ from h.last_eq, Submodule.map_top, LinearMap.range_eq_top]
+    exact e.toEquiv.surjective
+
+lemma isFiniteLengthModule_congr {M' : Type _} [AddCommGroup M'] [Module R M']
+    (e : M ≃ₗ[R] M') [h : IsFiniteLengthModule R M] : IsFiniteLengthModule R M' where
+  finite := ⟨finiteLengthModule_congr e (h := h.finite.some)⟩
+
+lemma moduleLength_congr
+    {M' : Type _} [AddCommGroup M'] [Module R M'] (e : M ≃ₗ[R] M') :
+    moduleLength R M = moduleLength R M' := by
+  by_cases H : IsFiniteLengthModule R M
+  · rw [H.finite.some.compositionSeries.moduleLength_eq_length,
+      (finiteLengthModule_congr (h := H.finite.some) e).compositionSeries.moduleLength_eq_length]
+    rfl
+    · exact (finiteLengthModule_congr (h := H.finite.some) e).head_eq
+    · exact (finiteLengthModule_congr (h := H.finite.some) e).last_eq
+    · exact H.finite.some.head_eq
+    · exact H.finite.some.last_eq
+  · have H' : ¬ IsFiniteLengthModule R M'
+    · contrapose! H; apply isFiniteLengthModule_congr e.symm
+    delta moduleLength
+    rw [dif_neg H, dif_neg H']
 
 end defs
