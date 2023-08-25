@@ -1146,6 +1146,22 @@ theorem Measurable.isLUB {ι} [Countable ι] {f : ι → δ → α} {g : δ → 
   exact MeasurableSet.iUnion fun i => hf i (isOpen_lt' _).measurableSet
 #align measurable.is_lub Measurable.isLUB
 
+theorem Measurable.isLUB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g' : δ → α}
+    (hf : ∀ i, Measurable (f i))
+    {s : Set δ} (hs : MeasurableSet s) (hg : ∀ b ∈ s, IsLUB { a | ∃ i, f i b = a } (g b))
+    (hg' : EqOn g g' sᶜ) (g'_meas : Measurable g') : Measurable g := by
+  let f' : ι → δ → α := fun i ↦ s.piecewise (f i) g'
+  suffices ∀ b, IsLUB { a | ∃ i, f' i b = a } (g b) from
+    Measurable.isLUB (fun i ↦ Measurable.piecewise hs (hf i) g'_meas) this
+  intro b
+  by_cases hb : b ∈ s
+
+
+
+
+#exit
+
+
 private theorem AEMeasurable.is_lub_of_nonempty {ι} (hι : Nonempty ι) {μ : Measure δ} [Countable ι]
     {f : ι → δ → α} {g : δ → α} (hf : ∀ i, AEMeasurable (f i) μ)
     (hg : ∀ᵐ b ∂μ, IsLUB { a | ∃ i, f i b = a } (g b)) : AEMeasurable g μ := by
@@ -1320,15 +1336,27 @@ open Filter
 @[measurability]
 theorem measurable_iSup {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     Measurable fun b => ⨆ i, f i b := by
-  have A : ∀ (i : ι) (c : α), MeasurableSet {x | c < f i x} := by
+  have A : ∀ (i : ι) (c : α), MeasurableSet {x | f i x ≤ c} := by
     intro i c
-    apply measurableSet_lt measurable_const (hf i)
-  have : ∀ (c : α), MeasurableSet (⋃ i, {x | c < f i x}) := by
+    exact measurableSet_le (hf i) measurable_const
+  have B : ∀ (c : α), MeasurableSet {x | ∀ i, f i x ≤ c} := by
     intro c
-    apply MeasurableSet.iUnion (fun i ↦ A i c)
+    rw [setOf_forall]
+    exact MeasurableSet.iInter (fun i ↦ A i c)
   have : MeasurableSet {x | ∃ c, ∀ i, f i x ≤ c} := by
-    have : ∃ (u : ℕ → α), Tendsto u atTop atTop := by
-      have Z := exists_seq_tendsto (atTop : Filter α)
+    obtain ⟨u, hu⟩ : ∃ (u : ℕ → α), Tendsto u atTop atTop := exists_seq_tendsto (atTop : Filter α)
+    have : {x | ∃ c, ∀ i, f i x ≤ c} = {x | ∃ n, ∀ i, f i x ≤ u n} := by
+      apply Subset.antisymm
+      · rintro x ⟨c, hc⟩
+        obtain ⟨n, hn⟩ : ∃ n, c ≤ u n := (tendsto_atTop.1 hu c).exists
+        exact ⟨n, fun i ↦ (hc i).trans hn⟩
+      · rintro x ⟨n, hn⟩
+        exact ⟨u n, hn⟩
+    rw [this, setOf_exists]
+    exact MeasurableSet.iUnion (fun n ↦ B (u n))
+
+
+
 
 #exit
 
