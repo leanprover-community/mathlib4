@@ -13,13 +13,13 @@ import Mathlib.Analysis.Calculus.Deriv.Mul
 # Line derivatives
 
 We define the derivative of a function `f : E → F`, at a point `x : E` along a vector `v : E`, as
-the element `f' : F` such that `f (x + t • v) = f x + t • f' + o (t)` as `t` tends to `0`.
-It is denoted by `lineDeriv 𝕜 f x v`.
+the element `f' : F` such that `f (x + t • v) = f x + t • f' + o (t)` as `t` tends to `0`, if it
+exists. It is denoted by `lineDeriv 𝕜 f x v`.
 
 This notion is generally less well behaved than the full Fréchet derivative (for instance, the
 composition of functions which are line-differentiable is not line-differentiable in general).
-The Fréchet derivative should therefore be favored over this one in general, although it may
-sometimes prove handy.
+The Fréchet derivative should therefore be favored over this one in general, although the line
+derivative may sometimes prove handy.
 
 ## Main definition and results
 
@@ -53,13 +53,6 @@ open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
-theorem ContinuousWithinAt.preimage_mem_nhdsWithin''
-    {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : α → β} {x : α} {y : β}
-    {s t : Set β} (h : ContinuousWithinAt f (f ⁻¹' s) x) (ht : t ∈ 𝓝[s] y) (hxy : y = f x) :
-    f ⁻¹' t ∈ 𝓝[f ⁻¹' s] x := by
-  rw [hxy] at ht
-  exact h.preimage_mem_nhdsWithin' (nhdsWithin_mono _ (image_preimage_subset f s) ht)
 
 section Module
 /-!
@@ -255,7 +248,7 @@ lemma HasFDerivAt.hasLineDerivAt (hf : HasFDerivAt f L x) :
   rw [← hasLineDerivWithinAt_univ]
   exact hf.hasFDerivWithinAt.hasLineDerivWithinAt
 
-theorem LineDifferentiableWithinAt.mono_of_mem (h : LineDifferentiableWithinAt 𝕜 f s x v) {t : Set E}
+theorem LineDifferentiableWithinAt.mono_of_mem (h : LineDifferentiableWithinAt 𝕜 f s x v)
     (hst : s ∈ 𝓝[t] x) : LineDifferentiableWithinAt 𝕜 f t x v :=
   (h.hasLineDerivWithinAt.mono_of_mem hst).lineDifferentiableWithinAt
 
@@ -316,12 +309,14 @@ theorem Filter.EventuallyEq.hasLineDerivWithinAt_iff_of_mem (h : f₀ =ᶠ[𝓝[
     HasLineDerivWithinAt 𝕜 f₀ f' s x v ↔ HasLineDerivWithinAt 𝕜 f₁ f' s x v :=
   h.hasLineDerivWithinAt_iff (h.eq_of_nhdsWithin hx)
 
-theorem Filter.EventuallyEq.lineDifferentiableWithinAt_iff (h : f₀ =ᶠ[𝓝[s] x] f₁) (hx : f₀ x = f₁ x) :
+theorem Filter.EventuallyEq.lineDifferentiableWithinAt_iff
+    (h : f₀ =ᶠ[𝓝[s] x] f₁) (hx : f₀ x = f₁ x) :
     LineDifferentiableWithinAt 𝕜 f₀ s x v ↔ LineDifferentiableWithinAt 𝕜 f₁ s x v :=
   ⟨fun h' ↦ ((h.hasLineDerivWithinAt_iff hx).1 h'.hasLineDerivWithinAt).lineDifferentiableWithinAt,
   fun h' ↦ ((h.hasLineDerivWithinAt_iff hx).2 h'.hasLineDerivWithinAt).lineDifferentiableWithinAt⟩
 
-theorem Filter.EventuallyEq.lineDifferentiableWithinAt_iff_of_mem (h : f₀ =ᶠ[𝓝[s] x] f₁) (hx : x ∈ s) :
+theorem Filter.EventuallyEq.lineDifferentiableWithinAt_iff_of_mem
+    (h : f₀ =ᶠ[𝓝[s] x] f₁) (hx : x ∈ s) :
     LineDifferentiableWithinAt 𝕜 f₀ s x v ↔ LineDifferentiableWithinAt 𝕜 f₁ s x v :=
   h.lineDifferentiableWithinAt_iff (h.eq_of_nhdsWithin hx)
 
@@ -342,7 +337,8 @@ theorem LineDifferentiableWithinAt.congr_of_eventuallyEq (h : LineDifferentiable
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : LineDifferentiableWithinAt 𝕜 f₁ s x v :=
   (h.hasLineDerivWithinAt.congr_of_eventuallyEq h₁ hx).differentiableWithinAt
 
-theorem LineDifferentiableAt.congr_of_eventuallyEq (h : LineDifferentiableAt 𝕜 f x v) (hL : f₁ =ᶠ[𝓝 x] f) :
+theorem LineDifferentiableAt.congr_of_eventuallyEq
+    (h : LineDifferentiableAt 𝕜 f x v) (hL : f₁ =ᶠ[𝓝 x] f) :
     LineDifferentiableAt 𝕜 f₁ x v := by
   apply DifferentiableAt.congr_of_eventuallyEq h
   let F := fun (t : 𝕜) ↦ x + t • v
