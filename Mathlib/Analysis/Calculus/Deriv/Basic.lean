@@ -516,10 +516,11 @@ theorem derivWithin_inter (ht : t ∈ 𝓝 x) : derivWithin f (s ∩ t) x = deri
   rw [fderivWithin_inter ht]
 #align deriv_within_inter derivWithin_inter
 
-theorem derivWithin_of_open (hs : IsOpen s) (hx : x ∈ s) : derivWithin f s x = deriv f x := by
-  unfold derivWithin
-  rw [fderivWithin_of_open hs hx]
-  rfl
+theorem derivWithin_of_mem_nhds (h : s ∈ 𝓝 x) : derivWithin f s x = deriv f x := by
+  simp only [derivWithin, deriv, fderivWithin_of_mem_nhds h]
+
+theorem derivWithin_of_open (hs : IsOpen s) (hx : x ∈ s) : derivWithin f s x = deriv f x :=
+  derivWithin_of_mem_nhds (hs.mem_nhds hx)
 #align deriv_within_of_open derivWithin_of_open
 
 theorem deriv_mem_iff {f : 𝕜 → F} {s : Set F} {x : 𝕜} :

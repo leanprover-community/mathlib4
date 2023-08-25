@@ -208,112 +208,37 @@ theorem LineDifferentiableWithinAt.mono_of_mem (h : LineDifferentiableWithinAt �
     (hst : s ∈ 𝓝[t] x) : LineDifferentiableWithinAt 𝕜 f t x v :=
   (h.hasLineDerivWithinAt.mono_of_mem hst).lineDifferentiableWithinAt
 
-theorem differentiableWithinAt_univ : LineDifferentiableWithinAt 𝕜 f univ x ↔ LineDifferentiableAt 𝕜 f x :=
-  by simp only [DifferentiableWithinAt, hasLineDerivWithinAt_univ, LineDifferentiableAt]
-#align differentiable_within_at_univ differentiableWithinAt_univ
+theorem lineDifferentiableWithinAt_univ :
+    LineDifferentiableWithinAt 𝕜 f univ x v ↔ LineDifferentiableAt 𝕜 f x v := by
+  simp only [LineDifferentiableWithinAt, LineDifferentiableAt, preimage_univ,
+    differentiableWithinAt_univ]
 
-theorem differentiableWithinAt_inter (ht : t ∈ 𝓝 x) :
-    LineDifferentiableWithinAt 𝕜 f (s ∩ t) x ↔ LineDifferentiableWithinAt 𝕜 f s x := by
-  simp only [DifferentiableWithinAt, hasLineDerivWithinAt_inter ht]
-#align differentiable_within_at_inter differentiableWithinAt_inter
+theorem LineDifferentiableAt.lineDifferentiableWithinAt (h : LineDifferentiableAt 𝕜 f x v) :
+    LineDifferentiableWithinAt 𝕜 f s x v :=
+  (differentiableWithinAt_univ.2 h).mono (subset_univ _)
+
+theorem lineDerivWithin_of_mem_nhds (h : s ∈ 𝓝 x) :
+    lineDerivWithin 𝕜 f s x v = lineDeriv 𝕜 f x v := by
+  apply derivWithin_of_mem_nhds
+  simp [h]
 
 #exit
 
-theorem differentiableWithinAt_inter' (ht : t ∈ 𝓝[s] x) :
-    LineDifferentiableWithinAt 𝕜 f (s ∩ t) x ↔ LineDifferentiableWithinAt 𝕜 f s x := by
-  simp only [DifferentiableWithinAt, hasLineDerivWithinAt_inter' ht]
-#align differentiable_within_at_inter' differentiableWithinAt_inter'
-
-theorem LineDifferentiableAt.differentiableWithinAt (h : LineDifferentiableAt 𝕜 f x) :
-    LineDifferentiableWithinAt 𝕜 f s x :=
-  (differentiableWithinAt_univ.2 h).mono (subset_univ _)
-#align differentiable_at.differentiable_within_at LineDifferentiableAt.differentiableWithinAt
-
-theorem LineDifferentiable.differentiableAt (h : LineDifferentiable 𝕜 f) : LineDifferentiableAt 𝕜 f x :=
-  h x
-#align differentiable.differentiable_at LineDifferentiable.differentiableAt
-
-protected theorem LineDifferentiableAt.lineDerivWithin (h : LineDifferentiableAt 𝕜 f x)
-    (hxs : UniqueDiffWithinAt 𝕜 s x) : lineDerivWithin 𝕜 f s x = lineDeriv 𝕜 f x :=
-  h.hasLineDerivAt.hasLineDerivWithinAt.lineDerivWithin hxs
-#align differentiable_at.lineDeriv_within LineDifferentiableAt.lineDerivWithin
-
-theorem LineDifferentiableOn.mono (h : LineDifferentiableOn 𝕜 f t) (st : s ⊆ t) : LineDifferentiableOn 𝕜 f s :=
-  fun x hx => (h x (st hx)).mono st
-#align differentiable_on.mono LineDifferentiableOn.mono
-
-theorem differentiableOn_univ : LineDifferentiableOn 𝕜 f univ ↔ LineDifferentiable 𝕜 f := by
-  simp only [DifferentiableOn, LineDifferentiable, differentiableWithinAt_univ, mem_univ,
-    forall_true_left]
-#align differentiable_on_univ differentiableOn_univ
-
-theorem LineDifferentiable.differentiableOn (h : LineDifferentiable 𝕜 f) : LineDifferentiableOn 𝕜 f s :=
-  (differentiableOn_univ.2 h).mono (subset_univ _)
-#align differentiable.differentiable_on LineDifferentiable.differentiableOn
-
-theorem differentiableOn_of_locally_differentiableOn
-    (h : ∀ x ∈ s, ∃ u, IsOpen u ∧ x ∈ u ∧ LineDifferentiableOn 𝕜 f (s ∩ u)) :
-    LineDifferentiableOn 𝕜 f s := by
-  intro x xs
-  rcases h x xs with ⟨t, t_open, xt, ht⟩
-  exact (differentiableWithinAt_inter (IsOpen.mem_nhds t_open xt)).1 (ht x ⟨xs, xt⟩)
-#align differentiable_on_of_locally_differentiable_on differentiableOn_of_locally_differentiableOn
-
-theorem lineDerivWithin_of_mem (st : t ∈ 𝓝[s] x) (ht : UniqueDiffWithinAt 𝕜 s x)
-    (h : LineDifferentiableWithinAt 𝕜 f t x) : lineDerivWithin 𝕜 f s x = lineDerivWithin 𝕜 f t x :=
-  ((DifferentiableWithinAt.hasLineDerivWithinAt h).mono_of_mem st).lineDerivWithin ht
-#align lineDeriv_within_of_mem lineDerivWithin_of_mem
-
-theorem lineDerivWithin_subset (st : s ⊆ t) (ht : UniqueDiffWithinAt 𝕜 s x)
-    (h : LineDifferentiableWithinAt 𝕜 f t x) : lineDerivWithin 𝕜 f s x = lineDerivWithin 𝕜 f t x :=
-  lineDerivWithin_of_mem (nhdsWithin_mono _ st self_mem_nhdsWithin) ht h
-#align lineDeriv_within_subset lineDerivWithin_subset
-
-theorem lineDerivWithin_inter (ht : t ∈ 𝓝 x) : lineDerivWithin 𝕜 f (s ∩ t) x = lineDerivWithin 𝕜 f s x := by
-  simp only [lineDerivWithin, hasLineDerivWithinAt_inter ht]
-#align lineDeriv_within_inter lineDerivWithin_inter
-
-theorem lineDerivWithin_of_mem_nhds (h : s ∈ 𝓝 x) : lineDerivWithin 𝕜 f s x = lineDeriv 𝕜 f x := by
-  simp only [lineDeriv, lineDerivWithin, HasLineDerivAt, HasLineDerivWithinAt, nhdsWithin_eq_nhds.2 h]
-#align lineDeriv_within_of_mem_nhds lineDerivWithin_of_mem_nhds
 
 @[simp]
 theorem lineDerivWithin_univ : lineDerivWithin 𝕜 f univ = lineDeriv 𝕜 f :=
   funext fun _ => lineDerivWithin_of_mem_nhds univ_mem
-#align lineDeriv_within_univ lineDerivWithin_univ
 
 theorem lineDerivWithin_of_open (hs : IsOpen s) (hx : x ∈ s) : lineDerivWithin 𝕜 f s x = lineDeriv 𝕜 f x :=
   lineDerivWithin_of_mem_nhds (hs.mem_nhds hx)
-#align lineDeriv_within_of_open lineDerivWithin_of_open
 
-theorem lineDerivWithin_eq_lineDeriv (hs : UniqueDiffWithinAt 𝕜 s x) (h : LineDifferentiableAt 𝕜 f x) :
+theorem lineDerivWithin_eq_lineDeriv (hs : UniqueDiffWithinAt 𝕜 s x) (h : LineDifferentiableAt 𝕜 f x v) :
     lineDerivWithin 𝕜 f s x = lineDeriv 𝕜 f x := by
   rw [← lineDerivWithin_univ]
   exact lineDerivWithin_subset (subset_univ _) hs h.differentiableWithinAt
-#align lineDeriv_within_eq_lineDeriv lineDerivWithin_eq_lineDeriv
 
-theorem lineDeriv_mem_iff {f : E → F} {s : Set (E →L[𝕜] F)} {x : E} :
-    lineDeriv 𝕜 f x ∈ s ↔
-      LineDifferentiableAt 𝕜 f x ∧ lineDeriv 𝕜 f x ∈ s ∨ ¬DifferentiableAt 𝕜 f x ∧ (0 : E →L[𝕜] F) ∈ s :=
-  by by_cases hx : LineDifferentiableAt 𝕜 f x <;> simp [lineDeriv_zero_of_not_differentiableAt, *]
-#align lineDeriv_mem_iff lineDeriv_mem_iff
+#exit
 
-theorem lineDerivWithin_mem_iff {f : E → F} {t : Set E} {s : Set (E →L[𝕜] F)} {x : E} :
-    lineDerivWithin 𝕜 f t x ∈ s ↔
-      LineDifferentiableWithinAt 𝕜 f t x ∧ lineDerivWithin 𝕜 f t x ∈ s ∨
-        ¬DifferentiableWithinAt 𝕜 f t x ∧ (0 : E →L[𝕜] F) ∈ s := by
-  by_cases hx : LineDifferentiableWithinAt 𝕜 f t x <;>
-    simp [lineDerivWithin_zero_of_not_differentiableWithinAt, *]
-#align lineDeriv_within_mem_iff lineDerivWithin_mem_iff
-
-theorem Asymptotics.IsBigO.hasLineDerivWithinAt {s : Set E} {x₀ : E} {n : ℕ}
-    (h : f =O[𝓝[s] x₀] fun x => ‖x - x₀‖ ^ n) (hx₀ : x₀ ∈ s) (hn : 1 < n) :
-    HasLineDerivWithinAt f (0 : E →L[𝕜] F) s x₀ := by
-  simp_rw [HasLineDerivWithinAt, HasLineDerivAtFilter,
-    h.eq_zero_of_norm_pow_within hx₀ <| zero_lt_one.trans hn, zero_apply, sub_zero,
-    h.trans_isLittleO ((isLittleO_pow_sub_sub x₀ hn).mono nhdsWithin_le_nhds)]
-set_option linter.uppercaseLean3 false in
-#align asymptotics.is_O.has_lineDeriv_within_at Asymptotics.IsBigO.hasLineDerivWithinAt
 
 theorem Asymptotics.IsBigO.hasLineDerivAt {x₀ : E} {n : ℕ} (h : f =O[𝓝 x₀] fun x => ‖x - x₀‖ ^ n)
     (hn : 1 < n) : HasLineDerivAt 𝕜 f (0 : E →L[𝕜] F) x₀ := by
@@ -367,7 +292,7 @@ theorem LineDifferentiableWithinAt.continuousWithinAt (h : LineDifferentiableWit
   hf'.continuousWithinAt
 #align differentiable_within_at.continuous_within_at LineDifferentiableWithinAt.continuousWithinAt
 
-theorem LineDifferentiableAt.continuousAt (h : LineDifferentiableAt 𝕜 f x) : ContinuousAt f x :=
+theorem LineDifferentiableAt.continuousAt (h : LineDifferentiableAt 𝕜 f x v) : ContinuousAt f x :=
   let ⟨_, hf'⟩ := h
   hf'.continuousAt
 #align differentiable_at.continuous_at LineDifferentiableAt.continuousAt
@@ -571,7 +496,7 @@ theorem differentiableOn_congr (h' : ∀ x ∈ s, f₁ x = f x) :
     LineDifferentiableOn.congr h h'⟩
 #align differentiable_on_congr differentiableOn_congr
 
-theorem LineDifferentiableAt.congr_of_eventuallyEq (h : LineDifferentiableAt 𝕜 f x) (hL : f₁ =ᶠ[𝓝 x] f) :
+theorem LineDifferentiableAt.congr_of_eventuallyEq (h : LineDifferentiableAt 𝕜 f x v) (hL : f₁ =ᶠ[𝓝 x] f) :
     LineDifferentiableAt 𝕜 f₁ x :=
   hL.differentiableAt_iff.2 h
 #align differentiable_at.congr_of_eventually_eq LineDifferentiableAt.congr_of_eventuallyEq
@@ -921,7 +846,7 @@ theorem differentiableWithinAt_of_derivWithin_ne_zero (h : derivWithin f s x ≠
   not_imp_comm.1 derivWithin_zero_of_not_differentiableWithinAt h
 #align differentiable_within_at_of_deriv_within_ne_zero differentiableWithinAt_of_derivWithin_ne_zero
 
-theorem deriv_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : deriv f x = 0 := by
+theorem deriv_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x v) : deriv f x = 0 := by
   unfold deriv
   rw [lineDeriv_zero_of_not_differentiableAt h]
   simp
@@ -1112,7 +1037,7 @@ theorem LineDifferentiableWithinAt.hasDerivWithinAt (h : LineDifferentiableWithi
   h.hasLineDerivWithinAt.hasDerivWithinAt
 #align differentiable_within_at.has_deriv_within_at LineDifferentiableWithinAt.hasDerivWithinAt
 
-theorem LineDifferentiableAt.hasDerivAt (h : LineDifferentiableAt 𝕜 f x) : HasDerivAt f (deriv f x) x :=
+theorem LineDifferentiableAt.hasDerivAt (h : LineDifferentiableAt 𝕜 f x v) : HasDerivAt f (deriv f x) x :=
   h.hasLineDerivAt.hasDerivAt
 #align differentiable_at.has_deriv_at LineDifferentiableAt.hasDerivAt
 
@@ -1160,7 +1085,7 @@ theorem lineDeriv_deriv : (lineDeriv 𝕜 f x : 𝕜 → F) 1 = deriv f x :=
 theorem deriv_lineDeriv : smulRight (1 : 𝕜 →L[𝕜] 𝕜) (deriv f x) = lineDeriv 𝕜 f x := by simp [deriv]
 #align deriv_lineDeriv deriv_lineDeriv
 
-theorem LineDifferentiableAt.derivWithin (h : LineDifferentiableAt 𝕜 f x) (hxs : UniqueDiffWithinAt 𝕜 s x) :
+theorem LineDifferentiableAt.derivWithin (h : LineDifferentiableAt 𝕜 f x v) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin f s x = deriv f x := by
   unfold derivWithin deriv
   rw [h.lineDerivWithin hxs]
@@ -1168,7 +1093,7 @@ theorem LineDifferentiableAt.derivWithin (h : LineDifferentiableAt 𝕜 f x) (hx
 
 theorem HasDerivWithinAt.deriv_eq_zero (hd : HasDerivWithinAt f 0 s x)
     (H : UniqueDiffWithinAt 𝕜 s x) : deriv f x = 0 :=
-  (em' (DifferentiableAt 𝕜 f x)).elim deriv_zero_of_not_differentiableAt fun h =>
+  (em' (DifferentiableAt 𝕜 f x v)).elim deriv_zero_of_not_differentiableAt fun h =>
     H.eq_deriv _ h.hasDerivAt.hasDerivWithinAt hd
 #align has_deriv_within_at.deriv_eq_zero HasDerivWithinAt.deriv_eq_zero
 
