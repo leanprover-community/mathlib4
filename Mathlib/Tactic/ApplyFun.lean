@@ -173,7 +173,7 @@ placeholders. Named placeholders (like `?a` or `?_`) will produce new goals.
 syntax (name := applyFun) "apply_fun " term (location)? (" using " term)? : tactic
 
 elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => withMainContext do
-  let P ← P.mapM (elabTerm · none)
+  let P ← withMainContext <| P.mapM (elabTerm · none)
   withLocation (expandOptLocation (Lean.mkOptionalNode loc))
     (atLocal := fun h ↦ do replaceMainGoal <| ← applyFunHyp f P h (← getMainGoal))
     (atTarget := withMainContext do
