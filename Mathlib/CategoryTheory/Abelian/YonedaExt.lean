@@ -129,6 +129,7 @@ noncomputable def Z.d (a b : ℤ) : Z.X E a ⟶ Z.X E b :=
       else
         (Z.XIso E a _ rfl ha).hom ≫ E.K.d _ _ ≫ (Z.XIso E b _ rfl hb).inv
 
+@[pp_dot]
 noncomputable def Z : CochainComplex C ℤ where
   X := Z.X E
   d := Z.d E
@@ -287,6 +288,54 @@ instance : QuasiIso E.ZToX₁ where
       dsimp
       rw [if_neg h]
       exact isZero_zero _
+
+noncomputable def extClass (m : ℕ) (hm : n + 1 = m) : newExt X₁ X₂ m :=
+  newExt.mk (inv (DerivedCategory.Q.map E.ZToX₁) ≫
+    DerivedCategory.Q.map (E.ZToX₂ (-m) (by simp [← hm])) ≫
+    (DerivedCategory.singleFunctorShiftIso C m (-m) 0 (add_right_neg _)).inv.app X₂)
+
+section composition
+
+variable {X₃ : C} {n' : ℕ} (E' : IteratedExtCategory X₂ X₃ n') {n'' : ℕ} (hn'' : n + n' +1 = n'')
+
+def compKX (i : ℤ) : C :=
+  if i ≤ n' + 1
+    then E'.K.X i
+    else E.K.X (i - n' - 1)
+
+def compKXIso' (i : ℤ) (hi : i ≤ n'+1) :
+  compKX E E' i ≅ E'.K.X i := eqToIso (by
+    dsimp [compKX]
+    rw [if_pos hi])
+
+def compKXIso (i : ℤ) (j : ℤ) (hi : n'+2 ≤ i) (hij : j + n' + 1 = i) :
+  compKX E E' i ≅ E.K.X j := eqToIso (by
+    dsimp [compKX]
+    obtain rfl : j = i - n' - 1 := by linarith
+    rw [if_neg]
+    intro
+    linarith)
+
+/-def compK : CochainComplex C ℤ where
+  X := compKX E E'
+  d := sorry
+  shape := sorry
+  d_comp_d' := sorry
+
+def comp : IteratedExtCategory X₁ X₃ n'' where
+  K := compK E E'
+  hK₀ := ⟨fun i hi => IsZero.of_iso (E'.K.isZero_of_isStrictlyGE 0 i hi)
+    (compKXIso' E E' i (by linarith))⟩
+  hK₁ := ⟨fun i hi =>
+    IsZero.of_iso (E.K.isZero_of_isStrictlyLE (n+2) (i - n' - 1) (by linarith))
+      (compKXIso E E' i (i - n' - 1) (by linarith) (by linarith))⟩
+  hK := sorry
+  iso₁ := compKXIso E E' (n'' + 2) (n+2) (by linarith) (by
+      simp only [← hn'', Nat.cast_add, Nat.cast_one]
+      linarith) ≪≫ E.iso₁
+  iso₂ := compKXIso' E E' 0 (by linarith) ≪≫ E'.iso₂-/
+
+end composition
 
 end IteratedExtCategory
 
