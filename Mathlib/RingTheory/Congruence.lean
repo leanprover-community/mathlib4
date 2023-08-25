@@ -36,7 +36,7 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 
 /-- A congruence relation on a type with an addition and multiplication is an equivalence relation
 which preserves both. -/
-structure RingCon (R : Type*) [Add R] [Mul R] extends AddCon R, Con R where
+structure RingCon (R : Type*) [Add R] [Mul R] extends Con R, AddCon R where
 #align ring_con RingCon
 
 attribute [inherit_doc RingCon] RingCon.toCon RingCon.toAddCon
