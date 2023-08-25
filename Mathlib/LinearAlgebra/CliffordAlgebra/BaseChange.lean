@@ -3,72 +3,71 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Data.Complex.Module
 import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
-import Mathlib.Data.Complex.Module
+import Mathlib.LinearAlgebra.TensorProduct.Opposite
 import Mathlib.RingTheory.TensorProduct
 
-variable {V : Type*} [AddCommGroup V] [Module ℝ V]
+#check 1
+
+variable {R A V : Type*}
+variable [CommRing R] [CommRing A] [AddCommGroup V]
+variable [Algebra R A] [Module R V] [Module A V] [IsScalarTower R A V]
+variable [Invertible (2 : R)]
 
 open scoped TensorProduct
 
-namespace QuadraticForm
-
-/-- The complexification of a quadratic form, defined by $Q_ℂ(z ⊗ v) = z^2Q(v)$. -/
-@[reducible]
-noncomputable def complexify (Q : QuadraticForm ℝ V) : QuadraticForm ℂ (ℂ ⊗[ℝ] V) :=
-  Q.baseChange ℂ
-
-end QuadraticForm
 
 namespace CliffordAlgebra
 
+variable (A)
+
 /-- Auxiliary construction: note this is really just a heterobasic `CliffordAlgebra.map`. -/
-noncomputable def ofComplexifyAux (Q : QuadraticForm ℝ V) :
-    CliffordAlgebra Q →ₐ[ℝ] CliffordAlgebra Q.complexify :=
+noncomputable def ofBaseChangeAux (Q : QuadraticForm R V) :
+    CliffordAlgebra Q →ₐ[R] CliffordAlgebra (Q.baseChange A) :=
   CliffordAlgebra.lift Q <| by
-    letI : Invertible (2 : ℂ) := invertibleTwo
-    refine ⟨(ι Q.complexify).restrictScalars ℝ ∘ₗ TensorProduct.mk ℝ ℂ V 1, fun v => ?_⟩
-    refine (CliffordAlgebra.ι_sq_scalar Q.complexify (1 ⊗ₜ v)).trans ?_
+    refine ⟨(ι (Q.baseChange A)).restrictScalars R ∘ₗ TensorProduct.mk R A V 1, fun v => ?_⟩
+    refine (CliffordAlgebra.ι_sq_scalar (Q.baseChange A) (1 ⊗ₜ v)).trans ?_
     rw [QuadraticForm.baseChange_tmul, one_mul, ←Algebra.algebraMap_eq_smul_one,
       ←IsScalarTower.algebraMap_apply]
 
-@[simp] lemma ofComplexifyAux_ι (Q : QuadraticForm ℝ V) (v : V) :
-    ofComplexifyAux Q (ι Q v) = ι Q.complexify (1 ⊗ₜ v) :=
-  CliffordAlgebra.lift_ι_apply _ _ _
+@[simp] theorem ofBaseChangeAux_ι (Q : QuadraticForm R V) (v : V) :
+    ofBaseChangeAux A Q (ι Q v) = ι (Q.baseChange A) (1 ⊗ₜ v) :=
+  CliffordAlgebra.lift_ι_apply _ _ v
 
-/-- Convert from the complexified clifford algebra to the clifford algebra over a complexified
+/-- Convert from the base-changed clifford algebra to the clifford algebra over a base-changed
 module. -/
-noncomputable def ofComplexify (Q : QuadraticForm ℝ V) :
-    ℂ ⊗[ℝ] CliffordAlgebra Q →ₐ[ℂ] CliffordAlgebra Q.complexify :=
+noncomputable def ofBaseChange (Q : QuadraticForm R V) :
+    A ⊗[R] CliffordAlgebra Q →ₐ[A] CliffordAlgebra (Q.baseChange A) :=
   Algebra.TensorProduct.algHomOfLinearMapTensorProduct
     (TensorProduct.AlgebraTensorModule.lift $
-      let f : ℂ →ₗ[ℂ] _ := (Algebra.lsmul ℂ ℂ (CliffordAlgebra Q.complexify)).toLinearMap
+      let f : A →ₗ[A] _ := (Algebra.lsmul A A (CliffordAlgebra (Q.baseChange A))).toLinearMap
       LinearMap.flip $ LinearMap.flip (({
-        toFun := fun f : CliffordAlgebra Q.complexify →ₗ[ℂ] CliffordAlgebra Q.complexify =>
-          LinearMap.restrictScalars ℝ f
+        toFun := fun f : CliffordAlgebra (Q.baseChange A) →ₗ[A] CliffordAlgebra (Q.baseChange A) =>
+          LinearMap.restrictScalars R f
         map_add' := fun f g => LinearMap.ext $ fun x => rfl
-        map_smul' := fun (c : ℂ) g => LinearMap.ext $ fun x => rfl
-      } : _ →ₗ[ℂ] _) ∘ₗ f) ∘ₗ (ofComplexifyAux Q).toLinearMap)
+        map_smul' := fun (c : A) g => LinearMap.ext $ fun x => rfl
+      } : _ →ₗ[A] _) ∘ₗ f) ∘ₗ (ofBaseChangeAux A Q).toLinearMap)
     (fun z₁ z₂ b₁ b₂ =>
-      show (z₁ * z₂) • ofComplexifyAux Q (b₁ * b₂)
-        = z₁ • ofComplexifyAux Q b₁ * z₂ • ofComplexifyAux Q b₂
+      show (z₁ * z₂) • ofBaseChangeAux A Q (b₁ * b₂)
+        = z₁ • ofBaseChangeAux A Q b₁ * z₂ • ofBaseChangeAux A Q b₂
       by rw [map_mul, smul_mul_smul])
     (fun r =>
-      show r • ofComplexifyAux Q 1 = algebraMap ℂ (CliffordAlgebra Q.complexify) r
+      show r • ofBaseChangeAux A Q 1 = algebraMap A (CliffordAlgebra (Q.baseChange A)) r
       by rw [map_one, Algebra.algebraMap_eq_smul_one])
 
-@[simp] lemma ofComplexify_tmul_ι (Q : QuadraticForm ℝ V) (z : ℂ) (v : V) :
-    ofComplexify Q (z ⊗ₜ ι Q v) = ι Q.complexify (z ⊗ₜ v) := by
-  show z • ofComplexifyAux Q (ι Q v) = ι Q.complexify (z ⊗ₜ[ℝ] v)
-  rw [ofComplexifyAux_ι, ←map_smul, TensorProduct.smul_tmul', smul_eq_mul, mul_one]
+@[simp] theorem ofBaseChange_tmul_ι (Q : QuadraticForm R V) (z : A) (v : V) :
+    ofBaseChange A Q (z ⊗ₜ ι Q v) = ι (Q.baseChange A) (z ⊗ₜ v) := by
+  show z • ofBaseChangeAux A Q (ι Q v) = ι (Q.baseChange A) (z ⊗ₜ[R] v)
+  rw [ofBaseChangeAux_ι, ←map_smul, TensorProduct.smul_tmul', smul_eq_mul, mul_one]
 
-@[simp] lemma ofComplexify_tmul_one (Q : QuadraticForm ℝ V) (z : ℂ) :
-    ofComplexify Q (z ⊗ₜ 1) = algebraMap _ _ z := by
-  show z • ofComplexifyAux Q 1 = _
+@[simp] theorem ofBaseChange_tmul_one (Q : QuadraticForm R V) (z : A) :
+    ofBaseChange A Q (z ⊗ₜ 1) = algebraMap _ _ z := by
+  show z • ofBaseChangeAux A Q 1 = _
   rw [map_one, ←Algebra.algebraMap_eq_smul_one]
 
-lemma _root_.CliffordAlgebra.preserves_iff_bilin {R A M} [CommRing R] [Ring A] [Algebra R A]
+theorem _root_.CliffordAlgebra.preserves_iff_bilin {R A M} [CommRing R] [Ring A] [Algebra R A]
     [AddCommGroup M] [Module R M] (Q : QuadraticForm R M)
     (h2 : IsUnit (2 : R))
     (f : M →ₗ[R] A) :
@@ -89,73 +88,71 @@ lemma _root_.CliffordAlgebra.preserves_iff_bilin {R A M} [CommRing R] [Ring A] [
     simp_rw [←Algebra.smul_def, two_smul]
     rw [h x x, QuadraticForm.polarBilin_apply, QuadraticForm.polar_self, two_mul, map_add]
 
-#check 1
-variable  (Q : QuadraticForm ℝ V) in
-#synth IsScalarTower ℝ ℂ (ℂ ⊗[ℝ] V →ₗ[ℂ] ℂ ⊗[ℝ] CliffordAlgebra Q)
-
-/-- Convert from the clifford algebra over a complexified module to the complexified clifford
+set_option maxHeartbeats 400000 in
+/-- Convert from the clifford algebra over a base-changed module to the base-changed clifford
 algebra. -/
-noncomputable def toComplexify (Q : QuadraticForm ℝ V) :
-    CliffordAlgebra Q.complexify →ₐ[ℂ] ℂ ⊗[ℝ] CliffordAlgebra Q :=
+noncomputable def toBaseChange (Q : QuadraticForm R V) :
+    CliffordAlgebra (Q.baseChange A) →ₐ[A] A ⊗[R] CliffordAlgebra Q :=
   CliffordAlgebra.lift _ <| by
-    let φ := TensorProduct.AlgebraTensorModule.map (LinearMap.id : ℂ →ₗ[ℂ] ℂ) (ι Q)
+    let φ := TensorProduct.AlgebraTensorModule.map (LinearMap.id : A →ₗ[A] A) (ι Q)
     refine ⟨φ, ?_⟩
-    rw [CliffordAlgebra.preserves_iff_bilin _ (IsUnit.mk0 (2 : ℂ) two_ne_zero)]
-    letI : IsScalarTower ℝ ℂ (ℂ ⊗[ℝ] V →ₗ[ℂ] ℂ ⊗[ℝ] CliffordAlgebra Q) :=
+    letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
+    rw [CliffordAlgebra.preserves_iff_bilin _ (isUnit_of_invertible _)]
+    letI : IsScalarTower R A (A ⊗[R] V →ₗ[A] A ⊗[R] CliffordAlgebra Q) :=
       LinearMap.instIsScalarTowerLinearMapInstSMulLinearMapInstSMulLinearMap
+    refine TensorProduct.AlgebraTensorModule.curry_injective ?_
+    ext v w
+    change (1 * 1) ⊗ₜ[R] (ι Q v * ι Q w) + (1 * 1) ⊗ₜ[R] (ι Q w * ι Q v) =
+      QuadraticForm.polar (Q.baseChange A) (1 ⊗ₜ[R] v) (1 ⊗ₜ[R] w) ⊗ₜ[R] 1
+    rw [← TensorProduct.tmul_add, CliffordAlgebra.ι_mul_ι_add_swap]
+      -- QuadraticForm.baseChange_polar_apply, one_mul, one_mul,
+      -- Algebra.TensorProduct.algebraMap_tmul_one]
     sorry
-      -- refine TensorProduct.AlgebraTensorModule.curry_injective ?_
-      -- ext v w
-      -- change (1 * 1) ⊗ₜ[ℝ] (ι Q v * ι Q w) + (1 * 1) ⊗ₜ[ℝ] (ι Q w * ι Q v) =
-      --   QuadraticForm.polar (Q.complexify) (1 ⊗ₜ[ℝ] v) (1 ⊗ₜ[ℝ] w) ⊗ₜ[ℝ] 1
-      -- rw [← TensorProduct.tmul_add, CliffordAlgebra.ι_mul_ι_add_swap,
-      --   QuadraticForm.baseChange_polar_apply, one_mul, one_mul,
-      --   Algebra.TensorProduct.algebraMap_tmul_one]
 
-@[simp] lemma toComplexify_ι (Q : QuadraticForm ℝ V) (z : ℂ) (v : V) :
-    toComplexify Q (ι Q.complexify (z ⊗ₜ v)) = z ⊗ₜ ι Q v :=
+@[simp] theorem toBaseChange_ι (Q : QuadraticForm R V) (z : A) (v : V) :
+    toBaseChange A Q (ι (Q.baseChange A) (z ⊗ₜ v)) = z ⊗ₜ ι Q v :=
   CliffordAlgebra.lift_ι_apply _ _ _
 
-lemma toComplexify_comp_involute (Q : QuadraticForm ℝ V) :
-    (toComplexify Q).comp (involute : CliffordAlgebra Q.complexify →ₐ[ℂ] _) =
-      (Algebra.TensorProduct.map (AlgHom.id _ _) involute).comp (toComplexify Q) := by
+theorem toBaseChange_comp_involute (Q : QuadraticForm R V) :
+    (toBaseChange A Q).comp (involute : CliffordAlgebra (Q.baseChange A) →ₐ[A] _) =
+      (Algebra.TensorProduct.map (AlgHom.id _ _) involute).comp (toBaseChange A Q) := by
   ext v
-  show toComplexify Q (involute (ι Q.complexify (1 ⊗ₜ[ℝ] v)))
+  show toBaseChange A Q (involute (ι (Q.baseChange A) (1 ⊗ₜ[R] v)))
     = (Algebra.TensorProduct.map (AlgHom.id _ _) involute :
-        ℂ ⊗[ℝ] CliffordAlgebra Q →ₐ[ℂ] _)
-      (toComplexify Q (ι Q.complexify (1 ⊗ₜ[ℝ] v)))
-  rw [toComplexify_ι, involute_ι, map_neg (toComplexify Q), toComplexify_ι,
+        A ⊗[R] CliffordAlgebra Q →ₐ[A] _)
+      (toBaseChange A Q (ι (Q.baseChange A) (1 ⊗ₜ[R] v)))
+  rw [toBaseChange_ι, involute_ι, map_neg (toBaseChange A Q), toBaseChange_ι,
     Algebra.TensorProduct.map_tmul, AlgHom.id_apply, involute_ι, TensorProduct.tmul_neg]
 
 /-- The involution acts only on the right of the tensor product. -/
-lemma toComplexify_involute (Q : QuadraticForm ℝ V) (x : CliffordAlgebra Q.complexify) :
-    toComplexify Q (involute x) =
-      TensorProduct.map LinearMap.id (involute.toLinearMap) (toComplexify Q x) :=
-  FunLike.congr_fun (toComplexify_comp_involute Q) x
+theorem toBaseChange_involute (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.baseChange A)) :
+    toBaseChange A Q (involute x) =
+      TensorProduct.map LinearMap.id (involute.toLinearMap) (toBaseChange A Q x) :=
+  FunLike.congr_fun (toBaseChange_comp_involute A Q) x
 
 open MulOpposite
 
--- /-- Auxiliary lemma used to prove `toComplexify_reverse` without needing induction. -/
--- lemma toComplexify_comp_reverse_aux (Q : QuadraticForm ℝ V) :
---     (toComplexify Q).op.comp (reverse_aux Q.complexify) =
---       ((Algebra.TensorProduct.op_alg_equiv ℂ).to_algHom.comp $
---         (Algebra.TensorProduct.map' ((algHom.id ℂ ℂ).to_opposite commute.all) (reverse_aux Q)).comp
---           (toComplexify Q)) := by
+-- /-- Auxiliary theorem used to prove `toBaseChange_reverse` without needing induction. -/
+-- theorem toBaseChange_comp_reverse_aux (Q : QuadraticForm R V) :
+--     (toBaseChange A Q).op.comp (reverse_aux (Q.baseChange A)) =
+--       ((Algebra.TensorProduct.op_alg_equiv A).to_algHom.comp $
+--         (Algebra.TensorProduct.map' ((algHom.id A A).to_opposite commute.all) (reverse_aux Q)).comp
+--           (toBaseChange A Q)) := by
 --   ext v
 --   show
---     op (toComplexify Q (reverse (ι Q.complexify (1 ⊗ₜ[ℝ] v)))) =
---     Algebra.TensorProduct.op_alg_equiv ℂ
---       (Algebra.TensorProduct.map' ((algHom.id ℂ ℂ).to_opposite commute.all) (reverse_aux Q)
---          (toComplexify Q (ι Q.complexify (1 ⊗ₜ[ℝ] v))))
---   rw [toComplexify_ι, reverse_ι, toComplexify_ι, Algebra.TensorProduct.map'_tmul,
+--     op (toBaseChange A Q (reverse (ι (Q.baseChange A) (1 ⊗ₜ[R] v)))) =
+--     Algebra.TensorProduct.op_alg_equiv A
+--       (Algebra.TensorProduct.map' ((algHom.id A A).to_opposite commute.all) (reverse_aux Q)
+--          (toBaseChange A Q (ι (Q.baseChange A) (1 ⊗ₜ[R] v))))
+--   rw [toBaseChange_ι, reverse_ι, toBaseChange_ι, Algebra.TensorProduct.map'_tmul,
 --     Algebra.TensorProduct.op_alg_equiv_tmul, unop_reverse_aux, reverse_ι]
 --   rfl
 
 -- /-- `reverse` acts only on the right of the tensor product. -/
--- lemma toComplexify_reverse (Q : QuadraticForm ℝ V) (x : CliffordAlgebra Q.complexify) :
---     toComplexify Q (reverse x) =
---       TensorProduct.map LinearMap.id (reverse : _ →ₗ[ℝ] _) (toComplexify Q x) := by
---   have := fun_like.congr_fun (toComplexify_comp_reverse_aux Q) x
+-- theorem toBaseChange_reverse (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.baseChange A)) :
+--     toBaseChange A Q (reverse x) =
+--       TensorProduct.map LinearMap.id (reverse : _ →ₗ[R] _) (toBaseChange A Q x) := by
+--   have := fun_like.congr_fun (toBaseChange_comp_reverse_aux Q) x
 --   refine (congr_arg unop this).trans _; clear this
 --   refine (TensorProduct.AlgebraTensorModule.map_map _ _ _ _ _).trans _
 --   erw [←reverse_eq_reverse_aux, algHom.toLinearMap_to_opposite,
@@ -163,38 +160,38 @@ open MulOpposite
 
 attribute [ext] TensorProduct.ext
 
-lemma toComplexify_comp_ofComplexify (Q : QuadraticForm ℝ V) :
-    (toComplexify Q).comp (ofComplexify Q) = AlgHom.id _ _ := by
+theorem toBaseChange_comp_ofBaseChange (Q : QuadraticForm R V) :
+    (toBaseChange A Q).comp (ofBaseChange A Q) = AlgHom.id _ _ := by
   ext z : 2
-  · change toComplexify Q (ofComplexify Q (z ⊗ₜ[ℝ] 1)) = z ⊗ₜ[ℝ] 1
-    rw [ofComplexify_tmul_one, AlgHom.commutes, Algebra.TensorProduct.algebraMap_apply,
+  · change toBaseChange A Q (ofBaseChange A Q (z ⊗ₜ[R] 1)) = z ⊗ₜ[R] 1
+    rw [ofBaseChange_tmul_one, AlgHom.commutes, Algebra.TensorProduct.algebraMap_apply,
       Algebra.id.map_eq_self]
   · ext v : 1
-    change toComplexify Q (ofComplexify Q (1 ⊗ₜ[ℝ] ι Q v)) = 1 ⊗ₜ[ℝ] ι Q v
-    rw [ofComplexify_tmul_ι, toComplexify_ι]
+    change toBaseChange A Q (ofBaseChange A Q (1 ⊗ₜ[R] ι Q v)) = 1 ⊗ₜ[R] ι Q v
+    rw [ofBaseChange_tmul_ι, toBaseChange_ι]
 
-@[simp] lemma toComplexify_ofComplexify (Q : QuadraticForm ℝ V) (x : ℂ ⊗[ℝ] CliffordAlgebra Q) :
-    toComplexify Q (ofComplexify Q x) = x :=
-  AlgHom.congr_fun (toComplexify_comp_ofComplexify Q : _) x
+@[simp] theorem toBaseChange_ofBaseChange (Q : QuadraticForm R V) (x : A ⊗[R] CliffordAlgebra Q) :
+    toBaseChange A Q (ofBaseChange A Q x) = x :=
+  AlgHom.congr_fun (toBaseChange_comp_ofBaseChange A Q : _) x
 
-lemma ofComplexify_comp_toComplexify (Q : QuadraticForm ℝ V) :
-    (ofComplexify Q).comp (toComplexify Q) = AlgHom.id _ _ := by
+theorem ofBaseChange_comp_toBaseChange (Q : QuadraticForm R V) :
+    (ofBaseChange A Q).comp (toBaseChange A Q) = AlgHom.id _ _ := by
   ext x
-  show ofComplexify Q (toComplexify Q (ι Q.complexify (1 ⊗ₜ[ℝ] x))) = ι Q.complexify (1 ⊗ₜ[ℝ] x)
-  rw [toComplexify_ι, ofComplexify_tmul_ι]
+  show ofBaseChange A Q (toBaseChange A Q (ι (Q.baseChange A) (1 ⊗ₜ[R] x))) = ι (Q.baseChange A) (1 ⊗ₜ[R] x)
+  rw [toBaseChange_ι, ofBaseChange_tmul_ι]
 
-@[simp] lemma ofComplexify_toComplexify
-    (Q : QuadraticForm ℝ V) (x : CliffordAlgebra Q.complexify) :
-    ofComplexify Q (toComplexify Q x) = x :=
-  AlgHom.congr_fun (ofComplexify_comp_toComplexify Q : _) x
+@[simp] theorem ofBaseChange_toBaseChange
+    (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.baseChange A)) :
+    ofBaseChange A Q (toBaseChange A Q x) = x :=
+  AlgHom.congr_fun (ofBaseChange_comp_toBaseChange A Q : _) x
 
-/-- Complexifying the vector space of a clifford algebra is isomorphic as a ℂ-algebra to
-complexifying the clifford algebra itself; $Cℓ(ℂ ⊗_ℝ V, Q_ℂ) ≅ ℂ ⊗_ℝ Cℓ(V, Q)$.
+/-- Base-changing the vector space of a clifford algebra is isomorphic as an A-algebra to
+base-changing the clifford algebra itself; $Cℓ(A ⊗_R V, Q_A) ≅ A ⊗_R Cℓ(V, Q)$.
 
-This is `CliffordAlgebra.toComplexify` and `CliffordAlgebra.ofComplexify` as an equivalence. -/
+This is `CliffordAlgebra.toBaseChange` and `CliffordAlgebra.ofBaseChange` as an equivalence. -/
 @[simps!]
-noncomputable def equivComplexify (Q : QuadraticForm ℝ V) :
-    CliffordAlgebra Q.complexify ≃ₐ[ℂ] ℂ ⊗[ℝ] CliffordAlgebra Q :=
-  AlgEquiv.ofAlgHom (toComplexify Q) (ofComplexify Q)
-    (toComplexify_comp_ofComplexify Q)
-    (ofComplexify_comp_toComplexify Q)
+noncomputable def equivBaseChange (Q : QuadraticForm R V) :
+    CliffordAlgebra (Q.baseChange A) ≃ₐ[A] A ⊗[R] CliffordAlgebra Q :=
+  AlgEquiv.ofAlgHom (toBaseChange A Q) (ofBaseChange A Q)
+    (toBaseChange_comp_ofBaseChange A Q)
+    (ofBaseChange_comp_toBaseChange A Q)
