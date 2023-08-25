@@ -93,7 +93,7 @@ irreducible_def IsBigOWith (c : ℝ) (l : Filter α) (f : α → E) (g : α → 
 theorem isBigOWith_iff : IsBigOWith c l f g ↔ ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ := by rw [IsBigOWith_def]
 #align asymptotics.is_O_with_iff Asymptotics.isBigOWith_iff
 
-alias isBigOWith_iff ↔ IsBigOWith.bound IsBigOWith.of_bound
+alias ⟨IsBigOWith.bound, IsBigOWith.of_bound⟩ := isBigOWith_iff
 #align asymptotics.is_O_with.bound Asymptotics.IsBigOWith.bound
 #align asymptotics.is_O_with.of_bound Asymptotics.IsBigOWith.of_bound
 
@@ -182,7 +182,7 @@ theorem isLittleO_iff_forall_isBigOWith : f =o[l] g ↔ ∀ ⦃c : ℝ⦄, 0 < c
   rw [IsLittleO_def]
 #align asymptotics.is_o_iff_forall_is_O_with Asymptotics.isLittleO_iff_forall_isBigOWith
 
-alias isLittleO_iff_forall_isBigOWith ↔ IsLittleO.forall_isBigOWith IsLittleO.of_isBigOWith
+alias ⟨IsLittleO.forall_isBigOWith, IsLittleO.of_isBigOWith⟩ := isLittleO_iff_forall_isBigOWith
 #align asymptotics.is_o.forall_is_O_with Asymptotics.IsLittleO.forall_isBigOWith
 #align asymptotics.is_o.of_is_O_with Asymptotics.IsLittleO.of_isBigOWith
 
@@ -191,7 +191,7 @@ theorem isLittleO_iff : f =o[l] g ↔ ∀ ⦃c : ℝ⦄, 0 < c → ∀ᶠ x in l
   simp only [IsLittleO_def, IsBigOWith_def]
 #align asymptotics.is_o_iff Asymptotics.isLittleO_iff
 
-alias isLittleO_iff ↔ IsLittleO.bound IsLittleO.of_bound
+alias ⟨IsLittleO.bound, IsLittleO.of_bound⟩ := isLittleO_iff
 #align asymptotics.is_o.bound Asymptotics.IsLittleO.bound
 #align asymptotics.is_o.of_bound Asymptotics.IsLittleO.of_bound
 
@@ -737,11 +737,11 @@ theorem isBigOWith_abs_right : (IsBigOWith c l f fun x => |u x|) ↔ IsBigOWith 
   @isBigOWith_norm_right _ _ _ _ _ _ f u l
 #align asymptotics.is_O_with_abs_right Asymptotics.isBigOWith_abs_right
 
-alias isBigOWith_norm_right ↔ IsBigOWith.of_norm_right IsBigOWith.norm_right
+alias ⟨IsBigOWith.of_norm_right, IsBigOWith.norm_right⟩ := isBigOWith_norm_right
 #align asymptotics.is_O_with.of_norm_right Asymptotics.IsBigOWith.of_norm_right
 #align asymptotics.is_O_with.norm_right Asymptotics.IsBigOWith.norm_right
 
-alias isBigOWith_abs_right ↔ IsBigOWith.of_abs_right IsBigOWith.abs_right
+alias ⟨IsBigOWith.of_abs_right, IsBigOWith.abs_right⟩ := isBigOWith_abs_right
 #align asymptotics.is_O_with.of_abs_right Asymptotics.IsBigOWith.of_abs_right
 #align asymptotics.is_O_with.abs_right Asymptotics.IsBigOWith.abs_right
 
@@ -756,11 +756,11 @@ theorem isBigO_abs_right : (f =O[l] fun x => |u x|) ↔ f =O[l] u :=
   @isBigO_norm_right _ _ ℝ _ _ _ _ _
 #align asymptotics.is_O_abs_right Asymptotics.isBigO_abs_right
 
-alias isBigO_norm_right ↔ IsBigO.of_norm_right IsBigO.norm_right
+alias ⟨IsBigO.of_norm_right, IsBigO.norm_right⟩ := isBigO_norm_right
 #align asymptotics.is_O.of_norm_right Asymptotics.IsBigO.of_norm_right
 #align asymptotics.is_O.norm_right Asymptotics.IsBigO.norm_right
 
-alias isBigO_abs_right ↔ IsBigO.of_abs_right IsBigO.abs_right
+alias ⟨IsBigO.of_abs_right, IsBigO.abs_right⟩ := isBigO_abs_right
 #align asymptotics.is_O.of_abs_right Asymptotics.IsBigO.of_abs_right
 #align asymptotics.is_O.abs_right Asymptotics.IsBigO.abs_right
 
@@ -775,11 +775,11 @@ theorem isLittleO_abs_right : (f =o[l] fun x => |u x|) ↔ f =o[l] u :=
   @isLittleO_norm_right _ _ ℝ _ _ _ _ _
 #align asymptotics.is_o_abs_right Asymptotics.isLittleO_abs_right
 
-alias isLittleO_norm_right ↔ IsLittleO.of_norm_right IsLittleO.norm_right
+alias ⟨IsLittleO.of_norm_right, IsLittleO.norm_right⟩ := isLittleO_norm_right
 #align asymptotics.is_o.of_norm_right Asymptotics.IsLittleO.of_norm_right
 #align asymptotics.is_o.norm_right Asymptotics.IsLittleO.norm_right
 
-alias isLittleO_abs_right ↔ IsLittleO.of_abs_right IsLittleO.abs_right
+alias ⟨IsLittleO.of_abs_right, IsLittleO.abs_right⟩ := isLittleO_abs_right
 #align asymptotics.is_o.of_abs_right Asymptotics.IsLittleO.of_abs_right
 #align asymptotics.is_o.abs_right Asymptotics.IsLittleO.abs_right
 
@@ -793,11 +793,11 @@ theorem isBigOWith_abs_left : IsBigOWith c l (fun x => |u x|) g ↔ IsBigOWith c
   @isBigOWith_norm_left _ _ _ _ _ _ g u l
 #align asymptotics.is_O_with_abs_left Asymptotics.isBigOWith_abs_left
 
-alias isBigOWith_norm_left ↔ IsBigOWith.of_norm_left IsBigOWith.norm_left
+alias ⟨IsBigOWith.of_norm_left, IsBigOWith.norm_left⟩ := isBigOWith_norm_left
 #align asymptotics.is_O_with.of_norm_left Asymptotics.IsBigOWith.of_norm_left
 #align asymptotics.is_O_with.norm_left Asymptotics.IsBigOWith.norm_left
 
-alias isBigOWith_abs_left ↔ IsBigOWith.of_abs_left IsBigOWith.abs_left
+alias ⟨IsBigOWith.of_abs_left, IsBigOWith.abs_left⟩ := isBigOWith_abs_left
 #align asymptotics.is_O_with.of_abs_left Asymptotics.IsBigOWith.of_abs_left
 #align asymptotics.is_O_with.abs_left Asymptotics.IsBigOWith.abs_left
 
@@ -812,11 +812,11 @@ theorem isBigO_abs_left : (fun x => |u x|) =O[l] g ↔ u =O[l] g :=
   @isBigO_norm_left _ _ _ _ _ g u l
 #align asymptotics.is_O_abs_left Asymptotics.isBigO_abs_left
 
-alias isBigO_norm_left ↔ IsBigO.of_norm_left IsBigO.norm_left
+alias ⟨IsBigO.of_norm_left, IsBigO.norm_left⟩ := isBigO_norm_left
 #align asymptotics.is_O.of_norm_left Asymptotics.IsBigO.of_norm_left
 #align asymptotics.is_O.norm_left Asymptotics.IsBigO.norm_left
 
-alias isBigO_abs_left ↔ IsBigO.of_abs_left IsBigO.abs_left
+alias ⟨IsBigO.of_abs_left, IsBigO.abs_left⟩ := isBigO_abs_left
 #align asymptotics.is_O.of_abs_left Asymptotics.IsBigO.of_abs_left
 #align asymptotics.is_O.abs_left Asymptotics.IsBigO.abs_left
 
@@ -831,11 +831,11 @@ theorem isLittleO_abs_left : (fun x => |u x|) =o[l] g ↔ u =o[l] g :=
   @isLittleO_norm_left _ _ _ _ _ g u l
 #align asymptotics.is_o_abs_left Asymptotics.isLittleO_abs_left
 
-alias isLittleO_norm_left ↔ IsLittleO.of_norm_left IsLittleO.norm_left
+alias ⟨IsLittleO.of_norm_left, IsLittleO.norm_left⟩ := isLittleO_norm_left
 #align asymptotics.is_o.of_norm_left Asymptotics.IsLittleO.of_norm_left
 #align asymptotics.is_o.norm_left Asymptotics.IsLittleO.norm_left
 
-alias isLittleO_abs_left ↔ IsLittleO.of_abs_left IsLittleO.abs_left
+alias ⟨IsLittleO.of_abs_left, IsLittleO.abs_left⟩ := isLittleO_abs_left
 #align asymptotics.is_o.of_abs_left Asymptotics.IsLittleO.of_abs_left
 #align asymptotics.is_o.abs_left Asymptotics.IsLittleO.abs_left
 
@@ -849,11 +849,11 @@ theorem isBigOWith_abs_abs :
   isBigOWith_abs_left.trans isBigOWith_abs_right
 #align asymptotics.is_O_with_abs_abs Asymptotics.isBigOWith_abs_abs
 
-alias isBigOWith_norm_norm ↔ IsBigOWith.of_norm_norm IsBigOWith.norm_norm
+alias ⟨IsBigOWith.of_norm_norm, IsBigOWith.norm_norm⟩ := isBigOWith_norm_norm
 #align asymptotics.is_O_with.of_norm_norm Asymptotics.IsBigOWith.of_norm_norm
 #align asymptotics.is_O_with.norm_norm Asymptotics.IsBigOWith.norm_norm
 
-alias isBigOWith_abs_abs ↔ IsBigOWith.of_abs_abs IsBigOWith.abs_abs
+alias ⟨IsBigOWith.of_abs_abs, IsBigOWith.abs_abs⟩ := isBigOWith_abs_abs
 #align asymptotics.is_O_with.of_abs_abs Asymptotics.IsBigOWith.of_abs_abs
 #align asymptotics.is_O_with.abs_abs Asymptotics.IsBigOWith.abs_abs
 
@@ -865,11 +865,11 @@ theorem isBigO_abs_abs : ((fun x => |u x|) =O[l] fun x => |v x|) ↔ u =O[l] v :
   isBigO_abs_left.trans isBigO_abs_right
 #align asymptotics.is_O_abs_abs Asymptotics.isBigO_abs_abs
 
-alias isBigO_norm_norm ↔ IsBigO.of_norm_norm IsBigO.norm_norm
+alias ⟨IsBigO.of_norm_norm, IsBigO.norm_norm⟩ := isBigO_norm_norm
 #align asymptotics.is_O.of_norm_norm Asymptotics.IsBigO.of_norm_norm
 #align asymptotics.is_O.norm_norm Asymptotics.IsBigO.norm_norm
 
-alias isBigO_abs_abs ↔ IsBigO.of_abs_abs IsBigO.abs_abs
+alias ⟨IsBigO.of_abs_abs, IsBigO.abs_abs⟩ := isBigO_abs_abs
 #align asymptotics.is_O.of_abs_abs Asymptotics.IsBigO.of_abs_abs
 #align asymptotics.is_O.abs_abs Asymptotics.IsBigO.abs_abs
 
@@ -881,11 +881,11 @@ theorem isLittleO_abs_abs : ((fun x => |u x|) =o[l] fun x => |v x|) ↔ u =o[l] 
   isLittleO_abs_left.trans isLittleO_abs_right
 #align asymptotics.is_o_abs_abs Asymptotics.isLittleO_abs_abs
 
-alias isLittleO_norm_norm ↔ IsLittleO.of_norm_norm IsLittleO.norm_norm
+alias ⟨IsLittleO.of_norm_norm, IsLittleO.norm_norm⟩ := isLittleO_norm_norm
 #align asymptotics.is_o.of_norm_norm Asymptotics.IsLittleO.of_norm_norm
 #align asymptotics.is_o.norm_norm Asymptotics.IsLittleO.norm_norm
 
-alias isLittleO_abs_abs ↔ IsLittleO.of_abs_abs IsLittleO.abs_abs
+alias ⟨IsLittleO.of_abs_abs, IsLittleO.abs_abs⟩ := isLittleO_abs_abs
 #align asymptotics.is_o.of_abs_abs Asymptotics.IsLittleO.of_abs_abs
 #align asymptotics.is_o.abs_abs Asymptotics.IsLittleO.abs_abs
 
@@ -899,7 +899,7 @@ theorem isBigOWith_neg_right : (IsBigOWith c l f fun x => -g' x) ↔ IsBigOWith 
   simp only [IsBigOWith_def, norm_neg]
 #align asymptotics.is_O_with_neg_right Asymptotics.isBigOWith_neg_right
 
-alias isBigOWith_neg_right ↔ IsBigOWith.of_neg_right IsBigOWith.neg_right
+alias ⟨IsBigOWith.of_neg_right, IsBigOWith.neg_right⟩ := isBigOWith_neg_right
 #align asymptotics.is_O_with.of_neg_right Asymptotics.IsBigOWith.of_neg_right
 #align asymptotics.is_O_with.neg_right Asymptotics.IsBigOWith.neg_right
 
@@ -909,7 +909,7 @@ theorem isBigO_neg_right : (f =O[l] fun x => -g' x) ↔ f =O[l] g' := by
   exact exists_congr fun _ => isBigOWith_neg_right
 #align asymptotics.is_O_neg_right Asymptotics.isBigO_neg_right
 
-alias isBigO_neg_right ↔ IsBigO.of_neg_right IsBigO.neg_right
+alias ⟨IsBigO.of_neg_right, IsBigO.neg_right⟩ := isBigO_neg_right
 #align asymptotics.is_O.of_neg_right Asymptotics.IsBigO.of_neg_right
 #align asymptotics.is_O.neg_right Asymptotics.IsBigO.neg_right
 
@@ -919,7 +919,7 @@ theorem isLittleO_neg_right : (f =o[l] fun x => -g' x) ↔ f =o[l] g' := by
   exact forall₂_congr fun _ _ => isBigOWith_neg_right
 #align asymptotics.is_o_neg_right Asymptotics.isLittleO_neg_right
 
-alias isLittleO_neg_right ↔ IsLittleO.of_neg_right IsLittleO.neg_right
+alias ⟨IsLittleO.of_neg_right, IsLittleO.neg_right⟩ := isLittleO_neg_right
 #align asymptotics.is_o.of_neg_right Asymptotics.IsLittleO.of_neg_right
 #align asymptotics.is_o.neg_right Asymptotics.IsLittleO.neg_right
 
@@ -928,7 +928,7 @@ theorem isBigOWith_neg_left : IsBigOWith c l (fun x => -f' x) g ↔ IsBigOWith c
   simp only [IsBigOWith_def, norm_neg]
 #align asymptotics.is_O_with_neg_left Asymptotics.isBigOWith_neg_left
 
-alias isBigOWith_neg_left ↔ IsBigOWith.of_neg_left IsBigOWith.neg_left
+alias ⟨IsBigOWith.of_neg_left, IsBigOWith.neg_left⟩ := isBigOWith_neg_left
 #align asymptotics.is_O_with.of_neg_left Asymptotics.IsBigOWith.of_neg_left
 #align asymptotics.is_O_with.neg_left Asymptotics.IsBigOWith.neg_left
 
@@ -938,7 +938,7 @@ theorem isBigO_neg_left : (fun x => -f' x) =O[l] g ↔ f' =O[l] g := by
   exact exists_congr fun _ => isBigOWith_neg_left
 #align asymptotics.is_O_neg_left Asymptotics.isBigO_neg_left
 
-alias isBigO_neg_left ↔ IsBigO.of_neg_left IsBigO.neg_left
+alias ⟨IsBigO.of_neg_left, IsBigO.neg_left⟩ := isBigO_neg_left
 #align asymptotics.is_O.of_neg_left Asymptotics.IsBigO.of_neg_left
 #align asymptotics.is_O.neg_left Asymptotics.IsBigO.neg_left
 
@@ -948,7 +948,7 @@ theorem isLittleO_neg_left : (fun x => -f' x) =o[l] g ↔ f' =o[l] g := by
   exact forall₂_congr fun _ _ => isBigOWith_neg_left
 #align asymptotics.is_o_neg_left Asymptotics.isLittleO_neg_left
 
-alias isLittleO_neg_left ↔ IsLittleO.of_neg_left IsLittleO.neg_left
+alias ⟨IsLittleO.of_neg_left, IsLittleO.neg_left⟩ := isLittleO_neg_left
 #align asymptotics.is_o.of_neg_left Asymptotics.IsLittleO.of_neg_left
 #align asymptotics.is_o.neg_left Asymptotics.IsLittleO.neg_left
 
@@ -1367,7 +1367,7 @@ theorem isBigO_one_iff : f =O[l] (fun _x => 1 : α → F) ↔
   rfl
 #align asymptotics.is_O_one_iff Asymptotics.isBigO_one_iff
 
-alias isBigO_one_iff ↔ _ _root_.Filter.IsBoundedUnder.isBigO_one
+alias ⟨_, _root_.Filter.IsBoundedUnder.isBigO_one⟩ := isBigO_one_iff
 #align filter.is_bounded_under.is_O_one Filter.IsBoundedUnder.isBigO_one
 
 @[simp]
@@ -1874,10 +1874,10 @@ theorem isLittleO_iff_tendsto {f g : α → 𝕜} (hgf : ∀ x, g x = 0 → f x 
   isLittleO_iff_tendsto' (eventually_of_forall hgf)
 #align asymptotics.is_o_iff_tendsto Asymptotics.isLittleO_iff_tendsto
 
-alias isLittleO_iff_tendsto' ↔ _ isLittleO_of_tendsto'
+alias ⟨_, isLittleO_of_tendsto'⟩ := isLittleO_iff_tendsto'
 #align asymptotics.is_o_of_tendsto' Asymptotics.isLittleO_of_tendsto'
 
-alias isLittleO_iff_tendsto ↔ _ isLittleO_of_tendsto
+alias ⟨_, isLittleO_of_tendsto⟩ := isLittleO_iff_tendsto
 #align asymptotics.is_o_of_tendsto Asymptotics.isLittleO_of_tendsto
 
 theorem isLittleO_const_left_of_ne {c : E''} (hc : c ≠ 0) :
@@ -1998,7 +1998,7 @@ theorem isBigO_iff_exists_eq_mul :
     exact isBigO_iff_isBigOWith.2 ⟨c, isBigOWith_of_eq_mul φ hφ huvφ⟩
 #align asymptotics.is_O_iff_exists_eq_mul Asymptotics.isBigO_iff_exists_eq_mul
 
-alias isBigO_iff_exists_eq_mul ↔ IsBigO.exists_eq_mul _
+alias ⟨IsBigO.exists_eq_mul, _⟩ := isBigO_iff_exists_eq_mul
 #align asymptotics.is_O.exists_eq_mul Asymptotics.IsBigO.exists_eq_mul
 
 theorem isLittleO_iff_exists_eq_mul :
@@ -2011,7 +2011,7 @@ theorem isLittleO_iff_exists_eq_mul :
     exact isBigOWith_of_eq_mul _ ((hφ c hpos).mono fun x => le_of_lt) huvφ
 #align asymptotics.is_o_iff_exists_eq_mul Asymptotics.isLittleO_iff_exists_eq_mul
 
-alias isLittleO_iff_exists_eq_mul ↔ IsLittleO.exists_eq_mul _
+alias ⟨IsLittleO.exists_eq_mul, _⟩ := isLittleO_iff_exists_eq_mul
 #align asymptotics.is_o.exists_eq_mul Asymptotics.IsLittleO.exists_eq_mul
 
 end ExistsMulEq

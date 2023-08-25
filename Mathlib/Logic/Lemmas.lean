@@ -19,7 +19,7 @@ would result in less delta-reduced statements.
 -/
 
 
-alias heq_iff_eq ↔ HEq.eq Eq.heq
+alias ⟨HEq.eq, Eq.heq⟩ := heq_iff_eq
 #align heq.eq HEq.eq
 #align eq.heq Eq.heq
 

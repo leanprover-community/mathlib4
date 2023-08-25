@@ -158,7 +158,7 @@ theorem coe_toNat_eq_self : ENat.toNat (n : ℕ∞) = n ↔ n ≠ ⊤ :=
   ENat.recTopCoe (by simp) (fun _ => by simp [toNat_coe]) n
 #align enat.coe_to_nat_eq_self ENat.coe_toNat_eq_self
 
-alias coe_toNat_eq_self ↔ _ coe_toNat
+alias ⟨_, coe_toNat⟩ := coe_toNat_eq_self
 #align enat.coe_to_nat ENat.coe_toNat
 
 theorem coe_toNat_le_self (n : ℕ∞) : ↑(toNat n) ≤ n :=

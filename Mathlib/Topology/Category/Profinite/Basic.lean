@@ -336,41 +336,27 @@ instance forget_reflectsIsomorphisms : ReflectsIsomorphisms (forget Profinite) :
 #align Profinite.forget_reflects_isomorphisms Profinite.forget_reflectsIsomorphisms
 
 /-- Construct an isomorphism from a homeomorphism. -/
-@[simps hom inv]
-def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y where
-  hom := ⟨f, f.continuous⟩
-  inv := ⟨f.symm, f.symm.continuous⟩
-  hom_inv_id := by
-    ext x
-    exact f.symm_apply_apply x
-  inv_hom_id := by
-    ext x
-    exact f.apply_symm_apply x
+@[simps! hom inv]
+noncomputable
+def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y :=
+  @asIso _ _ _ _ ⟨f, f.continuous⟩ (@isIso_of_reflects_iso _ _ _ _ _ _ _ profiniteToCompHaus
+    (IsIso.of_iso (CompHaus.isoOfHomeo f)) _)
 #align Profinite.iso_of_homeo Profinite.isoOfHomeo
 
 /-- Construct a homeomorphism from an isomorphism. -/
-@[simps]
-def homeoOfIso (f : X ≅ Y) : X ≃ₜ Y where
-  toFun := f.hom
-  invFun := f.inv
-  left_inv x := by simp
-  right_inv x := by simp
-  continuous_toFun := f.hom.continuous
-  continuous_invFun := f.inv.continuous
+@[simps!]
+def homeoOfIso (f : X ≅ Y) : X ≃ₜ Y := CompHaus.homeoOfIso (profiniteToCompHaus.mapIso f)
 #align Profinite.homeo_of_iso Profinite.homeoOfIso
 
 /-- The equivalence between isomorphisms in `Profinite` and homeomorphisms
 of topological spaces. -/
-@[simps]
+@[simps!]
+noncomputable
 def isoEquivHomeo : (X ≅ Y) ≃ (X ≃ₜ Y) where
   toFun := homeoOfIso
   invFun := isoOfHomeo
-  left_inv f := by
-    ext
-    rfl
-  right_inv f := by
-    ext
-    rfl
+  left_inv f := by ext; rfl
+  right_inv f := by ext; rfl
 #align Profinite.iso_equiv_homeo Profinite.isoEquivHomeo
 
 theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
