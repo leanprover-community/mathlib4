@@ -9,7 +9,26 @@ import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 import Mathlib.LinearAlgebra.TensorProduct.Opposite
 import Mathlib.RingTheory.TensorProduct
 
-#check 1
+/-!
+# The base change of a clifford algebra
+
+In this file we show the isomorphism
+
+* `CliffordAlgebra.equivBaseChange A Q` :
+  `CliffordAlgebra (Q.baseChange A) ≃ₐ[A] (A ⊗[R] CliffordAlgebra Q)`
+  with forward direction `CliffordAlgebra.toBasechange A Q` and reverse direction
+  `CliffordAlgebra.ofBasechange A Q`.
+
+This covers a more general case of §2.2 of https://empg.maths.ed.ac.uk/Activities/Spin/Lecture2.pdf,
+where ℂ and ℝ are relaced by an `R`-algebra `A`.
+
+We show:
+
+* `CliffordAlgebra.toBasechange_ι`: the effect of base-changing pure vectors.
+* `CliffordAlgebra.ofBasechange_tmul_ι`: the effect of un-base-changing a tensor of a pure vectors.
+* `CliffordAlgebra.toBasechange_involute`: the effect of base-changing an involution.
+* `CliffordAlgebra.toBasechange_reverse`: the effect of base-changing a reversal.
+-/
 
 variable {R A V : Type*}
 variable [CommRing R] [CommRing A] [AddCommGroup V]
