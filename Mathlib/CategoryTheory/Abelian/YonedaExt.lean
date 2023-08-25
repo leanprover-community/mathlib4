@@ -1,5 +1,6 @@
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.Ext
+import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 namespace HomologicalComplex
@@ -84,7 +85,7 @@ namespace CategoryTheory
 
 open Category Limits ZeroObject
 
-variable {C : Type _} [Category C] [Abelian C]
+variable {C : Type _} [Category C] [Abelian C] [HasDerivedCategory C]
 
 namespace Abelian
 
@@ -267,24 +268,25 @@ noncomputable def leftHomologyMapData : ShortComplex.LeftHomologyMapData
     simp only [comp_id, id_comp, ite_true, Iso.cancel_iso_hom_left]
     erw [comp_id]
 
-lemma ZToX₁_quasi_iso (n : ℤ) :
-    IsIso ((HomologicalComplex.homologyFunctor _ _ n).map E.ZToX₁) := by
-  by_cases n = 0
-  . subst h
-    suffices IsIso (ShortComplex.homologyMap
-        ((HomologicalComplex.shortComplexFunctor' _ _ (-1) 0 1).map E.ZToX₁)) from
-      (NatIso.isIso_map_iff (isoWhiskerRight
-        (HomologicalComplex.natIsoSc' C (ComplexShape.up ℤ) (-1) 0 1 (by simp) (by simp))
-        (ShortComplex.homologyFunctor _ )) E.ZToX₁).2 this
-    rw [E.leftHomologyMapData.homologyMap_eq]
-    dsimp
-    erw [id_comp]
-    infer_instance
-  . refine' ⟨0, IsZero.eq_of_src (E.isZero_homology_ZToX₁ n h) _ _,
-      IsZero.eq_of_src (ShortComplex.isZero_homology_of_isZero_X₂ _ _) _ _⟩
-    dsimp
-    rw [if_neg h]
-    exact isZero_zero _
+instance : QuasiIso E.ZToX₁ where
+  quasiIso n := by
+    rw [quasiIsoAt_iff_isIso_homologyMap]
+    by_cases n = 0
+    . subst h
+      suffices IsIso (ShortComplex.homologyMap
+          ((HomologicalComplex.shortComplexFunctor' _ _ (-1) 0 1).map E.ZToX₁)) from
+        (NatIso.isIso_map_iff (isoWhiskerRight
+          (HomologicalComplex.natIsoSc' C (ComplexShape.up ℤ) (-1) 0 1 (by simp) (by simp))
+          (ShortComplex.homologyFunctor _ )) E.ZToX₁).2 this
+      rw [E.leftHomologyMapData.homologyMap_eq]
+      dsimp
+      erw [id_comp]
+      infer_instance
+    . refine' ⟨0, IsZero.eq_of_src (E.isZero_homology_ZToX₁ n h) _ _,
+        IsZero.eq_of_src (ShortComplex.isZero_homology_of_isZero_X₂ _ _) _ _⟩
+      dsimp
+      rw [if_neg h]
+      exact isZero_zero _
 
 end IteratedExtCategory
 

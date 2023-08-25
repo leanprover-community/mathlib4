@@ -430,6 +430,11 @@ lemma isZero_homology_of_isZero (i : ι) (hi : IsZero (K.X i)) [K.HasHomology i]
     IsZero (K.homology i) :=
   ShortComplex.isZero_homology_of_isZero_X₂ _ (by exact hi)
 
+variable (C c)
+
+def qis [CategoryWithHomology C] : MorphismProperty (HomologicalComplex C c) :=
+  fun _ _ f => ∀ (i : ι), IsIso (homologyMap f i)
+
 end HomologicalComplex
 
 section
@@ -510,9 +515,6 @@ lemma homologyMap_add : homologyMap (φ + ψ) i = homologyMap φ i + homologyMap
 instance [CategoryWithHomology C] : (homologyFunctor C c i).Additive where
 
 variable (C c)
-
-def qis [CategoryWithHomology C] : MorphismProperty (HomologicalComplex C c) :=
-  fun _ _ f => ∀ (i : ι), IsIso (homologyMap f i)
 
 lemma homotopyEquivalences_subset_qis [CategoryWithHomology C] :
     homotopyEquivalences C c ⊆ qis C c := by

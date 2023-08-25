@@ -3,6 +3,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.Cylinder
+import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.CategoryTheory.Localization.Composition
 import Mathlib.CategoryTheory.Localization.HasLocalization
 
@@ -254,6 +255,13 @@ lemma isIso_Q_map_iff {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
 lemma isIso_Q_map_iff' {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
     IsIso (Q.map φ) ↔ HomologicalComplex.qis _ _ φ :=
   isIso_Q_map_iff φ
+
+lemma isIso_Q_map_iff_quasiIso {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
+    IsIso (Q.map φ) ↔ QuasiIso φ := by
+  simp only [isIso_Q_map_iff', quasiIso_iff_mem_qis]
+
+instance {K L : CochainComplex C ℤ} (φ : K ⟶ L) [QuasiIso φ] : IsIso (Q.map φ) := by
+  simpa only [isIso_Q_map_iff_quasiIso]
 
 instance : Q.IsLocalization (HomologicalComplex.qis C (ComplexShape.up ℤ)) := by
   refine' Functor.IsLocalization.comp (HomotopyCategory.quotient _ _)

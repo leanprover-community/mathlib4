@@ -251,6 +251,12 @@ lemma quasiIsoAt_iff' (f : C ⟶ D) (i j k : ι) (hi : c.prev j = i) (hk : c.nex
   exact ShortComplex.quasiIso_iff_of_arrow_mk_iso _ _
     (Arrow.isoOfNatIso (HomologicalComplex.natIsoSc' V c i j k hi hk) (Arrow.mk f))
 
+lemma quasiIsoAt_iff_isIso_homologyMap (f : C ⟶ D) (i : ι)
+    [C.HasHomology i] [D.HasHomology i] :
+    QuasiIsoAt f i ↔ IsIso ((HomologicalComplex.homologyMap f i)) := by
+  rw [quasiIsoAt_iff, ShortComplex.quasiIso_iff]
+  rfl
+
 lemma quasiIsoAt_iff_exactAt (f : C ⟶ D) (i : ι) [C.HasHomology i] [D.HasHomology i]
     (hC : C.ExactAt i) :
     QuasiIsoAt f i ↔ D.ExactAt i := by
@@ -306,6 +312,16 @@ instance quasiIsoAt_of_isIso (f : C ⟶ D) [IsIso f] (i : ι) [C.HasHomology i] 
 
 instance quasiIso_of_isIso (f : C ⟶ D) [IsIso f] [∀ i, C.HasHomology i] [∀ i, D.HasHomology i] :
     QuasiIso f where
+
+lemma quasiIso_iff_mem_qis (f : C ⟶ D) [CategoryWithHomology V] :
+    QuasiIso f ↔ HomologicalComplex.qis _ _ f := by
+  dsimp [HomologicalComplex.qis]
+  simp only [← quasiIsoAt_iff_isIso_homologyMap f]
+  constructor
+  · intro h i
+    infer_instance
+  · intro h
+    exact ⟨h⟩
 
 lemma CochainComplex.quasiIsoAt₀_iff {K L : CochainComplex V ℕ} (f : K ⟶ L)
     [K.HasHomology 0] [L.HasHomology 0] [(K.sc' 0 0 1).HasHomology] [(L.sc' 0 0 1).HasHomology] :
