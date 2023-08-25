@@ -15,6 +15,7 @@ universe v v₁ u u₁ w
 - The code in section `OpenEmbedding` should be added to `Mathlib.Topology.Category.Stonean.Limits`
   in a separate PR and does not depend on any of the previous stuff in this file
   (DONE, awaiting review, see #6771 and #6774).
+- The section `StoneanPullback` can be PR-ed.
 - The section `StoneanProjective` can be removed once #5808 is merged. (DONE)
 - The section `StoneanPrecoherent` can be removed once #6725 is merged. (DONE)
 - The sections `CompHausExplicitSheaves` and `ProfiniteExplicitSheaves` are identical except for
@@ -431,7 +432,7 @@ end Stonean
 
 end OpenEmbedding
 
-section StoneanPullback
+section StoneanPullback -- TODO: PR
 
 open CategoryTheory Limits
 
