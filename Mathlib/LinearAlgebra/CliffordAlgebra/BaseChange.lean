@@ -132,31 +132,36 @@ theorem toBaseChange_involute (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.ba
 
 open MulOpposite
 
--- /-- Auxiliary theorem used to prove `toBaseChange_reverse` without needing induction. -/
--- theorem toBaseChange_comp_reverse_aux (Q : QuadraticForm R V) :
---     (toBaseChange A Q).op.comp (reverse_aux (Q.baseChange A)) =
---       ((Algebra.TensorProduct.op_alg_equiv A).to_algHom.comp $
---         (Algebra.TensorProduct.map' ((algHom.id A A).to_opposite commute.all) (reverse_aux Q)).comp
---           (toBaseChange A Q)) := by
---   ext v
---   show
---     op (toBaseChange A Q (reverse (ι (Q.baseChange A) (1 ⊗ₜ[R] v)))) =
---     Algebra.TensorProduct.op_alg_equiv A
---       (Algebra.TensorProduct.map' ((algHom.id A A).to_opposite commute.all) (reverse_aux Q)
---          (toBaseChange A Q (ι (Q.baseChange A) (1 ⊗ₜ[R] v))))
---   rw [toBaseChange_ι, reverse_ι, toBaseChange_ι, Algebra.TensorProduct.map'_tmul,
---     Algebra.TensorProduct.op_alg_equiv_tmul, unop_reverse_aux, reverse_ι]
---   rfl
+/-- Auxiliary theorem used to prove `toBaseChange_reverse` without needing induction. -/
+theorem toBaseChange_comp_reverseOp (Q : QuadraticForm R V) :
+    (toBaseChange A Q).op.comp (reverseOp (Q := Q.baseChange A)) =
+      ((Algebra.TensorProduct.opAlgEquiv R A A (CliffordAlgebra Q)).toAlgHom.comp $
+        (Algebra.TensorProduct.map ((AlgHom.id A A).toOpposite Commute.all) (reverseOp (Q := Q))).comp
+          (toBaseChange A Q)) := by
+  ext v
+  save
+  dsimp only [TensorProduct.AlgebraTensorModule.curry_apply, AlgHom.comp_toLinearMap,
+    TensorProduct.curry_apply, LinearMap.coe_restrictScalars, LinearMap.coe_comp,
+    Function.comp_apply, AlgHom.toLinearMap_apply, AlgHom.op_apply_apply, AlgEquiv.toAlgHom_eq_coe,
+    AlgEquiv.toAlgHom_toLinearMap, AlgEquiv.toLinearMap_apply]
+  -- show
+  --   op (toBaseChange A Q (reverse (ι (Q.baseChange A) (1 ⊗ₜ[R] v)))) =
+  --   Algebra.TensorProduct.opAlgEquiv R A A (CliffordAlgebra Q)
+  --     (Algebra.TensorProduct.map ((algHom.id A A).toOpposite Commute.all) (reverseOp Q)
+  --        (toBaseChange A Q (ι (Q.baseChange A) (1 ⊗ₜ[R] v))))
+  rw [toBaseChange_ι, reverseOp_ι, unop_op, toBaseChange_ι, Algebra.TensorProduct.map_tmul,
+    Algebra.TensorProduct.opAlgEquiv_tmul, reverseOp_ι, unop_op]
+  rfl
 
--- /-- `reverse` acts only on the right of the tensor product. -/
--- theorem toBaseChange_reverse (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.baseChange A)) :
---     toBaseChange A Q (reverse x) =
---       TensorProduct.map LinearMap.id (reverse : _ →ₗ[R] _) (toBaseChange A Q x) := by
---   have := fun_like.congr_fun (toBaseChange_comp_reverse_aux Q) x
---   refine (congr_arg unop this).trans _; clear this
---   refine (TensorProduct.AlgebraTensorModule.map_map _ _ _ _ _).trans _
---   erw [←reverse_eq_reverse_aux, algHom.toLinearMap_to_opposite,
---     TensorProduct.AlgebraTensorModule.map_apply]
+/-- `reverse` acts only on the right of the tensor product. -/
+theorem toBaseChange_reverse (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.baseChange A)) :
+    toBaseChange A Q (reverse x) =
+      TensorProduct.map LinearMap.id (reverse (Q := Q)) (toBaseChange A Q x) := by
+  have := FunLike.congr_fun (toBaseChange_comp_reverseOp A Q) x
+  refine (congr_arg unop this).trans ?_; clear this
+  refine (TensorProduct.AlgebraTensorModule.map_comp_map _ _ _ _ _).trans ?_
+  erw [reverse, AlgHom.toLinearMap_toOpposite,
+    TensorProduct.AlgebraTensorModule.map_apply]
 
 attribute [ext] TensorProduct.ext
 
