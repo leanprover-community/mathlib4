@@ -25,8 +25,6 @@ is an alias for `Comma.right`.
 * https://ncatlab.org/nlab/show/lifts+and+extensions
 * https://ncatlab.org/nlab/show/Kan+extension
 
-## Todo
-API for left lifts, right extensions, and right lifts
 -/
 
 namespace CategoryTheory
@@ -90,6 +88,11 @@ abbrev lift (t : LeftLift f g) : c ⟶ b := t.right
 /-- The 2-morphism filling the triangle diagram. -/
 abbrev unit (t : LeftLift f g) : g ⟶ t.lift ≫ f := t.hom
 
+/-- The left lift along the identity. -/
+def alongId (g : c ⟶ a) : LeftLift (𝟙 a) g := StructuredArrow.mk (ρ_ g).inv
+
+instance : Inhabited (LeftLift (𝟙 a) g) := ⟨alongId g⟩
+
 end LeftLift
 
 /-- Triangle diagrams for (right) extensions.
@@ -115,6 +118,11 @@ abbrev extension (t : RightExtension f g) : b ⟶ c := t.left
 /-- The 2-morphism filling the triangle diagram. -/
 abbrev counit (t : RightExtension f g) : f ≫ t.extension ⟶ g := t.hom
 
+/-- The right extension along the identity. -/
+def alongId (g : a ⟶ c) : RightExtension (𝟙 a) g := CostructuredArrow.mk (λ_ g).hom
+
+instance : Inhabited (RightExtension (𝟙 a) g) := ⟨alongId g⟩
+
 end RightExtension
 
 /-- Triangle diagrams for (right) lifts.
@@ -139,6 +147,11 @@ abbrev lift (t : RightLift f g) : c ⟶ b := t.left
 
 /-- The 2-morphism filling the triangle diagram. -/
 abbrev counit (t : RightLift f g) : t.lift ≫ f ⟶ g := t.hom
+
+/-- The right lift along the identity. -/
+def alongId (g : c ⟶ a) : RightLift (𝟙 a) g := CostructuredArrow.mk (ρ_ g).hom
+
+instance : Inhabited (RightLift (𝟙 a) g) := ⟨alongId g⟩
 
 end RightLift
 

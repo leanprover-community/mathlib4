@@ -20,6 +20,8 @@ in the namespace `StructuredArrow.IsUniversal`:
 * `h.hom_ext`: two 2-morphisms out of the left Kan extension are equal if their compositions with
   each unit are equal.
 
+We also define left Kan lifts, right Kan extensions, and right Kan lifts.
+
 ## Implementation Notes
 We use the Is-Has design pattern, which is used for the implementation of limits and colimits in
 the category theory library. This means that `IsKan t` is a structure containing the data of
@@ -30,8 +32,6 @@ exists.
 ## References
 https://ncatlab.org/nlab/show/Kan+extension
 
-## Todo
-left Kan lifts, right Kan extensions, and right Kan lifts
 -/
 
 namespace CategoryTheory
@@ -50,6 +50,33 @@ variable {f : a ⟶ b} {g : a ⟶ c}
 abbrev IsKan (t : LeftExtension f g) := t.IsUniversal
 
 end LeftExtension
+
+namespace LeftLift
+
+variable {f : b ⟶ a} {g : c ⟶ a}
+
+/-- A left Kan lift of `g` along `f` is an initial object in `LeftLift f g`. -/
+abbrev IsKan (t : LeftLift f g) := t.IsUniversal
+
+end LeftLift
+
+namespace RightExtension
+
+variable {f : a ⟶ b} {g : a ⟶ c}
+
+/-- A right Kan extension of `g` along `f` is a terminal object in `RightExtension f g`. -/
+abbrev IsKan (t : RightExtension f g) := t.IsUniversal
+
+end RightExtension
+
+namespace RightLift
+
+variable {f : b ⟶ a} {g : c ⟶ a}
+
+/-- A right Kan lift of `g` along `f` is a terminal object in `RightLift f g`. -/
+abbrev IsKan (t : RightLift f g) := t.IsUniversal
+
+end RightLift
 
 end Bicategory
 
