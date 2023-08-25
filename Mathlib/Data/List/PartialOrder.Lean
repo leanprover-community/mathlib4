@@ -44,7 +44,7 @@ lemma le_getLast_of_chain'_le
   rw [List.getLast_eq_get]
   refine s'.rel_get_of_le (Nat.lt_succ_iff.mp m.2 : (⟨_, _⟩ : Fin _) ≤ ⟨_, _⟩)
 
-lemma dedup_head?_of_chain_wcovby [DecidableEq α]
+lemma dedup_head?_of_chain'_wcovby [DecidableEq α]
   (l : List α) (l_chain : l.Chain' (. ⩿ .)) : l.dedup.head? = l.head? :=
 match l, l_chain with
 | [], _ => by simp
@@ -69,9 +69,37 @@ match l, l_chain with
   rw [h, _root_.le_antisymm h1 h2]
   rfl
 
-lemma dedup_head!_of_chain_wcovby [DecidableEq α] [Inhabited α]
+lemma dedup_head!_of_chain'_wcovby [DecidableEq α] [Inhabited α]
     (l : List α) (l_chain : l.Chain' (. ⩿ .)) : l.dedup.head! = l.head! :=
-  by rwa [List.head!_eq_head?, List.head!_eq_head?, List.dedup_head?_of_chain_wcovby]
+  by rwa [List.head!_eq_head?, List.head!_eq_head?, List.dedup_head?_of_chain'_wcovby]
+
+lemma dedup_getLast_eq_getLast_of_chain'_wcovby [DecidableEq α] [PartialOrder α]
+    (l : List α) (l_chain : l.Chain' (. ⩿ .)) (l_ne_nil : l ≠ []) :
+    l.dedup.getLast (List.dedup_ne_nil_of_ne_nil _ l_ne_nil) = l.getLast l_ne_nil := by
+  obtain ⟨y, l', rfl⟩ : ∃ (y : α) (l' : List α), l = y :: l'
+  · induction l with | nil => ?_ | cons y l' _ => ?_
+    · cases l_ne_nil rfl
+    · exact ⟨y, l', rfl⟩
+
+  refine _root_.le_antisymm ?_ ?_
+
+  · apply List.le_getLast_of_chain'_le _ _ (l_chain.imp $ λ _ _ ↦ Wcovby.le)
+    rw [←List.mem_dedup]
+    exact List.getLast_mem _
+
+  · have ne_nil2 : (y :: l').dedup ≠ []
+    · exact List.dedup_ne_nil_of_ne_nil _ l_ne_nil
+    obtain ⟨x, l, hl⟩ : ∃ (x : α) (l : List α), x :: l = (y :: l').dedup
+    . set L := dedup (y :: l'); clear_value L
+      induction L with | nil => ?_ | cons y l' _ => ?_
+      · cases ne_nil2 rfl
+      · exact ⟨_, _, rfl⟩
+    simp_rw [← hl]
+    refine List.le_getLast_of_chain'_le x l ?_ _ ?_
+    · rw [hl]
+      exact List.Chain'.sublist (l_chain.imp $ λ _ _ ↦ Wcovby.le) (List.dedup_sublist _)
+    rw [hl, List.mem_dedup]
+    exact List.getLast_mem _
 
 lemma dedup_chain'_wcovby_of_chain'_wcovby [DecidableEq α]
     (l : List α) (l_chain : l.Chain' (. ⩿ .)) : l.dedup.Chain' (. ⩿ .) := by
@@ -85,7 +113,7 @@ lemma dedup_chain'_wcovby_of_chain'_wcovby [DecidableEq α]
   · rw [List.dedup_cons_of_not_mem hx, List.chain'_cons']
     refine ⟨?_, ih l_chain.2⟩
     rintro y (hy : _ = _)
-    exact l_chain.1 y (Eq.trans (l.dedup_head?_of_chain_wcovby l_chain.2).symm hy)
+    exact l_chain.1 y (Eq.trans (l.dedup_head?_of_chain'_wcovby l_chain.2).symm hy)
 
 lemma dedup_chain'_covby_of_chain'_wcovby [DecidableEq α]
     (l : List α) (l_chain : l.Chain' (. ⩿ .)) : l.dedup.Chain' (. ⋖ .) := by

@@ -317,4 +317,82 @@ lemma eq_interList_get_of_head_eq_bot_and_interList_nodup (s0 : s.head = ⊥)
       refine ⟨hx1, ⟨hx1, hx2⟩⟩
     · rintro ⟨hy0, ⟨-, hy1⟩⟩; exact ⟨hy0, hy1⟩
 
+lemma eq_top_of_interList_nodup (s0 : s.head = ⊥) (slast : s.last = ⊤)
+    (hinter : (s.interList N).Nodup) :  N = ⊤ := by
+  classical
+  have eq0 := s.eq_interList_get_of_head_eq_bot_and_interList_nodup N s0 hinter (Fin.last _)
+  rw [show s (Fin.last _) = _ from slast, interList_get_eq_aux] at eq0
+  pick_goal 2
+  · simp only [Fin.coe_cast, Fin.val_last, lt_add_iff_pos_right]
+  simp only [Fin.coe_cast, Fin.val_last, ge_iff_le, Submodule.comap_inf,
+    Submodule.comap_subtype_self, top_le_iff, Submodule.comap_subtype_eq_top, _root_.le_top,
+    inf_of_le_right] at eq0
+  rw [show s ⟨s.length, _⟩ = _ from slast] at eq0
+  simp only [Submodule.comap_top, Submodule.map_top, Submodule.range_subtype] at eq0
+  exact eq0.symm
+
+lemma interList_not_nodup_of_lt_top (s0 : s.head = ⊥) (slast : s.last = ⊤)
+    (h : N < ⊤) : ¬ (s.interList N).Nodup := by
+  contrapose! h
+  rw [lt_top_iff_ne_top, not_ne_iff]
+  apply eq_top_of_interList_nodup <;>
+  assumption
+
+/-- after removing duplication from `s ⊓ N`, it becomes a composition series. -/
+@[simps!]
+noncomputable def ofInterList :
+  CompositionSeries (Submodule R N) :=
+let _ : DecidableEq (Submodule R N) := Classical.decEq _
+RelSeries.fromListChain' (s.interList N).dedup (List.dedup_ne_nil_of_ne_nil _ $
+  List.map_ne_nil_of_ne_nil _ s.toList_ne_empty _) $ List.dedup_chain'_covby_of_chain'_wcovby _ $
+  interList_chain'_wcovby s N
+
+lemma ofInterList_head_eq_bot_of_head_eq_bot (s0 : s.head = ⊥) :
+    (s.ofInterList N).head = ⊥ := by
+  classical
+  rw [ofInterList, RelSeries.fromListChain', RelSeries.head]
+  simp only [Function.comp_apply]
+  change List.get _ ⟨0, _⟩ = _
+  have h : 0 < (s.interList N).length
+  · rw [interList_length]; norm_num
+  have := List.dedup_head?_of_chain'_wcovby _ (s.interList_chain'_wcovby N)
+  rw [← List.get_zero h, ← List.get_zero, Option.some.injEq] at this
+  rw [this]
+  apply interList_head_eq_bot_of_head_eq_bot (s0 := s0)
+
+
+lemma ofInterList_last_eq_top_of_last_eq_top (slast : s.last = ⊤) :
+  (s.ofInterList N).last = ⊤ := by
+  classical
+  rw [ofInterList, RelSeries.fromListChain', RelSeries.last]
+  simp only [Function.comp_apply]
+  change List.get _ ⟨List.length _ - 1, _⟩ = _
+  rw [List.get_length_sub_one, List.dedup_getLast_eq_getLast_of_chain'_wcovby (l_ne_nil :=
+    show (s.interList N) ≠ [] from List.map_ne_nil_of_ne_nil _ s.toList_ne_empty _)
+    (l_chain := interList_chain'_wcovby s N), List.getLast_eq_get]
+  simp only [s.interList_length, ge_iff_le, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
+    add_tsub_cancel_right]
+  exact s.interList_last_eq_top_of_last_eq_top N slast
+
+lemma exists_compositionSeries_with_smaller_length_of_lt_top
+    (s0 : s.head = ⊥) (slast : s.last = ⊤) (h : N < ⊤) :
+    ∃ (s' : CompositionSeries (Submodule R N)),
+      s'.head = ⊥ ∧ s'.last = ⊤ ∧ s'.length < s.length := by
+  classical
+  refine ⟨s.ofInterList N, s.ofInterList_head_eq_bot_of_head_eq_bot N s0,
+    s.ofInterList_last_eq_top_of_last_eq_top N slast, ?_⟩
+  rw [ofInterList, RelSeries.fromListChain']
+  change List.length _ - 1 < s.length
+  have ineq1 : (s.interList N).dedup.length < (s.interList N).length
+  · exact List.dedup_length_lt_of_not_nodup _
+      (s.interList_not_nodup_of_lt_top N s0 slast h)
+  rw [interList_length] at ineq1
+  have ineq2 : 0 < (s.interList N).dedup.length
+  · by_contra rid
+    push_neg at rid
+    norm_num at rid
+    rw [List.length_eq_zero] at rid
+    exact List.dedup_ne_nil_of_ne_nil _ (List.map_ne_nil_of_ne_nil _ s.toList_ne_nil _) rid
+  apply Nat.sub_lt_right_of_lt_add (H := ineq2) (h := ineq1)
+
 end CompositionSeries
