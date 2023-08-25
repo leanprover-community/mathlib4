@@ -1,4 +1,3 @@
-import Mathlib.Algebra.Ring.UnitEquivs
 import Mathlib.GroupTheory.ClassEquation
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
