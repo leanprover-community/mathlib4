@@ -17,7 +17,7 @@ which allows us to more easily work with operations which do depend
 on the number of leading zeros in the binary representation of `n`.
 For example, we can more easily work with `Nat.bits` and `Nat.size`.
 
-See also: `Nat.bitwise`, `Nat.pow` (for various lemmas about `size` and `shiftl`/`shiftr`),
+See also: `Nat.bitwise`, `Nat.pow` (for various lemmas about `size` and `shiftLeft`/`shiftRight`),
 and `Nat.digits`.
 -/
 
