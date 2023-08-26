@@ -301,9 +301,11 @@ combined in a single query.
 
 2. By lemma name substring:
    ```lean
-   #find "two"
+   #find Real.sin "two"
    ```
-   finds all lemmas that have `"two"` as part of the lemma _name_.
+   restricts the search above to those lemmas that have `"two"` as part of the lemma _name_.
+
+   (Currently, substring searches _must_ be combined with other kind of queries.)
 
 3. By subexpression:
    ```lean
@@ -326,6 +328,7 @@ combined in a single query.
    #find ⊢ (_ < _ → tsum _ < tsum _)
    ```
    will find `tsum_lt_tsum` even though the hypothesis `f i < g i` is not the last.
+
 5. In combination:
    ```lean
    #find Real.sin "two" tsum  (_ * _) (_ ^ _) ⊢ (_ < _ → _)
