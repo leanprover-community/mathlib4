@@ -1212,7 +1212,7 @@ lemma le_iff_transGen_wcovby [Preorder α] [LocallyFiniteOrder α] {x y : α} :
 /-- In a locally finite partial order, `≤` is the reflexive transitive closure of `⋖`. -/
 lemma le_iff_reflTransGen_covby [PartialOrder α] [LocallyFiniteOrder α] {x y : α} :
     x ≤ y ↔ ReflTransGen (· ⋖ ·) x y := by
-  rw [le_iff_transGen_wcovby, wcovby_eq_reflGen_covby, transGen_comp_reflGen]
+  rw [le_iff_transGen_wcovby, wcovby_eq_reflGen_covby, transGen_reflGen]
 
 /-- In a locally finite preorder, `<` is the transitive closure of `⋖`. -/
 lemma lt_iff_transGen_covby [Preorder α] [LocallyFiniteOrder α] {x y : α} :
