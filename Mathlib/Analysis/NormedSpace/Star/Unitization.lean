@@ -15,7 +15,7 @@ open ContinuousLinearMap
 
 local postfix:max "⋆" => star
 
-variable (𝕜 : Type _) {E : Type _}
+variable (𝕜 : Type*) {E : Type*}
 
 variable [DenselyNormedField 𝕜] [NonUnitalNormedRing E] [StarRing E] [CstarRing E]
 

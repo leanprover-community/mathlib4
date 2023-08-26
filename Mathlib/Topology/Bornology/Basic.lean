@@ -41,12 +41,12 @@ it is intended for regular use as a filter on `α`.
 
 open Set Filter
 
-variable {ι α β : Type _}
+variable {ι α β : Type*}
 
 /-- A **bornology** on a type `α` is a filter of cobounded sets which contains the cofinite filter.
 Such spaces are equivalently specified by their bounded sets, see `Bornology.ofBounded`
 and `Bornology.ext_iff_isBounded`-/
-class Bornology (α : Type _) where
+class Bornology (α : Type*) where
   /-- The filter of cobounded sets in a bornology. This is a field of the structure, but one
   should always prefer `Bornology.cobounded` because it makes the `α` argument explciit. -/
   cobounded' : Filter α
@@ -61,12 +61,12 @@ fields explicit, we have to define these separately, prove the `ext` lemmas manu
 initialize new `simps` projections. -/
 
 /-- The filter of cobounded sets in a bornology. -/
-def Bornology.cobounded (α : Type _) [Bornology α] : Filter α := Bornology.cobounded'
+def Bornology.cobounded (α : Type*) [Bornology α] : Filter α := Bornology.cobounded'
 #align bornology.cobounded Bornology.cobounded
 
 alias Bornology.cobounded ← Bornology.Simps.cobounded
 
-lemma Bornology.le_cofinite (α : Type _) [Bornology α] : cobounded α ≤ cofinite :=
+lemma Bornology.le_cofinite (α : Type*) [Bornology α] : cobounded α ≤ cofinite :=
 Bornology.le_cofinite'
 #align bornology.le_cofinite Bornology.le_cofinite
 
@@ -89,7 +89,7 @@ lemma Bornology.ext_iff (t t' : Bornology α) :
 /-- A constructor for bornologies by specifying the bounded sets,
 and showing that they satisfy the appropriate conditions. -/
 @[simps]
-def Bornology.ofBounded {α : Type _} (B : Set (Set α))
+def Bornology.ofBounded {α : Type*} (B : Set (Set α))
     (empty_mem : ∅ ∈ B)
     (subset_mem : ∀ s₁ (_ : s₁ ∈ B) s₂, s₂ ⊆ s₁ → s₂ ∈ B)
     (union_mem : ∀ s₁ (_ : s₁ ∈ B) s₂ (_ : s₂ ∈ B), s₁ ∪ s₂ ∈ B)
@@ -112,7 +112,7 @@ def Bornology.ofBounded {α : Type _} (B : Set (Set α))
 /-- A constructor for bornologies by specifying the bounded sets,
 and showing that they satisfy the appropriate conditions. -/
 @[simps!]
-def Bornology.ofBounded' {α : Type _} (B : Set (Set α))
+def Bornology.ofBounded' {α : Type*} (B : Set (Set α))
     (empty_mem : ∅ ∈ B)
     (subset_mem : ∀ s₁ (_ : s₁ ∈ B) s₂, s₂ ⊆ s₁ → s₂ ∈ B)
     (union_mem : ∀ s₁ (_ : s₁ ∈ B) s₂ (_ : s₂ ∈ B), s₁ ∪ s₂ ∈ B)
@@ -317,7 +317,7 @@ def Bornology.cofinite : Bornology α
 #align bornology.cofinite Bornology.cofinite
 
 /-- A space with a `Bornology` is a **bounded space** if `Set.univ : Set α` is bounded. -/
-class BoundedSpace (α : Type _) [Bornology α] : Prop where
+class BoundedSpace (α : Type*) [Bornology α] : Prop where
   /-- The `Set.univ` is bounded. -/
   bounded_univ : Bornology.IsBounded (univ : Set α)
 #align bounded_space BoundedSpace

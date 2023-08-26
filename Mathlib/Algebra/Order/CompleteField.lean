@@ -45,7 +45,7 @@ reals, conditionally complete, ordered field, uniqueness
 -/
 
 
-variable {F α β γ : Type _}
+variable {F α β γ : Type*}
 
 noncomputable section
 
@@ -56,7 +56,7 @@ open scoped Classical Pointwise
 /-- A field which is both linearly ordered and conditionally complete with respect to the order.
 This axiomatizes the reals. -/
 -- @[protect_proj] -- Porting note: does not exist anymore
-class ConditionallyCompleteLinearOrderedField (α : Type _) extends
+class ConditionallyCompleteLinearOrderedField (α : Type*) extends
     LinearOrderedField α, ConditionallyCompleteLinearOrder α
 #align conditionally_complete_linear_ordered_field ConditionallyCompleteLinearOrderedField
 
@@ -261,7 +261,6 @@ theorem le_inducedMap_mul_self_of_mem_cutMap (ha : 0 < a) (b : β) (hb : b ∈ c
   trans (q' : β) ^ 2
   exact_mod_cast hqq'.le
   rw [pow_two] at hqa ⊢
-  push_cast at hqa
   exact mul_self_le_mul_self (by exact_mod_cast hq'.le)
     (le_csSup (cutMap_bddAbove β a) <|
       coe_mem_cutMap_iff.2 <| lt_of_mul_self_lt_mul_self ha.le hqa)
@@ -359,7 +358,7 @@ end LinearOrderedField
 
 section Real
 
-variable {R S : Type _} [OrderedRing R] [LinearOrderedRing S]
+variable {R S : Type*} [OrderedRing R] [LinearOrderedRing S]
 
 theorem ringHom_monotone (hR : ∀ r : R, 0 ≤ r → ∃ s : R, s ^ 2 = r) (f : R →+* S) : Monotone f :=
   (monotone_iff_map_nonneg f).2 fun r h => by

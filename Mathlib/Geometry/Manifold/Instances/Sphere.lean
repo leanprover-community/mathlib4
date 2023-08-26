@@ -64,7 +64,7 @@ Relate the stereographic projection to the inversion of the space.
 -/
 
 
-variable {E : Type _} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 noncomputable section
 
@@ -72,7 +72,7 @@ open Metric FiniteDimensional Function
 
 open scoped Manifold
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 section StereographicProjection
 
@@ -476,11 +476,11 @@ theorem contMDiff_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
           U.symm.contDiff).contDiffOn
 #align cont_mdiff_coe_sphere contMDiff_coe_sphere
 
-variable {F : Type _} [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
-variable {H : Type _} [TopologicalSpace H] {I : ModelWithCorners ℝ F H}
+variable {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ F H}
 
-variable {M : Type _} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
+variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
 
 /-- If a `cont_mdiff` function `f : M → E`, where `M` is some manifold, takes values in the
 sphere, then it restricts to a `cont_mdiff` function from `M` to the sphere. -/

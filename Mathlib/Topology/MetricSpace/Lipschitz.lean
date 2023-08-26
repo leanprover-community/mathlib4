@@ -40,6 +40,8 @@ coercions both to `ℝ` and `ℝ≥0∞`. Constructors whose names end with `'` 
 argument, and return `LipschitzWith (Real.toNNReal K) f`.
 -/
 
+set_option autoImplicit true
+
 
 universe u v w x
 

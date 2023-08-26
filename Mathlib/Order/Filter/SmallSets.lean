@@ -26,7 +26,7 @@ open Filter
 
 open Filter Set
 
-variable {α β : Type _} {ι : Sort _}
+variable {α β : Type*} {ι : Sort*}
 
 namespace Filter
 

@@ -37,7 +37,7 @@ open Classical BigOperators Polynomial Submodule
 
 section Ring
 
-variable {R S A : Type _}
+variable {R S A : Type*}
 
 variable [CommRing R] [Ring A] [Ring S] (f : R →+* S)
 
@@ -115,7 +115,7 @@ end Ring
 
 section
 
-variable {K A : Type _}
+variable {K A : Type*}
 
 variable [Field K] [Ring A] [Algebra K A] [FiniteDimensional K A]
 
@@ -135,13 +135,13 @@ end
 
 section
 
-variable {R A B S : Type _}
+variable {R A B S : Type*}
 
 variable [CommRing R] [CommRing A] [CommRing B] [CommRing S]
 
 variable [Algebra R A] [Algebra R B] (f : R →+* S)
 
-theorem map_isIntegral {B C F : Type _} [Ring B] [Ring C] [Algebra R B] [Algebra A B] [Algebra R C]
+theorem map_isIntegral {B C F : Type*} [Ring B] [Ring C] [Algebra R B] [Algebra A B] [Algebra R C]
     [IsScalarTower R A B] [Algebra A C] [IsScalarTower R A C] {b : B} [AlgHomClass F A B C] (f : F)
     (hb : IsIntegral R b) : IsIntegral R (f b) := by
   obtain ⟨P, hP⟩ := hb
@@ -150,7 +150,7 @@ theorem map_isIntegral {B C F : Type _} [Ring B] [Ring C] [Algebra R B] [Algebra
     aeval_algHom_apply, aeval_map_algebraMap, aeval_def, hP.2, _root_.map_zero]
 #align map_is_integral map_isIntegral
 
-theorem isIntegral_map_of_comp_eq_of_isIntegral {R S T U : Type _} [CommRing R] [CommRing S]
+theorem isIntegral_map_of_comp_eq_of_isIntegral {R S T U : Type*} [CommRing R] [CommRing S]
     [CommRing T] [CommRing U] [Algebra R S] [Algebra T U] (φ : R →+* T) (ψ : S →+* U)
     (h : (algebraMap T U).comp φ = ψ.comp (algebraMap R S)) {a : S} (ha : IsIntegral R a) :
     IsIntegral T (ψ a) := by
@@ -161,7 +161,7 @@ theorem isIntegral_map_of_comp_eq_of_isIntegral {R S T U : Type _} [CommRing R] 
     RingHom.map_zero]
 #align is_integral_map_of_comp_eq_of_is_integral isIntegral_map_of_comp_eq_of_isIntegral
 
-theorem isIntegral_algHom_iff {A B : Type _} [Ring A] [Ring B] [Algebra R A] [Algebra R B]
+theorem isIntegral_algHom_iff {A B : Type*} [Ring A] [Ring B] [Algebra R A] [Algebra R B]
     (f : A →ₐ[R] B) (hf : Function.Injective f) {x : A} : IsIntegral R (f x) ↔ IsIntegral R x := by
   refine' ⟨_, map_isIntegral f⟩
   rintro ⟨p, hp, hx⟩
@@ -171,7 +171,7 @@ theorem isIntegral_algHom_iff {A B : Type _} [Ring A] [Ring B] [Algebra R A] [Al
 #align is_integral_alg_hom_iff isIntegral_algHom_iff
 
 @[simp]
-theorem isIntegral_algEquiv {A B : Type _} [Ring A] [Ring B] [Algebra R A] [Algebra R B]
+theorem isIntegral_algEquiv {A B : Type*} [Ring A] [Ring B] [Algebra R A] [Algebra R B]
     (f : A ≃ₐ[R] B) {x : A} : IsIntegral R (f x) ↔ IsIntegral R x :=
   ⟨fun h => by simpa using map_isIntegral f.symm.toAlgHom h, map_isIntegral f.toAlgHom⟩
 #align is_integral_alg_equiv isIntegral_algEquiv
@@ -182,7 +182,7 @@ theorem isIntegral_of_isScalarTower [Algebra A B] [IsScalarTower R A B] {x : B}
   ⟨p.map <| algebraMap R A, hp.map _, by rw [← aeval_def, aeval_map_algebraMap, aeval_def, hpx]⟩
 #align is_integral_of_is_scalar_tower isIntegral_of_isScalarTower
 
-theorem map_isIntegral_int {B C F : Type _} [Ring B] [Ring C] {b : B} [RingHomClass F B C] (f : F)
+theorem map_isIntegral_int {B C F : Type*} [Ring B] [Ring C] {b : B} [RingHomClass F B C] (f : F)
     (hb : IsIntegral ℤ b) : IsIntegral ℤ (f b) :=
   map_isIntegral (f : B →+* C).toIntAlgHom hb
 #align map_is_integral_int map_isIntegral_int
@@ -369,14 +369,14 @@ theorem isIntegral_of_mem_of_FG (S : Subalgebra R A) (HS : S.toSubmodule.FG) (x 
   exact Subalgebra.smul_mem _ (Algebra.subset_adjoin <| hlx1 hr) _
 #align is_integral_of_mem_of_fg isIntegral_of_mem_of_FG
 
-theorem Module.End.isIntegral {M : Type _} [AddCommGroup M] [Module R M] [Module.Finite R M] :
+theorem Module.End.isIntegral {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M] :
     Algebra.IsIntegral R (Module.End R M) :=
   LinearMap.exists_monic_and_aeval_eq_zero R
 #align module.End.is_integral Module.End.isIntegral
 
 /-- Suppose `A` is an `R`-algebra, `M` is an `A`-module such that `a • m ≠ 0` for all non-zero `a`
 and `m`. If `x : A` fixes a nontrivial f.g. `R`-submodule `N` of `M`, then `x` is `R`-integral. -/
-theorem isIntegral_of_smul_mem_submodule {M : Type _} [AddCommGroup M] [Module R M] [Module A M]
+theorem isIntegral_of_smul_mem_submodule {M : Type*} [AddCommGroup M] [Module R M] [Module A M]
     [IsScalarTower R A M] [NoZeroSMulDivisors A M] (N : Submodule R M) (hN : N ≠ ⊥) (hN' : N.FG)
     (x : A) (hx : ∀ n ∈ N, x • n ∈ N) : IsIntegral R x := by
   let A' : Subalgebra R A :=
@@ -643,7 +643,7 @@ theorem isIntegral_of_mem_closure' (G : Set A) (hG : ∀ x ∈ G, IsIntegral R x
     (fun _ => isIntegral_neg) fun _ _ => isIntegral_mul
 #align is_integral_of_mem_closure' isIntegral_of_mem_closure'
 
-theorem isIntegral_of_mem_closure'' {S : Type _} [CommRing S] {f : R →+* S} (G : Set S)
+theorem isIntegral_of_mem_closure'' {S : Type*} [CommRing S] {f : R →+* S} (G : Set S)
     (hG : ∀ x ∈ G, f.IsIntegralElem x) : ∀ x ∈ Subring.closure G, f.IsIntegralElem x := fun x hx =>
   @isIntegral_of_mem_closure' R S _ _ f.toAlgebra G hG x hx
 #align is_integral_of_mem_closure'' isIntegral_of_mem_closure''
@@ -670,17 +670,17 @@ theorem IsIntegral.multiset_sum {s : Multiset A} (h : ∀ x ∈ s, IsIntegral R 
   (integralClosure R A).multiset_sum_mem h
 #align is_integral.multiset_sum IsIntegral.multiset_sum
 
-theorem IsIntegral.prod {α : Type _} {s : Finset α} (f : α → A) (h : ∀ x ∈ s, IsIntegral R (f x)) :
+theorem IsIntegral.prod {α : Type*} {s : Finset α} (f : α → A) (h : ∀ x ∈ s, IsIntegral R (f x)) :
     IsIntegral R (∏ x in s, f x) :=
   (integralClosure R A).prod_mem h
 #align is_integral.prod IsIntegral.prod
 
-theorem IsIntegral.sum {α : Type _} {s : Finset α} (f : α → A) (h : ∀ x ∈ s, IsIntegral R (f x)) :
+theorem IsIntegral.sum {α : Type*} {s : Finset α} (f : α → A) (h : ∀ x ∈ s, IsIntegral R (f x)) :
     IsIntegral R (∑ x in s, f x) :=
   (integralClosure R A).sum_mem h
 #align is_integral.sum IsIntegral.sum
 
-theorem IsIntegral.det {n : Type _} [Fintype n] [DecidableEq n] {M : Matrix n n A}
+theorem IsIntegral.det {n : Type*} [Fintype n] [DecidableEq n] {M : Matrix n n A}
     (h : ∀ i j, IsIntegral R (M i j)) : IsIntegral R M.det := by
   rw [Matrix.det_apply]
   exact IsIntegral.sum _ fun σ _hσ => IsIntegral.zsmul (IsIntegral.prod _ fun i _hi => h _ _) _
@@ -708,7 +708,7 @@ theorem IsIntegral.tmul (x : A) {y : B} (h : IsIntegral R y) : IsIntegral A (x �
   · simp only [Algebra.TensorProduct.includeLeftRingHom_apply, Algebra.TensorProduct.tmul_pow,
       one_pow]
     convert (MulZeroClass.mul_zero (M₀ := A ⊗[R] B) _).symm
-    erw [Polynomial.eval₂_map, Algebra.TensorProduct.includeLeft_comp_algebraMap,
+    erw [Polynomial.eval₂_map, Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap,
       ← Polynomial.eval₂_map]
     convert Polynomial.eval₂_at_apply
       (Algebra.TensorProduct.includeRight : B →ₐ[R] A ⊗[R] B).toRingHom y
@@ -832,13 +832,13 @@ section IsIntegralClosure
 the integral closure of `R` in `B`,
 i.e. that an element of `B` is integral over `R` iff it is an element of (the image of) `A`.
 -/
-class IsIntegralClosure (A R B : Type _) [CommRing R] [CommSemiring A] [CommRing B] [Algebra R B]
+class IsIntegralClosure (A R B : Type*) [CommRing R] [CommSemiring A] [CommRing B] [Algebra R B]
   [Algebra A B] : Prop where
   algebraMap_injective' : Function.Injective (algebraMap A B)
   isIntegral_iff : ∀ {x : B}, IsIntegral R x ↔ ∃ y, algebraMap A B y = x
 #align is_integral_closure IsIntegralClosure
 
-instance integralClosure.isIntegralClosure (R A : Type _) [CommRing R] [CommRing A] [Algebra R A] :
+instance integralClosure.isIntegralClosure (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] :
     IsIntegralClosure (integralClosure R A) R A where
   algebraMap_injective' := Subtype.coe_injective
   isIntegral_iff {x} := ⟨fun h => ⟨⟨x, h⟩, rfl⟩, by rintro ⟨⟨_, h⟩, rfl⟩; exact h⟩
@@ -847,11 +847,11 @@ instance integralClosure.isIntegralClosure (R A : Type _) [CommRing R] [CommRing
 namespace IsIntegralClosure
 
 -- Porting note: added to work around missing infer kind support
-theorem algebraMap_injective (A R B : Type _) [CommRing R] [CommSemiring A] [CommRing B]
+theorem algebraMap_injective (A R B : Type*) [CommRing R] [CommSemiring A] [CommRing B]
   [Algebra R B] [Algebra A B] [IsIntegralClosure A R B] : Function.Injective (algebraMap A B) :=
   algebraMap_injective' R
 
-variable {R A B : Type _} [CommRing R] [CommRing A] [CommRing B]
+variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B]
 
 variable [Algebra R B] [Algebra A B] [IsIntegralClosure A R B]
 
@@ -918,7 +918,7 @@ theorem mk'_algebraMap [Algebra R A] [IsScalarTower R A B] (x : R)
 section lift
 
 -- porting note: `R` and `A` were redundant binder updates
-variable (B) {S : Type _} [CommRing S] [Algebra R S]
+variable (B) {S : Type*} [CommRing S] [Algebra R S]
 -- split from above, since otherwise it does not synthesize `Semiring S`
 variable [Algebra S B] [IsScalarTower R S B]
 
@@ -944,7 +944,7 @@ end lift
 
 section Equiv
 
-variable (R B) (A' : Type _) [CommRing A']
+variable (R B) (A' : Type*) [CommRing A']
 variable [Algebra A' B] [IsIntegralClosure A' R B]
 
 variable [Algebra R A] [Algebra R A'] [IsScalarTower R A B] [IsScalarTower R A' B]
@@ -977,7 +977,7 @@ section Algebra
 
 open Algebra
 
-variable {R A B S T : Type _}
+variable {R A B S T : Type*}
 
 variable [CommRing R] [CommRing A] [CommRing B] [CommRing S] [CommRing T]
 
@@ -1071,7 +1071,7 @@ nonrec theorem RingHom.isIntegral_tower_bot_of_isIntegral (hg : Function.Injecti
     hg x (hfg (g x))
 #align ring_hom.is_integral_tower_bot_of_is_integral RingHom.isIntegral_tower_bot_of_isIntegral
 
-theorem isIntegral_tower_bot_of_isIntegral_field {R A B : Type _} [CommRing R] [Field A]
+theorem isIntegral_tower_bot_of_isIntegral_field {R A B : Type*} [CommRing R] [Field A]
     [CommRing B] [Nontrivial B] [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
     {x : A} (h : IsIntegral R (algebraMap A B x)) : IsIntegral R x :=
   isIntegral_tower_bot_of_isIntegral (algebraMap A B).injective h
@@ -1123,7 +1123,7 @@ theorem isIntegral_quotientMap_iff {I : Ideal S} :
 #align is_integral_quotient_map_iff isIntegral_quotientMap_iff
 
 /-- If the integral extension `R → S` is injective, and `S` is a field, then `R` is also a field. -/
-theorem isField_of_isIntegral_of_isField {R S : Type _} [CommRing R] [Nontrivial R] [CommRing S]
+theorem isField_of_isIntegral_of_isField {R S : Type*} [CommRing R] [Nontrivial R] [CommRing S]
     [IsDomain S] [Algebra R S] (H : Algebra.IsIntegral R S)
     (hRS : Function.Injective (algebraMap R S)) (hS : IsField S) : IsField R := by
   refine' ⟨⟨0, 1, zero_ne_one⟩, mul_comm, fun {a} ha => _⟩
@@ -1161,7 +1161,7 @@ theorem isField_of_isIntegral_of_isField {R S : Type _} [CommRing R] [Nontrivial
   rw [mul_assoc, ← pow_succ', tsub_add_cancel_of_le this]
 #align is_field_of_is_integral_of_is_field isField_of_isIntegral_of_isField
 
-theorem isField_of_isIntegral_of_isField' {R S : Type _} [CommRing R] [CommRing S] [IsDomain S]
+theorem isField_of_isIntegral_of_isField' {R S : Type*} [CommRing R] [CommRing S] [IsDomain S]
     [Algebra R S] (H : Algebra.IsIntegral R S) (hR : IsField R) : IsField S := by
   letI := hR.toField
   refine' ⟨⟨0, 1, zero_ne_one⟩, mul_comm, fun {x} hx => _⟩
@@ -1178,7 +1178,7 @@ theorem isField_of_isIntegral_of_isField' {R S : Type _} [CommRing R] [CommRing 
   exact ⟨y, Subtype.ext_iff.mp hy⟩
 #align is_field_of_is_integral_of_is_field' isField_of_isIntegral_of_isField'
 
-theorem Algebra.IsIntegral.isField_iff_isField {R S : Type _} [CommRing R] [Nontrivial R]
+theorem Algebra.IsIntegral.isField_iff_isField {R S : Type*} [CommRing R] [Nontrivial R]
     [CommRing S] [IsDomain S] [Algebra R S] (H : Algebra.IsIntegral R S)
     (hRS : Function.Injective (algebraMap R S)) : IsField R ↔ IsField S :=
   ⟨isField_of_isIntegral_of_isField' H, isField_of_isIntegral_of_isField H hRS⟩
@@ -1186,7 +1186,7 @@ theorem Algebra.IsIntegral.isField_iff_isField {R S : Type _} [CommRing R] [Nont
 
 end Algebra
 
-theorem integralClosure_idem {R : Type _} {A : Type _} [CommRing R] [CommRing A] [Algebra R A] :
+theorem integralClosure_idem {R : Type*} {A : Type*} [CommRing R] [CommRing A] [Algebra R A] :
     integralClosure (integralClosure R A : Set A) A = ⊥ :=
   eq_bot_iff.2 fun x hx =>
     Algebra.mem_bot.2
@@ -1198,7 +1198,7 @@ theorem integralClosure_idem {R : Type _} {A : Type _} [CommRing R] [CommRing A]
 
 section IsDomain
 
-variable {R S : Type _} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
+variable {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
 
 instance : IsDomain (integralClosure R S) :=
   inferInstance

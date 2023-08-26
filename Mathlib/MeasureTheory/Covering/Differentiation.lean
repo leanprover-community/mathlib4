@@ -77,14 +77,14 @@ make no sense. However, the measure is not globally zero if the space is big eno
 -/
 
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open MeasureTheory Metric Set Filter TopologicalSpace MeasureTheory.Measure
 
 open scoped Filter ENNReal MeasureTheory NNReal Topology
 
-variable {α : Type _} [MetricSpace α] {m0 : MeasurableSpace α} {μ : Measure α} (v : VitaliFamily μ)
-  {E : Type _} [NormedAddCommGroup E]
+variable {α : Type*} [MetricSpace α] {m0 : MeasurableSpace α} {μ : Measure α} (v : VitaliFamily μ)
+  {E : Type*} [NormedAddCommGroup E]
 
 namespace VitaliFamily
 
@@ -772,7 +772,6 @@ theorem ae_tendsto_measure_inter_div (s : Set α) :
 
 /-! ### Lebesgue differentiation theorem -/
 
-
 theorem ae_tendsto_lintegral_div' {f : α → ℝ≥0∞} (hf : Measurable f) (h'f : (∫⁻ y, f y ∂μ) ≠ ∞) :
     ∀ᵐ x ∂μ, Tendsto (fun a => (∫⁻ y in a, f y ∂μ) / μ a) (v.filterAt x) (𝓝 (f x)) := by
   let ρ := μ.withDensity f
@@ -799,7 +798,7 @@ theorem ae_tendsto_lintegral_div {f : α → ℝ≥0∞} (hf : AEMeasurable f μ
   exact ae_restrict_of_ae hf.ae_eq_mk
 #align vitali_family.ae_tendsto_lintegral_div VitaliFamily.ae_tendsto_lintegral_div
 
-theorem ae_tendsto_lintegral_nnnorm_sub_div' {f : α → E} (hf : Integrable f μ)
+theorem ae_tendsto_lintegral_nnnorm_sub_div'_of_integrable {f : α → E} (hf : Integrable f μ)
     (h'f : StronglyMeasurable f) :
     ∀ᵐ x ∂μ, Tendsto (fun a => (∫⁻ y in a, ‖f y - f x‖₊ ∂μ) / μ a) (v.filterAt x) (𝓝 0) := by
   /- For every `c`, then `(∫⁻ y in a, ‖f y - c‖₊ ∂μ) / μ a` tends almost everywhere to `‖f x - c‖`.
@@ -873,12 +872,12 @@ theorem ae_tendsto_lintegral_nnnorm_sub_div' {f : α → E} (hf : Integrable f �
       · simp only [lintegral_const, Measure.restrict_apply, MeasurableSet.univ, univ_inter]
         exact mul_le_mul_right' xc.le _
     _ = ε * μ a := by rw [← add_mul, ENNReal.add_halves]
-#align vitali_family.ae_tendsto_lintegral_nnnorm_sub_div' VitaliFamily.ae_tendsto_lintegral_nnnorm_sub_div'
+#align vitali_family.ae_tendsto_lintegral_nnnorm_sub_div' VitaliFamily.ae_tendsto_lintegral_nnnorm_sub_div'_of_integrable
 
-theorem ae_tendsto_lintegral_nnnorm_sub_div {f : α → E} (hf : Integrable f μ) :
+theorem ae_tendsto_lintegral_nnnorm_sub_div_of_integrable {f : α → E} (hf : Integrable f μ) :
     ∀ᵐ x ∂μ, Tendsto (fun a => (∫⁻ y in a, ‖f y - f x‖₊ ∂μ) / μ a) (v.filterAt x) (𝓝 0) := by
   have I : Integrable (hf.1.mk f) μ := hf.congr hf.1.ae_eq_mk
-  filter_upwards [v.ae_tendsto_lintegral_nnnorm_sub_div' I hf.1.stronglyMeasurable_mk,
+  filter_upwards [v.ae_tendsto_lintegral_nnnorm_sub_div'_of_integrable I hf.1.stronglyMeasurable_mk,
     hf.1.ae_eq_mk] with x hx h'x
   apply hx.congr _
   intro a
@@ -887,45 +886,69 @@ theorem ae_tendsto_lintegral_nnnorm_sub_div {f : α → E} (hf : Integrable f μ
   apply ae_restrict_of_ae
   filter_upwards [hf.1.ae_eq_mk] with y hy
   rw [hy, h'x]
-#align vitali_family.ae_tendsto_lintegral_nnnorm_sub_div VitaliFamily.ae_tendsto_lintegral_nnnorm_sub_div
+#align vitali_family.ae_tendsto_lintegral_nnnorm_sub_div VitaliFamily.ae_tendsto_lintegral_nnnorm_sub_div_of_integrable
+
+theorem ae_tendsto_lintegral_nnnorm_sub_div {f : α → E} (hf : LocallyIntegrable f μ) :
+    ∀ᵐ x ∂μ, Tendsto (fun a => (∫⁻ y in a, ‖f y - f x‖₊ ∂μ) / μ a) (v.filterAt x) (𝓝 0) := by
+  rcases hf.exists_nat_integrableOn with ⟨u, u_open, u_univ, hu⟩
+  have : ∀ n, ∀ᵐ x ∂μ,
+      Tendsto (fun a => (∫⁻ y in a, ‖(u n).indicator f y - (u n).indicator f x‖₊ ∂μ) / μ a)
+      (v.filterAt x) (𝓝 0) := by
+    intro n
+    apply ae_tendsto_lintegral_nnnorm_sub_div_of_integrable
+    exact (integrable_indicator_iff (u_open n).measurableSet).2 (hu n)
+  filter_upwards [ae_all_iff.2 this] with x hx
+  obtain ⟨n, hn⟩ : ∃ n, x ∈ u n := by simpa only [← u_univ, mem_iUnion] using mem_univ x
+  apply Tendsto.congr' _ (hx n)
+  filter_upwards [v.eventually_filterAt_subset_of_nhds ((u_open n).mem_nhds hn),
+    v.eventually_filterAt_measurableSet x] with a ha h'a
+  congr 1
+  refine' set_lintegral_congr_fun h'a (eventually_of_forall (fun y hy ↦ _))
+  rw [indicator_of_mem (ha hy) f, indicator_of_mem hn f]
+
+theorem eventually_filterAt_integrableOn (x : α) {f : α → E} (hf : LocallyIntegrable f μ) :
+    ∀ᶠ a in v.filterAt x, IntegrableOn f a μ := by
+  rcases hf x with ⟨w, w_nhds, hw⟩
+  filter_upwards [v.eventually_filterAt_subset_of_nhds w_nhds] with a ha
+  exact hw.mono_set ha
 
 /-- *Lebesgue differentiation theorem*: for almost every point `x`, the
 average of `‖f y - f x‖` on `a` tends to `0` as `a` shrinks to `x` along a Vitali family.-/
-theorem ae_tendsto_average_norm_sub {f : α → E} (hf : Integrable f μ) :
+theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ) :
     ∀ᵐ x ∂μ, Tendsto (fun a => ⨍ y in a, ‖f y - f x‖ ∂μ) (v.filterAt x) (𝓝 0) := by
-  filter_upwards [v.ae_tendsto_lintegral_nnnorm_sub_div hf, v.ae_eventually_measure_pos] with x hx
-    h'x
+  filter_upwards [v.ae_tendsto_lintegral_nnnorm_sub_div hf] with x hx
   have := (ENNReal.tendsto_toReal ENNReal.zero_ne_top).comp hx
   simp only [ENNReal.zero_toReal] at this
   apply Tendsto.congr' _ this
-  filter_upwards [h'x, v.eventually_measure_lt_top x] with a _ h'a
+  filter_upwards [v.eventually_measure_lt_top x, v.eventually_filterAt_integrableOn x hf]
+    with a h'a h''a
   simp only [Function.comp_apply, ENNReal.toReal_div, setAverage_eq, div_eq_inv_mul]
   have A : IntegrableOn (fun y => (‖f y - f x‖₊ : ℝ)) a μ := by
     simp_rw [coe_nnnorm]
-    exact (hf.integrableOn.sub (integrableOn_const.2 (Or.inr h'a))).norm
+    exact (h''a.sub (integrableOn_const.2 (Or.inr h'a))).norm
   rw [lintegral_coe_eq_integral _ A, ENNReal.toReal_ofReal]
   · simp_rw [coe_nnnorm]
     rfl
   · apply integral_nonneg
     intro x
     exact NNReal.coe_nonneg _
-#align vitali_family.ae_tendsto_average_norm_sub VitaliFamily.ae_tendsto_average_norm_sub
 
 /-- *Lebesgue differentiation theorem*: for almost every point `x`, the
 average of `f` on `a` tends to `f x` as `a` shrinks to `x` along a Vitali family.-/
-theorem ae_tendsto_average [NormedSpace ℝ E] [CompleteSpace E] {f : α → E} (hf : Integrable f μ) :
+theorem ae_tendsto_average [NormedSpace ℝ E] [CompleteSpace E] {f : α → E}
+    (hf : LocallyIntegrable f μ) :
     ∀ᵐ x ∂μ, Tendsto (fun a => ⨍ y in a, f y ∂μ) (v.filterAt x) (𝓝 (f x)) := by
   filter_upwards [v.ae_tendsto_average_norm_sub hf, v.ae_eventually_measure_pos] with x hx h'x
   rw [tendsto_iff_norm_tendsto_zero]
   refine' squeeze_zero' (eventually_of_forall fun a => norm_nonneg _) _ hx
-  filter_upwards [h'x, v.eventually_measure_lt_top x] with a ha h'a
+  filter_upwards [h'x, v.eventually_measure_lt_top x, v.eventually_filterAt_integrableOn x hf]
+    with a ha h'a h''a
   nth_rw 1 [← setAverage_const ha.ne' h'a.ne (f x)]
   simp_rw [setAverage_eq']
   rw [← integral_sub]
   · exact norm_integral_le_integral_norm _
-  · exact (integrable_inv_smul_measure ha.ne' h'a.ne).2 hf.integrableOn
+  · exact (integrable_inv_smul_measure ha.ne' h'a.ne).2 h''a
   · exact (integrable_inv_smul_measure ha.ne' h'a.ne).2 (integrableOn_const.2 (Or.inr h'a))
-#align vitali_family.ae_tendsto_average VitaliFamily.ae_tendsto_average
 
 end
 

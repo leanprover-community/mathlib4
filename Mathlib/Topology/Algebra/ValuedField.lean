@@ -36,7 +36,7 @@ open Topology
 
 section DivisionRing
 
-variable {K : Type _} [DivisionRing K] {Γ₀ : Type _} [LinearOrderedCommGroupWithZero Γ₀]
+variable {K : Type*} [DivisionRing K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 
 section ValuationTopologicalDivisionRing
 
@@ -137,7 +137,7 @@ namespace Valued
 
 open UniformSpace
 
-variable {K : Type _} [Field K] {Γ₀ : Type _} [LinearOrderedCommGroupWithZero Γ₀] [hv : Valued K Γ₀]
+variable {K : Type*} [Field K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] [hv : Valued K Γ₀]
 
 local notation "hat " => Completion
 
@@ -311,7 +311,6 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
         (isClosed_le (cont.comp continuous_add) <| cont.comp continuous_fst).union
           (isClosed_le (cont.comp continuous_add) <| cont.comp continuous_snd)
     · intro x y
-      dsimp
       norm_cast
       rw [← le_max_iff]
       exact v.map_add x y

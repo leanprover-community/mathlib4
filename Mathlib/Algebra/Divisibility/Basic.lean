@@ -30,7 +30,7 @@ divisibility, divides
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 section Semigroup
 
@@ -94,9 +94,9 @@ theorem dvd_of_mul_right_dvd (h : a * b ∣ c) : a ∣ c :=
 
 section map_dvd
 
-variable {M N : Type _} [Monoid M] [Monoid N]
+variable {M N : Type*} [Monoid M] [Monoid N]
 
-theorem map_dvd {F : Type _} [MulHomClass F M N] (f : F) {a b} : a ∣ b → f a ∣ f b
+theorem map_dvd {F : Type*} [MulHomClass F M N] (f : F) {a b} : a ∣ b → f a ∣ f b
   | ⟨c, h⟩ => ⟨f c, h.symm ▸ map_mul f a c⟩
 #align map_dvd map_dvd
 

@@ -76,6 +76,11 @@ theorem IsCoprime.ne_zero [Nontrivial R] {p : Fin 2 → R} (h : IsCoprime (p 0) 
   exact not_isCoprime_zero_zero h
 #align is_coprime.ne_zero IsCoprime.ne_zero
 
+theorem IsCoprime.ne_zero_or_ne_zero [Nontrivial R] (h : IsCoprime x y) : x ≠ 0 ∨ y ≠ 0 := by
+  apply not_or_of_imp
+  rintro rfl rfl
+  exact not_isCoprime_zero_zero h
+
 theorem isCoprime_one_left : IsCoprime 1 x :=
   ⟨1, 0, by rw [one_mul, zero_mul, add_zero]⟩
 #align is_coprime_one_left isCoprime_one_left
@@ -222,7 +227,7 @@ end CommSemiring
 
 section ScalarTower
 
-variable {R G : Type _} [CommSemiring R] [Group G] [MulAction G R] [SMulCommClass G R R]
+variable {R G : Type*} [CommSemiring R] [Group G] [MulAction G R] [SMulCommClass G R R]
   [IsScalarTower G R R] (x : G) (y z : R)
 
 theorem isCoprime_group_smul_left : IsCoprime (x • y) z ↔ IsCoprime y z :=
@@ -242,7 +247,7 @@ end ScalarTower
 
 section CommSemiringUnit
 
-variable {R : Type _} [CommSemiring R] {x : R} (hu : IsUnit x) (y z : R)
+variable {R : Type*} [CommSemiring R] {x : R} (hu : IsUnit x) (y z : R)
 
 theorem isCoprime_mul_unit_left_left : IsCoprime (x * y) z ↔ IsCoprime y z :=
   let ⟨u, hu⟩ := hu
@@ -377,7 +382,7 @@ theorem neg_neg_iff (x y : R) : IsCoprime (-x) (-y) ↔ IsCoprime x y :=
 
 end CommRing
 
-theorem sq_add_sq_ne_zero {R : Type _} [LinearOrderedCommRing R] {a b : R} (h : IsCoprime a b) :
+theorem sq_add_sq_ne_zero {R : Type*} [LinearOrderedCommRing R] {a b : R} (h : IsCoprime a b) :
     a ^ 2 + b ^ 2 ≠ 0 := by
   intro h'
   obtain ⟨ha, hb⟩ := (add_eq_zero_iff'

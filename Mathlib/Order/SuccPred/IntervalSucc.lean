@@ -27,7 +27,7 @@ For the latter lemma, we also prove various order dual versions.
 
 open Set Order
 
-variable {α β : Type _} [LinearOrder α]
+variable {α β : Type*} [LinearOrder α]
 
 namespace Monotone
 

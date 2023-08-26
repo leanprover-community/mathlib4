@@ -44,7 +44,7 @@ the bundled version, see `Rel`.
 
 open Function
 
-variable {α β γ δ : Type _}
+variable {α β γ δ : Type*}
 
 section NeImp
 

@@ -68,8 +68,7 @@ noncomputable section
 ## Definition of the Riemann zeta function and related functions
 -/
 
--- Porting note: see https://github.com/leanprover/lean4/issues/2220
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 /-- Function whose Mellin transform is `π ^ (-s) * Γ(s) * zeta (2 * s)`, for `1 / 2 < Re s`. -/
 def zetaKernel₁ (t : ℝ) : ℂ :=
@@ -248,7 +247,7 @@ theorem isBigO_zero_zetaKernel₂ : IsBigO (𝓝[>] 0) zetaKernel₂ fun t => ex
   have h4 := h3.mul (isBigO_refl (fun t : ℝ => 1 / (sqrt t : ℂ)) (𝓝[>] 0)).norm_right
   refine h4.congr' ?_ ?_
   · refine eventually_of_mem self_mem_nhdsWithin fun x hx => ?_
-    simp_rw [← mul_assoc]
+    dsimp
     rw [mul_comm, ← mul_assoc, one_div_mul_cancel, one_mul]
     exact ofReal_ne_zero.mpr ((sqrt_ne_zero <| le_of_lt hx).mpr (ne_of_gt hx))
   · refine eventually_of_mem self_mem_nhdsWithin fun x _ => ?_

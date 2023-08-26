@@ -41,7 +41,7 @@ We also define `IsStarNormal R`, a `Prop` that states that an element `x` satisf
 -/
 
 
-variable {R A : Type _}
+variable {R A : Type*}
 
 /-- An element is self-adjoint if it is equal to its star. -/
 def IsSelfAdjoint [Star R] (x : R) : Prop :=
@@ -92,14 +92,14 @@ theorem mul_star_self [Semigroup R] [StarSemigroup R] (x : R) : IsSelfAdjoint (x
 #align is_self_adjoint.mul_star_self IsSelfAdjoint.mul_star_self
 
 /-- Functions in a `StarHomClass` preserve self-adjoint elements. -/
-theorem starHom_apply {F R S : Type _} [Star R] [Star S] [StarHomClass F R S] {x : R}
+theorem starHom_apply {F R S : Type*} [Star R] [Star S] [StarHomClass F R S] {x : R}
     (hx : IsSelfAdjoint x) (f : F) : IsSelfAdjoint (f x) :=
   show star (f x) = f x from map_star f x ▸ congr_arg f hx
 #align is_self_adjoint.star_hom_apply IsSelfAdjoint.starHom_apply
 
 /- note: this lemma is *not* marked as `simp` so that Lean doesn't look for a `[TrivialStar R]`
 instance every time it sees `⊢ IsSelfAdjoint (f x)`, which will likely occur relatively often. -/
-theorem _root_.isSelfAdjoint_starHom_apply {F R S : Type _} [Star R] [Star S] [StarHomClass F R S]
+theorem _root_.isSelfAdjoint_starHom_apply {F R S : Type*} [Star R] [Star S] [StarHomClass F R S]
     [TrivialStar R] (f : F) (x : R) : IsSelfAdjoint (f x) :=
   (IsSelfAdjoint.all x).starHom_apply f
 

@@ -32,11 +32,11 @@ commutative ring, field of fractions
 -/
 
 
-variable (R : Type _) [CommRing R] {M : Submonoid R} (S : Type _) [CommRing S]
+variable (R : Type*) [CommRing R] {M : Submonoid R} (S : Type*) [CommRing S]
 
-variable [Algebra R S] {P : Type _} [CommRing P]
+variable [Algebra R S] {P : Type*} [CommRing P]
 
-variable {A : Type _} [CommRing A] [IsDomain A] (K : Type _)
+variable {A : Type*} [CommRing A] [IsDomain A] (K : Type*)
 
 -- TODO: should this extend `Algebra` instead of assuming it?
 /-- `IsFractionRing R K` states `K` is the field of fractions of an integral domain `R`. -/
@@ -147,7 +147,7 @@ noncomputable def toField : Field K :=
 
 end CommRing
 
-variable {B : Type _} [CommRing B] [IsDomain B] [Field K] {L : Type _} [Field L] [Algebra A K]
+variable {B : Type*} [CommRing B] [IsDomain B] [Field K] {L : Type*} [Field L] [Algebra A K]
   [IsFractionRing A K] {g : A →+* L}
 
 theorem mk'_mk_eq_div {r s} (hs : s ∈ nonZeroDivisors A) :
@@ -222,7 +222,7 @@ theorem lift_mk' (hg : Injective g) (x) (y : nonZeroDivisors A) : lift hg (mk' K
 and an injective ring hom `j : A →+* B`, we get a field hom
 sending `z : K` to `g (j x) * (g (j y))⁻¹`, where `(x, y) : A × (NonZeroDivisors A)` are
 such that `z = f x * (f y)⁻¹`. -/
-noncomputable def map {A B K L : Type _} [CommRing A] [CommRing B] [IsDomain B] [CommRing K]
+noncomputable def map {A B K L : Type*} [CommRing A] [CommRing B] [IsDomain B] [CommRing K]
     [Algebra A K] [IsFractionRing A K] [CommRing L] [Algebra B L] [IsFractionRing B L] {j : A →+* B}
     (hj : Injective j) : K →+* L :=
   IsLocalization.map L j
@@ -263,7 +263,7 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
     rw [← h.symm.map_mul, hz, h.symm.map_zero]
 #align is_fraction_ring.is_fraction_ring_iff_of_base_ring_equiv IsFractionRing.isFractionRing_iff_of_base_ringEquiv
 
-protected theorem nontrivial (R S : Type _) [CommRing R] [Nontrivial R] [CommRing S] [Algebra R S]
+protected theorem nontrivial (R S : Type*) [CommRing R] [Nontrivial R] [CommRing S] [Algebra R S]
     [IsFractionRing R S] : Nontrivial S := by
   apply nontrivial_of_ne
   intro h
@@ -292,7 +292,7 @@ def FractionRing :=
 namespace FractionRing
 
 instance unique [Subsingleton R] : Unique (FractionRing R) :=
-  Localization.instUniqueLocalizationToCommMonoid
+  Localization.instUniqueLocalization
 #align fraction_ring.unique FractionRing.unique
 
 instance [Nontrivial R] : Nontrivial (FractionRing R) :=
@@ -323,7 +323,7 @@ instance [IsDomain R] [Field K] [Algebra R K] [NoZeroSMulDivisors R K] :
 /-- Given an integral domain `A` and a localization map to a field of fractions
 `f : A →+* K`, we get an `A`-isomorphism between the field of fractions of `A` as a quotient
 type and `K`. -/
-noncomputable def algEquiv (K : Type _) [Field K] [Algebra A K] [IsFractionRing A K] :
+noncomputable def algEquiv (K : Type*) [Field K] [Algebra A K] [IsFractionRing A K] :
     FractionRing A ≃ₐ[A] K :=
   Localization.algEquiv (nonZeroDivisors A) K
 #align fraction_ring.alg_equiv FractionRing.algEquiv

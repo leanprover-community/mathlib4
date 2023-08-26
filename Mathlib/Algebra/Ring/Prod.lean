@@ -25,7 +25,7 @@ trivial `simp` lemmas, and define the following operations on `RingHom`s and sim
 -/
 
 
-variable {α β R R' S S' T T' : Type _}
+variable {α β R R' S S' T T' : Type*}
 
 namespace Prod
 
@@ -373,7 +373,7 @@ def zeroRingProd : R ≃+* S × R where
 end RingEquiv
 
 /-- The product of two nontrivial rings is not a domain -/
-theorem false_of_nontrivial_of_product_domain (R S : Type _) [Ring R] [Ring S] [IsDomain (R × S)]
+theorem false_of_nontrivial_of_product_domain (R S : Type*) [Ring R] [Ring S] [IsDomain (R × S)]
     [Nontrivial R] [Nontrivial S] : False := by
   have :=
     NoZeroDivisors.eq_zero_or_eq_zero_of_mul_eq_zero (show ((0 : R), (1 : S)) * (1, 0) = 0 by simp)

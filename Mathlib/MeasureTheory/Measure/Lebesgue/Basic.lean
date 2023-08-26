@@ -34,7 +34,7 @@ assert_not_exists MeasureTheory.integral
 
 noncomputable section
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Classical Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
@@ -49,7 +49,7 @@ open scoped BigOperators ENNReal NNReal Topology
 
 namespace Real
 
-variable {ι : Type _} [Fintype ι]
+variable {ι : Type*} [Fintype ι]
 
 /-- The volume on the real line (as a particular case of the volume on a finite-dimensional
 inner product space) coincides with the Stieltjes measure coming from the identity function. -/
@@ -460,7 +460,7 @@ end Real
 
 section regionBetween
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- The region between two real-valued functions on an arbitrary set. -/
 def regionBetween (f g : α → ℝ) (s : Set α) : Set (α × ℝ) :=

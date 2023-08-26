@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Tactic.DeriveToExpr
+import Mathlib.Util.WhatsNew
 
 /-! # `ToExpr` instances for Mathlib
 
@@ -14,6 +15,8 @@ that come from core Lean 4 that do not handle universe polymorphism.
 
 In addition, we provide some additional `ToExpr` instances for core definitions.
 -/
+
+set_option autoImplicit true
 
 section override
 namespace Lean
@@ -36,6 +39,8 @@ instance {α : Type u} [ToExpr α] [ToLevel.{u}] : ToExpr (Array α) :=
 attribute [-instance] Lean.instToExprProd
 
 deriving instance ToExpr for Prod
+
+deriving instance ToExpr for System.FilePath
 
 end Lean
 end override

@@ -95,11 +95,13 @@ elab (name := mfldSetTac) "mfld_set_tac" : tactic => withMainContext do
       apply Set.ext; intro my_y
       constructor <;>
         · intro h_my_y
-          try (simp only [*, mfld_simps] at h_my_y; simp only [*, mfld_simps]))))
+          try simp only [*, mfld_simps] at h_my_y
+          try simp only [*, mfld_simps])))
   | (``Subset, #[_ty, _inst, _e₁, _e₂]) =>
     evalTactic (← `(tactic| (
       intro my_y h_my_y
-      try (simp only [*, mfld_simps] at h_my_y; simp only [*, mfld_simps]))))
+      try simp only [*, mfld_simps] at h_my_y
+      try simp only [*, mfld_simps])))
   | _ => throwError "goal should be an equality or an inclusion"
 
 attribute [mfld_simps] and_true eq_self_iff_true Function.comp_apply
@@ -108,13 +110,13 @@ end Tactic.MfldSetTac
 
 open Function Set
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 /-- Local equivalence between subsets `source` and `target` of `α` and `β` respectively. The
 (global) maps `toFun : α → β` and `invFun : β → α` map `source` to `target` and conversely, and are
 inverse to each other there. The values of `toFun` outside of `source` and of `invFun` outside of
 `target` are irrelevant. -/
-structure LocalEquiv (α : Type _) (β : Type _) where
+structure LocalEquiv (α : Type*) (β : Type*) where
   /-- The global function which has a local inverse. Its value outside of the `source` subset is
   irrelevant. -/
   toFun : α → β
@@ -594,7 +596,7 @@ theorem restr_univ {e : LocalEquiv α β} : e.restr univ = e :=
 #align local_equiv.restr_univ LocalEquiv.restr_univ
 
 /-- The identity local equiv -/
-protected def refl (α : Type _) : LocalEquiv α α :=
+protected def refl (α : Type*) : LocalEquiv α α :=
   (Equiv.refl α).toLocalEquiv
 #align local_equiv.refl LocalEquiv.refl
 
@@ -967,7 +969,7 @@ theorem refl_prod_refl :
 #align local_equiv.refl_prod_refl LocalEquiv.refl_prod_refl
 
 @[simp, mfld_simps]
-theorem prod_trans {η : Type _} {ε : Type _} (e : LocalEquiv α β) (f : LocalEquiv β γ)
+theorem prod_trans {η : Type*} {ε : Type*} (e : LocalEquiv α β) (f : LocalEquiv β γ)
     (e' : LocalEquiv δ η) (f' : LocalEquiv η ε) :
     (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') := by
   ext ⟨x, y⟩ <;> simp [ext_iff]; tauto
@@ -1031,7 +1033,7 @@ theorem disjointUnion_eq_piecewise (e e' : LocalEquiv α β) (hs : Disjoint e.so
 
 section Pi
 
-variable {ι : Type _} {αi βi γi : ι → Type _}
+variable {ι : Type*} {αi βi γi : ι → Type*}
 
 /-- The product of a family of local equivs, as a local equiv on the pi type. -/
 @[simps (config := mfld_cfg) apply source target]

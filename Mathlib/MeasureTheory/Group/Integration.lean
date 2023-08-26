@@ -5,7 +5,6 @@ Authors: Floris van Doorn
 -/
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Group.Measure
-import Mathlib.MeasureTheory.Group.Action
 
 #align_import measure_theory.group.integration from "leanprover-community/mathlib"@"ec247d43814751ffceb33b758e8820df2372bf6f"
 
@@ -23,7 +22,7 @@ open Measure TopologicalSpace
 
 open scoped ENNReal
 
-variable {𝕜 M α G E F : Type _} [MeasurableSpace G]
+variable {𝕜 M α G E F : Type*} [MeasurableSpace G]
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] [NormedAddCommGroup F]
 

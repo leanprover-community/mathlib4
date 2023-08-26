@@ -56,8 +56,7 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
         change v (x * y) < _
         rw [Valuation.map_mul, Hx, MulZeroClass.zero_mul]
         exact Units.zero_lt γ
-      · simp only [image_subset_iff, setOf_subset_setOf, preimage_setOf_eq, Valuation.map_mul]
-        use γx⁻¹ * γ
+      · use γx⁻¹ * γ
         rintro y (vy_lt : v y < ↑(γx⁻¹ * γ))
         change (v (x * y) : Γ₀) < γ
         rw [Valuation.map_mul, Hx, mul_comm]

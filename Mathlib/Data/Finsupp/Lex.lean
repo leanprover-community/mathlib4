@@ -16,7 +16,7 @@ This file defines the lexicographic order on `Finsupp`.
 -/
 
 
-variable {α N : Type _}
+variable {α N : Type*}
 
 namespace Finsupp
 
@@ -142,5 +142,34 @@ instance Lex.covariantClass_le_right :
 end Right
 
 end Covariants
+
+section OrderedAddMonoid
+
+variable [LinearOrder α]
+
+instance Lex.orderBot [CanonicallyOrderedAddMonoid N] : OrderBot (Lex (α →₀ N)) where
+  bot := 0
+  bot_le _ := Finsupp.toLex_monotone bot_le
+
+noncomputable instance Lex.orderedAddCancelCommMonoid [OrderedCancelAddCommMonoid N] :
+    OrderedCancelAddCommMonoid (Lex (α →₀ N)) where
+  add_le_add_left _ _ h _ := add_le_add_left (α := Lex (α → N)) h _
+  le_of_add_le_add_left _ _ _ := le_of_add_le_add_left (α := Lex (α → N))
+
+noncomputable instance Lex.orderedAddCommGroup [OrderedAddCommGroup N] :
+    OrderedAddCommGroup (Lex (α →₀ N)) where
+  add_le_add_left _ _ := add_le_add_left
+
+noncomputable instance Lex.linearOrderedCancelAddCommMonoid [LinearOrderedCancelAddCommMonoid N] :
+    LinearOrderedCancelAddCommMonoid (Lex (α →₀ N)) where
+  __ := (inferInstance : LinearOrder (Lex (α →₀ N)))
+  __ := (inferInstance: OrderedCancelAddCommMonoid (Lex (α →₀ N)))
+
+noncomputable instance Lex.linearOrderedAddCommGroup [LinearOrderedAddCommGroup N] :
+    LinearOrderedAddCommGroup (Lex (α →₀ N)) where
+  __ := (inferInstance : LinearOrder (Lex (α →₀ N)))
+  add_le_add_left _ _ := add_le_add_left
+
+end OrderedAddMonoid
 
 end Finsupp

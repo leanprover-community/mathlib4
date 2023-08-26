@@ -13,7 +13,7 @@ import Mathlib.Data.Set.Pointwise.SMul
 
 open Pointwise
 
-variable {F α β γ : Type _}
+variable {F α β γ : Type*}
 
 namespace Set
 
@@ -169,7 +169,7 @@ open Set
 
 namespace Group
 
-variable {G : Type _} [Group G] [Fintype G] (S : Set G)
+variable {G : Type*} [Group G] [Fintype G] (S : Set G)
 
 @[to_additive]
 theorem card_pow_eq_card_pow_card_univ [∀ k : ℕ, DecidablePred (· ∈ S ^ k)] :

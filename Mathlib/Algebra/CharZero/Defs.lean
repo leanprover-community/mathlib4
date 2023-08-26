@@ -27,6 +27,8 @@ from the natural numbers into it is injective.
 * Unify with `CharP` (possibly using an out-parameter)
 -/
 
+set_option autoImplicit true
+
 /-- Typeclass for monoids with characteristic zero.
   (This is usually stated on fields but it makes sense for any additive monoid with 1.)
 *Warning*: for a semiring `R`, `CharZero R` and `CharP R 0` need not coincide.

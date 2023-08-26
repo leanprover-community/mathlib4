@@ -30,7 +30,7 @@ namespace Orientation
 
 attribute [local instance] Complex.finrank_real_complex_fact
 
-variable {V V' : Type _}
+variable {V V' : Type*}
 
 variable [NormedAddCommGroup V] [NormedAddCommGroup V']
 

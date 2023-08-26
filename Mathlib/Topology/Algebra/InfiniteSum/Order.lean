@@ -20,7 +20,7 @@ This file provides lemmas about the interaction of infinite sums and order opera
 open Finset Filter Function BigOperators
 open scoped Classical
 
-variable {ι κ α : Type _}
+variable {ι κ α : Type*}
 
 section Preorder
 

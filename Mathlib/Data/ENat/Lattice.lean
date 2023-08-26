@@ -24,7 +24,7 @@ noncomputable instance : CompleteLinearOrder ENat :=
 
 namespace ENat
 
-variable {ι : Sort _} {f : ι → ℕ}
+variable {ι : Sort*} {f : ι → ℕ}
 
 lemma iSup_coe_lt_top : (⨆ x, ↑(f x) : ℕ∞) < ⊤ ↔ BddAbove (Set.range f) :=
   WithTop.iSup_coe_lt_top f

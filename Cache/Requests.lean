@@ -6,6 +6,8 @@ Authors: Arthur Paulino
 import Lean.Data.Json.Parser
 import Cache.Hashing
 
+set_option autoImplicit true
+
 namespace Cache.Requests
 
 /-- Azure blob URL -/
@@ -60,7 +62,7 @@ def downloadFile (hash : UInt64) : IO Bool := do
 
 /-- Calls `curl` to download files from the server to `CACHEDIR` (`.cache`) -/
 def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool) : IO Unit := do
-  let hashMap := if forceDownload then hashMap else hashMap.filter (← IO.getLocalCacheSet) false
+  let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
   let size := hashMap.size
   if size > 0 then
     IO.mkDir IO.CACHEDIR

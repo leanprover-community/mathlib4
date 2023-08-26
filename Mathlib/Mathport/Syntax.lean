@@ -165,7 +165,6 @@ open Lean Parser.Tactic
 /- S -/ syntax (name := hint) "hint" : tactic
 
 /- M -/ syntax (name := congrM) "congrm " term : tactic
-/- E -/ syntax (name := acChange) "ac_change " term (" using " num)? : tactic
 
 /- S -/ syntax (name := rcases?) "rcases?" casesTarget,* (" : " num)? : tactic
 /- S -/ syntax (name := rintro?) "rintro?" (" : " num)? : tactic

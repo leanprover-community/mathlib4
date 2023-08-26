@@ -271,7 +271,7 @@ For the classification of Pythagorean triples, we will use a parametrization of 
 -/
 
 
-variable {K : Type _} [Field K]
+variable {K : Type*} [Field K]
 
 /-- A parameterization of the unit circle that is useful for classifying Pythagorean triples.
  (To be applied in the case where `K = ℚ`.) -/
@@ -679,6 +679,7 @@ theorem classification :
         (x = k * (m ^ 2 - n ^ 2) ∧ y = k * (2 * m * n) ∨
             x = k * (2 * m * n) ∧ y = k * (m ^ 2 - n ^ 2)) ∧
           (z = k * (m ^ 2 + n ^ 2) ∨ z = -k * (m ^ 2 + n ^ 2)) := by
+  clear h
   constructor
   · intro h
     obtain ⟨k, m, n, H⟩ := h.classified

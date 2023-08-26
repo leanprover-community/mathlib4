@@ -26,7 +26,7 @@ Note this is not the same unicode symbol as `⊥` (`Bot`).
 -/
 
 
-variable {𝕜 E F : Type _} [IsROrC 𝕜]
+variable {𝕜 E F : Type*} [IsROrC 𝕜]
 
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
@@ -175,7 +175,7 @@ theorem inf_orthogonal (K₁ K₂ : Submodule 𝕜 E) : K₁ᗮ ⊓ K₂ᗮ = (K
 
 /-- The inf of an indexed family of orthogonal subspaces equals the
 subspace orthogonal to the sup. -/
-theorem iInf_orthogonal {ι : Type _} (K : ι → Submodule 𝕜 E) : ⨅ i, (K i)ᗮ = (iSup K)ᗮ :=
+theorem iInf_orthogonal {ι : Type*} (K : ι → Submodule 𝕜 E) : ⨅ i, (K i)ᗮ = (iSup K)ᗮ :=
   (orthogonal_gc 𝕜 E).l_iSup.symm
 #align submodule.infi_orthogonal Submodule.iInf_orthogonal
 
@@ -360,13 +360,13 @@ theorem isOrtho_sSup_right {U : Submodule 𝕜 E} {V : Set (Submodule 𝕜 E)} :
 #align submodule.is_ortho_Sup_right Submodule.isOrtho_sSup_right
 
 @[simp]
-theorem isOrtho_iSup_left {ι : Sort _} {U : ι → Submodule 𝕜 E} {V : Submodule 𝕜 E} :
+theorem isOrtho_iSup_left {ι : Sort*} {U : ι → Submodule 𝕜 E} {V : Submodule 𝕜 E} :
     iSup U ⟂ V ↔ ∀ i, U i ⟂ V :=
   iSup_le_iff
 #align submodule.is_ortho_supr_left Submodule.isOrtho_iSup_left
 
 @[simp]
-theorem isOrtho_iSup_right {ι : Sort _} {U : Submodule 𝕜 E} {V : ι → Submodule 𝕜 E} :
+theorem isOrtho_iSup_right {ι : Sort*} {U : Submodule 𝕜 E} {V : ι → Submodule 𝕜 E} :
     U ⟂ iSup V ↔ ∀ i, U ⟂ V i :=
   isOrtho_comm.trans <| isOrtho_iSup_left.trans <| by simp_rw [isOrtho_comm]
 #align submodule.is_ortho_supr_right Submodule.isOrtho_iSup_right

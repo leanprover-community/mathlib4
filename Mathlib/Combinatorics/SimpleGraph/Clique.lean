@@ -32,7 +32,7 @@ open Finset Fintype
 
 namespace SimpleGraph
 
-variable {α : Type _} (G H : SimpleGraph α)
+variable {α : Type*} (G H : SimpleGraph α)
 
 /-! ### Cliques -/
 

@@ -28,7 +28,7 @@ This file defines the determinant of a matrix, `Matrix.det`, and its essential p
 
 ## Main results
 
- - `det_mul`: the determinant of `A ⬝ B` is the product of determinants
+ - `det_mul`: the determinant of `A * B` is the product of determinants
  - `det_zero_of_row_eq`: the determinant is zero if there is a repeated row
  - `det_block_diagonal`: the determinant of a block diagonal matrix is a product
    of the blocks' determinants
@@ -49,7 +49,7 @@ namespace Matrix
 
 open Matrix BigOperators
 
-variable {m n : Type _} [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m]
+variable {m n : Type*} [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m]
 
 variable {R : Type v} [CommRing R]
 
@@ -115,7 +115,7 @@ theorem det_eq_one_of_card_eq_zero {A : Matrix n n R} (h : Fintype.card n = 0) :
 Although `Unique` implies `DecidableEq` and `Fintype`, the instances might
 not be syntactically equal. Thus, we need to fill in the args explicitly. -/
 @[simp]
-theorem det_unique {n : Type _} [Unique n] [DecidableEq n] [Fintype n] (A : Matrix n n R) :
+theorem det_unique {n : Type*} [Unique n] [DecidableEq n] [Fintype n] (A : Matrix n n R) :
     det A = A default default := by simp [det_apply, univ_unique]
 #align matrix.det_unique Matrix.det_unique
 
@@ -150,9 +150,9 @@ theorem det_mul_aux {M N : Matrix n n R} {p : n → n} (H : ¬Bijective p) :
 -- Porting note: need to bump for last simp; new after #3414 (reenableeta)
 set_option maxHeartbeats 300000 in
 @[simp]
-theorem det_mul (M N : Matrix n n R) : det (M ⬝ N) = det M * det N :=
+theorem det_mul (M N : Matrix n n R) : det (M * N) = det M * det N :=
   calc
-    det (M ⬝ N) = ∑ p : n → n, ∑ σ : Perm n, ε σ * ∏ i, M (σ i) (p i) * N (p i) i := by
+    det (M * N) = ∑ p : n → n, ∑ σ : Perm n, ε σ * ∏ i, M (σ i) (p i) * N (p i) i := by
       simp only [det_apply', mul_apply, prod_univ_sum, mul_sum, Fintype.piFinset_univ]
       rw [Finset.sum_comm]
     _ =
@@ -199,27 +199,29 @@ theorem coe_detMonoidHom : (detMonoidHom : Matrix n n R → R) = det :=
 #align matrix.coe_det_monoid_hom Matrix.coe_detMonoidHom
 
 /-- On square matrices, `mul_comm` applies under `det`. -/
-theorem det_mul_comm (M N : Matrix m m R) : det (M ⬝ N) = det (N ⬝ M) := by
+theorem det_mul_comm (M N : Matrix m m R) : det (M * N) = det (N * M) := by
   rw [det_mul, det_mul, mul_comm]
 #align matrix.det_mul_comm Matrix.det_mul_comm
 
 /-- On square matrices, `mul_left_comm` applies under `det`. -/
-theorem det_mul_left_comm (M N P : Matrix m m R) : det (M ⬝ (N ⬝ P)) = det (N ⬝ (M ⬝ P)) := by
+theorem det_mul_left_comm (M N P : Matrix m m R) : det (M * (N * P)) = det (N * (M * P)) := by
   rw [← Matrix.mul_assoc, ← Matrix.mul_assoc, det_mul, det_mul_comm M N, ← det_mul]
 #align matrix.det_mul_left_comm Matrix.det_mul_left_comm
 
 /-- On square matrices, `mul_right_comm` applies under `det`. -/
-theorem det_mul_right_comm (M N P : Matrix m m R) : det (M ⬝ N ⬝ P) = det (M ⬝ P ⬝ N) := by
+theorem det_mul_right_comm (M N P : Matrix m m R) : det (M * N * P) = det (M * P * N) := by
   rw [Matrix.mul_assoc, Matrix.mul_assoc, det_mul, det_mul_comm N P, ← det_mul]
 #align matrix.det_mul_right_comm Matrix.det_mul_right_comm
 
+-- TODO(mathlib4#6607): fix elaboration so that the ascription isn't needed
 theorem det_units_conj (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
-    det (↑M ⬝ N ⬝ ↑M⁻¹ : Matrix m m R) = det N := by
-  rw [det_mul_right_comm, ← mul_eq_mul, ← mul_eq_mul, Units.mul_inv, one_mul]
+    det ((M : Matrix _ _ _) * N * (↑M⁻¹ : Matrix _ _ _)) = det N := by
+  rw [det_mul_right_comm, Units.mul_inv, one_mul]
 #align matrix.det_units_conj Matrix.det_units_conj
 
+-- TODO(mathlib4#6607): fix elaboration so that the ascription isn't needed
 theorem det_units_conj' (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
-    det (↑M⁻¹ ⬝ N ⬝ ↑M : Matrix m m R) = det N :=
+    det ((↑M⁻¹ : Matrix _ _ _) * N * (↑M : Matrix _ _ _)) = det N :=
   det_units_conj M⁻¹ N
 #align matrix.det_units_conj' Matrix.det_units_conj'
 
@@ -275,7 +277,7 @@ theorem det_permutation (σ : Perm n) :
 
 theorem det_smul (A : Matrix n n R) (c : R) : det (c • A) = c ^ Fintype.card n * det A :=
   calc
-    det (c • A) = det (Matrix.mul (diagonal fun _ => c) A) := by rw [smul_eq_diagonal_mul]
+    det (c • A) = det ((diagonal fun _ => c) * A) := by rw [smul_eq_diagonal_mul]
     _ = det (diagonal fun _ => c) * det A := (det_mul _ _)
     _ = c ^ Fintype.card n * det A := by simp [card_univ]
 #align matrix.det_smul Matrix.det_smul
@@ -301,7 +303,7 @@ the product of the `v`s. -/
 theorem det_mul_row (v : n → R) (A : Matrix n n R) :
     det (of fun i j => v j * A i j) = (∏ i, v i) * det A :=
   calc
-    det (of fun i j => v j * A i j) = det (A ⬝ diagonal v) :=
+    det (of fun i j => v j * A i j) = det (A * diagonal v) :=
       congr_arg det <| by
         ext
         simp [mul_comm]
@@ -427,17 +429,17 @@ Lemmas showing the determinant is invariant under a variety of operations.
 
 
 theorem det_eq_of_eq_mul_det_one {A B : Matrix n n R} (C : Matrix n n R) (hC : det C = 1)
-    (hA : A = B ⬝ C) : det A = det B :=
+    (hA : A = B * C) : det A = det B :=
   calc
-    det A = det (B ⬝ C) := congr_arg _ hA
+    det A = det (B * C) := congr_arg _ hA
     _ = det B * det C := (det_mul _ _)
     _ = det B := by rw [hC, mul_one]
 #align matrix.det_eq_of_eq_mul_det_one Matrix.det_eq_of_eq_mul_det_one
 
 theorem det_eq_of_eq_det_one_mul {A B : Matrix n n R} (C : Matrix n n R) (hC : det C = 1)
-    (hA : A = C ⬝ B) : det A = det B :=
+    (hA : A = C * B) : det A = det B :=
   calc
-    det A = det (C ⬝ B) := congr_arg _ hA
+    det A = det (C * B) := congr_arg _ hA
     _ = det C * det B := (det_mul _ _)
     _ = det B := by rw [hC, one_mul]
 #align matrix.det_eq_of_eq_det_one_mul Matrix.det_eq_of_eq_det_one_mul
@@ -569,7 +571,7 @@ theorem det_eq_of_forall_col_eq_smul_add_pred {n : ℕ} {A B : Matrix (Fin (n + 
 end DetEq
 
 @[simp]
-theorem det_blockDiagonal {o : Type _} [Fintype o] [DecidableEq o] (M : o → Matrix n n R) :
+theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Matrix n n R) :
     (blockDiagonal M).det = ∏ k, (M k).det := by
   -- Rewrite the determinants as a sum over permutations.
   simp_rw [det_apply']

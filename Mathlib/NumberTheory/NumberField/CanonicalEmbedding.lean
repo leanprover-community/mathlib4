@@ -33,7 +33,7 @@ open Function FiniteDimensional Finset Fintype NumberField NumberField.InfiniteP
 
 open scoped Classical NumberField
 
-variable (K : Type _) [Field K]
+variable (K : Type*) [Field K]
 
 namespace NumberField.canonicalEmbedding
 
@@ -65,7 +65,8 @@ theorem nontrivial_space [NumberField K] : Nontrivial E := by
 
 /-- The canonical embedding of a number field `K` of signature `(r₁, r₂)` into `ℝ^r₁ × ℂ^r₂`. -/
 def _root_.NumberField.canonicalEmbedding : K →+* E :=
-  RingHom.prod (Pi.ringHom fun w => w.prop.embedding) (Pi.ringHom fun w => w.val.embedding)
+  RingHom.prod (Pi.ringHom fun w => embedding_of_isReal w.prop)
+    (Pi.ringHom fun w => w.val.embedding)
 #align number_field.canonical_embedding NumberField.canonicalEmbedding
 
 theorem _root_.NumberField.canonicalEmbedding_injective [NumberField K] :
@@ -79,7 +80,7 @@ variable {K}
 
 @[simp]
 theorem apply_at_real_infinitePlace (w : { w : InfinitePlace K // IsReal w }) (x : K) :
-    (NumberField.canonicalEmbedding K x).1 w = w.prop.embedding x := by
+    (NumberField.canonicalEmbedding K x).1 w = embedding_of_isReal w.prop x := by
   simp only [canonicalEmbedding, RingHom.prod_apply, Pi.ringHom_apply]
 #align number_field.canonical_embedding.apply_at_real_infinite_place NumberField.canonicalEmbedding.apply_at_real_infinitePlace
 
@@ -102,15 +103,14 @@ theorem nnnorm_eq [NumberField K] (x : K) :
           fun w => (⟨w x, map_nonneg w x⟩ : NNReal)).symm using 2
       ext w
       dsimp
-      simp only [apply_at_real_infinitePlace, coe_nnnorm, Real.norm_eq_abs,
-        Function.Embedding.coe_subtype, Subtype.coe_mk, IsReal.abs_embedding_apply]
+      rw [apply_at_real_infinitePlace, ← Complex.abs_ofReal, embedding_of_isReal_apply,
+        ← Complex.norm_eq_abs, norm_embedding_eq]
     · convert
         (Finset.univ.sup_map (Function.Embedding.subtype fun w : InfinitePlace K => IsComplex w)
           fun w => (⟨w x, map_nonneg w x⟩ : NNReal)).symm using 2
       ext w
       dsimp
-      simp only [apply_at_complex_infinitePlace, coe_nnnorm,
-        Complex.norm_eq_abs, Function.Embedding.coe_subtype, Subtype.coe_mk, abs_embedding]
+      rw [apply_at_complex_infinitePlace, ← Complex.norm_eq_abs, norm_embedding_eq]
   · ext w
     simp_rw [Finset.mem_univ, Finset.mem_union, Set.mem_toFinset, Set.mem_setOf_eq,
       w.isReal_or_isComplex]
@@ -163,8 +163,8 @@ theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
   obtain hr | _ := lt_or_le r 0
   · simp [closedBall_eq_empty.2 hr]
   have heq : ∀ x, canonicalEmbedding K x ∈ closedBall (0 : E) r ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
-    simp only [← place_apply, ← InfinitePlace.coe_mk, mem_closedBall_zero_iff, norm_le_iff]
-    exact fun x => le_iff_le x r
+    simp_rw [← place_apply, mem_closedBall_zero_iff, norm_le_iff, le_iff_le, place_apply,
+      implies_true]
   convert (Embeddings.finite_of_norm_le K ℂ r).image (canonicalEmbedding K)
   ext; constructor
   · rintro ⟨⟨_, ⟨x, rfl⟩, rfl⟩, hx2⟩

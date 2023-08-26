@@ -46,7 +46,7 @@ Lattice structure on antichains. Order equivalence between upper/lower sets and 
 
 open OrderDual Set
 
-variable {α β γ : Type _} {ι : Sort _} {κ : ι → Sort _}
+variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 /-! ### Unbundled upper/lower sets -/
 
@@ -393,7 +393,7 @@ section LE
 variable [LE α]
 
 /-- The type of upper sets of an order. -/
-structure UpperSet (α : Type _) [LE α] where
+structure UpperSet (α : Type*) [LE α] where
   /-- The carrier of an `UpperSet`. -/
   carrier : Set α
   /-- The carrier of an `UpperSet` is an upper set. -/
@@ -401,7 +401,7 @@ structure UpperSet (α : Type _) [LE α] where
 #align upper_set UpperSet
 
 /-- The type of lower sets of an order. -/
-structure LowerSet (α : Type _) [LE α] where
+structure LowerSet (α : Type*) [LE α] where
   /-- The carrier of a `LowerSet`. -/
   carrier : Set α
   /-- The carrier of a `LowerSet` is a lower set. -/

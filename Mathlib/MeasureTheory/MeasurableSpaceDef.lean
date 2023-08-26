@@ -42,10 +42,10 @@ open Set Encodable Function Equiv
 
 open Classical
 
-variable {α β γ δ δ' : Type _} {ι : Sort _} {s t u : Set α}
+variable {α β γ δ δ' : Type*} {ι : Sort*} {s t u : Set α}
 
 /-- A measurable space is a space equipped with a σ-algebra. -/
-@[class] structure MeasurableSpace (α : Type _) where
+@[class] structure MeasurableSpace (α : Type*) where
   /-- Predicate saying that a given set is measurable. Use `MeasurableSet` in the root namespace
   instead. -/
   MeasurableSet' : Set α → Prop
@@ -265,7 +265,7 @@ theorem MeasurableSpace.ext_iff {m₁ m₂ : MeasurableSpace α} :
 #align measurable_space.ext_iff MeasurableSpace.ext_iff
 
 /-- A typeclass mixin for `MeasurableSpace`s such that each singleton is measurable. -/
-class MeasurableSingletonClass (α : Type _) [MeasurableSpace α] : Prop where
+class MeasurableSingletonClass (α : Type*) [MeasurableSpace α] : Prop where
   /-- A singleton is a measurable set. -/
   measurableSet_singleton : ∀ x, MeasurableSet ({x} : Set α)
 #align measurable_singleton_class MeasurableSingletonClass
@@ -578,7 +578,7 @@ theorem Measurable.le {α} {m m0 : MeasurableSpace α} {_ : MeasurableSpace β} 
     {f : α → β} (hf : Measurable[m] f) : Measurable[m0] f := fun _ hs => hm _ (hf hs)
 #align measurable.le Measurable.le
 
-theorem MeasurableSpace.Top.measurable {α β : Type _} [MeasurableSpace β] (f : α → β) :
+theorem MeasurableSpace.Top.measurable {α β : Type*} [MeasurableSpace β] (f : α → β) :
     Measurable[⊤] f := fun _ _ => MeasurableSpace.measurableSet_top
 #align measurable_space.top.measurable MeasurableSpace.Top.measurable
 

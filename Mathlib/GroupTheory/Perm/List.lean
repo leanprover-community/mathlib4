@@ -31,7 +31,7 @@ nontrivial permutation that is noncyclic.
 
 namespace List
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 section FormPerm
 

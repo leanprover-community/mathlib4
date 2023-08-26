@@ -97,8 +97,7 @@ def Gamma0 (N : ℕ) : Subgroup SL(2, ℤ) where
     intro a b ha hb
     simp only [Set.mem_setOf_eq]
     have h := (Matrix.two_mul_expl a.1 b.1).2.2.1
-    simp only [coe_matrix_coe, coe_mul, Int.coe_castRingHom, map_apply, Set.mem_setOf_eq,
-      mul_eq_mul] at *
+    simp only [coe_matrix_coe, coe_mul, Int.coe_castRingHom, map_apply, Set.mem_setOf_eq] at *
     rw [h]
     simp [ha, hb]
   inv_mem' := by
@@ -126,8 +125,7 @@ def Gamma0Map (N : ℕ) : Gamma0 N →* ZMod N where
   map_mul' := by
     intro A B
     have := (two_mul_expl A.1.1 B.1.1).2.2.2
-    simp only [Subgroup.coe_mul, coe_matrix_coe, coe_mul, Int.coe_castRingHom, map_apply,
-      mul_eq_mul] at *
+    simp only [Subgroup.coe_mul, coe_matrix_coe, coe_mul, Int.coe_castRingHom, map_apply] at *
     rw [this]
     have ha := A.property
     simp only [Int.cast_add, Int.cast_mul, add_left_eq_self, Gamma0_mem,

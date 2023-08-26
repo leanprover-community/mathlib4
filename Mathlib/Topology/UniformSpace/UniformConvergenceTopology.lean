@@ -143,14 +143,14 @@ section TypeAlias
 
 /-- The type of functions from `α` to `β` equipped with the uniform structure and topology of
 uniform convergence. We denote it `α →ᵤ β`. -/
-def UniformFun (α β : Type _) :=
+def UniformFun (α β : Type*) :=
   α → β
 #align uniform_fun UniformFun
 
 /-- The type of functions from `α` to `β` equipped with the uniform structure and topology of
 uniform convergence on some family `𝔖` of subsets of `α`. We denote it `α →ᵤ[𝔖] β`. -/
 @[nolint unusedArguments]
-def UniformOnFun (α β : Type _) (_ : Set (Set α)) :=
+def UniformOnFun (α β : Type*) (_ : Set (Set α)) :=
   α → β
 #align uniform_on_fun UniformOnFun
 
@@ -199,7 +199,7 @@ open UniformConvergence
 
 namespace UniformFun
 
-variable (α β : Type _) {γ ι : Type _}
+variable (α β : Type*) {γ ι : Type*}
 
 variable {s s' : Set α} {x : α} {p : Filter ι} {g : ι → α}
 
@@ -236,13 +236,12 @@ protected def filter (𝓕 : Filter <| β × β) : Filter ((α →ᵤ β) × (α
 #align uniform_fun.filter UniformFun.filter
 
 -- mathport name: exprΦ
---local notation "Φ" => fun (α β : Type _) (uvx : ((α →ᵤ β) × (α →ᵤ β)) × α) =>
+--local notation "Φ" => fun (α β : Type*) (uvx : ((α →ᵤ β) × (α →ᵤ β)) × α) =>
   --(uvx.fst.fst uvx.2, uvx.1.2 uvx.2)
 
-protected def phi (α β : Type _) (uvx : ((α →ᵤ β) × (α →ᵤ β)) × α) : β × β :=
+protected def phi (α β : Type*) (uvx : ((α →ᵤ β) × (α →ᵤ β)) × α) : β × β :=
   (uvx.fst.fst uvx.2, uvx.1.2 uvx.2)
 
--- mathport name: exprlower_adjoint
 set_option quotPrecheck false -- Porting note: error message suggested to do this
 /- This is a lower adjoint to `UniformFun.filter` (see `UniformFun.gc`).
 The exact definition of the lower adjoint `l` is not interesting; we will only use that it exists
@@ -313,7 +312,7 @@ protected theorem hasBasis_uniformity :
 /-- The uniformity of `α →ᵤ β` admits the family `{(f, g) | ∀ x, (f x, g x) ∈ V}` for `V ∈ 𝓑` as
 a filter basis, for any basis `𝓑` of `𝓤 β` (in the case `𝓑 = (𝓤 β).as_basis` this is true by
 definition). -/
-protected theorem hasBasis_uniformity_of_basis {ι : Sort _} {p : ι → Prop} {s : ι → Set (β × β)}
+protected theorem hasBasis_uniformity_of_basis {ι : Sort*} {p : ι → Prop} {s : ι → Set (β × β)}
     (h : (𝓤 β).HasBasis p s) : (𝓤 (α →ᵤ β)).HasBasis p (UniformFun.gen α β ∘ s) :=
   (UniformFun.hasBasis_uniformity α β).to_hasBasis
     (fun _ hU =>
@@ -522,7 +521,7 @@ protected def uniformEquivProdArrow [UniformSpace γ] : (α →ᵤ β × γ) ≃
 #align uniform_fun.uniform_equiv_prod_arrow UniformFun.uniformEquivProdArrow
 
 -- the relevant diagram commutes by definition
-variable (α) (δ : ι → Type _) [∀ i, UniformSpace (δ i)]
+variable (α) (δ : ι → Type*) [∀ i, UniformSpace (δ i)]
 
 /-- The natural bijection between `α → Π i, δ i` and `Π i, α → δ i`, upgraded to a uniform
 isomorphism between `α →ᵤ (Π i, δ i)` and `Π i, α →ᵤ δ i`. -/
@@ -552,7 +551,7 @@ end UniformFun
 
 namespace UniformOnFun
 
-variable {α β : Type _} {γ ι : Type _}
+variable {α β : Type*} {γ ι : Type*}
 
 variable {s s' : Set α} {x : α} {p : Filter ι} {g : ι → α}
 
@@ -903,7 +902,7 @@ protected def uniformEquivProdArrow [UniformSpace γ] :
 #align uniform_on_fun.uniform_equiv_prod_arrow UniformOnFun.uniformEquivProdArrow
 
 -- the relevant diagram commutes by definition
-variable (𝔖) (δ : ι → Type _) [∀ i, UniformSpace (δ i)]
+variable (𝔖) (δ : ι → Type*) [∀ i, UniformSpace (δ i)]
 
 /-- The natural bijection between `α → Π i, δ i` and `Π i, α → δ i`, upgraded to a uniform
 isomorphism between `α →ᵤ[𝔖] (Π i, δ i)` and `Π i, α →ᵤ[𝔖] δ i`. -/

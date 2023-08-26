@@ -33,7 +33,7 @@ namespace Set
 
 section Prod
 
-variable {α β γ δ : Type _} {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {a : α} {b : β}
+variable {α β γ δ : Type*} {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {a : α} {b : β}
 
 /-- The cartesian product `Set.prod s t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
 def prod (s : Set α) (t : Set β) : Set (α × β) :=
@@ -66,6 +66,10 @@ theorem prod_mk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) 
 theorem mk_mem_prod (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t :=
   ⟨ha, hb⟩
 #align set.mk_mem_prod Set.mk_mem_prod
+
+theorem Subsingleton.prod (hs : s.Subsingleton) (ht : t.Subsingleton) :
+    (s ×ˢ t).Subsingleton := fun _x hx _y hy ↦
+  Prod.ext (hs hx.1 hy.1) (ht hx.2 hy.2)
 
 noncomputable instance decidableMemProd [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)] :
     DecidablePred (· ∈ s ×ˢ t) := fun _ => And.decidable
@@ -327,10 +331,12 @@ theorem Nonempty.fst : (s ×ˢ t).Nonempty → s.Nonempty := fun ⟨x, hx⟩ => 
 theorem Nonempty.snd : (s ×ˢ t).Nonempty → t.Nonempty := fun ⟨x, hx⟩ => ⟨x.2, hx.2⟩
 #align set.nonempty.snd Set.Nonempty.snd
 
+@[simp]
 theorem prod_nonempty_iff : (s ×ˢ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.prod h.2⟩
 #align set.prod_nonempty_iff Set.prod_nonempty_iff
 
+@[simp]
 theorem prod_eq_empty_iff : s ×ˢ t = ∅ ↔ s = ∅ ∨ t = ∅ := by
   simp only [not_nonempty_iff_eq_empty.symm, prod_nonempty_iff, not_and_or]
 #align set.prod_eq_empty_iff Set.prod_eq_empty_iff
@@ -472,10 +478,10 @@ In this section we prove some lemmas about the diagonal set `{p | p.1 = p.2}` an
 
 section Diagonal
 
-variable {α : Type _} {s t : Set α}
+variable {α : Type*} {s t : Set α}
 
 /-- `diagonal α` is the set of `α × α` consisting of all pairs of the form `(a, a)`. -/
-def diagonal (α : Type _) : Set (α × α) :=
+def diagonal (α : Type*) : Set (α × α) :=
   { p | p.1 = p.2 }
 #align set.diagonal Set.diagonal
 
@@ -539,7 +545,7 @@ end Diagonal
 
 section OffDiag
 
-variable {α : Type _} {s t : Set α} {x : α × α} {a : α}
+variable {α : Type*} {s t : Set α} {x : α × α} {a : α}
 
 /-- The off-diagonal of a set `s` is the set of pairs `(a, b)` with `a, b ∈ s` and `a ≠ b`. -/
 def offDiag (s : Set α) : Set (α × α) :=
@@ -640,7 +646,7 @@ end OffDiag
 
 section Pi
 
-variable {ι : Type _} {α β : ι → Type _} {s s₁ s₂ : Set ι} {t t₁ t₂ : ∀ i, Set (α i)} {i : ι}
+variable {ι : Type*} {α β : ι → Type*} {s s₁ s₂ : Set ι} {t t₁ t₂ : ∀ i, Set (α i)} {i : ι}
 
 /-- Given an index set `ι` and a family of sets `t : Π i, Set (α i)`, `pi s t`
 is the set of dependent functions `f : Πa, π a` such that `f a` belongs to `t a`
@@ -663,6 +669,10 @@ theorem empty_pi (s : ∀ i, Set (α i)) : pi ∅ s = univ := by
   ext
   simp [pi]
 #align set.empty_pi Set.empty_pi
+
+theorem subsingleton_univ_pi (ht : ∀ i, (t i).Subsingleton) :
+    (univ.pi t).Subsingleton := fun _f hf _g hg ↦ funext fun i ↦
+  (ht i) (hf _ <| mem_univ _) (hg _ <| mem_univ _)
 
 @[simp]
 theorem pi_univ (s : Set ι) : (pi s fun i => (univ : Set (α i))) = univ :=
@@ -812,7 +822,7 @@ theorem pi_update_of_mem [DecidableEq ι] (hi : i ∈ s) (f : ∀ j, α j) (a : 
         by rw [union_pi, singleton_pi', update_same, pi_update_of_not_mem]; simp
 #align set.pi_update_of_mem Set.pi_update_of_mem
 
-theorem univ_pi_update [DecidableEq ι] {β : ∀ _, Type _} (i : ι) (f : ∀ j, α j) (a : α i)
+theorem univ_pi_update [DecidableEq ι] {β : ∀ _, Type*} (i : ι) (f : ∀ j, α j) (a : α i)
     (t : ∀ j, α j → Set (β j)) :
     (pi univ fun j => t j (update f i a j)) = { x | x i ∈ t i a } ∩ pi {i}ᶜ fun j => t j (f j) :=
   by rw [compl_eq_univ_diff, ← pi_update_of_mem (mem_univ _)]

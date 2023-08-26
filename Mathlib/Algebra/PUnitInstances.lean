@@ -18,6 +18,8 @@ This file collects facts about algebraic structures on the one-element type, e.g
 commutative ring.
 -/
 
+set_option autoImplicit true
+
 namespace PUnit
 
 @[to_additive]
@@ -131,7 +133,7 @@ instance smul : SMul R PUnit :=
   ⟨fun _ _ => unit⟩
 
 @[to_additive (attr := simp)]
-theorem smul_eq {R : Type _} (y : PUnit) (r : R) : r • y = unit :=
+theorem smul_eq {R : Type*} (y : PUnit) (r : R) : r • y = unit :=
   rfl
 #align punit.smul_eq PUnit.smul_eq
 #align punit.vadd_eq PUnit.vadd_eq

@@ -32,7 +32,7 @@ affine space, ordered module, slope
 
 open AffineMap
 
-variable {k E PE : Type _}
+variable {k E PE : Type*}
 
 /-!
 ### Monotonicity of `lineMap`

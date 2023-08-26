@@ -37,7 +37,7 @@ noncomputable section
 
 /-- The structure representing a cubic polynomial. -/
 @[ext]
-structure Cubic (R : Type _) where
+structure Cubic (R : Type*) where
   (a b c d : R)
 #align cubic Cubic
 
@@ -47,7 +47,7 @@ open Cubic Polynomial
 
 open Polynomial
 
-variable {R S F K : Type _}
+variable {R S F K : Type*}
 
 instance [Inhabited R] : Inhabited (Cubic R) :=
   ⟨⟨default, default, default, default⟩⟩
@@ -291,7 +291,7 @@ def equiv : Cubic R ≃ { p : R[X] // p.degree ≤ 3 } where
     -- Porting note: Added `simp only [Nat.zero_eq, Nat.succ_eq_add_one] <;> ring_nf`
     -- There's probably a better way to do this.
     ext (_ | _ | _ | _ | n) <;> simp only [Nat.zero_eq, Nat.succ_eq_add_one] <;> ring_nf
-      <;> simp only [coeffs]
+      <;> try simp only [coeffs]
     have h3 : 3 < 4 + n := by linarith only
     rw [coeff_eq_zero h3,
       (degree_le_iff_coeff_zero (f : R[X]) 3).mp f.2 _ <| WithBot.coe_lt_coe.mpr (by exact h3)]
@@ -559,7 +559,7 @@ end Split
 section Discriminant
 
 /-- The discriminant of a cubic polynomial. -/
-def disc {R : Type _} [Ring R] (P : Cubic R) : R :=
+def disc {R : Type*} [Ring R] (P : Cubic R) : R :=
   P.b ^ 2 * P.c ^ 2 - 4 * P.a * P.c ^ 3 - 4 * P.b ^ 3 * P.d - 27 * P.a ^ 2 * P.d ^ 2 +
     18 * P.a * P.b * P.c * P.d
 #align cubic.disc Cubic.disc
