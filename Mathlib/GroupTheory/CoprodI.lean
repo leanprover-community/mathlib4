@@ -482,6 +482,17 @@ theorem smul_def (i) (w : Word M) (m : M i) :
     m • w = rcons { equivPair i w with head := m * (equivPair i w).head } :=
   rfl
 
+theorem equivPair_smul_same {i} (m : M i) (w : Word M) :
+    equivPair i (m • w) = ⟨m * (equivPair i w).head, (equivPair i w).tail,
+      (equivPair i w).fstIdx_ne⟩ := by
+  rw [smul_def, ← equivPair_symm]
+  simp
+
+@[simp]
+theorem equivPair_equivPair_tail {i} (w : Word M) :
+    equivPair i (equivPair i w).tail = ⟨1, (equivPair i w).tail, (equivPair i w).fstIdx_ne⟩ :=
+  equivPair_eq_of_fstIdx_ne _
+
 theorem of_smul_def (i) (w : Word M) (m : M i) :
     of m • w = rcons { equivPair i w with head := m * (equivPair i w).head } :=
   rfl

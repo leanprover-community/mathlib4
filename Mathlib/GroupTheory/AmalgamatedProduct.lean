@@ -149,6 +149,14 @@ theorem normalize_single_mem_range {i : ι} (hφ : ∀ i, Function.Injective (φ
   apply hφ i
   rw [Classical.choose_spec (MonoidHom.mem_range.2 ⟨_, rfl⟩)]
 
+theorem normalizeSingle_one {i : ι} (hφ : ∀ i, Function.Injective (φ i)) :
+    (normalizeSingle (i := i) φ 1) = (1, 1)  := by
+  have h1 : 1 ∈ (φ i).range := one_mem  _
+  rw [normalizeSingle, dif_pos (one_mem _)]
+  simp only [Prod.mk.injEq, and_true]
+  apply hφ i
+  rw [Classical.choose_spec h1, map_one]
+
 structure Word extends CoprodI.Word G where
   left : H
   normalized : ∀ i g, ⟨i, g⟩ ∈ toList → (normalizeSingle φ g).2 = g
@@ -165,27 +173,56 @@ structure Pair (i : ι) where
 
 variable [DecidableEq ι] [∀ i, DecidableEq (G i)]
 
-theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} {g : G i} (h : H)
+theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
     (hφ : ∀ i, Function.Injective (φ i))
     (hw : ∀ i g, ⟨i, g⟩ ∈ w.toList → (normalizeSingle φ g).2 = g)
-    (hφw : ∀ i g, ⟨i, g⟩ ∈ (φ i h • w).toList → (normalizeSingle φ g).2 = g) :
-    φ i h = 1 := by
-  have := hφw i (φ i h * (normalizeSingle φ (Word.equivPair i w).head).2) ?_
-  · simpa [normalizeSingle_mul _ hφ] using this
-  . rw [Word.mem_smul_iff]
-    simp
-
-
-
+    (hφw : ∀ j g, ⟨j, g⟩ ∈ (φ i h • w).toList → (normalizeSingle φ g).2 = g) :
+    h = 1 := by
+  have hhead : (normalizeSingle φ (Word.equivPair i w).head).2 =
+      (Word.equivPair i w).head := by
+    rw [Word.equivPair_head]
+    split_ifs with h
+    · rcases h with ⟨_, rfl⟩
+      dsimp
+      exact hw _ _ (List.head_mem _)
+    · rw [normalizeSingle_one _ hφ]
+  by_contra hh1
+  have := hφw i (φ i h * (Word.equivPair i w).head) ?_
+  · apply hh1
+    simpa [normalizeSingle_mul _ hφ, hhead, ((injective_iff_map_eq_one' _).1 (hφ i))] using this
+  . simp only [Word.mem_smul_iff, not_true, false_and, ne_eq, Option.mem_def, mul_right_inj,
+      exists_eq_right', mul_right_eq_self, exists_prop, true_and, false_or]
+    constructor
+    · intro h
+      apply_fun (normalizeSingle φ) at h
+      rw [normalizeSingle_one _ hφ, normalizeSingle_mul _ hφ, hhead,
+        Prod.ext_iff] at h
+      rcases h with ⟨h₁, h₂⟩
+      dsimp at h₁ h₂
+      rw [h₂, normalizeSingle_one _ hφ, _root_.mul_one] at h₁
+      contradiction
+    · rw [Word.equivPair_head]
+      dsimp
+      split_ifs with hep
+      · rcases hep with ⟨hnil, rfl⟩
+        rw [head?_eq_head _ hnil]
+        simp_all
+      · push_neg at hep
+        by_cases hw : w.toList = []
+        · simp [hw, Word.fstIdx]
+        · simp [head?_eq_head _ hw, Word.fstIdx, hep hw]
 
 theorem Word.ext {w₁ w₂ : Word φ} (i : ι)
     (h : φ i w₁.left • w₁.toWord = φ i w₂.left • w₂.toWord) :
     w₁ = w₂ := by
-  cases w₁
-  cases w₂
+  rcases w₁ with ⟨w₁, h₁, hw₁⟩
+  rcases w₂ with ⟨w₂, h₂, hw₂⟩
   dsimp at *
-  rw [smul_eq_iff_eq_inv_smul, ← mul_smul, ← map_inv,
-    ← map_mul] at h
+  rw [smul_eq_iff_eq_inv_smul, ← mul_smul, ← map_inv, ← map_mul] at h
+  subst h
+  have : h₁⁻¹ * h₂ = 1 := eq_one_of_smul_normalized φ _ (h₁⁻¹ * h₂) hφ hw₂ hw₁
+  rw [inv_mul_eq_one] at this; subst this
+  simp
 
 noncomputable def rcons {i : ι} (p : Pair φ i) : Word φ :=
   let n := normalizeSingle φ (p.head * φ i p.tail.left)
@@ -204,11 +241,10 @@ noncomputable def rcons {i : ι} (p : Pair φ i) : Word φ :=
         · cases hg₂.2
           simp }
 
-theorem eq_one_of_coprod_rcons_normalized
-
 noncomputable def toPair (i) (w : Word φ) : Pair φ i :=
   let p := Word.equivPair i w.toWord
   { p with
+    --This is wrong
     tail :=
     { toWord := p.tail
       left := w.left
@@ -221,7 +257,12 @@ noncomputable def summandAction {i : ι} : MulAction (G i) (Word φ) :=
     mul_smul := by
       intro g₁ g₂ w
       simp only [instHSMul]
-      simp [rcons, toPair]
+      apply Word.ext _ hφ i
+      simp only [rcons, toPair, ← mul_smul,
+        normalizeSingle_fst_mul_normalizeSingle_snd, _root_.mul_one,
+        Word.equivPair_smul_same, Word.equivPair_equivPair_tail]
+
+
 
   }
 
