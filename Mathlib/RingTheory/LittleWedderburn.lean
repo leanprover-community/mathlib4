@@ -15,9 +15,6 @@ namespace LittleWedderburn
 universe u v
 variable {D : Type u} [DivisionRing D] {R : Type v} [Ring R]
 
-theorem mem_center_units_of_coe_mem_center (x : Rˣ) (h : (x : R) ∈ Subring.center R) :
-    x ∈ Subgroup.center Rˣ := fun y ↦ Units.ext <| h y
-
 variable (D)
 
 def InductionHyp : Prop :=
@@ -58,7 +55,7 @@ theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ 
   have h1qn : 1 ≤ q ^ n := by rw [← card_D]; exact Fintype.card_pos
   have key := Group.nat_card_center_add_sum_card_noncenter_eq_card (Dˣ)
   simp only [Nat.card_eq_fintype_card] at key
-  rw [Fintype.card_congr (centerUnitsEquivUnitsRingCenter D).toEquiv,
+  rw [Fintype.card_congr (show _ ≃* Zˣ from Subgroup.centerUnitsEquivUnitsCenter D).toEquiv,
       Fintype.card_units, ← card_Z, Fintype.card_units, card_D] at key
   let Φ := cyclotomic n ℤ
   have aux : Φ.eval ↑q ∣ (q : ℤ) ^ n - 1 := by
@@ -79,17 +76,15 @@ theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ 
   apply Finset.dvd_sum
   rintro ⟨x⟩ hx
   simp only [ConjClasses.quot_mk_eq_mk]
-  rw [ConjClasses.card_carrier, Fintype.card_congr (unitsCentralizerEquivSubring x).symm.toEquiv,
-      Fintype.card_units, card_D]
   set Zx := Subring.centralizer ({↑x} : Set D)
+  rw [ConjClasses.card_carrier, ←Fintype.card_congr
+        (show Zxˣ ≃* _ from unitsCentralizerEquiv _ x).toEquiv, Fintype.card_units, card_D]
   have hZx : Zx < ⊤ := by
     rw [lt_top_iff_ne_top]
     intro hZx
-    have Hx :=
-      mem_center_units_of_coe_mem_center _
-        (Subring.centralizer_eq_top_iff_subset.mp hZx <| Set.mem_singleton _)
     simp only [Set.mem_toFinset, ConjClasses.quot_mk_eq_mk] at hx
-    exact (ConjClasses.mk_bijOn (Dˣ)).1 Hx hx
+    refine (ConjClasses.mk_bijOn (Dˣ)).1 (Set.subset_center_units ?_) hx
+    exact Subring.centralizer_eq_top_iff_subset.mp hZx <| Set.mem_singleton _
   letI : Field Zx := hD.field _ hZx
   letI : Algebra Z Zx :=
     (Subring.inclusion <| Subring.center_le_centralizer {(x : D)}).toAlgebra
