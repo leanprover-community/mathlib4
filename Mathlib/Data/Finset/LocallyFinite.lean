@@ -1094,47 +1094,39 @@ variable [DecidableEq α]
 
 @[simp]
 theorem image_add_left_Icc (a b c : α) : (Icc a b).image ((· + ·) c) = Icc (c + a) (c + b) := by
-  rw [← map_add_left_Icc, map_eq_image]
-  rfl
+  rw [← map_add_left_Icc, map_eq_image, addLeftEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_left_Icc Finset.image_add_left_Icc
 
 @[simp]
 theorem image_add_left_Ico (a b c : α) : (Ico a b).image ((· + ·) c) = Ico (c + a) (c + b) := by
-  rw [← map_add_left_Ico, map_eq_image]
-  rfl
+  rw [← map_add_left_Ico, map_eq_image, addLeftEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_left_Ico Finset.image_add_left_Ico
 
 @[simp]
 theorem image_add_left_Ioc (a b c : α) : (Ioc a b).image ((· + ·) c) = Ioc (c + a) (c + b) := by
-  rw [← map_add_left_Ioc, map_eq_image]
-  rfl
+  rw [← map_add_left_Ioc, map_eq_image, addLeftEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_left_Ioc Finset.image_add_left_Ioc
 
 @[simp]
 theorem image_add_left_Ioo (a b c : α) : (Ioo a b).image ((· + ·) c) = Ioo (c + a) (c + b) := by
-  rw [← map_add_left_Ioo, map_eq_image]
-  rfl
+  rw [← map_add_left_Ioo, map_eq_image, addLeftEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_left_Ioo Finset.image_add_left_Ioo
 
 @[simp]
 theorem image_add_right_Icc (a b c : α) : (Icc a b).image (· + c) = Icc (a + c) (b + c) := by
-  rw [← map_add_right_Icc, map_eq_image]
-  rfl
+  rw [← map_add_right_Icc, map_eq_image, addRightEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_right_Icc Finset.image_add_right_Icc
 
 theorem image_add_right_Ico (a b c : α) : (Ico a b).image (· + c) = Ico (a + c) (b + c) := by
-  rw [← map_add_right_Ico, map_eq_image]
-  rfl
+  rw [← map_add_right_Ico, map_eq_image, addRightEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_right_Ico Finset.image_add_right_Ico
 
 theorem image_add_right_Ioc (a b c : α) : (Ioc a b).image (· + c) = Ioc (a + c) (b + c) := by
-  rw [← map_add_right_Ioc, map_eq_image]
-  rfl
+  rw [← map_add_right_Ioc, map_eq_image, addRightEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_right_Ioc Finset.image_add_right_Ioc
 
 theorem image_add_right_Ioo (a b c : α) : (Ioo a b).image (· + c) = Ioo (a + c) (b + c) := by
-  rw [← map_add_right_Ioo, map_eq_image]
-  rfl
+  rw [← map_add_right_Ioo, map_eq_image, addRightEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_right_Ioo Finset.image_add_right_Ioo
 
 end OrderedCancelAddCommMonoid
