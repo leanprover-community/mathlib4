@@ -737,7 +737,7 @@ theorem HasCompactSupport.continuous_convolution_right (hcg : HasCompactSupport 
 
 /-- The convolution is continuous if one function is integrable and the other is bounded and
 continuous. -/
-theorem BddAbove.continuous_convolution_right_of_integrable [SecondCountableTopology G]
+theorem BddAbove.continuous_convolution_right_of_integrable [SecondCountableTopologyEither G E']
     (hbg : BddAbove (range fun x => ‖g x‖)) (hf : Integrable f μ) (hg : Continuous g) :
     Continuous (f ⋆[L, μ] g) := by
   refine' continuous_iff_continuousAt.mpr fun x₀ => _
@@ -823,7 +823,8 @@ theorem HasCompactSupport.continuous_convolution_left [FirstCountableTopology G]
   exact hcf.continuous_convolution_right L.flip hg hf
 #align has_compact_support.continuous_convolution_left HasCompactSupport.continuous_convolution_left
 
-theorem BddAbove.continuous_convolution_left_of_integrable [SecondCountableTopology G]
+theorem BddAbove.continuous_convolution_left_of_integrable
+    [FirstCountableTopology G] [SecondCountableTopologyEither G E]
     (hbf : BddAbove (range fun x => ‖f x‖)) (hf : Continuous f) (hg : Integrable g μ) :
     Continuous (f ⋆[L, μ] g) := by
   rw [← convolution_flip]

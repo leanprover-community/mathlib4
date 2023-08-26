@@ -186,7 +186,7 @@ theorem isUnitTrinomial_iff :
   rw [if_neg hkm.ne, if_neg (hkm.trans hmn).ne] at hx
   rw [if_neg hkm.ne', if_neg hmn.ne] at hy
   rw [if_neg (hkm.trans hmn).ne', if_neg hmn.ne'] at hz
-  simp_rw [MulZeroClass.mul_zero, zero_add, add_zero] at hx hy hz
+  simp_rw [mul_zero, zero_add, add_zero] at hx hy hz
   exact ⟨k, m, n, hkm, hmn, hx.unit, hy.unit, hz.unit, rfl⟩
 #align polynomial.is_unit_trinomial_iff Polynomial.isUnitTrinomial_iff
 

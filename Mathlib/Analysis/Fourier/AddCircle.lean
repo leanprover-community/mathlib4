@@ -186,7 +186,7 @@ theorem fourier_zero' {x : AddCircle T} : @toCircle T 0 = (1 : ℂ) := by
 
 -- @[simp] -- Porting note: simp normal form is *also* `fourier_zero'`
 theorem fourier_eval_zero (n : ℤ) : fourier n (0 : AddCircle T) = 1 := by
-  rw [← QuotientAddGroup.mk_zero, fourier_coe_apply, Complex.ofReal_zero, MulZeroClass.mul_zero,
+  rw [← QuotientAddGroup.mk_zero, fourier_coe_apply, Complex.ofReal_zero, mul_zero,
     zero_div, Complex.exp_zero]
 #align fourier_eval_zero fourier_eval_zero
 

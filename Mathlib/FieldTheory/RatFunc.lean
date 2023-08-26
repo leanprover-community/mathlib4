@@ -1374,7 +1374,7 @@ theorem num_mul_denom_add_denom_mul_num_ne_zero {x y : RatFunc K} (hxy : x + y â
     x.num * y.denom + x.denom * y.num â‰  0 := by
   intro h_zero
   have h := num_denom_add x y
-  rw [h_zero, MulZeroClass.zero_mul] at h
+  rw [h_zero, zero_mul] at h
   exact (mul_ne_zero (num_ne_zero hxy) (mul_ne_zero x.denom_ne_zero y.denom_ne_zero)) h
 #align ratfunc.num_mul_denom_add_denom_mul_num_ne_zero RatFunc.num_mul_denom_add_denom_mul_num_ne_zero
 
