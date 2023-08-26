@@ -20,7 +20,7 @@ namespace Nat
 
 /-- `Nat.super_factorial n` is the super factorial of `n`. -/
 @[simp]
-def super_factorial : ℕ → ℕ
+def superFactorial : ℕ → ℕ
   | 0 => 1
   | succ n => factorial n.succ * super_factorial n
 
