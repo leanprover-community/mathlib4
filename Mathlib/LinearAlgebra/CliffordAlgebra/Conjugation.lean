@@ -89,27 +89,24 @@ def reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q :=
           unop_injective <| by simp⟩).toLinearMap
 #align clifford_algebra.reverse CliffordAlgebra.reverse
 
--- porting note: can't infer `Q`
 @[simp]
-theorem reverse_ι (m : M) : reverse (Q := Q) (ι Q m) = ι Q m := by simp [reverse]
+theorem reverse_ι (m : M) : reverse (ι Q m) = ι Q m := by simp [reverse]
 #align clifford_algebra.reverse_ι CliffordAlgebra.reverse_ι
 
 @[simp]
 theorem reverse.commutes (r : R) :
-    -- porting note: can't infer `Q`
-    reverse (Q := Q) (algebraMap R (CliffordAlgebra Q) r) = algebraMap R _ r := by simp [reverse]
+    reverse (algebraMap R (CliffordAlgebra Q) r) = algebraMap R _ r := by simp [reverse]
 #align clifford_algebra.reverse.commutes CliffordAlgebra.reverse.commutes
 
--- porting note: can't infer `Q`
 @[simp]
-theorem reverse.map_one : reverse (Q := Q) (1 : CliffordAlgebra Q) = 1 := by
+theorem reverse.map_one : reverse (1 : CliffordAlgebra Q) = 1 := by
   convert reverse.commutes (Q := Q) (1 : R) <;> simp
 #align clifford_algebra.reverse.map_one CliffordAlgebra.reverse.map_one
 
 @[simp]
 theorem reverse.map_mul (a b : CliffordAlgebra Q) :
   -- porting note: can't infer `Q`
-  reverse (Q := Q) (a * b) = reverse (Q := Q) b * reverse (Q := Q) a := by
+  reverse (a * b) = reverse b * reverse a := by
   simp [reverse]
 #align clifford_algebra.reverse.map_mul CliffordAlgebra.reverse.map_mul
 
@@ -131,9 +128,8 @@ theorem reverse_involutive : Function.Involutive (reverse (Q := Q)) :=
   LinearMap.congr_fun reverse_comp_reverse
 #align clifford_algebra.reverse_involutive CliffordAlgebra.reverse_involutive
 
--- porting note: can't infer `Q`
 @[simp]
-theorem reverse_reverse : ∀ a : CliffordAlgebra Q, reverse (Q := Q) (reverse (Q := Q) a) = a :=
+theorem reverse_reverse : ∀ a : CliffordAlgebra Q, reverse (reverse a) = a :=
   reverse_involutive
 #align clifford_algebra.reverse_reverse CliffordAlgebra.reverse_reverse
 
@@ -162,8 +158,7 @@ theorem reverse_involute_commute : Function.Commute (reverse (Q := Q)) involute 
 #align clifford_algebra.reverse_involute_commute CliffordAlgebra.reverse_involute_commute
 
 theorem reverse_involute :
-    -- porting note: can't infer `Q`
-    ∀ a : CliffordAlgebra Q, reverse (Q := Q) (involute a) = involute (reverse (Q := Q) a) :=
+    ∀ a : CliffordAlgebra Q, reverse (involute a) = involute (reverse a) :=
   reverse_involute_commute
 #align clifford_algebra.reverse_involute CliffordAlgebra.reverse_involute
 
@@ -180,7 +175,7 @@ section List
 taking the product of the reverse of that list. -/
 theorem reverse_prod_map_ι :
   -- porting note: can't infer `Q`
-    ∀ l : List M, reverse (Q := Q) (l.map <| ι Q).prod = (l.map <| ι Q).reverse.prod
+    ∀ l : List M, reverse (l.map <| ι Q).prod = (l.map <| ι Q).reverse.prod
   | [] => by simp
   | x::xs => by simp [reverse_prod_map_ι xs]
 #align clifford_algebra.reverse_prod_map_ι CliffordAlgebra.reverse_prod_map_ι
@@ -316,7 +311,7 @@ theorem involute_mem_evenOdd_iff {x : CliffordAlgebra Q} {n : ZMod 2} :
 @[simp]
 theorem reverse_mem_evenOdd_iff {x : CliffordAlgebra Q} {n : ZMod 2} :
     -- porting note: cannot infer `Q`
-    reverse (Q := Q) x ∈ evenOdd Q n ↔ x ∈ evenOdd Q n :=
+    reverse x ∈ evenOdd Q n ↔ x ∈ evenOdd Q n :=
   SetLike.ext_iff.mp (evenOdd_comap_reverse Q n) x
 #align clifford_algebra.reverse_mem_even_odd_iff CliffordAlgebra.reverse_mem_evenOdd_iff
 
