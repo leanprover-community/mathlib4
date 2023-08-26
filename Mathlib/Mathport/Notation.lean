@@ -267,6 +267,7 @@ against is in the `lit` variable.
 Runs `smatcher`, extracts the resulting `scopeId` variable, processes this value
 (which must be a lambda) to produce a binder, and loops. -/
 partial def matchScoped (lit scopeId : Name) (smatcher : Matcher) : Matcher := go #[] where
+  /-- Variant of `matchScoped` after some number of `binders` have already been captured. -/
   go (binders : Array (TSyntax ``extBinderParenthesized)) : Matcher := fun s => do
     -- `lit` is bound to the SubExpr that the `scoped` syntax produced
     s.withVar lit do
