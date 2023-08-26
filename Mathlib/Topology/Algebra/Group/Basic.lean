@@ -1692,6 +1692,24 @@ theorem exists_disjoint_smul_of_isCompact [NoncompactSpace G] {K L : Set G} (hK 
 #align exists_disjoint_smul_of_is_compact exists_disjoint_smul_of_isCompact
 #align exists_disjoint_vadd_of_is_compact exists_disjoint_vadd_of_isCompact
 
+/-- A compact neighborhood of `1` in a topological group admits a closed compact subset
+that is a neighborhood of `1`. -/
+@[to_additive "A compact neighborhood of `0` in a topological additive group
+admits a closed compact subset that is a neighborhood of `0`."]
+theorem exists_isCompact_isClosed_subset_isCompact_nhds_one
+    {L : Set G} (Lcomp : IsCompact L) (L1 : L ∈ 𝓝 (1 : G)) :
+    ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ⊆ L ∧ K ∈ 𝓝 (1 : G) := by
+  rcases exists_open_nhds_one_mul_subset L1 with ⟨V, hVo, hV₁, hVL⟩
+  have hcVL : closure V ⊆ L :=
+    calc
+      closure V = 1 * closure V := (one_mul _).symm
+      _ ⊆ V * closure V :=
+        mul_subset_mul_right <| singleton_subset_iff.2 hV₁
+      _ = V * V := hVo.mul_closure _
+      _ ⊆ L := hVL
+  exact ⟨closure V, isCompact_of_isClosed_subset Lcomp isClosed_closure hcVL, isClosed_closure,
+    hcVL, mem_of_superset (hVo.mem_nhds hV₁) subset_closure⟩
+
 /-- In a locally compact group, any neighborhood of the identity contains a compact closed
 neighborhood of the identity, even without separation assumptions on the space. -/
 @[to_additive
@@ -1700,31 +1718,21 @@ neighborhood of the identity, even without separation assumptions on the space. 
 theorem local_isCompact_isClosed_nhds_of_group [LocallyCompactSpace G] {U : Set G}
     (hU : U ∈ 𝓝 (1 : G)) :
     ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ⊆ U ∧ (1 : G) ∈ interior K := by
-  obtain ⟨L, Lint, LU, Lcomp⟩ : ∃ (L : Set G), L ∈ 𝓝 (1 : G) ∧ L ⊆ U ∧ IsCompact L :=
+  obtain ⟨L, L1, LU, Lcomp⟩ : ∃ (L : Set G), L ∈ 𝓝 (1 : G) ∧ L ⊆ U ∧ IsCompact L :=
     local_compact_nhds hU
-  obtain ⟨V, Vnhds, hV⟩ : ∃ V ∈ 𝓝 (1 : G), ∀ v ∈ V, ∀ w ∈ V, v * w ∈ L := by
-    have : (fun p : G × G => p.1 * p.2) ⁻¹' L ∈ 𝓝 ((1, 1) : G × G) := by
-      refine' continuousAt_fst.mul continuousAt_snd _
-      simpa only [mul_one] using Lint
-    simpa only [div_eq_mul_inv, nhds_prod_eq, mem_prod_self_iff, prod_subset_iff, mem_preimage]
-      using this
-  have VL : closure V ⊆ L :=
-    calc
-      closure V = {(1 : G)} * closure V := by simp only [singleton_mul, one_mul, image_id']
-      _ ⊆ interior V * closure V :=
-        mul_subset_mul_right
-          (by simpa only [singleton_subset_iff] using mem_interior_iff_mem_nhds.2 Vnhds)
-      _ = interior V * V := isOpen_interior.mul_closure _
-      _ ⊆ V * V := mul_subset_mul_right interior_subset
-      _ ⊆ L := by
-        rintro x ⟨y, z, yv, zv, rfl⟩
-        exact hV _ yv _ zv
-
-  exact
-    ⟨closure V, isCompact_of_isClosed_subset Lcomp isClosed_closure VL, isClosed_closure,
-      VL.trans LU, interior_mono subset_closure (mem_interior_iff_mem_nhds.2 Vnhds)⟩
+  obtain ⟨K, Kcomp, Kcl, KL, K1⟩ := exists_isCompact_isClosed_subset_isCompact_nhds_one Lcomp L1
+  exact ⟨K, Kcomp, Kcl, KL.trans LU, mem_interior_iff_mem_nhds.2 K1⟩
 #align local_is_compact_is_closed_nhds_of_group local_isCompact_isClosed_nhds_of_group
 #align local_is_compact_is_closed_nhds_of_add_group local_isCompact_isClosed_nhds_of_addGroup
+
+variable (G)
+
+@[to_additive]
+theorem exists_isCompact_isClosed_nhds_one [LocallyCompactSpace G] :
+    ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ∈ 𝓝 1 :=
+  let ⟨_L, Lcomp, L1⟩ := exists_compact_mem_nhds (1 : G)
+  let ⟨K, Kcl, Kcomp, _, K1⟩ := exists_isCompact_isClosed_subset_isCompact_nhds_one Lcomp L1
+  ⟨K, Kcl, Kcomp, K1⟩
 
 end
 
@@ -1938,7 +1946,7 @@ theorem toTopologicalSpace_injective :
 
 @[to_additive (attr := ext)]
 theorem ext' {f g : GroupTopology α} (h : f.IsOpen = g.IsOpen) : f = g :=
-  toTopologicalSpace_injective <| topologicalSpace_eq h
+  toTopologicalSpace_injective <| TopologicalSpace.ext h
 #align group_topology.ext' GroupTopology.ext'
 #align add_group_topology.ext' AddGroupTopology.ext'
 

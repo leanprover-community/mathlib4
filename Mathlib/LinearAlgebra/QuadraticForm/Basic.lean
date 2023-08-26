@@ -883,6 +883,11 @@ theorem associated_linMulLin (f g : M →ₗ[R₁] R₁) :
   ring
 #align quadratic_form.associated_lin_mul_lin QuadraticForm.associated_linMulLin
 
+@[simp]
+lemma associated_sq : associated (R₁ := R₁) sq = LinearMap.toBilin (LinearMap.mul R₁ R₁) :=
+  (associated_linMulLin (LinearMap.id) (LinearMap.id)).trans <|
+    by simp only [smul_add, invOf_two_smul_add_invOf_two_smul]; rfl
+
 end Associated
 
 section Anisotropic
