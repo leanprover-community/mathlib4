@@ -101,6 +101,22 @@ theorem RespectsIso.unop {P : MorphismProperty Cᵒᵖ} (h : RespectsIso P) : Re
   ⟨fun e f hf => h.2 e.op f.op hf, fun e f hf => h.1 e.op f.op hf⟩
 #align category_theory.morphism_property.respects_iso.unop CategoryTheory.MorphismProperty.RespectsIso.unop
 
+/-- The closure by isomorphisms of a `MorphismProperty` -/
+def isoClosure (P : MorphismProperty C) : MorphismProperty C :=
+  fun _ _ f => ∃ (Y₁ Y₂ : C) (f' : Y₁ ⟶ Y₂) (_ : P f'), Nonempty (Arrow.mk f' ≅ Arrow.mk f)
+
+lemma subset_isoClosure (P : MorphismProperty C) : P ⊆ P.isoClosure :=
+  fun _ _ f hf => ⟨_, _, f, hf, ⟨Iso.refl _⟩⟩
+
+lemma isoClosure_respectsIso (P : MorphismProperty C) :
+    RespectsIso P.isoClosure :=
+  ⟨fun e f ⟨_, _, f', hf', ⟨iso⟩⟩ =>
+    ⟨_, _, f', hf', ⟨Arrow.isoMk (asIso iso.hom.left ≪≫ e.symm)
+      (asIso iso.hom.right) (by simp)⟩⟩,
+  fun e f ⟨_, _, f', hf', ⟨iso⟩⟩ =>
+    ⟨_, _, f', hf', ⟨Arrow.isoMk (asIso iso.hom.left)
+      (asIso iso.hom.right ≪≫ e) (by simp)⟩⟩⟩
+
 /-- A morphism property is `StableUnderComposition` if the composition of two such morphisms
 still falls in the class. -/
 def StableUnderComposition (P : MorphismProperty C) : Prop :=

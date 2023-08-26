@@ -13,6 +13,7 @@ import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
+import Mathlib.Algebra.Algebra.Subalgebra.Unitization
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Algebra.Unitization
 import Mathlib.Algebra.AlgebraicCard
@@ -471,6 +472,7 @@ import Mathlib.AlgebraicTopology.DoldKan.Compatibility
 import Mathlib.AlgebraicTopology.DoldKan.Decomposition
 import Mathlib.AlgebraicTopology.DoldKan.Degeneracies
 import Mathlib.AlgebraicTopology.DoldKan.EquivalenceAdditive
+import Mathlib.AlgebraicTopology.DoldKan.EquivalencePseudoabelian
 import Mathlib.AlgebraicTopology.DoldKan.Faces
 import Mathlib.AlgebraicTopology.DoldKan.FunctorGamma
 import Mathlib.AlgebraicTopology.DoldKan.FunctorN
@@ -976,6 +978,7 @@ import Mathlib.CategoryTheory.Limits.ExactFunctor
 import Mathlib.CategoryTheory.Limits.Filtered
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Limits.FinallySmall
 import Mathlib.CategoryTheory.Limits.Fubini
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.FunctorCategory
@@ -1041,6 +1044,7 @@ import Mathlib.CategoryTheory.Linear.FunctorCategory
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.CategoryTheory.Linear.Yoneda
 import Mathlib.CategoryTheory.Localization.Construction
+import Mathlib.CategoryTheory.Localization.Equivalence
 import Mathlib.CategoryTheory.Localization.Opposite
 import Mathlib.CategoryTheory.Localization.Predicate
 import Mathlib.CategoryTheory.Monad.Adjunction

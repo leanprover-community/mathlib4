@@ -22,8 +22,8 @@ This file defines the commutative ring `AdjoinRoot f`, the ring R[X]/(f) obtaine
 commutative ring `R` and a polynomial `f : R[X]`. If furthermore `R` is a field and `f` is
 irreducible, the field structure on `AdjoinRoot f` is constructed.
 
-We suggest stating results on `is_adjoin_root` instead of `AdjoinRoot` to achieve higher
-generality, since `is_adjoin_root` works for all different constructions of `R[α]`
+We suggest stating results on `IsAdjoinRoot` instead of `AdjoinRoot` to achieve higher
+generality, since `IsAdjoinRoot` works for all different constructions of `R[α]`
 including `AdjoinRoot f = R[X]/(f)` itself.
 
 ## Main definitions and results
@@ -613,7 +613,7 @@ open Algebra Polynomial
 
 /-- The surjective algebra morphism `R[X]/(minpoly R x) → R[x]`.
 If `R` is a GCD domain and `x` is integral, this is an isomorphism,
-see `adjoin_root.minpoly.equiv_adjoin`. -/
+see `minpoly.equivAdjoin`. -/
 @[simps!]
 def Minpoly.toAdjoin : AdjoinRoot (minpoly R x) →ₐ[R] adjoin R ({x} : Set S) :=
   liftHom _ ⟨x, self_mem_adjoin_singleton R x⟩
@@ -662,9 +662,7 @@ guaranteed to be identical to `g`. -/
 @[simps (config := { fullyApplied := false })]
 def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g = 0) :
     AdjoinRoot g ≃ₐ[R] S :=
-  {
-    AdjoinRoot.liftHom g pb.gen
-      h₂ with
+  { AdjoinRoot.liftHom g pb.gen h₂ with
     toFun := AdjoinRoot.liftHom g pb.gen h₂
     invFun := pb.lift (root g) h₁
     -- porting note: another term-mode proof converted to tactic-mode.

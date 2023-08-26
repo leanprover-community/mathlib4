@@ -583,6 +583,53 @@ def biproduct.mapIso {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ 
   inv := biproduct.map fun b => (p b).inv
 #align category_theory.limits.biproduct.map_iso CategoryTheory.Limits.biproduct.mapIso
 
+/-- Two biproducts which differ by an equivalence in the indexing type,
+and up to isomorphism in the factors, are isomorphic.
+
+Unfortunately there are two natural ways to define each direction of this isomorphism
+(because it is true for both products and coproducts separately).
+We give the alternative definitions as lemmas below.
+-/
+@[simps]
+def biproduct.whisker_equiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
+    [HasBiproduct f] [HasBiproduct g] : ⨁ f ≅ ⨁ g where
+  hom := biproduct.desc fun j => (w j).inv ≫ biproduct.ι g (e j)
+  inv := biproduct.desc fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom ≫ biproduct.ι f _
+
+lemma biproduct.whisker_equiv_hom_eq_lift {f : J → C} {g : K → C} (e : J ≃ K)
+    (w : ∀ j, g (e j) ≅ f j) [HasBiproduct f] [HasBiproduct g] :
+    (biproduct.whisker_equiv e w).hom =
+      biproduct.lift fun k => biproduct.π f (e.symm k) ≫ (w _).inv ≫ eqToHom (by simp) := by
+  simp only [whisker_equiv_hom]
+  ext k j
+  by_cases h : k = e j
+  · subst h
+    simp
+  · simp only [ι_desc_assoc, Category.assoc, ne_eq, lift_π]
+    rw [biproduct.ι_π_ne, biproduct.ι_π_ne_assoc]
+    · simp
+    · rintro rfl
+      simp at h
+    · exact Ne.symm h
+
+lemma biproduct.whisker_equiv_inv_eq_lift {f : J → C} {g : K → C} (e : J ≃ K)
+    (w : ∀ j, g (e j) ≅ f j) [HasBiproduct f] [HasBiproduct g] :
+    (biproduct.whisker_equiv e w).inv =
+      biproduct.lift fun j => biproduct.π g (e j) ≫ (w j).hom := by
+  simp only [whisker_equiv_inv]
+  ext j k
+  by_cases h : k = e j
+  · subst h
+    simp only [ι_desc_assoc, ← eqToHom_iso_hom_naturality_assoc w (e.symm_apply_apply j).symm,
+      Equiv.symm_apply_apply, eqToHom_comp_ι, Category.assoc, bicone_ι_π_self, Category.comp_id,
+      lift_π, bicone_ι_π_self_assoc]
+  · simp only [ι_desc_assoc, Category.assoc, ne_eq, lift_π]
+    rw [biproduct.ι_π_ne, biproduct.ι_π_ne_assoc]
+    · simp
+    · exact h
+    · rintro rfl
+      simp at h
+
 instance (f : ι → Type _) (g : (i : ι) → (f i) → C)
     [∀ i, HasBiproduct (g i)] [HasBiproduct fun i => ⨁ g i] :
     HasBiproduct fun p : Σ i, f i => g p.1 p.2 where

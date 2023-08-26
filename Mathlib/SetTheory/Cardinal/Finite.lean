@@ -85,11 +85,11 @@ theorem card_eq_one_iff_unique : Nat.card α = 1 ↔ Subsingleton α ∧ Nonempt
 #align nat.card_eq_one_iff_unique Nat.card_eq_one_iff_unique
 
 theorem card_eq_two_iff : Nat.card α = 2 ↔ ∃ x y : α, x ≠ y ∧ {x, y} = @Set.univ α :=
-  (toNat_eq_iff two_ne_zero).trans <| Iff.trans (by rw [Nat.cast_two]) mk_eq_two_iff
+  toNat_eq_ofNat.trans mk_eq_two_iff
 #align nat.card_eq_two_iff Nat.card_eq_two_iff
 
 theorem card_eq_two_iff' (x : α) : Nat.card α = 2 ↔ ∃! y, y ≠ x :=
-  (toNat_eq_iff two_ne_zero).trans <| Iff.trans (by rw [Nat.cast_two]) (mk_eq_two_iff' x)
+  toNat_eq_ofNat.trans (mk_eq_two_iff' x)
 #align nat.card_eq_two_iff' Nat.card_eq_two_iff'
 
 theorem card_of_isEmpty [IsEmpty α] : Nat.card α = 0 := by simp

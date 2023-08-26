@@ -953,6 +953,65 @@ theorem isConnected_iff_connectedSpace {s : Set α} : IsConnected s ↔ Connecte
     ⟨nonempty_subtype.mp h.2, isPreconnected_iff_preconnectedSpace.mpr h.1⟩⟩
 #align is_connected_iff_connected_space isConnected_iff_connectedSpace
 
+/-- In a preconnected space, given a transitive relation `P`, if `P x y` and `P y x` are true
+for `y` close enough to `x`, then `P x y` holds for all `x, y`. This is a version of the fact
+that, if an equivalence relation has open classes, then it has a single equivalence class. -/
+lemma PreconnectedSpace.induction₂' [PreconnectedSpace α] (P : α → α → Prop)
+    (h : ∀ x, ∀ᶠ y in 𝓝 x, P x y ∧ P y x) (h' : Transitive P) (x y : α) :
+    P x y := by
+  let u := {z | P x z}
+  have A : IsOpen u := by
+    apply isOpen_iff_mem_nhds.2 (fun z hz ↦ ?_)
+    filter_upwards [h z] with t ht
+    exact h' hz ht.1
+  have B : IsClosed u := by
+    apply isClosed_iff_nhds.2 (fun z hz ↦ ?_)
+    rcases hz _ (h z) with ⟨t, ht, h't⟩
+    exact h' h't ht.2
+  have C : u.Nonempty := ⟨x, (mem_of_mem_nhds (h x)).1⟩
+  have D : u = Set.univ := IsClopen.eq_univ ⟨A, B⟩ C
+  show y ∈ u
+  simp [D]
+
+/-- In a preconnected space, if a symmetric transitive relation `P x y` is true for `y` close
+enough to `x`, then it holds for all `x, y`. This is a version of the fact that, if an equivalence
+relation has open classes, then it has a single equivalence class. -/
+lemma PreconnectedSpace.induction₂ [PreconnectedSpace α] (P : α → α → Prop)
+    (h : ∀ x, ∀ᶠ y in 𝓝 x, P x y) (h' : Transitive P) (h'' : Symmetric P) (x y : α) :
+    P x y := by
+  refine PreconnectedSpace.induction₂' P (fun z ↦ ?_) h' x y
+  filter_upwards [h z] with a ha
+  refine ⟨ha, h'' ha⟩
+
+/-- In a preconnected set, given a transitive relation `P`, if `P x y` and `P y x` are true
+for `y` close enough to `x`, then `P x y` holds for all `x, y`. This is a version of the fact
+that, if an equivalence relation has open classes, then it has a single equivalence class. -/
+lemma IsPreconnected.induction₂' {s : Set α} (hs : IsPreconnected s) (P : α → α → Prop)
+    (h : ∀ x ∈ s, ∀ᶠ y in 𝓝[s] x, P x y ∧ P y x)
+    (h' : ∀ x y z, x ∈ s → y ∈ s → z ∈ s → P x y → P y z → P x z)
+    {x y : α} (hx : x ∈ s) (hy : y ∈ s) : P x y := by
+  let Q : s → s → Prop := fun a b ↦ P a b
+  show Q ⟨x, hx⟩ ⟨y, hy⟩
+  have : PreconnectedSpace s := Subtype.preconnectedSpace hs
+  apply PreconnectedSpace.induction₂'
+  · rintro ⟨x, hx⟩
+    have Z := h x hx
+    rwa [nhdsWithin_eq_map_subtype_coe] at Z
+  · rintro ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ hab hbc
+    exact h' a b c ha hb hc  hab hbc
+
+/-- In a preconnected set, if a symmetric transitive relation `P x y` is true for `y` close
+enough to `x`, then it holds for all `x, y`. This is a version of the fact that, if an equivalence
+relation has open classes, then it has a single equivalence class. -/
+lemma IsPreconnected.induction₂ {s : Set α} (hs : IsPreconnected s) (P : α → α → Prop)
+    (h : ∀ x ∈ s, ∀ᶠ y in 𝓝[s] x, P x y)
+    (h' : ∀ x y z, x ∈ s → y ∈ s → z ∈ s → P x y → P y z → P x z)
+    (h'' : ∀ x y, x ∈ s → y ∈ s → P x y → P y x)
+    {x y : α} (hx : x ∈ s) (hy : y ∈ s) : P x y := by
+  apply hs.induction₂' P (fun z hz ↦ ?_) h' hx hy
+  filter_upwards [h z hz, self_mem_nhdsWithin] with a ha h'a
+  exact ⟨ha, h'' z a hz h'a ha⟩
+
 /-- A set `s` is preconnected if and only if for every cover by two open sets that are disjoint on
 `s`, it is contained in one of the two covering sets. -/
 theorem isPreconnected_iff_subset_of_disjoint {s : Set α} :

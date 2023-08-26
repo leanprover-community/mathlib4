@@ -255,7 +255,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type _} [AddCommGroup O] [Mo
     rw [mul_comm, mul_smul, hc]
   -- So we can extend a basis for `N'` with `y`
   refine' ⟨y'_ortho_M', ay'_ortho_N', fun n' bN' ↦ ⟨_, _⟩⟩
-  · refine' Basis.mkFinConsOfLe y yN bN' N'_le_N _ _
+  · refine' Basis.mkFinConsOfLE y yN bN' N'_le_N _ _
     · intro c z zN' hc
       refine' ay'_ortho_N' c z zN' _
       rwa [← a_smul_y'] at hc
@@ -268,7 +268,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type _} [AddCommGroup O] [Mo
   -- And extend a basis for `M'` with `y'`
   intro m' hn'm' bM'
   refine' ⟨Nat.succ_le_succ hn'm', _, _⟩
-  · refine' Basis.mkFinConsOfLe y' y'M bM' M'_le_M y'_ortho_M' _
+  · refine' Basis.mkFinConsOfLE y' y'M bM' M'_le_M y'_ortho_M' _
     intro z zM
     refine' ⟨-ϕ ⟨z, zM⟩, ⟨⟨z, zM⟩ - ϕ ⟨z, zM⟩ • ⟨y', y'M⟩, LinearMap.mem_ker.mpr _, _⟩⟩
     · rw [LinearMap.map_sub, LinearMap.map_smul, ϕy'_eq, smul_eq_mul, mul_one, sub_self]
@@ -278,7 +278,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type _} [AddCommGroup O] [Mo
   intro as h
   refine' ⟨Fin.cons a as, _⟩
   intro i
-  rw [Basis.coe_mkFinConsOfLe, Basis.coe_mkFinConsOfLe]
+  rw [Basis.coe_mkFinConsOfLE, Basis.coe_mkFinConsOfLE]
   refine' Fin.cases _ (fun i ↦ _) i
   · simp only [Fin.cons_zero, Fin.castLE_zero]
     exact a_smul_y'.symm

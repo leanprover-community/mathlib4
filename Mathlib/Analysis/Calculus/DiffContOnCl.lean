@@ -79,9 +79,9 @@ protected theorem differentiableAt (h : DiffContOnCl 𝕜 f s) (hs : IsOpen s) (
   h.differentiableOn.differentiableAt <| hs.mem_nhds hx
 #align diff_cont_on_cl.differentiable_at DiffContOnCl.differentiableAt
 
-theorem differentiable_at' (h : DiffContOnCl 𝕜 f s) (hx : s ∈ 𝓝 x) : DifferentiableAt 𝕜 f x :=
+theorem differentiableAt' (h : DiffContOnCl 𝕜 f s) (hx : s ∈ 𝓝 x) : DifferentiableAt 𝕜 f x :=
   h.differentiableOn.differentiableAt hx
-#align diff_cont_on_cl.differentiable_at' DiffContOnCl.differentiable_at'
+#align diff_cont_on_cl.differentiable_at' DiffContOnCl.differentiableAt'
 
 protected theorem mono (h : DiffContOnCl 𝕜 f s) (ht : t ⊆ s) : DiffContOnCl 𝕜 f t :=
   ⟨h.differentiableOn.mono ht, h.continuousOn.mono (closure_mono ht)⟩
