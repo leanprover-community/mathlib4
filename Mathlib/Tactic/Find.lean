@@ -274,6 +274,9 @@ def parseFindPatterns (args : TSyntax `find_patterns) : TermElabM Arguments :=
           unless (← getEnv).contains n do
             throwErrorAt i "unknown identifier '{n}'"
           idents := idents.push n
+        | `(find_pattern| _) => do
+            throwErrorAt arg ("Cannot search for _. " ++
+              "Did you forget to put a term pattern in parentheses?")
         | `(find_pattern| $_:turnstyle $s:term) => do
           let t ← Lean.Elab.Term.elabTerm s none
           terms := terms.push (true, t)

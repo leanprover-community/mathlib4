@@ -55,6 +55,10 @@ Of these, 0 match your patterns.
 #guard_msgs in
 #find (uniquenameforthistestthatdoesn'texist = _)
 
+/-- error: Cannot search for _. Did you forget to put a term pattern in parentheses? -/
+#guard_msgs in
+#find uniquenameforthistest _
+
 /-- warning: declaration uses 'sorry' -/
 #guard_msgs in
 theorem non_linear_pattern_test1 {n m : Nat} (_ : uniquenameforthistest = true) :
