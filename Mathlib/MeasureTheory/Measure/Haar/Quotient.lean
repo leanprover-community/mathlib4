@@ -36,25 +36,7 @@ open Set MeasureTheory TopologicalSpace MeasureTheory.Measure
 
 open scoped Pointwise NNReal
 
-section SigmaFiniteSmul
-
---move to `Mathlib.Data.Set.Lattice`
-
-theorem Set.iUnion_equiv {α ι ι' : Type _} (f : ι → Set α) (g : Equiv ι' ι) :
-    (⋃ i, (f ∘ g) i) = ⋃ i, f i := Equiv.iSup_congr g (congrFun rfl)
-
-
--- move
-theorem Set.iUnion_inter_iUnion {α ι ι' : Type _} (A : ι → Set α) (B : ι' → Set α) :
-    (⋃ (i : ι) (j : ι'), A i ∩ B j) = (⋃ (i : ι), A i) ∩ (⋃ (j : ι'), B j) := by
-  rw [Set.iUnion_inter]
-  apply Set.iUnion_congr
-  intro i
-  rw [Set.inter_iUnion]
-
---- move same place
-theorem Set.iUnion_prod_dom {α ι ι' : Type _} (f : ι × ι' → Set α) :
-    (⋃ (x : ι × ι'), f x) = (⋃ (i : ι) (j : ι'), f (i, j)) := iSup_prod (f := f)
+section SigmaFiniteSmul -- delete after merging origin/master
 
 theorem MeasureTheory.SigmaFinite.add {α : Type u_1} {m0 : MeasurableSpace α}
     {μ ν : MeasureTheory.Measure α} (hμ : MeasureTheory.SigmaFinite μ)
@@ -73,6 +55,8 @@ variable {G : Type _} [Group G] [MeasurableSpace G] [TopologicalSpace G] [Topolo
 instance CosetSpace.borelSpace {G : Type _} [TopologicalSpace G] [PolishSpace G]
     [Group G] [MeasurableSpace G] [BorelSpace G] {N : Subgroup G} [T2Space (G ⧸ N)]
     [SecondCountableTopology (G ⧸ N)] : BorelSpace (G ⧸ N) := Quotient.borelSpace
+
+-- TODO : make additive version of the below
 
 /-- Measurability of the action of the topological group `G` on the left-coset space `G / Γ`. -/
 --@[to_additive "Measurability of the action of the additive topological group `G` on the left-coset
@@ -312,9 +296,21 @@ theorem MeasurePreserving.zero {f : X → Y} [MeasurableSpace X] [MeasurableSpac
       measurable := hf
       map_eq := Measure.map_zero f
 
+/-- Move somewhere -/
+theorem QuotientGroup.sound [Subgroup.Normal Γ] (U : Set (G ⧸ Γ)) (g : (Subgroup.opposite Γ)) :
+    g • (QuotientGroup.mk' Γ) ⁻¹' U = (QuotientGroup.mk' Γ) ⁻¹' U := by
+  rw [QuotientGroup.coe_mk']
+  ext x
+  simp only [mem_preimage]
+  have := @Set.mem_inv_smul_set_iff (x := x) (A := (mk' Γ) ⁻¹' U) (a := g⁻¹) _ _
+  simp only [inv_inv, coe_mk', mem_preimage] at this
+  convert this using 2
+  apply @Quotient.sound (a := x) (s := (QuotientGroup.leftRel Γ)) (b := g⁻¹ • x)
+  use g
+  simp
 
---- Keeping or not?
-/-- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
+
+/- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
   right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ` is
   measure-preserving between appropriate multiples of Haar measure on `G` and `G ⧸ Γ`. -/
 theorem MeasurePreserving_QuotientGroup.foo [Subgroup.Normal Γ]
@@ -357,11 +353,7 @@ theorem MeasurePreserving_QuotientGroup.foo [Subgroup.Normal Γ]
     exact vol_int_nonzero (@MeasureTheory.measure_mono_null _ _ _ _ _ this h_v)
   have c_nonzero : c ≠ 0
   · contrapose! this
-    apply h𝓕.measure_zero_of_invariant
-    · intro g
-      simp only [QuotientGroup.coe_mk']
-      sorry -- ALEX HOMEWORK ???
-    · exact this
+    apply h𝓕.measure_zero_of_invariant (ht := fun g ↦ QuotientGroup.sound _ _) (hts := this)
   have c_ne_top : c ≠ ⊤
   · contrapose! h𝓕_finite
     have : volume (↑(QuotientGroup.mk' Γ) ⁻¹' ↑K ∩ 𝓕) ≤ volume 𝓕 :=
@@ -386,6 +378,7 @@ theorem MeasurePreserving_QuotientGroup.foo [Subgroup.Normal Γ]
     · rw [hasDom.covolume_eq_volume 𝓕 h𝓕]
       norm_cast
       simp only [QuotientGroup.coe_mk', Pi.smul_apply, smul_eq_mul]
+
       sorry -- ???
     · convert h𝓕_finite
       rw [hasDom.covolume_eq_volume 𝓕 h𝓕]
