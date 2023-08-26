@@ -152,16 +152,20 @@ theorem Pairwise.pmap {l : List α} (hl : Pairwise R l) {p : α → Prop} {f : �
 
 theorem pairwise_of_forall_mem_list {l : List α} {r : α → α → Prop} (h : ∀ a ∈ l, ∀ b ∈ l, r a b) :
     l.Pairwise r := by
-  classical
-    refine'
-      pairwise_of_reflexive_on_dupl_of_forall_ne (fun a ha' => _) fun a ha b hb _ => h a ha b hb
-    have ha := List.count_pos_iff_mem.1 ha'.le
-    exact h a ha a ha
+  apply pairwise_iff_forall_sublist.mpr
+  intro a b hab
+  apply h <;> (apply hab.subset; simp)
 #align list.pairwise_of_forall_mem_list List.pairwise_of_forall_mem_list
 
 theorem pairwise_of_reflexive_of_forall_ne {l : List α} {r : α → α → Prop} (hr : Reflexive r)
     (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → r a b) : l.Pairwise r := by
-  classical exact pairwise_of_reflexive_on_dupl_of_forall_ne (fun _ _ => hr _) h
+  apply pairwise_iff_forall_sublist.mpr
+  intro a b hab
+  if heq : a = b then
+    cases heq; apply hr
+  else
+    apply h <;> try (apply hab.subset; simp)
+    exact heq
 #align list.pairwise_of_reflexive_of_forall_ne List.pairwise_of_reflexive_of_forall_ne
 
 set_option linter.deprecated false in
