@@ -180,7 +180,7 @@ theorem mulHom_map_iff (f : G ↪ H) (mul : ∀ x y, f (x * y) = f x * f y) :
 end UniqueMul
 
 /-- Let `G` be a Type with addition.  `UniqueSums G` asserts that any two non-empty
-finite subsets of `A` have the `UniqueAdd` property, with respect to some element of their
+finite subsets of `G` have the `UniqueAdd` property, with respect to some element of their
 sum `A + B`. -/
 class UniqueSums (G) [Add G] : Prop where
 /-- For `A B` two nonempty finite sets, there always exist `a0 ∈ A, b0 ∈ B` such that
