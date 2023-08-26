@@ -133,9 +133,9 @@ syntax bigOpBinder := term:max ((" : " term) <|> binderPred)?
 /-- A BigOperator binder in parentheses -/
 syntax bigOpBinderParenthesized := " (" bigOpBinder ")"
 /-- A list of parenthesized binders -/
-syntax bigOpBinderCollection := bigOpBinderParenthesized*
+syntax bigOpBinderCollection := bigOpBinderParenthesized+
 /-- A single (unparenthesized) binder, or a list of parenthesized binders -/
-syntax bigOpBinders := (ppSpace bigOpBinder) <|> bigOpBinderCollection
+syntax bigOpBinders := bigOpBinderCollection <|> (ppSpace bigOpBinder)
 
 /-- Collects additional binder/Finset pairs for the given `bigOpBinder`.
 Note: this is not extensible at the moment, unlike the usual `bigOpBinder` expansions. -/
