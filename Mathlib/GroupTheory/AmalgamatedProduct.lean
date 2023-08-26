@@ -308,8 +308,7 @@ theorem summandToPermNormalWord_injective {i : ι} : Function.Injective (summand
 
 @[simp]
 theorem summandToPermNormalWord_app_eq {i : ι} (h : H) (w : NormalWord φ) :
-    summandToPermNormalWord hφ i (φ i h) w =
-      { w with left := h * w.left } := by
+    summandToPermNormalWord hφ i (φ i h) w = { w with left := h * w.left } := by
   apply ext_smul hφ i
   simp only [summandToPermNormalWord_apply, summandToEndNormalWord, equivPair, rcons, Equiv.coe_fn_mk,
     Equiv.coe_fn_symm_mk, MonoidHom.coe_mk, OneHom.coe_mk, map_mul]
