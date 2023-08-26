@@ -1,6 +1,7 @@
 import Mathlib.CategoryTheory.Shift.InducedShiftSequence
 import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+import Mathlib.Algebra.Homology.QuasiIso
 
 open CategoryTheory Category Preadditive
 
@@ -111,6 +112,14 @@ noncomputable instance :
     simp only [ShiftSequence.shiftIso_hom_app, id_comp,
       ← ShortComplex.homologyMap_comp, shiftFunctorAdd'_eq_shiftFunctorAdd,
       shiftShortComplexFunctorIso_add'_hom_app n m _ rfl a a' a'' ha' ha'' K]
+
+instance {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n : ℤ) [QuasiIso φ] : QuasiIso (φ⟦n⟧') where
+  quasiIso a := by
+    rw [quasiIsoAt_iff_isIso_homologyMap]
+    refine' (NatIso.isIso_map_iff
+      ((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso n a (n+a) rfl) φ).2 _
+    change IsIso (homologyMap φ _)
+    infer_instance
 
 end CochainComplex
 

@@ -188,6 +188,24 @@ noncomputable def singleFunctorShiftIso (n a a' : ℤ) (ha' : n + a = a') :
     (Functor.associator _ _ _).symm ≪≫
     isoWhiskerRight (CochainComplex.singleShiftIso C n a a' ha') Q
 
+variable {C}
+
+lemma singleFunctorShiftIso_hom_app (n a a' : ℤ) (ha' : n + a = a') (X : C) :
+    (singleFunctorShiftIso C n a a' ha').hom.app X =
+      (Q.commShiftIso n).inv.app ((HomologicalComplex.single C (ComplexShape.up ℤ) a').obj X) ≫
+        Q.map ((CochainComplex.singleShiftIso C n a a' ha').hom.app X) := by
+  dsimp [singleFunctorShiftIso]
+  erw [id_comp, id_comp]
+
+lemma singleFunctorShiftIso_inv_app (n a a' : ℤ) (ha' : n + a = a') (X : C) :
+    (singleFunctorShiftIso C n a a' ha').inv.app X =
+      Q.map ((CochainComplex.singleShiftIso C n a a' ha').inv.app X) ≫
+      (Q.commShiftIso n).hom.app ((HomologicalComplex.single C (ComplexShape.up ℤ) a').obj X) := by
+  dsimp [singleFunctorShiftIso]
+  erw [comp_id, comp_id]
+
+variable (C)
+
 lemma homologyFunctor_inverts_qis (n : ℤ) :
     (HomotopyCategory.qis C).IsInvertedBy
       (HomotopyCategory.homologyFunctor C _ n) := fun X Y f hf => by
