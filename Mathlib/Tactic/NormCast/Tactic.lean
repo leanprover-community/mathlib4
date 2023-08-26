@@ -129,7 +129,7 @@ partial def upwardAndElim (up : SimpTheorems) (e : Expr) : SimpM Simp.Step := do
   let r ← Simp.rewrite? e up.post up.erased prove (tag := "squash") (rflOnly := false)
   let r := r.getD { expr := e }
   let r ← mkEqTrans r <|← splittingProcedure r.expr
-  if r.expr == e then return Simp.Step.done {expr := e}
+  if r.expr == e then return Simp.Step.visit {expr := e}
   return Simp.Step.visit r
 
 /--
