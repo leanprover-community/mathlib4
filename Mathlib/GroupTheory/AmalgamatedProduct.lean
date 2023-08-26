@@ -315,8 +315,7 @@ theorem summandToPermNormalWord_app_eq {i : ι} (h : H) (w : NormalWord φ) :
     Equiv.coe_fn_symm_mk, MonoidHom.coe_mk, OneHom.coe_mk, map_mul]
   simp only [Word.equivPair_symm, Word.rcons_eq_smul, ← mul_smul]
   simp only [normalizeSingle_mul hφ, map_mul, mul_assoc,
-    normalizeSingle_fst_mul_normalizeSingle_snd ]
-  simp only [mul_smul]
+    normalizeSingle_fst_mul_normalizeSingle_snd, mul_smul]
   rw [← Word.rcons_eq_smul, ← Word.equivPair_symm, Equiv.symm_apply_apply]
 
 end NormalWord
