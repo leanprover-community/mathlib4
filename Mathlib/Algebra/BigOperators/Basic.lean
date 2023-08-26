@@ -124,49 +124,57 @@ open Lean.Elab.Term.Quotation in
   | `(finset% $t) => precheck t
   | _ => Elab.throwUnsupportedSyntax
 
-/-- Collects additional binder/Finset pairs for the given `extBinder`.
-Note: this is not extensible at the moment, unlike the usual `extBinder` expansions. -/
-def processExtBinder (processed : (Array (TSyntax ``binderIdent × Term)))
-    (binder : TSyntax ``extBinder) : MacroM (Array (TSyntax ``binderIdent × Term)) :=
+-- TODO: contribute this modification back to `extBinder`
+
+/-- A `bigOpBinder` is like an `extBinder` and has the form `x`, `x : ty`, or `x pred`
+where `pred` is a `binderPred` like `< 2`.
+Unlike `extBinder`, `x` is a term. -/
+syntax bigOpBinder := term:max ((" : " term) <|> binderPred)?
+/-- A BigOperator binder in parentheses -/
+syntax bigOpBinderParenthesized := " (" bigOpBinder ")"
+/-- A list of parenthesized binders -/
+syntax bigOpBinderCollection := bigOpBinderParenthesized*
+/-- A single (unparenthesized) binder, or a list of parenthesized binders -/
+syntax bigOpBinders := (ppSpace bigOpBinder) <|> bigOpBinderCollection
+
+/-- Collects additional binder/Finset pairs for the given `bigOpBinder`.
+Note: this is not extensible at the moment, unlike the usual `bigOpBinder` expansions. -/
+def processBigOpBinder (processed : (Array (Term × Term)))
+    (binder : TSyntax ``bigOpBinder) : MacroM (Array (Term × Term)) :=
   withRef binder do
     match binder with
-    | `(extBinder| $x:binderIdent) => return processed |>.push (x, ← `(Finset.univ))
-    | `(extBinder| $x : $t) => return processed |>.push (x, ← `((Finset.univ : Finset $t)))
-    | `(extBinder| $x ∈ $s) => return processed |>.push (x, ← `(finset% $s))
-    | `(extBinder| $x < $n) => return processed |>.push (x, ← `(Finset.Iio $n))
-    | `(extBinder| $x ≤ $n) => return processed |>.push (x, ← `(Finset.Iic $n))
-    | `(extBinder| $x > $n) => return processed |>.push (x, ← `(Finset.Ioi $n))
-    | `(extBinder| $x ≥ $n) => return processed |>.push (x, ← `(Finset.Ici $n))
+    | `(bigOpBinder| $x:term) =>
+      match x with
+      | `($a + $b = $n) => -- Maybe this is too cute.
+        return processed |>.push (← `(⟨$a, $b⟩), ← `(Finset.antidiagonal $n))
+      | _ => return processed |>.push (x, ← `(Finset.univ))
+    | `(bigOpBinder| $x : $t) => return processed |>.push (x, ← `((Finset.univ : Finset $t)))
+    | `(bigOpBinder| $x ∈ $s) => return processed |>.push (x, ← `(finset% $s))
+    | `(bigOpBinder| $x < $n) => return processed |>.push (x, ← `(Finset.Iio $n))
+    | `(bigOpBinder| $x ≤ $n) => return processed |>.push (x, ← `(Finset.Iic $n))
+    | `(bigOpBinder| $x > $n) => return processed |>.push (x, ← `(Finset.Ioi $n))
+    | `(bigOpBinder| $x ≥ $n) => return processed |>.push (x, ← `(Finset.Ici $n))
     | _ => Macro.throwUnsupported
 
-/-- Collects the binder/Finset pairs for the given `extBinders`. -/
-def processExtBinders (binders : TSyntax ``extBinders) :
-    MacroM (Array (TSyntax ``binderIdent × Term)) :=
+/-- Collects the binder/Finset pairs for the given `bigOpBinders`. -/
+def processBigOpBinders (binders : TSyntax ``bigOpBinders) :
+    MacroM (Array (Term × Term)) :=
   match binders with
-  | `(extBinders| $b:extBinder) => processExtBinder #[] b
-  | `(extBinders| $[($bs:extBinder)]*) => bs.foldlM processExtBinder #[]
-  | _ => Macro.throwUnsupported
-
-/-- Convert a `binderIdent` into a `term`. -/
-def termOfBinderIdent (bi : TSyntax ``binderIdent) : MacroM Term :=
-  match bi with
-  | `(binderIdent| $id:ident) => `($id)
-  | `(binderIdent| _)         => `(_)
+  | `(bigOpBinders| $b:bigOpBinder) => processBigOpBinder #[] b
+  | `(bigOpBinders| $[($bs:bigOpBinder)]*) => bs.foldlM processBigOpBinder #[]
   | _ => Macro.throwUnsupported
 
 /-- Collect the binderIdents into a `⟨...⟩` expression. -/
-def extBindersPattern (processed : (Array (TSyntax ``binderIdent × Term))) :
+def bigOpBindersPattern (processed : (Array (Term × Term))) :
     MacroM Term := do
-  let mut ts : Array Term := #[]
-  for (bi, _) in processed do
-    ts := ts |>.push (← termOfBinderIdent bi)
+  let ts := processed.map Prod.fst
   if ts.size == 1 then
     return ts[0]!
   else
     `(⟨$ts,*⟩)
 
 /-- Collect the terms into a product of sets. -/
-def extBindersProd (processed : (Array (TSyntax ``binderIdent × Term))) :
+def bigOpBindersProd (processed : (Array (Term × Term))) :
     MacroM Term := do
   if processed.isEmpty then
     `((Finset.univ : Finset Unit))
@@ -184,8 +192,10 @@ def extBindersProd (processed : (Array (TSyntax ``binderIdent × Term))) :
 - `∑ x ∈ s with p x, f x` is notation for `Finset.sum (Finset.filter p s) f`.
 - `∑ (x ∈ s) (y ∈ t), f x y` is notation for `Finset.sum (s ×ˢ t) (fun ⟨x, y⟩ ↦ f x y)`.
 
-Notation: `"∑" extBinders* ("with" term)? "," term` -/
-scoped syntax (name := bigsum) "∑ " extBinders ("with " term)? ", " term:67 : term
+These support destructuring, for example `∑ ⟨x, y⟩ ∈ s ×ˢ t, f x y`.
+
+Notation: `"∑" bigOpBinders* ("with" term)? "," term` -/
+scoped syntax (name := bigsum) "∑ " bigOpBinders ("with " term)? ", " term:67 : term
 
 /--
 - `∏ x, f x` is notation for `Finset.prod Finset.univ f`. It is the product of `f x`,
@@ -195,23 +205,25 @@ scoped syntax (name := bigsum) "∑ " extBinders ("with " term)? ", " term:67 : 
 - `∏ x ∈ s with p x, f x` is notation for `Finset.prod (Finset.filter p s) f`.
 - `∏ (x ∈ s) (y ∈ t), f x y` is notation for `Finset.prod (s ×ˢ t) (fun ⟨x, y⟩ ↦ f x y)`.
 
-Notation: `"∏" extBinders* ("with" term)? "," term` -/
-scoped syntax (name := bigprod) "∏ " extBinders ("with " term)? ", " term:67 : term
+These support destructuring, for example `∏ ⟨x, y⟩ ∈ s ×ˢ t, f x y`.
+
+Notation: `"∏" bigOpBinders* ("with" term)? "," term` -/
+scoped syntax (name := bigprod) "∏ " bigOpBinders ("with " term)? ", " term:67 : term
 
 scoped macro_rules (kind := bigsum)
-  | `(∑ $bs:extBinders $[with $p?]?, $v) => do
-    let processed ← processExtBinders bs
-    let x ← extBindersPattern processed
-    let s ← extBindersProd processed
+  | `(∑ $bs:bigOpBinders $[with $p?]?, $v) => do
+    let processed ← processBigOpBinders bs
+    let x ← bigOpBindersPattern processed
+    let s ← bigOpBindersProd processed
     match p? with
     | some p => `(Finset.sum (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
     | none => `(Finset.sum $s (fun $x ↦ $v))
 
 scoped macro_rules (kind := bigprod)
-  | `(∏ $bs:extBinders $[with $p?]?, $v) => do
-    let processed ← processExtBinders bs
-    let x ← extBindersPattern processed
-    let s ← extBindersProd processed
+  | `(∏ $bs:bigOpBinders $[with $p?]?, $v) => do
+    let processed ← processBigOpBinders bs
+    let x ← bigOpBindersPattern processed
+    let s ← bigOpBindersProd processed
     match p? with
     | some p => `(Finset.prod (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
     | none => `(Finset.prod $s (fun $x ↦ $v))
@@ -247,10 +259,10 @@ to show the domain type when the product is over `Finset.univ`. -/
     let binder ←
       if ppDomain then
         let ty ← withNaryArg 1 delab
-        `(extBinder| $(.mk i):ident : $ty)
+        `(bigOpBinder| $(.mk i):ident : $ty)
       else
-        `(extBinder| $(.mk i):ident)
-    `(∏ $binder:extBinder, $body)
+        `(bigOpBinder| $(.mk i):ident)
+    `(∏ $binder:bigOpBinder, $body)
   else
     let ss ← withNaryArg 3 <| delab
     `(∏ $(.mk i):ident ∈ $ss, $body)
@@ -267,10 +279,10 @@ to show the domain type when the sum is over `Finset.univ`. -/
     let binder ←
       if ppDomain then
         let ty ← withNaryArg 1 delab
-        `(extBinder| $(.mk i):ident : $ty)
+        `(bigOpBinder| $(.mk i):ident : $ty)
       else
-        `(extBinder| $(.mk i):ident)
-    `(∑ $binder:extBinder, $body)
+        `(bigOpBinder| $(.mk i):ident)
+    `(∑ $binder:bigOpBinder, $body)
   else
     let ss ← withNaryArg 3 <| delab
     `(∑ $(.mk i):ident ∈ $ss, $body)
