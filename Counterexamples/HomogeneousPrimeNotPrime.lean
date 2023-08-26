@@ -23,9 +23,9 @@ statement is false.
 We achieve this by considering the ring `R=ℤ/4ℤ`. We first give the two element set `ι = {0, 1}` a
 structure of linear ordered additive commutative monoid by setting `0 + 0 = 0` and `_ + _ = 1` and
 `0 < 1`. Then we use `ι` to grade `R²` by setting `{(a, a) | a ∈ R}` to have grade `0`; and
-`{(0, b) | b ∈ R}` to have grade 1. Then the ideal `I = span {(0, 2)} ⊆ ℤ/4ℤ` is homogeneous and not
-prime. But it is homogeneously prime, i.e. if `(a, b), (c, d)` are two homogeneous elements then
-`(a, b) * (c, d) ∈ I` implies either `(a, b) ∈ I` or `(c, d) ∈ I`.
+`{(0, b) | b ∈ R}` to have grade 1. Then the ideal `I = span {(2, 2)} ⊆ ℤ/4ℤ × ℤ/4ℤ` is homogeneous
+and not prime. But it is homogeneously prime, i.e. if `(a, b), (c, d)` are two homogeneous elements
+then `(a, b) * (c, d) ∈ I` implies either `(a, b) ∈ I` or `(c, d) ∈ I`.
 
 
 ## Tags

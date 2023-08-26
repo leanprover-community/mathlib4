@@ -191,7 +191,7 @@ theorem nondegenerate_iff_det_ne_zero {A : Type*} [DecidableEq n] [CommRing A] [
     simpa only [dotProduct_mulVec, dotProduct_single, mul_one] using hv (Pi.single i 1)
 #align matrix.nondegenerate_iff_det_ne_zero Matrix.nondegenerate_iff_det_ne_zero
 
-alias nondegenerate_iff_det_ne_zero ↔ Nondegenerate.det_ne_zero Nondegenerate.of_det_ne_zero
+alias ⟨Nondegenerate.det_ne_zero, Nondegenerate.of_det_ne_zero⟩ := nondegenerate_iff_det_ne_zero
 #align matrix.nondegenerate.det_ne_zero Matrix.Nondegenerate.det_ne_zero
 #align matrix.nondegenerate.of_det_ne_zero Matrix.Nondegenerate.of_det_ne_zero
 
