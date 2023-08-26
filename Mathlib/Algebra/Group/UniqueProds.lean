@@ -202,7 +202,7 @@ class UniqueProds (G) [Mul G] : Prop where
     ∀ {A B : Finset G} (_ : A.Nonempty) (_ : B.Nonempty), ∃ a0 ∈ A, ∃ b0 ∈ B, UniqueMul A B a0 b0
 #align unique_prods UniqueProds
 
-attribute [to_additive UniqueSums] UniqueProds
+attribute [to_additive] UniqueProds
 
 namespace Multiplicative
 
