@@ -4,15 +4,21 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 
-import Mathlib.Algebra.Submodule.JordanHolder
+import Mathlib.Algebra.Module.Submodule.JordanHolder
+import Mathlib.RingTheory.Noetherian
+import Mathlib.RingTheory.Artinian
 import Mathlib.Order.KrullDimension
 
 /-!
 
-# Composition Series of a module
+# Module Length
 
-This files relates `LTSeries` and `CompositionSeries` so that we can prove the two equivalent
-definition of module length are the same
+for an `R`-module `M`, if it has a composition series `0 ⋖ ... ⋖ M`, then its length is defined by
+the length of this composition series, otherwise its length is said to be infinite. By Jordan-Hölder
+theorem this is well defined.
+
+Some authors also define the length of `M` to be the length of longest `N₀ < N₁ < ... < Nₖ`. In this
+file, we show that two definitions are in fact equal.
 
 -/
 
@@ -52,7 +58,8 @@ noncomputable def moduleLength : WithTop ℕ :=
 
 variable {R M}
 
-lemma _root_.CompositionSeries.moduleLength_eq_length (s0 : s.head = ⊥) (slast : s.last = ⊤) :
+lemma _root_.CompositionSeries.moduleLength_eq_length
+    (s : CompositionSeries (Submodule R M)) (s0 : s.head = ⊥) (slast : s.last = ⊤) :
     moduleLength R M = s.length := by
   delta moduleLength
   split_ifs with h
@@ -63,8 +70,8 @@ lemma _root_.CompositionSeries.moduleLength_eq_length (s0 : s.head = ⊥) (slast
         h.finite.some.last_eq]
   · exact (h ⟨_, s0, slast⟩).elim
 
-lemma moduleLength_lt_of_proper_submodule [h : FiniteLengthModule R M] (hN : N < ⊤) :
-  moduleLength R N < moduleLength R M := by
+lemma moduleLength_lt_of_proper_submodule [h : FiniteLengthModule R M]
+    (N : Submodule R M) (hN : N < ⊤) : moduleLength R N < moduleLength R M := by
   obtain ⟨x, x0, xlast, xlen⟩ :=
     h.compositionSeries.exists_compositionSeries_with_smaller_length_of_lt_top
     N hN h.head_eq h.last_eq
@@ -74,7 +81,7 @@ lemma moduleLength_lt_of_proper_submodule [h : FiniteLengthModule R M] (hN : N <
 
 /-- transport a composition series across a linear equivalence -/
 @[simps!]
-def _root_.CompositionSeries.congr
+def _root_.CompositionSeries.congr (s : CompositionSeries (Submodule R M))
     {M' : Type _} [AddCommGroup M'] [Module R M'] (e : M ≃ₗ[R] M') :
     CompositionSeries (Submodule R M') :=
   s.map _ (Submodule.map e) $ λ x y (h : x ⋖ y) ↦ by
@@ -222,8 +229,7 @@ private lemma lt_compositionSeries_length_aux
     rintro ⟨i, hi⟩
     induction i with | zero => ?_ | succ i ih => ?_
     · simp only [Nat.zero_eq, WithTop.coe_zero, Fin.castSucc_mk, Fin.mk_zero, zero_le]
-    ·
-      specialize this ⟨i, (lt_add_one _).trans hi⟩
+    · specialize this ⟨i, (lt_add_one _).trans hi⟩
       specialize ih ((lt_add_one _).trans hi)
       simp only [Fin.castSucc_mk, moduleLength_eq_coe] at ih this ⊢
       have ineq0 := WithTop.coe_lt_coe.mp $ lt_of_le_of_lt ih this
@@ -250,3 +256,40 @@ lemma length_le_compositionSeries
     refine x'.lt_compositionSeries_length_aux (RelSeries.snoc_last _ _ _) s s0 slast
 
 end LTSeries
+
+variable [∀ (M : Type _) [AddCommGroup M] [Module R M], Decidable $ IsFiniteLengthModule R M]
+
+lemma moduleLength_eq_krullDim_Submodules [h : FiniteLengthModule R M] :
+  moduleLength R M = krullDim (Submodule R M) :=
+le_antisymm (le_iSup_iff.mpr $ λ m hm ↦ moduleLength_eq_coe (h := h) ▸
+  hm (h.compositionSeries.OfLE $ λ _ _ h ↦ h.1)) $ iSup_le $ λ i ↦ by
+    refine WithBot.coe_le_coe.mpr $ moduleLength_eq_coe (h := h) ▸ WithTop.coe_le_coe.mpr ?_
+    exact i.length_le_compositionSeries _ h.head_eq h.last_eq
+
+section Noetherian_and_Artinian
+
+variable (R M)
+
+lemma isNoetherian_of_finiteLength [h : FiniteLengthModule R M] :
+    IsNoetherian R M := by
+  rw [isNoetherian_iff_wellFounded]
+  refine RelEmbedding.wellFounded_iff_no_descending_seq.2 ⟨λ a ↦ ?_⟩
+  let p : LTSeries (Submodule R M) := LTSeries.mk (h.compositionSeries.length + 1)
+    (λ x ↦ a x) λ i j h ↦ by rw [← gt_iff_lt]; erw [a.2]; exact h
+  have : h.compositionSeries.length + 1 ≤ h.compositionSeries.length :=
+    p.length_le_compositionSeries _ h.head_eq h.last_eq
+  norm_num at this
+
+lemma isArtinian_of_finiteLength [h : FiniteLengthModule R M] :
+    IsArtinian R M where
+  wellFounded_submodule_lt' := RelEmbedding.wellFounded_iff_no_descending_seq.2 ⟨λ a ↦ by
+    let p : LTSeries (Submodule R M) := LTSeries.mk (h.compositionSeries.length + 1)
+      (λ x ↦ a (h.compositionSeries.length + 1 - x))
+      (λ i j (h : i.1 < j.1) ↦ by
+        erw [a.2]
+        exact Nat.sub_lt_sub_left (lt_of_lt_of_le h $ Nat.le_of_lt_succ j.2) h)
+    have : h.compositionSeries.length + 1 ≤ h.compositionSeries.length :=
+      p.length_le_compositionSeries _ h.head_eq h.last_eq
+    norm_num at this⟩
+
+end Noetherian_and_Artinian
