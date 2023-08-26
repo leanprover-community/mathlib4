@@ -52,8 +52,6 @@ end prelim
 variable {ι X Y α β : Type*} [TopologicalSpace X] [u : UniformSpace α] [UniformSpace β]
 variable {F : ι → X → α} {G : ι → β → α}
 
--- It's a bit inconsitent to use `Pi.uniformSpace` here but `⨅` in `comap_uniformOnFun_eq`,
--- but I also believe I wrote the most useful versions in each case. What should I do?
 theorem Equicontinuous.comap_uniformFun_eq [CompactSpace X] (hF : Equicontinuous F) :
     (UniformFun.uniformSpace X α).comap F =
     (Pi.uniformSpace _).comap F := by
@@ -97,50 +95,55 @@ theorem Equicontinuous.comap_uniformFun_eq [CompactSpace X] (hF : Equicontinuous
   exact mem_of_superset
     (A.iInter_mem_sets.mpr fun x _ ↦ mem_iInf_of_mem x <| preimage_mem_comap hV) this
 
-theorem Equicontinuous.uniformInducing_pi_of_uniformFun [UniformSpace ι] [CompactSpace X]
-    (hF : Equicontinuous F) (F_ind : UniformInducing (UniformFun.ofFun ∘ F)) :
-    UniformInducing F := by
-  rw [uniformInducing_iff_uniformSpace, ← F_ind.comap_uniformSpace]
-  exact hF.comap_uniformFun_eq.symm
+lemma Equicontinuous.uniformInducing_pi_iff_uniformFun [UniformSpace ι] [CompactSpace X]
+    (hF : Equicontinuous F) :
+    UniformInducing (UniformFun.ofFun ∘ F) ↔ UniformInducing F := by
+  rw [uniformInducing_iff_uniformSpace, uniformInducing_iff_uniformSpace, ← hF.comap_uniformFun_eq]
+  rfl
 
-lemma Equicontinuous.comap_uniformOnFun_eq {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
+theorem Equicontinuous.comap_uniformOnFun_eq {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
     (hF : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F)) :
     (UniformOnFun.uniformSpace X α 𝔖).comap F =
     (Pi.uniformSpace _).comap ((⋃₀ 𝔖).restrict ∘ F) := by
   -- Recall that the uniform structure on `X →ᵤ[𝔖] α` is the one induced by all the maps
-  -- `K.restrict : (X →ᵤ[𝔖] α) → (K →ᵤ α)` for `K ∈ 𝔖`.
-  have : ∀ K ∈ 𝔖, (UniformFun.uniformSpace K α).comap (K.restrict ∘ F) =
+  -- `K.restrict : (X →ᵤ[𝔖] α) → (K →ᵤ α)` for `K ∈ 𝔖`. Its pullback along `F`, which is
+  -- the LHS of our goal, is thus the uniform structure induced by the maps
+  -- `K.restrict ∘ F : ι → (K →ᵤ α)` for `K ∈ 𝔖`.
+  have H1 : (UniformOnFun.uniformSpace X α 𝔖).comap F =
+      ⨅ (K ∈ 𝔖), (UniformFun.uniformSpace _ _).comap (K.restrict ∘ F) := by
+    simp_rw [UniformOnFun.uniformSpace, UniformSpace.comap_iInf, UniformSpace.comap_comap]
+  -- Now, note that a similar fact is true for the uniform structure on `X → α` induced by
+  -- the map `(⋃₀ 𝔖).restrict : (X → α) → ((⋃₀ 𝔖) → α)`: it is equal to the one induced by
+  -- all maps `K.restrict : (X → α) → (K → α)` for `K ∈ 𝔖`, which means that the RHS of our
+  -- goal is the uniform structure induced by the maps `K.restrict ∘ F : ι → (K → α)` for `K ∈ 𝔖`.
+  have H2 : (Pi.uniformSpace _).comap ((⋃₀ 𝔖).restrict ∘ F) =
+      ⨅ (K ∈ 𝔖), (Pi.uniformSpace _).comap (K.restrict ∘ F) := by
+    simp_rw [UniformSpace.comap_comap, Pi.uniformSpace_comap_restrict (fun _ ↦ α),
+      UniformSpace.comap_iInf, iInf_sUnion]
+  -- But, for `K ∈ 𝔖` fixed, we know that the uniform structures of `K →ᵤ α` and `K → α`
+  -- induce, via the equicontinuous family `K.restrict ∘ F`, the same uniform structure on `ι`.
+  have H3 : ∀ K ∈ 𝔖, (UniformFun.uniformSpace K α).comap (K.restrict ∘ F) =
       (Pi.uniformSpace _).comap (K.restrict ∘ F) := fun K hK ↦ by
     have : CompactSpace K := isCompact_iff_compactSpace.mp (h𝔖 K hK)
     exact (hF K hK).comap_uniformFun_eq
-  simp [UniformOnFun.uniformSpace, Pi.uniformSpace_eq, UniformSpace.comap_iInf,
-    ← UniformSpace.comap_comap, iInf_congr fun K ↦ iInf_congr fun hK ↦ this K hK, iInf_subtype]
-  --simp_rw [UniformSpace.comap_iInf, ← UniformSpace.comap_comap]
-  --refine iInf_congr fun K ↦ iInf_congr fun hK ↦ ?_
-  --have : CompactSpace K := isCompact_iff_compactSpace.mp (h𝔖 K hK)
-  --simp_rw [(hF K hK).comap_uniformFun_eq, UniformSpace.comap_comap,
-  --          Pi.uniformSpace_eq, UniformSpace.comap_iInf, iInf_subtype, ← UniformSpace.comap_comap]
-  --exact iInf_congr fun x ↦ iInf_congr fun hx ↦ congr_arg _ rfl
+  -- Combining these three facts complete the proof.
+  simp_rw [H1, H2, iInf_congr fun K ↦ iInf_congr fun hK ↦ H3 K hK]
 
-theorem Equicontinuous.uniformInducing_pi_of_uniformOnFun' [UniformSpace ι] [CompactSpace X]
+lemma Equicontinuous.uniformInducing_pi_iff_uniformOnFun' [UniformSpace ι] [CompactSpace X]
     {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
-    (hF : ∀ K ∈ 𝔖, Equicontinuous ((K.restrict : (X → α) → (K → α)) ∘ F))
-    (F_ind : UniformInducing (UniformOnFun.ofFun 𝔖 ∘ F)) :
-    UniformInducing (((⋃₀ 𝔖).restrict : (X → α) → (⋃₀ 𝔖 → α)) ∘ F) := by
-  rw [uniformInducing_iff_uniformSpace, ← F_ind.comap_uniformSpace]
-  refine Eq.trans ?_ (Equicontinuous.comap_uniformOnFun_eq h𝔖 hF).symm
-  simp_rw [Pi.uniformSpace_eq, UniformSpace.comap_iInf, iInf_subtype, ← iInf_sUnion,
-    ← UniformSpace.comap_comap]
-  exact iInf_congr fun x ↦ iInf_congr fun hx ↦ congr_arg _ rfl
+    (hF : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F)) :
+    UniformInducing (UniformOnFun.ofFun 𝔖 ∘ F) ↔
+    UniformInducing ((⋃₀ 𝔖).restrict ∘ F) := by
+  rw [uniformInducing_iff_uniformSpace, uniformInducing_iff_uniformSpace,
+      ← Equicontinuous.comap_uniformOnFun_eq h𝔖 hF]
+  rfl
 
-theorem Equicontinuous.uniformInducing_pi_of_uniformOnFun [UniformSpace ι] [CompactSpace X]
+lemma Equicontinuous.uniformInducing_pi_of_uniformOnFun [UniformSpace ι] [CompactSpace X]
     {𝔖 : Set (Set X)} (𝔖_covers : ⋃₀ 𝔖 = univ) (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
-    (hF : ∀ K ∈ 𝔖, Equicontinuous ((K.restrict : (X → α) → (K → α)) ∘ F))
-    (F_ind : UniformInducing (UniformOnFun.ofFun 𝔖 ∘ F)) :
-    UniformInducing F := by
-  rw [uniformInducing_iff_uniformSpace, ← F_ind.comap_uniformSpace]
-  refine Eq.trans ?_ (Equicontinuous.comap_uniformOnFun_eq h𝔖 hF).symm
-  simp_rw [Pi.uniformSpace_eq, ← iInf_sUnion, 𝔖_covers, iInf_univ]
+    (hF : ∀ K ∈ 𝔖, Equicontinuous ((K.restrict : (X → α) → (K → α)) ∘ F)) :
+    UniformInducing (UniformOnFun.ofFun 𝔖 ∘ F) ↔
+    UniformInducing F :=
+  sorry
 
 #exit
 

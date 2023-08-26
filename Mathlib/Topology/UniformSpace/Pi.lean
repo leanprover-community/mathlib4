@@ -23,7 +23,7 @@ open Filter UniformSpace Function
 
 universe u
 
-variable {ι : Type*} (α : ι → Type u) [U : ∀ i, UniformSpace (α i)]
+variable {ι ι' β : Type*} (α : ι → Type u) [U : ∀ i, UniformSpace (α i)] [UniformSpace β]
 
 instance Pi.uniformSpace : UniformSpace (∀ i, α i) :=
   UniformSpace.ofCoreEq (⨅ i, UniformSpace.comap (fun a : ∀ i, α i => a i) (U i)).toCore
@@ -32,7 +32,7 @@ instance Pi.uniformSpace : UniformSpace (∀ i, α i) :=
 #align Pi.uniform_space Pi.uniformSpace
 
 lemma Pi.uniformSpace_eq :
-    Pi.uniformSpace α = ⨅ i, UniformSpace.comap (fun a : (∀ i, α i) ↦ a i) (U i) := by
+    Pi.uniformSpace α = ⨅ i, UniformSpace.comap (eval i) (U i) := by
   ext : 1; rfl
 
 theorem Pi.uniformity :
@@ -83,5 +83,20 @@ instance Pi.separated [∀ i, SeparatedSpace (α i)] : SeparatedSpace (∀ i, α
     apply eq_of_separated_of_uniformContinuous (Pi.uniformContinuous_proj α i)
     apply H
 #align Pi.separated Pi.separated
+
+lemma Pi.uniformSpace_comap_precomp' (f : ι' → ι) :
+    UniformSpace.comap (fun g i' ↦ g (f i')) (Pi.uniformSpace (fun i' ↦ α (f i'))) =
+    ⨅ i', UniformSpace.comap (eval (f i')) (U (f i')) := by
+  simp [Pi.uniformSpace_eq, UniformSpace.comap_iInf, ← UniformSpace.comap_comap, comp]
+
+lemma Pi.uniformSpace_comap_restrict (S : Set ι) :
+    UniformSpace.comap (S.restrict) (Pi.uniformSpace (fun i : S ↦ α i)) =
+    ⨅ i ∈ S, UniformSpace.comap (eval i) (U i) := by
+  simp [← iInf_subtype'', ← uniformSpace_comap_precomp' _ ((↑) : S → ι), Set.restrict]
+
+lemma Pi.uniformSpace_comap_precomp (f : ι' → ι) :
+    UniformSpace.comap (· ∘ f) (Pi.uniformSpace (fun _ ↦ β)) =
+    ⨅ i', UniformSpace.comap (eval (f i')) ‹UniformSpace β› :=
+  uniformSpace_comap_precomp' (fun _ ↦ β) f
 
 end
