@@ -86,9 +86,9 @@ namespace ContinuousLinearMap
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-theorem measurable_apply₂ [MeasurableSpace E] [OpensMeasurableSpace E] [SecondCountableTopology E]
-    [SecondCountableTopology (E →L[𝕜] F)] [MeasurableSpace F] [BorelSpace F] :
-    Measurable fun p : (E →L[𝕜] F) × E => p.1 p.2 :=
+theorem measurable_apply₂ [MeasurableSpace E] [OpensMeasurableSpace E]
+    [SecondCountableTopologyEither (E →L[𝕜] F) E]
+    [MeasurableSpace F] [BorelSpace F] : Measurable fun p : (E →L[𝕜] F) × E => p.1 p.2 :=
   isBoundedBilinearMapApply.continuous.measurable
 #align continuous_linear_map.measurable_apply₂ ContinuousLinearMap.measurable_apply₂
 

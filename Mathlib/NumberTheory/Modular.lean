@@ -223,13 +223,13 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
   · simp only [mulVec, dotProduct, Fin.sum_univ_two, coe_matrix_coe,
       Int.coe_castRingHom, lcRow0_apply, Function.comp_apply, cons_val_zero, lcRow0Extend_apply,
       LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLinear,
-      planeConformalMatrix_val, neg_neg, mulVecLin_apply, cons_val_one, head_cons, of_apply,
+      val_planeConformalMatrix, neg_neg, mulVecLin_apply, cons_val_one, head_cons, of_apply,
       Fin.mk_zero, Fin.mk_one]
   · convert congr_arg (fun n : ℤ => (-n : ℝ)) g.det_coe.symm using 1
     simp only [mulVec, dotProduct, Fin.sum_univ_two, Matrix.det_fin_two, Function.comp_apply,
       Subtype.coe_mk, lcRow0Extend_apply, cons_val_zero,
       LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLinear,
-      planeConformalMatrix_val, mulVecLin_apply, cons_val_one, head_cons, map_apply, neg_mul,
+      val_planeConformalMatrix, mulVecLin_apply, cons_val_one, head_cons, map_apply, neg_mul,
       Int.cast_sub, Int.cast_mul, neg_sub, of_apply, Fin.mk_zero, Fin.mk_one]
     ring
   · rfl
