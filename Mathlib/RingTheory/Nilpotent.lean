@@ -51,7 +51,7 @@ theorem IsNilpotent.mk [Zero R] [Pow R ℕ] (x : R) (n : ℕ) (e : x ^ n = 0) : 
 theorem IsNilpotent.neg [Ring R] (h : IsNilpotent x) : IsNilpotent (-x) := by
   obtain ⟨n, hn⟩ := h
   use n
-  rw [neg_pow, hn, MulZeroClass.mul_zero]
+  rw [neg_pow, hn, mul_zero]
 #align is_nilpotent.neg IsNilpotent.neg
 
 @[simp]
@@ -167,10 +167,10 @@ theorem isNilpotent_add (hx : IsNilpotent x) (hy : IsNilpotent y) : IsNilpotent 
   rw [h_comm.add_pow']
   apply Finset.sum_eq_zero
   rintro ⟨i, j⟩ hij
-  suffices x ^ i * y ^ j = 0 by simp only [this, nsmul_eq_mul, MulZeroClass.mul_zero]
+  suffices x ^ i * y ^ j = 0 by simp only [this, nsmul_eq_mul, mul_zero]
   cases' Nat.le_or_le_of_add_eq_add_pred (Finset.Nat.mem_antidiagonal.mp hij) with hi hj
-  · rw [pow_eq_zero_of_le hi hn, MulZeroClass.zero_mul]
-  · rw [pow_eq_zero_of_le hj hm, MulZeroClass.mul_zero]
+  · rw [pow_eq_zero_of_le hi hn, zero_mul]
+  · rw [pow_eq_zero_of_le hj hm, mul_zero]
 #align commute.is_nilpotent_add Commute.isNilpotent_add
 
 protected lemma isNilpotent_sum {ι : Type _} {s : Finset ι} {f : ι → R}
@@ -188,7 +188,7 @@ protected lemma isNilpotent_sum {ι : Type _} {s : Finset ι} {f : ι → R}
 theorem isNilpotent_mul_left (h : IsNilpotent x) : IsNilpotent (x * y) := by
   obtain ⟨n, hn⟩ := h
   use n
-  rw [h_comm.mul_pow, hn, MulZeroClass.zero_mul]
+  rw [h_comm.mul_pow, hn, zero_mul]
 #align commute.is_nilpotent_mul_left Commute.isNilpotent_mul_left
 
 protected lemma isNilpotent_mul_left_iff (hy : y ∈ nonZeroDivisorsLeft R) :

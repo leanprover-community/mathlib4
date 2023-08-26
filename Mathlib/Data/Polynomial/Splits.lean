@@ -178,7 +178,7 @@ theorem exists_root_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : degree (f.map
         (show ¬IsUnit (f.map i) from mt isUnit_iff_degree_eq_zero.1 hf0) hf0'
     let ⟨x, hx⟩ := exists_root_of_degree_eq_one (hs.resolve_left hf0' hg.1 hg.2)
     let ⟨i, hi⟩ := hg.2
-    ⟨x, by rw [← eval_map, hi, eval_mul, show _ = _ from hx, MulZeroClass.zero_mul]⟩
+    ⟨x, by rw [← eval_map, hi, eval_mul, show _ = _ from hx, zero_mul]⟩
 #align polynomial.exists_root_of_splits' Polynomial.exists_root_of_splits'
 
 theorem roots_ne_zero_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : natDegree (f.map i) ≠ 0) :
@@ -208,7 +208,7 @@ theorem natDegree_eq_card_roots' {p : K[X]} {i : K →+* L} (hsplit : Splits i p
   obtain ⟨q, he, hd, hr⟩ := exists_prod_multiset_X_sub_C_mul (p.map i)
   rw [← splits_id_iff_splits, ← he] at hsplit
   rw [← he] at hp
-  have hq : q ≠ 0 := fun h => hp (by rw [h, MulZeroClass.mul_zero])
+  have hq : q ≠ 0 := fun h => hp (by rw [h, mul_zero])
   rw [← hd, add_right_eq_self]
   by_contra h
   have h' : (map (RingHom.id L) q).natDegree ≠ 0 := by simp [h]

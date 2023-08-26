@@ -173,7 +173,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
         intro n
         contrapose! hx
         exact g_s n hx
-      simp only [this, MulZeroClass.mul_zero, tsum_zero]
+      simp only [this, mul_zero, tsum_zero]
     · intro x hx
       obtain ⟨n, hn⟩ : ∃ n, x ∈ support (g n); exact s_g x hx
       have I : 0 < r n * g n x := mul_pos (rpos n) (lt_of_le_of_ne (g_nonneg n x) (Ne.symm hn))
@@ -399,7 +399,7 @@ theorem y_eq_zero_of_not_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (hx : x ∉ b
   have Bx : φ x = 0 := B _ (mem_ball_self Dpos)
   have B' : ∀ y, y ∈ ball x D → φ y = φ x := by rw [Bx]; exact B
   rw [convolution_eq_right' _ (le_of_eq (w_support E Dpos)) B']
-  simp only [lsmul_apply, Algebra.id.smul_eq_mul, Bx, MulZeroClass.mul_zero, integral_const]
+  simp only [lsmul_apply, Algebra.id.smul_eq_mul, Bx, mul_zero, integral_const]
 #align exists_cont_diff_bump_base.Y_eq_zero_of_not_mem_ball ExistsContDiffBumpBase.y_eq_zero_of_not_mem_ball
 
 theorem y_nonneg (D : ℝ) (x : E) : 0 ≤ y D x :=
