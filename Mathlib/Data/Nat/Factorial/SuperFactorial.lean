@@ -12,37 +12,37 @@ This file defines the super factorial `1! * 2! * 3! * ...* n!`.
 
 ## Main declarations
 
-* `Nat.super_factorial`: The super factorial.
+* `Nat.superFactorial`: The super factorial.
 -/
 
 
 namespace Nat
 
-/-- `Nat.super_factorial n` is the super factorial of `n`. -/
+/-- `Nat.superFactorial n` is the super factorial of `n`. -/
 @[simp]
 def superFactorial : ℕ → ℕ
   | 0 => 1
-  | succ n => factorial n.succ * super_factorial n
+  | succ n => factorial n.succ * superFactorial n
 
 /-- `sf` notation for super factorial -/
-scoped notation  "sf" n => Nat.super_factorial n
+scoped notation  "sf" n => Nat.superFactorial n
 
 section SuperFactorial
 
 variable {n : ℕ}
 
 @[simp]
-theorem super_factorial_zero : (sf 0) = 1 :=
+theorem superFactorial_zero : (sf 0) = 1 :=
   rfl
 
 @[simp]
-theorem super_factorial_succ (n : ℕ) : (sf n.succ) = (n + 1)! * (sf n) :=
+theorem superFactorial_succ (n : ℕ) : (sf n.succ) = (n + 1)! * (sf n) :=
   rfl
 
-theorem super_factorial_one : (sf 1) = 1 :=
+theorem superFactorial_one : (sf 1) = 1 :=
   rfl
 
-theorem super_factorial_two : (sf 2) = 2 :=
+theorem superFactorial_two : (sf 2) = 2 :=
   rfl
 
 end SuperFactorial
