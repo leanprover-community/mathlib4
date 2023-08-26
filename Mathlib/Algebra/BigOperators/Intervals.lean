@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.Nat.Interval
 import Mathlib.Tactic.Linarith
+import Mathlib.Data.Nat.Factorial.SuperFactorial
 
 #align_import algebra.big_operators.intervals from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -193,6 +194,19 @@ theorem prod_range_add_one_eq_factorial : ∀ n : ℕ, (∏ x in range n, (x + 1
   | 0 => rfl
   | n + 1 => by simp [Finset.range_succ, prod_range_add_one_eq_factorial n]
 #align finset.prod_range_add_one_eq_factorial Finset.prod_range_add_one_eq_factorial
+
+@[simp]
+theorem prod_Ico_id_eq_superFactorial : ∀ n : ℕ, (∏ x in Ico 1 (n + 1), x !) = sf n
+  | 0 => rfl
+  | n + 1 => by
+    rw [prod_Ico_succ_top <| Nat.succ_le_succ <| Nat.zero_le n, Nat.factorial_succ,
+      prod_Ico_id_eq_superFactorial n, superFactorial, factorial, Nat.succ_eq_add_one, mul_comm]
+
+@[simp]
+theorem prod_range_add_one_eq_superFactorial : ∀ n : ℕ, (∏ x in range n, (x + 1) !) = sf n
+  | 0 => rfl
+  | n + 1 => by
+    rw [Finset.prod_range_succ, prod_range_add_one_eq_superFactorial n, superFactorial, mul_comm]
 
 section GaussSum
 
