@@ -226,11 +226,6 @@ theorem zero_shiftRight : ∀ n, 0 >>> n = 0 := by
   case succ =>
     simp [shiftRight, IH]
 
-theorem shiftRight_eq_shiftr: n >>> m = Nat.shiftr n m := by
-  simp only [HShiftRight.hShiftRight, ShiftRight.shiftRight]
-  induction' m with m hm generalizing n
-  <;> simp [Nat.shiftr, Nat.shiftRight, Nat.div2_val, *]
-
 /-- `testBit m n` returns whether the `(n+1)ˢᵗ` least significant bit is `1` or `0`-/
 def testBit (m n : ℕ) : Bool :=
   bodd (m >>> n)

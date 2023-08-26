@@ -23,6 +23,8 @@ in both the runtime and the kernel, inheriting all the special support for `Nat`
 
 def BitVec (w : Nat) := Fin (2^w)
 
+variable {w v : Nat}
+
 instance : DecidableEq (BitVec w) :=
   inferInstanceAs (DecidableEq (Fin _))
 
@@ -99,7 +101,7 @@ protected def shiftLeft (x : BitVec w) (n : Nat) : BitVec w :=
 
 protected def shiftRight (x : BitVec w) (n : Nat) : BitVec w :=
   ⟨x.val >>> n, by
-      simp only [Nat.shiftRight_eq_shiftr, Nat.shiftr_eq_div_pow]
+      simp only [Nat.shiftRight_eq_div_pow]
       exact lt_of_le_of_lt (Nat.div_le_self' _ _) (x.isLt) ⟩
 
 protected def slt (x y : BitVec (w + 1)) : Prop :=
@@ -127,10 +129,10 @@ def rotateLeft (x : BitVec w) (n : Nat) : BitVec w :=
 def rotateRight (x : BitVec w) (n : Nat) : BitVec w :=
   x >>> n ||| x <<< (w - n)
 
-protected def append (x : BitVec w) (y : BitVec v) : BitVec (w+v) :=
+protected def append (x : BitVec w) (y : BitVec v) : BitVec (w + v) :=
   ⟨x.val <<< v ||| y.val, Nat.add_comm _ _ ▸ Nat.append_lt y.isLt x.isLt⟩
 
-instance : HAppend (BitVec w) (BitVec v) (BitVec (w+v)) := ⟨BitVec.append⟩
+instance : HAppend (BitVec w) (BitVec v) (BitVec (w + v)) := ⟨BitVec.append⟩
 
 /-- Extract the bitvector between indices i and j. -/
 @[simp]
