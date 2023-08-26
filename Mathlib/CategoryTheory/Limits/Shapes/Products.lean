@@ -343,8 +343,8 @@ and up to isomorphism in the factors, are isomorphic.
 @[simps]
 def Pi.whisker_equiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
     [HasProduct f] [HasProduct g] : ∏ f ≅ ∏ g where
-  hom := Pi.lift fun k => Pi.π f (e.symm k) ≫ (w _).inv ≫ eqToHom (by simp)
-  inv := Pi.lift fun j => Pi.π g (e j) ≫ (w j).hom
+  hom := Pi.map' e.symm fun k => (w (e.symm k)).inv ≫ eqToHom (by simp)
+  inv := Pi.map' e fun j => (w j).hom
 
 /-- Two coproducts which differ by an equivalence in the indexing type,
 and up to isomorphism in the factors, are isomorphic.
@@ -352,8 +352,8 @@ and up to isomorphism in the factors, are isomorphic.
 @[simps]
 def Sigma.whisker_equiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
     [HasCoproduct f] [HasCoproduct g] : ∐ f ≅ ∐ g where
-  hom := Sigma.desc fun j => (w j).inv ≫ Sigma.ι g (e j)
-  inv := Sigma.desc fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom ≫ Sigma.ι f _
+  hom := Sigma.map' e fun j => (w j).inv
+  inv := Sigma.map' e.symm fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom
 
 instance (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasProduct (g i)] [HasProduct fun i => ∏ g i] :
