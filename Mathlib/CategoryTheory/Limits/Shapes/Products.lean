@@ -33,6 +33,8 @@ As with the other special shapes in the limits library, all the definitions here
 general limits can be used.
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 

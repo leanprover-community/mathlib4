@@ -117,6 +117,8 @@ The components of `linarith` are spread between a number of files for the sake o
 linarith, nlinarith, lra, nra, Fourier-Motzkin, linear arithmetic, linear programming
 -/
 
+set_option autoImplicit true
+
 open Lean Elab Tactic Meta
 open Std
 

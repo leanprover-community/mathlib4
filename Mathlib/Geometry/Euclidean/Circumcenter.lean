@@ -203,12 +203,12 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
       use ⟨p i, 0⟩
       simp only [Set.range_unique, AffineSubspace.mem_affineSpan_singleton]
       constructor
-      · simp_rw [hi default, Set.singleton_subset_iff, Sphere.mem_coe, mem_sphere, dist_self]
+      · simp_rw [hi default, Set.singleton_subset_iff]
         exact ⟨⟨⟩, by simp only [Metric.sphere_zero, Set.mem_singleton_iff]⟩
       · rintro ⟨cc, cr⟩
         simp only
         rintro ⟨rfl, hdist⟩
-        simp [Set.singleton_subset_iff, Sphere.mem_coe, mem_sphere, dist_self] at hdist
+        simp [Set.singleton_subset_iff] at hdist
         rw [hi default, hdist]
     · have i := hne.some
       let ι2 := { x // x ≠ i }

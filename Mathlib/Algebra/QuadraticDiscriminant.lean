@@ -104,7 +104,7 @@ theorem exists_quadratic_eq_zero (ha : a ≠ 0) (h : ∃ s, discrim a b c = s * 
 /-- Root of a quadratic when its discriminant equals zero -/
 theorem quadratic_eq_zero_iff_of_discrim_eq_zero (ha : a ≠ 0) (h : discrim a b c = 0) (x : K) :
     a * x * x + b * x + c = 0 ↔ x = -b / (2 * a) := by
-  have : discrim a b c = 0 * 0 := by rw [h, MulZeroClass.mul_zero]
+  have : discrim a b c = 0 * 0 := by rw [h, mul_zero]
   rw [quadratic_eq_zero_iff ha this, add_zero, sub_zero, or_self_iff]
 #align quadratic_eq_zero_iff_of_discrim_eq_zero quadratic_eq_zero_iff_of_discrim_eq_zero
 

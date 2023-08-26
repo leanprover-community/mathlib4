@@ -35,6 +35,8 @@ Let `R` be a commutative ring. Jacobson rings are defined using the first of the
 Jacobson, Jacobson Ring
 -/
 
+set_option autoImplicit true
+
 universe u
 namespace Ideal
 

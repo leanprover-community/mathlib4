@@ -161,7 +161,7 @@ instance commRingCat_hasStrictTerminalObjects : HasStrictTerminalObjects CommRin
     rw [← f.map_one, ← f.map_zero]
     congr
   replace e : 0 * x = 1 * x := congr_arg (· * x) e
-  rw [one_mul, MulZeroClass.zero_mul, ← f.map_zero] at e
+  rw [one_mul, zero_mul, ← f.map_zero] at e
   exact e
 set_option linter.uppercaseLean3 false in
 #align CommRing.CommRing_has_strict_terminal_objects CommRingCat.commRingCat_hasStrictTerminalObjects

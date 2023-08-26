@@ -444,7 +444,7 @@ theorem traceMatrix_reindex {κ' : Type*} (b : Basis κ A B) (f : κ ≃ κ') :
 variable {A}
 
 theorem traceMatrix_of_matrix_vecMul [Fintype κ] (b : κ → B) (P : Matrix κ κ A) :
-    traceMatrix A ((P.map (algebraMap A B)).vecMul b) = Pᵀ ⬝ traceMatrix A b ⬝ P := by
+    traceMatrix A ((P.map (algebraMap A B)).vecMul b) = Pᵀ * traceMatrix A b * P := by
   ext (α β)
   rw [traceMatrix_apply, vecMul, dotProduct, vecMul, dotProduct, Matrix.mul_apply,
     BilinForm.sum_left,
@@ -465,7 +465,7 @@ theorem traceMatrix_of_matrix_vecMul [Fintype κ] (b : κ → B) (P : Matrix κ 
 #align algebra.trace_matrix_of_matrix_vec_mul Algebra.traceMatrix_of_matrix_vecMul
 
 theorem traceMatrix_of_matrix_mulVec [Fintype κ] (b : κ → B) (P : Matrix κ κ A) :
-    traceMatrix A ((P.map (algebraMap A B)).mulVec b) = P ⬝ traceMatrix A b ⬝ Pᵀ := by
+    traceMatrix A ((P.map (algebraMap A B)).mulVec b) = P * traceMatrix A b * Pᵀ := by
   refine' AddEquiv.injective (transposeAddEquiv κ κ A) _
   rw [transposeAddEquiv_apply, transposeAddEquiv_apply, ← vecMul_transpose, ← transpose_map,
     traceMatrix_of_matrix_vecMul, transpose_transpose, transpose_mul, transpose_transpose,
@@ -546,13 +546,13 @@ variable [Module.Finite K L] [IsSeparable K L] [IsAlgClosed E]
 variable (b : κ → L) (pb : PowerBasis K L)
 
 theorem traceMatrix_eq_embeddingsMatrix_mul_trans :
-    (traceMatrix K b).map (algebraMap K E) = embeddingsMatrix K E b ⬝ (embeddingsMatrix K E b)ᵀ :=
+    (traceMatrix K b).map (algebraMap K E) = embeddingsMatrix K E b * (embeddingsMatrix K E b)ᵀ :=
   by ext (i j); simp [trace_eq_sum_embeddings, embeddingsMatrix, Matrix.mul_apply]
 #align algebra.trace_matrix_eq_embeddings_matrix_mul_trans Algebra.traceMatrix_eq_embeddingsMatrix_mul_trans
 
 theorem traceMatrix_eq_embeddingsMatrixReindex_mul_trans [Fintype κ] (e : κ ≃ (L →ₐ[K] E)) :
     (traceMatrix K b).map (algebraMap K E) =
-      embeddingsMatrixReindex K E b e ⬝ (embeddingsMatrixReindex K E b e)ᵀ := by
+      embeddingsMatrixReindex K E b e * (embeddingsMatrixReindex K E b e)ᵀ := by
   rw [traceMatrix_eq_embeddingsMatrix_mul_trans, embeddingsMatrixReindex, reindex_apply,
     transpose_submatrix, ← submatrix_mul_transpose_submatrix, ← Equiv.coe_refl, Equiv.refl_symm]
 #align algebra.trace_matrix_eq_embeddings_matrix_reindex_mul_trans Algebra.traceMatrix_eq_embeddingsMatrixReindex_mul_trans
@@ -592,11 +592,11 @@ theorem det_traceForm_ne_zero [IsSeparable K L] [DecidableEq ι] (b : Basis ι K
   swap; · apply Basis.toMatrix_mul_toMatrix_flip
   refine'
     mul_ne_zero
-      (isUnit_of_mul_eq_one _ ((b.toMatrix pb.basis)ᵀ ⬝ b.toMatrix pb.basis).det _).ne_zero _
+      (isUnit_of_mul_eq_one _ ((b.toMatrix pb.basis)ᵀ * b.toMatrix pb.basis).det _).ne_zero _
   · calc
-      (pb.basis.toMatrix b ⬝ (pb.basis.toMatrix b)ᵀ).det *
-            ((b.toMatrix pb.basis)ᵀ ⬝ b.toMatrix pb.basis).det =
-          (pb.basis.toMatrix b ⬝ (b.toMatrix pb.basis ⬝ pb.basis.toMatrix b)ᵀ ⬝
+      (pb.basis.toMatrix b * (pb.basis.toMatrix b)ᵀ).det *
+            ((b.toMatrix pb.basis)ᵀ * b.toMatrix pb.basis).det =
+          (pb.basis.toMatrix b * (b.toMatrix pb.basis * pb.basis.toMatrix b)ᵀ *
               b.toMatrix pb.basis).det :=
         by simp only [← det_mul, Matrix.mul_assoc, Matrix.transpose_mul]
       _ = 1 := by

@@ -163,7 +163,7 @@ Ring Theory:
     roots of a polynomial: 'Polynomial.roots'
     multiplicity: 'Polynomial.rootMultiplicity'
     relationship between the coefficients and the roots of a split polynomial: 'Polynomial.coeff_eq_esymm_roots_of_card'
-    Newton's identities: 'https://en.wikipedia.org/wiki/Newton%27s_identities'
+    Newton's identities: 'MvPolynomial.mul_esymm_eq_sum'
     polynomial derivative: 'Polynomial.derivative'
     decomposition into sums of homogeneous polynomials: 'MvPolynomial.sum_homogeneousComponent'
     symmetric polynomials: 'MvPolynomial.IsSymmetric'
