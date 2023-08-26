@@ -1,8 +1,6 @@
 /-
-Copyright (c) 2022 by the authors listed in the file AUTHORS and their
-institutional affiliations. All rights reserved.
+Copyright (c) 2023 Harun Khan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-
 Authors: Harun Khan
 -/
 
