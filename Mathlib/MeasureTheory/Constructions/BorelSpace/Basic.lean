@@ -1330,7 +1330,7 @@ theorem Measurable.iInf_Prop {α} [MeasurableSpace α] [ConditionallyCompleteLat
     convert measurable_const using 1; funext; exact ciInf_neg h
 #align measurable.infi_Prop Measurable.iInf_Prop
 
-section CompleteLinearOrder
+section ConditionallyCompleteLinearOrder
 
 variable [ConditionallyCompleteLinearOrder α] [OrderTopology α] [SecondCountableTopology α]
 
@@ -1341,7 +1341,7 @@ theorem measurable_iSup {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, 
   · simp [iSup_of_empty']
   have A : MeasurableSet {b | BddAbove (range (fun i ↦ f i b))} :=
     measurableSet_bddAbove_range hf
-  have : Measurable (fun (_b : δ) ↦ sSup (univ : Set α)) := measurable_const
+  have : Measurable (fun (_b : δ) ↦ sSup (∅ : Set α)) := measurable_const
   apply Measurable.isLUB_of_mem hf A _ _ this
   · rintro b ⟨c, hc⟩
     apply isLUB_ciSup
@@ -1372,32 +1372,35 @@ theorem aemeasurable_iInf {ι} {μ : Measure δ} [Countable ι] {f : ι → δ �
 #align ae_measurable_infi aemeasurable_iInf
 
 theorem measurable_biSup {ι} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
-    (hf : ∀ i, Measurable (f i)) : Measurable fun b => ⨆ i ∈ s, f i b := by
+    (hf : ∀ i ∈ s, Measurable (f i)) : Measurable fun b => ⨆ i ∈ s, f i b := by
   haveI : Encodable s := hs.toEncodable
   by_cases H : ∀ i, i ∈ s
-  · have : ∀ b, ⨆ i ∈ s, f i b = ⨆ (i : s), f i b := by
-      intro b
-      let g : s → α := fun i ↦ f i b
-      change ⨆ (i : ι) (hi : i ∈ s), g ⟨i, hi⟩ = ⨆ (i : s), f i b
-      rw [cbiSup_eq_of_forall H]
+  · have : ∀ b, ⨆ i ∈ s, f i b = ⨆ (i : s), f i b :=
+      fun b ↦ cbiSup_eq_of_forall (f := fun i ↦ f i b) H
     simp only [this]
-    exact measurable_iSup (fun (i : s) ↦ hf i)
-  · have : ∀ b, ⨆ i ∈ s, f i b = (⨆ (i : s), f i b) ⊔ sSup ∅ := by
-      intro b
-      let g : s → α := fun i ↦ f i b
-      change ⨆ (i : ι) (hi : i ∈ s), g ⟨i, hi⟩ = (⨆ (i : s), f i b) ⊔ sSup ∅
-      rw [cbiSup_eq_of_not_forall H]
+    exact measurable_iSup (fun (i : s) ↦ hf i i.2)
+  · have : ∀ b, ⨆ i ∈ s, f i b = (⨆ (i : s), f i b) ⊔ sSup ∅ :=
+      fun b ↦ cbiSup_eq_of_not_forall (f := fun i ↦ f i b) H
     simp only [this]
     apply Measurable.sup _ measurable_const
-    exact measurable_iSup (fun (i : s) ↦ hf i)
+    exact measurable_iSup (fun (i : s) ↦ hf i i.2)
 #align measurable_bsupr measurable_biSup
 
 theorem aemeasurable_biSup {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
-    (hf : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨆ i ∈ s, f i b) μ := by
-  haveI : Encodable s := hs.toEncodable
-  simp only [iSup_subtype']
-  exact aemeasurable_iSup fun i => hf i
+    (hf : ∀ i ∈ s, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨆ i ∈ s, f i b) μ := by
+  let g : ι → δ → α := fun i ↦
+  refine ⟨fun b ↦ ⨆ (i) (hi : i ∈ s), (hf i hi).mk (f i) b, ?_, ?_⟩
+
+
+  have Z := measurable_biSup (f := fun i ↦ s hs (fun (i : ι) (hi : i ∈ s) ↦ (hf i hi).measurable_mk)
+
+--    measurable_biSup s hs (fun i hi ↦ (hf i).measurable_mk), ?_⟩
+--  filter_upwards [ae_all_iff.2 (fun i ↦ (hf i).ae_eq_mk)] with b hb using by simp [hb]
+
+
 #align ae_measurable_bsupr aemeasurable_biSup
+
+#exit
 
 theorem measurable_biInf {ι} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
     (hf : ∀ i, Measurable (f i)) : Measurable fun b => ⨅ i ∈ s, f i b := by
