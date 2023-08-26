@@ -18,39 +18,45 @@ It also provides the expected value for specific probability mass functions.
 
 namespace Pmf
 
-open MeasureTheory BigOperators ENNReal
+open MeasureTheory BigOperators ENNReal TopologicalSpace
 
-theorem integral_eq_tsum' (α : Type _) [MeasurableSpace α] [MeasurableSingletonClass α] (p : Pmf α)
-  (f : α → ℝ) (hf : Integrable (fun a ↦ f a) (p.toMeasure)) :
-    ∫ a, f a ∂(p.toMeasure) = ∑' a, f a * (p a).toReal := calc
+section General
+
+variable {α : Type _} [MeasurableSpace α] [MeasurableSingletonClass α]
+variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+
+theorem integral_eq_tsum' (p : Pmf α) (f : α → E) (hf : Integrable (fun a ↦ f a) (p.toMeasure)) :
+    ∫ a, f a ∂(p.toMeasure) = ∑' a, (p a).toReal • f a := calc
   _ = ∫ a in p.support, f a ∂(p.toMeasure) := by rw [restrict_toMeasure_support p]
-  _ = ∑' (a : ↑(support p)), f a * (p.toMeasure {a.val}).toReal := by
+  _ = ∑' (a : ↑(support p)), (p.toMeasure {a.val}).toReal • f a := by
     apply integral_countable f p.support_countable
     rwa [restrict_toMeasure_support p]
-  _ = ∑' (a : ↑(support p)), f a.val * (p a.val).toReal := by
+  _ = ∑' (a : ↑(support p)), (p a.val).toReal • f a.val := by
     congr with x; congr
     apply Pmf.toMeasure_apply_singleton p x.val (MeasurableSet.singleton x.val)
   _ = _ := by
     apply tsum_subtype_eq_of_support_subset (s := p.support)
-      (f := fun a=>f ↑a * ENNReal.toReal (p ↑a))
-    trans; refine Function.support_mul_subset_right _ _
+      (f := fun a => ENNReal.toReal (p ↑a) • f ↑a)
+    trans; refine Function.support_smul_subset_left _ _
     intro x
     simp [ENNReal.toReal_eq_zero_iff]
     tauto
 
-theorem integral_eq_tsum (α : Type _) [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α]
+theorem integral_eq_tsum [Countable α]
   (p : Pmf α) (f : α → ℝ) (hf : Integrable (fun a ↦ f a) p.toMeasure) :
-    ∫ a, f a ∂(p.toMeasure) = ∑' a, f a * (p a).toReal := by
+    ∫ a, f a ∂(p.toMeasure) = ∑' a, (p a).toReal • f a := by
   rw [integral_countable' hf]
   congr 1 with x
   rw [Pmf.toMeasure_apply_singleton _ _ (MeasurableSet.singleton x)]
 
-theorem integral_eq_sum (α : Type _) [Fintype α] [MeasurableSpace α] [MeasurableSingletonClass α]
+theorem integral_eq_sum [Fintype α]
   (p : Pmf α) (f : α → ℝ) :
-    ∫ a, f a ∂(p.toMeasure) = ∑ a, f a * (p a).toReal := by
+    ∫ a, f a ∂(p.toMeasure) = ∑ a, (p a).toReal • f a := by
   rw [integral_fintype _ (integrable_of_fintype _ f)]
   congr 1 with x
   rw [Pmf.toMeasure_apply_singleton _ _ (MeasurableSet.singleton x)]
+
+end General
 
 theorem bernoulli_expectation {p : ℝ≥0∞} (h : p ≤ 1) :
     ∫ b, cond b 1 0 ∂((bernoulli p h).toMeasure) = p.toReal := by simp [integral_eq_sum]

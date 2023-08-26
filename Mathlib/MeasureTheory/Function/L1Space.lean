@@ -185,7 +185,7 @@ theorem hasFiniteIntegral_of_bounded [IsFiniteMeasure μ] {f : α → β} {C : �
 #align measure_theory.has_finite_integral_of_bounded MeasureTheory.hasFiniteIntegral_of_bounded
 
 theorem hasFiniteIntegral_of_fintype [Fintype α] [IsFiniteMeasure μ] {f : α → β} :
-  HasFiniteIntegral f μ :=
+    HasFiniteIntegral f μ :=
   hasFiniteIntegral_of_bounded (C := (Finset.sup .univ (fun a => ‖f a‖₊) : NNReal)) <| by
     apply ae_of_all μ
     intro x
@@ -508,9 +508,7 @@ theorem integrable_const [IsFiniteMeasure μ] (c : β) : Integrable (fun _ : α 
 
 @[simp]
 theorem integrable_of_fintype [Fintype α] [MeasurableSpace α] [MeasurableSingletonClass α]
-    [MeasurableSpace β] [PseudoMetrizableSpace β] [SecondCountableTopology β]
-    [OpensMeasurableSpace β] (μ : Measure α) [IsFiniteMeasure μ] (f : α → β) :
-    Integrable (fun a ↦ f a) μ :=
+  (μ : Measure α) [IsFiniteMeasure μ] (f : α → ℝ) : Integrable (fun a ↦ f a) μ :=
   ⟨Measurable.aestronglyMeasurable (measurable_of_finite _), hasFiniteIntegral_of_fintype⟩
 
 theorem Memℒp.integrable_norm_rpow {f : α → β} {p : ℝ≥0∞} (hf : Memℒp f p μ) (hp_ne_zero : p ≠ 0)
