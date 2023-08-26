@@ -26,18 +26,20 @@ instance : Group (AmalgamatedProduct G H φ) :=
 def of {i : ι} : G i →* AmalgamatedProduct G H φ :=
   (QuotientGroup.mk' _).comp CoprodI.of
 
-def lift (f : ∀ i, G i →* K) (hf : ∀ i, (f i).comp (φ i) = 1) :
+def lift (f : ∀ i, G i →* K) (hf : ∀ i j, (f i).comp (φ i) = (f j).comp (φ j)) :
     AmalgamatedProduct G H φ →* K :=
   QuotientGroup.lift _ (CoprodI.lift f)
     (show normalClosure _ ≤ (CoprodI.lift f).ker
       from normalClosure_le_normal <| by
-        simp only [FunLike.ext_iff, MonoidHom.coe_comp, Function.comp_apply,
-          MonoidHom.one_apply] at hf
-        simp [Set.iUnion_subset_iff, Set.range_subset_iff, SetLike.mem_coe, MonoidHom.mem_ker, hf])
+        simp only [Set.iUnion_subset_iff, Set.range_subset_iff,
+          MonoidHom.mem_ker, SetLike.mem_coe]
+        intro i j h
+        simp only [FunLike.ext_iff, MonoidHom.coe_comp, Function.comp_apply] at hf
+        simp [hf i j])
 
 @[simp]
-theorem lift_of (f : ∀ i, G i →* K) (hf : ∀ i, (f i).comp (φ i) = 1) {i : ι} (g : G i) :
-    (lift f hf) (of g : AmalgamatedProduct G H φ) = f i g := by
+theorem lift_of (f : ∀ i, G i →* K) (hf : ∀ i j, (f i).comp (φ i) = (f j).comp (φ j))
+    {i : ι} (g : G i) : (lift f hf) (of g : AmalgamatedProduct G H φ) = f i g := by
   delta AmalgamatedProduct
   simp [lift, of]
 
@@ -160,11 +162,20 @@ structure Word extends CoprodI.Word G where
   left : H
   normalized : ∀ i g, ⟨i, g⟩ ∈ toList → (normalizeSingle φ g).2 = g
 
+def Word.empty : Word φ := ⟨CoprodI.Word.empty, 1, fun i g => by simp [CoprodI.Word.empty]⟩
+
+instance : Inhabited (Word φ) := ⟨Word.empty φ⟩
+
 open List
 
 /- Inspired by a similar structure in `CoprodI` -/
 structure Pair (i : ι) extends CoprodI.Word.Pair G i where
   normalized : ∀ i g, ⟨i, g⟩ ∈ tail.toList → (normalizeSingle φ g).2 = g
+
+instance (i : ι) : Inhabited (Pair φ i) :=
+  ⟨{ (Word.empty _ : Word φ) with
+      head := 1,
+      fstIdx_ne := fun h => by cases h }⟩
 
 variable [DecidableEq ι] [∀ i, DecidableEq (G i)]
 
@@ -262,8 +273,8 @@ noncomputable def equivPair (i) : Word φ ≃ Pair φ i :=
     invFun := rcons _
     left_inv := leftInv
     right_inv := fun _ => rcons_injective _ (leftInv _) }
-#print Function.End
-noncomputable instance summandAction {i : ι} : G i →* Function.End (Word φ) :=
+
+noncomputable def summandToEndWord (i : ι) : G i →* Function.End (Word φ) :=
   { toFun := fun g w => (equivPair φ hφ i).symm
       { equivPair φ hφ i w with
         head := g * (equivPair φ hφ i w).head }
@@ -274,12 +285,58 @@ noncomputable instance summandAction {i : ι} : G i →* Function.End (Word φ) 
       exact (equivPair φ hφ i).symm_apply_apply w
     map_mul' := fun _ _ => by
       funext w
-      simp [mul_assoc, Equiv.apply_symm_apply] }
+      simp [mul_assoc, Equiv.apply_symm_apply, Function.End.mul_def] }
 
-theorem smul_def {i : ι} (g : G i) (w : Word φ) : g • w = (equivPair φ hφ _).symm
-    { equivPair φ hφ _ w with
-      head := g * (equivPair φ hφ _ w).head } := rfl
+noncomputable def summandToPermWord (i : ι) : G i →* Equiv.Perm (Word φ) :=
+  { toFun := fun g =>
+      { toFun := summandToEndWord φ hφ i g
+        invFun := summandToEndWord φ hφ i (g⁻¹)
+        left_inv := fun x => by
+          show (summandToEndWord φ hφ i (g⁻¹) * summandToEndWord φ hφ i g) x = x
+          rw [← map_mul, inv_mul_self, map_one]
+          rfl
+        right_inv := fun x => by
+          show (summandToEndWord φ hφ i g * summandToEndWord φ hφ i (g⁻¹)) x = x
+          rw [← map_mul, mul_inv_self, map_one]
+          rfl  }
+    map_one' := by ext; simp; rfl
+    map_mul' := by intros; ext; simp; rfl}
+
+theorem summandToPermWord_injective {i : ι} : Function.Injective (summandToPermWord φ hφ i) := by
+  intros x y
+  simp only [summandToPermWord, summandToEndWord, MonoidHom.coe_mk, OneHom.coe_mk, Equiv.mk.injEq,
+    Function.funext_iff, EmbeddingLike.apply_eq_iff_eq, Pair.mk.injEq,
+    Word.Pair.mk.injEq, mul_left_inj, and_true, inv_inj, and_self]
+  exact fun h => h default
+
+@[simp]
+theorem summandToPermWord_app_eq {i : ι} (h : H) (w : Word φ) :
+    summandToPermWord φ hφ i (φ i h) w =
+      { w with left := h * w.left } := by
+  apply Word.ext _ hφ i
+  simp only [summandToPermWord, summandToEndWord, equivPair, rcons, Equiv.coe_fn_mk,
+    Equiv.coe_fn_symm_mk, MonoidHom.coe_mk, OneHom.coe_mk, map_mul]
+  simp only [Word.equivPair_symm, Word.rcons_eq_smul, ← mul_smul]
+  simp only [normalizeSingle_mul _ hφ, map_mul, mul_assoc,
+    normalizeSingle_fst_mul_normalizeSingle_snd ]
+  simp only [mul_smul]
+  rw [← Word.rcons_eq_smul, ← Word.equivPair_symm, Equiv.symm_apply_apply]
 
 end Word
+
+open Word
+
+noncomputable def toPermWord [DecidableEq ι] [∀ i, DecidableEq (G i)]
+    (hφ : ∀ i, Function.Injective (φ i)) :
+    AmalgamatedProduct G H φ →* Equiv.Perm (Word φ) :=
+  lift (summandToPermWord φ hφ) <| by intros; ext; simp
+
+theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
+    Function.Injective (of (G := G) (φ := φ) (i := i)) := by
+  let _ := Classical.decEq ι
+  let _ := fun i => Classical.decEq (G i)
+  refine Function.Injective.of_comp (f := toPermWord hφ) ?_
+  simp only [Function.comp, toPermWord, lift_of]
+  exact summandToPermWord_injective φ hφ
 
 end AmalgamatedProduct
