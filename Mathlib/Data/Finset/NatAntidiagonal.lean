@@ -215,7 +215,8 @@ def sigmaAntidiagonalEquivProd : (Σn : ℕ, antidiagonal n) ≃ ℕ × ℕ wher
 end EquivProd
 
 /-- The set `antidiagonal n` is equivalent to `Fin (n+1)`, via the first projection. --/
-def antidiagonal_equiv_fin (n : ℕ) : antidiagonal n ≃ Fin (n + 1) where
+@[simps]
+def antidiagonalEquivFin (n : ℕ) : antidiagonal n ≃ Fin (n + 1) where
   toFun := fun ⟨⟨i, j⟩, h⟩ ↦ ⟨i, antidiagonal.fst_lt h⟩
   invFun := fun ⟨i, h⟩ ↦ ⟨⟨i, n - i⟩, by
     rw [mem_antidiagonal, add_comm, tsub_add_cancel_iff_le]
