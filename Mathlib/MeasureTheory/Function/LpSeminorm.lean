@@ -463,6 +463,11 @@ theorem snorm_congr_norm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ x ∂μ,
   snorm_congr_nnnorm_ae <| hfg.mono fun _x hx => NNReal.eq hx
 #align measure_theory.snorm_congr_norm_ae MeasureTheory.snorm_congr_norm_ae
 
+theorem snorm_indicator_sub_indicator (s t : Set α) (f : α → E) :
+    snorm (s.indicator f - t.indicator f) p μ = snorm ((s ∆ t).indicator f) p μ :=
+    snorm_congr_norm_ae <| ae_of_all _ fun x ↦ by
+  simp only [Pi.sub_apply, Set.apply_indicator_symmDiff norm_neg]
+
 @[simp]
 theorem snorm'_norm {f : α → F} : snorm' (fun a => ‖f a‖) q μ = snorm' f q μ := by simp [snorm']
 #align measure_theory.snorm'_norm MeasureTheory.snorm'_norm
