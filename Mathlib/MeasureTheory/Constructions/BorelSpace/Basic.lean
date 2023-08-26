@@ -1379,20 +1379,18 @@ theorem measurable_biSup {ι} (s : Set ι) {f : ι → δ → α} (hs : s.Counta
       intro b
       let g : s → α := fun i ↦ f i b
       change ⨆ (i : ι) (hi : i ∈ s), g ⟨i, hi⟩ = ⨆ (i : s), f i b
-      rw [ciSup_subtype1 H]
+      rw [cbiSup_eq_of_forall H]
     simp only [this]
     exact measurable_iSup (fun (i : s) ↦ hf i)
   · have : ∀ b, ⨆ i ∈ s, f i b = (⨆ (i : s), f i b) ⊔ sSup ∅ := by
       intro b
       let g : s → α := fun i ↦ f i b
       change ⨆ (i : ι) (hi : i ∈ s), g ⟨i, hi⟩ = (⨆ (i : s), f i b) ⊔ sSup ∅
-      rw [ciSup_subtype2 H]
+      rw [cbiSup_eq_of_not_forall H]
     simp only [this]
     apply Measurable.sup _ measurable_const
     exact measurable_iSup (fun (i : s) ↦ hf i)
 #align measurable_bsupr measurable_biSup
-
-#exit
 
 theorem aemeasurable_biSup {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
     (hf : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨆ i ∈ s, f i b) μ := by

@@ -900,7 +900,7 @@ lemma ciInf_eq_ite {p : Prop} [Decidable p] {f : p → α} :
     (⨅ h : p, f h) = if h : p then f h else sInf (∅ : Set α) :=
   ciSup_eq_ite (α := αᵒᵈ)
 
-theorem cbSup_eq_of_forall {p : ι → Prop} {f : Subtype p → α} (hp : ∀ i, p i) :
+theorem cbiSup_eq_of_forall {p : ι → Prop} {f : Subtype p → α} (hp : ∀ i, p i) :
     ⨆ (i) (h : p i), f ⟨i, h⟩ = iSup f := by
   simp only [hp, ciSup_unique]
   simp only [iSup]
@@ -911,9 +911,9 @@ theorem cbSup_eq_of_forall {p : ι → Prop} {f : Subtype p → α} (hp : ∀ i,
   · rintro - ⟨i, rfl⟩
     simp
 
-theorem cbInf_eq_of_forall {p : ι → Prop} {f : Subtype p → α} (hp : ∀ i, p i) :
+theorem cbiInf_eq_of_forall {p : ι → Prop} {f : Subtype p → α} (hp : ∀ i, p i) :
     ⨅ (i) (h : p i), f ⟨i, h⟩ = iInf f :=
-  cbSup_eq_of_forall (α := αᵒᵈ) hp
+  cbiSup_eq_of_forall (α := αᵒᵈ) hp
 
 /-- Introduction rule to prove that `b` is the supremum of `f`: it suffices to check that `b`
 is larger than `f i` for all `i`, and that this is not the case of any `w<b`.
