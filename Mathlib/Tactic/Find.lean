@@ -274,6 +274,9 @@ def parseFindPatterns (args : TSyntax `find_patterns) : TermElabM Arguments :=
           unless (← getEnv).contains n do
             throwErrorAt i "unknown identifier '{n}'"
           idents := idents.push n
+        | `(find_pattern| _) => do
+            throwErrorAt arg ("Cannot search for _. " ++
+              "Did you forget to put a term pattern in parentheses?")
         | `(find_pattern| $_:turnstyle $s:term) => do
           let t ← Lean.Elab.Term.elabTerm s none
           terms := terms.push (true, t)
@@ -301,9 +304,11 @@ combined in a single query.
 
 2. By lemma name substring:
    ```lean
-   #find "two"
+   #find Real.sin "two"
    ```
-   finds all lemmas that have `"two"` as part of the lemma _name_.
+   restricts the search above to those lemmas that have `"two"` as part of the lemma _name_.
+
+   (Currently, substring searches _must_ be combined with other kind of queries.)
 
 3. By subexpression:
    ```lean
@@ -326,6 +331,7 @@ combined in a single query.
    #find ⊢ (_ < _ → tsum _ < tsum _)
    ```
    will find `tsum_lt_tsum` even though the hypothesis `f i < g i` is not the last.
+
 5. In combination:
    ```lean
    #find Real.sin "two" tsum  (_ * _) (_ ^ _) ⊢ (_ < _ → _)
