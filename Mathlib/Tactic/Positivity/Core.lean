@@ -3,7 +3,7 @@ Copyright (c) 2022 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
-import Mathlib.Tactic.NormNum.Core  -- alpha: should be first?
+/- alpha: should be first? -/ import Mathlib.Tactic.NormNum.Core
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Nat.Cast.Basic

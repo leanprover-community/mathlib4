@@ -29,9 +29,9 @@ import Mathlib.Tactic.Cases
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Classical
-import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
+import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Congr!
 import Mathlib.Tactic.Constructor
@@ -72,15 +72,15 @@ import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.Propose
 import Mathlib.Tactic.PushNeg
+import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Recover
-import Mathlib.Tactic.Rename
-import Mathlib.Tactic.RenameBVar
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Tactic.Relation.Trans
+import Mathlib.Tactic.Rename
+import Mathlib.Tactic.RenameBVar
 import Mathlib.Tactic.Replace
 import Mathlib.Tactic.Rewrites
-import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.Says
 import Mathlib.Tactic.ScopedNS
@@ -99,7 +99,6 @@ import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.SwapVar
-import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Tauto
 -- TFAE imports `Mathlib.Data.List.TFAE` and thence `Mathlib.Data.List.Basic`.
 -- import Mathlib.Tactic.TFAE

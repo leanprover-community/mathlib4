@@ -25,8 +25,8 @@ It is a relative of `apply?` but for *forward reasoning* (i.e. looking at the hy
 rather than backward reasoning.
 
 ```
-import Std.Data.List.Basic
 import Mathlib.Tactic.Propose
+import Std.Data.List.Basic
 
 example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
   have? using w, m -- Try this: `List.disjoint_of_subset_left m w`

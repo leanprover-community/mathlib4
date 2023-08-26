@@ -1,5 +1,5 @@
-import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Init.Logic
+import Mathlib.Tactic.DefEqTransformations
 import Std.Tactic.GuardExpr
 
 namespace Tests
