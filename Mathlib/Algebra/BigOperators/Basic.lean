@@ -141,14 +141,15 @@ syntax bigOpBinders := (ppSpace bigOpBinder) <|> bigOpBinderCollection
 Note: this is not extensible at the moment, unlike the usual `bigOpBinder` expansions. -/
 def processBigOpBinder (processed : (Array (Term × Term)))
     (binder : TSyntax ``bigOpBinder) : MacroM (Array (Term × Term)) :=
+  set_option hygiene false in
   withRef binder do
     match binder with
     | `(bigOpBinder| $x:term) =>
       match x with
-      | `($a + $b = $n) => -- Maybe this is too cute.
-        return processed |>.push (← `(⟨$a, $b⟩), ← `(Finset.antidiagonal $n))
-      | _ => return processed |>.push (x, ← `(Finset.univ))
-    | `(bigOpBinder| $x : $t) => return processed |>.push (x, ← `((Finset.univ : Finset $t)))
+      | `(($a + $b = $n)) => -- Maybe this is too cute.
+        return processed |>.push (← `(⟨$a, $b⟩), ← `(Finset.Nat.antidiagonal $n))
+      | _ => return processed |>.push (x, ← ``(Finset.univ))
+    | `(bigOpBinder| $x : $t) => return processed |>.push (x, ← ``((Finset.univ : Finset $t)))
     | `(bigOpBinder| $x ∈ $s) => return processed |>.push (x, ← `(finset% $s))
     | `(bigOpBinder| $x < $n) => return processed |>.push (x, ← `(Finset.Iio $n))
     | `(bigOpBinder| $x ≤ $n) => return processed |>.push (x, ← `(Finset.Iic $n))
