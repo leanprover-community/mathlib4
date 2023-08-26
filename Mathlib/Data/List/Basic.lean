@@ -96,7 +96,7 @@ theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
 
 #align list.ne_nil_of_mem List.ne_nil_of_mem
 
-lemma mem_doubleton {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
+lemma mem_pair {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
   rw [mem_cons, mem_singleton]
 
 theorem mem_split {a : α} {l : List α} (h : a ∈ l) : ∃ s t : List α, l = s ++ a :: t := by
