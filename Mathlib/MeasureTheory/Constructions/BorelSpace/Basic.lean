@@ -1352,36 +1352,47 @@ theorem measurable_iSup {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, 
     apply csSup_of_not_bddAbove
     exact hb
 
-
-
-
-
-#exit
-
 @[measurability]
 theorem aemeasurable_iSup {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α}
-    (hf : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨆ i, f i b) μ :=
-  AEMeasurable.isLUB hf <| ae_of_all μ fun _ => isLUB_iSup
+    (hf : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨆ i, f i b) μ := by
+  refine ⟨fun b ↦ ⨆ i, (hf i).mk (f i) b, measurable_iSup (fun i ↦ (hf i).measurable_mk), ?_⟩
+  filter_upwards [ae_all_iff.2 (fun i ↦ (hf i).ae_eq_mk)] with b hb using by simp [hb]
 #align ae_measurable_supr aemeasurable_iSup
 
 @[measurability]
 theorem measurable_iInf {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     Measurable fun b => ⨅ i, f i b :=
-  Measurable.isGLB hf fun _ => isGLB_iInf
+  measurable_iSup (α := αᵒᵈ) hf
 #align measurable_infi measurable_iInf
 
 @[measurability]
 theorem aemeasurable_iInf {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α}
     (hf : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨅ i, f i b) μ :=
-  AEMeasurable.isGLB hf <| ae_of_all μ fun _ => isGLB_iInf
+  aemeasurable_iSup (α := αᵒᵈ) hf
 #align ae_measurable_infi aemeasurable_iInf
 
 theorem measurable_biSup {ι} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
     (hf : ∀ i, Measurable (f i)) : Measurable fun b => ⨆ i ∈ s, f i b := by
   haveI : Encodable s := hs.toEncodable
-  simp only [iSup_subtype']
-  exact measurable_iSup fun i => hf i
+  by_cases H : ∀ i, i ∈ s
+  · have : ∀ b, ⨆ i ∈ s, f i b = ⨆ (i : s), f i b := by
+      intro b
+      let g : s → α := fun i ↦ f i b
+      change ⨆ (i : ι) (hi : i ∈ s), g ⟨i, hi⟩ = ⨆ (i : s), f i b
+      rw [ciSup_subtype1 H]
+    simp only [this]
+    exact measurable_iSup (fun (i : s) ↦ hf i)
+  · have : ∀ b, ⨆ i ∈ s, f i b = (⨆ (i : s), f i b) ⊔ sSup ∅ := by
+      intro b
+      let g : s → α := fun i ↦ f i b
+      change ⨆ (i : ι) (hi : i ∈ s), g ⟨i, hi⟩ = (⨆ (i : s), f i b) ⊔ sSup ∅
+      rw [ciSup_subtype2 H]
+    simp only [this]
+    apply Measurable.sup _ measurable_const
+    exact measurable_iSup (fun (i : s) ↦ hf i)
 #align measurable_bsupr measurable_biSup
+
+#exit
 
 theorem aemeasurable_biSup {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
     (hf : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨆ i ∈ s, f i b) μ := by
