@@ -65,7 +65,6 @@ open Coset
 
 variable [Inhabited ι] (φ) (hφ : ∀ i, Function.Injective (φ i))
 
-
 noncomputable def normalizeSingle {i : ι} (g : G i) : H × G i :=
   letI := Classical.propDecidable (g ∈ (φ i).range )
   if hg : g ∈ (φ i).range
@@ -164,12 +163,8 @@ structure Word extends CoprodI.Word G where
 open List
 
 /- Inspired by a similar structure in `CoprodI` -/
-structure Pair (i : ι) where
-  head : G i
-  /-- The remaining letters of the word, excluding the first letter -/
-  tail : Word φ
-  /-- The index first letter of tail of a `Pair M i` is not equal to `i` -/
-  fstIdx_ne : tail.fstIdx ≠ some i
+structure Pair (i : ι) extends CoprodI.Word.Pair G i where
+  normalized : ∀ i g, ⟨i, g⟩ ∈ tail.toList → (normalizeSingle φ g).2 = g
 
 variable [DecidableEq ι] [∀ i, DecidableEq (G i)]
 
@@ -225,48 +220,65 @@ theorem Word.ext {w₁ w₂ : Word φ} (i : ι)
   simp
 
 noncomputable def rcons {i : ι} (p : Pair φ i) : Word φ :=
-  let n := normalizeSingle φ (p.head * φ i p.tail.left)
-  { toWord := n.2 • p.tail.toWord,
-    left := n.1,
-    normalized := by
-      intro j g₂ hg₂
-      rw [Word.mem_smul_iff] at hg₂
-      rcases hg₂ with ⟨_, hg₂⟩ | ⟨hg1, rfl, hg₂⟩
-      · exact p.tail.normalized _ _ hg₂
-      · rcases hg₂ with hg₂ | ⟨m', hm', rfl⟩ | hg₂
-        · exact p.tail.normalized _ _ (List.mem_of_mem_tail hg₂)
-        · have := p.fstIdx_ne
-          intros
-          simp_all [Word.fstIdx]
-        · cases hg₂.2
-          simp }
+  let n := normalizeSingle φ p.head
+  let w := (Word.equivPair i).symm { p.toPair with head := n.2 }
+  { toWord := w
+    left := n.1
+    normalized := fun i g hg => by
+        dsimp at hg
+        rw [Word.equivPair_symm, Word.mem_rcons_toList_iff] at hg
+        dsimp at hg
+        rcases hg with hg | ⟨_, rfl, rfl⟩
+        · exact p.normalized _ _ hg
+        · simp }
 
-noncomputable def toPair (i) (w : Word φ) : Pair φ i :=
-  let p := Word.equivPair i w.toWord
-  { p with
-    --This is wrong
-    tail :=
-    { toWord := p.tail
-      left := w.left
-      normalized := fun _ _ h =>
-        w.normalized _ _ (Word.mem_of_mem_equivPair_tail_toList _ h) } }
+theorem rcons_injective {i : ι} : Function.Injective (rcons φ (i := i)) := by
+  rintro ⟨⟨head₁, tail₁⟩, _⟩ ⟨⟨head₂, tail₂⟩, _⟩
+  simp only [rcons, Word.mk.injEq, EmbeddingLike.apply_eq_iff_eq,
+    Word.Pair.mk.injEq, Pair.mk.injEq, and_imp]
+  intro h₁ h₂ h₃
+  subst h₂
+  rw [← normalizeSingle_fst_mul_normalizeSingle_snd φ head₁,
+    h₁, h₃, normalizeSingle_fst_mul_normalizeSingle_snd]
+  simp
 
-noncomputable def summandAction {i : ι} : MulAction (G i) (Word φ) :=
-  { smul := fun g w => rcons φ { toPair φ i w with head := g * (toPair φ i w).head }
-    one_smul := sorry
-    mul_smul := by
-      intro g₁ g₂ w
-      simp only [instHSMul]
-      apply Word.ext _ hφ i
-      simp only [rcons, toPair, ← mul_smul,
-        normalizeSingle_fst_mul_normalizeSingle_snd, _root_.mul_one,
-        Word.equivPair_smul_same, Word.equivPair_equivPair_tail]
+noncomputable def equivPair (i) : Word φ ≃ Pair φ i :=
+  let toFun : Word φ → Pair φ i :=
+    fun w =>
+      let p := Word.equivPair i (φ i w.left • w.toWord)
+      { toPair := p
+        normalized := fun j g hg => by
+          dsimp only at hg
+          rw [Word.smul_def, ← Word.equivPair_symm, Equiv.apply_symm_apply] at hg
+          dsimp at hg
+          exact w.normalized _ _ (Word.mem_of_mem_equivPair_tail_toList _ hg) }
+  have leftInv : Function.LeftInverse (rcons φ) toFun :=
+    fun w => Word.ext φ hφ i <| by
+      simp [rcons, Word.equivPair_symm, Word.rcons_eq_smul, ← mul_smul,
+        normalizeSingle_fst_mul_normalizeSingle_snd]
+      rw [← Word.rcons_eq_smul, ← Word.equivPair_symm,
+        Equiv.symm_apply_apply]
+  { toFun := toFun
+    invFun := rcons _
+    left_inv := leftInv
+    right_inv := fun _ => rcons_injective _ (leftInv _) }
+#print Function.End
+noncomputable instance summandAction {i : ι} : G i →* Function.End (Word φ) :=
+  { toFun := fun g w => (equivPair φ hφ i).symm
+      { equivPair φ hφ i w with
+        head := g * (equivPair φ hφ i w).head }
+    map_one' := by
+      funext w
+      dsimp [instHSMul]
+      rw [one_mul]
+      exact (equivPair φ hφ i).symm_apply_apply w
+    map_mul' := fun _ _ => by
+      funext w
+      simp [mul_assoc, Equiv.apply_symm_apply] }
 
-
-
-  }
-
-
+theorem smul_def {i : ι} (g : G i) (w : Word φ) : g • w = (equivPair φ hφ _).symm
+    { equivPair φ hφ _ w with
+      head := g * (equivPair φ hφ _ w).head } := rfl
 
 end Word
 

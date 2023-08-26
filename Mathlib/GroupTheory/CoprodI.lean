@@ -489,8 +489,8 @@ theorem equivPair_smul_same {i} (m : M i) (w : Word M) :
   simp
 
 @[simp]
-theorem equivPair_equivPair_tail {i} (w : Word M) :
-    equivPair i (equivPair i w).tail = ⟨1, (equivPair i w).tail, (equivPair i w).fstIdx_ne⟩ :=
+theorem equivPair_tail {i} (p : Pair M i) :
+    equivPair i p.tail = ⟨1, p.tail, p.fstIdx_ne⟩ :=
   equivPair_eq_of_fstIdx_ne _
 
 theorem of_smul_def (i) (w : Word M) (m : M i) :
@@ -558,6 +558,10 @@ theorem cons_eq_smul {i} {m : M i} {ls h1 h2} :
   · rw [fstIdx_ne_iff]
     exact (List.chain'_cons'.1 h2).1
 #align free_product.word.cons_eq_smul Monoid.CoprodI.Word.cons_eq_smul
+
+theorem rcons_eq_smul {i} (p : Pair M i) :
+    rcons p = p.head • p.tail := by
+  simp [smul_def]
 
 theorem smul_induction {C : Word M → Prop} (h_empty : C empty)
     (h_smul : ∀ (i) (m : M i) (w), C w → C (of m • w)) (w : Word M) : C w := by
