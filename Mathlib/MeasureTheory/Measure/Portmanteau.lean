@@ -421,8 +421,6 @@ end ConvergenceImpliesLimsupClosedLE --section
 section LimitBorelImpliesLimsupClosedLE
 
 /-! ### Portmanteau implication: limit condition for Borel sets implies limsup for closed sets
-
-TODO: The proof of the implication is not yet here. Add it.
 -/
 
 open ENNReal
@@ -434,8 +432,8 @@ theorem exists_null_frontier_thickening (μ : Measure Ω) [SigmaFinite μ] (s : 
   have mbles : ∀ r : ℝ, MeasurableSet (frontier (Metric.thickening r s)) :=
     fun r => isClosed_frontier.measurableSet
   have disjs := Metric.frontier_thickening_disjoint s
-  have key := @Measure.countable_meas_pos_of_disjoint_iUnion Ω _ _ μ _ _ mbles disjs
-  have aux := @measure_diff_null ℝ _ volume (Ioo a b) _ (Set.Countable.measure_zero key volume)
+  have key := Measure.countable_meas_pos_of_disjoint_iUnion (μ := μ) mbles disjs
+  have aux := measure_diff_null (s₁ := Ioo a b) (Set.Countable.measure_zero key volume)
   have len_pos : 0 < ENNReal.ofReal (b - a) := by simp only [hab, ENNReal.ofReal_pos, sub_pos]
   rw [← Real.volume_Ioo, ← aux] at len_pos
   rcases nonempty_of_measure_ne_zero len_pos.ne.symm with ⟨r, ⟨r_in_Ioo, hr⟩⟩
@@ -477,7 +475,7 @@ lemma limsup_measure_closed_le_of_forall_tendsto_measure
   have key := fun (n : ℕ) ↦ h (Fthicks_open n).measurableSet (rs_null n)
   apply ENNReal.le_of_forall_pos_le_add
   intros ε ε_pos μF_finite
-  have keyB := @tendsto_measure_cthickening_of_isClosed Ω _ _ _ μ F
+  have keyB := tendsto_measure_cthickening_of_isClosed (μ := μ) (s := F)
                 ⟨1, ⟨by simp only [gt_iff_lt, zero_lt_one], measure_ne_top _ _⟩⟩ F_closed
   have nhd : Iio ((μ : Measure Ω) F + ε) ∈ 𝓝 ((μ : Measure Ω) F) := by
     apply Iio_mem_nhds
@@ -485,8 +483,7 @@ lemma limsup_measure_closed_le_of_forall_tendsto_measure
   specialize rs_lim (keyB nhd)
   simp only [mem_map, mem_atTop_sets, ge_iff_le, mem_preimage, mem_Iio] at rs_lim
   obtain ⟨m, hm⟩ := rs_lim
-  have aux' := fun i ↦
-    @measure_mono _ _ (μs i : Measure Ω) _ _ (Metric.self_subset_thickening (rs_pos m) F)
+  have aux' := fun i ↦ measure_mono (μ := μs i) (Metric.self_subset_thickening (rs_pos m) F)
   have aux : (fun i ↦ ((μs i : Measure Ω) F))
               ≤ᶠ[L] (fun i ↦ (μs i : Measure Ω) (Metric.thickening (rs m) F)) := by
     exact eventually_of_forall aux'
