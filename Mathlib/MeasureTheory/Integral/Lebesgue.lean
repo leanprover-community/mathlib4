@@ -5,8 +5,9 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.MeasureTheory.Function.SimpleFunc
-import Mathlib.MeasureTheory.Measure.Count
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
+import Mathlib.MeasureTheory.Measure.Count
+import Mathlib.MeasureTheory.Measure.MutuallySingular
 
 #align_import measure_theory.integral.lebesgue from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 
