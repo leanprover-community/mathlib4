@@ -1456,7 +1456,7 @@ namespace Ordinal
 `ω_ o` is a notation for the *initial ordinal* of cardinality
 `aleph o`. Thus, for example `ω_ 0 = ω`.
 -/
-scoped notation "ω_" => λ o ↦ ord <| aleph o
+scoped notation "ω_" o => ord <| aleph o
 
 /--
 `ω₁` is the first uncountable ordinal.
