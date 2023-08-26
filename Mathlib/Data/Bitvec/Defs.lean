@@ -70,20 +70,6 @@ instance : LE (BitVec w)  := ⟨fun x y => BitVec.le x y⟩
 ## Bitwise operations
 -/
 
-@[norm_cast]
-theorem val_bitvec_eq {a b : BitVec w} : a.val = b.val ↔ a = b :=
-  ⟨(match a, b, · with | ⟨_, _⟩,⟨_, _⟩, rfl => rfl), (· ▸ rfl)⟩
-
-/-- `a < b` as natural numbers if and only if `a < b` in `Fin n`. -/
-@[norm_cast]
-theorem val_bitvec_lt {a b : BitVec w} : a.val < b.val ↔ a < b := by
-  simp [LT.lt, BitVec.lt]
-
-/-- `a ≠ b` as natural numbers if and only if `a != b` in `Fin n`. -/
-@[norm_cast]
-theorem val_bitvec_bne {a b : BitVec w} : a.val ≠ b.val ↔ a != b := by
-  simp [bne, val_bitvec_eq]
-
 protected def complement (x : BitVec w) : BitVec w :=
   0 - (x + .ofNat w 1)
 
@@ -136,26 +122,26 @@ instance : HAppend (BitVec w) (BitVec v) (BitVec (w + v)) := ⟨BitVec.append⟩
 
 /-- Extract the bitvector between indices i and j. -/
 @[simp]
-def extract (i j : Nat) (x : BitVec w) : BitVec (i - j + 1) :=
+def extract (i j) (x : BitVec w) : BitVec (i - j + 1) :=
   BitVec.ofNat _ (x.val >>> j)
 
-def repeat_ : (i : Nat) → BitVec w → BitVec (w*i)
+def repeat_ : (i : Nat) → BitVec w → BitVec (w * i)
   | 0,   _ => 0
   | n+1, x =>
-    have hEq : w + w*n = w*(n + 1) := by
+    have hEq : w + w * n = w * (n + 1) := by
       rw [Nat.mul_add, Nat.add_comm, Nat.mul_one]
     hEq ▸ (x ++ repeat_ n x)
 
-def zeroExtend (i : Nat) (x : BitVec w) : BitVec (w+i) :=
+def zeroExtend (i : Nat) (x : BitVec w) : BitVec (w + i) :=
   have hEq : w+i = i+w := Nat.add_comm _ _
   hEq ▸ ((0 : BitVec i) ++ x)
 
-def signExtend (i : Nat) (x : BitVec w) : BitVec (w+i) :=
-  have hEq : ((w-1) - (w-1) + 1)*i + w = w+i := by
+def signExtend (i) (x : BitVec w) : BitVec (w + i) :=
+  have hEq : ((w - 1) - (w - 1) + 1) * i + w = w + i := by
     rw [Nat.sub_self, Nat.zero_add, Nat.one_mul, Nat.add_comm]
-  hEq ▸ ((repeat_ i (extract (w-1) (w-1) x)) ++ x)
+  hEq ▸ ((repeat_ i (extract (w - 1) (w - 1) x)) ++ x)
 
-def shrink (v : Nat) (x : BitVec w) : BitVec v :=
+def shrink (v) (x : BitVec w) : BitVec v :=
   if hZero : 0 < v then
     have hEq : v - 1 + 0 + 1 = v := by
       rw [Nat.add_zero]

@@ -55,13 +55,13 @@ theorem bit_true : bit true = bit1 :=
 #align nat.bit_tt Nat.bit_true
 
 @[simp]
-theorem bit_eq_zero {n : ℕ} {b : Bool} : n.bit b = 0 ↔ n = 0 ∧ b = false := by
+theorem bit_eq_zero {n b} : n.bit b = 0 ↔ n = 0 ∧ b = false := by
   cases b <;> simp [Nat.bit0_eq_zero, Nat.bit1_ne_zero]
 #align nat.bit_eq_zero Nat.bit_eq_zero
 
 lemma bit_toNat (b : Bool) : bit b 0 = b.toNat := by cases' b <;> simp
 
-theorem bodd_eq_bodd_iff {m n : ℕ} : bodd n = bodd m ↔ n % 2 = m % 2 := by
+theorem bodd_eq_bodd_iff {m n}: bodd n = bodd m ↔ n % 2 = m % 2 := by
   cases' hn : bodd n <;> cases' hm : bodd m
   <;> simp [mod_two_of_bodd, hn, hm]
 
@@ -142,7 +142,7 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
     <;> linarith only [this]
 #align nat.lt_of_test_bit Nat.lt_of_testBit
 
-theorem testBit_eq_false_of_lt {n i : ℕ} (h : n < 2 ^ i) : n.testBit i = false := by
+theorem testBit_eq_false_of_lt {n i} (h : n < 2 ^ i) : n.testBit i = false := by
   simp [testBit, shiftRight_eq_div_pow, Nat.div_eq_zero h]
 
 @[simp]
@@ -170,7 +170,7 @@ theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
     simp [h]
 #align nat.test_bit_two_pow Nat.testBit_two_pow
 
-theorem testBit_two_pow_mul_add {n b w i : ℕ} (h: i < w) :
+theorem testBit_two_pow_mul_add {n b w i} (h: i < w) :
   Nat.testBit (2 ^ w * b + n) i = Nat.testBit n i := by
   simp only [testBit, shiftRight_eq_div_pow, bodd_eq_bodd_iff]
   rw [Nat.add_div_of_dvd_right (by simp [Dvd.dvd.mul_right, pow_dvd_pow, le_of_lt h]), add_mod]
@@ -181,7 +181,7 @@ theorem testBit_two_pow_mul_add {n b w i : ℕ} (h: i < w) :
     simp [← Nat.sub_add_comm, succ_le_of_lt h]
   simp [mul_comm, Nat.mul_div_assoc b (pow_dvd_pow 2 (le_of_lt h)), mul_mod, h1]
 
-theorem testBit_two_pow_mul_toNat_add {n w : ℕ} {b : Bool} (h: n < 2 ^ w) :
+theorem testBit_two_pow_mul_toNat_add {n w b} (h: n < 2 ^ w) :
   testBit (2 ^ w * b.toNat + n) w = b := by
   simp only [testBit, shiftRight_eq_div_pow]
   rw [Nat.add_div_of_dvd_right (Dvd.intro _ rfl), Nat.div_eq_zero h, add_zero]
@@ -196,15 +196,14 @@ def ofBits (f : Nat → Bool) (z : Nat) : Nat → Nat
   | 0 => z
   | i + 1 => ofBits f (z.bit (f i)) i
 
-theorem ofBits_eq_pow_mul_add {f : Nat → Bool} {z i : ℕ} :
-  ofBits f z i = 2 ^ i * z + ofBits f 0 i := by
+theorem ofBits_eq_pow_mul_add {f z i} : ofBits f z i = 2 ^ i * z + ofBits f 0 i := by
   induction' i with i ih generalizing z
   · simp [ofBits, bit_val]
   · simp only [ofBits, @ih (bit (f i) 0), @ih (bit (f i) z)]
     rw [bit_val, mul_add, ← mul_assoc, ← pow_succ]
     simp [bit_val, add_assoc]
 
-theorem ofBits_lt {f : Nat → Bool} {i : ℕ} : ofBits f 0 i < 2 ^ i := by
+theorem ofBits_lt {f i} : ofBits f 0 i < 2 ^ i := by
   induction' i with i ih
   · simp [ofBits, bit_val, lt_succ, Bool.toNat_le_one]
   · simp only [ofBits]
@@ -213,8 +212,7 @@ theorem ofBits_lt {f : Nat → Bool} {i : ℕ} : ofBits f 0 i < 2 ^ i := by
 
 /-- The `ith` bit of `ofBits` is the function at `i`.
 This is used extensively in the proof of each of the bitadd, bitneg, bitmul etc.-/
-theorem testBit_ofBits {f : Nat → Bool} {i j : ℕ} (h1: i < j) :
-  (ofBits f 0 j).testBit i = f i := by
+theorem testBit_ofBits {f i j} (h1: i < j) : (ofBits f 0 j).testBit i = f i := by
   induction' j, (pos_of_gt h1) using Nat.le_induction with j _ ih generalizing i
   · simp [lt_one_iff.1 h1, ofBits]
   · cases' lt_or_eq_of_le (lt_succ_iff.mp h1) with h1 h1
@@ -223,15 +221,15 @@ theorem testBit_ofBits {f : Nat → Bool} {i j : ℕ} (h1: i < j) :
 
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
     is also commutative. -/
-theorem bitwise'_comm {f : Bool → Bool → Bool} (hf : ∀ b b', f b b' = f b' b)
-    (hf' : f false false = false) (n m : ℕ) : bitwise' f n m = bitwise' f m n :=
+theorem bitwise'_comm {f} (hf : ∀ b b', f b b' = f b' b) (hf' : f false false = false) (n m) :
+  bitwise' f n m = bitwise' f m n :=
   suffices bitwise' f = swap (bitwise' f) by conv_lhs => rw [this]
   calc
     bitwise' f = bitwise' (swap f) := congr_arg _ <| funext fun _ => funext <| hf _
     _ = swap (bitwise' f) := bitwise'_swap hf'
 #align nat.bitwise_comm Nat.bitwise'_comm
 
-lemma bitwise_eq_bitwise' (f: Bool → Bool → Bool ) (h: f false false = false) :
+lemma bitwise_eq_bitwise' (f) (h: f false false = false) :
   bitwise f = bitwise' f := by
   funext x y
   have ⟨k, hk⟩ : ∃ k, k = x+y := by use x+y
@@ -258,8 +256,8 @@ lemma bitwise_eq_bitwise' (f: Bool → Bool → Bool ) (h: f false false = false
     <;> simp [h1, h2, hx, hy, bit_val, div2_val, mul_comm, add_comm, h]
     <;> aesop
 
-theorem bitwise_lt {f : Bool → Bool → Bool} {x y n : ℕ}
-  (hx : x < 2 ^ n) (hy: y < 2 ^ n) (h: f false false = false) : bitwise f x y < 2 ^ n := by
+theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy: y < 2 ^ n) (h: f false false = false) :
+  bitwise f x y < 2 ^ n := by
   rw [bitwise_eq_bitwise' f h]
   apply lt_of_testBit n (by simp [testBit_bitwise' h x y n,
                                   testBit_eq_false_of_lt hx,
@@ -270,7 +268,7 @@ theorem bitwise_lt {f : Bool → Bool → Bool} {x y n : ℕ}
   rw [testBit_eq_false_of_lt (lt_trans hy (pow_lt_pow_of_lt_right (by decide) hj)), h]
   rw [testBit_two_pow_of_ne (ne_of_lt hj)]
 
-lemma append_lt {x y n m : ℕ} (hx : x < 2 ^ n) (hy: y < 2 ^ m) : y <<< n ||| x < 2 ^ (n + m) := by
+lemma append_lt {x y n m} (hx : x < 2 ^ n) (hy: y < 2 ^ m) : y <<< n ||| x < 2 ^ (n + m) := by
   have H: x < 2 ^ (n + m) ∧ y * 2 ^ n < 2 ^ (n + m):= by
     apply And.intro
     · exact lt_of_lt_of_le hx ((pow_add 2 n m).symm ▸ le_mul_of_one_le_right' (by linarith))
