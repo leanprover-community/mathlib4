@@ -298,8 +298,9 @@ partial def matchScoped (lit scopeId : Name) (smatcher : Matcher) : Matcher := g
           go binders s
     catch _ =>
       guard <| !binders.isEmpty
-      if let some _binders := s.scopeState then
-        return s -- TODO: check for equality?
+      if let some binders₂ := s.scopeState then
+        guard <| binders == binders₂ -- TODO: this might be a bit too strict, but it seems to work
+        return s
       else
         return {s with scopeState := binders}
 

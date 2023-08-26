@@ -29,7 +29,10 @@ notation3 "∀ᶠᶠ " (...) " in " f ": "
 #guard_msgs in #check ∀ᶠᶠ (x : Nat) (y) in Filter.atTop: x < y, x = y
 /-- info: ∀ᶠᶠ (x : ℕ) in Filter.atTop: x < 3, x = 1 : Prop -/
 #guard_msgs in #check ∀ᶠᶠ x in Filter.atTop: x < 3, x = 1
-
+/-- info: ∀ᶠᶠ (x : ℕ) in Filter.atTop: x < 3, x = 1 : Prop -/
+#guard_msgs in #check foobar (fun x ↦ Eq x 1) (Filter.atTop.eventually fun x ↦ LT.lt x 3)
+/-- info: foobar (fun y ↦ y = 1) (∀ᶠ (x : ℕ) in Filter.atTop, x < 3) : Prop -/
+#guard_msgs in #check foobar (fun y ↦ Eq y 1) (Filter.atTop.eventually fun x ↦ LT.lt x 3)
 
 notation3 "∃' " (...) ", " r:(scoped p => Exists p) => r
 /-- info: ∃' (x : ℕ) (_ : x < 3), x < 3 : Prop -/
