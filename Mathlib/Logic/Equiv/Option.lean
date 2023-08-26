@@ -26,7 +26,7 @@ namespace Equiv
 
 open Option
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 section OptionCongr
 

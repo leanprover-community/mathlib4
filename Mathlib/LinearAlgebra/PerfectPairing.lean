@@ -27,7 +27,7 @@ namespace LinearEquiv
 
 open Module
 
-variable {R M N : Type _} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 variable [IsReflexive R M] (e : N ≃ₗ[R] Dual R M)
 
 /-- For a reflexive module `M`, an equivalence `N ≃ₗ[R] Dual R M` naturally yields an equivalence

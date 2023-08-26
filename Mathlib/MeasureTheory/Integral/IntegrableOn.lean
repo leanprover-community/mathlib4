@@ -27,7 +27,7 @@ open Set Filter TopologicalSpace MeasureTheory Function
 
 open scoped Classical Topology Interval BigOperators Filter ENNReal MeasureTheory
 
-variable {α β E F : Type _} [MeasurableSpace α]
+variable {α β E F : Type*} [MeasurableSpace α]
 
 section
 
@@ -447,7 +447,7 @@ theorem IntegrableAtFilter.inf_ae_iff {l : Filter α} :
   exact fun ⟨hv, ht⟩ => ⟨hv, ⟨ht, hx⟩⟩
 #align measure_theory.integrable_at_filter.inf_ae_iff MeasureTheory.IntegrableAtFilter.inf_ae_iff
 
-alias IntegrableAtFilter.inf_ae_iff ↔ IntegrableAtFilter.of_inf_ae _
+alias ⟨IntegrableAtFilter.of_inf_ae, _⟩ := IntegrableAtFilter.inf_ae_iff
 #align measure_theory.integrable_at_filter.of_inf_ae MeasureTheory.IntegrableAtFilter.of_inf_ae
 
 /-- If `μ` is a measure finite at filter `l` and `f` is a function such that its norm is bounded
@@ -472,8 +472,8 @@ theorem Measure.FiniteAtFilter.integrableAtFilter_of_tendsto_ae {l : Filter α}
       hf.norm.isBoundedUnder_le).of_inf_ae
 #align measure_theory.measure.finite_at_filter.integrable_at_filter_of_tendsto_ae MeasureTheory.Measure.FiniteAtFilter.integrableAtFilter_of_tendsto_ae
 
-alias Measure.FiniteAtFilter.integrableAtFilter_of_tendsto_ae ←
-  _root_.Filter.Tendsto.integrableAtFilter_ae
+alias _root_.Filter.Tendsto.integrableAtFilter_ae :=
+  Measure.FiniteAtFilter.integrableAtFilter_of_tendsto_ae
 #align filter.tendsto.integrable_at_filter_ae Filter.Tendsto.integrableAtFilter_ae
 
 theorem Measure.FiniteAtFilter.integrableAtFilter_of_tendsto {l : Filter α}
@@ -482,8 +482,8 @@ theorem Measure.FiniteAtFilter.integrableAtFilter_of_tendsto {l : Filter α}
   hμ.integrableAtFilter hfm hf.norm.isBoundedUnder_le
 #align measure_theory.measure.finite_at_filter.integrable_at_filter_of_tendsto MeasureTheory.Measure.FiniteAtFilter.integrableAtFilter_of_tendsto
 
-alias Measure.FiniteAtFilter.integrableAtFilter_of_tendsto ←
-  _root_.Filter.Tendsto.integrableAtFilter
+alias _root_.Filter.Tendsto.integrableAtFilter :=
+  Measure.FiniteAtFilter.integrableAtFilter_of_tendsto
 #align filter.tendsto.integrable_at_filter Filter.Tendsto.integrableAtFilter
 
 theorem integrable_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (support g))
@@ -616,7 +616,7 @@ theorem Continuous.stronglyMeasurableAtFilter [TopologicalSpace α] [OpensMeasur
 
 /-- If a function is continuous on a measurable set `s`, then it is measurable at the filter
   `𝓝[s] x` for all `x`. -/
-theorem ContinuousOn.stronglyMeasurableAtFilter_nhdsWithin {α β : Type _} [MeasurableSpace α]
+theorem ContinuousOn.stronglyMeasurableAtFilter_nhdsWithin {α β : Type*} [MeasurableSpace α]
     [TopologicalSpace α] [OpensMeasurableSpace α] [TopologicalSpace β] [PseudoMetrizableSpace β]
     [SecondCountableTopologyEither α β] {f : α → β} {s : Set α} {μ : Measure α}
     (hf : ContinuousOn f s) (hs : MeasurableSet s) (x : α) :

@@ -20,6 +20,9 @@ which allow for plugging in new normalization functionality around a simp-based 
 The actual behavior is in `@[norm_num]`-tagged definitions in `Tactic.NormNum.Basic`
 and elsewhere.
 -/
+
+set_option autoImplicit true
+
 open Lean hiding Rat mkRat
 open Lean.Meta Qq Lean.Elab Term
 
@@ -484,7 +487,7 @@ def mkOfNat (α : Q(Type u)) (_sα : Q(AddMonoidWithOne $α)) (lit : Q(ℕ)) :
     | k+2 =>
       let k : Q(ℕ) := mkRawNatLit k
       let _x : Q(Nat.AtLeastTwo $lit) :=
-        (q(instAtLeastTwoHAddNatInstHAddInstAddNatOfNat (n := $k)) : Expr)
+        (q(instNatAtLeastTwo (n := $k)) : Expr)
       let a' : Q($α) := q(OfNat.ofNat $lit)
       pure ⟨a', (q(Eq.refl $a') : Expr)⟩
 

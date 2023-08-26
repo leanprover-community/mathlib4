@@ -12,6 +12,8 @@ import Mathlib.Algebra.Order.Group.Defs
 # Least upper bound and the greatest lower bound in linear ordered additive commutative groups
 -/
 
+set_option autoImplicit true
+
 section LinearOrderedAddCommGroup
 
 variable [LinearOrderedAddCommGroup α] {s : Set α} {a ε : α}

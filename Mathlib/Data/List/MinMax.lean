@@ -22,10 +22,12 @@ The main definitions are `argmax`, `argmin`, `minimum` and `maximum` for lists.
 `[]`
 -/
 
+set_option autoImplicit true
+
 
 namespace List
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 section ArgAux
 

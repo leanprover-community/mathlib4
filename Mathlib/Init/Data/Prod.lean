@@ -8,6 +8,8 @@ import Mathlib.Util.CompileInductive
 
 /-! ### alignments from lean 3 `init.data.prod` -/
 
+set_option autoImplicit true
+
 compile_inductive% Prod
 
 @[simp]

@@ -35,7 +35,7 @@ open scoped Classical
 
 noncomputable section
 
-variable {ι X : Type _} [TopologicalSpace X] [NormalSpace X]
+variable {ι X : Type*} [TopologicalSpace X] [NormalSpace X]
 
 namespace ShrinkingLemma
 

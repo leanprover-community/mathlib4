@@ -54,7 +54,7 @@ variable [AddCommGroup N] [Module R N] [Module.Free R N]
 variable {R}
 
 /-- A free module with a basis indexed by a `Fintype` is finite. -/
-theorem _root_.Module.Finite.of_basis {R M ι : Type _} [CommRing R] [AddCommGroup M] [Module R M]
+theorem _root_.Module.Finite.of_basis {R M ι : Type*} [CommRing R] [AddCommGroup M] [Module R M]
     [_root_.Finite ι] (b : Basis ι R M) : Module.Finite R M := by
   cases nonempty_fintype ι
   classical
@@ -62,7 +62,7 @@ theorem _root_.Module.Finite.of_basis {R M ι : Type _} [CommRing R] [AddCommGro
     simp only [Set.image_univ, Finset.coe_univ, Finset.coe_image, Basis.span_eq]
 #align module.finite.of_basis Module.Finite.of_basis
 
-instance _root_.Module.Finite.matrix {ι₁ ι₂ : Type _} [_root_.Finite ι₁] [_root_.Finite ι₂] :
+instance _root_.Module.Finite.matrix {ι₁ ι₂ : Type*} [_root_.Finite ι₁] [_root_.Finite ι₂] :
     Module.Finite R (Matrix ι₁ ι₂ R) := by
   cases nonempty_fintype ι₁
   cases nonempty_fintype ι₂

@@ -36,7 +36,7 @@ open scoped Topology Real BigOperators Nat
 
 open Finset Filter Nat Real
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 namespace Stirling
 
@@ -55,7 +55,7 @@ noncomputable def stirlingSeq (n : ℕ) : ℝ :=
 
 @[simp]
 theorem stirlingSeq_zero : stirlingSeq 0 = 0 := by
-  rw [stirlingSeq, cast_zero, MulZeroClass.mul_zero, Real.sqrt_zero, MulZeroClass.zero_mul,
+  rw [stirlingSeq, cast_zero, mul_zero, Real.sqrt_zero, zero_mul,
     div_zero]
 #align stirling.stirling_seq_zero Stirling.stirlingSeq_zero
 
