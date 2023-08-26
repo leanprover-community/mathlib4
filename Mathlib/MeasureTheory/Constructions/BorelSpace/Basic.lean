@@ -1177,77 +1177,23 @@ theorem Measurable.isLUB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g'
     · have A : ∀ i, f' i b = g' b := fun i ↦ by simp [hf', hb]
       have : {a | ∃ (_i : ι), g' b = a} = {g' b} := by
         apply Subset.antisymm
-        · rintro a ⟨j, rfl⟩
+        · rintro - ⟨_j, rfl⟩
           simp only [mem_singleton_iff]
-        · rintro a rfl
+        · rintro - rfl
           exact ⟨i, rfl⟩
       simp [A, this, hg' hb, isLUB_singleton]
-
-private theorem AEMeasurable.is_lub_of_nonempty {ι} (hι : Nonempty ι) {μ : Measure δ} [Countable ι]
-    {f : ι → δ → α} {g : δ → α} (hf : ∀ i, AEMeasurable (f i) μ)
-    (hg : ∀ᵐ b ∂μ, IsLUB { a | ∃ i, f i b = a } (g b)) : AEMeasurable g μ := by
-  let p : δ → (ι → α) → Prop := fun x f' => IsLUB { a | ∃ i, f' i = a } (g x)
-  let g_seq x := ite (x ∈ aeSeqSet hf p) (g x) (⟨g x⟩ : Nonempty α).some
-  have hg_seq : ∀ b, IsLUB { a | ∃ i, aeSeq hf p i b = a } (g_seq b) := by
-    intro b
-    haveI hα : Nonempty α := Nonempty.map g ⟨b⟩
-    simp only [aeSeq]
-    split_ifs with h
-    · have h_set_eq :
-          { a : α | ∃ i : ι, (hf i).mk (f i) b = a } = { a : α | ∃ i : ι, f i b = a } := by
-        ext x
-        simp_rw [Set.mem_setOf_eq, aeSeq.mk_eq_fun_of_mem_aeSeqSet hf h]
-      rw [h_set_eq]
-      exact aeSeq.fun_prop_of_mem_aeSeqSet hf h
-    · have h_singleton : { a : α | ∃ _ : ι, hα.some = a } = {hα.some} := by
-        ext1 x
-        exact ⟨fun hx => hx.choose_spec.symm, fun hx => ⟨hι.some, hx.symm⟩⟩
-      rw [h_singleton]
-      exact isLUB_singleton
-  refine' ⟨g_seq, Measurable.isLUB (aeSeq.measurable hf p) hg_seq, _⟩
-  exact
-    (ite_ae_eq_of_measure_compl_zero g (fun x => (⟨g x⟩ : Nonempty α).some) (aeSeqSet hf p)
-        (aeSeq.measure_compl_aeSeqSet_eq_zero hf hg)).symm
 
 theorem AEMeasurable.isLUB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α} {g : δ → α}
     (hf : ∀ i, AEMeasurable (f i) μ) (hg : ∀ᵐ b ∂μ, IsLUB { a | ∃ i, f i b = a } (g b)) :
     AEMeasurable g μ := by
-  rcases eq_zero_or_neZero μ with rfl | hμ
-  · exact aemeasurable_zero_measure
-  by_cases hι : Nonempty ι
-  · exact AEMeasurable.is_lub_of_nonempty hι hf hg
-  suffices ∃ x, g =ᵐ[μ] fun _ => g x by
-    exact ⟨fun _ => g this.choose, measurable_const, this.choose_spec⟩
-  have h_empty : ∀ x, { a : α | ∃ i : ι, f i x = a } = ∅ := by
-    intro x
-    ext1 y
-    rw [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false_iff]
-    exact fun hi => hι (nonempty_of_exists hi)
-  simp_rw [h_empty] at hg
-  exact ⟨hg.exists.choose, hg.mono fun y hy => IsLUB.unique hy hg.exists.choose_spec⟩
-#align ae_measurable.is_lub AEMeasurable.isLUB
-
-theorem Measurable.isGLB {ι} [Countable ι] {f : ι → δ → α} {g : δ → α} (hf : ∀ i, Measurable (f i))
-    (hg : ∀ b, IsGLB { a | ∃ i, f i b = a } (g b)) : Measurable g := by
-  change ∀ b, IsGLB (range fun i => f i b) (g b) at hg
-  rw [‹BorelSpace α›.measurable_eq, borel_eq_generateFrom_Iio α]
-  apply measurable_generateFrom
-  rintro _ ⟨a, rfl⟩
-  simp_rw [Set.preimage, mem_Iio, isGLB_lt_iff (hg _), exists_range_iff, setOf_exists]
-  exact MeasurableSet.iUnion fun i => hf i (isOpen_gt' _).measurableSet
-#align measurable.is_glb Measurable.isGLB
-
-theorem AEMeasurable.isGLB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α} {g : δ → α}
-    (hf : ∀ i, AEMeasurable (f i) μ) (hg : ∀ᵐ b ∂μ, IsGLB { a | ∃ i, f i b = a } (g b)) :
-    AEMeasurable g μ := by
   nontriviality α
   haveI hα : Nonempty α := inferInstance
   cases' isEmpty_or_nonempty ι with hι hι
-  · simp only [IsEmpty.exists_iff, setOf_false, isGLB_empty_iff] at hg
-    exact aemeasurable_const' (hg.mono fun a ha => hg.mono fun b hb => (hb _).antisymm (ha _))
-  let p : δ → (ι → α) → Prop := fun x f' => IsGLB { a | ∃ i, f' i = a } (g x)
+  · simp only [IsEmpty.exists_iff, setOf_false, isLUB_empty_iff] at hg
+    exact aemeasurable_const' (hg.mono fun a ha => hg.mono fun b hb => (ha _).antisymm (hb _))
+  let p : δ → (ι → α) → Prop := fun x f' => IsLUB { a | ∃ i, f' i = a } (g x)
   let g_seq := (aeSeqSet hf p).piecewise g fun _ => hα.some
-  have hg_seq : ∀ b, IsGLB { a | ∃ i, aeSeq hf p i b = a } (g_seq b) := by
+  have hg_seq : ∀ b, IsLUB { a | ∃ i, aeSeq hf p i b = a } (g_seq b) := by
     intro b
     simp only [aeSeq, Set.piecewise]
     split_ifs with h
@@ -1257,11 +1203,22 @@ theorem AEMeasurable.isGLB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ 
         simp_rw [Set.mem_setOf_eq, aeSeq.mk_eq_fun_of_mem_aeSeqSet hf h]
       rw [h_set_eq]
       exact aeSeq.fun_prop_of_mem_aeSeqSet hf h
-    · exact IsLeast.isGLB ⟨(@exists_const (hα.some = hα.some) ι _).2 rfl, fun x ⟨i, hi⟩ => hi.le⟩
-  refine' ⟨g_seq, Measurable.isGLB (aeSeq.measurable hf p) hg_seq, _⟩
+    · exact IsGreatest.isLUB ⟨(@exists_const (hα.some = hα.some) ι _).2 rfl, fun x ⟨i, hi⟩ => hi.ge⟩
+  refine' ⟨g_seq, Measurable.isLUB (aeSeq.measurable hf p) hg_seq, _⟩
   exact
     (ite_ae_eq_of_measure_compl_zero g (fun _ => hα.some) (aeSeqSet hf p)
         (aeSeq.measure_compl_aeSeqSet_eq_zero hf hg)).symm
+#align ae_measurable.is_lub AEMeasurable.isLUB
+
+theorem Measurable.isGLB {ι} [Countable ι] {f : ι → δ → α} {g : δ → α} (hf : ∀ i, Measurable (f i))
+    (hg : ∀ b, IsGLB { a | ∃ i, f i b = a } (g b)) : Measurable g :=
+  Measurable.isLUB (α := αᵒᵈ) hf hg
+#align measurable.is_glb Measurable.isGLB
+
+theorem AEMeasurable.isGLB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α} {g : δ → α}
+    (hf : ∀ i, AEMeasurable (f i) μ) (hg : ∀ᵐ b ∂μ, IsGLB { a | ∃ i, f i b = a } (g b)) :
+    AEMeasurable g μ :=
+  AEMeasurable.isLUB (α := αᵒᵈ) hf hg
 #align ae_measurable.is_glb AEMeasurable.isGLB
 
 protected theorem Monotone.measurable [LinearOrder β] [OrderClosedTopology β] {f : β → α}
@@ -1332,6 +1289,31 @@ theorem measurableSet_of_mem_nhdsWithin_Ioi {s : Set α} (h : ∀ x ∈ s, s ∈
     exact H
 #align measurable_set_of_mem_nhds_within_Ioi measurableSet_of_mem_nhdsWithin_Ioi
 
+lemma measurableSet_bddAbove_range {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
+    MeasurableSet {b | BddAbove (range (fun i ↦ f i b))} := by
+  rcases isEmpty_or_nonempty α with hα|hα
+  · have : ∀ b, range (fun i ↦ f i b) = ∅ := fun b ↦ Iff.mp toFinset_eq_empty rfl
+    simp [this]
+  have A : ∀ (i : ι) (c : α), MeasurableSet {x | f i x ≤ c} := by
+    intro i c
+    exact measurableSet_le (hf i) measurable_const
+  have B : ∀ (c : α), MeasurableSet {x | ∀ i, f i x ≤ c} := by
+    intro c
+    rw [setOf_forall]
+    exact MeasurableSet.iInter (fun i ↦ A i c)
+  obtain ⟨u, hu⟩ : ∃ (u : ℕ → α), Tendsto u atTop atTop := exists_seq_tendsto (atTop : Filter α)
+  have : {b | BddAbove (range (fun i ↦ f i b))} = {x | ∃ n, ∀ i, f i x ≤ u n} := by
+    apply Subset.antisymm
+    · rintro x ⟨c, hc⟩
+      obtain ⟨n, hn⟩ : ∃ n, c ≤ u n := (tendsto_atTop.1 hu c).exists
+      exact ⟨n, fun i ↦ (hc ((mem_range_self i))).trans hn⟩
+    · rintro x ⟨n, hn⟩
+      refine ⟨u n, ?_⟩
+      rintro - ⟨i, rfl⟩
+      exact hn i
+  rw [this, setOf_exists]
+  exact MeasurableSet.iUnion (fun n ↦ B (u n))
+
 end LinearOrder
 
 @[measurability]
@@ -1352,29 +1334,24 @@ section CompleteLinearOrder
 
 variable [ConditionallyCompleteLinearOrder α] [OrderTopology α] [SecondCountableTopology α]
 
-open Filter
-
 @[measurability]
 theorem measurable_iSup {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
-    Measurable fun b => ⨆ i, f i b := by
-  have A : ∀ (i : ι) (c : α), MeasurableSet {x | f i x ≤ c} := by
-    intro i c
-    exact measurableSet_le (hf i) measurable_const
-  have B : ∀ (c : α), MeasurableSet {x | ∀ i, f i x ≤ c} := by
-    intro c
-    rw [setOf_forall]
-    exact MeasurableSet.iInter (fun i ↦ A i c)
-  have : MeasurableSet {x | ∃ c, ∀ i, f i x ≤ c} := by
-    obtain ⟨u, hu⟩ : ∃ (u : ℕ → α), Tendsto u atTop atTop := exists_seq_tendsto (atTop : Filter α)
-    have : {x | ∃ c, ∀ i, f i x ≤ c} = {x | ∃ n, ∀ i, f i x ≤ u n} := by
-      apply Subset.antisymm
-      · rintro x ⟨c, hc⟩
-        obtain ⟨n, hn⟩ : ∃ n, c ≤ u n := (tendsto_atTop.1 hu c).exists
-        exact ⟨n, fun i ↦ (hc i).trans hn⟩
-      · rintro x ⟨n, hn⟩
-        exact ⟨u n, hn⟩
-    rw [this, setOf_exists]
-    exact MeasurableSet.iUnion (fun n ↦ B (u n))
+    Measurable (fun b ↦ ⨆ i, f i b) := by
+  rcases isEmpty_or_nonempty ι with hι|hι
+  · simp [iSup_of_empty']
+  have A : MeasurableSet {b | BddAbove (range (fun i ↦ f i b))} :=
+    measurableSet_bddAbove_range hf
+  have : Measurable (fun (_b : δ) ↦ sSup (univ : Set α)) := measurable_const
+  apply Measurable.isLUB_of_mem hf A _ _ this
+  · rintro b ⟨c, hc⟩
+    apply isLUB_ciSup
+    refine ⟨c, ?_⟩
+    rintro d ⟨i, rfl⟩
+    exact hc (mem_range_self i)
+  · intro b hb
+    apply csSup_of_not_bddAbove
+    exact hb
+
 
 
 
