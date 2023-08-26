@@ -138,7 +138,10 @@ def librarySearchLemma (lem : Name) (mod : DeclMod) (required : List Expr) (solv
       let subgoals ← solveByElim newGoals required (exfalso := false) (depth := solveByElimDepth)
       pure (← getMCtx, subgoals)
     catch _ =>
-      pure (← getMCtx, newGoals)
+      if required.isEmpty then
+        pure (← getMCtx, newGoals)
+      else
+        failure
 
 /--
 Returns a lazy list of the results of applying a library lemma,

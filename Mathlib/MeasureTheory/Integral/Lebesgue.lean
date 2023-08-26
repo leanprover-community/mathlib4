@@ -7,6 +7,7 @@ import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.MeasureTheory.Function.SimpleFunc
 import Mathlib.MeasureTheory.Measure.MutuallySingular
 import Mathlib.MeasureTheory.Measure.Count
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 
 #align_import measure_theory.integral.lebesgue from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 
@@ -2110,5 +2111,64 @@ theorem exists_absolutelyContinuous_isFiniteMeasure {m : MeasurableSpace α} (μ
 #align measure_theory.exists_absolutely_continuous_is_finite_measure MeasureTheory.exists_absolutelyContinuous_isFiniteMeasure
 
 end SigmaFinite
+
+section TendstoIndicator
+
+variable {α : Type _} [MeasurableSpace α] {A : Set α}
+variable {ι : Type _} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set α}
+
+/-- If the indicators of measurable sets `Aᵢ` tend pointwise almost everywhere to the indicator
+of a measurable set `A` and we eventually have `Aᵢ ⊆ B` for some set `B` of finite measure, then
+the measures of `Aᵢ` tend to the measure of `A`. -/
+lemma tendsto_measure_of_ae_tendsto_indicator {μ : Measure α} (A_mble : MeasurableSet A)
+    (As_mble : ∀ i, MeasurableSet (As i)) {B : Set α} (B_mble : MeasurableSet B)
+    (B_finmeas : μ B ≠ ∞) (As_le_B : ∀ᶠ i in L, As i ⊆ B)
+    (h_lim : ∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (1 : α → ℝ≥0∞) x)
+      L (𝓝 (A.indicator 1 x))) :
+    Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) := by
+  simp_rw [← MeasureTheory.lintegral_indicator_one A_mble,
+           ← MeasureTheory.lintegral_indicator_one (As_mble _)]
+  refine tendsto_lintegral_filter_of_dominated_convergence (B.indicator (1 : α → ℝ≥0∞))
+          (eventually_of_forall ?_) ?_ ?_ h_lim
+  · exact fun i ↦ Measurable.indicator measurable_const (As_mble i)
+  · filter_upwards [As_le_B] with i hi
+    exact eventually_of_forall (fun x ↦ indicator_le_indicator_of_subset hi (by simp) x)
+  · rwa [← lintegral_indicator_one B_mble] at B_finmeas
+
+/-- If `μ` is a finite measure and the indicators of measurable sets `Aᵢ` tend pointwise
+almost everywhere to the indicator of a measurable set `A`, then the measures `μ Aᵢ` tend to
+the measure `μ A`. -/
+lemma tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure [IsCountablyGenerated L]
+    {μ : Measure α} [IsFiniteMeasure μ] (A_mble : MeasurableSet A)
+    (As_mble : ∀ i, MeasurableSet (As i))
+    (h_lim : ∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (1 : α → ℝ≥0∞) x)
+      L (𝓝 (A.indicator 1 x))) :
+    Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) :=
+  tendsto_measure_of_ae_tendsto_indicator L A_mble As_mble MeasurableSet.univ
+    (measure_ne_top μ univ) (eventually_of_forall (fun i ↦ subset_univ (As i))) h_lim
+
+/-- If the indicators of measurable sets `Aᵢ` tend pointwise to the indicator of a set `A`
+and we eventually have `Aᵢ ⊆ B` for some set `B` of finite measure, then the measures of `Aᵢ`
+tend to the measure of `A`. -/
+lemma tendsto_measure_of_tendsto_indicator [NeBot L] {μ : Measure α}
+    (As_mble : ∀ i, MeasurableSet (As i)) {B : Set α} (B_mble : MeasurableSet B)
+    (B_finmeas : μ B ≠ ∞) (As_le_B : ∀ᶠ i in L, As i ⊆ B)
+    (h_lim : Tendsto (fun i ↦ (As i).indicator (1 : α → ℝ≥0∞)) L (𝓝 (A.indicator 1))) :
+    Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) := by
+  apply tendsto_measure_of_ae_tendsto_indicator L ?_ As_mble B_mble B_finmeas As_le_B
+  · exact eventually_of_forall (by simpa only [tendsto_pi_nhds] using h_lim)
+  · exact measurableSet_of_tendsto_indicator L As_mble h_lim
+
+/-- If `μ` is a finite measure and the indicators of measurable sets `Aᵢ` tend pointwise to
+the indicator of a set `A`, then the measures `μ Aᵢ` tend to the measure `μ A`. -/
+lemma tendsto_measure_of_tendsto_indicator_of_isFiniteMeasure [NeBot L]
+    (μ : Measure α) [IsFiniteMeasure μ] (As_mble : ∀ i, MeasurableSet (As i))
+    (h_lim : Tendsto (fun i ↦ (As i).indicator (1 : α → ℝ≥0∞)) L (𝓝 (A.indicator 1))) :
+    Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) := by
+  apply tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure L ?_ As_mble
+  · exact eventually_of_forall (by simpa only [tendsto_pi_nhds] using h_lim)
+  · exact measurableSet_of_tendsto_indicator L As_mble h_lim
+
+end TendstoIndicator -- section
 
 end MeasureTheory
