@@ -1128,6 +1128,12 @@ theorem Function.End.smul_def (f : Function.End α) (a : α) : f • a = f a :=
   rfl
 #align function.End.smul_def Function.End.smul_def
 
+theorem Function.End.mul_def (f g : Function.End α) : (f * g) = f ∘ g :=
+  rfl
+
+theorem Function.End.one_def : (1 : Function.End α) = id :=
+  rfl
+
 /-- `Function.End.applyMulAction` is faithful. -/
 instance Function.End.apply_FaithfulSMul : FaithfulSMul (Function.End α) α :=
   ⟨fun {_ _} => funext⟩
