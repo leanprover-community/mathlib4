@@ -9,7 +9,7 @@ import Std.Tactic.Exact
 ## Dischargers for `simp` to tactics
 
 This file defines a wrapper for `Simp.Discharger`s as regular tactics, that allows them to be
-used via the tactic frontend of `simp` via `simp (discharger := my_discharger)`.
+used via the tactic frontend of `simp` via `simp (discharger := wrapSimpDischarger my_discharger)`.
 -/
 
 open Lean Meta Elab Tactic
