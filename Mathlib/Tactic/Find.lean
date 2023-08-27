@@ -157,9 +157,10 @@ def find (args : Arguments) (maxShown := 200) :
 
     -- Prepare term patterns
     let pats ← liftM <| args.terms.mapM fun (isConclusionPattern, t) =>
-      if isConclusionPattern
-      then matchConclusion t
-      else matchAnywhere t
+      if isConclusionPattern then
+        matchConclusion t
+      else
+        matchAnywhere t
 
     -- Query the declaration cache
     let (m₁, m₂) ← findDeclsByConsts.get
