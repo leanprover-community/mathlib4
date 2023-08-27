@@ -156,12 +156,7 @@ theorem det_vandermonde_ne_zero_iff [IsDomain R] {n : ℕ} {v : Fin n → R} :
 
 theorem det_vandermonde_eq_det_vandermonde_add {n : ℕ} (v : Fin n → R) (a : R) :
     (Matrix.vandermonde v).det = (Matrix.vandermonde fun i ↦ v i + a).det := by
-  rw [Matrix.det_vandermonde, Matrix.det_vandermonde]
-  congr
-  ext i
-  congr
-  ext j
-  exact (add_sub_add_right_eq_sub (v j) (v i) a).symm
+  simp [Matrix.det_vandermonde]
 
 theorem det_vandermonde_eq_det_vandermonde_sub {n : ℕ} (v : Fin n → R) (a : R) :
     (Matrix.vandermonde v).det = (Matrix.vandermonde fun i ↦ v i - a).det := by
