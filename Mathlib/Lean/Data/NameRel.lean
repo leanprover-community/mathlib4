@@ -37,6 +37,6 @@ def NameRel.addDecl (c : ConstantInfo) (m : NameRel) := do
     )
 
 /-- Finds the set of names associated with the given one -/
-def NameRel.find (m : NameRel) (n : Name) := m.findD n {}
+def NameRel.find (m : NameRel) (n : Name) : NameSet := m.findD n {}
 
 end Lean
