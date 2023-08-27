@@ -8,6 +8,12 @@ example {α : Type _} (R : α → α → Prop) (a : α) (al : List α) :
       al = List.nil ∨ ∃ (b : α) (l : List α), R a b ∧ List.Chain R b l ∧ al = b :: l :=
   test.chain_iff R a al
 
+-- check that the statement prints nicely
+/-- info: test.chain_iff.{u_1} {α : Type u_1} (R : α → α → Prop) (a✝ : α) (a✝¹ : List α) :
+  List.Chain R a✝ a✝¹ ↔ a✝¹ = [] ∨ ∃ b l, R a✝ b ∧ List.Chain R b l ∧ a✝¹ = b :: l -/
+#guard_msgs in
+#check test.chain_iff
+
 mk_iff_of_inductive_prop False    test.false_iff
 example : False ↔ False := test.false_iff
 
