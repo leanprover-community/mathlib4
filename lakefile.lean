@@ -80,15 +80,18 @@ section Scripts
 
 open System
 
-partial def moduleNamesIn (dir : FilePath) (ext := "lean") : IO (Array Name) :=
+partial def moduleNamesIn (dir : FilePath)
+    (ext := "lean") (includeDirs? := false) : IO (Array Name) :=
   dir.readDir >>= Array.concatMapM fun entry ↦ do
     if (← entry.path.isDir) then
       let n := entry.fileName.toName
-      let mods ← Array.map (n ++ ·) <$> moduleNamesIn entry.path ext
-      if mods.isEmpty then
-        return #[]
-      else
-        return mods.push n
+      let mods ← .map (n ++ ·) <$> moduleNamesIn entry.path ext
+      if includeDirs? then
+        if mods.isEmpty then
+          return #[]
+        else
+          return mods.push n
+      else return mods
     else if entry.path.extension == some ext then
       return #[FilePath.withExtension entry.fileName "" |>.toString.toName]
     else return #[]
