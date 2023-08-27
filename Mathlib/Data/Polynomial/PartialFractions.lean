@@ -95,7 +95,7 @@ open algebraMap
 Then, a fraction of the form f / ∏ (g i) can be rewritten as q + ∑ (r i) / (g i), where
 deg(r i) < deg(g i), provided that the g i are monic and pairwise coprime.
 -/
-theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type _} {g : ι → R[X]} {s : Finset ι}
+theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s : Finset ι}
     (hg : ∀ i ∈ s, (g i).Monic) (hcop : Set.Pairwise ↑s fun i j => IsCoprime (g i) (g j)) :
     ∃ (q : R[X]) (r : ι → R[X]),
       (∀ i ∈ s, (r i).degree < (g i).degree) ∧

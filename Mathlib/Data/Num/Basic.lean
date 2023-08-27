@@ -18,6 +18,8 @@ in favor of the "Peano" natural numbers `Nat`, and the purpose of this
 collection of theorems is to show the equivalence of the different approaches.
 -/
 
+set_option autoImplicit true
+
 
 /-- The type of positive binary numbers.
 
@@ -189,7 +191,7 @@ end PosNum
 
 section
 
-variable {α : Type _} [One α] [Add α]
+variable {α : Type*} [One α] [Add α]
 
 section deprecated
 set_option linter.deprecated false
@@ -669,7 +671,7 @@ end ZNum
 section
 
 set_option linter.deprecated false
-variable {α : Type _} [Zero α] [One α] [Add α] [Neg α]
+variable {α : Type*} [Zero α] [One α] [Add α] [Neg α]
 
 /-- `castZNum` casts a `ZNum` into any type which has `0`, `1`, `+` and `neg` -/
 @[deprecated, coe] def castZNum : ZNum → α

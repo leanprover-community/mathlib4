@@ -66,7 +66,7 @@ fractions, recurrence, equivalence
 -/
 
 
-variable {K : Type _} {n : ℕ}
+variable {K : Type*} {n : ℕ}
 
 namespace GeneralizedContinuedFraction
 

@@ -19,7 +19,7 @@ This file provides some basic definitions related to sets and functions not pres
 library, as well as extra lemmas for functions in the core library (empty set, univ, union,
 intersection, insert, singleton, set-theoretic difference, complement, and powerset).
 
-Note that a set is a term, not a type. There is a coercion from `Set α` to `Type _` sending
+Note that a set is a term, not a type. There is a coercion from `Set α` to `Type*` sending
 `s` to the corresponding subtype `↥s`.
 
 See also the file `SetTheory/ZFC.lean`, which contains an encoding of ZFC set theory in Lean.
@@ -54,7 +54,7 @@ Definitions in the file:
 * `s.Nonempty` is to be preferred to `s ≠ ∅` or `∃ x, x ∈ s`. It has the advantage that
 the `s.Nonempty` dot notation can be used.
 
-* For `s : Set α`, do not use `Subtype s`. Instead use `↥s` or `(s : Type _)` or `s`.
+* For `s : Set α`, do not use `Subtype s`. Instead use `↥s` or `(s : Type*)` or `s`.
 
 ## Tags
 
@@ -81,7 +81,7 @@ namespace Set
 
 variable {α : Type _} {s t : Set α}
 
-instance {α : Type _} : BooleanAlgebra (Set α) :=
+instance instBooleanAlgebraSet {α : Type _} : BooleanAlgebra (Set α) :=
   { (inferInstance : BooleanAlgebra (α → Prop)) with
     sup := (· ∪ ·),
     le := (· ≤ ·),
@@ -133,10 +133,10 @@ theorem lt_iff_ssubset : s < t ↔ s ⊂ t :=
   Iff.rfl
 #align set.lt_iff_ssubset Set.lt_iff_ssubset
 
-alias le_iff_subset ↔ _root_.LE.le.subset _root_.HasSubset.Subset.le
+alias ⟨_root_.LE.le.subset, _root_.HasSubset.Subset.le⟩ := le_iff_subset
 #align has_subset.subset.le HasSubset.Subset.le
 
-alias lt_iff_ssubset ↔ _root_.LT.lt.ssubset _root_.HasSSubset.SSubset.lt
+alias ⟨_root_.LT.lt.ssubset, _root_.HasSSubset.SSubset.lt⟩ := lt_iff_ssubset
 #align has_ssubset.ssubset.lt HasSSubset.SSubset.lt
 
 -- Porting note: I've introduced this abbreviation, with the `@[coe]` attribute,
@@ -217,7 +217,7 @@ theorem SetCoe.ext_iff {s : Set α} {a b : s} : (↑a : α) = ↑b ↔ a = b :=
 end SetCoe
 
 /-- See also `Subtype.prop` -/
-theorem Subtype.mem {α : Type _} {s : Set α} (p : s) : (p : α) ∈ s :=
+theorem Subtype.mem {α : Type*} {s : Set α} (p : s) : (p : α) ∈ s :=
   p.prop
 #align subtype.mem Subtype.mem
 
@@ -446,7 +446,7 @@ theorem nonempty_coe_sort {s : Set α} : Nonempty (↥s) ↔ s.Nonempty :=
   nonempty_subtype
 #align set.nonempty_coe_sort Set.nonempty_coe_sort
 
-alias nonempty_coe_sort ↔ _ Nonempty.coe_sort
+alias ⟨_, Nonempty.coe_sort⟩ := nonempty_coe_sort
 #align set.nonempty.coe_sort Set.Nonempty.coe_sort
 
 theorem nonempty_def : s.Nonempty ↔ ∃ x, x ∈ s :=
@@ -615,7 +615,7 @@ theorem not_nonempty_iff_eq_empty' : ¬Nonempty s ↔ s = ∅ := by
 theorem nonempty_iff_ne_empty' : Nonempty s ↔ s ≠ ∅ :=
   not_nonempty_iff_eq_empty'.not_right
 
-alias nonempty_iff_ne_empty ↔ Nonempty.ne_empty _
+alias ⟨Nonempty.ne_empty, _⟩ := nonempty_iff_ne_empty
 #align set.nonempty.ne_empty Set.Nonempty.ne_empty
 
 @[simp]
@@ -648,7 +648,7 @@ theorem empty_ssubset : ∅ ⊂ s ↔ s.Nonempty :=
   (@bot_lt_iff_ne_bot (Set α) _ _ _).trans nonempty_iff_ne_empty.symm
 #align set.empty_ssubset Set.empty_ssubset
 
-alias empty_ssubset ↔ _ Nonempty.empty_ssubset
+alias ⟨_, Nonempty.empty_ssubset⟩ := empty_ssubset
 #align set.nonempty.empty_ssubset Set.Nonempty.empty_ssubset
 
 /-!
@@ -689,7 +689,7 @@ theorem univ_subset_iff {s : Set α} : univ ⊆ s ↔ s = univ :=
   @top_le_iff _ _ _ s
 #align set.univ_subset_iff Set.univ_subset_iff
 
-alias univ_subset_iff ↔ eq_univ_of_univ_subset _
+alias ⟨eq_univ_of_univ_subset, _⟩ := univ_subset_iff
 #align set.eq_univ_of_univ_subset Set.eq_univ_of_univ_subset
 
 theorem eq_univ_iff_forall {s : Set α} : s = univ ↔ ∀ x, x ∈ s :=
@@ -713,11 +713,11 @@ theorem exists_mem_of_nonempty (α) : ∀ [Nonempty α], ∃ x : α, x ∈ (univ
   | ⟨x⟩ => ⟨x, trivial⟩
 #align set.exists_mem_of_nonempty Set.exists_mem_of_nonempty
 
-theorem ne_univ_iff_exists_not_mem {α : Type _} (s : Set α) : s ≠ univ ↔ ∃ a, a ∉ s := by
+theorem ne_univ_iff_exists_not_mem {α : Type*} (s : Set α) : s ≠ univ ↔ ∃ a, a ∉ s := by
   rw [← not_forall, ← eq_univ_iff_forall]
 #align set.ne_univ_iff_exists_not_mem Set.ne_univ_iff_exists_not_mem
 
-theorem not_subset_iff_exists_mem_not_mem {α : Type _} {s t : Set α} :
+theorem not_subset_iff_exists_mem_not_mem {α : Type*} {s t : Set α} :
     ¬s ⊆ t ↔ ∃ x, x ∈ s ∧ x ∉ t := by simp [subset_def]
 #align set.not_subset_iff_exists_mem_not_mem Set.not_subset_iff_exists_mem_not_mem
 
@@ -1502,7 +1502,7 @@ theorem sep_setOf : { x ∈ { y | p y } | q x } = { x | p x ∧ q x } :=
 end Sep
 
 @[simp]
-theorem subset_singleton_iff {α : Type _} {s : Set α} {x : α} : s ⊆ {x} ↔ ∀ y ∈ s, y = x :=
+theorem subset_singleton_iff {α : Type*} {s : Set α} {x : α} : s ⊆ {x} ↔ ∀ y ∈ s, y = x :=
   Iff.rfl
 #align set.subset_singleton_iff Set.subset_singleton_iff
 
@@ -1555,7 +1555,7 @@ lemma not_disjoint_iff : ¬Disjoint s t ↔ ∃ x, x ∈ s ∧ x ∈ t :=
 lemma not_disjoint_iff_nonempty_inter : ¬ Disjoint s t ↔ (s ∩ t).Nonempty := not_disjoint_iff
 #align set.not_disjoint_iff_nonempty_inter Set.not_disjoint_iff_nonempty_inter
 
-alias not_disjoint_iff_nonempty_inter ↔ _ Nonempty.not_disjoint
+alias ⟨_, Nonempty.not_disjoint⟩ := not_disjoint_iff_nonempty_inter
 #align set.nonempty.not_disjoint Set.Nonempty.not_disjoint
 
 lemma disjoint_or_nonempty_inter (s t : Set α) : Disjoint s t ∨ (s ∩ t).Nonempty :=
@@ -1566,7 +1566,7 @@ lemma disjoint_iff_forall_ne : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃
   simp only [Ne.def, disjoint_left, @imp_not_comm _ (_ = _), forall_eq']
 #align set.disjoint_iff_forall_ne Set.disjoint_iff_forall_ne
 
-alias disjoint_iff_forall_ne ↔ _root_.Disjoint.ne_of_mem _
+alias ⟨_root_.Disjoint.ne_of_mem, _⟩ := disjoint_iff_forall_ne
 #align disjoint.ne_of_mem Disjoint.ne_of_mem
 
 lemma disjoint_of_subset_left (h : s ⊆ u) (d : Disjoint u t) : Disjoint s t := d.mono_left h
@@ -1773,16 +1773,16 @@ theorem disjoint_compl_right_iff_subset : Disjoint s tᶜ ↔ s ⊆ t :=
   disjoint_compl_right_iff
 #align set.disjoint_compl_right_iff_subset Set.disjoint_compl_right_iff_subset
 
-alias subset_compl_iff_disjoint_right ↔ _ _root_.Disjoint.subset_compl_right
+alias ⟨_, _root_.Disjoint.subset_compl_right⟩ := subset_compl_iff_disjoint_right
 #align disjoint.subset_compl_right Disjoint.subset_compl_right
 
-alias subset_compl_iff_disjoint_left ↔ _ _root_.Disjoint.subset_compl_left
+alias ⟨_, _root_.Disjoint.subset_compl_left⟩ := subset_compl_iff_disjoint_left
 #align disjoint.subset_compl_left Disjoint.subset_compl_left
 
-alias disjoint_compl_left_iff_subset ↔ _ _root_.HasSubset.Subset.disjoint_compl_left
+alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_left⟩ := disjoint_compl_left_iff_subset
 #align has_subset.subset.disjoint_compl_left HasSubset.Subset.disjoint_compl_left
 
-alias disjoint_compl_right_iff_subset ↔ _ _root_.HasSubset.Subset.disjoint_compl_right
+alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_right⟩ := disjoint_compl_right_iff_subset
 #align has_subset.subset.disjoint_compl_right HasSubset.Subset.disjoint_compl_right
 
 theorem subset_union_compl_iff_inter_subset {s t u : Set α} : s ⊆ t ∪ uᶜ ↔ s ∩ u ⊆ t :=
@@ -2411,11 +2411,11 @@ theorem subsingleton_of_subsingleton [Subsingleton α] {s : Set α} : Set.Subsin
   subsingleton_univ.anti (subset_univ s)
 #align set.subsingleton_of_subsingleton Set.subsingleton_of_subsingleton
 
-theorem subsingleton_isTop (α : Type _) [PartialOrder α] : Set.Subsingleton { x : α | IsTop x } :=
+theorem subsingleton_isTop (α : Type*) [PartialOrder α] : Set.Subsingleton { x : α | IsTop x } :=
   fun x hx _ hy => hx.isMax.eq_of_le (hy x)
 #align set.subsingleton_is_top Set.subsingleton_isTop
 
-theorem subsingleton_isBot (α : Type _) [PartialOrder α] : Set.Subsingleton { x : α | IsBot x } :=
+theorem subsingleton_isBot (α : Type*) [PartialOrder α] : Set.Subsingleton { x : α | IsBot x } :=
   fun x hx _ hy => hx.isMin.eq_of_ge (hy x)
 #align set.subsingleton_is_bot Set.subsingleton_isBot
 
@@ -2609,7 +2609,7 @@ theorem nontrivial_coe_sort {s : Set α} : Nontrivial s ↔ s.Nontrivial := by
     exact ⟨⟨x, hx⟩, mem_univ _, ⟨y, hy⟩, mem_univ _, Subtype.mk_eq_mk.not.mpr hxy⟩
 #align set.nontrivial_coe_sort Set.nontrivial_coe_sort
 
-alias nontrivial_coe_sort ↔ _ Nontrivial.coe_sort
+alias ⟨_, Nontrivial.coe_sort⟩ := nontrivial_coe_sort
 #align set.nontrivial.coe_sort Set.Nontrivial.coe_sort
 
 /-- A type with a set `s` whose `coe_sort` is a nontrivial type is nontrivial.
@@ -2618,7 +2618,7 @@ theorem nontrivial_of_nontrivial_coe (hs : Nontrivial s) : Nontrivial α :=
   nontrivial_of_nontrivial <| nontrivial_coe_sort.1 hs
 #align set.nontrivial_of_nontrivial_coe Set.nontrivial_of_nontrivial_coe
 
-theorem nontrivial_mono {α : Type _} {s t : Set α} (hst : s ⊆ t) (hs : Nontrivial s) :
+theorem nontrivial_mono {α : Type*} {s t : Set α} (hst : s ⊆ t) (hs : Nontrivial s) :
     Nontrivial t :=
   Nontrivial.coe_sort <| (nontrivial_coe_sort.1 hs).mono hst
 #align set.nontrivial_mono Set.nontrivial_mono
@@ -2633,10 +2633,10 @@ theorem not_nontrivial_iff : ¬s.Nontrivial ↔ s.Subsingleton :=
   Iff.not_left not_subsingleton_iff.symm
 #align set.not_nontrivial_iff Set.not_nontrivial_iff
 
-alias not_nontrivial_iff ↔ _ Subsingleton.not_nontrivial
+alias ⟨_, Subsingleton.not_nontrivial⟩ := not_nontrivial_iff
 #align set.subsingleton.not_nontrivial Set.Subsingleton.not_nontrivial
 
-alias not_subsingleton_iff ↔ _ Nontrivial.not_subsingleton
+alias ⟨_, Nontrivial.not_subsingleton⟩ := not_subsingleton_iff
 #align set.nontrivial.not_subsingleton Set.Nontrivial.not_subsingleton
 
 protected lemma subsingleton_or_nontrivial (s : Set α) : s.Subsingleton ∨ s.Nontrivial := by
@@ -2765,7 +2765,7 @@ open Set
 
 namespace Function
 
-variable {ι : Sort _} {α : Type _} {β : Type _} {f : α → β}
+variable {ι : Sort*} {α : Type*} {β : Type*} {f : α → β}
 
 theorem Injective.nonempty_apply_iff {f : Set α → Set β} (hf : Injective f) (h2 : f ∅ = ∅)
     {s : Set α} : (f s).Nonempty ↔ s.Nonempty := by
@@ -2783,7 +2783,7 @@ namespace Set
 
 section Inclusion
 
-variable {α : Type _} {s t u : Set α}
+variable {α : Type*} {s t u : Set α}
 
 /-- `inclusion` is the "identity" function between two subsets `s` and `t`, where `s ⊆ t` -/
 def inclusion (h : s ⊆ t) : s → t := fun x : s => (⟨x, h x.2⟩ : t)
@@ -2844,7 +2844,7 @@ end Set
 
 namespace Subsingleton
 
-variable {α : Type _} [Subsingleton α]
+variable {α : Type*} [Subsingleton α]
 
 theorem eq_univ_of_nonempty {s : Set α} : s.Nonempty → s = univ := fun ⟨x, hx⟩ =>
   eq_univ_of_forall fun y => Subsingleton.elim x y ▸ hx
@@ -2855,7 +2855,7 @@ theorem set_cases {p : Set α → Prop} (h0 : p ∅) (h1 : p univ) (s) : p s :=
   (s.eq_empty_or_nonempty.elim fun h => h.symm ▸ h0) fun h => (eq_univ_of_nonempty h).symm ▸ h1
 #align subsingleton.set_cases Subsingleton.set_cases
 
-theorem mem_iff_nonempty {α : Type _} [Subsingleton α] {s : Set α} {x : α} : x ∈ s ↔ s.Nonempty :=
+theorem mem_iff_nonempty {α : Type*} [Subsingleton α] {s : Set α} {x : α} : x ∈ s ↔ s.Nonempty :=
   ⟨fun hx => ⟨x, hx⟩, fun ⟨y, hy⟩ => Subsingleton.elim y x ▸ hy⟩
 #align subsingleton.mem_iff_nonempty Subsingleton.mem_iff_nonempty
 
@@ -2904,7 +2904,7 @@ end Set
 /-! ### Monotone lemmas for sets -/
 
 section Monotone
-variable {α β : Type _}
+variable {α β : Type*}
 
 theorem Monotone.inter [Preorder β] {f g : β → Set α} (hf : Monotone f) (hg : Monotone g) :
     Monotone fun x => f x ∩ g x :=
@@ -2967,7 +2967,7 @@ end Monotone
 
 /-! ### Disjoint sets -/
 
-variable {α β : Type _} {s t u : Set α} {f : α → β}
+variable {α β : Type*} {s t u : Set α} {f : α → β}
 
 namespace Disjoint
 

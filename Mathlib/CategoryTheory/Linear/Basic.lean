@@ -148,7 +148,7 @@ instance {X Y : C} (f : X ⟶ Y) [Mono f] (r : R) [Invertible r] : Mono (r • f
 
 /-- Given isomorphic objects `X ≅ Y, W ≅ Z` in a `k`-linear category, we have a `k`-linear
 isomorphism between `Hom(X, W)` and `Hom(Y, Z).` -/
-def homCongr (k : Type _) {C : Type _} [Category C] [Semiring k] [Preadditive C] [Linear k C]
+def homCongr (k : Type*) {C : Type*} [Category C] [Semiring k] [Preadditive C] [Linear k C]
     {X Y W Z : C} (f₁ : X ≅ Y) (f₂ : W ≅ Z) : (X ⟶ W) ≃ₗ[k] Y ⟶ Z :=
   {
     (rightComp k Y f₂.hom).comp
@@ -165,13 +165,13 @@ def homCongr (k : Type _) {C : Type _} [Category C] [Semiring k] [Preadditive C]
         Iso.inv_hom_id, Category.comp_id] }
 #align category_theory.linear.hom_congr CategoryTheory.Linear.homCongr
 
-theorem homCongr_apply (k : Type _) {C : Type _} [Category C] [Semiring k] [Preadditive C]
+theorem homCongr_apply (k : Type*) {C : Type*} [Category C] [Semiring k] [Preadditive C]
     [Linear k C] {X Y W Z : C} (f₁ : X ≅ Y) (f₂ : W ≅ Z) (f : X ⟶ W) :
     homCongr k f₁ f₂ f = (f₁.inv ≫ f) ≫ f₂.hom :=
   rfl
 #align category_theory.linear.hom_congr_apply CategoryTheory.Linear.homCongr_apply
 
-theorem homCongr_symm_apply (k : Type _) {C : Type _} [Category C] [Semiring k] [Preadditive C]
+theorem homCongr_symm_apply (k : Type*) {C : Type*} [Category C] [Semiring k] [Preadditive C]
     [Linear k C] {X Y W Z : C} (f₁ : X ≅ Y) (f₂ : W ≅ Z) (f : Y ⟶ Z) :
     (homCongr k f₁ f₂).symm f = f₁.hom ≫ f ≫ f₂.inv :=
   rfl

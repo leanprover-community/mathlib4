@@ -33,7 +33,7 @@ open Polynomial
 
 section Semiring
 
-variable {R : Type _} [CommSemiring R]
+variable {R : Type*} [CommSemiring R]
 
 /-- A sum version of Vieta's formula for `Multiset`: the product of the linear terms `X + λ` where
 `λ` runs through a multiset `s` is equal to a linear combination of the symmetric functions
@@ -89,7 +89,7 @@ end Semiring
 
 section Ring
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 theorem esymm_neg (s : Multiset R) (k : ℕ) : (map Neg.neg s).esymm k = (-1) ^ k * esymm s k := by
   rw [esymm, esymm, ← Multiset.sum_map_mul_left, Multiset.powersetLen_map, Multiset.map_map,
@@ -160,7 +160,7 @@ section MvPolynomial
 
 open Finset Polynomial Fintype
 
-variable (R σ : Type _) [CommSemiring R] [Fintype σ]
+variable (R σ : Type*) [CommSemiring R] [Fintype σ]
 
 /-- A sum version of Vieta's formula for `MvPolynomial`: viewing `X i` as variables,
 the product of linear terms `λ + X i` is equal to a linear combination of

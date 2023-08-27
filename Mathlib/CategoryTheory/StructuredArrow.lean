@@ -58,6 +58,10 @@ variable {S S' S'' : D} {Y Y' : C} {T T' : C ⥤ D}
 lemma hom_ext {X Y : StructuredArrow S T} (f g : X ⟶ Y) (h : f.right = g.right) : f = g :=
   CommaMorphism.ext _ _ (Subsingleton.elim _ _) h
 
+@[simp]
+theorem hom_eq_iff {X Y : StructuredArrow S T} (f g : X ⟶ Y) : f = g ↔ f.right = g.right :=
+  ⟨fun h ↦ by rw [h], hom_ext _ _⟩
+
 /-- Construct a structured arrow from a morphism. -/
 def mk (f : S ⟶ T.obj Y) : StructuredArrow S T :=
   ⟨⟨⟨⟩⟩, Y, f⟩
@@ -113,13 +117,12 @@ def homMk {f f' : StructuredArrow S T} (g : f.right ⟶ f'.right)
 picks up on it (seems like a bug). Either way simp solves it.  -/
 attribute [-simp, nolint simpNF] homMk_left
 
-/-- Given a structured arrow `X ⟶ F(U)`, and an arrow `U ⟶ Y`, we can construct a morphism of
-structured arrow given by `(X ⟶ F(U)) ⟶ (X ⟶ F(U) ⟶ F(Y))`.
--/
-def homMk' {F : C ⥤ D} {X : D} {Y : C} (U : StructuredArrow X F) (f : U.right ⟶ Y) :
-    U ⟶ mk (U.hom ≫ F.map f) where
+/-- Given a structured arrow `X ⟶ T(Y)`, and an arrow `Y ⟶ Y'`, we can construct a morphism of
+    structured arrows given by `(X ⟶ T(Y)) ⟶ (X ⟶ T(Y) ⟶ T(Y'))`.  -/
+@[simps]
+def homMk' (f : StructuredArrow S T) (g : f.right ⟶ Y') : f ⟶ mk (f.hom ≫ T.map g) where
   left := eqToHom (by ext)
-  right := f
+  right := g
 #align category_theory.structured_arrow.hom_mk' CategoryTheory.StructuredArrow.homMk'
 
 /-- To construct an isomorphism of structured arrows,
@@ -171,11 +174,10 @@ instance epi_homMk {A B : StructuredArrow S T} (f : A.right ⟶ B.right) (w) [h 
   (proj S T).epi_of_epi_map h
 #align category_theory.structured_arrow.epi_hom_mk CategoryTheory.StructuredArrow.epi_homMk
 
-/-- Eta rule for structured arrows. Prefer `StructuredArrow.eta`, since equality of objects tends
-    to cause problems. -/
-theorem eq_mk (f : StructuredArrow S T) : f = mk f.hom := by
-  cases f
-  congr
+/-- Eta rule for structured arrows. Prefer `StructuredArrow.eta` for rewriting, since equality of
+    objects tends to cause problems. -/
+theorem eq_mk (f : StructuredArrow S T) : f = mk f.hom :=
+  rfl
 #align category_theory.structured_arrow.eq_mk CategoryTheory.StructuredArrow.eq_mk
 
 /-- Eta rule for structured arrows. -/
@@ -302,6 +304,43 @@ instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] 
   exact Set.ext fun X => ⟨fun h => ⟨⟨⟨_, h⟩, X.hom⟩, (eq_mk _).symm⟩, by aesop_cat⟩
 #align category_theory.structured_arrow.small_proj_preimage_of_locally_small CategoryTheory.StructuredArrow.small_proj_preimage_of_locallySmall
 
+/-- A structured arrow is called universal if it is initial. -/
+abbrev IsUniversal (f : StructuredArrow S T) := IsInitial f
+
+namespace IsUniversal
+
+variable {f g : StructuredArrow S T}
+
+theorem uniq (h : IsUniversal f) (η : f ⟶ g) : η = h.to g :=
+  h.hom_ext η (h.to g)
+
+/-- The family of morphisms out of a universal arrow. -/
+def desc (h : IsUniversal f) (g : StructuredArrow S T) : f.right ⟶ g.right :=
+  (h.to g).right
+
+/-- Any structured arrow factors through a universal arrow. -/
+@[reassoc (attr := simp)]
+theorem fac (h : IsUniversal f) (g : StructuredArrow S T) :
+    f.hom ≫ T.map (h.desc g) = g.hom :=
+  Category.id_comp g.hom ▸ (h.to g).w.symm
+
+theorem hom_desc (h : IsUniversal f) {c : C} (η : f.right ⟶ c) :
+    η = h.desc (mk <| f.hom ≫ T.map η) :=
+  let g := mk <| f.hom ≫ T.map η
+  congrArg CommaMorphism.right (h.hom_ext (homMk η rfl : f ⟶ g) (h.to g))
+
+/-- Two morphisms out of a universal `T`-structured arrow are equal if their image under `T` are
+equal after precomposing the universal arrow. -/
+theorem hom_ext (h : IsUniversal f) {c : C} {η η' : f.right ⟶ c}
+    (w : f.hom ≫ T.map η = f.hom ≫ T.map η') : η = η' := by
+  rw [h.hom_desc η, h.hom_desc η', w]
+
+theorem existsUnique (h : IsUniversal f) (g : StructuredArrow S T) :
+    ∃! η : f.right ⟶ g.right, f.hom ≫ T.map η = g.hom :=
+  ⟨h.desc g, h.fac g, fun f w ↦ h.hom_ext <| by simp [w]⟩
+
+end IsUniversal
+
 end StructuredArrow
 
 /-- The category of `S`-costructured arrows with target `T : D` (here `S : C ⥤ D`),
@@ -331,6 +370,10 @@ variable {T T' T'' : D} {Y Y' : C} {S S' : C ⥤ D}
 @[ext]
 lemma hom_ext {X Y : CostructuredArrow S T} (f g : X ⟶ Y) (h : f.left = g.left) : f = g :=
   CommaMorphism.ext _ _ h (Subsingleton.elim _ _)
+
+@[simp]
+theorem hom_eq_iff {X Y : CostructuredArrow S T} (f g : X ⟶ Y) : f = g ↔ f.left = g.left :=
+  ⟨fun h ↦ by rw [h], hom_ext _ _⟩
 
 /-- Construct a costructured arrow from a morphism. -/
 def mk (f : S.obj Y ⟶ T) : CostructuredArrow S T :=
@@ -390,6 +433,13 @@ def homMk {f f' : CostructuredArrow S T} (g : f.left ⟶ f'.left)
 picks up on it. Either way simp can prove this -/
 attribute [-simp, nolint simpNF] homMk_right_down_down
 
+/-- Given a costructured arrow `S(Y) ⟶ X`, and an arrow `Y' ⟶ Y'`, we can construct a morphism of
+    costructured arrows given by `(S(Y) ⟶ X) ⟶ (S(Y') ⟶ S(Y) ⟶ X)`. -/
+@[simps]
+def homMk' (f : CostructuredArrow S T) (g : Y' ⟶ f.left) : mk (S.map g ≫ f.hom) ⟶ f where
+  left := g
+  right := eqToHom (by ext)
+
 /-- To construct an isomorphism of costructured arrows,
 we need an isomorphism of the objects underlying the source,
 and to check that the triangle commutes.
@@ -437,11 +487,10 @@ instance epi_homMk {A B : CostructuredArrow S T} (f : A.left ⟶ B.left) (w) [h 
   (proj S T).epi_of_epi_map h
 #align category_theory.costructured_arrow.epi_hom_mk CategoryTheory.CostructuredArrow.epi_homMk
 
-/-- Eta rule for costructured arrows. Prefer `CostructuredArrow.eta`, as equality of objects tends
-    to cause problems. -/
-theorem eq_mk (f : CostructuredArrow S T) : f = mk f.hom := by
-  cases f
-  congr
+/-- Eta rule for costructured arrows. Prefer `CostructuredArrow.eta` for rewriting, as equality of
+    objects tends to cause problems. -/
+theorem eq_mk (f : CostructuredArrow S T) : f = mk f.hom :=
+  rfl
 #align category_theory.costructured_arrow.eq_mk CategoryTheory.CostructuredArrow.eq_mk
 
 /-- Eta rule for costructured arrows. -/
@@ -568,6 +617,43 @@ instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] 
     infer_instance
   exact Set.ext fun X => ⟨fun h => ⟨⟨⟨_, h⟩, X.hom⟩, (eq_mk _).symm⟩, by aesop_cat⟩
 #align category_theory.costructured_arrow.small_proj_preimage_of_locally_small CategoryTheory.CostructuredArrow.small_proj_preimage_of_locallySmall
+
+/-- A costructured arrow is called universal if it is terminal. -/
+abbrev IsUniversal (f : CostructuredArrow S T) := IsTerminal f
+
+namespace IsUniversal
+
+variable {f g : CostructuredArrow S T}
+
+theorem uniq (h : IsUniversal f) (η : g ⟶ f) : η = h.from g :=
+  h.hom_ext η (h.from g)
+
+/-- The family of morphisms into a universal arrow. -/
+def lift (h : IsUniversal f) (g : CostructuredArrow S T) : g.left ⟶ f.left :=
+  (h.from g).left
+
+/-- Any costructured arrow factors through a universal arrow. -/
+@[reassoc (attr := simp)]
+theorem fac (h : IsUniversal f) (g : CostructuredArrow S T) :
+    S.map (h.lift g) ≫ f.hom = g.hom :=
+  Category.comp_id g.hom ▸ (h.from g).w
+
+theorem hom_desc (h : IsUniversal f) {c : C} (η : c ⟶ f.left) :
+    η = h.lift (mk <| S.map η ≫ f.hom) :=
+  let g := mk <| S.map η ≫ f.hom
+  congrArg CommaMorphism.left (h.hom_ext (homMk η rfl : g ⟶ f) (h.from g))
+
+/-- Two morphisms into a universal `S`-costructured arrow are equal if their image under `S` are
+equal after postcomposing the universal arrow. -/
+theorem hom_ext (h : IsUniversal f) {c : C} {η η' : c ⟶ f.left}
+    (w : S.map η ≫ f.hom = S.map η' ≫ f.hom) : η = η' := by
+  rw [h.hom_desc η, h.hom_desc η', w]
+
+theorem existsUnique (h : IsUniversal f) (g : CostructuredArrow S T) :
+    ∃! η : g.left ⟶ f.left, S.map η ≫ f.hom = g.hom :=
+  ⟨h.lift g, h.fac g, fun f w ↦ h.hom_ext <| by simp [w]⟩
+
+end IsUniversal
 
 end CostructuredArrow
 

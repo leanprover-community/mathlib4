@@ -336,7 +336,7 @@ def powZero {I : C} (t : IsInitial I) [CartesianClosed C] : I ⟹ B ≅ ⊤_ C w
   hom := default
   inv := CartesianClosed.curry ((mulZero t).hom ≫ t.to _)
   hom_inv_id := by
-    -- Porting note: mathport thought that the `mulZero` here was `MulZeroClass.mul_zero`!
+    -- Porting note: mathport thought that the `mulZero` here was `mul_zero`!
     rw [← curry_natural_left, curry_eq_iff, ← cancel_epi (mulZero t).inv]
     apply t.hom_ext
 #align category_theory.pow_zero CategoryTheory.powZero

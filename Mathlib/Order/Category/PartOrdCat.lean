@@ -36,17 +36,17 @@ deriving instance LargeCategory for PartOrdCat
 instance : ConcreteCategory PartOrdCat :=
   BundledHom.concreteCategory _
 
-instance : CoeSort PartOrdCat (Type _) :=
+instance : CoeSort PartOrdCat (Type*) :=
   Bundled.coeSort
 
 /-- Construct a bundled PartOrd from the underlying type and typeclass. -/
-def of (α : Type _) [PartialOrder α] : PartOrdCat :=
+def of (α : Type*) [PartialOrder α] : PartOrdCat :=
   Bundled.of α
 set_option linter.uppercaseLean3 false in
 #align PartOrd.of PartOrdCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [PartialOrder α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [PartialOrder α] : ↥(of α) = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align PartOrd.coe_of PartOrdCat.coe_of

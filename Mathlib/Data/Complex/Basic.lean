@@ -365,11 +365,11 @@ instance : Nontrivial ℂ :=
 -- porting note: moved from `Module/Data/Complex/Basic.lean`
 section SMul
 
-variable {R : Type _} [SMul R ℝ]
+variable {R : Type*} [SMul R ℝ]
 
 /- The useless `0` multiplication in `smul` is to make sure that
 `RestrictScalars.module ℝ ℂ ℂ = Complex.module` definitionally. -/
-instance : SMul R ℂ where
+instance instSMulRealComplex : SMul R ℂ where
   smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
 
 theorem smul_re (r : R) (z : ℂ) : (r • z).re = r • z.re := by simp [(· • ·), SMul.smul]
@@ -912,7 +912,7 @@ instance charZero : CharZero ℂ :=
 #align complex.char_zero_complex Complex.charZero
 
 -- Test if the `ℚ` smul instance is correct.
-example : (Complex.instSMulComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
+example : (Complex.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
 
 /-- A complex number `z` plus its conjugate `conj z` is `2` times its real part. -/
 theorem re_eq_add_conj (z : ℂ) : (z.re : ℂ) = (z + conj z) / 2 := by
@@ -1041,7 +1041,7 @@ theorem abs_conj (z : ℂ) : Complex.abs (conj z) = Complex.abs z :=
 #align complex.abs_conj Complex.abs_conj
 
 @[simp]
-theorem abs_prod {ι : Type _} (s : Finset ι) (f : ι → ℂ) :
+theorem abs_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
     Complex.abs (s.prod f) = s.prod fun I => Complex.abs (f I) :=
   map_prod Complex.abs _ _
 #align complex.abs_prod Complex.abs_prod
@@ -1251,7 +1251,7 @@ theorem lim_abs (f : CauSeq ℂ Complex.abs) : lim (cauSeqAbs f) = Complex.abs (
     ⟨i, fun j hj => lt_of_le_of_lt (Complex.abs.abs_abv_sub_le_abv_sub _ _) (hi j hj)⟩
 #align complex.lim_abs Complex.lim_abs
 
-variable {α : Type _} (s : Finset α)
+variable {α : Type*} (s : Finset α)
 
 @[simp, norm_cast]
 theorem ofReal_prod (f : α → ℝ) : ((∏ i in s, f i : ℝ) : ℂ) = ∏ i in s, (f i : ℂ) :=

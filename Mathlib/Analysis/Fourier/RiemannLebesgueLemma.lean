@@ -52,7 +52,7 @@ open MeasureTheory Filter Complex Set FiniteDimensional
 
 open scoped Filter Topology Real ENNReal FourierTransform RealInnerProductSpace NNReal
 
-variable {E V : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E] {f : V → E}
+variable {E V : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f : V → E}
 
 local notation "e" => Real.fourierChar
 

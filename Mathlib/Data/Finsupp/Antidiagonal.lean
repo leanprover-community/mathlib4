@@ -90,7 +90,7 @@ theorem antidiagonal_zero : antidiagonal (0 : α →₀ ℕ) = singleton (0, 0) 
 #align finsupp.antidiagonal_zero Finsupp.antidiagonal_zero
 
 @[to_additive]
-theorem prod_antidiagonal_swap {M : Type _} [CommMonoid M] (n : α →₀ ℕ)
+theorem prod_antidiagonal_swap {M : Type*} [CommMonoid M] (n : α →₀ ℕ)
     (f : (α →₀ ℕ) → (α →₀ ℕ) → M) :
     ∏ p in antidiagonal n, f p.1 p.2 = ∏ p in antidiagonal n, f p.2 p.1 :=
   Finset.prod_bij (fun p _hp ↦ p.swap) (fun _p ↦ swap_mem_antidiagonal.2) (fun _p _hp ↦ rfl)

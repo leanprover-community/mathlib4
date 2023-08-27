@@ -38,7 +38,7 @@ noncomputable section
 
 open scoped Classical MeasureTheory ENNReal NNReal
 
-variable {α β : Type _} {m : MeasurableSpace α}
+variable {α β : Type*} {m : MeasurableSpace α}
 
 namespace MeasureTheory
 
@@ -95,7 +95,7 @@ def equivSignedMeasure : ComplexMeasure α ≃ SignedMeasure α × SignedMeasure
 
 section
 
-variable {R : Type _} [Semiring R] [Module R ℝ]
+variable {R : Type*} [Semiring R] [Module R ℝ]
 
 variable [ContinuousConstSMul R ℝ] [ContinuousConstSMul R ℂ]
 
