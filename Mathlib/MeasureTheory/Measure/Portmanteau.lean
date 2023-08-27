@@ -498,10 +498,9 @@ lemma le_liminf_measure_open_of_forall_tendsto_measure
     {Ω ι : Type _} {L : Filter ι} [NeBot L]
     [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω]
     {μ : Measure Ω} [IsProbabilityMeasure μ] {μs : ι → Measure Ω} [∀ i, IsProbabilityMeasure (μs i)]
-    (h : ∀ {E : Set Ω}, MeasurableSet E → (μ : Measure Ω) (frontier E) = 0 →
-            Tendsto (fun i ↦ (μs i : Measure Ω) E) L (𝓝 ((μ : Measure Ω) E)))
+    (h : ∀ {E}, MeasurableSet E → μ (frontier E) = 0 → Tendsto (fun i ↦ μs i E) L (𝓝 (μ E)))
     (G : Set Ω) (G_open : IsOpen G) :
-    (μ : Measure Ω) G ≤ L.liminf (fun i ↦ (μs i : Measure Ω) G) := by
+    μ G ≤ L.liminf (fun i ↦ μs i G) := by
   apply le_measure_liminf_of_limsup_measure_compl_le G_open.measurableSet
   exact limsup_measure_closed_le_of_forall_tendsto_measure h _ (isClosed_compl_iff.mpr G_open)
 
