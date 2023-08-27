@@ -277,11 +277,11 @@ def exact? (tk : Syntax) (required : Option (Array (TSyntax `term))) (requireClo
     else
       addExactSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta
 
-elab_rules : tactic | `(tactic| exact?%$tk $[using $[$required],*]?) => do
-  exact? tk required true
+elab_rules : tactic | `(tactic| exact? $[using $[$required],*]?) => do
+  exact? (← getRef) required true
 
-elab_rules : tactic | `(tactic| apply?%$tk $[using $[$required],*]?) => do
-  exact? tk required false
+elab_rules : tactic | `(tactic| apply? $[using $[$required],*]?) => do
+  exact? (← getRef) required false
 
 elab tk:"library_search" : tactic => do
   logWarning ("`library_search` has been renamed to `apply?`" ++
