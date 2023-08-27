@@ -181,7 +181,7 @@ Elaborates to an expression satisfying `cHole?` that equals the LHS or RHS of `h
 if the LHS or RHS is available after elaborating `h`. Uses the expected type as a hint. -/
 syntax (name := cHoleExpand) "cHole% " (&"lhs" <|> &"rhs") term : term
 
-@[term_elab cHoleExpand]
+@[term_elab cHoleExpand, inherit_doc cHoleExpand]
 def elabCHoleExpand : Term.TermElab := fun stx expectedType? =>
   match stx with
   | `(cHole% lhs $h) => elabCHole h true expectedType?
@@ -229,6 +229,7 @@ def mkHCongrWithArity' (f : Expr) (numArgs : Nat) : MetaM CongrTheorem := do
   let thm ← mkHCongrWithArity f numArgs
   process thm thm.type thm.argKinds.toList #[] #[] #[]
 where
+  /-- Process the congruence theorem by trying to pre-prove arguments using `prove`. -/
   process (cthm : CongrTheorem) (type : Expr) (argKinds : List CongrArgKind)
       (argKinds' : Array CongrArgKind) (params args : Array Expr) : MetaM CongrTheorem := do
     match argKinds with
@@ -253,6 +254,7 @@ where
             process cthm type' argKinds (argKinds'.push argKind)
               (params := params ++ params') (args := args ++ params')
       | _ => panic! "Unexpected CongrArgKind"
+  /-- Close the goal given only the fvars in `params`, or else fails. -/
   prove (g : MVarId) (params : Array Expr) : MetaM Unit := do
     -- Prune the local context.
     let g ← g.cleanup
@@ -328,7 +330,10 @@ This complexity is to support two features:
 2. If the congrence hole is a metavariable, then we can specialize that
    hole to an Iff, Eq, or HEq depending on what's necessary at that site. -/
 structure CongrResult where
-  (lhs rhs : Expr)
+  /-- The left-hand side of the congruence result. -/
+  lhs : Expr
+  /-- The right-hand side of the congruence result. -/
+  rhs : Expr
   /-- A generator for an `Eq lhs rhs` or `HEq lhs rhs` proof.
   If such a proof is impossible, the generator can throw an error.
   The inferred type of the generated proof needs only be defeq to `Eq lhs rhs` or `HEq lhs rhs`.
@@ -427,6 +432,7 @@ where
     else
       discard <| mkHEqForExpectedType (← inferType pf)
       return pf
+  /-- Get the sides of the type of `pf` and unify them with the respective `lhs` and `rhs`. -/
   ensureSidesDefeq (pf : Expr) : MetaM Expr := do
     let pfTy ← inferType pf
     let some (_, lhs', _, rhs') ← sides? pfTy
@@ -666,7 +672,7 @@ partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
 
 /-! ### Elaborating congruence quotations -/
 
-@[term_elab termCongr]
+@[term_elab termCongr, inherit_doc termCongr]
 def elabTermCongr : Term.TermElab := fun stx expectedType? => do
   match stx with
   | `(congr($t)) =>
