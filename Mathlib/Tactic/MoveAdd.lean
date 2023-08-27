@@ -10,8 +10,58 @@ import Mathlib.Algebra.Group.Basic
 #  `move_add` a tactic for moving summands in expressions
 
 The tactic `move_add` rearranges summands in expressions.
-It does so by receiving as input a list of "summand atoms", inducing the desired permutation.
-See the doc-string for `move_oper` for details of how the permutation is determined by the input.
+
+The tactic takes as input a list of terms, each one optionally preceded by `←`.
+A term preceded by `←` gets moved to the left, while a term without `←` gets moved to the right.
+
+* Singleton input: `move_add [a]` and `move_add [← a]`
+
+  If `⊢ b + a + c` is (a summand in) the goal, then
+  * `move_add [← a]` changes the goal to `a + b + c` (effectively, `a` moved to the left).
+  * `move_add [a]` changes the goal to `b + c + a` (effectively, `a` moved to the right);
+
+  The tactic reorders *all* sub-expressions of the target at the same same.
+  For instance, if `⊢ 0 < if b + a < b + a + c then a + b else b + a` is the goal, then
+  * `move_add [a]` changes the goal to `0 < if b + a < b + c + a then b + a else b + a`
+    (`a` moved to the right in three sums);
+  * `move_add [← a]` changes the goal to `0 < if a + b < a + b + c then a + b else a + b`
+    (`a` again moved to the left in three sums).
+
+* Longer iputs: `move_add [..., a, ..., ← b, ...]`
+
+  If the list contains more than one term, the tactic effectively tries to move each term preceded
+  by `←` to the left, each term not preceded by `←` to the right
+  *maintaining the relative order in the call*.
+  Thus, applying `move_add [a, b, c, ← d, ← e]` returns summands of the form
+  `d + e + [...] + a + b + c`, i.e. `d` and `e` have the same relative position in the input list
+  and in the final rearrangement (and similarly for `a, b, c`).
+  In particular, `move_add [a, b]` likely has the same effect as
+  `move_add [a]; move_add [b]`: first, we move `a` to the right, then we move `b` also to the
+  right, *after* `a`.
+  However, `move_add [← a, ← b]` likely has the same effect as
+  `move_add [b]; move_add [a]`: first, we move `b` to the left, then we move `a` also to the
+  left, *before* `a`.
+  Also note, though, that `move_add [a, b]` may differ `move_add [b]; move_add [a]`,
+  for instance when `a` and `b` are `DefEq`.
+
+* Unification of inputs and repetitions: `move_add [_, ← _, a * _]`
+
+  The matching of the user inputs with the atoms of the summands in the target expression
+  is performed via checking `DefEq` and selecting the first, still available match.
+  Thus, if a sum in the target is `2 * 3 + 4 * (5 + 6) + 4 * 7 + 10 * 10`, then
+  `move_add [4 * _]` moves the summand `4 * (5 + 6)` to the right.
+
+  The unification of later terms only uses the atoms in the target that have not yet been unified.
+  Thus, if again the target contains `2 * 3 + 4 * (5 + 6) + 4 * 7 + 10 * 10`, then
+  `move_add [_, ← _, 4 * _]`
+  matches
+  * the first input (`_`) with `2 * 3`;
+  * the second input (`_`) with `4 * (5 + 6)`;
+  * the third input (`4 * _`) with `4 * 7`.
+
+  The resulting permutation therefore places `2 * 3` and `4 * 7` to the left (in this order) and
+  `4 * (5 + 6)` to the right: `2 * 3 + 4 * 7 + 10 * 10 + 4 * (5 + 6)`.
+
 For the technical description, look at `Mathlib.MoveAdd.weight` and `Mathlib.MoveAdd.reorderUsing`.
 
 `move_add` is the specialization of a more general `move_oper` tactic that takes a binary,
@@ -377,3 +427,7 @@ elab "move_add" rws:rwRuleSeq : tactic => do evalTactic (← `(tactic| move_oper
 elab "move_mul" rws:rwRuleSeq : tactic => do evalTactic (← `(tactic| move_oper (1 * 1) $rws))
 
 end parsing
+
+
+example {G} [AddCommSemigroup G] {a b c : G} : a + b + c = c := by
+  move_add [_, _]
