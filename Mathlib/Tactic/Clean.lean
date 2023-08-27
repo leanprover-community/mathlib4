@@ -20,7 +20,7 @@ namespace Lean.Expr
 All of these names must resolve to functions defeq `id`. -/
 -- Note: one could also add `hidden`, but this doesn't arise from type hints.
 def cleanConsts : List Name :=
-  [``id, ``Id]
+  [``id]
 
 /-- Clean an expression by eliminating identify functions listed in `cleanConsts`.
 Also eliminates `fun x => x` applications and tautological `let_fun` bindings. -/
