@@ -83,7 +83,7 @@ operation and replaces them by their reordered versions.
 Once that is done, it tries to replace the initial goal with the permuted one by using `simp`.
 
 Currently, no attempt is made at guiding `simp` by doing a `congr`-like destruction of the goal.
-I, DT, already have code for this improvement, but am leaving it for a later PR.
+This will be the content of a later PR.
 -/
 
 open Lean Expr
