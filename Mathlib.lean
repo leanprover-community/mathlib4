@@ -3415,7 +3415,6 @@ import Mathlib.Util.AddRelatedDecl
 import Mathlib.Util.AssertExists
 import Mathlib.Util.AssertNoSorry
 import Mathlib.Util.AtomM
-import Mathlib.Util.Cli
 import Mathlib.Util.CompileInductive
 import Mathlib.Util.CountHeartbeats
 import Mathlib.Util.DummyLabelAttr

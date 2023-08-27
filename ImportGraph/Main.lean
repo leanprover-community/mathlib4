@@ -8,8 +8,8 @@ import Mathlib.Lean.CoreM
 import Mathlib.Lean.Data.NameMap
 import Mathlib.Lean.IO.Process
 import Mathlib.Lean.Name
-import Mathlib.Util.Cli
 import Std.Lean.Util.Path
+import Cli
 
 /-!
 # `lake exe graph`
@@ -36,10 +36,10 @@ open IO.FS IO.Process Name in
 /-- Implementation of the import graph command line program. -/
 def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
   let to := match args.flag? "to" with
-  | some to => to.as! Name
+  | some to => to.as! ModuleName
   | none => `Mathlib -- autodetect the main module from the `lakefile.lean`?
   let from? := match args.flag? "from" with
-  | some fr => some <| fr.as! Name
+  | some fr => some <| fr.as! ModuleName
   | none => none
   searchPathRef.set compile_time_search_path%
   let dotFile ← unsafe withImportModules [{module := to}] {} (trustLevel := 1024) fun env => do
@@ -86,11 +86,11 @@ def graph : Cmd := `[Cli|
   "Generate representations of a Lean import graph."
 
   FLAGS:
-    reduce;         "Remove transitively redundant edges."
-    to : Name;      "Only show the upstream imports of the specified module."
-    "from" : Name;  "Only show the downstream dependencies of the specified module."
-    "exclude-meta"; "Exclude any files starting with `Mathlib.[Tactic|Lean|Util]`."
-    "include-deps"; "Include used files from other projects (e.g. lake packages)"
+    reduce;               "Remove transitively redundant edges."
+    to : ModuleName;      "Only show the upstream imports of the specified module."
+    "from" : ModuleName;  "Only show the downstream dependencies of the specified module."
+    "exclude-meta";       "Exclude any files starting with `Mathlib.[Tactic|Lean|Util]`."
+    "include-deps";       "Include used files from other projects (e.g. lake packages)"
 
   ARGS:
     ...outputs : String;  "Filename(s) for the output. " ++

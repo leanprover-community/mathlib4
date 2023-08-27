@@ -12,7 +12,7 @@
   {"git":
    {"url": "https://github.com/mhuisi/lean4-cli.git",
     "subDir?": null,
-    "rev": "5a858c32963b6b19be0d477a30a1f4b6c120be7e",
+    "rev": "b25b443cbe9b47a8cb10a7b515e27cffd13c5cfd",
     "opts": {},
     "name": "Cli",
     "inputRev?": "nightly",
