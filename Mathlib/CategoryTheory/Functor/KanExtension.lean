@@ -1,5 +1,6 @@
 import Mathlib.CategoryTheory.StructuredArrow
-import Mathlib.CategoryTheory.Adjunction.Limits
+--import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 
 namespace CategoryTheory
 
@@ -79,16 +80,7 @@ end Functor
 
 namespace Equivalence
 
-variable {C D : Type _} [Category C] [Category D] (e : C ≌ D) (J : Type _) [Category J]
-
-lemma hasLimitsOfShape_iff  :
-    HasLimitsOfShape J C ↔ HasLimitsOfShape J D :=
-  ⟨fun _ => Adjunction.hasLimitsOfShape_of_equivalence e.inverse,
-    fun _ => Adjunction.hasLimitsOfShape_of_equivalence e.functor⟩
-
-lemma hasTerminal_iff :
-    HasTerminal C ↔ HasTerminal D :=
-  e.hasLimitsOfShape_iff _
+variable {C D : Type _} [Category C] [Category D] (e : C ≌ D)
 
 def whiskeringLeft (E : Type _) [Category E] : (D ⥤ E) ≌ (C ⥤ E) where
   functor := (CategoryTheory.whiskeringLeft C D E).obj e.functor
