@@ -49,16 +49,16 @@ section
 
 variable [F.HasLeftDerivedFunctor W]
 
-noncomputable def leftDerived : H ⥤ D :=
+noncomputable def totalLeftDerived : H ⥤ D :=
   have := HasLeftDerivedFunctor.hasRightKanExtension F L W
   rightKanExtension L F
 
-noncomputable def leftDerivedCounit : L ⋙ F.leftDerived L W ⟶ F :=
+noncomputable def totalLeftDerivedCounit : L ⋙ F.totalLeftDerived L W ⟶ F :=
   have := HasLeftDerivedFunctor.hasRightKanExtension F L W
   rightKanExtensionCounit L F
 
-instance : (F.leftDerived L W).IsLeftDerivedFunctor (F.leftDerivedCounit L W) W := by
-  dsimp [leftDerived, leftDerivedCounit]
+instance : (F.totalLeftDerived L W).IsLeftDerivedFunctor (F.totalLeftDerivedCounit L W) W := by
+  dsimp [totalLeftDerived, totalLeftDerivedCounit]
   infer_instance
 
 end
