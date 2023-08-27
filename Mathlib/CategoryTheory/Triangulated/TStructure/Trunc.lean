@@ -25,7 +25,7 @@ lemma triangle_map_ext' (a b : ℤ) (hab : a ≤ b) {T T' : Triangle C} (f₁ f�
     rw [H, sub_self]
   intro f hf
   ext
-  . obtain ⟨g, hg⟩ := coyoneda_exact₂ _ (inv_rot_of_dist_triangle _ hT') f.hom₁ (by
+  . obtain ⟨g, hg⟩ := Triangle.coyoneda_exact₂ _ (inv_rot_of_dist_triangle _ hT') f.hom₁ (by
       have eq := f.comm₁
       dsimp at eq ⊢
       rw [← eq, hf, comp_zero])
@@ -33,7 +33,7 @@ lemma triangle_map_ext' (a b : ℤ) (hab : a ≤ b) {T T' : Triangle C} (f₁ f�
       (t.isGE_shift T'.obj₃ b (-1) (b+1) (by linarith))
     rw [instAddCommGroupTriangleHom_zero_hom₁, hg, hg', zero_comp]
   . rw [hf, instAddCommGroupTriangleHom_zero_hom₂]
-  . obtain ⟨g, hg⟩ := yoneda_exact₃ _ hT f.hom₃ (by rw [f.comm₂, hf, zero_comp])
+  . obtain ⟨g, hg⟩ := T.yoneda_exact₃ hT f.hom₃ (by rw [f.comm₂, hf, zero_comp])
     have hg' : g = 0 := t.zero_of_isLE_of_isGE g (a-1) b (by linarith)
       (t.isLE_shift _ a 1 (a-1) (by linarith)) inferInstance
     rw [instAddCommGroupTriangleHom_zero_hom₃, hg, hg', comp_zero]
@@ -44,7 +44,7 @@ lemma triangle_map_exists (n₀ n₁ : ℤ) (h : n₀ < n₁) (T T' : Triangle C
     (h₀ : t.IsLE T.obj₁ n₀)
     (h₁' : t.IsGE T'.obj₃ n₁) :
     ∃ (f : T ⟶ T'), f.hom₂ = φ := by
-  obtain ⟨a, comm₁⟩ := coyoneda_exact₂ _ hT' (T.mor₁ ≫ φ) (t.zero _ n₀ n₁ h)
+  obtain ⟨a, comm₁⟩ := T'.coyoneda_exact₂ hT' (T.mor₁ ≫ φ) (t.zero _ n₀ n₁ h)
   obtain ⟨c, ⟨comm₂, comm₃⟩⟩ := complete_distinguished_triangle_morphism _ _ hT hT' a φ comm₁
   exact ⟨
     { hom₁ := a
@@ -852,7 +852,7 @@ lemma from_truncGE_obj_ext (n : ℤ) (X : C) {Y : C}
   suffices ∀ (f : (t.truncGE n).obj X ⟶ Y) (_ : (t.truncGEπ n).app X ≫ f = 0), f = 0 by
     rw [← sub_eq_zero, this (f₁ - f₂) (by rw [comp_sub, sub_eq_zero, h])]
   intro f hf
-  obtain ⟨g, hg⟩ := yoneda_exact₃ _
+  obtain ⟨g, hg⟩ := Triangle.yoneda_exact₃ _
     (t.triangleLTGE_distinguished n X) f hf
   have hg' := t.zero_of_isLE_of_isGE g (n-2) n (by linarith)
     (by dsimp ; exact t.isLE_shift _ (n-1) 1 (n-2) (by linarith)) (by infer_instance)
@@ -865,7 +865,7 @@ lemma to_truncLE_obj_ext (n : ℤ) (Y : C) {X : C}
   suffices ∀ (f : Y ⟶ (t.truncLE n).obj X) (_ : f ≫ (t.truncLEι n).app X = 0), f = 0 by
     rw [← sub_eq_zero, this (f₁ - f₂) (by rw [sub_comp, sub_eq_zero, h])]
   intro f hf
-  obtain ⟨g, hg⟩ := coyoneda_exact₂ _ (inv_rot_of_dist_triangle _
+  obtain ⟨g, hg⟩ := Triangle.coyoneda_exact₂ _ (inv_rot_of_dist_triangle _
     (t.triangleLEGT_distinguished n X)) f hf
   have hg' := t.zero_of_isLE_of_isGE g n (n+2) (by linarith) (by infer_instance)
     (by dsimp ; apply (t.isGE_shift _ (n+1) (-1) (n+2) (by linarith)))
@@ -881,7 +881,7 @@ lemma to_truncLT_obj_ext (n : ℤ) (Y : C) {X : C}
 
 lemma liftTruncLE' {X Y : C} (f : X ⟶ Y) (n : ℤ) [t.IsLE X n] :
     ∃ (f' : X ⟶ (t.truncLE n).obj Y), f = f' ≫ (t.truncLEι n).app Y :=
-  coyoneda_exact₂ _ (t.triangleLEGT_distinguished n Y) f
+  Triangle.coyoneda_exact₂ _ (t.triangleLEGT_distinguished n Y) f
     (t.zero_of_isLE_of_isGE  _ n (n+1) (by linarith) inferInstance (by dsimp ; infer_instance))
 
 noncomputable def liftTruncLE {X Y : C} (f : X ⟶ Y) (n : ℤ) [t.IsLE X n] :
@@ -904,7 +904,7 @@ lemma liftTruncLT_ι {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ + 1 = n
 
 lemma descTruncGE' {X Y : C} (f : X ⟶ Y) (n : ℤ) [t.IsGE Y n] :
   ∃ (f' : (t.truncGE n).obj X ⟶ Y), f = (t.truncGEπ n).app X ≫ f' :=
-  yoneda_exact₂ _ (t.triangleLTGE_distinguished n X) f
+  Triangle.yoneda_exact₂ _ (t.triangleLTGE_distinguished n X) f
     (t.zero_of_isLE_of_isGE _ (n-1)  n (by linarith) (by dsimp ; infer_instance) inferInstance)
 
 noncomputable def descTruncGE {X Y : C} (f : X ⟶ Y) (n : ℤ) [t.IsGE Y n] :
@@ -941,7 +941,7 @@ lemma isLE₂ (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) (h₁ : t.IsL
     (h₃ : t.IsLE T.obj₃ n) : t.IsLE T.obj₂ n := by
   rw [t.isLE_iff_orthogonal n (n+1) rfl]
   intro Y f hY
-  obtain ⟨f', hf'⟩ := yoneda_exact₂ _ hT f
+  obtain ⟨f', hf'⟩ := Triangle.yoneda_exact₂ _ hT f
     (t.zero _ n (n+1) (by linarith) )
   rw [hf', t.zero f' n (n+1) (by linarith), comp_zero]
 
@@ -949,7 +949,7 @@ lemma isGE₂ (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) (h₁ : t.IsG
     (h₃ : t.IsGE T.obj₃ n) : t.IsGE T.obj₂ n := by
   rw [t.isGE_iff_orthogonal (n-1) n (by linarith)]
   intro Y f hY
-  obtain ⟨f', hf'⟩ := coyoneda_exact₂ _ hT f (t.zero _ (n-1) n (by linarith))
+  obtain ⟨f', hf'⟩ := Triangle.coyoneda_exact₂ _ hT f (t.zero _ (n-1) n (by linarith))
   rw [hf', t.zero f' (n-1) n (by linarith), zero_comp]
 
 def minus : Triangulated.Subcategory C where

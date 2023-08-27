@@ -114,7 +114,7 @@ def homologicalKernel [F.IsHomological] :
   shift := fun X a hX b =>
     IsZero.of_iso (hX (a + b)) (F.mapIso ((shiftFunctorAdd C a b).app X).symm)
   ext₂ := fun T hT h₁ h₃ n => (F.map_distinguished_exact _
-    (shift_distinguished T hT n)).isZero_of_both_zeros
+    (Triangle.shift_distinguished T hT n)).isZero_of_both_zeros
       (IsZero.eq_of_src (h₁ n) _ _) (IsZero.eq_of_tgt (h₃ n) _ _)
 
 lemma mem_homologicalKernel_iff [F.IsHomological] [F.ShiftSequence ℤ]
@@ -206,7 +206,7 @@ lemma homology_sequence_comp  :
 
 lemma homology_sequence_exact₂ :
   (ShortComplex.mk _ _ (F.homology_sequence_comp T hT n₀)).Exact := by
-  refine' ShortComplex.exact_of_iso _ (F.map_distinguished_exact _ (shift_distinguished _ hT n₀))
+  refine' ShortComplex.exact_of_iso _ (F.map_distinguished_exact _ (Triangle.shift_distinguished _ hT n₀))
   refine' ShortComplex.isoMk ((F.isoShift n₀).app _)
     (mulIso ((-1 : Units ℤ)^n₀) ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _) _ _
   . dsimp

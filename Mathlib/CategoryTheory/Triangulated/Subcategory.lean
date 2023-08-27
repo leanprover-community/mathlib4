@@ -179,7 +179,7 @@ instance [IsTriangulated C] : S.W.HasLeftCalculusOfFractions where
   ext := by
     rintro X' X Y f₁ f₂ s ⟨Z, g, h, H, mem⟩ hf₁
     have hf₂ : s ≫ (f₁ - f₂) = 0 := by rw [comp_sub, hf₁, sub_self]
-    obtain ⟨q, hq⟩ := yoneda_exact₂ _ H _ hf₂
+    obtain ⟨q, hq⟩ := Triangle.yoneda_exact₂ _ H _ hf₂
     obtain ⟨Y', r, t, mem'⟩ := distinguished_cocone_triangle q
     refine' ⟨Y', r, _, _⟩
     . exact ⟨_, _, _, rot_of_dist_triangle _ mem', S.shift _ _ mem⟩
@@ -198,7 +198,7 @@ instance [IsTriangulated C] : S.W.HasRightCalculusOfFractions where
     have hf₂ : (f₁ - f₂) ≫ s = 0 := by rw [sub_comp, hf₁, sub_self]
     rw [W_eq_W'] at hs
     obtain ⟨Z, g, h, H, mem⟩ := hs
-    obtain ⟨q, hq⟩ := coyoneda_exact₂ _ H _ hf₂
+    obtain ⟨q, hq⟩ := Triangle.coyoneda_exact₂ _ H _ hf₂
     obtain ⟨Y', r, t, mem'⟩ := distinguished_cocone_triangle₁ q
     refine' ⟨Y', r, _, _⟩
     . exact ⟨_, _, _, mem', mem⟩
@@ -221,7 +221,7 @@ instance WIsCompatibleWIthShift : S.W.IsCompatibleWithShift ℤ := ⟨by
   have : ∀ {X Y : C} (f : X ⟶ Y) (hf : S.W f) (n : ℤ), S.W (f⟦n⟧') := by
     rintro X Y f ⟨Z, g, h, H, mem⟩ n
     rw [← mul_mem_W_iff S _ n]
-    exact ⟨_, _, _, shift_distinguished _ H n, S.shift _ n mem⟩
+    exact ⟨_, _, _, Triangle.shift_distinguished _ H n, S.shift _ n mem⟩
   intro n
   apply MorphismProperty.ext
   intro X Y f
