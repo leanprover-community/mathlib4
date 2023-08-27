@@ -126,8 +126,6 @@ section LinearPatternTest
 
 class Star (R : Type _) where star : R → R
 export Star(star)
--- Without an instance, `#check (star _)` will always fail
-instance : Star Unit where star := fun () => ()
 
 /-- warning: declaration uses 'sorry' -/
 #guard_msgs in

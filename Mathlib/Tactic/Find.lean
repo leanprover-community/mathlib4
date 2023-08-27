@@ -212,6 +212,14 @@ declare_syntax_cat find_patterns
 /-- `#find` patterns -/
 syntax find_pattern* : find_patterns
 
+/-- A variant of `Lean.Elab.Term.elabTerm` that does not complain for example
+when a type class constraint has not instances.  -/
+def elabTerm' (t : Term) (expectedType? : Option Expr) : TermElabM Expr := do
+  withTheReader Term.Context (fun ctx => { ctx with ignoreTCFailures := true }) do
+    let t ← Term.elabTerm t expectedType?
+    Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
+    return t
+
 /-- Parses a list of `find_pattern` syntax into `Arguments` -/
 def parseFindPatterns (args : TSyntax `find_patterns) : TermElabM Arguments :=
   withReader (fun ctx => { ctx with errToSorry := false }) do
@@ -234,10 +242,10 @@ def parseFindPatterns (args : TSyntax `find_patterns) : TermElabM Arguments :=
             throwErrorAt arg ("Cannot search for _. " ++
               "Did you forget to put a term pattern in parentheses?")
         | `(find_pattern| $_:turnstyle $s:term) => do
-          let t ← Lean.Elab.Term.elabTerm s none
+          let t ← elabTerm' s none
           terms := terms.push (true, t)
         | `(find_pattern| $s:term) => do
-          let t ← Lean.Elab.Term.elabTerm s none
+          let t ← elabTerm' s none
           terms := terms.push (false, t)
         | _ => throwErrorAt arg "unexpected argument to #find"
     | _ => throwErrorAt args "unexpected argument to #find"
