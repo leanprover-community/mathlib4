@@ -7,8 +7,6 @@ import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.List.Defs
 import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.NormNum
--- import Mathlib.MeasureTheory.Function.LocallyIntegrable
--- import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
 open List Set
 
@@ -415,6 +413,8 @@ example {x y z w : ℕ} : true := by
 --   mono
 --   mono
 
+-- import Mathlib.MeasureTheory.Function.LocallyIntegrable
+-- import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 -- example : ∫ x in Icc 0 1, real.exp x ≤ ∫ x in Icc 0 1, real.exp (x+1) := by
 --   mono
 --   · exact real.continuous_exp.locally_integrable.integrable_on_is_compact is_compact_Icc
