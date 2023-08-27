@@ -15,10 +15,6 @@ import Mathlib.Lean.Data.RBTree
 
 open Lean Meta Elab
 
-/-!
-## Utilities, to be moved somewhere else before merging
--/
-
 /-- Returns `true` if `needle` is a substring of `hey` -/
 def String.isInfixOf (needle : String) (hey : String) := Id.run do
   -- until https://github.com/leanprover/std4/pull/178 lands
@@ -28,6 +24,11 @@ def String.isInfixOf (needle : String) (hey : String) := Id.run do
     then return true
     else i := i.next
   return false
+
+
+/-!
+## Formattnig utilities
+-/
 
 /-- Puts `MessageData` into a bulleted list -/
 def MessageData.bulletList (xs : List MessageData) : MessageData :=
