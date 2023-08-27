@@ -6,6 +6,7 @@ Authors: Sebastian Ullrich, Joachim Breitner
 import Lean
 import Std.Lean.Delaborator
 import Mathlib.Tactic.Cache
+import Mathlib.Lean.NameRel
 
 /-!
 # The `#find` command and tactic.
@@ -126,33 +127,6 @@ def matchConclusion (t : Expr) : MetaM ConstMatcher := withReducible do
 end Mathlib.Tactic.Find
 
 
-/-!
-## A data structure for a relation on names
--/
-
-namespace Lean
-
-/-- A `NameRel` maps names to sets of names -/
-def NameRel := NameMap NameSet
-
-instance : EmptyCollection NameRel :=
-  inferInstanceAs $ EmptyCollection (NameMap NameSet)
-
-instance : Inhabited NameRel :=
-  inferInstanceAs $ Inhabited (NameMap NameSet)
-
-/-- For all names `n` mentioned in the type of the constant `c`, add `c.name` to the set associated
-with `n`. -/
-def NameRel.addDecl (c : ConstantInfo) (m : NameRel) := do
-  if ← c.name.isBlackListed then
-    return m
-  let consts := c.type.foldConsts {} (flip NameSet.insert)
-  return consts.fold (init := m) fun m n =>
-    m.insert n (
-      m.findD n {} |> flip .insert c.name
-    )
-
-end Lean
 
 
 /-!
@@ -207,7 +181,7 @@ def find (args : Arguments) (maxShown := 200) :
     -- Query the declaration cache
     let (m₁, m₂) ← findDeclsByConsts.get
     let hits := NameSet.intersects <| needles.toArray.map <| fun needle =>
-      NameSet.union (m₁.findD needle {}) (m₂.findD needle {})
+      NameSet.union (m₁.find needle) (m₂.find needle)
 
     -- Filter by name patterns
     let hits2 := hits.toArray.filter fun n => args.namePats.all fun p =>
