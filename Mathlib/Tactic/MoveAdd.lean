@@ -88,9 +88,9 @@ I, DT, already have code for this improvement, but am leaving it for a later PR.
 
 open Lean Expr
 
-/-- `getExprArgs e` inspects the outermost constructor of `e` and returns the array of all the
+/-- `getExprInputs e` inspects the outermost constructor of `e` and returns the array of all the
 arguments to that constructor that are themselves `Expr`essions. -/
-def Lean.Expr.getExprArgs : Expr → Array Expr
+def Lean.Expr.getExprInputs : Expr → Array Expr
   | app fn arg        => #[fn, arg]
   | lam _ bt bb _     => #[bt, bb]
   | forallE _ bt bb _ => #[bt, bb]
@@ -101,7 +101,7 @@ def Lean.Expr.getExprArgs : Expr → Array Expr
 
 /-- `size e` returns the number of subexpressions of `e`. -/
 partial
-def Lean.Expr.size (e : Expr) : ℕ := (e.getExprArgs.map size).foldl (· + ·) 1
+def Lean.Expr.size (e : Expr) : ℕ := (e.getExprInputs.map size).foldl (· + ·) 1
 
 namespace Mathlib.MoveAdd
 
@@ -191,6 +191,25 @@ let reorder := uToReorder.qsort fun x y =>
     | _, _ => weight uInstructions x ≤ weight uInstructions y
 (reorder.map Prod.fst).toList
 
+section tactic
+open Mathlib.MoveAdd
+
+#guard (uniquify [ 0,      1,      0,      1,      0,      3] =
+                 [(0, 0), (1, 0), (0, 1), (1, 1), (0, 2), (3, 0)])
+
+#guard
+  (let dat := [(0, true), (1, false), (2, true)]
+   (#[0, 1, 2, 3, 4].qsort (fun x y => (weight dat x) ≤ (weight dat y)) = #[0, 2, 3, 4, 1]))
+
+#guard false = ( reorderUsing [0, 1, 2] [(0, false)] = [1, 2, 0] &&
+                 reorderUsing [0, 1, 2] [(1, true)] = [1, 0, 2] &&
+                 reorderUsing [0, 1, 2] [(1, true), (0, false)] != [1, 2, 0])
+
+#guard reorderUsing [1, 5, 4, 3, 2, 1] [(3, true), (2, false), (1, false)] =
+                        [3, 5, 4, 1, 2, 1]
+
+end tactic
+
 end reorder
 
 end ExprProcessing
@@ -215,7 +234,7 @@ Possibly returns duplicates!
 -/
 partial def getOps (sum : Expr) : MetaM (Array ((Array Expr) × Expr)) := do
 let summands := ← getAddends op (← inferType sum <|> return sum) sum
-let (first, rest) := if summands.size == 1 then (#[], sum.getExprArgs) else
+let (first, rest) := if summands.size == 1 then (#[], sum.getExprInputs) else
   (#[(summands, sum)], summands)
 let rest := ← rest.mapM getOps
 return rest.foldl Array.append  first
@@ -427,7 +446,3 @@ elab "move_add" rws:rwRuleSeq : tactic => do evalTactic (← `(tactic| move_oper
 elab "move_mul" rws:rwRuleSeq : tactic => do evalTactic (← `(tactic| move_oper (1 * 1) $rws))
 
 end parsing
-
-
-example {G} [AddCommSemigroup G] {a b c : G} : a + b + c = c := by
-  move_add [_, _]

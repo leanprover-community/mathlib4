@@ -3,29 +3,6 @@ import Mathlib.Data.Nat.Basic
 
 universe u
 
-section tactic
-open Mathlib.MoveAdd
-
-run_cmd if uniquify [ 0,      1,      0,      1,      0,      3] ≠
-                    [(0, 0), (1, 0), (0, 1), (1, 1), (0, 2), (3, 0)] then
-          throwError "'uniquify' is not uniquifying"
-
-run_cmd
-  let dat := [(0, true), (1, false), (2, true)]
-  if (#[0, 1, 2, 3, 4].qsort (fun x y => (weight dat x) ≤ (weight dat y)) != #[0, 2, 3, 4, 1]) then
-    throwError "The sorting order induced by 'wtFnc' does not seem to have the required properties"
-
-run_cmd if false = (reorderUsing [0, 1, 2] [(0, false)] = [1, 2, 0] &&
-                    reorderUsing [0, 1, 2] [(1, true)] = [1, 0, 2] &&
-                    reorderUsing [0, 1, 2] [(1, true), (0, false)] = [1, 2, 0]) then
-          throwError "'reorderUsing' is not reordering properly"
-
-run_cmd if reorderUsing [1, 5, 4, 3, 2, 1] [(3, true), (2, false), (1, false)] ≠
-                        [3, 5, 4, 1, 2, 1] then
-          throwError "'reorderUsing' is not reordering properly"
-
-end tactic
-
 variable {R : Type u}
 section add
 
