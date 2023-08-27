@@ -95,9 +95,8 @@ partial def moduleNamesIn (dir : FilePath) (ext := "lean") : IO (Array Name) :=
 
 def importsForLib (dir : FilePath) (root : Name) : IO String := do
   moduleNamesIn (dir / root.toString) >>=
-    Array.mapM (return .mkSimple root.toString ++ ·) >>=
     Array.foldlM (init := "") fun imports fileName ↦
-      return imports ++ s!"import {fileName.toString}\n"
+      return imports ++ s!"import {(root ++ fileName).toString}\n"
 
 script import_all do
   let pkg ← Workspace.root <$> getWorkspace
