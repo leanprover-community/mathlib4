@@ -25,7 +25,7 @@ which were not available in the import dependencies of `Data.Int.Cast.Basic`.
 
 open Nat
 
-variable {F ι α β : Type _}
+variable {F ι α β : Type*}
 
 namespace Int
 
@@ -67,7 +67,7 @@ theorem cast_ite [AddGroupWithOne α] (P : Prop) [Decidable P] (m n : ℤ) :
 #align int.cast_ite Int.cast_ite
 
 /-- `coe : ℤ → α` as an `AddMonoidHom`. -/
-def castAddHom (α : Type _) [AddGroupWithOne α] : ℤ →+ α where
+def castAddHom (α : Type*) [AddGroupWithOne α] : ℤ →+ α where
   toFun := Int.cast
   map_zero' := cast_zero
   map_add' := cast_add
@@ -79,7 +79,7 @@ theorem coe_castAddHom [AddGroupWithOne α] : ⇑(castAddHom α) = fun x : ℤ =
 #align int.coe_cast_add_hom Int.coe_castAddHom
 
 /-- `coe : ℤ → α` as a `RingHom`. -/
-def castRingHom (α : Type _) [NonAssocRing α] : ℤ →+* α where
+def castRingHom (α : Type*) [NonAssocRing α] : ℤ →+* α where
   toFun := Int.cast
   map_zero' := cast_zero
   map_add' := cast_add
@@ -220,7 +220,7 @@ open Int
 
 namespace AddMonoidHom
 
-variable {A : Type _}
+variable {A : Type*}
 
 /-- Two additive monoid homomorphisms `f`, `g` from `ℤ` to an additive monoid are equal
 if `f 1 = g 1`. -/
@@ -253,7 +253,7 @@ theorem Int.castAddHom_int : Int.castAddHom ℤ = AddMonoidHom.id ℤ :=
 
 namespace MonoidHom
 
-variable {M : Type _} [Monoid M]
+variable {M : Type*} [Monoid M]
 
 open Multiplicative
 
@@ -277,7 +277,7 @@ end MonoidHom
 
 namespace MonoidWithZeroHom
 
-variable {M : Type _} [MonoidWithZero M]
+variable {M : Type*} [MonoidWithZero M]
 
 /-- If two `MonoidWithZeroHom`s agree on `-1` and the naturals then they are equal. -/
 @[ext]
@@ -322,11 +322,11 @@ theorem eq_intCast' (f : ℤ →+* α) : f = Int.castRingHom α :=
   RingHom.ext <| eq_intCast f
 #align ring_hom.eq_int_cast' RingHom.eq_intCast'
 
-theorem ext_int {R : Type _} [NonAssocSemiring R] (f g : ℤ →+* R) : f = g :=
+theorem ext_int {R : Type*} [NonAssocSemiring R] (f g : ℤ →+* R) : f = g :=
   coe_addMonoidHom_injective <| AddMonoidHom.ext_int <| f.map_one.trans g.map_one.symm
 #align ring_hom.ext_int RingHom.ext_int
 
-instance Int.subsingleton_ringHom {R : Type _} [NonAssocSemiring R] : Subsingleton (ℤ →+* R) :=
+instance Int.subsingleton_ringHom {R : Type*} [NonAssocSemiring R] : Subsingleton (ℤ →+* R) :=
   ⟨RingHom.ext_int⟩
 #align ring_hom.int.subsingleton_ring_hom RingHom.Int.subsingleton_ringHom
 
@@ -343,7 +343,7 @@ theorem Int.castRingHom_int : Int.castRingHom ℤ = RingHom.id ℤ :=
 
 namespace Pi
 
-variable {π : ι → Type _} [∀ i, IntCast (π i)]
+variable {π : ι → Type*} [∀ i, IntCast (π i)]
 
 instance intCast : IntCast (∀ i, π i) :=
   { intCast := fun n _ ↦ n }
@@ -359,7 +359,7 @@ theorem coe_int (n : ℤ) : (n : ∀ i, π i) = fun _ => ↑n :=
 
 end Pi
 
-theorem Sum.elim_intCast_intCast {α β γ : Type _} [IntCast γ] (n : ℤ) :
+theorem Sum.elim_intCast_intCast {α β γ : Type*} [IntCast γ] (n : ℤ) :
     Sum.elim (n : α → γ) (n : β → γ) = n :=
   @Sum.elim_lam_const_lam_const α β γ n
 #align sum.elim_int_cast_int_cast Sum.elim_intCast_intCast

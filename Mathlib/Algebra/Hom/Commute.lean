@@ -16,7 +16,7 @@ import Mathlib.Algebra.Group.Commute
 
 section Commute
 
-variable {F M N : Type _} [Mul M] [Mul N] {a x y : M}
+variable {F M N : Type*} [Mul M] [Mul N] {a x y : M}
 
 @[to_additive (attr := simp)]
 protected theorem SemiconjBy.map [MulHomClass F M N] (h : SemiconjBy a x y) (f : F) :

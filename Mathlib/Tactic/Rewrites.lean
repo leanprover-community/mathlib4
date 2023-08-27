@@ -3,8 +3,9 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Util.Pickle
-import Mathlib.Data.ListM.Heartbeats
+import Std.Util.Pickle
+import Std.Data.MLList.Heartbeats
+import Mathlib.Data.MLList.Dedup
 import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.SolveByElim
@@ -25,6 +26,8 @@ Suggestions are printed as `rw [h]` or `rw [←h]`.
 We could try discharging side goals via `assumption` or `solve_by_elim`.
 
 -/
+
+set_option autoImplicit true
 
 namespace Mathlib.Tactic.Rewrites
 
@@ -134,7 +137,7 @@ This core function returns a monadic list, to allow the caller to decide how lon
 See also `rewrites` for a more convenient interface.
 -/
 def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
-    (goal : MVarId) (target : Expr) : ListM MetaM RewriteResult := ListM.squash do
+    (goal : MVarId) (target : Expr) : MLList MetaM RewriteResult := MLList.squash fun _ => do
 
   -- Get all lemmas which could match some subexpression
   let candidates := (← lemmas.1.getSubexpressionMatches target)
@@ -145,11 +148,26 @@ def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name 
 
   let candidates := candidates.insertionSort fun r s => r.2.2 > s.2.2
 
-  trace[Tactic.rewrites.lemmas] m!"Candidate rewrite lemmas:\n{candidates}"
+  -- Now deduplicate. We can't use `Array.deduplicateSorted` as we haven't completely sorted,
+  -- and in fact want to keep some of the residual ordering from the discrimination tree.
+  let mut forward : NameSet := ∅
+  let mut backward : NameSet := ∅
+  let mut deduped := #[]
+  for (l, s, w) in candidates do
+    if s then
+      if ¬ backward.contains l then
+        deduped := deduped.push (l, s, w)
+        backward := backward.insert l
+    else
+      if ¬ forward.contains l then
+        deduped := deduped.push (l, s, w)
+        forward := forward.insert l
+
+  trace[Tactic.rewrites.lemmas] m!"Candidate rewrite lemmas:\n{deduped}"
 
   -- Lift to a monadic list, so the caller can decide how much of the computation to run.
-  let candidates := ListM.ofList candidates.toList
-  pure <| candidates.filterMapM fun ⟨lem, symm, weight⟩ => do
+  let lazy := MLList.ofList deduped.toList
+  pure <| lazy.filterMapM fun ⟨lem, symm, weight⟩ => do
     trace[Tactic.rewrites] "considering {if symm then "←" else ""}{lem}"
     let some result ← try? do goal.rewrite target (← mkConstWithFreshMVarLevels lem) symm
       | return none
@@ -164,11 +182,16 @@ def rewrites (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × B
     (goal : MVarId) (target : Expr) (stop_at_rfl : Bool := False) (max : Nat := 20)
     (leavePercentHeartbeats : Nat := 10) : MetaM (List RewriteResult) := do
   let results ← rewritesCore lemmas goal target
+    -- Don't report duplicate results.
+    -- (TODO: we later pretty print results; save them here?)
+    -- (TODO: a config flag to disable this,
+    -- if distinct-but-pretty-print-the-same results are desirable?)
+    |>.dedupBy (fun r => do pure <| (← ppExpr r.result.eNew).pretty)
+    -- Stop if we find a rewrite after which `with_reducible rfl` would succeed.
+    |>.mapM RewriteResult.computeRfl -- TODO could simply not compute this if `stop_at_rfl` is False
+    |>.takeUpToFirst (fun r => stop_at_rfl && r.rfl? = some true)
     -- Don't use too many heartbeats.
     |>.whileAtLeastHeartbeatsPercent leavePercentHeartbeats
-    -- Stop if we find a rewrite after which `with_reducible rfl` would succeed.
-    |>.mapM RewriteResult.computeRfl -- TODO could simply not compute this if stop_at_rfl is False
-    |>.takeUpToFirst (fun r => stop_at_rfl && r.rfl? = some true)
     -- Bound the number of results.
     |>.takeAsList max
   return match results.filter (fun r => stop_at_rfl && r.rfl? = some true) with
@@ -209,7 +232,7 @@ elab_rules : tactic |
         throwError "Could not find any lemmas which can rewrite the hypothesis {
           ← f.getUserName}"
       for r in results do
-        addRewriteSuggestion tk (← mkConstWithFreshMVarLevels r.name) r.symm
+        addRewriteSuggestion tk [(← mkConstWithFreshMVarLevels r.name, r.symm)]
           r.result.eNew (loc? := .some (.fvar f)) (origSpan? := ← getRef)
       if lucky.isSome then
         match results[0]? with
@@ -226,7 +249,7 @@ elab_rules : tactic |
         throwError "Could not find any lemmas which can rewrite the goal"
       for r in results do
         let newGoal := if r.rfl? = some true then Expr.lit (.strVal "no goals") else r.result.eNew
-        addRewriteSuggestion tk (← mkConstWithFreshMVarLevels r.name) r.symm
+        addRewriteSuggestion tk [(← mkConstWithFreshMVarLevels r.name, r.symm)]
           newGoal (origSpan? := ← getRef)
       if lucky.isSome then
         match results[0]? with
