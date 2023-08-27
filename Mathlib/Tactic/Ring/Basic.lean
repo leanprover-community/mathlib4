@@ -1088,11 +1088,21 @@ partial def eval {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     | _ => els
   | _, _, _ => els
 
+/-- `CSLift α β` is a typeclass used by `ring` for lifting operations from `α`
+(which is not a commutative semiring) into a commutative semiring `β` by using an injective map
+`lift : α → β`. -/
 class CSLift (α : Type u) (β : outParam (Type u)) where
+  /-- `lift` is the "canonical injection" from `α` to `β` -/
   lift : α → β
+  /-- `lift` is an injective function -/
   inj : Function.Injective lift
 
+/-- `CSLiftVal a b` means that `b = lift a`. This is used by `ring` to construct an expression `b`
+from the input expression `a`, and then run the usual ring algorithm on `b`. -/
 class CSLiftVal {α} {β : outParam (Type u)} [CSLift α β] (a : α) (b : outParam β) : Prop where
+  /-- The output value `b` is equal to the lift of `a`. This can be supplied by the default
+  instance which sets `b := lift a`, but `ring` will treat this as an atom so it is more useful
+  when there are other instances which distribute addition or multiplication. -/
   eq : b = CSLift.lift a
 
 instance (priority := low) {α β} [CSLift α β] (a : α) : CSLiftVal a (CSLift.lift a) := ⟨rfl⟩
@@ -1139,6 +1149,8 @@ def proveEq (g : MVarId) : AtomM Unit := do
     pure q($pf $(← ringCore sβ e₁' e₂'))
   g.assign eq
 where
+  /-- The core of `proveEq` takes expressions `e₁ e₂ : α` where `α` is a `CommSemiring`,
+  and returns a proof that they are equal (or fails). -/
   ringCore {v : Level} {α : Q(Type v)} (sα : Q(CommSemiring $α))
       (e₁ e₂ : Q($α)) : AtomM Q($e₁ = $e₂) := do
     let c ← mkCache sα
