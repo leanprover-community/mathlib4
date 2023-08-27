@@ -150,3 +150,12 @@ info: Try this: rw [f_eq]
 lemma test : f n = f m := by
   rw?
   rw [f_eq, f_eq]
+
+
+def zero : Nat := 0
+
+-- This used to (incorrectly!) succeed because `rw?` would try `rfl`,
+-- rather than `withReducible` `rfl`.
+example : zero = 0 := by
+  rw?!
+  sorry
