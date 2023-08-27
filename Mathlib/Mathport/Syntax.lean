@@ -29,6 +29,7 @@ import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Constructor
+import Mathlib.Tactic.Congrm
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
@@ -161,8 +162,6 @@ open Lean Parser.Tactic
 /- S -/ syntax (name := revertTargetDeps) "revert_target_deps" : tactic
 
 /- S -/ syntax (name := hint) "hint" : tactic
-
-/- M -/ syntax (name := congrM) "congrm " term : tactic
 
 /- S -/ syntax (name := rcases?) "rcases?" casesTarget,* (" : " num)? : tactic
 /- S -/ syntax (name := rintro?) "rintro?" (" : " num)? : tactic
