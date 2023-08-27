@@ -93,9 +93,10 @@ partial def moduleNamesIn (dir : FilePath) (ext := "lean") : IO (Array Name) :=
       return #[FilePath.withExtension entry.fileName "" |>.toString.toName]
     else return #[]
 
-def importsForLib (dir : FilePath) (root : Name) : IO String := do
-  moduleNamesIn (dir / root.toString) >>=
-    Array.foldlM (init := "") fun imports fileName ↦
+def importsForLib (dir : FilePath) (root : Name) (lt : Name → Name → Bool) : IO String := do
+  let files ← moduleNamesIn (dir / root.toString)
+  let filesSorted := files.qsort lt
+  filesSorted.foldlM (init := "") fun imports fileName ↦
       return imports ++ s!"import {(root ++ fileName).toString}\n"
 
 script import_all do
@@ -105,7 +106,7 @@ script import_all do
     for root in lib.config.roots do
       let dir := lib.srcDir.normalize
       let fileName : FilePath := dir / (root.toString ++ ".lean")
-      let imports ← importsForLib dir root
+      let imports ← importsForLib dir root (·.toString < ·.toString)
       IO.FS.writeFile fileName imports
       IO.println s!"Created imports file {fileName} for {root} library."
   return 0
@@ -117,7 +118,7 @@ script import_all? do
     for root in lib.config.roots do
       let dir := lib.srcDir.normalize
       let fileName : FilePath := dir / (root.toString ++ ".lean")
-      let allImports ← importsForLib dir root
+      let allImports ← importsForLib dir root (·.toString < ·.toString)
       let existingImports ← IO.FS.readFile fileName
       unless existingImports == allImports do
         IO.eprintln s!"Invalid import list for {root} library."
