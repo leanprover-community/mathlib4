@@ -21,7 +21,7 @@ open Function Sum
 
 namespace Finset
 
-variable {α₁ α₂ β₁ β₂ γ₁ γ₂ : Type _}
+variable {α₁ α₂ β₁ β₂ γ₁ γ₂ : Type*}
 
 section SumLift₂
 
@@ -221,7 +221,7 @@ open Finset Function
 
 namespace Sum
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-! ### Disjoint sum of orders -/
 

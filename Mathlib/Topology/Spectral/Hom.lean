@@ -27,7 +27,7 @@ Once we have `SpectralSpace`, `IsSpectralMap` should move to `topology.spectral.
 
 open Function OrderDual
 
-variable {F α β γ δ : Type _}
+variable {F α β γ δ : Type*}
 
 section Unbundled
 
@@ -63,7 +63,7 @@ theorem IsSpectralMap.comp {f : β → γ} {g : α → β} (hf : IsSpectralMap f
 end Unbundled
 
 /-- The type of spectral maps from `α` to `β`. -/
-structure SpectralMap (α β : Type _) [TopologicalSpace α] [TopologicalSpace β] where
+structure SpectralMap (α β : Type*) [TopologicalSpace α] [TopologicalSpace β] where
   /-- function between topological spaces-/
   toFun : α → β
   /-- proof that `toFun` is a spectral map-/
@@ -75,7 +75,7 @@ section
 /-- `SpectralMapClass F α β` states that `F` is a type of spectral maps.
 
 You should extend this class when you extend `SpectralMap`. -/
-class SpectralMapClass (F : Type _) (α β : outParam <| Type _) [TopologicalSpace α]
+class SpectralMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
   [TopologicalSpace β] extends FunLike F α fun _ => β where
   /-- statement that `F` is a type of spectral maps-/
   map_spectral (f : F) : IsSpectralMap f
@@ -191,7 +191,7 @@ theorem coe_comp_continuousMap (f : SpectralMap β γ) (g : SpectralMap α β) :
 -- porting note: removed `simp` from this and added lemma above to address `simpNF` lint
 theorem coe_comp_continuousMap' (f : SpectralMap β γ) (g : SpectralMap α β) :
     (f.comp g : ContinuousMap α γ) = (f : ContinuousMap β γ).comp g := by
-    simp only [@coe_comp]; rfl
+  rfl
 #align spectral_map.coe_comp_continuous_map SpectralMap.coe_comp_continuousMap'
 
 @[simp]

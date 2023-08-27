@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 
-import Mathlib.Tactic.Basic
+import Mathlib.Tactic.ToExpr
 
 /-! # Script to check `undergrad.yaml`, `overview.yaml`, and `100.yaml`
 
@@ -14,7 +14,7 @@ It verifies that the referenced declarations exist.
 -/
 
 open IO.FS Lean Lean.Elab
-open Lean Core Elab Command Std.Tactic.Lint
+open Lean Core Elab Command
 
 abbrev DBFile := Array (String × Name)
 
@@ -40,11 +40,6 @@ def processDb (decls : ConstMap) : String × String → IO Bool
     return true
   else
     return false
-
-open System in
-instance : ToExpr FilePath where
-  toTypeExpr := mkConst ``FilePath
-  toExpr path := mkApp (mkConst ``FilePath.mk) (toExpr path.1)
 
 elab "compileTimeSearchPath" : term =>
   return toExpr (← searchPathRef.get)

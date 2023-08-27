@@ -15,7 +15,7 @@ existential quantifiers. Their definitions are in core Lean.
 -/
 
 
-variable {α : Type _} {p : α → Prop} [DecidablePred p] {l : List α} {a : α}
+variable {α : Type*} {p : α → Prop} [DecidablePred p] {l : List α} {a : α}
 
 namespace List
 

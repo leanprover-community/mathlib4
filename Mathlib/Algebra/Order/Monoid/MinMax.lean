@@ -15,7 +15,7 @@ import Mathlib.Algebra.Order.Monoid.Lemmas
 
 open Function
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-! Some lemmas about types that have an ordering and a binary operation, with no
   rules relating them. -/

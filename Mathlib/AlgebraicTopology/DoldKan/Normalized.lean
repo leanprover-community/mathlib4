@@ -23,6 +23,8 @@ the Dold-Kan equivalence
 `CategoryTheory.Abelian.DoldKan.equivalence : SimplicialObject A ≌ ChainComplex A ℕ`
 with a functor (definitionally) equal to `normalizedMooreComplex A`.
 
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
+
 -/
 
 
@@ -37,7 +39,7 @@ namespace DoldKan
 
 universe v
 
-variable {A : Type _} [Category A] [Abelian A] {X : SimplicialObject A}
+variable {A : Type*} [Category A] [Abelian A] {X : SimplicialObject A}
 
 theorem HigherFacesVanish.inclusionOfMooreComplexMap (n : ℕ) :
     HigherFacesVanish (n + 1) ((inclusionOfMooreComplexMap X).f (n + 1)) := fun j _ => by

@@ -18,7 +18,7 @@ when needed. To construct instances for concrete numbers,
 -/
 
 
-variable {K : Type _}
+variable {K : Type*}
 
 section Field
 
