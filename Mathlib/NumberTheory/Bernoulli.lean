@@ -113,23 +113,21 @@ theorem bernoulli'_one : bernoulli' 1 = 1 / 2 := by
 
 @[simp]
 theorem bernoulli'_two : bernoulli' 2 = 1 / 6 := by
-  rw [bernoulli'_def, sum_range_succ, sum_range_succ, sum_range_zero]
-  norm_num
+  rw [bernoulli'_def]
+  norm_num [sum_range_succ, sum_range_succ, sum_range_zero]
 #align bernoulli'_two bernoulli'_two
 
 @[simp]
 theorem bernoulli'_three : bernoulli' 3 = 0 := by
-  rw [bernoulli'_def, sum_range_succ, sum_range_succ, sum_range_succ, sum_range_zero]
-  norm_num
+  rw [bernoulli'_def]
+  norm_num [sum_range_succ, sum_range_succ, sum_range_zero]
 #align bernoulli'_three bernoulli'_three
 
 @[simp]
 theorem bernoulli'_four : bernoulli' 4 = -1 / 30 := by
-  have : Nat.choose 4 2 = 6 := by decide
-  -- shrug
-  rw [bernoulli'_def, sum_range_succ, sum_range_succ, sum_range_succ,
-    sum_range_succ, sum_range_zero, this]
-  norm_num
+  have : Nat.choose 4 2 = 6 := by norm_num -- shrug
+  rw [bernoulli'_def]
+  norm_num [sum_range_succ, sum_range_succ, sum_range_zero, this]
 #align bernoulli'_four bernoulli'_four
 
 end Examples
@@ -211,7 +209,7 @@ theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
 #align bernoulli_zero bernoulli_zero
 
 @[simp]
-theorem bernoulli_one : bernoulli 1 = -1 / 2 := by norm_num; simp [bernoulli]
+theorem bernoulli_one : bernoulli 1 = -1 / 2 := by norm_num [bernoulli]
 #align bernoulli_one bernoulli_one
 
 theorem bernoulli_eq_bernoulli'_of_ne_one {n : ℕ} (hn : n ≠ 1) : bernoulli n = bernoulli' n := by

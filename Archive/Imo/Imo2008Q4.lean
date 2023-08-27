@@ -56,8 +56,8 @@ theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
   have h₀ : f 1 ≠ 0 := by specialize H₁ 1 zero_lt_one; exact ne_of_gt H₁
   have h₁ : f 1 = 1 := by
     specialize H₂ 1 1 1 1 zero_lt_one zero_lt_one zero_lt_one zero_lt_one rfl
-    norm_num at H₂
-    rw [← two_mul, ← two_mul, mul_div_mul_left (f 1 ^ 2) (f 1) two_ne_zero] at H₂
+    norm_num [← two_mul] at H₂
+    rw [mul_div_mul_left (f 1 ^ 2) (f 1) two_ne_zero] at H₂
     rwa [← (div_eq_iff h₀).mpr (sq (f 1))]
   have h₂ : ∀ x > 0, (f x - x) * (f x - 1 / x) = 0 := by
     intro x hx
