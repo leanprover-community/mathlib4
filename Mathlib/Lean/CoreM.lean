@@ -19,7 +19,7 @@ Run a `CoreM α` in a fresh `Environment` with specified `modules : List Name` i
 -/
 def CoreM.withImportModules (modules : List Name) (run : CoreM α)
     (searchPath : Option SearchPath := none) (options : Options := {})
-    (trustLevel : UInt32 := 1024) (fileName := "") :
+    (trustLevel : UInt32 := 0) (fileName := "") :
     IO α := unsafe do
   if let some sp := searchPath then searchPathRef.set sp
   Lean.withImportModules (modules.map (Import.mk · false)) options trustLevel fun env =>
