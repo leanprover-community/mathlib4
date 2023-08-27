@@ -387,6 +387,9 @@ instance id : Lifting L W L (𝟭 D) :=
   ⟨Functor.rightUnitor L⟩
 #align category_theory.localization.lifting.id CategoryTheory.Localization.Lifting.id
 
+@[simps]
+instance leftComp (F : D ⥤ E) : Localization.Lifting L W (L ⋙ F) F := ⟨Iso.refl _⟩
+
 /-- Given a localization functor `L : C ⥤ D` for `W : MorphismProperty C`,
 if `F₁' : D ⥤ E` lifts a functor `F₁ : C ⥤ D`, then a functor `F₂'` which
 is isomorphic to `F₁'` also lifts a functor `F₂` that is isomorphic to `F₁`.  -/

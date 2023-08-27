@@ -522,6 +522,11 @@ theorem RespectsIso.isomorphisms : RespectsIso (isomorphisms C) := by
 
 variable {C}
 
+lemma IsInvertedBy.of_iso (W : MorphismProperty C) {F G : C ⥤ D} (e : F ≅ G) (hF : W.IsInvertedBy F) :
+    W.IsInvertedBy G := fun X Y f hf =>
+  (RespectsIso.arrow_mk_iso_iff (RespectsIso.isomorphisms D)
+    (Arrow.isoMk (e.app X) (e.app Y) (by simp))).1 (hF f hf)
+
 lemma map_isInvertedBy_iff {E : Type _} [Category E]
   (P : MorphismProperty C) (F : C ⥤ D) (G : D ⥤ E) :
     (P.map F).IsInvertedBy G ↔ P.IsInvertedBy (F ⋙ G) := by

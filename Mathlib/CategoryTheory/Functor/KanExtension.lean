@@ -1,5 +1,4 @@
 import Mathlib.CategoryTheory.StructuredArrow
---import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 
 namespace CategoryTheory
