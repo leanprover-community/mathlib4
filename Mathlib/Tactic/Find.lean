@@ -73,11 +73,8 @@ def matchAnywhere (t : Expr) : MetaM ConstMatcher := withReducible do
     Lean.Meta.forEachExpr' cTy fun sub_e => do
       if head == sub_e.headIndexWithArgs then do
         withNewMCtxDepth $ do
-          let pat := pat.expr.instantiateLevelParamsArray pat.paramNames
-            (← mkFreshLevelMVars pat.numMVars).toArray
-          let (_, _, pat) ← lambdaMetaTelescope pat
-          -- dbg_trace (pat, sub_e)
-          if ← isDefEq pat sub_e
+          let (_, _, pat_e) ← openAbstractMVarsResult pat
+          if ← isDefEq pat_e sub_e
           then found.set true
       -- keep searching if we haven't found it yet
       not <$> found.get
@@ -105,14 +102,11 @@ def matchConclusion (t : Expr) : MetaM ConstMatcher := withReducible do
     let cTy := c.instantiateTypeLevelParams (← mkFreshLevelMVars c.numLevelParams)
     forallTelescopeReducing cTy fun cParams cTy' ↦ do
       if head == cTy'.headIndexWithArgs then
-        let pat := pat.expr.instantiateLevelParamsArray pat.paramNames
-          (← mkFreshLevelMVars pat.numMVars).toArray
-        let (_, _, pat) ← lambdaMetaTelescope pat
-        let (patParams, _, pat) ← forallMetaTelescopeReducing pat
-        isDefEq cTy' pat <&&> matchHyps patParams.toList [] cParams.toList
+        let (_, _, pat_e) ← openAbstractMVarsResult pat
+        let (patParams, _, pat_concl) ← forallMetaTelescopeReducing pat_e
+        isDefEq cTy' pat_concl <&&> matchHyps patParams.toList [] cParams.toList
       else
         pure false
-
 
 /-!
 ## The find tactic engine: Cache and matching

@@ -153,9 +153,11 @@ Of these, 1 match your patterns.
 
 /--
 info: Found 1 definitions mentioning HMul.hMul, Eq and Star.star.
-Of these, 0 match your patterns.
+Of these, 1 match your patterns.
+• star_comm_self'
 -/
 #guard_msgs in
 #find (star ?a * ?a = ?a * star ?a)
+
 
 end LinearPatternTest
