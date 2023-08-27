@@ -1216,6 +1216,47 @@ theorem DeleteFar.mono (h : G.DeleteFar p r₂) (hr : r₁ ≤ r₂) : G.DeleteF
 
 end DeleteFar
 
+/-! ## Vertex replacement -/
+
+
+/-- The graph formed by replacing `t` with a copy of `s`, by changing `t`'s neighbours to match.
+The `s-t` edge is removed if present. -/
+def replaceVertex (s t : V) : SimpleGraph V where
+  Adj := G.Adj \ Sym2.ToRel (G.incidenceSet t) ⊔ Sym2.ToRel {⟦(t, v)⟧ | v ∈ G.neighborSet s \ {t}}
+  symm v w := by
+    intro h; cases h
+    · exact Or.inl (by simpa [adj_comm, Sym2.eq_swap])
+    · aesop
+  loopless v := by simp only [Set.mem_diff, Pi.sup_apply, Pi.sdiff_apply, SimpleGraph.irrefl,
+    Sym2.toRel_prop, Set.mem_setOf_eq, Quotient.eq, Sym2.rel_iff, or_self, exists_eq_right_right,
+    le_Prop_eq, sdiff_le_iff, IsEmpty.forall_iff, sup_of_le_right]; tauto
+
+@[simp]
+theorem replaceVertex_self (s : V) : G.replaceVertex s s = G := by
+  rw [replaceVertex]
+  congr!
+  ext x y
+  rw [incidenceSet]
+  simp_all only [mem_neighborSet, SimpleGraph.irrefl, not_false_eq_true, Set.diff_singleton_eq_self,
+    Pi.sup_apply, Pi.sdiff_apply, Sym2.toRel_prop, Set.mem_setOf_eq, mem_edgeSet, Sym2.mem_iff,
+    Quotient.eq, Sym2.rel_iff, ge_iff_le, le_Prop_eq, forall_exists_index, and_imp, sdiff_le_iff,
+    sup_Prop_eq, true_and]
+  by_cases ha : Adj G x y
+  · simp_all only [true_and, iff_true]
+    change ⊤ \ _ ∨ _
+    simp only [top_sdiff', hnot_eq_compl, compl_iff_not]
+    rw [← imp_iff_not_or]
+    intro e
+    cases' e with z z
+    · use y; rw [z]; simpa
+    · use x; rw [z, adj_comm]; simpa
+  · simp_all only [false_and, _root_.sdiff_self, iff_false]
+    change ¬(False ∨ _)
+    simp only [false_or, not_exists, not_and]
+    intro b hb
+    push_neg
+    constructor <;> (intro e; contrapose! hb; simpa only [e, hb, adj_comm] using ha)
+
 /-! ## Map and comap -/
 
 
