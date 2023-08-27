@@ -45,6 +45,8 @@ it eagerly wants to solve for instance arguments. The current version is able to
 expected LHS and RHS to fill in arguments before solving for instance arguments.
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic.TermCongr
 open Lean Elab Meta
 
