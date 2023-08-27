@@ -4,6 +4,8 @@ import Mathlib.Tactic.Congrm
 
 namespace Tests.Congrm
 
+set_option autoImplicit true
+
 section docs
 
 /-! These are the examples from the tactic documentation -/

@@ -6,6 +6,8 @@ import Mathlib.Tactic.TermCongr
 
 namespace Tests
 
+set_option autoImplicit true
+
 --set_option trace.Elab.congr true
 
 section congr_thms
