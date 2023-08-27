@@ -68,7 +68,6 @@ lean_lib Counterexamples where
 lean_lib ImportGraph where
   roots := #[`ImportGraph]
 
-@[default_target]
 lean_exe graph where
   root := `ImportGraph.Main
   supportInterpreter := true
