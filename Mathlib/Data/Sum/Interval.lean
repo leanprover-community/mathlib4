@@ -77,7 +77,7 @@ theorem sumLift₂_eq_empty :
     sumLift₂ f g a b = ∅ ↔
       (∀ a₁ b₁, a = inl a₁ → b = inl b₁ → f a₁ b₁ = ∅) ∧
         ∀ a₂ b₂, a = inr a₂ → b = inr b₂ → g a₂ b₂ = ∅ := by
-  refine' ⟨λ h ↦ _, λ h ↦ _⟩
+  refine' ⟨fun h ↦ _, fun h ↦ _⟩
   · constructor <;>
     · rintro a b rfl rfl
       exact map_eq_empty.1 h
@@ -109,13 +109,13 @@ section SumLexLift
 variable (f₁ f₁' : α₁ → β₁ → Finset γ₁) (f₂ f₂' : α₂ → β₂ → Finset γ₂)
   (g₁ g₁' : α₁ → β₂ → Finset γ₁) (g₂ g₂' : α₁ → β₂ → Finset γ₂)
 
-/-- Lifts maps `α₁ → β₁ → finset γ₁`, `α₂ → β₂ → finset γ₂`, `α₁ → β₂ → finset γ₁`,
-`α₂ → β₂ → finset γ₂`  to a map `α₁ ⊕ α₂ → β₁ ⊕ β₂ → finset (γ₁ ⊕ γ₂)`. Could be generalized to
+/-- Lifts maps `α₁ → β₁ → Finset γ₁`, `α₂ → β₂ → Finset γ₂`, `α₁ → β₂ → Finset γ₁`,
+`α₂ → β₂ → Finset γ₂`  to a map `α₁ ⊕ α₂ → β₁ ⊕ β₂ → Finset (γ₁ ⊕ γ₂)`. Could be generalized to
 alternative monads if we can make sure to keep computability and universe polymorphism. -/
-def sumLexLift : ∀ (a : Sum α₁ α₂) (b : Sum β₁ β₂), Finset (Sum γ₁ γ₂)
+def sumLexLift : Sum α₁ α₂ → Sum β₁ β₂ → Finset (Sum γ₁ γ₂)
   | inl a, inl b => (f₁ a b).map Embedding.inl
   | inl a, inr b => (g₁ a b).disjSum (g₂ a b)
-  | inr a, inl b => ∅
+  | inr _, inl _ => ∅
   | inr a, inr b => (f₂ a b).map ⟨_, inr_injective⟩
 #align finset.sum_lex_lift Finset.sumLexLift
 
@@ -147,24 +147,24 @@ theorem mem_sumLexLift :
           (∃ a₁ b₂ c₂, a = inl a₁ ∧ b = inr b₂ ∧ c = inr c₂ ∧ c₂ ∈ g₂ a₁ b₂) ∨
             ∃ a₂ b₂ c₂, a = inr a₂ ∧ b = inr b₂ ∧ c = inr c₂ ∧ c₂ ∈ f₂ a₂ b₂ := by
   constructor
-  · cases a <;> cases b
-    · rw [sum_lex_lift, mem_map]
+  · obtain a | a := a <;> obtain b | b :=  b
+    · rw [sumLexLift, mem_map]
       rintro ⟨c, hc, rfl⟩
       exact Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩
-    · refine' λ h ↦ (mem_disj_sum.1 h).elim _ _
+    · refine' λ h ↦ (mem_disjSum.1 h).elim _ _
       · rintro ⟨c, hc, rfl⟩
         exact Or.inr (Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩)
       · rintro ⟨c, hc, rfl⟩
         exact Or.inr (Or.inr $ Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩)
     · exact λ h ↦ (not_mem_empty _ h).elim
-    · rw [sum_lex_lift, mem_map]
+    · rw [sumLexLift, mem_map]
       rintro ⟨c, hc, rfl⟩
       exact Or.inr (Or.inr $ Or.inr $ ⟨a, b, c, rfl, rfl, rfl, hc⟩)
   · rintro (⟨a, b, c, rfl, rfl, rfl, hc⟩ | ⟨a, b, c, rfl, rfl, rfl, hc⟩ |
       ⟨a, b, c, rfl, rfl, rfl, hc⟩ | ⟨a, b, c, rfl, rfl, rfl, hc⟩)
     · exact mem_map_of_mem _ hc
-    · exact inl_mem_disj_sum.2 hc
-    · exact inr_mem_disj_sum.2 hc
+    · exact inl_mem_disjSum.2 hc
+    · exact inr_mem_disjSum.2 hc
     · exact mem_map_of_mem _ hc
 #align finset.mem_sum_lex_lift Finset.mem_sumLexLift
 
@@ -172,14 +172,14 @@ theorem inl_mem_sumLexLift {c₁ : γ₁} :
     inl c₁ ∈ sumLexLift f₁ f₂ g₁ g₂ a b ↔
       (∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ c₁ ∈ f₁ a₁ b₁) ∨
         ∃ a₁ b₂, a = inl a₁ ∧ b = inr b₂ ∧ c₁ ∈ g₁ a₁ b₂ :=
-  by simp [mem_sum_lex_lift]
+  by simp [mem_sumLexLift]
 #align finset.inl_mem_sum_lex_lift Finset.inl_mem_sumLexLift
 
 theorem inr_mem_sumLexLift {c₂ : γ₂} :
     inr c₂ ∈ sumLexLift f₁ f₂ g₁ g₂ a b ↔
       (∃ a₁ b₂, a = inl a₁ ∧ b = inr b₂ ∧ c₂ ∈ g₂ a₁ b₂) ∨
         ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ c₂ ∈ f₂ a₂ b₂ :=
-  by simp [mem_sum_lex_lift]
+  by simp [mem_sumLexLift]
 #align finset.inr_mem_sum_lex_lift Finset.inr_mem_sumLexLift
 
 theorem sumLexLift_mono (hf₁ : ∀ a b, f₁ a b ⊆ f₁' a b) (hf₂ : ∀ a b, f₂ a b ⊆ f₂' a b)
@@ -187,7 +187,7 @@ theorem sumLexLift_mono (hf₁ : ∀ a b, f₁ a b ⊆ f₁' a b) (hf₂ : ∀ a
     (b : Sum β₁ β₂) : sumLexLift f₁ f₂ g₁ g₂ a b ⊆ sumLexLift f₁' f₂' g₁' g₂' a b :=
   by
   cases a <;> cases b
-  exacts [map_subset_map.2 (hf₁ _ _), disj_sum_mono (hg₁ _ _) (hg₂ _ _), subset.rfl,
+  exacts [map_subset_map.2 (hf₁ _ _), disjSum_mono (hg₁ _ _) (hg₂ _ _), Subset.rfl,
     map_subset_map.2 (hf₂ _ _)]
 #align finset.sum_lex_lift_mono Finset.sumLexLift_mono
 
@@ -198,7 +198,7 @@ theorem sumLexLift_eq_empty :
           ∀ a₂ b₂, a = inr a₂ → b = inr b₂ → f₂ a₂ b₂ = ∅ := by
   refine' ⟨λ h ↦ ⟨_, _, _⟩, λ h ↦ _⟩
   any_goals rintro a b rfl rfl; exact map_eq_empty.1 h
-  · rintro a b rfl rfl; exact disj_sum_eq_empty.1 h
+  · rintro a b rfl rfl; exact disjSum_eq_empty.1 h
   cases a <;> cases b
   · exact map_eq_empty.2 (h.1 _ _ rfl rfl)
   · simp [h.2.1 _ _ rfl rfl]
@@ -211,7 +211,7 @@ theorem sumLexLift_nonempty :
       (∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ (f₁ a₁ b₁).Nonempty) ∨
         (∃ a₁ b₂, a = inl a₁ ∧ b = inr b₂ ∧ ((g₁ a₁ b₂).Nonempty ∨ (g₂ a₁ b₂).Nonempty)) ∨
           ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ (f₂ a₂ b₂).Nonempty :=
-  by simp [nonempty_iff_ne_empty, sum_lex_lift_eq_empty, not_and_or]
+  by simp [nonempty_iff_ne_empty, sumLexLift_eq_empty, not_and_or]
 #align finset.sum_lex_lift_nonempty Finset.sumLexLift_nonempty
 
 end SumLexLift
@@ -325,12 +325,12 @@ variable [Preorder α] [Preorder β] [OrderTop α] [OrderBot β] [LocallyFiniteO
 
 /-- Throwaway tactic. -/
 private unsafe def simp_lex : tactic Unit :=
-`[refine to_lex.surjective.forall₃.2 _, rintro (a | a) (b | b) (c | c); simp only
-    [sum_lex_lift_inl_inl, sum_lex_lift_inl_inr, sum_lex_lift_inr_inl, sum_lex_lift_inr_inr,
+  `[refine ToLex.surjective.forall₃.2 ?_; rintro (a | a) (b | b) (c | c) <;> simp only
+    [sumLexLift_inl_inl, sumLexLift_inl_inr, sumLexLift_inr_inl, sumLexLift_inr_inr,
     inl_le_inl_iff, inl_le_inr, not_inr_le_inl, inr_le_inr_iff, inl_lt_inl_iff, inl_lt_inr,
     not_inr_lt_inl, inr_lt_inr_iff, mem_Icc, mem_Ico, mem_Ioc, mem_Ioo, mem_Ici, mem_Ioi, mem_Iic,
-    mem_Iio, equiv.coe_to_embedding, to_lex_inj, exists_false, and_false, false_and, map_empty,
-    not_mem_empty, true_and, inl_mem_disj_sum, inr_mem_disj_sum, and_true, of_lex_to_lex, mem_map,
+    mem_Iio, equiv.coe_to_embedding, toLex_inj, exists_false, and_false, false_and, map_empty,
+    not_mem_empty, true_and, inl_mem_disj_sum, inr_mem_disj_sum, and_true, ofLex_toLex, mem_map,
     embedding.coe_fn_mk, exists_prop, exists_eq_right, embedding.inl_apply]]
 
 instance locallyFiniteOrder : LocallyFiniteOrder (α ⊕ₗ β) where
