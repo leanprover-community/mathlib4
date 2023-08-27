@@ -68,16 +68,20 @@ namespace Mathlib.Tactic.Find
 /-- A predicate on `ConstantInfo` -/
 def ConstMatcher := ConstantInfo → MetaM Bool
 
+/-- A quick comparison of expressions, to avoid setting up the machinery for isDefEq
+when it will surely fail -/
+def _root_.Lean.Expr.headIndexWithArgs (e : Expr) := (e.toHeadIndex, e.headNumArgs)
+
 /-- Takes a pattern (of type `Expr`), and returns a matcher that succeeds if _any_ subexpression
 matches that patttern.  -/
 def matchAnywhere (t : Expr) : MetaM ConstMatcher := withReducible do
-  let head := t.toHeadIndex
+  let head := t.headIndexWithArgs
   let pat ← abstractMVars (← instantiateMVars t)
   pure fun (c : ConstantInfo) => withReducible do
     let found  ← IO.mkRef false
     let cTy := c.instantiateTypeLevelParams (← mkFreshLevelMVars c.numLevelParams)
     Lean.Meta.forEachExpr' cTy fun sub_e => do
-      if head == sub_e.toHeadIndex then do
+      if head == sub_e.headIndexWithArgs then do
         withNewMCtxDepth $ do
           let pat := pat.expr.instantiateLevelParamsArray pat.paramNames
             (← mkFreshLevelMVars pat.numMVars).toArray
@@ -105,12 +109,12 @@ private partial def matchHyps : List Expr → List Expr → List Expr → MetaM 
 lemma matches the conclusion of the pattern, and all hypotheses of the pattern are found among the
 hypotheses of the lemma.  -/
 def matchConclusion (t : Expr) : MetaM ConstMatcher := withReducible do
-  let head := (← forallMetaTelescopeReducing t).2.2.toHeadIndex
+  let head := (← forallMetaTelescopeReducing t).2.2.headIndexWithArgs
   let pat ← abstractMVars (← instantiateMVars t)
   pure fun (c : ConstantInfo) => withReducible do
     let cTy := c.instantiateTypeLevelParams (← mkFreshLevelMVars c.numLevelParams)
     forallTelescopeReducing cTy fun cParams cTy' ↦ do
-      if head == cTy'.toHeadIndex then
+      if head == cTy'.headIndexWithArgs then
         let pat := pat.expr.instantiateLevelParamsArray pat.paramNames
           (← mkFreshLevelMVars pat.numMVars).toArray
         let (_, _, pat) ← lambdaMetaTelescope pat
