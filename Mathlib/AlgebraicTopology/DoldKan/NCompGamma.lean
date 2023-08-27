@@ -19,6 +19,8 @@ that it becomes an isomorphism after the application of the functor
 `N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)`
 which reflects isomorphisms.
 
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
+
 -/
 
 

@@ -111,7 +111,7 @@ theorem derivative_succ_aux (n ν : ℕ) :
       (↑(n + 1) : R[X]) * ((n.choose ν : R[X]) * X ^ ν * (1 - X) ^ (n - ν) -
         (n.choose (ν + 1) : R[X]) * X ^ (ν + 1) * (1 - X) ^ (n - (ν + 1))) by
     simpa [Polynomial.derivative_pow, ← sub_eq_add_neg, Nat.succ_sub_succ_eq_sub,
-      Polynomial.derivative_mul, Polynomial.derivative_nat_cast, MulZeroClass.zero_mul,
+      Polynomial.derivative_mul, Polynomial.derivative_nat_cast, zero_mul,
       Nat.cast_add, algebraMap.coe_one, Polynomial.derivative_X, mul_one, zero_add,
       Polynomial.derivative_sub, Polynomial.derivative_one, zero_sub, mul_neg, Nat.sub_zero,
       bernsteinPolynomial, map_add, map_natCast, Nat.cast_one]
@@ -330,7 +330,7 @@ theorem sum_smul (n : ℕ) :
     -- Step inside the sum:
     refine' Finset.sum_congr rfl fun k _ => (w k).trans _
     simp only [pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, nsmul_eq_mul, Bool.cond_true,
-      Bool.cond_false, add_zero, mul_one, MulZeroClass.mul_zero, smul_zero, MvPolynomial.aeval_X,
+      Bool.cond_false, add_zero, mul_one, mul_zero, smul_zero, MvPolynomial.aeval_X,
       MvPolynomial.pderiv_mul, Derivation.leibniz_pow, Derivation.map_coe_nat, map_natCast, map_pow,
       map_mul]
   · rw [(pderiv true).leibniz_pow, (pderiv true).map_add, pderiv_true_x, pderiv_true_y]
@@ -370,7 +370,7 @@ theorem sum_mul_smul (n : ℕ) :
     -- Step inside the sum:
     refine' Finset.sum_congr rfl fun k _ => (w k).trans _
     simp only [pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, nsmul_eq_mul, Bool.cond_true,
-      Bool.cond_false, add_zero, zero_add, MulZeroClass.mul_zero, smul_zero, mul_one,
+      Bool.cond_false, add_zero, zero_add, mul_zero, smul_zero, mul_one,
       MvPolynomial.aeval_X, MvPolynomial.pderiv_X_self, MvPolynomial.pderiv_X_of_ne,
       Derivation.leibniz_pow, Derivation.leibniz, Derivation.map_coe_nat, map_natCast, map_pow,
       map_mul, map_add]

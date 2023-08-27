@@ -21,6 +21,8 @@ Use the notation `X _[n]` in the `Simplicial` locale to obtain the `n`-th term o
 
 -/
 
+set_option autoImplicit true
+
 
 open Opposite
 

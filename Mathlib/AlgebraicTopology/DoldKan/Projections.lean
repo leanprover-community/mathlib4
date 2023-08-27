@@ -23,8 +23,9 @@ and `P_f_naturality`) and are compatible with the application
 of additive functors (see `map_P`).
 
 By passing to the limit, these endomorphisms `P q` shall be used in `PInfty.lean`
-in order to define `PInfty : K[X] ⟶ K[X]`, see `Equivalence.lean` for the general
-strategy of proof of the Dold-Kan equivalence.
+in order to define `PInfty : K[X] ⟶ K[X]`.
+
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
 

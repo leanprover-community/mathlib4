@@ -100,12 +100,12 @@ variable [MulZeroClass α]
 
 @[simp]
 theorem hadamard_zero : A ⊙ (0 : Matrix m n α) = 0 :=
-  ext fun _ _ => MulZeroClass.mul_zero _
+  ext fun _ _ => mul_zero _
 #align matrix.hadamard_zero Matrix.hadamard_zero
 
 @[simp]
 theorem zero_hadamard : (0 : Matrix m n α) ⊙ A = 0 :=
-  ext fun _ _ => MulZeroClass.zero_mul _
+  ext fun _ _ => zero_mul _
 #align matrix.zero_hadamard Matrix.zero_hadamard
 
 end Zero
@@ -134,7 +134,7 @@ variable [DecidableEq n] [MulZeroClass α]
 
 theorem diagonal_hadamard_diagonal (v : n → α) (w : n → α) :
     diagonal v ⊙ diagonal w = diagonal (v * w) :=
-  ext fun _ _ => (apply_ite₂ _ _ _ _ _ _).trans (congr_arg _ <| MulZeroClass.zero_mul 0)
+  ext fun _ _ => (apply_ite₂ _ _ _ _ _ _).trans (congr_arg _ <| zero_mul 0)
 #align matrix.diagonal_hadamard_diagonal Matrix.diagonal_hadamard_diagonal
 
 end Diagonal
@@ -145,12 +145,12 @@ variable [Fintype m] [Fintype n]
 
 variable (R) [Semiring α] [Semiring R] [Module R α]
 
-theorem sum_hadamard_eq : (∑ i : m, ∑ j : n, (A ⊙ B) i j) = trace (A ⬝ Bᵀ) :=
+theorem sum_hadamard_eq : (∑ i : m, ∑ j : n, (A ⊙ B) i j) = trace (A * Bᵀ) :=
   rfl
 #align matrix.sum_hadamard_eq Matrix.sum_hadamard_eq
 
 theorem dotProduct_vecMul_hadamard [DecidableEq m] [DecidableEq n] (v : m → α) (w : n → α) :
-    dotProduct (vecMul v (A ⊙ B)) w = trace (diagonal v ⬝ A ⬝ (B ⬝ diagonal w)ᵀ) := by
+    dotProduct (vecMul v (A ⊙ B)) w = trace (diagonal v * A * (B * diagonal w)ᵀ) := by
   rw [← sum_hadamard_eq, Finset.sum_comm]
   simp [dotProduct, vecMul, Finset.sum_mul, mul_assoc]
 #align matrix.dot_product_vec_mul_hadamard Matrix.dotProduct_vecMul_hadamard

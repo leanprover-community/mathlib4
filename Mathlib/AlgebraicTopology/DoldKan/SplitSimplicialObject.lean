@@ -17,6 +17,8 @@ In this file we define a functor `nondegComplex : SimplicialObject.Split C ⥤ C
 when `C` is a preadditive category with finite coproducts, and get an isomorphism
 `toKaroubiNondegComplexFunctorIsoN₁ : nondegComplex ⋙ toKaroubi _ ≅ forget C ⋙ DoldKan.N₁`.
 
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
+
 -/
 
 
