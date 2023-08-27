@@ -124,19 +124,13 @@ def matchConclusion (t : Expr) : MetaM ConstMatcher := withReducible do
       else
         pure false
 
-end Mathlib.Tactic.Find
-
-
-
 
 /-!
 ## The find tactic engine: Cache and matching
 -/
 
-namespace Mathlib.Tactic.Find
-
-/-- The declaration cache used by `#find`, stores  `NameRel` mapping names to the
-name of constants they are mentinend in.
+/-- The declaration cache used by `#find`, stores `NameRel` mapping names to the name
+of constants they are mentinend in.
 
 The first `NameRel` is for library declaration (and doesn't change once populated),
 the second is for local declarations and is rebuilt upon every invocation of `#find`.  -/
