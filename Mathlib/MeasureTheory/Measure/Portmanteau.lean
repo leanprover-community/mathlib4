@@ -468,7 +468,7 @@ lemma limsup_measure_closed_le_of_forall_tendsto_measure
   let rs := Classical.choose ex
   have rs_lim : Tendsto rs atTop (𝓝 0) := (Classical.choose_spec ex).1
   have rs_pos : ∀ n, 0 < rs n := fun n ↦ ((Classical.choose_spec ex).2 n).1
-  have rs_null : ∀ n, (μ : Measure Ω) (frontier (Metric.thickening (rs n) F)) = 0 :=
+  have rs_null : ∀ n, μ (frontier (Metric.thickening (rs n) F)) = 0 :=
     fun n ↦ ((Classical.choose_spec ex).2 n).2
   have Fthicks_open : ∀ n, IsOpen (Metric.thickening (rs n) F) :=
     fun n ↦ Metric.isOpen_thickening
@@ -477,16 +477,15 @@ lemma limsup_measure_closed_le_of_forall_tendsto_measure
   intros ε ε_pos μF_finite
   have keyB := tendsto_measure_cthickening_of_isClosed (μ := μ) (s := F)
                 ⟨1, ⟨by simp only [gt_iff_lt, zero_lt_one], measure_ne_top _ _⟩⟩ F_closed
-  have nhd : Iio ((μ : Measure Ω) F + ε) ∈ 𝓝 ((μ : Measure Ω) F) := by
+  have nhd : Iio (μ F + ε) ∈ 𝓝 (μ F) := by
     apply Iio_mem_nhds
-    simpa only [add_zero] using ENNReal.add_lt_add_left μF_finite.ne (ENNReal.coe_pos.mpr ε_pos)
+    exact ENNReal.lt_add_right μF_finite.ne (ENNReal.coe_pos.mpr ε_pos).ne'
   specialize rs_lim (keyB nhd)
   simp only [mem_map, mem_atTop_sets, ge_iff_le, mem_preimage, mem_Iio] at rs_lim
   obtain ⟨m, hm⟩ := rs_lim
   have aux' := fun i ↦ measure_mono (μ := μs i) (Metric.self_subset_thickening (rs_pos m) F)
-  have aux : (fun i ↦ ((μs i : Measure Ω) F))
-              ≤ᶠ[L] (fun i ↦ (μs i : Measure Ω) (Metric.thickening (rs m) F)) := by
-    exact eventually_of_forall aux'
+  have aux : (fun i ↦ (μs i F)) ≤ᶠ[L] (fun i ↦ μs i (Metric.thickening (rs m) F)) :=
+    eventually_of_forall aux'
   refine (limsup_le_limsup aux).trans ?_
   rw [Tendsto.limsup_eq (key m)]
   apply (measure_mono (Metric.thickening_subset_cthickening (rs m) F)).trans (hm m rfl.le).le
