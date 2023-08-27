@@ -23,29 +23,33 @@ files.
 ## Main results
 
 The main result will be the portmanteau theorem providing various characterizations of the
-weak convergence of measures. The separate implications are:
- * `MeasureTheory.FiniteMeasure.limsup_measure_closed_le_of_tendsto` proves that weak convergence
-   implies a limsup-condition for closed sets.
- * `MeasureTheory.limsup_measure_closed_le_iff_liminf_measure_open_ge` proves for probability
-   measures the equivalence of the limsup condition for closed sets and the liminf condition for
-   open sets.
- * `MeasureTheory.tendsto_measure_of_null_frontier` proves that the liminf condition for open
-   sets (which is equivalent to the limsup condition for closed sets) implies the convergence of
-   probabilities of sets whose boundary carries no mass under the limit measure.
- * `MeasureTheory.ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto` is a
-   combination of earlier implications, which shows that weak convergence of probability measures
-   implies the convergence of probabilities of sets whose boundary carries no mass under the
-   limit measure.
+weak convergence of measures. The separate conditions that will be proven equivalent (under
+suitable rather general hypotheses) are:
+
+  (T) Measures `μs` tend to a measure `μ` weakly.
+  (C) For any closed set `F` in `Ω` the limsup of the measures of `F` under `μs` is at most
+      the measure of `F` under `μ`, i.e., `limsup (μs i F) ≤ μ F`.
+  (O) For any open set `G` in `Ω` the liminf of the measures of `G` under `μs` is at least
+      the measure of `G` under `μ`, i.e., `μ G ≤ limsup (μs i G)`.
+  (B) For any Borel set `B` in `Ω` whose boundary carries no mass under `μ`, i.e. `μ ∂B = 0`,
+      the measures of `B` under `μs` tend to the measure of `B` under `μ`, i.e.,
+      `lim (μs i B) = μ B`.
+
+The separate implications are:
+ * `MeasureTheory.FiniteMeasure.limsup_measure_closed_le_of_tendsto` is the implication (W) → (C).
+ * `MeasureTheory.limsup_measure_closed_le_iff_liminf_measure_open_ge` is the equivalence (C) ↔ (O).
+ * `MeasureTheory.tendsto_measure_of_null_frontier` is the implication (O) → (B).
+ * `MeasureTheory.limsup_measure_closed_le_of_forall_tendsto_measure` is the implication (B) → (C).
 
 TODO:
- * Prove the rest of the implications.
+ * Prove the remaining implication (O) → (W) to complete the proof of equivalence of the conditions.
 
 ## Implementation notes
 
 Many of the characterizations of weak convergence hold for finite measures and are proven in that
 generality and then specialized to probability measures. Some implications hold with slightly
 weaker assumptions than usually stated. The full portmanteau theorem, however, is most convenient
-for probability measures on metrizable spaces with their Borel sigmas.
+for probability measures on metrizable spaces with their Borel sigma algebras.
 
 Some specific considerations on the assumptions in the different implications:
  * `MeasureTheory.FiniteMeasure.limsup_measure_closed_le_of_tendsto` assumes
@@ -91,10 +95,12 @@ section LimsupClosedLEAndLELiminfOpen
 
 In this section we prove that for a sequence of Borel probability measures on a topological space
 and its candidate limit measure, the following two conditions are equivalent:
-  (C) For any closed set `F` in `Ω` the limsup of the measures of `F` is at most the limit
-      measure of `F`.
-  (O) For any open set `G` in `Ω` the liminf of the measures of `G` is at least the limit
-      measure of `G`.
+
+  (C) For any closed set `F` in `Ω` the limsup of the measures of `F` under `μs` is at most
+      the measure of `F` under `μ`, i.e., `limsup (μs i F) ≤ μ F`.
+  (O) For any open set `G` in `Ω` the liminf of the measures of `G` under `μs` is at least
+      the measure of `G` under `μ`, i.e., `μ G ≤ limsup (μs i G)`.
+
 Either of these will later be shown to be equivalent to the weak convergence of the sequence
 of measures.
 -/
@@ -190,14 +196,17 @@ section TendstoOfNullFrontier
 
 In this section we prove that for a sequence of Borel probability measures on a topological space
 and its candidate limit measure, either of the following equivalent conditions:
-  (C) For any closed set `F` in `Ω` the limsup of the measures of `F` is at most the limit
-      measure of `F`
-  (O) For any open set `G` in `Ω` the liminf of the measures of `G` is at least the limit
-      measure of `G`
+
+  (C) For any closed set `F` in `Ω` the limsup of the measures of `F` under `μs` is at most
+      the measure of `F` under `μ`, i.e., `limsup (μs i F) ≤ μ F`.
+  (O) For any open set `G` in `Ω` the liminf of the measures of `G` under `μs` is at least
+      the measure of `G` under `μ`, i.e., `μ G ≤ limsup (μs i G)`.
+
 implies that
-  (B) For any Borel set `E` in `Ω` whose boundary `∂E` carries no mass under the candidate limit
-      measure, we have that the limit of measures of `E` is the measure of `E` under the
-      candidate limit measure.
+
+  (B) For any Borel set `B` in `Ω` whose boundary carries no mass under `μ`, i.e. `μ ∂B = 0`,
+      the measures of `B` under `μs` tend to the measure of `B` under `μ`, i.e.,
+      `lim (μs i B) = μ B`.
 -/
 
 
@@ -253,14 +262,22 @@ section ConvergenceImpliesLimsupClosedLE
 /-! ### Portmanteau implication: weak convergence implies a limsup condition for closed sets
 
 In this section we prove, under the assumption that the underlying topological space `Ω` is
-pseudo-emetrizable, that the weak convergence of measures on `MeasureTheory.FiniteMeasure Ω`
-implies that for any closed set `F` in `Ω` the limsup of the measures of `F` is at most the
-limit measure of `F`. This is one implication of the portmanteau theorem characterizing weak
-convergence of measures.
+pseudo-emetrizable, that
 
-Combining with an earlier implication we also get that weak convergence implies that for any Borel
-set `E` in `Ω` whose boundary `∂E` carries no mass under the limit measure, the limit of measures
-of `E` is the measure of `E` under the limit measure.
+  (T) Measures `μs` tend to a measure `μ` weakly
+
+implies
+
+  (C) For any closed set `F` in `Ω` the limsup of the measures of `F` under `μs` is at most
+      the measure of `F` under `μ`, i.e., `limsup (μs i F) ≤ μ F`.
+
+Combining with a earlier proven implications, we get that (T) implies also both
+
+  (O) For any open set `G` in `Ω` the liminf of the measures of `G` under `μs` is at least
+      the measure of `G` under `μ`, i.e., `μ G ≤ limsup (μs i G)`; and
+  (B) For any Borel set `B` in `Ω` whose boundary carries no mass under `μ`, i.e. `μ ∂B = 0`,
+      the measures of `B` under `μs` tend to the measure of `B` under `μ`, i.e.,
+      `lim (μs i B) = μ B`.
 -/
 
 
@@ -421,6 +438,25 @@ end ConvergenceImpliesLimsupClosedLE --section
 section LimitBorelImpliesLimsupClosedLE
 
 /-! ### Portmanteau implication: limit condition for Borel sets implies limsup for closed sets
+
+
+In this section we prove, under the assumption that the underlying topological space `Ω` is
+pseudo-emetrizable, that
+
+  (B) For any Borel set `B` in `Ω` whose boundary carries no mass under `μ`, i.e. `μ ∂B = 0`,
+      the measures of `B` under `μs` tend to the measure of `B` under `μ`, i.e.,
+      `lim (μs i B) = μ B`.
+
+implies
+
+  (C) For any closed set `F` in `Ω` the limsup of the measures of `F` under `μs` is at most
+      the measure of `F` under `μ`, i.e., `limsup (μs i F) ≤ μ F`.
+
+Combining with a earlier proven implications, we get that (B) implies also
+
+  (O) For any open set `G` in `Ω` the liminf of the measures of `G` under `μs` is at least
+      the measure of `G` under `μ`, i.e., `μ G ≤ limsup (μs i G)`.
+
 -/
 
 open ENNReal
@@ -457,7 +493,7 @@ Assuming that for all Borel sets `E` whose boundary `∂E` carries no probabilit
 candidate limit probability measure `μ` we have convergence of the measures `μs i E` to `μ E`,
 then for all closed sets `F` we have the limsup condition `limsup (μs i F) ≤ μ F`. -/
 lemma limsup_measure_closed_le_of_forall_tendsto_measure
-    {Ω ι : Type _} {L : Filter ι} [NeBot L]
+    {Ω ι : Type*} {L : Filter ι} [NeBot L]
     [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω]
     {μ : Measure Ω} [IsFiniteMeasure μ] {μs : ι → Measure Ω}
     (h : ∀ {E : Set Ω}, MeasurableSet E → μ (frontier E) = 0 →
@@ -495,7 +531,7 @@ Assuming that for all Borel sets `E` whose boundary `∂E` carries no probabilit
 candidate limit probability measure `μ` we have convergence of the measures `μs i E` to `μ E`,
 then for all open sets `G` we have the limsup condition `μ G ≤ liminf (μs i G)`. -/
 lemma le_liminf_measure_open_of_forall_tendsto_measure
-    {Ω ι : Type _} {L : Filter ι} [NeBot L]
+    {Ω ι : Type*} {L : Filter ι} [NeBot L]
     [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω]
     {μ : Measure Ω} [IsProbabilityMeasure μ] {μs : ι → Measure Ω} [∀ i, IsProbabilityMeasure (μs i)]
     (h : ∀ {E}, MeasurableSet E → μ (frontier E) = 0 → Tendsto (fun i ↦ μs i E) L (𝓝 (μ E)))
