@@ -1,4 +1,5 @@
 import Mathlib.CategoryTheory.StructuredArrow
+import Mathlib.CategoryTheory.Adjunction.Limits
 
 namespace CategoryTheory
 
@@ -46,18 +47,22 @@ lemma rightKanExtension_ext {G : H ⥤ D} (γ₁ γ₂ : G ⟶ F')
 end
 
 class HasRightKanExtension (L : C ⥤ H) (F : C ⥤ D) : Prop where
-  nonempty_hasTerminal : Nonempty (HasTerminal (RightExtension L F))
+  hasTerminal : HasTerminal (RightExtension L F)
 
 lemma HasRightKanExtension.mk' (F' : H ⥤ D) {L : C ⥤ H} {F : C ⥤ D} (α : L ⋙ F' ⟶ F)
     [F'.IsRightKanExtension α] : HasRightKanExtension L F where
-  nonempty_hasTerminal := ⟨(F'.rightKanExtensionUniversal α).hasTerminal⟩
+  hasTerminal := (F'.rightKanExtensionUniversal α).hasTerminal
+
+lemma hasRightKanExtension_iff (L : C ⥤ H) (F : C ⥤ D) :
+    HasRightKanExtension L F ↔ HasTerminal (RightExtension L F) :=
+  ⟨fun h => h.hasTerminal, fun h => ⟨h⟩⟩
 
 section
 
 variable (L : C ⥤ H) (F : C ⥤ D) [HasRightKanExtension L F]
 
 noncomputable def rightExtensionTerminal : RightExtension L F :=
-  have : HasTerminal (RightExtension L F) := HasRightKanExtension.nonempty_hasTerminal.some
+  have : HasTerminal (RightExtension L F) := HasRightKanExtension.hasTerminal
   ⊤_ _
 
 noncomputable def rightKanExtension : H ⥤ D := (rightExtensionTerminal L F).left
@@ -65,10 +70,87 @@ noncomputable def rightKanExtensionCounit : L ⋙ rightKanExtension L F ⟶ F :=
 
 instance : (L.rightKanExtension F).IsRightKanExtension (L.rightKanExtensionCounit F) where
   nonempty_isUniversal := ⟨by
-    have : HasTerminal (RightExtension L F) := HasRightKanExtension.nonempty_hasTerminal.some
+    have : HasTerminal (RightExtension L F) := HasRightKanExtension.hasTerminal
     apply terminalIsTerminal⟩
 
 end
+
+end Functor
+
+namespace Equivalence
+
+variable {C D : Type _} [Category C] [Category D] (e : C ≌ D) (J : Type _) [Category J]
+
+lemma hasLimitsOfShape_iff  :
+    HasLimitsOfShape J C ↔ HasLimitsOfShape J D :=
+  ⟨fun _ => Adjunction.hasLimitsOfShape_of_equivalence e.inverse,
+    fun _ => Adjunction.hasLimitsOfShape_of_equivalence e.functor⟩
+
+lemma hasTerminal_iff :
+    HasTerminal C ↔ HasTerminal D :=
+  e.hasLimitsOfShape_iff _
+
+def whiskeringLeft (E : Type _) [Category E] : (D ⥤ E) ≌ (C ⥤ E) where
+  functor := (CategoryTheory.whiskeringLeft C D E).obj e.functor
+  inverse := (CategoryTheory.whiskeringLeft D C E).obj e.inverse
+  unitIso := (CategoryTheory.whiskeringLeft D D E).mapIso e.counitIso.symm
+  counitIso := (CategoryTheory.whiskeringLeft C C E).mapIso e.unitIso.symm
+  functor_unitIso_comp F := by
+    ext Y
+    dsimp
+    rw [← F.map_id, ← F.map_comp]
+    congr 1
+    simp
+
+end Equivalence
+
+namespace Functor
+
+variable {C H H' : Type _} [Category C] [Category H] [Category H']
+
+instance (F : H ⥤ H') [IsEquivalence F] :
+    IsEquivalence ((whiskeringLeft H H' C).obj F) := by
+  change IsEquivalence (F.asEquivalence.whiskeringLeft C).functor
+  infer_instance
+
+end Functor
+
+namespace Functor
+
+variable {C D H H' : Type _} [Category C] [Category D] [Category H] [Category H']
+  (L L' : C ⥤ H) (iso₁ : L ≅ L') (F F' : C ⥤ D) (e : H ≌ H') (iso₂ : F ≅ F')
+
+noncomputable def rightExtensionEquivalenceOfPostcomp₁ :
+    RightExtension (L ⋙ e.functor) F ≌ RightExtension L F := by
+  have := CostructuredArrow.isEquivalencePre ((whiskeringLeft H H' D).obj e.functor) ((whiskeringLeft C H D).obj L) F
+  exact Functor.asEquivalence (CostructuredArrow.pre ((whiskeringLeft H H' D).obj e.functor) ((whiskeringLeft C H D).obj L) F)
+
+lemma hasRightExtension_iff_postcomp₁ :
+    HasRightKanExtension L F ↔ HasRightKanExtension (L ⋙ e.functor) F := by
+  simp only [hasRightKanExtension_iff,
+    (rightExtensionEquivalenceOfPostcomp₁ L F e).hasTerminal_iff]
+
+variable {L L'}
+
+def rightExtensionEquivalenceOfIso₁ :
+    RightExtension L F ≌ RightExtension L' F :=
+  CostructuredArrow.mapNatIso ((whiskeringLeft C H D).mapIso iso₁)
+
+lemma hasRightExtension_iff_of_iso₁ :
+    HasRightKanExtension L F ↔ HasRightKanExtension L' F := by
+  simp only [hasRightKanExtension_iff,
+    (rightExtensionEquivalenceOfIso₁ iso₁ F).hasTerminal_iff]
+
+variable (L) {F F'}
+
+def rightExtensionEquivalenceOfIso₂ :
+    RightExtension L F ≌ RightExtension L F' :=
+  CostructuredArrow.mapIso iso₂
+
+lemma hasRightExtension_iff_of_iso₂ :
+    HasRightKanExtension L F ↔ HasRightKanExtension L F' := by
+  simp only [hasRightKanExtension_iff,
+    (rightExtensionEquivalenceOfIso₂ L iso₂).hasTerminal_iff]
 
 end Functor
 
