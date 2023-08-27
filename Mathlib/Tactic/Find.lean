@@ -6,7 +6,8 @@ Authors: Sebastian Ullrich, Joachim Breitner
 import Lean
 import Std.Lean.Delaborator
 import Mathlib.Tactic.Cache
-import Mathlib.Lean.NameRel
+import Mathlib.Lean.Data.NameRel
+import Mathlib.Lean.Data.RBTree
 
 /-!
 # The `#find` command and tactic.
@@ -17,19 +18,6 @@ open Lean Meta Elab
 /-!
 ## Utilities, to be moved somewhere else before merging
 -/
-
-/-- The intersection of a (non-empty) array of `NameSet`s -/
-def Lean.NameSet.intersects (ss : Array NameSet) : NameSet :=
-  -- sort smallest set to the back, and iterate over that one
-  -- TODO: Does `RBTree` admit faster intersection algorithms?
-  let ss := ss.qsort (·.size > ·.size)
-  ss.back.fold (init := {}) fun s m =>
-    if ss.pop.all (·.contains m) then s.insert m else s
-
-/-- The union of two `NameSet`s -/
-def Lean.NameSet.union (s₁ : NameSet) (s₂ : NameSet) : NameSet :=
-  -- TODO: Does `RBTree` admit faster union?
-  s₂.fold (init := s₁) .insert
 
 /-- Returns `true` if `needle` is a substring of `hey` -/
 def String.isInfixOf (needle : String) (hey : String) := Id.run do
@@ -174,8 +162,8 @@ def find (args : Arguments) (maxShown := 200) :
 
     -- Query the declaration cache
     let (m₁, m₂) ← findDeclsByConsts.get
-    let hits := NameSet.intersects <| needles.toArray.map <| fun needle =>
-      NameSet.union (m₁.find needle) (m₂.find needle)
+    let hits := RBTree.intersects <| needles.toArray.map <| fun needle =>
+      (m₁.find needle).union (m₂.find needle)
 
     -- Filter by name patterns
     let hits2 := hits.toArray.filter fun n => args.namePats.all fun p =>
