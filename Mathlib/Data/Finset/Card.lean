@@ -590,10 +590,15 @@ theorem exists_ne_of_one_lt_card (hs : 1 < s.card) (a : α) : ∃ b, b ∈ s ∧
   · exact ⟨y, hy, ha⟩
 #align finset.exists_ne_of_one_lt_card Finset.exists_ne_of_one_lt_card
 
-lemma one_lt_card_mul_card_iff : 1 < s.card * t.card ↔
+/-- The product of the cardinalities of two Finsets is greater than 1 iff
+  one of the cardinalities is greater than 1 and both Finsets are nonempty. -/
+lemma one_lt_card_mul_card_iff {t : Finset β} : 1 < s.card * t.card ↔
     s.Nonempty ∧ t.Nonempty ∧ (1 < s.card ∨ 1 < t.card) := by
   simp_rw [← card_pos]; apply Nat.one_lt_mul_iff
 
+/-- If a Finset in a Pi type is nontrivial (has at least two elements), then
+  its projection to some factor is nontrivial, and the fibers of the projection
+  are proper subsets. -/
 lemma exists_of_one_lt_card_pi {ι : Type*} {α : ι → Type*} [∀ i, DecidableEq (α i)]
     {s : Finset (∀ i, α i)} (h : 1 < s.card) :
     ∃ i, 1 < (s.image (· i)).card ∧ ∀ ai, s.filter (· i = ai) ⊂ s := by
