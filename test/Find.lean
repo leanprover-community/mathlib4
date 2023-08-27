@@ -118,3 +118,44 @@ Of these, 2 match your patterns.
 -/
 #guard_msgs in
 #find ⊢ (uniquenameforthistest = _ → 0 < ?n → _ ≤ ?n)
+
+
+-- Regression test
+
+section LinearPatternTest
+
+class Star (R : Type _) where star : R → R
+export Star(star)
+-- Without an instance, `#check (star _)` will always fail
+instance : Star Unit where star := fun () => ()
+
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
+theorem star_comm_self' {R} [Mul R] [Star R] (x : R) : star x * x = x * star x := sorry
+
+/--
+info: Found 1 definitions mentioning Star.star.
+Of these, 1 match your patterns.
+• star_comm_self'
+-/
+#guard_msgs in
+#find (star _)
+
+/--
+info: Found 1 definitions mentioning HMul.hMul, Eq and Star.star.
+Of these, 1 match your patterns.
+• star_comm_self'
+-/
+#guard_msgs in
+#find (star ?a * ?a = ?a * star ?_)
+
+-- The following does not work for some strange reason
+
+/--
+info: Found 1 definitions mentioning HMul.hMul, Eq and Star.star.
+Of these, 0 match your patterns.
+-/
+#guard_msgs in
+#find (star ?a * ?a = ?a * star ?a)
+
+end LinearPatternTest
