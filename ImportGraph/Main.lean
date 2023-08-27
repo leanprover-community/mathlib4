@@ -9,6 +9,7 @@ import Mathlib.Lean.Data.NameMap
 import Mathlib.Lean.IO.Process
 import Mathlib.Lean.Name
 import Mathlib.Util.Cli
+import Std.Lean.Util.Path
 
 /-!
 # `lake exe graph`
@@ -40,7 +41,7 @@ def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
   let from? := match args.flag? "from" with
   | some fr => some <| fr.as! Name
   | none => none
-  searchPathRef.set compileTimeSearchPath%
+  searchPathRef.set compile_time_search_path%
   let dotFile ← unsafe withImportModules [{module := to}] {} (trustLevel := 1024) fun env => do
     let mut graph := env.importGraph
     if let .some f := from? then
