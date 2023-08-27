@@ -361,7 +361,7 @@ theorem lt_succ_iff_lt_or_eq {n i : ℕ} : n < i.succ ↔ n < i ∨ n = i :=
 set_option push_neg.use_distrib true in
 /-- The product of two natural numbers is greater than 1 if and only if
   at least one of them is greater than 1 and both are positive. -/
-lemma one_lt_mul_iff {m n : ℕ} : 1 < m * n ↔ 0 < m ∧ 0 < n ∧ (1 < m ∨ 1 < n) := by
+lemma one_lt_mul_iff : 1 < m * n ↔ 0 < m ∧ 0 < n ∧ (1 < m ∨ 1 < n) := by
   constructor <;> intro h
   · contrapose! h; simp_rw [Nat.le_zero] at h
     obtain rfl | rfl | h := h; simp; simp; exact Nat.mul_le_mul h.1 h.2
