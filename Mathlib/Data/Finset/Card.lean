@@ -590,6 +590,20 @@ theorem exists_ne_of_one_lt_card (hs : 1 < s.card) (a : α) : ∃ b, b ∈ s ∧
   · exact ⟨y, hy, ha⟩
 #align finset.exists_ne_of_one_lt_card Finset.exists_ne_of_one_lt_card
 
+lemma one_lt_card_mul_card_iff : 1 < s.card * t.card ↔
+    s.Nonempty ∧ t.Nonempty ∧ (1 < s.card ∨ 1 < t.card) := by
+  simp_rw [← card_pos]; apply Nat.one_lt_mul_iff
+
+lemma exists_of_one_lt_card_pi {ι : Type*} {α : ι → Type*} [∀ i, DecidableEq (α i)]
+    {s : Finset (∀ i, α i)} (h : 1 < s.card) :
+    ∃ i, 1 < (s.image (· i)).card ∧ ∀ ai, s.filter (· i = ai) ⊂ s := by
+  simp_rw [one_lt_card_iff, Function.ne_iff] at h ⊢
+  obtain ⟨a1, a2, h1, h2, i, hne⟩ := h
+  refine ⟨i, ⟨_, _, mem_image_of_mem _ h1, mem_image_of_mem _ h2, hne⟩, fun ai => ?_⟩
+  rw [filter_ssubset]
+  obtain rfl | hne := eq_or_ne (a2 i) ai
+  exacts [⟨a1, h1, hne⟩, ⟨a2, h2, hne⟩]
+
 theorem card_eq_succ [DecidableEq α] :
     s.card = n + 1 ↔ ∃ a t, a ∉ t ∧ insert a t = s ∧ t.card = n :=
   ⟨fun h =>
