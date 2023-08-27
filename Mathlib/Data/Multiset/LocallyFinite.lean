@@ -61,13 +61,13 @@ theorem Ioo_eq_zero_iff [DenselyOrdered α] : Ioo a b = 0 ↔ ¬a < b := by
   rw [Ioo, Finset.val_eq_zero, Finset.Ioo_eq_empty_iff]
 #align multiset.Ioo_eq_zero_iff Multiset.Ioo_eq_zero_iff
 
-alias Icc_eq_zero_iff ↔ _ Icc_eq_zero
+alias ⟨_, Icc_eq_zero⟩ := Icc_eq_zero_iff
 #align multiset.Icc_eq_zero Multiset.Icc_eq_zero
 
-alias Ico_eq_zero_iff ↔ _ Ico_eq_zero
+alias ⟨_, Ico_eq_zero⟩ := Ico_eq_zero_iff
 #align multiset.Ico_eq_zero Multiset.Ico_eq_zero
 
-alias Ioc_eq_zero_iff ↔ _ Ioc_eq_zero
+alias ⟨_, Ioc_eq_zero⟩ := Ioc_eq_zero_iff
 #align multiset.Ioc_eq_zero Multiset.Ioc_eq_zero
 
 @[simp]

@@ -1031,7 +1031,7 @@ theorem norm_add_sq (x y : E) : ‖x + y‖ ^ 2 = ‖x‖ ^ 2 + 2 * re ⟪x, y�
   rw [← inner_conj_symm, conj_re]
 #align norm_add_sq norm_add_sq
 
-alias norm_add_sq ← norm_add_pow_two
+alias norm_add_pow_two := norm_add_sq
 #align norm_add_pow_two norm_add_pow_two
 
 /-- Expand the square -/
@@ -1040,7 +1040,7 @@ theorem norm_add_sq_real (x y : F) : ‖x + y‖ ^ 2 = ‖x‖ ^ 2 + 2 * ⟪x, y
   simpa using h
 #align norm_add_sq_real norm_add_sq_real
 
-alias norm_add_sq_real ← norm_add_pow_two_real
+alias norm_add_pow_two_real := norm_add_sq_real
 #align norm_add_pow_two_real norm_add_pow_two_real
 
 /-- Expand the square -/
@@ -1063,7 +1063,7 @@ theorem norm_sub_sq (x y : E) : ‖x - y‖ ^ 2 = ‖x‖ ^ 2 - 2 * re ⟪x, y�
     sub_eq_add_neg]
 #align norm_sub_sq norm_sub_sq
 
-alias norm_sub_sq ← norm_sub_pow_two
+alias norm_sub_pow_two := norm_sub_sq
 #align norm_sub_pow_two norm_sub_pow_two
 
 /-- Expand the square -/
@@ -1071,7 +1071,7 @@ theorem norm_sub_sq_real (x y : F) : ‖x - y‖ ^ 2 = ‖x‖ ^ 2 - 2 * ⟪x, y
   @norm_sub_sq ℝ _ _ _ _ _ _
 #align norm_sub_sq_real norm_sub_sq_real
 
-alias norm_sub_sq_real ← norm_sub_pow_two_real
+alias norm_sub_pow_two_real := norm_sub_sq_real
 #align norm_sub_pow_two_real norm_sub_pow_two_real
 
 /-- Expand the square -/
