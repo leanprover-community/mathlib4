@@ -736,8 +736,11 @@ end AbstractSpectralObject
 
 lemma isZero_truncLE_obj_zero (n : ℤ) : IsZero ((t.truncLE n).obj 0) := by
   let δ := (t.truncGEδLE n (n+1) rfl).app 0
-  have : IsIso δ := (isIso₃_iff _ (t.triangleLEGE_distinguished n (n+1) rfl 0)).2
-    ⟨(isZero_zero C).eq_of_tgt _ _, (isZero_zero C).eq_of_src _ _⟩
+  have : IsIso δ := by
+    have h := (t.triangleLEGE_distinguished n (n+1) rfl 0)
+    exact (Triangle.isZero₂_iff_isIso₃ _ h).1
+      ((Triangle.isZero₂_iff _ (t.triangleLEGE_distinguished n (n+1) rfl 0)).2
+        ⟨(isZero_zero C).eq_of_tgt _ _, (isZero_zero C).eq_of_src _ _⟩)
   have : t.IsLE ((t.truncLE n ⋙ shiftFunctor C (1 : ℤ)).obj 0) (n-1) :=
     t.isLE_shift _ n 1 (n-1) (by linarith)
   have hδ := t.zero_of_isLE_of_isGE δ (n-1) (n+1) (by linarith)
@@ -747,7 +750,7 @@ lemma isZero_truncLE_obj_zero (n : ℤ) : IsZero ((t.truncLE n).obj 0) := by
   rw [Functor.map_id, Functor.map_zero, ← cancel_epi δ, comp_zero, hδ, zero_comp]
 
 lemma isZero_truncGE_obj_zero (n : ℤ) : IsZero ((t.truncGE n).obj 0) := by
-  apply (isIso₁_iff_isZero₃ _ (t.triangleLEGE_distinguished (n-1) n (by linarith) 0)).1
+  apply (Triangle.isZero₃_iff_isIso₁ _ (t.triangleLEGE_distinguished (n-1) n (by linarith) 0)).2
   exact ⟨⟨0, (isZero_truncLE_obj_zero t (n-1)).eq_of_src _ _, (isZero_zero _).eq_of_src _ _⟩⟩
 
 instance (n : ℤ) : t.IsLE (0 : C) n := t.isLE_of_iso (t.isZero_truncLE_obj_zero n).isoZero n
@@ -815,22 +818,22 @@ instance (X : C) (n : ℤ) [t.IsGE X n] : IsIso ((t.truncGEπ n).app X) := by
 lemma isLE_iff_isZero_truncGT_obj (n : ℤ) (X : C) :
     t.IsLE X n ↔ IsZero ((t.truncGT n).obj X) := by
   rw [t.isLE_iff_isIso_truncLEι_app n X]
-  exact isIso₁_iff_isZero₃ _ (t.triangleLEGT_distinguished n X)
+  exact (Triangle.isZero₃_iff_isIso₁ _ (t.triangleLEGT_distinguished n X)).symm
 
 lemma isGE_iff_isZero_truncLT_obj (n : ℤ) (X : C) :
     t.IsGE X n ↔ IsZero ((t.truncLT n).obj X) := by
   rw [t.isGE_iff_isIso_truncGEπ_app n X]
-  exact isIso₂_iff_isZero₁ _ (t.triangleLTGE_distinguished n X)
+  exact (Triangle.isZero₁_iff_isIso₂ _ (t.triangleLTGE_distinguished n X)).symm
 
 lemma isLE_iff_isZero_truncGE_obj (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) :
     t.IsLE X n₀ ↔ IsZero ((t.truncGE n₁).obj X) := by
   rw [t.isLE_iff_isIso_truncLEι_app n₀ X]
-  exact isIso₁_iff_isZero₃ _ (t.triangleLEGE_distinguished n₀ n₁ h X)
+  exact (Triangle.isZero₃_iff_isIso₁ _ (t.triangleLEGE_distinguished n₀ n₁ h X)).symm
 
 lemma isGE_iff_isZero_truncLE_obj (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) :
     t.IsGE X n₁ ↔ IsZero ((t.truncLE n₀).obj X) := by
   rw [t.isGE_iff_isIso_truncGEπ_app n₁ X]
-  exact isIso₂_iff_isZero₁ _ (t.triangleLEGE_distinguished n₀ n₁ h X)
+  exact (Triangle.isZero₁_iff_isIso₂ _ (t.triangleLEGE_distinguished n₀ n₁ h X)).symm
 
 lemma isZero_truncGE_obj_of_isLE (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) [t.IsLE X n₀] :
     IsZero ((t.truncGE n₁).obj X) := by

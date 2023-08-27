@@ -96,14 +96,14 @@ variable [F.IsTriangulated]
 
 noncomputable def mapZeroObject : F.obj 0 ≅ 0 := by
   apply IsZero.isoZero
-  apply isZero_of_isIso_mor₁ _ (F.map_distinguished _ (contractible_distinguished (0 : C)))
+  apply Triangle.isZero₃_of_isIso₁ _ (F.map_distinguished _ (contractible_distinguished (0 : C)))
   dsimp
   infer_instance
 
 instance : PreservesZeroMorphisms F := by
   have h : 𝟙 (F.obj 0) = 0 := by
     rw [← IsZero.iff_id_eq_zero]
-    apply isZero_of_isIso_mor₁ _ (F.map_distinguished _ (contractible_distinguished (0 : C)))
+    apply Triangle.isZero₃_of_isIso₁ _ (F.map_distinguished _ (contractible_distinguished (0 : C)))
     dsimp
     infer_instance
   refine' ⟨fun X Y => _⟩

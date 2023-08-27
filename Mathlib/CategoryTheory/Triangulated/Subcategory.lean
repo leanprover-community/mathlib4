@@ -518,7 +518,7 @@ instance : CompleteLattice (Subcategory C) where
         change IsZero _
         simp only [IsZero.iff_id_eq_zero] at hX ⊢
         rw [← (shiftFunctor C n).map_id, hX, Functor.map_zero]
-      ext₂ := fun T hT h₁ h₃ => isZero₂_of_isZero₂₃ _ hT h₁ h₃ }
+      ext₂ := fun T hT h₁ h₃ => T.isZero₂_of_isZero₁₃ hT h₁ h₃ }
   le_top _ _ _ := Set.mem_univ _
   bot_le := fun A X (hX : IsZero X) => A.zero' _ hX
 
@@ -535,8 +535,6 @@ open Category Limits
 variable {C : Type _} [Category C] [HasZeroObject C] [HasShift C ℤ] [Preadditive C]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C] [IsTriangulated C]
   (S : Triangulated.Subcategory C)
-
-example : MorphismProperty C := S.W
 
 noncomputable example : Pretriangulated S.W.Localization := inferInstance
 noncomputable example : IsTriangulated S.W.Localization := inferInstance
