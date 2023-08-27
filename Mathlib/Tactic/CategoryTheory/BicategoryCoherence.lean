@@ -24,6 +24,8 @@ tactic is given in `Mathlib.Tactic.CategoryTheory.Coherence` at the same time as
 tactic for monoidal categories.
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 
@@ -125,6 +127,8 @@ attribute [instance] isIso
 /-- The chosen structural isomorphism between to 1-morphisms. -/
 @[reducible]
 def hom (f g : a ⟶ b) [LiftHom f] [LiftHom g] [BicategoricalCoherence f g] : f ⟶ g := hom'
+
+attribute [simp] hom hom'
 
 @[simps]
 instance refl (f : a ⟶ b) [LiftHom f] : BicategoricalCoherence f f :=
@@ -284,16 +288,19 @@ def bicategory_coherence (g : MVarId) : TermElabM Unit := g.withContext do
 Use `pure_coherence` instead, which is a frontend to this one. -/
 elab "bicategory_coherence" : tactic => do bicategory_coherence (← getMainGoal)
 
+open Lean.Parser.Tactic
+
 /--
 Simp lemmas for rewriting a 2-morphism into a normal form.
 -/
-syntax (name := whisker_simps) "whisker_simps" : tactic
+syntax (name := whisker_simps) "whisker_simps" (config)? : tactic
 
 @[inherit_doc whisker_simps]
 elab_rules : tactic
-| `(tactic| whisker_simps) => do
+| `(tactic| whisker_simps $[$cfg]?) => do
   evalTactic (← `(tactic|
-    simp only [Category.assoc, Bicategory.comp_whiskerLeft, Bicategory.id_whiskerLeft,
+    simp $[$cfg]? only [Category.assoc,
+      Bicategory.comp_whiskerLeft, Bicategory.id_whiskerLeft,
       Bicategory.whiskerRight_comp, Bicategory.whiskerRight_id,
       Bicategory.whiskerLeft_comp, Bicategory.whiskerLeft_id,
       Bicategory.comp_whiskerRight, Bicategory.id_whiskerRight, Bicategory.whisker_assoc]

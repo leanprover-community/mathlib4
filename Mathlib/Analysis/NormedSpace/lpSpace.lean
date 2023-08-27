@@ -55,6 +55,8 @@ say that `‖-f‖ = ‖f‖`, instead of the non-working `f.norm_neg`.
 
 -/
 
+set_option autoImplicit true
+
 
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
@@ -415,7 +417,7 @@ theorem norm_eq_tsum_rpow (hp : 0 < p.toReal) (f : lp E p) :
 theorem norm_rpow_eq_tsum (hp : 0 < p.toReal) (f : lp E p) :
     ‖f‖ ^ p.toReal = ∑' i, ‖f i‖ ^ p.toReal := by
   rw [norm_eq_tsum_rpow hp, ← Real.rpow_mul]
-  · field_simp [hp.ne']
+  · field_simp
   apply tsum_nonneg
   intro i
   calc

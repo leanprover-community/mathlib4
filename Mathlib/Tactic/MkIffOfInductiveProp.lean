@@ -24,6 +24,8 @@ This tactic can be called using either the `mk_iff_of_inductive_prop` user comma
 the `mk_iff` attribute.
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic.MkIff
 
 open Lean Meta Elab

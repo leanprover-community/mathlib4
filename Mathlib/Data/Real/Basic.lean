@@ -761,7 +761,9 @@ noncomputable instance : ConditionallyCompleteLinearOrder ℝ :=
     le_csSup := fun s a hs ha => (Real.isLUB_sSup s ⟨a, ha⟩ hs).1 ha
     csSup_le := fun s a hs ha => (Real.isLUB_sSup s hs ⟨a, ha⟩).2 ha
     csInf_le := fun s a hs ha => (Real.is_glb_sInf s ⟨a, ha⟩ hs).1 ha
-    le_csInf := fun s a hs ha => (Real.is_glb_sInf s hs ⟨a, ha⟩).2 ha }
+    le_csInf := fun s a hs ha => (Real.is_glb_sInf s hs ⟨a, ha⟩).2 ha
+    csSup_of_not_bddAbove := fun s hs ↦ by simp [hs, sSup_def]
+    csInf_of_not_bddBelow := fun s hs ↦ by simp [hs, sInf_def, sSup_def] }
 
 theorem lt_sInf_add_pos {s : Set ℝ} (h : s.Nonempty) {ε : ℝ} (hε : 0 < ε) :
     ∃ a ∈ s, a < sInf s + ε :=
@@ -938,5 +940,32 @@ theorem cauSeq_converges (f : CauSeq ℝ abs) : ∃ x, f ≈ const abs x := by
 
 instance : CauSeq.IsComplete ℝ abs :=
   ⟨cauSeq_converges⟩
+
+open Set
+
+theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f '' Ioi x))
+    (hf_mono : Monotone f) : ⨅ r : Ioi x, f r = ⨅ q : { q' : ℚ // x < q' }, f q := by
+  refine' le_antisymm _ _
+  · have : Nonempty { r' : ℚ // x < ↑r' } := by
+      obtain ⟨r, hrx⟩ := exists_rat_gt x
+      exact ⟨⟨r, hrx⟩⟩
+    refine' le_ciInf fun r => _
+    obtain ⟨y, hxy, hyr⟩ := exists_rat_btwn r.prop
+    refine' ciInf_set_le hf (hxy.trans _)
+    exact_mod_cast hyr
+  · refine' le_ciInf fun q => _
+    have hq := q.prop
+    rw [mem_Ioi] at hq
+    obtain ⟨y, hxy, hyq⟩ := exists_rat_btwn hq
+    refine' (ciInf_le _ _).trans _
+    · refine' ⟨hf.some, fun z => _⟩
+      rintro ⟨u, rfl⟩
+      suffices hfu : f u ∈ f '' Ioi x
+      exact hf.choose_spec hfu
+      exact ⟨u, u.prop, rfl⟩
+    · exact ⟨y, hxy⟩
+    · refine' hf_mono (le_trans _ hyq.le)
+      norm_cast
+#align infi_Ioi_eq_infi_rat_gt Real.iInf_Ioi_eq_iInf_rat_gt
 
 end Real

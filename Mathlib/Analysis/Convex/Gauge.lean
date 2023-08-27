@@ -38,6 +38,8 @@ For a real vector space,
 Minkowski functional, gauge
 -/
 
+set_option autoImplicit true
+
 
 open NormedField Set
 open scoped Pointwise Topology NNReal

@@ -1,6 +1,8 @@
 import Mathlib.Tactic.CancelDenoms
 import Mathlib.Tactic.Ring
 
+set_option autoImplicit true
+
 section
 variable {α : Type u} [LinearOrderedField α] (a b c d : α)
 

@@ -18,6 +18,8 @@ This file collects facts about algebraic structures on the one-element type, e.g
 commutative ring.
 -/
 
+set_option autoImplicit true
+
 namespace PUnit
 
 @[to_additive]

@@ -177,7 +177,7 @@ theorem coe_const (p : P2) : ⇑(const k P1 p) = Function.const P1 p :=
 
 -- Porting note: new theorem
 @[simp]
-theorem const_apply (p : P2) : (const k P1 p) q = p := rfl
+theorem const_apply (p : P2) (q : P1) : (const k P1 p) q = p := rfl
 
 @[simp]
 theorem const_linear (p : P2) : (const k P1 p).linear = 0 :=
