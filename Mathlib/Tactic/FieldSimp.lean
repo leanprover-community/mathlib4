@@ -7,8 +7,8 @@ Authors: Sébastien Gouëzel, David Renshaw
 import Lean.Elab.Tactic.Basic
 import Lean.Meta.Tactic.Simp.Main
 import Mathlib.Algebra.Group.Units
-import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.NormNum.Core
+import Mathlib.Tactic.Positivity.Core
 import Qq
 import Std.Lean.Parser
 

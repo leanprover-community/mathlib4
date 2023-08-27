@@ -1,6 +1,6 @@
-import Std.Tactic.GuardMsgs
-import Mathlib.Mathport.Notation
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Mathport.Notation
+import Std.Tactic.GuardMsgs
 
 set_option pp.unicode.fun true
 set_option autoImplicit true
