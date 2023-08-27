@@ -134,7 +134,7 @@ theorem discrim_le_zero (h : ∀ x : K, 0 ≤ a * x * x + b * x + c) : discrim a
   -- if a > 0
   · have ha' : 0 ≤ 4 * a := mul_nonneg zero_le_four ha.le
     convert neg_nonpos.2 (mul_nonneg ha' (h (-b / (2 * a)))) using 1
-    field_simp [ha.ne']
+    field_simp
     ring
 #align discrim_le_zero discrim_le_zero
 
