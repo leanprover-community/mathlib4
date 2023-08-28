@@ -1804,6 +1804,10 @@ def piCongrLeft' (P : α → Sort*) (e : α ≃ β) : (∀ a, P a) ≃ ∀ b, P 
 -- Use `Equiv.piCongrLeft'_symm_apply_apply` instead
 #noalign equiv.Pi_congr_left'_symm_apply
 
+/-- Note: one may expect a result of the form `(piCongrLeft' P e).symm g a = g (e a)` but that
+doesn't typecheck: the LHS would have type `P a` while the RHS would have type `P (e.symm (e a))`.
+You can still unfold the definition of `piCongrLeft'` if you need something of this form with
+casts involved, but in most cases you should try to use this version. -/
 @[simp]
 lemma piCongrLeft'_symm_apply_apply (P : α → Sort*) (e : α ≃ β) (g : ∀ b, P (e.symm b)) (b : β) :
     (piCongrLeft' P e).symm g (e.symm b) = g b := by
@@ -1831,6 +1835,10 @@ lemma piCongrLeft_symm_apply (g : ∀ b, P b) (a : α) :
     (piCongrLeft P e).symm g a = g (e a) :=
   piCongrLeft'_apply P e.symm g a
 
+/-- Note: one may expect a result of the form `(piCongrLeft P e) f b = f (e.symm b)` but that
+doesn't typecheck: the LHS would have type `P b` while the RHS would have type `P (e (e.symm b))`.
+You can still unfold the definition of `piCongrLeft` if you need something of this form with
+casts involved, but in most cases you should try to use this version. -/
 @[simp]
 lemma piCongrLeft_apply_apply (f : ∀ a, P (e a)) (a : α) :
     (piCongrLeft P e) f (e a) = f a :=
