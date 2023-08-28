@@ -96,9 +96,7 @@ def ScottHausdorffTopology : TopologicalSpace α :=
     obtain ⟨s₀, hs₀_w, hs₀_h⟩ := ha
     obtain ⟨b, hb_w, hb_h⟩ := h s₀ hs₀_w hd₁ hd₂ hd₃ hs₀_h
     use b
-    constructor
-    · exact hb_w
-    · exact Set.subset_sUnion_of_subset s s₀ hb_h hs₀_w }
+    exact ⟨hb_w, Set.subset_sUnion_of_subset s s₀ hb_h hs₀_w⟩ }
 
 
 lemma ScottHausdorffTopology.Lower_IsOpen {s : Set α} (h : IsLowerSet s) :
@@ -182,7 +180,7 @@ variable [Preorder α]
 
 lemma isOpen_iff_upper_and_Scott_Hausdorff_Open' {u : Set α} :
   IsOpen (WithScottTopology.ofScott ⁻¹' u) ↔ IsUpperSet u ∧ ScottHausdorffTopology.IsOpen u :=
-by rfl
+Iff.rfl
 
 variable [TopologicalSpace α] [ScottTopology α]
 
