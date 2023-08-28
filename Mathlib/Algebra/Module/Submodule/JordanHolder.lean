@@ -97,7 +97,7 @@ lemma interList_get_le_get_succ (i : Fin s.length) :
 def interList_get_succ_to_qf (i : Fin s.length) :
   s.interList_get_succ N i →ₗ[R] s.qf i :=
 (Submodule.mkQ _).comp $ N.subtype.restrict $ λ _ h ↦ by
-  rw [interList_get_succ_eq, Submodule.mem_comap] at h
+  rw [interList_get_succ_eq] at h
   exact h.2
 
 lemma interList_get_succ_to_qf_ker (i : Fin s.length) :
@@ -105,8 +105,7 @@ lemma interList_get_succ_to_qf_ker (i : Fin s.length) :
     Submodule.comap (s.interList_get_succ N i).subtype (s.interList_get N i) := by
   ext ⟨x, hx⟩
   rw [LinearMap.mem_ker, Submodule.mem_comap, Submodule.subtype_apply,
-    interList_get_succ_to_qf_apply, Submodule.Quotient.mk_eq_zero, LinearMap.restrict_apply,
-    Submodule.mem_comap]
+    interList_get_succ_to_qf_apply, Submodule.Quotient.mk_eq_zero, Submodule.mem_comap]
   change x.1 ∈ _ ↔ _
   rw [interList_get_eq, Submodule.mem_comap, Submodule.subtype_apply, Submodule.mem_inf,
     iff_and_self]
@@ -167,9 +166,7 @@ lemma interList_get_succ_eq_get_of_equiv_punit (i : Fin s.length)
   replace uniq_qf := Submodule.unique_quotient_iff_forall_mem.mp uniq_qf
   ext x : 1; fconstructor
   · intro hx
-    have uniq_qf' := @uniq_qf ⟨x, hx⟩
-    rw [Submodule.mem_comap] at uniq_qf'
-    exact uniq_qf'
+    exact @uniq_qf ⟨x, hx⟩
   · intro hx; exact s.interList_get_le_get_succ N i hx
 
 /-- the `i`-th element of `s ⊓ N` is either equal to the `i+1`-st element of `s ⊓ N` or
@@ -239,7 +236,6 @@ lemma interList_head_eq_bot_of_head_eq_bot (s0 : s.head = ⊥) : s.interList_hea
     rw [eq_bot_iff, interList_head_eq]
     rintro x ⟨-, (hx2 : x.1 ∈ s.head)⟩
     rw [s0] at hx2
-    rw [Submodule.mem_bot] at hx2 ⊢
     ext1
     exact hx2
 
@@ -267,7 +263,7 @@ lemma eq_interList_get_of_head_eq_bot_and_interList_nodup (s0 : s.head = ⊥)
   have inter_chain := List.chain'_covby_of_chain'_wcovby_of_nodup _ (s.interList_chain'_wcovby N) h
   rcases i with ⟨i, hi⟩
   induction i with | zero => ?_ | succ i ih => ?_
-  · simp only [Nat.zero_eq, Fin.castSucc_mk, Fin.mk_zero]
+  · simp only [Fin.mk_zero]
     rw [show s 0 = _ from s0, eq_comm, eq_bot_iff]
     rintro - ⟨y, hy, rfl⟩
     simpa [SetLike.mem_coe, show (s.interList N).get (Fin.cast (s.interList_length N).symm 0) =
@@ -292,7 +288,7 @@ lemma eq_interList_get_of_head_eq_bot_and_interList_nodup (s0 : s.head = ⊥)
   -- N ⊓ s i ⋖ N ⊓ s (i + 1) as N-submodule
 
   have le1 : N ⊓ s ⟨i, (lt_add_one _).trans hi⟩ ≤ N ⊓ s ⟨i + 1, hi⟩
-  · simp only [ge_iff_le, le_inf_iff, inf_le_left, true_and]
+  · simp only [le_inf_iff, inf_le_left, true_and]
     refine le_trans inf_le_right (s.strictMono.monotone $ by norm_num)
 
   have covby2 : s ⟨i, (lt_add_one _).trans hi⟩ ⋖ s ⟨i + 1, hi⟩
@@ -305,7 +301,7 @@ lemma eq_interList_get_of_head_eq_bot_and_interList_nodup (s0 : s.head = ⊥)
     · refine le_antisymm ?_ h1.le
       rw [s.interList_get_eq_aux N _ hi, s.interList_get_eq_aux N _ ((lt_add_one _).trans hi)]
       refine Submodule.comap_mono ?_
-      simp only [ge_iff_le, le_inf_iff, inf_le_left, true_and]
+      simp only [le_inf_iff, inf_le_left, true_and]
       rw [H]
     have : IsIrrefl (Submodule R N) (. ≠ .)
     · fconstructor; intro _ r; exact r rfl
@@ -313,8 +309,8 @@ lemma eq_interList_get_of_head_eq_bot_and_interList_nodup (s0 : s.head = ⊥)
     norm_num at this
   · rw [← H]
     ext1 x
-    simp only [ge_iff_le, Submodule.mem_inf, Fin.cast_mk, Submodule.mem_map, Submodule.coeSubtype,
-      Subtype.exists, exists_and_right, exists_eq_right]
+    simp only [Fin.cast_mk, Submodule.mem_map, Submodule.coeSubtype, Subtype.exists,
+      exists_and_right, exists_eq_right]
     rw [s.interList_get_eq_aux N _ hi]
     fconstructor
     · rintro ⟨hx1, hx2⟩
@@ -328,9 +324,8 @@ lemma eq_top_of_interList_nodup (s0 : s.head = ⊥) (slast : s.last = ⊤)
   rw [show s (Fin.last _) = _ from slast, interList_get_eq_aux] at eq0
   pick_goal 2
   · simp only [Fin.coe_cast, Fin.val_last, lt_add_iff_pos_right]
-  simp only [Fin.coe_cast, Fin.val_last, ge_iff_le, Submodule.comap_inf,
-    Submodule.comap_subtype_self, top_le_iff, Submodule.comap_subtype_eq_top, _root_.le_top,
-    inf_of_le_right] at eq0
+  simp only [Fin.coe_cast, Fin.val_last, Submodule.comap_inf, Submodule.comap_subtype_self,
+    _root_.le_top, inf_of_le_right] at eq0
   rw [show s ⟨s.length, _⟩ = _ from slast] at eq0
   simp only [Submodule.comap_top, Submodule.map_top, Submodule.range_subtype] at eq0
   exact eq0.symm
@@ -354,8 +349,6 @@ RelSeries.fromListChain' (s.interList N).dedup (List.dedup_ne_nil_of_ne_nil _ $
 lemma ofInterList_head_eq_bot_of_head_eq_bot (s0 : s.head = ⊥) :
     (s.ofInterList N).head = ⊥ := by
   classical
-  rw [ofInterList, RelSeries.fromListChain', RelSeries.head]
-  simp only [Function.comp_apply]
   change List.get _ ⟨0, _⟩ = _
   have h : 0 < (s.interList N).length
   · rw [interList_length]; norm_num
@@ -367,14 +360,11 @@ lemma ofInterList_head_eq_bot_of_head_eq_bot (s0 : s.head = ⊥) :
 lemma ofInterList_last_eq_top_of_last_eq_top (slast : s.last = ⊤) :
   (s.ofInterList N).last = ⊤ := by
   classical
-  rw [ofInterList, RelSeries.fromListChain', RelSeries.last]
-  simp only [Function.comp_apply]
   change List.get _ ⟨List.length _ - 1, _⟩ = _
   rw [List.get_length_sub_one, List.dedup_getLast_eq_getLast_of_chain'_wcovby (l_ne_nil :=
     show (s.interList N) ≠ [] from List.map_ne_nil_of_ne_nil _ s.toList_ne_empty _)
     (l_chain := interList_chain'_wcovby s N), List.getLast_eq_get]
-  simp only [s.interList_length, ge_iff_le, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
-    add_tsub_cancel_right]
+  simp only [s.interList_length]
   exact s.interList_last_eq_top_of_last_eq_top N slast
 
 lemma exists_compositionSeries_with_smaller_length_of_lt_top (h : N < ⊤)
@@ -384,8 +374,6 @@ lemma exists_compositionSeries_with_smaller_length_of_lt_top (h : N < ⊤)
   classical
   refine ⟨s.ofInterList N, s.ofInterList_head_eq_bot_of_head_eq_bot N s0,
     s.ofInterList_last_eq_top_of_last_eq_top N slast, ?_⟩
-  rw [ofInterList, RelSeries.fromListChain']
-  change List.length _ - 1 < s.length
   have ineq1 : (s.interList N).dedup.length < (s.interList N).length
   · exact List.dedup_length_lt_of_not_nodup _
       (s.interList_not_nodup_of_lt_top N s0 slast h)
