@@ -128,8 +128,8 @@ Limits.IsColimit.coconePointUniqueUpToIso
 
 /-- The inclusion maps into the explicit finite coproduct are open embeddings. -/
 lemma finiteCoproduct.openEmbedding_ι {α : Type} [Fintype α] (Z : α → Stonean.{u}) (a : α) :
-    OpenEmbedding (finiteCoproduct.ι Z a) := by
-  exact openEmbedding_sigmaMk (σ := fun a => (Z a))
+    OpenEmbedding (finiteCoproduct.ι Z a) :=
+  openEmbedding_sigmaMk (σ := fun a => (Z a))
 
 /-- The inclusion maps into the abstract finite coproduct are open embeddings. -/
 lemma Sigma.openEmbedding_ι {α : Type} [Fintype α] (Z : α → Stonean.{u}) (a : α) :
