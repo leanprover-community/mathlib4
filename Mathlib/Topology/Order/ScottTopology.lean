@@ -164,7 +164,7 @@ The Scott topology is defined as the join of the topology of upper sets and the 
 where a set `u` is open if, when the least upper bound of a directed set `d` lies in `u` then there
 is a tail of `d` which is a subset of `u`.
 -/
-class ScottTopology (α : Type _) [t : TopologicalSpace α] [Preorder α] : Prop where
+class ScottTopology (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop where
   topology_eq_ScottTopology : t = ScottTopology'
 
 instance [Preorder α] : ScottTopology (WithScottTopology α) :=
