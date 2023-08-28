@@ -7,6 +7,8 @@ import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.MeasureTheory.Function.LpSeminorm
 import Mathlib.MeasureTheory.Measure.OpenPos
 import Mathlib.Topology.ContinuousFunction.Compact
+import Mathlib.Topology.MetricSpace.MetrizableUniformity
+import Mathlib.Topology.MetricSpace.EMetricParacompact
 
 #align_import measure_theory.function.lp_space from "leanprover-community/mathlib"@"c4015acc0a223449d44061e27ddac1835a3852b9"
 
@@ -447,23 +449,31 @@ protected lemma nnnorm_add_le (f g : Lp E p μ) : ‖f + g‖₊ ≤ LpAddConst 
 protected lemma norm_add_le (f g : Lp E p μ) : ‖f + g‖ ≤ LpAddConst p * (‖f‖ + ‖g‖) :=
   Lp.nnnorm_add_le f g
 
+variable (E p μ)
+protected lemma exists_half {ε : ℝ} (hε : 0 < ε) :
+    ∃ δ > 0, ∀ f g : Lp E p μ, ‖f‖ ≤ δ → ‖g‖ ≤ δ → ‖f + g‖ < ε := by
+  lift ε to ℝ≥0 using hε.le; rw [NNReal.coe_pos] at hε
+  rcases exists_Lp_half E μ p (ENNReal.coe_ne_zero.2 hε.ne') with ⟨δ, δ0, hδ⟩
+  refine ⟨δ, δ0, fun f g ↦ ?_⟩
+  specialize hδ f g (Lp.aestronglyMeasurable f) (Lp.aestronglyMeasurable g)
+  simp only [← Lp.coe_nnnorm, ← Lp.nnnorm_coe_ennreal,
+    ← snorm_congr_ae (AEEqFun.coeFn_add _ _), ← AddSubgroup.coe_add] at hδ ⊢
+  exact_mod_cast hδ
+variable {E p μ}
+
 instance instUniformSpace : UniformSpace (Lp E p μ) :=
   .ofCore
     { uniformity := ⨅ (ε : ℝ) (_ : 0 < ε), (𝓟 {x | dist x.1 x.2 < ε}),
       refl := le_iInf₂ fun ε hε ↦ principal_mono.2 <| idRel_subset.2 fun x ↦ by simpa [dist_def],
       symm := tendsto_iInf_iInf fun r => tendsto_iInf_iInf fun _ => tendsto_principal_principal.2
         fun x hx => by rwa [Set.mem_setOf, Lp.dist_def, ← snorm_neg, neg_sub, ← Lp.dist_def],
-      comp := le_iInf₂ fun ε hε => le_principal_iff.2 <| by
-        lift ε to ℝ≥0 using hε.le; rw [NNReal.coe_pos] at hε
-        rcases exists_Lp_half E μ p (ENNReal.coe_ne_zero.2 hε.ne') with ⟨δ, δ0, hδ⟩
-        refine mem_of_superset
-          (mem_lift' <| mem_iInf_of_mem (δ : ℝ) <| mem_iInf_of_mem δ0 (mem_principal_self _)) ?_
-        rintro ⟨f₁, f₃⟩ ⟨f₂, h₁₂, h₂₃⟩
-        simp only [Set.mem_setOf_eq, dist, ← sub_add_sub_cancel f₁ f₂ f₃, ← Lp.coe_nnnorm,
-          Lp.nnnorm_coe_ennreal, NNReal.coe_lt_coe, ← ENNReal.coe_lt_coe, AddSubgroup.coe_add,
-          snorm_congr_ae (AEEqFun.coeFn_add (f₁ - f₂).1 (f₂ - f₃).1)] at h₁₂ h₂₃ ⊢
-        exact hδ _ _ (Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _) h₁₂.le h₂₃.le }
-
+      comp := le_iInf₂ fun ε hε => le_principal_iff.2 <|
+        let ⟨δ, hδ, hδε⟩ := Lp.exists_half E p μ hε
+        mem_of_superset
+          (mem_lift' (mem_iInf_of_mem δ (mem_iInf_of_mem hδ (mem_principal_self _)))) <| by
+            rintro ⟨f₁, f₃⟩ ⟨f₂, h₁₂, h₂₃⟩
+            simp only [Set.mem_setOf_eq, dist, ← sub_add_sub_cancel f₁ f₂ f₃] at h₁₂ h₂₃ ⊢
+            exact hδε _ _ h₁₂.le h₂₃.le }
 
 protected theorem uniformity_basis_dist :
     (𝓤 (Lp E p μ)).HasBasis (0 < ·) ({x | dist x.1 x.2 < ·}) :=
@@ -481,12 +491,42 @@ protected theorem uniformity_basis_edist :
     ⟨δ, ENNReal.coe_pos.1 hδ, fun _x hx ↦ (Lp.edist_dist _ _).trans_lt <|
       lt_trans ((ENNReal.ofReal_lt_coe_iff ENNReal.toReal_nonneg).2 hx) hδε⟩
 
+protected theorem uniformity_basis_edist_inv_two_pow :
+    (𝓤 (Lp E p μ)).HasAntitoneBasis (fun n : ℕ ↦ {x | edist x.1 x.2 < (2⁻¹ : ℝ≥0∞) ^ n}) :=
+  ⟨Lp.uniformity_basis_edist.to_hasBasis (fun _ε hε ↦
+      let ⟨n, hn⟩ := ENNReal.exists_inv_two_pow_lt hε.ne'
+      ⟨n, trivial, fun _x hx ↦ hx.out.trans_le hn.le⟩) fun _n _ ↦
+      ⟨_, ENNReal.pow_pos (ENNReal.inv_pos.2 ENNReal.coe_ne_top) _, Set.Subset.rfl⟩,
+    fun _m _n hmn _x hx ↦ hx.out.trans_le <| pow_le_pow_of_le_one (zero_le _)
+      (ENNReal.inv_le_one.2 one_le_two) hmn⟩
+
+instance [NeZero p] : SeparatedSpace (Lp E p μ) :=
+  separated_def'.2 fun f g hne ↦
+    ⟨{x | dist x.1 x.2 < dist f g}, Lp.uniformity_basis_dist.mem_of_mem <|
+      lt_of_le_of_ne ENNReal.toReal_nonneg (Ne.symm <| by
+        simpa only [dist, Ne.def, norm_eq_zero_iff (NeZero.pos p), sub_eq_zero]),
+      lt_irrefl (dist f g)⟩
+
+instance : (𝓤 (Lp E p μ)).IsCountablyGenerated :=
+  HasCountableBasis.isCountablyGenerated ⟨Lp.uniformity_basis_edist_inv_two_pow.1,
+    Set.to_countable _⟩
+
+instance [NeZero p] : MetrizableSpace (Lp E p μ) := UniformSpace.metrizableSpace
+
+instance [NeZero p] : NormalSpace (Lp E p μ) :=
+  let _ := metrizableSpaceMetric (Lp E p μ)
+  EMetric.normal_of_emetric
+
 instance instUniformAddGroup : UniformAddGroup (Lp E p μ) := by
   constructor
   rw [UniformContinuous, uniformity_prod_eq_prod, tendsto_map'_iff,
     Lp.uniformity_basis_dist.prod_self.tendsto_iff Lp.uniformity_basis_dist]
-  
-
+  intro ε hε
+  rcases Lp.exists_half E p μ hε with ⟨δ, hδ, hδε⟩
+  refine ⟨δ, hδ, fun ((f₁, f₂), (f₃, f₄)) ⟨(h₁₂ : ‖f₁ - f₂‖ < δ), (h₃₄ : ‖f₃ - f₄‖ < δ)⟩ ↦ ?_⟩
+  calc
+    ‖(f₁ - f₃) - (f₂ - f₄)‖ = ‖(f₁ - f₂) + -(f₃ - f₄)‖ := by congr 1; abel
+    _ < ε := hδε _ _ h₁₂.le <| le_of_lt <| by rwa [Lp.norm_neg]
 
 instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E p μ) :=
   { AddGroupNorm.toNormedAddCommGroup
@@ -576,7 +616,6 @@ section NormedSpace
 
 variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
 
-set_option synthInstance.maxHeartbeats 30000 in
 instance instNormedSpace [Fact (1 ≤ p)] : NormedSpace 𝕜 (Lp E p μ) where
   norm_smul_le _ _ := norm_smul_le _ _
 #align measure_theory.Lp.normed_space MeasureTheory.Lp.instNormedSpace
@@ -819,7 +858,7 @@ theorem norm_indicatorConstLp' (hp_pos : p ≠ 0) (hμs_pos : μ s ≠ 0) :
 theorem norm_indicatorConstLp_le :
     ‖indicatorConstLp p hs hμs c‖ ≤ ‖c‖ * (μ s).toReal ^ (1 / p.toReal) := by
   rw [indicatorConstLp, Lp.norm_toLp]
-  refine toReal_le_of_le_ofReal (by positivity) ?_
+  refine ENNReal.toReal_le_of_le_ofReal (by positivity) ?_
   refine (snorm_indicator_const_le _ _).trans_eq ?_
   rw [← coe_nnnorm, ENNReal.ofReal_mul (NNReal.coe_nonneg _), ENNReal.ofReal_coe_nnreal,
     ENNReal.toReal_rpow, ENNReal.ofReal_toReal]
@@ -1037,10 +1076,9 @@ variable {g : E → F} {c : ℝ≥0}
 theorem LipschitzWith.comp_memℒp {α E F} {K} [MeasurableSpace α] {μ : Measure α}
     [NormedAddCommGroup E] [NormedAddCommGroup F] {f : α → E} {g : E → F} (hg : LipschitzWith K g)
     (g0 : g 0 = 0) (hL : Memℒp f p μ) : Memℒp (g ∘ f) p μ :=
-  haveI : ∀ x, ‖g (f x)‖ ≤ K * ‖f x‖ := by
-    intro a
+  have : ∀ x, ‖g (f x)‖ ≤ K * ‖f x‖ := fun x ↦ by
     -- TODO: add `LipschitzWith.nnnorm_sub_le` and `LipschitzWith.nnnorm_le`
-    simpa [g0] using hg.norm_sub_le (f a) 0
+    simpa [g0] using hg.norm_sub_le (f x) 0
   hL.of_le_mul (hg.continuous.comp_aestronglyMeasurable hL.1) (eventually_of_forall this)
 #align lipschitz_with.comp_mem_ℒp LipschitzWith.comp_memℒp
 
