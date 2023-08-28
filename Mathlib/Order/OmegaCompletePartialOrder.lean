@@ -5,6 +5,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Control.Monad.Basic
 import Mathlib.Data.Part
+import Mathlib.Order.Chain
 import Mathlib.Order.Hom.Order
 import Mathlib.Data.Nat.Order.Basic
 
@@ -106,6 +107,8 @@ instance : Membership α (Chain α) :=
 variable (c c' : Chain α)
 variable (f : α →o β)
 variable (g : β →o γ)
+
+lemma isChain_range : IsChain (· ≤ ·) (Set.range c) := Monotone.isChain_range (OrderHomClass.mono c)
 
 instance : LE (Chain α) where le x y := ∀ i, ∃ j, x i ≤ y j
 
@@ -232,6 +235,31 @@ theorem ωSup_le_iff (c : Chain α) (x : α) : ωSup c ≤ x ↔ ∀ i, c i ≤ 
   exact ωSup_le _ _ ‹_›
 #align omega_complete_partial_order.ωSup_le_iff OmegaCompletePartialOrder.ωSup_le_iff
 
+lemma ωSup_IsLUB {c : Chain α} : IsLUB (Set.range c) (ωSup c) := by
+  unfold IsLUB
+  unfold IsLeast
+  constructor
+  · unfold upperBounds
+    simp
+    exact fun a ↦ le_ωSup c a
+  · unfold lowerBounds
+    unfold upperBounds
+    simp
+    exact fun ⦃a⦄ a_1 ↦ ωSup_le c a a_1
+
+lemma IsLUB_ωSup {c : Chain α} {a : α} (h: IsLUB (Set.range c) a) : a = ωSup c := by
+  rw [le_antisymm_iff]
+  unfold IsLUB at h
+  unfold IsLeast at h
+  unfold upperBounds at h
+  unfold lowerBounds at h
+  simp at h
+  constructor
+  · apply h.2
+    exact fun a ↦ le_ωSup c a
+  · rw [ωSup_le_iff]
+    apply h.1
+
 /-- A subset `p : α → Prop` of the type closed under `ωSup` induces an
 `OmegaCompletePartialOrder` on the subtype `{a : α // p a}`. -/
 def subtype {α : Type*} [OmegaCompletePartialOrder α] (p : α → Prop)
@@ -262,6 +290,21 @@ def Continuous (f : α →o β) : Prop :=
 def Continuous' (f : α → β) : Prop :=
   ∃ hf : Monotone f, Continuous ⟨f, hf⟩
 #align omega_complete_partial_order.continuous' OmegaCompletePartialOrder.Continuous'
+
+lemma IsLUB_of_ScottContinuous {c : Chain α} {f : α → β} (hf : ScottContinuous f) :
+    IsLUB (Set.range (Chain.map c ⟨f, (ScottContinuous.monotone hf)⟩)) (f (ωSup c)) := by
+  simp only [map_coe, OrderHom.coe_mk]
+  rw [(Set.range_comp f ↑c)]
+  apply hf
+  exact Set.range_nonempty ↑c
+  exact IsChain.directedOn (isChain_range c)
+  exact ωSup_IsLUB
+
+lemma Continuous'_of_ScottContinuous {f : α → β} (hf : ScottContinuous f) : Continuous' f := by
+  constructor
+  · intro c
+    rw [← (IsLUB_ωSup (IsLUB_of_ScottContinuous hf))]
+    simp only [OrderHom.coe_mk]
 
 theorem Continuous'.to_monotone {f : α → β} (hf : Continuous' f) : Monotone f :=
   hf.fst
