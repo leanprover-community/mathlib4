@@ -1789,7 +1789,7 @@ variable (P : α → Sort w) (e : α ≃ β)
 
 /-- Transport dependent functions through an equivalence of the base space.
 -/
-@[simps]
+@[simps apply]
 def piCongrLeft' (P : α → Sort*) (e : α ≃ β) : (∀ a, P a) ≃ ∀ b, P (e.symm b) where
   toFun f x := f (e.symm x)
   invFun f x := (e.symm_apply_apply x).ndrec (f (e x))
@@ -1800,7 +1800,22 @@ def piCongrLeft' (P : α → Sort*) (e : α ≃ β) : (∀ a, P a) ≃ ∀ b, P 
       (e.apply_symm_apply x)
 #align equiv.Pi_congr_left' Equiv.piCongrLeft'
 #align equiv.Pi_congr_left'_apply Equiv.piCongrLeft'_apply
-#align equiv.Pi_congr_left'_symm_apply Equiv.piCongrLeft'_symm_apply
+
+-- Use `Equiv.piCongrLeft'_symm_apply_apply` instead
+#noalign equiv.Pi_congr_left'_symm_apply
+
+/-- Note: one may expect a result of the form `(piCongrLeft' P e).symm g a = g (e a)` but that
+doesn't typecheck: the LHS would have type `P a` while the RHS would have type `P (e.symm (e a))`.
+You can still unfold the definition of `piCongrLeft'` if you need something of this form with
+casts involved, but in most cases you should try to use this version. -/
+@[simp]
+lemma piCongrLeft'_symm_apply_apply (P : α → Sort*) (e : α ≃ β) (g : ∀ b, P (e.symm b)) (b : β) :
+    (piCongrLeft' P e).symm g (e.symm b) = g b := by
+  change Eq.ndrec _ _ = _
+  generalize_proofs hZa
+  revert hZa
+  rw [e.apply_symm_apply b]
+  simp
 
 end
 
@@ -1814,6 +1829,20 @@ expressed as a "simplification".
 def piCongrLeft : (∀ a, P (e a)) ≃ ∀ b, P b :=
   (piCongrLeft' P e.symm).symm
 #align equiv.Pi_congr_left Equiv.piCongrLeft
+
+@[simp]
+lemma piCongrLeft_symm_apply (g : ∀ b, P b) (a : α) :
+    (piCongrLeft P e).symm g a = g (e a) :=
+  piCongrLeft'_apply P e.symm g a
+
+/-- Note: one may expect a result of the form `(piCongrLeft P e) f b = f (e.symm b)` but that
+doesn't typecheck: the LHS would have type `P b` while the RHS would have type `P (e (e.symm b))`.
+You can still unfold the definition of `piCongrLeft` if you need something of this form with
+casts involved, but in most cases you should try to use this version. -/
+@[simp]
+lemma piCongrLeft_apply_apply (f : ∀ a, P (e a)) (a : α) :
+    (piCongrLeft P e) f (e a) = f a :=
+  piCongrLeft'_symm_apply_apply P e.symm f a
 
 end
 
@@ -1842,11 +1871,7 @@ theorem piCongr_symm_apply (f : ∀ b, Z b) :
 
 @[simp]
 theorem piCongr_apply_apply (f : ∀ a, W a) (a : α) : h₁.piCongr h₂ f (h₁ a) = h₂ a (f a) := by
-  change Eq.ndrec _ _ = _
-  generalize_proofs hZa
-  revert hZa
-  rw [h₁.symm_apply_apply a]
-  simp; rfl
+  simp [piCongr, piCongrLeft_apply_apply, piCongrRight]
 #align equiv.Pi_congr_apply_apply Equiv.piCongr_apply_apply
 
 end
@@ -1876,13 +1901,7 @@ theorem piCongr'_apply (f : ∀ a, W a) : h₁.piCongr' h₂ f = fun b => h₂ b
 @[simp]
 theorem piCongr'_symm_apply_symm_apply (f : ∀ b, Z b) (b : β) :
     (h₁.piCongr' h₂).symm f (h₁.symm b) = (h₂ b).symm (f b) := by
-  change Eq.ndrec _ _ = _
-  generalize_proofs hWb
-  revert hWb
-  generalize hb : h₁ (h₁.symm b) = b'
-  rw [h₁.apply_symm_apply b] at hb
-  subst hb
-  simp; rfl
+  simp [piCongr', piCongr_apply_apply]
 #align equiv.Pi_congr'_symm_apply_symm_apply Equiv.piCongr'_symm_apply_symm_apply
 
 end
