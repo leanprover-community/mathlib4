@@ -77,8 +77,7 @@ def ScottHausdorffTopology : TopologicalSpace α :=
 { IsOpen := fun u => ∀ ⦃d : Set α⦄ ⦃a : α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a →
     a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u,
   isOpen_univ := by
-    intros d _ hd₁ _ _ _
-    cases' hd₁ with b hb
+    rintro d _ ⟨b, hb⟩ _ _ _
     exact ⟨b, hb, (Ici b ∩ d).subset_univ⟩,
   isOpen_inter := by
     intros s t hs ht d a hd₁ hd₂ hd₃ ha
