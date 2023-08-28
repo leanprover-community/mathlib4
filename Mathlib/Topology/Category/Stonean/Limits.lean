@@ -263,25 +263,22 @@ section Isos
 @[simps]
 noncomputable
 def pullbackIsoPullback : Stonean.pullback f hi ≅
-    @Limits.pullback _ _ _ _ _ f i (HasPullbackOpenEmbedding f hi) where
-  hom :=
-    haveI : HasPullback f i := HasPullbackOpenEmbedding f hi
-    Limits.pullback.lift (pullback.fst _ hi) (pullback.snd _ hi) (pullback.condition f hi)
-  inv :=
-    haveI : HasPullback f i := HasPullbackOpenEmbedding f hi
-    pullback.lift f hi Limits.pullback.fst Limits.pullback.snd Limits.pullback.condition
-  hom_inv_id :=
-    haveI : HasPullback f i := HasPullbackOpenEmbedding f hi
-    pullback.hom_ext f hi _ _ (by simp only [pullback.cone_pt, Category.assoc,
-      pullback.lift_fst, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.id_comp])
-  inv_hom_id := by
-    haveI : HasPullback f i := HasPullbackOpenEmbedding f hi
-    refine' Limits.pullback.hom_ext (k := (pullback.lift f hi Limits.pullback.fst
-      Limits.pullback.snd Limits.pullback.condition ≫ Limits.pullback.lift
-      (pullback.fst _ hi) (pullback.snd _ hi) (pullback.condition f hi))) _ _
-    · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
-        pullback.lift_fst, Category.id_comp]
-    · rw [Category.id_comp, Category.assoc, Limits.pullback.lift_snd, pullback.lift_snd]
+    @Limits.pullback _ _ _ _ _ f i (HasPullbackOpenEmbedding f hi) :=
+  haveI : HasPullback f i := HasPullbackOpenEmbedding f hi
+  { hom :=
+      Limits.pullback.lift (pullback.fst _ hi) (pullback.snd _ hi) (pullback.condition f hi)
+    inv :=
+      pullback.lift f hi Limits.pullback.fst Limits.pullback.snd Limits.pullback.condition
+    hom_inv_id :=
+      pullback.hom_ext f hi _ _ (by simp only [pullback.cone_pt, Category.assoc,
+        pullback.lift_fst, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.id_comp])
+    inv_hom_id := by
+      refine' Limits.pullback.hom_ext (k := (pullback.lift f hi Limits.pullback.fst
+        Limits.pullback.snd Limits.pullback.condition ≫ Limits.pullback.lift
+        (pullback.fst _ hi) (pullback.snd _ hi) (pullback.condition f hi))) _ _
+      · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
+          pullback.lift_fst, Category.id_comp]
+      · rw [Category.id_comp, Category.assoc, Limits.pullback.lift_snd, pullback.lift_snd] }
 
 end Isos
 
