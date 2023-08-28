@@ -309,9 +309,7 @@ def tprod : MultilinearMap R s (⨂[R] i, s i) where
 variable {R}
 
 /-- pure tensor in tensor product over some index type -/
--- Porting note: use `FunLike.coe` as an explicit coercion to help `notation3` pretty print,
--- was just `tprod R f`.
-notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => FunLike.coe (tprod R) f) => r
+notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
 
 --Porting note: new theorem
 theorem tprod_eq_tprodCoeff_one :
