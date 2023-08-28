@@ -199,13 +199,14 @@ variable [Preorder α] [Preorder β]
 open TopologicalSpace
 
 lemma UpperSetTopology_Monotone_coinduced_LE' {t₁ : TopologicalSpace α} [UpperSetTopology α]
-    (hf : Monotone f) : coinduced f t₁ ≤ @ScottTopology' β _ := by
+  {f : α → β}  (hf : Monotone f) : coinduced f t₁ ≤ @ScottTopology' β _ := by
   apply le_sup_of_le_left
   rwa [← continuous_iff_coinduced_le,
     ← @UpperSetTopology.monotone_iff_continuous α β _ _ t₁ _ (upperSetTopology' β) _ _ ]
 
 lemma UpperSetTopology_Monotone_coinduced_LE {t₁ : TopologicalSpace α} [UpperSetTopology α]
-    {t₂ : TopologicalSpace β} [ScottTopology β] (hf : Monotone f) : coinduced f t₁ ≤ t₂ := by
+    {t₂ : TopologicalSpace β} [ScottTopology β] {f : α → β} (hf : Monotone f) :
+    coinduced f t₁ ≤ t₂ := by
   rw [ScottTopology.topology_eq β]
   apply UpperSetTopology_Monotone_coinduced_LE' hf
 
