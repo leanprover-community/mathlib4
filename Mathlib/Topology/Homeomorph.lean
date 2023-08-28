@@ -568,12 +568,10 @@ end
 
 /-- `Equiv.piCongrLeft` as an homeomorphism. -/
 @[simps! apply toEquiv]
-def piCongr {ι ι' : Type*} {β : ι' → Type*} [∀ j, TopologicalSpace (β j)]
+def piCongrLeft {ι ι' : Type*} {β : ι' → Type*} [∀ j, TopologicalSpace (β j)]
     (e : ι ≃ ι') : (∀ i, β (e i)) ≃ₜ ∀ j, β j where
   continuous_toFun := continuous_pi <| e.forall_congr_left.mp <| fun i ↦ by
-    --exact continuous_apply (fun i ↦ β (e i)) i
-
-    sorry
+    simpa using continuous_apply i
   continuous_invFun := Pi.continuous_precomp' e
   toEquiv := Equiv.piCongrLeft _ e
 
@@ -597,12 +595,8 @@ theorem piCongrRight_symm {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, Topo
 @[simps! apply toEquiv]
 def piCongr {ι₁ ι₂ : Type*} {β₁ : ι₁ → Type*} {β₂ : ι₂ → Type*}
     [∀ i₁, TopologicalSpace (β₁ i₁)] [∀ i₂, TopologicalSpace (β₂ i₂)]
-    (e : ι₁ ≃ ι₂) (F : ∀ i₁, β₁ i₁ ≃ₜ β₂ (e i₁)) : (∀ i₁, β₁ i₁) ≃ₜ ∀ i₂, β₂ i₂ where
-  continuous_toFun := continuous_pi <| e.forall_congr_left.mp <| fun i₁ ↦ by
-    simp
-
-  continuous_invFun := sorry
-  toEquiv := Equiv.piCongr e (fun i₁ ↦ F i₁)
+    (e : ι₁ ≃ ι₂) (F : ∀ i₁, β₁ i₁ ≃ₜ β₂ (e i₁)) : (∀ i₁, β₁ i₁) ≃ₜ ∀ i₂, β₂ i₂ :=
+  (Homeomorph.piCongrRight F).trans (Homeomorph.piCongrLeft e)
 
 -- porting note: TODO: align the order of universes with `Equiv.ulift`
 /-- `ULift α` is homeomorphic to `α`. -/
