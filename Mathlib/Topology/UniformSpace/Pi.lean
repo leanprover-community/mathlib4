@@ -54,6 +54,23 @@ theorem Pi.uniformContinuous_proj (i : ι) : UniformContinuous fun a : ∀ i : �
   uniformContinuous_pi.1 uniformContinuous_id i
 #align Pi.uniform_continuous_proj Pi.uniformContinuous_proj
 
+theorem Pi.uniformContinuous_precomp' {ι' : Type*} (φ : ι' → ι) :
+    UniformContinuous (fun (f : (∀ i, α i)) (j : ι') ↦ f (φ j)) :=
+  uniformContinuous_pi.mpr fun j ↦ uniformContinuous_proj α (φ j)
+
+theorem Pi.uniformContinuous_precomp {ι' β : Type*} [UniformSpace β] (φ : ι' → ι) :
+    UniformContinuous (· ∘ φ : (ι → β) → (ι' → β)) :=
+  Pi.uniformContinuous_precomp' _ φ
+
+theorem Pi.uniformContinuous_postcomp' {β : ι → Type*} [∀ i, UniformSpace (β i)]
+    {g : ∀ i, α i → β i} (hg : ∀ i, UniformContinuous (g i)) :
+    UniformContinuous (fun (f : (∀ i, α i)) (i : ι) ↦ g i (f i)) :=
+  uniformContinuous_pi.mpr fun i ↦ (hg i).comp <| uniformContinuous_proj α i
+
+theorem Pi.uniformContinuous_postcomp {α β : Type*} [UniformSpace α] [UniformSpace β] {g : α → β}
+    (hg : UniformContinuous g) : UniformContinuous (g ∘ · : (ι → α) → (ι → β)) :=
+  Pi.uniformContinuous_postcomp' _ fun _ ↦ hg
+
 lemma cauchy_pi_iff [Nonempty ι] {l : Filter (∀ i, α i)} :
     Cauchy l ↔ ∀ i, Cauchy (map (eval i) l) := by
   simp_rw [Pi.uniformSpace_eq, cauchy_iInf_uniformSpace, cauchy_comap_uniformSpace]
