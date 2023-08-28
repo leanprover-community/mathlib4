@@ -171,109 +171,94 @@ variable (C : Type u) [Category.{v} C]
 
 open Sieve CategoryTheory.Limits Opposite
 
+namespace Coverage
+
+@[simps]
+def union (x y : Coverage C) : Coverage C where
+  covering B := x.covering B ∪ y.covering B
+  pullback := by
+    rintro X Y f S (hx | hy)
+    · obtain ⟨T, hT⟩ := x.pullback f S hx
+      exact ⟨T, Or.inl hT.1, hT.2⟩
+    · obtain ⟨T, hT⟩ := y.pullback f S hy
+      exact ⟨T, Or.inr hT.1, hT.2⟩
+
+end Coverage
+
 variable {C}
 
 def ExtensiveSieve [HasFiniteCoproducts C] (B : C) := { S | ∃ (α : Type) (_ : Fintype α) (X : α → C)
-  (π : (a : α) → (X a ⟶ B)),
-    S = Presieve.ofArrows X π ∧ IsIso (Sigma.desc π) }
+  (π : (a : α) → (X a ⟶ B)), S = Presieve.ofArrows X π ∧ IsIso (Sigma.desc π) }
 
 def RegularSieve (B : C) := { S | ∃ (X : C) (f : X ⟶ B), S = Presieve.ofArrows (fun (_ : Unit) ↦ X)
       (fun (_ : Unit) ↦ f) ∧ Epi f }
 
-variable [HasFiniteCoproducts C] (C)
+variable (C)
 
-def Extensivity [HasPullbackOfIsIsodesc C] : Prop :=
-  ∀ {α : Type} [Fintype α] {X : C} {Z : α → C} (π : (a : α) → Z a ⟶ X)
-  {Y : C} (f : Y ⟶ X) (_ : IsIso (Sigma.desc π)),
-     IsIso (Sigma.desc ((fun _ ↦ pullback.fst) : (a : α) → pullback f (π a) ⟶ _))
+def Extensivity [HasFiniteCoproducts C] [HasPullbackOfIsIsodesc C] : Prop :=
+    ∀ {α : Type} [Fintype α] {X : C} {Z : α → C} (π : (a : α) → Z a ⟶ X)
+    {Y : C} (f : Y ⟶ X) (_ : IsIso (Sigma.desc π)),
+    IsIso (Sigma.desc ((fun _ ↦ pullback.fst) : (a : α) → pullback f (π a) ⟶ _))
 
-def EverythingIsProjective : Prop :=
-  ∀ X : C, Projective X
-
-def ExtensiveRegularCoverage [HasFiniteCoproducts C] [HasPullbackOfIsIsodesc C]
-    (h_proj : EverythingIsProjective C) (h_ext : Extensivity C) : Coverage C where
-  covering B :=   (ExtensiveSieve B) ∪ (RegularSieve B)
+@[simps]
+def ExtensiveCoverage [HasFiniteCoproducts C] [HasPullbackOfIsIsodesc C] (h_ext : Extensivity C) :
+    Coverage C where
+  covering B := ExtensiveSieve B
   pullback := by
-    rintro X Y f S (⟨α, hα, Z, π, hS, h_iso⟩ | ⟨Z, π, hπ, h_epi⟩)
-    · let Z' : α → C := fun a ↦ pullback f (π a)
-      set π' : (a : α) → Z' a ⟶ Y := fun a ↦ pullback.fst with hπ'
-      set S' := @Presieve.ofArrows C _ _ α Z' π' with hS'
-      use S'
-      constructor
-      · rw [Set.mem_union]
-        apply Or.intro_left
-        rw [ExtensiveSieve]
-        constructor
-        refine ⟨hα, Z', π', ⟨by simp only, ?_⟩⟩
-        · rw [hπ']
-          exact h_ext (fun x => π x) f h_iso
-      · rw [hS', Presieve.FactorsThruAlong]
-        intro W g hg
-        rcases hg with ⟨a⟩
-        refine ⟨Z a, pullback.snd, π a, ?_, by rw [CategoryTheory.Limits.pullback.condition]⟩
-        rw [hS]
-        refine Presieve.ofArrows.mk a
-    · set S' := Presieve.singleton (𝟙 Y) with hS'
-      use S'
-      constructor
-      · apply Or.intro_right
-        rw [RegularSieve]
-        refine ⟨Y, 𝟙 _, by {rw [Presieve.ofArrows_pUnit (𝟙 Y)]}, instEpiIdToCategoryStruct Y⟩
-      · rw [hS', Presieve.FactorsThruAlong]
-        intro W g hg
-        cases hg
-        simp only [Category.id_comp]
-        use Z
-        use @Projective.factorThru C _ Y X Z ?_ f π h_epi
-        · use π
-          constructor
-          · cases hπ
-            rw [Presieve.ofArrows_pUnit]
-            exact Presieve.singleton.mk
-          · have : Projective Y
-            exact h_proj Y
-            exact @Projective.factorThru_comp C _ Y X Z this f π h_epi
-        · exact h_proj Y
+    intro X Y f S ⟨α, hα, Z, π, hS, h_iso⟩
+    let Z' : α → C := fun a ↦ pullback f (π a)
+    let π' : (a : α) → Z' a ⟶ Y := fun a ↦ pullback.fst
+    refine ⟨@Presieve.ofArrows C _ _ α Z' π', ⟨?_, ?_⟩⟩
+    · constructor
+      exact ⟨hα, Z', π', ⟨by simp only, h_ext (fun x => π x) f h_iso⟩⟩
+    · intro W g hg
+      rcases hg with ⟨a⟩
+      refine ⟨Z a, pullback.snd, π a, ?_, by rw [CategoryTheory.Limits.pullback.condition]⟩
+      rw [hS]
+      refine Presieve.ofArrows.mk a
+
+@[simps]
+def RegularCoverage (h_proj : ∀ X : C, Projective X) : Coverage C where
+  covering B := RegularSieve B
+  pullback := by
+    intro X Y f S ⟨Z, π, hπ, h_epi⟩
+    refine ⟨Presieve.singleton (𝟙 Y), ⟨?_, ?_⟩⟩
+    · exact ⟨Y, 𝟙 _, by {rw [Presieve.ofArrows_pUnit (𝟙 Y)]}, instEpiIdToCategoryStruct Y⟩
+    · intro W g hg
+      cases hg
+      simp only [Category.id_comp]
+      refine ⟨Z, @Projective.factorThru C _ Y X Z (h_proj Y) f π h_epi,
+        ⟨π, ?_, @Projective.factorThru_comp C _ Y X Z (h_proj Y) f π h_epi⟩⟩
+      cases hπ
+      rw [Presieve.ofArrows_pUnit]
+      exact Presieve.singleton.mk
 
 def EpiPullbackOfEpi [HasPullbacks C] : Prop := ∀ {X Y Z : C} (f : Y ⟶ X) (π : Z ⟶ X) [Epi π],
-    Epi (@pullback.fst _ _ _ _ _ f π _)
+    Epi (pullback.fst (f := f) (g := π))
 
-def ExtensiveRegularCoverage' [HasFiniteCoproducts C] [HasPullbacks C] (h_epi_epi : EpiPullbackOfEpi C)
-    (h_ext : Extensivity C) : Coverage C where
-  covering B := (ExtensiveSieve B) ∪ (RegularSieve B)
+@[simps]
+def RegularCoverage' [HasPullbacks C] (h_epi_epi : EpiPullbackOfEpi C) : Coverage C where
+  covering B := (RegularSieve B)
   pullback := by
-    rintro X Y f S (⟨α, hα, Z, π, hS, h_iso⟩ | ⟨Z, π, hπ, h_epi⟩)
-    · let Z' : α → C := fun a ↦ pullback f (π a)
-      set π' : (a : α) → Z' a ⟶ Y := fun a ↦ pullback.fst with hπ'
-      set S' := @Presieve.ofArrows C _ _ α Z' π' with hS'
-      use S'
-      constructor
-      · rw [Set.mem_union]
-        apply Or.intro_left
-        rw [ExtensiveSieve]
-        constructor
-        refine ⟨hα, Z', π', ⟨by simp only, ?_⟩⟩
-        · rw [hπ']
-          exact h_ext (fun x => π x) f h_iso
-      · rw [hS', Presieve.FactorsThruAlong]
-        intro W g hg
-        rcases hg with ⟨a⟩
-        refine ⟨Z a, pullback.snd, π a, ?_, by rw [CategoryTheory.Limits.pullback.condition]⟩
-        rw [hS]
-        refine Presieve.ofArrows.mk a
-    · set S' := Presieve.singleton (@pullback.fst _ _ _ _ _ f π _) with hS'
-      use S'
-      constructor
-      · right
-        rw [RegularSieve]
-        refine' ⟨(pullback f π), _, by {rw [Presieve.ofArrows_pUnit _]}, h_epi_epi f π⟩
-      · rw [hS', Presieve.FactorsThruAlong]
-        rintro _ _ ⟨⟩
-        refine' ⟨Z, pullback.snd, π, ⟨_, by rw [pullback.condition]⟩⟩
-        rw [hπ]
-        exact Presieve.ofArrows.mk ()
+    intro X Y f S ⟨Z, π, hπ, h_epi⟩
+    refine ⟨Presieve.singleton (pullback.fst (f := f) (g := π)), ?_, ?_⟩
+    · refine' ⟨(pullback f π), _, by {rw [Presieve.ofArrows_pUnit _]}, h_epi_epi f π⟩
+    · rintro _ _ ⟨⟩
+      refine' ⟨Z, pullback.snd, π, ⟨_, by rw [pullback.condition]⟩⟩
+      rw [hπ]
+      exact Presieve.ofArrows.mk ()
 
-variable [HasPullbackOfIsIsodesc C] {C}
+@[simps!]
+def ExtensiveRegularCoverage [HasFiniteCoproducts C] [HasPullbackOfIsIsodesc C]
+    (h_proj : ∀ X : C, Projective X) (h_ext : Extensivity C) : Coverage C :=
+  (ExtensiveCoverage C h_ext).union C (RegularCoverage C h_proj)
+
+@[simps!]
+def ExtensiveRegularCoverage' [HasFiniteCoproducts C] [HasPullbacks C]
+    (h_epi_epi : EpiPullbackOfEpi C) (h_ext : Extensivity C) : Coverage C :=
+  (ExtensiveCoverage C h_ext).union C (RegularCoverage' C h_epi_epi)
+
+variable [HasFiniteCoproducts C] [HasPullbackOfIsIsodesc C] {C}
 
 lemma isPullbackSieve_ExtensiveSieve {X : C} {S : Presieve X}
     (hS : S ∈ ExtensiveSieve X) : isPullbackPresieve S := by
@@ -1555,16 +1540,15 @@ lemma extensivity : Extensivity Stonean := @fun α _ X Z i Y f H => by
     Discrete.functor_obj, const_obj_obj, Discrete.natIso_hom_app, Cofan.mk_ι_app,
     limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
 
-lemma everything_proj : EverythingIsProjective Stonean := by
-  refine' fun P => ⟨(@fun X Y f e he => _)⟩
-  have proj : Projective (toCompHaus.obj P) := inferInstanceAs (Projective P.compHaus)
-  have : Epi (toCompHaus.map e) := by --TODO state a general lemma
-    rw [CompHaus.epi_iff_surjective]
-    change Function.Surjective e
-    rwa [← Stonean.epi_iff_surjective]
-  set g := toCompHaus.preimage <| Projective.factorThru (toCompHaus.map f) (toCompHaus.map e) with hg
-  refine' ⟨g, toCompHaus.map_injective _⟩
-  rw [map_comp, hg, image_preimage, Projective.factorThru_comp]
+instance everything_proj (X : Stonean) : Projective X where
+  factors := by
+    intro B C φ f _
+    haveI : ExtremallyDisconnected X.compHaus.toTop := X.extrDisc
+    have hf : Function.Surjective f := by rwa [← Stonean.epi_iff_surjective]
+    obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.continuous f.continuous hf
+    use ⟨f', h.left⟩
+    ext
+    exact congr_fun h.right _
 
 lemma extensiveRegular_generates_coherent :
     (ExtensiveRegularCoverage Stonean everything_proj extensivity).toGrothendieck =
