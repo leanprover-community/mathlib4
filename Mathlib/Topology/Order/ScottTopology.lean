@@ -131,8 +131,8 @@ namespace WithScottTopology
 /-- `ofScott` is the identity function from the `WithScottTopology` of a type.  -/
 @[match_pattern] def ofScott : WithScottTopology α ≃ α := Equiv.refl _
 
-@[simp] lemma to_scott_symm_eq : (@toScott α).symm = ofScott := rfl
-@[simp] lemma of_scott_symm_eq : (@ofScott α).symm = toScott := rfl
+@[simp] lemma toScott_symm_eq : (@toScott α).symm = ofScott := rfl
+@[simp] lemma ofScott_symm_eq : (@ofScott α).symm = toScott := rfl
 @[simp] lemma toScott_ofScott (a : WithScottTopology α) : toScott (ofScott a) = a := rfl
 @[simp] lemma ofScott_toScott (a : α) : ofScott (toScott a) = a := rfl
 -- porting note: removed @[simp] to make linter happy
