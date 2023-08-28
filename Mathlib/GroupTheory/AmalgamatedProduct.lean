@@ -5,16 +5,17 @@ Authors: Chris Hughes
 -/
 
 import Mathlib.GroupTheory.Coprod.CoprodI
+import Mathlib.GroupTheory.Coprod.Coprod
 import Mathlib.GroupTheory.QuotientGroup
 
 variable {ι : Type*} {G : ι → Type*} [∀ i, Group (G i)] {H : Type*} [Group H]
   (φ : ∀ i, H →* G i) {K : Type*} [Group K]
 
-open Monoid CoprodI Subgroup
+open Monoid CoprodI Subgroup Coprod
 
 def AmalgamatedProduct : Type _ :=
-  CoprodI G ⧸ normalClosure
-    (⋃ (i : ι) (j : ι), Set.range (fun g => of (φ i g) * (of (φ j g))⁻¹))
+  ((CoprodI G) ∗ H) ⧸ normalClosure
+    (⋃ (i : ι), Set.range (fun g : H => inl (of (φ i g)⁻¹) * (inr g)))
 
 namespace AmalgamatedProduct
 
@@ -24,32 +25,72 @@ instance : Group (AmalgamatedProduct φ) :=
   QuotientGroup.Quotient.group _
 
 def of {i : ι} : G i →* AmalgamatedProduct φ :=
-  (QuotientGroup.mk' _).comp CoprodI.of
+  (QuotientGroup.mk' _).comp <| inl.comp CoprodI.of
 
-def lift (f : ∀ i, G i →* K) (hf : ∀ i j, (f i).comp (φ i) = (f j).comp (φ j)) :
+def base : H →* AmalgamatedProduct φ :=
+  (QuotientGroup.mk' _).comp <| inr
+
+@[simp]
+theorem of_comp_eq_base (i : ι) : of.comp (φ i) = (base (φ := φ)) := by
+  ext x
+  apply QuotientGroup.eq.2
+  refine subset_normalClosure ?_
+  simp only [MonoidHom.comp_apply, Set.mem_iUnion, Set.mem_range]
+  exact ⟨_, _, rfl⟩
+
+@[simp]
+theorem of_apply_eq_base {i : ι} (x : H) : of (φ i x) = base (φ := φ) x := by
+  rw [← MonoidHom.comp_apply, of_comp_eq_base]
+
+def lift (f : ∀ i, G i →* K) (k : H →* K)
+    (hf : ∀ i, (f i).comp (φ i) = k) :
     AmalgamatedProduct φ →* K :=
-  QuotientGroup.lift _ (CoprodI.lift f)
-    (show normalClosure _ ≤ (CoprodI.lift f).ker
+  QuotientGroup.lift _ (Coprod.lift (CoprodI.lift f) k)
+    (show normalClosure _ ≤ (Coprod.lift (CoprodI.lift f) k).ker
       from normalClosure_le_normal <| by
         simp only [Set.iUnion_subset_iff, Set.range_subset_iff,
           MonoidHom.mem_ker, SetLike.mem_coe]
-        intro i j h
+        intro i h
         simp only [FunLike.ext_iff, MonoidHom.coe_comp, Function.comp_apply] at hf
-        simp [hf i j])
+        simp [hf i])
 
+set_option maxHeartbeats 200000 in
 @[simp]
-theorem lift_of (f : ∀ i, G i →* K) (hf : ∀ i j, (f i).comp (φ i) = (f j).comp (φ j))
-    {i : ι} (g : G i) : (lift f hf) (of g : AmalgamatedProduct φ) = f i g := by
-  delta AmalgamatedProduct
-  simp [lift, of]
+theorem lift_of (f : ∀ i, G i →* K) (k : H →* K)
+    (hf : ∀ i, (f i).comp (φ i) = k)
+    {i : ι} (g : G i) : (lift f k hf) (of g : AmalgamatedProduct φ) = f i g := by
+  delta AmalgamatedProduct lift of
+  simp only [MonoidHom.coe_comp, QuotientGroup.coe_mk', Function.comp_apply,
+    QuotientGroup.lift_mk, lift_inl, lift_of, CoprodI.lift_of]
+
+set_option maxHeartbeats 200000 in
+@[simp]
+theorem lift_base (f : ∀ i, G i →* K) (k : H →* K)
+    (hf : ∀ i, (f i).comp (φ i) = k)
+    (g : H) : (lift f k hf) (base g : AmalgamatedProduct φ) = k g := by
+  delta AmalgamatedProduct lift base
+  simp only [MonoidHom.coe_comp, QuotientGroup.coe_mk', Function.comp_apply,
+    QuotientGroup.lift_mk, lift_inr, lift_of]
+
+set_option maxHeartbeats 200000 in
+@[ext 1199]
+theorem hom_ext {f g : AmalgamatedProduct φ →* K}
+    (h : ∀ i, f.comp (of : G i →* _) = g.comp (of : G i →* _))
+    (hbase : f.comp base = g.comp base) : f = g :=
+  QuotientGroup.monoidHom_ext _ <|
+    Coprod.ext_hom _ _
+      (CoprodI.ext_hom _ _ h)
+      hbase
 
 @[ext high]
-theorem hom_ext {f g : AmalgamatedProduct φ →* K}
-    (h : ∀ i, f.comp (of : G i →* _) = g.comp of) : f = g := by
-  delta AmalgamatedProduct
-  ext i x
-  simp only [FunLike.ext_iff] at h
-  exact h _ _
+theorem hom_ext_nonempty [hn : Nonempty ι]
+    {f g : AmalgamatedProduct φ →* K}
+    (h : ∀ i, f.comp (of : G i →* _) = g.comp (of : G i →* _)) : f = g :=
+  hom_ext h <| by
+    cases hn with
+    | intro i =>
+      ext
+      rw [← of_comp_eq_base i, ← MonoidHom.comp_assoc, h, MonoidHom.comp_assoc]
 
 noncomputable def rangeEquiv (h : ∀ i, Function.Injective (φ i)) (i j) :
     (φ i).range ≃* (φ j).range :=
@@ -306,12 +347,32 @@ theorem summandToPermNormalWord_apply {i : ι} (g : G i) :
 theorem summandToPermNormalWord_injective {i : ι} : Function.Injective (summandToPermNormalWord hφ i) := by
   simp [Function.Injective, Equiv.ext_iff, summandToPermNormalWord_apply, summandToEndNormalWord]
 
+def baseToEndNormalWord : H →* Function.End (NormalWord φ) :=
+  { toFun := fun h w => { w with left := h * w.left },
+    map_one' := by
+      funext w
+      cases w
+      dsimp [Function.End.one_def]
+      simp
+    map_mul' := fun _ _ => by
+      funext w
+      cases w
+      simp [mul_assoc, Function.End.mul_def] }
+
+def baseToPermNormalWord : H →* Equiv.Perm (NormalWord φ) :=
+  @MulAction.toPermHom _ _ _ (MulAction.ofEndHom baseToEndNormalWord)
+
+theorem baseToPermNormalWord_apply (h : H) :
+  (baseToPermNormalWord h : NormalWord φ → NormalWord φ) =
+    baseToEndNormalWord h := rfl
+
 @[simp]
 theorem summandToPermNormalWord_app_eq {i : ι} (h : H) (w : NormalWord φ) :
-    summandToPermNormalWord hφ i (φ i h) w = { w with left := h * w.left } := by
+    summandToPermNormalWord hφ i (φ i h) w = baseToPermNormalWord h w := by
   apply ext_smul hφ i
   simp only [summandToPermNormalWord_apply, summandToEndNormalWord, equivPair, rcons, Equiv.coe_fn_mk,
-    Equiv.coe_fn_symm_mk, MonoidHom.coe_mk, OneHom.coe_mk, map_mul]
+    Equiv.coe_fn_symm_mk, MonoidHom.coe_mk, OneHom.coe_mk, map_mul, baseToPermNormalWord_apply,
+    baseToEndNormalWord]
   simp only [Word.equivPair_symm, Word.rcons_eq_smul, ← mul_smul]
   simp only [normalizeSingle_mul hφ, map_mul, mul_assoc,
     normalizeSingle_fst_mul_normalizeSingle_snd, mul_smul]
@@ -324,7 +385,7 @@ open NormalWord
 noncomputable def toPermNormalWord [DecidableEq ι] [∀ i, DecidableEq (G i)]
     (hφ : ∀ i, Function.Injective (φ i)) :
     AmalgamatedProduct φ →* Equiv.Perm (NormalWord φ) :=
-  lift (summandToPermNormalWord hφ) <| by intros; ext; simp
+  lift (summandToPermNormalWord hφ) baseToPermNormalWord (by intros; ext; simp)
 
 theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
     Function.Injective (of (G := G) (φ := φ) (i := i)) := by
