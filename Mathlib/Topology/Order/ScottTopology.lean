@@ -64,6 +64,10 @@ variable {α β}
 
 variable [Preorder α] [Preorder β]
 
+/--
+A set `u` is said to be inaccessible by directed joins if, when the least upper bound of a directed
+set `d` lies in `u` then `d` has non-empty intersection with `u`.
+-/
 def DirSupInacc (u : Set α) : Prop :=
   ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a → a ∈ u → (d ∩ u).Nonempty
 
