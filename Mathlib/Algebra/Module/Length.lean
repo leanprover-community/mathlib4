@@ -45,6 +45,53 @@ class IsFiniteLengthModule : Prop where
   with itself. -/
   finite : Nonempty (FiniteLengthModule R M)
 
+variable {R M}
+
+/-- transport a composition series across a linear equivalence -/
+@[simps!]
+def _root_.CompositionSeries.congr (s : CompositionSeries (Submodule R M))
+    {M' : Type _} [AddCommGroup M'] [Module R M'] (e : M ≃ₗ[R] M') :
+    CompositionSeries (Submodule R M') :=
+  s.map _ (Submodule.map e) $ λ x y (h : x ⋖ y) ↦ by
+    refine ⟨⟨?_, ?_⟩, ?_⟩
+    · rintro _ ⟨a, ha, rfl⟩; exact ⟨a, h.1.1 ha, rfl⟩
+    · have H := h.1.2
+      contrapose! H
+      rintro b hb
+      obtain ⟨a, ha, ha'⟩ := H $ show e b ∈ y.map e from ⟨b, hb, rfl⟩
+      simp only [EmbeddingLike.apply_eq_iff_eq] at ha'
+      rwa [← ha']
+    · intro z hz r
+      refine h.2 (c := Submodule.map e.symm z) ⟨λ a ha ↦ ⟨e a, hz.1 ⟨_, ha, rfl⟩, e.3 _⟩, ?_⟩
+        ⟨?_, ?_⟩
+      · obtain ⟨m, hm1, hm2⟩ := SetLike.not_le_iff_exists.mp hz.2
+        obtain ⟨n, -, rfl⟩ := r.1 hm1
+        contrapose! hm2
+        specialize hm2 $ show n ∈ _ from ⟨e n, hm1, e.3 _⟩
+        exact ⟨_, hm2, rfl⟩
+      · rintro _ ⟨a, ha, rfl⟩
+        obtain ⟨b, hb1, rfl⟩ := r.1 ha
+        rwa [show e.symm (e b) = b from e.3 b]
+      · have r' := r.2
+        contrapose! r'
+        rintro _ ⟨a, ha, rfl⟩
+        obtain ⟨b, hb, rfl⟩ := r' ha
+        rwa [show e (e.symm b) = b from e.4 _]
+
+noncomputable instance [h : FiniteLengthModule R M] (N : Submodule R M) :
+    FiniteLengthModule R N where
+  compositionSeries := h.compositionSeries.ofInterList N
+  head_eq := h.compositionSeries.ofInterList_head_eq_bot_of_head_eq_bot N h.head_eq
+  last_eq := h.compositionSeries.ofInterList_last_eq_top_of_last_eq_top N h.last_eq
+
+instance [h : FiniteLengthModule R M] : IsFiniteLengthModule R M := ⟨⟨h⟩⟩
+
+noncomputable instance (priority := 100) [h : IsFiniteLengthModule R M] : FiniteLengthModule R M :=
+  h.finite.some
+
+section decIssue
+
+variable (R M)
 variable [∀ (M : Type _) [AddCommGroup M] [Module R M], Decidable $ IsFiniteLengthModule R M]
 
 
@@ -78,37 +125,6 @@ lemma moduleLength_lt_of_proper_submodule [h : FiniteLengthModule R M]
   rw [x.moduleLength_eq_length x0 xlast, h.compositionSeries.moduleLength_eq_length
     h.head_eq h.last_eq]
   exact WithTop.coe_lt_coe.mpr xlen
-
-/-- transport a composition series across a linear equivalence -/
-@[simps!]
-def _root_.CompositionSeries.congr (s : CompositionSeries (Submodule R M))
-    {M' : Type _} [AddCommGroup M'] [Module R M'] (e : M ≃ₗ[R] M') :
-    CompositionSeries (Submodule R M') :=
-  s.map _ (Submodule.map e) $ λ x y (h : x ⋖ y) ↦ by
-    refine ⟨⟨?_, ?_⟩, ?_⟩
-    · rintro _ ⟨a, ha, rfl⟩; exact ⟨a, h.1.1 ha, rfl⟩
-    · have H := h.1.2
-      contrapose! H
-      rintro b hb
-      obtain ⟨a, ha, ha'⟩ := H $ show e b ∈ y.map e from ⟨b, hb, rfl⟩
-      simp only [EmbeddingLike.apply_eq_iff_eq] at ha'
-      rwa [← ha']
-    · intro z hz r
-      refine h.2 (c := Submodule.map e.symm z) ⟨λ a ha ↦ ⟨e a, hz.1 ⟨_, ha, rfl⟩, e.3 _⟩, ?_⟩
-        ⟨?_, ?_⟩
-      · obtain ⟨m, hm1, hm2⟩ := SetLike.not_le_iff_exists.mp hz.2
-        obtain ⟨n, -, rfl⟩ := r.1 hm1
-        contrapose! hm2
-        specialize hm2 $ show n ∈ _ from ⟨e n, hm1, e.3 _⟩
-        exact ⟨_, hm2, rfl⟩
-      · rintro _ ⟨a, ha, rfl⟩
-        obtain ⟨b, hb1, rfl⟩ := r.1 ha
-        rwa [show e.symm (e b) = b from e.3 b]
-      · have r' := r.2
-        contrapose! r'
-        rintro _ ⟨a, ha, rfl⟩
-        obtain ⟨b, hb, rfl⟩ := r' ha
-        rwa [show e (e.symm b) = b from e.4 _]
 
 /-- finite length modules are preserved under linear isomorphisms -/
 def finiteLengthModule_congr {M' : Type _} [AddCommGroup M'] [Module R M']
@@ -192,20 +208,11 @@ lemma IsFiniteLengthModule_iff_moduleLength_finite :
     rw [dif_neg r]
     exact λ n ↦ by norm_num
 
-noncomputable instance [h : FiniteLengthModule R M] (N : Submodule R M) :
-    FiniteLengthModule R N where
-  compositionSeries := h.compositionSeries.ofInterList N
-  head_eq := h.compositionSeries.ofInterList_head_eq_bot_of_head_eq_bot N h.head_eq
-  last_eq := h.compositionSeries.ofInterList_last_eq_top_of_last_eq_top N h.last_eq
-
-instance [h : FiniteLengthModule R M] : IsFiniteLengthModule R M := ⟨⟨h⟩⟩
-
-noncomputable instance (priority := 100) [h : IsFiniteLengthModule R M] : FiniteLengthModule R M :=
-  h.finite.some
-
 lemma moduleLength_eq_coe [h : FiniteLengthModule R M] :
     moduleLength R M = h.compositionSeries.length :=
   h.compositionSeries.moduleLength_eq_length h.head_eq h.last_eq
+
+end decIssue
 
 end defs
 
@@ -257,6 +264,8 @@ lemma length_le_compositionSeries
 
 end LTSeries
 
+section decIssue
+
 variable [∀ (M : Type _) [AddCommGroup M] [Module R M], Decidable $ IsFiniteLengthModule R M]
 
 lemma moduleLength_eq_krullDim_Submodules [h : FiniteLengthModule R M] :
@@ -266,11 +275,13 @@ le_antisymm (le_iSup_iff.mpr $ λ m hm ↦ moduleLength_eq_coe (h := h) ▸
     refine WithBot.coe_le_coe.mpr $ moduleLength_eq_coe (h := h) ▸ WithTop.coe_le_coe.mpr ?_
     exact i.length_le_compositionSeries _ h.head_eq h.last_eq
 
+end decIssue
+
 section Noetherian_and_Artinian
 
 variable (R M)
 
-lemma isNoetherian_of_finiteLength [h : FiniteLengthModule R M] :
+instance isNoetherian_of_finiteLength [h : FiniteLengthModule R M] :
     IsNoetherian R M := by
   rw [isNoetherian_iff_wellFounded]
   refine RelEmbedding.wellFounded_iff_no_descending_seq.2 ⟨λ a ↦ ?_⟩
@@ -280,7 +291,7 @@ lemma isNoetherian_of_finiteLength [h : FiniteLengthModule R M] :
     p.length_le_compositionSeries _ h.head_eq h.last_eq
   norm_num at this
 
-lemma isArtinian_of_finiteLength [h : FiniteLengthModule R M] :
+instance isArtinian_of_finiteLength [h : FiniteLengthModule R M] :
     IsArtinian R M where
   wellFounded_submodule_lt' := RelEmbedding.wellFounded_iff_no_descending_seq.2 ⟨λ a ↦ by
     let p : LTSeries (Submodule R M) := LTSeries.mk (h.compositionSeries.length + 1)
@@ -291,5 +302,148 @@ lemma isArtinian_of_finiteLength [h : FiniteLengthModule R M] :
     have : h.compositionSeries.length + 1 ≤ h.compositionSeries.length :=
       p.length_le_compositionSeries _ h.head_eq h.last_eq
     norm_num at this⟩
+
+variable {R M}
+variable [IsArtinian R M] (N : Submodule R M)
+
+/-- for an artinian `R`-module `M`, there is a well defined successor function on its submodules.
+`N ↦ N'` such that `N ⋖ N'`-/
+noncomputable def _root_.Submodule.next : Submodule R M :=
+let wf : WellFounded ((. < .) : Submodule R M → Submodule R M → Prop) :=
+  (inferInstance : IsArtinian R M).1
+wf.succ N
+
+lemma _root_.Submodule.exists_of_ne_top (ne_top : N ≠ ⊤) : ∃ (x : Submodule R M), N < x := by
+  obtain ⟨m, _, nm⟩ := SetLike.exists_of_lt (Ne.lt_top ne_top : N < ⊤)
+  refine ⟨N ⊔ R ∙ m, SetLike.lt_iff_le_and_exists.mpr ⟨le_sup_left, ⟨m, ?_, nm⟩⟩⟩
+  exact (le_sup_right : (R ∙ m) ≤ _) (Submodule.mem_span_singleton_self _)
+
+lemma _root_.Submodule.le_next : N ≤ N.next := by
+  delta Submodule.next WellFounded.succ
+  by_cases H : ∃ _, _
+  · exact le_of_lt (WellFounded.lt_succ _ H)
+  · dsimp only
+    split_ifs with h
+    · exact (H h).elim
+    · rfl
+
+lemma _root_.Submodule.lt_next_of_ne_top (ne_top : N ≠ ⊤) : N < N.next :=
+  WellFounded.lt_succ _ (N.exists_of_ne_top ne_top)
+
+lemma _root_.Submodule.eq_top_of_eq_next (eq_next : N = N.next) : N = ⊤ := by
+  contrapose! eq_next
+  exact ne_of_lt (N.lt_next_of_ne_top eq_next)
+
+lemma _root_.Submodule.covby_next_of_ne_top (ne_top : N ≠ ⊤) : N ⋖ N.next := by
+  classical
+  rw [covby_iff_lt_and_eq_or_eq]
+  refine ⟨N.lt_next_of_ne_top ne_top, λ x hx1 hx2 ↦ ?_⟩
+  dsimp only [Submodule.next] at hx2 ⊢
+  -- generalize_proofs h at hx2
+  rw [le_iff_lt_or_eq] at hx2
+  rcases hx2 with (hx2|rfl)
+  · left
+    refine le_antisymm ?_ hx1
+    delta WellFounded.succ at hx2
+    rw [dif_pos (N.exists_of_ne_top ne_top)] at hx2
+    have : ¬ _ < _ := not_imp_not.mpr (WellFounded.not_lt_min _ _ _) (not_not.mpr hx2)
+    rw [SetLike.lt_iff_le_and_exists, not_and_or] at this
+    push_neg at this
+    exact this.resolve_left (not_not.mpr hx1)
+  · right; rfl
+
+variable (R M)
+
+/-- the `n`-th largest submodule, counting from `0`-th largest being `⊥`
+  this is implemented as an order homomorphism -/
+@[simps]
+noncomputable def nthSubmodule : ℕ →o Submodule R M where
+  toFun := λ n ↦ Submodule.next^[n] ⊥
+  monotone' := λ m n h ↦ by
+    apply Function.monotone_iterate_of_id_le
+    · intro x; apply Submodule.le_next
+    · assumption
+
+lemma nthSubmodule_eventually_stabilize_of_isNoetherian [IsNoetherian R M] :
+  ∃ (n : ℕ), ∀ (m : ℕ), n ≤ m → nthSubmodule R M n = nthSubmodule R M m :=
+(monotone_stabilizes_iff_noetherian).mpr (inferInstance : IsNoetherian R M) $
+  nthSubmodule R M
+
+section decIssue
+
+variable [DecidablePred $ λ (n : ℕ) ↦ ∀ (m : ℕ), n ≤ m → nthSubmodule R M n = nthSubmodule R M m]
+variable  [IsNoetherian R M]
+
+/-- the index of `⊤` appearing in `nthSubmodule`-/
+noncomputable def indexOfTopSubmodule : ℕ :=
+  Nat.find (nthSubmodule_eventually_stabilize_of_isNoetherian R M)
+
+lemma nthSubmodule_stabilize_after_indexOfTopSubmodule_aux :
+    ∀ (m : ℕ), indexOfTopSubmodule R M ≤ m →
+      nthSubmodule R M (indexOfTopSubmodule R M) = nthSubmodule R M m :=
+  Nat.find_spec (nthSubmodule_eventually_stabilize_of_isNoetherian R M)
+
+lemma nthSubmodule_indexOfTopSubmodule_eq_top :
+    nthSubmodule R M (indexOfTopSubmodule R M) = ⊤ := by
+  apply Submodule.eq_top_of_eq_next
+  rw [show (nthSubmodule R M (indexOfTopSubmodule R M)).next =
+    (nthSubmodule R M (indexOfTopSubmodule R M + 1)) from _]
+  · exact nthSubmodule_stabilize_after_indexOfTopSubmodule_aux R M _ $ le_of_lt $ lt_add_one _
+  · rw [nthSubmodule_coe, nthSubmodule_coe, Function.iterate_succ', Function.comp_apply]
+
+lemma nthSubmodule_stabilize_after_indexOfTopSubmodule :
+    ∀ (m : ℕ), indexOfTopSubmodule R M ≤ m → nthSubmodule R M m = ⊤ := by
+  intro m hm
+  rw [← nthSubmodule_indexOfTopSubmodule_eq_top]
+  symm
+  apply nthSubmodule_stabilize_after_indexOfTopSubmodule_aux _ _ _ hm
+
+lemma ne_top_of_lt_indexOfTopSubmodule (n : ℕ) (lt : n < indexOfTopSubmodule R M) :
+    nthSubmodule R M n ≠ ⊤ := by
+  have H := (Nat.lt_find_iff (nthSubmodule_eventually_stabilize_of_isNoetherian R M) n).mp lt n
+    (le_refl _)
+  push_neg at H
+  obtain ⟨m, hm1, hm2⟩ := H
+  intro rid
+  have ineq1 : nthSubmodule R M n < nthSubmodule R M m
+  · exact (le_iff_lt_or_eq.mp ((nthSubmodule R M).2 hm1)).resolve_right hm2
+  rw [rid] at ineq1
+  exact not_top_lt ineq1
+
+/-- If an `R`-module `M` is both artinian and noetherian, then it has a composition series, hence a
+module of finite length. -/
+@[simps]
+noncomputable def _root_.CompositionSeries.ofIsArtinianOfIsNoetherian :
+    CompositionSeries (Submodule R M) where
+  length := indexOfTopSubmodule R M
+  toFun := nthSubmodule R M ∘ Fin.val
+  step := λ i ↦ by
+    simpa only [Function.comp_apply, Fin.coe_castSucc, nthSubmodule_coe, Fin.val_succ,
+      Function.iterate_succ'] using Submodule.covby_next_of_ne_top _
+      (ne_top_of_lt_indexOfTopSubmodule R M _ i.2)
+
+lemma _root_.CompositionSeries.ofIsArtinianOfIsNoetherian_head_eq :
+    (CompositionSeries.ofIsArtinianOfIsNoetherian R M).head = ⊥ := by
+  simp only [RelSeries.head, CompositionSeries.ofIsArtinianOfIsNoetherian_toFun,
+    Function.comp_apply, Fin.val_zero, nthSubmodule_coe, Function.iterate_zero, id_eq]
+
+lemma _root_.CompositionSeries.ofIsArtinianOfIsNoetherian_last_eq :
+    (CompositionSeries.ofIsArtinianOfIsNoetherian R M).last = ⊤ := by
+  simpa only [RelSeries.last, CompositionSeries.ofIsArtinianOfIsNoetherian_length,
+    CompositionSeries.ofIsArtinianOfIsNoetherian_toFun, Function.comp_apply, Fin.val_last,
+    nthSubmodule_coe] using nthSubmodule_indexOfTopSubmodule_eq_top R M
+
+noncomputable instance [IsArtinian R M] [IsNoetherian R M] : FiniteLengthModule R M where
+  compositionSeries := _
+  head_eq := CompositionSeries.ofIsArtinianOfIsNoetherian_head_eq R M
+  last_eq := CompositionSeries.ofIsArtinianOfIsNoetherian_last_eq R M
+
+instance [IsArtinian R M] [IsNoetherian R M] : IsFiniteLengthModule R M where
+  finite := by
+    classical
+    exact ⟨_, CompositionSeries.ofIsArtinianOfIsNoetherian_head_eq R M,
+      CompositionSeries.ofIsArtinianOfIsNoetherian_last_eq R M⟩
+
+end decIssue
 
 end Noetherian_and_Artinian
