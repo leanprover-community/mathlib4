@@ -135,8 +135,8 @@ lemma subset_toDirectedSet {s : Set α} :
 /--
 A join semi-lattice where every directed subset has a least upper bound is automatically complete
 -/
-def SemilatticeSup.toCompleteSemilatticeSup (dSup : DirectedSet α → α)
-    (h : ∀ (d : DirectedSet α), IsLUB d.set (dSup d)) : CompleteSemilatticeSup α where
+def SemilatticeSup.toCompleteSemilatticeSup (dSup : Set α → α)
+    (h : ∀ d, DirectedOn (. ≤ .) d → IsLUB d (dSup d)) : CompleteSemilatticeSup α where
   sSup := fun s => dSup (directedClosure s)
   le_sSup := by
     intros s a ha
