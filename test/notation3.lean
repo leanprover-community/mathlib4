@@ -96,3 +96,12 @@ def myId (x : α) := x
 notation3 "BAD " c "; " (x", "* => foldl (a b => b) c) " DAB" => myId x
 /-- info: myId 3 : ℕ -/
 #guard_msgs in #check BAD 1; 2, 3 DAB
+
+section
+variable (x : Nat)
+local notation3 "y" => x + 1
+/-- info: y : ℕ -/
+#guard_msgs in #check y
+/-- info: y : ℕ -/
+#guard_msgs in #check x + 1
+end
