@@ -103,8 +103,7 @@ def ScottHausdorffTopology : TopologicalSpace α :=
 
 lemma ScottHausdorffTopology.Lower_IsOpen {s : Set α} (h : IsLowerSet s) :
     ScottHausdorffTopology.IsOpen s := by
-  intros d a hd _ hda ha
-  obtain ⟨b, hb⟩  := hd
+  intros d a ⟨b, hb⟩ _ hda ha
   use b
   constructor
   · exact hb
