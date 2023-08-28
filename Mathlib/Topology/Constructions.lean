@@ -1252,6 +1252,23 @@ theorem continuousAt_pi {f : α → ∀ i, π i} {x : α} :
   tendsto_pi_nhds
 #align continuous_at_pi continuousAt_pi
 
+theorem Pi.continuous_precomp' {ι' : Type*} (φ : ι' → ι) :
+    Continuous (fun (f : (∀ i, π i)) (j : ι') ↦ f (φ j)) :=
+  continuous_pi fun j ↦ continuous_apply (φ j)
+
+theorem Pi.continuous_precomp {ι' : Type*} (φ : ι' → ι) :
+    Continuous (· ∘ φ : (ι → α) → (ι' → α)) :=
+  Pi.continuous_precomp' φ
+
+theorem Pi.continuous_postcomp' {ρ : ι → Type*} [∀ i, TopologicalSpace (ρ i)]
+    {g : ∀ i, π i → ρ i} (hg : ∀ i, Continuous (g i)) :
+    Continuous (fun (f : (∀ i, π i)) (i : ι) ↦ g i (f i)) :=
+  continuous_pi fun i ↦ (hg i).comp <| continuous_apply i
+
+theorem Pi.continuous_postcomp [TopologicalSpace β] {g : α → β} (hg : Continuous g) :
+    Continuous (g ∘ · : (ι → α) → (ι → β)) :=
+  Pi.continuous_postcomp' fun _ ↦ hg
+
 theorem Filter.Tendsto.update [DecidableEq ι] {l : Filter β} {f : β → ∀ i, π i} {x : ∀ i, π i}
     (hf : Tendsto f l (𝓝 x)) (i : ι) {g : β → π i} {xi : π i} (hg : Tendsto g l (𝓝 xi)) :
     Tendsto (fun a => update (f a) i (g a)) l (𝓝 <| update x i xi) :=
