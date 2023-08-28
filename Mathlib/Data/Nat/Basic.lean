@@ -364,7 +364,10 @@ set_option push_neg.use_distrib true in
 lemma one_lt_mul_iff : 1 < m * n ↔ 0 < m ∧ 0 < n ∧ (1 < m ∨ 1 < n) := by
   constructor <;> intro h
   · contrapose! h; simp_rw [Nat.le_zero] at h
-    obtain rfl | rfl | h := h; simp; simp; exact Nat.mul_le_mul h.1 h.2
+    obtain rfl | rfl | h := h
+    · simp
+    · simp
+    · exact Nat.mul_le_mul h.1 h.2
   · obtain hm | hn := h.2.2
     · exact Nat.mul_lt_mul hm h.2.1 Nat.zero_lt_one
     · exact Nat.mul_lt_mul' h.1 hn h.1
