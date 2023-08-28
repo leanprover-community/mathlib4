@@ -499,6 +499,9 @@ theorem of_smul_def (i) (w : Word M) (m : M i) :
   rfl
 #align free_product.word.of_smul_def Monoid.CoprodI.Word.of_smul_def
 
+theorem smul_eq_of_smul {i} (m : M i) (w : Word M) :
+    m • w = of m • w := rfl
+
 theorem mem_smul_iff' {i j : ι} {m₁ : M i} {w : Word M} {m₂ : M j} :
     ⟨_, m₁⟩ ∈ (m₂ • w).toList ↔
       ⟨i, m₁⟩ ∈ w.toList.tail
