@@ -1,4 +1,5 @@
 import Mathlib.CategoryTheory.Arrow
+import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.Data.Set.Image
 
 universe w v u
@@ -28,10 +29,10 @@ variable (C)
 structure Subcategory where
   J : Type w
   s : J → Arrow C
-  id₁ : ∀ (i : J), (Arrow.mk (𝟙 (s i).left)) ∈ Set.range s
-  id₂ : ∀ (i : J), (Arrow.mk (𝟙 (s i).right)) ∈ Set.range s
+  id₁ : ∀ (i : J), Arrow.mk (𝟙 (s i).left) ∈ Set.range s
+  id₂ : ∀ (i : J), Arrow.mk (𝟙 (s i).right) ∈ Set.range s
   comp' : ∀ (i j : J) (hij : (s i).right = (s j).left),
-    Arrow.mk ((s i).hom ≫ eqToHom hij ≫ (s j).hom ) ∈ Set.range s
+    Arrow.mk ((s i).hom ≫ eqToHom hij ≫ (s j).hom) ∈ Set.range s
 
 namespace Subcategory
 
@@ -41,7 +42,7 @@ variable (S : Subcategory C)
 
 @[pp_dot]
 def objSet : Set C :=
-  fun X => (∃ (i : S.J), X = (S.s i).left) ∨ (∃ (i : S.J), X = (S.s i).right)
+  fun X => ∃ (i : S.J), X = (S.s i).left
 
 @[pp_dot]
 def obj : Type u := S.objSet
@@ -61,12 +62,9 @@ lemma hom_ext {X Y : S.obj} (f g : S.hom X Y) (h : f.1 = g.1) : f = g :=
 
 @[simps, pp_dot]
 def id (X : S.obj) : S.hom X X := ⟨𝟙 _, by
-  obtain ⟨i, hi⟩ | ⟨i, hi⟩ := X.2
+  obtain ⟨i, hi⟩ := X.2
   · simp only [mem_homSet_iff]
     obtain ⟨j, hj⟩ := S.id₁ i
-    exact ⟨j, by convert hj⟩
-  · simp only [mem_homSet_iff]
-    obtain ⟨j, hj⟩ := S.id₂ i
     exact ⟨j, by convert hj⟩⟩
 
 @[simps, pp_dot]
@@ -89,6 +87,39 @@ instance : Category S.obj where
   id_comp _ := S.hom_ext _ _ (by aesop_cat)
   comp_id _ := S.hom_ext _ _ (by aesop_cat)
   assoc _ _ _ := S.hom_ext _ _ (by aesop_cat)
+
+def S.ι : S.obj ⥤ C where
+  obj X := X.1
+  map φ := φ.1
+
+instance : Small.{w} S.obj := by
+  let π : S.J → S.obj := fun i => ⟨(S.s i).left, ⟨i, rfl⟩⟩
+  have : Function.Surjective π := fun X => by
+    obtain ⟨i, hi⟩ := X.2
+    exact ⟨i, Subtype.ext hi.symm⟩
+  exact small_of_surjective this
+
+instance : Small.{w} (Skeleton S.obj) := by
+  have : Function.Injective (fromSkeleton S.obj).obj := fun _ _ h => by simpa using h
+  exact small_of_injective this
+
+instance : LocallySmall.{w} S.obj := ⟨fun X Y => by
+  let Z : Set S.J := fun i => X.1 = (S.s i).left ∧ Y.1 = (S.s i).right
+  let π : Z → S.hom X Y := fun i => by
+    refine' ⟨eqToHom i.2.1 ≫ (S.s i).hom ≫ eqToHom i.2.2.symm, ⟨i, _⟩ ⟩
+    rw [Arrow.eq_iff]
+    exact ⟨i.2.1.symm, i.2.2.symm, by simp⟩
+  have : Function.Surjective π := fun f => by
+    obtain ⟨i, hi⟩ := f.2
+    rw [Arrow.eq_iff] at hi
+    obtain ⟨h₁, h₂, hi⟩ := hi
+    dsimp at h₁ h₂
+    exact ⟨⟨i, ⟨h₁.symm, h₂.symm⟩⟩, Subtype.ext (by simp [hi])⟩
+  exact small_of_surjective this⟩
+
+instance : EssentiallySmall.{w} S.obj := by
+  rw [essentiallySmall_iff]
+  constructor <;> infer_instance
 
 end Subcategory
 
