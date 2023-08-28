@@ -104,7 +104,7 @@ lemma Set_DirectedSet_upperBounds {s : Set α} :
     upperBounds (Set.ToDirectedSet s).set = upperBounds s := by
   rw [subset_antisymm_iff]
   constructor
-  · exact upperBounds_mono_set Set_subseteq_DirectedSet
+  · exact upperBounds_mono_set subset_toDirectedSet
   · intro u hu
     rw [mem_upperBounds]
     intro b hb
@@ -123,7 +123,7 @@ lemma Set_DirectedSet_LUB [SemilatticeSup α] {s : Set α} {u : α} : IsLUB s u 
     · rw [mem_lowerBounds]
       intro b hb
       rw [isLUB_le_iff hsu]
-      exact upperBounds_mono_set Set_subseteq_DirectedSet hb
+      exact upperBounds_mono_set subset_toDirectedSet hb
   · intro h
     constructor
     · rw [← Set_DirectedSet_upperBounds]
@@ -145,7 +145,7 @@ def SemilatticeSup.toCompleteSemilatticeSup (dSup : DirectedSet α → α)
       exact Iff.mpr Set_DirectedSet_LUB (h (Set.ToDirectedSet s))
     simp only [ge_iff_le]
     rw [IsLUB, IsLeast] at e1
-    exact e1.1 (Set_subseteq_DirectedSet ha)
+    exact e1.1 (subset_toDirectedSet ha)
   sSup_le := by
     intros s a ha
     have e1: IsLUB (Set.ToDirectedSet s).set (dSup (Set.ToDirectedSet s)) := by
