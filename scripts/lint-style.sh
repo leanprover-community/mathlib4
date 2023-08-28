@@ -56,10 +56,11 @@ fi
 
 # 2.2 Check that there are no filenames with the same lower-case reduction
 
-upper_lower_clashes="$(git ls-files | sort --ignore-case | uniq -D --ignore-case)"
+# `uniq -D`: print all duplicate lines
+ignore_case_clashes="$(git ls-files | sort --ignore-case | uniq -D --ignore-case)"
 
-if [ -n "${upper_lower_clashes}" ]; then
+if [ -n "${ignore_case_clashes}" ]; then
 	printf $'The following files have the same lower-case form:\n\n%s\n
-Please, make sure to avoid such clashes!\n' "${upper_lower_clashes}"
+Please, make sure to avoid such clashes!\n' "${ignore_case_clashes}"
 	exit 1
 fi
