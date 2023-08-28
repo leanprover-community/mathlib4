@@ -483,10 +483,15 @@ theorem smul_def (i) (w : Word M) (m : M i) :
     m • w = rcons { equivPair i w with head := m * (equivPair i w).head } :=
   rfl
 
+theorem of_smul_def (i) (w : Word M) (m : M i) :
+    of m • w = rcons { equivPair i w with head := m * (equivPair i w).head } :=
+  rfl
+#align free_product.word.of_smul_def Monoid.CoprodI.Word.of_smul_def
+
 theorem equivPair_smul_same {i} (m : M i) (w : Word M) :
-    equivPair i (m • w) = ⟨m * (equivPair i w).head, (equivPair i w).tail,
+    equivPair i (of m • w) = ⟨m * (equivPair i w).head, (equivPair i w).tail,
       (equivPair i w).fstIdx_ne⟩ := by
-  rw [smul_def, ← equivPair_symm]
+  rw [of_smul_def, ← equivPair_symm]
   simp
 
 @[simp]
@@ -494,33 +499,28 @@ theorem equivPair_tail {i} (p : Pair M i) :
     equivPair i p.tail = ⟨1, p.tail, p.fstIdx_ne⟩ :=
   equivPair_eq_of_fstIdx_ne _
 
-theorem of_smul_def (i) (w : Word M) (m : M i) :
-    of m • w = rcons { equivPair i w with head := m * (equivPair i w).head } :=
-  rfl
-#align free_product.word.of_smul_def Monoid.CoprodI.Word.of_smul_def
-
 theorem smul_eq_of_smul {i} (m : M i) (w : Word M) :
     m • w = of m • w := rfl
 
 theorem mem_smul_iff' {i j : ι} {m₁ : M i} {w : Word M} {m₂ : M j} :
-    ⟨_, m₁⟩ ∈ (m₂ • w).toList ↔
+    ⟨_, m₁⟩ ∈ (of m₂ • w).toList ↔
       ⟨i, m₁⟩ ∈ w.toList.tail
       ∨ (¬i = j ∧ ∃ h : w.toList ≠ [], w.toList.head h = ⟨i, m₁⟩)
       ∨ (m₁ ≠ 1 ∧ ∃ (hij : j = i), m₁ = hij ▸
         (m₂ * (if h : ∃ (h : w.toList ≠ []), (w.toList.head h).1 = j
           then h.snd ▸ (w.toList.head h.1).2
           else 1))) := by
-  rw [smul_def, mem_rcons_iff, mem_equivPair_tail_iff, equivPair_head, or_assoc]
+  rw [of_smul_def, mem_rcons_iff, mem_equivPair_tail_iff, equivPair_head, or_assoc]
 
 theorem mem_smul_iff_of_ne {i j : ι} (hij : i ≠ j) {m₁ : M i} {w : Word M} {m₂ : M j} :
-    ⟨_, m₁⟩ ∈ (m₂ • w).toList ↔ ⟨i, m₁⟩ ∈ w.toList := by
+    ⟨_, m₁⟩ ∈ (of m₂ • w).toList ↔ ⟨i, m₁⟩ ∈ w.toList := by
   rw [mem_smul_iff']
   simp [hij, Ne.symm hij]
   rcases w with ⟨w, -, -⟩
   cases w <;> simp [or_comm, eq_comm]
 
 theorem mem_smul_iff {i j : ι} {m₁ : M i} {w : Word M} {m₂ : M j} :
-    ⟨_, m₁⟩ ∈ (m₂ • w).toList ↔
+    ⟨_, m₁⟩ ∈ (of m₂ • w).toList ↔
       (¬i = j ∧ ⟨i, m₁⟩ ∈ w.toList)
       ∨ (m₁ ≠ 1 ∧ ∃ (hij : i = j),(⟨i, m₁⟩ ∈ w.toList.tail) ∨
         (∃ m', ⟨j, m'⟩ ∈ w.toList.head? ∧ m₁ = hij ▸ (m₂ * m')) ∨
@@ -563,8 +563,13 @@ theorem cons_eq_smul {i} {m : M i} {ls h1 h2} :
 #align free_product.word.cons_eq_smul Monoid.CoprodI.Word.cons_eq_smul
 
 theorem rcons_eq_smul {i} (p : Pair M i) :
-    rcons p = p.head • p.tail := by
-  simp [smul_def]
+    rcons p = of p.head • p.tail := by
+  simp [of_smul_def]
+
+@[simp]
+theorem equivPair_head_smul_equivPair_tail {i : ι} (w : Word M) :
+    of (equivPair i w).head • (equivPair i w).tail = w := by
+  rw [← rcons_eq_smul, ← equivPair_symm, Equiv.symm_apply_apply]
 
 theorem smul_induction {C : Word M → Prop} (h_empty : C empty)
     (h_smul : ∀ (i) (m : M i) (w), C w → C (of m • w)) (w : Word M) : C w := by

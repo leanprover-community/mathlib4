@@ -258,7 +258,7 @@ theorem ext_iff {w₁ w₂ : NormalWord φ} : w₁ = w₂ ↔ w₁.left = w₂.l
 
 theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
     (hw : ∀ i g, ⟨i, g⟩ ∈ w.toList → (normalizeSingle φ g).2 = g)
-    (hφw : ∀ j g, ⟨j, g⟩ ∈ (φ i h • w).toList → (normalizeSingle φ g).2 = g) :
+    (hφw : ∀ j g, ⟨j, g⟩ ∈ (CoprodI.of (φ i h) • w).toList → (normalizeSingle φ g).2 = g) :
     h = 1 := by
   have hhead : (normalizeSingle φ (Word.equivPair i w).head).2 =
       (Word.equivPair i w).head := by
@@ -295,13 +295,15 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
         · simp [head?_eq_head _ hw, Word.fstIdx, hep hw]
 
 theorem ext_smul {w₁ w₂ : NormalWord φ} (i : ι)
-    (h : (φ i w₁.left • w₁.toWord = φ i w₂.left • w₂.toWord) :
+    (h : CoprodI.of (φ i w₁.left) • w₁.toWord =
+      CoprodI.of (φ i w₂.left) • w₂.toWord) :
     w₁ = w₂ := by
   rcases w₁ with ⟨w₁, h₁, hw₁⟩
   rcases w₂ with ⟨w₂, h₂, hw₂⟩
   dsimp at *
-  rw [smul_eq_iff_eq_inv_smul, ← mul_smul, ← map_inv, ← map_mul] at h
+  rw [smul_eq_iff_eq_inv_smul, ← mul_smul] at h
   subst h
+  simp only [← map_inv, ← map_mul] at hw₁
   have : h₁⁻¹ * h₂ = 1 := eq_one_of_smul_normalized hφ _ (h₁⁻¹ * h₂) hw₂ hw₁
   rw [inv_mul_eq_one] at this; subst this
   simp
@@ -332,19 +334,19 @@ theorem rcons_injective {i : ι} : Function.Injective (rcons (φ := φ) (i := i)
 noncomputable def equivPair (i) : NormalWord φ ≃ Pair φ i :=
   let toFun : NormalWord φ → Pair φ i :=
     fun w =>
-      let p := Word.equivPair i (φ i w.left • w.toWord)
+      let p := Word.equivPair i (CoprodI.of (φ i w.left) • w.toWord)
       { toPair := p
         normalized := fun j g hg => by
           dsimp only at hg
-          rw [Word.smul_def, ← Word.equivPair_symm, Equiv.apply_symm_apply] at hg
+          rw [Word.of_smul_def, ← Word.equivPair_symm, Equiv.apply_symm_apply] at hg
           dsimp at hg
           exact w.normalized _ _ (Word.mem_of_mem_equivPair_tail _ hg) }
   have leftInv : Function.LeftInverse (rcons (φ := φ)) toFun :=
     fun w => ext_smul hφ i <| by
-      simp [rcons, Word.equivPair_symm, Word.rcons_eq_smul, ← mul_smul,
-        normalizeSingle_fst_mul_normalizeSingle_snd]
-      rw [← Word.rcons_eq_smul, ← Word.equivPair_symm,
-        Equiv.symm_apply_apply]
+      simp only [rcons, Word.equivPair_symm, Word.smul_eq_of_smul, Eq.ndrec, eq_mp_eq_cast,
+        cast_eq, Word.rcons_eq_smul, ne_eq, id_eq, ← mul_smul, ← map_mul,
+        normalizeSingle_fst_mul_normalizeSingle_snd, Word.equivPair_smul_same]
+      simp only [map_mul, mul_smul, Word.equivPair_head_smul_equivPair_tail]
   { toFun := toFun
     invFun := rcons
     left_inv := leftInv
@@ -400,25 +402,54 @@ theorem baseToPermNormalWord_apply (h : H) :
 theorem summandToPermNormalWord_app_eq_base {i : ι} (h : H) (w : NormalWord φ) :
     summandToPermNormalWord hφ i (φ i h) w = baseToPermNormalWord h w := by
   apply ext_smul hφ i
-  simp only [summandToPermNormalWord_apply, summandToEndNormalWord, equivPair, rcons, Equiv.coe_fn_mk,
-    Equiv.coe_fn_symm_mk, MonoidHom.coe_mk, OneHom.coe_mk, map_mul, baseToPermNormalWord_apply,
-    baseToEndNormalWord]
-  simp only [Word.equivPair_symm, Word.rcons_eq_smul, ← mul_smul]
-  simp only [normalizeSingle_mul hφ, map_mul, mul_assoc,
-    normalizeSingle_fst_mul_normalizeSingle_snd, mul_smul]
-  rw [← Word.rcons_eq_smul, ← Word.equivPair_symm, Equiv.symm_apply_apply]
+  simp only [summandToPermNormalWord_apply, equivPair, rcons, Word.equivPair_symm, Equiv.coe_fn_mk,
+    Equiv.coe_fn_symm_mk, Word.rcons_eq_smul, baseToPermNormalWord_apply,
+    Word.equivPair_smul_same, ← mul_smul, ← map_mul, Word.smul_eq_of_smul,
+    normalizeSingle_fst_mul_normalizeSingle_snd]
+  simp only [map_mul, mul_smul, Word.equivPair_head_smul_equivPair_tail]
+
+def mkAux {l} (ls : List (Σ i, G i)) (left : H)
+    (h1 : ∀ l' ∈ l::ls, Sigma.snd l' ≠ 1)
+    (h2 : (l::ls).Chain' (fun l l' => Sigma.fst l ≠ Sigma.fst l'))
+    (h3 : ∀ i g, ⟨i, g⟩ ∈ l::ls → (normalizeSingle φ g).2 = g) :
+    NormalWord φ :=
+  ⟨⟨ls, by simp at *; tauto, by simp [List.chain'_cons'] at *; tauto⟩, left,
+    fun i g hg => h3 _ _ (List.mem_cons_of_mem _ hg)⟩
 
 noncomputable def toPermNormalWord [DecidableEq ι] [∀ i, DecidableEq (G i)] :
     AmalgamatedProduct φ →* Equiv.Perm (NormalWord φ) :=
   lift (summandToPermNormalWord hφ) baseToPermNormalWord (by intros; ext <;> simp)
 
+theorem cons_eq_toPermNormalWord {l} (ls : List (Σ i, G i))
+    (h1 : ∀ l' ∈ l::ls, Sigma.snd l' ≠ 1)
+    (h2 : (l::ls).Chain' (fun l l' => Sigma.fst l ≠ Sigma.fst l'))
+    (h3 : ∀ i g, ⟨i, g⟩ ∈ l::ls → (normalizeSingle φ g).2 = g) :
+    NormalWord.mk (Word.mk (l::ls) h1 h2) 1 h3 = toPermNormalWord hφ (of l.2)
+      (mkAux ls 1 h1 h2 h3) := by
+  apply NormalWord.ext_smul hφ l.1
+  simp only [map_one, one_smul, toPermNormalWord, mkAux, ne_eq, lift_of,
+    summandToPermNormalWord_apply, equivPair, Word.equivPair_smul_same, rcons,
+    Word.equivPair_symm, Word.rcons_eq_smul, Equiv.coe_fn_mk, one_mul, Equiv.coe_fn_symm_mk]
+  simp only [← mul_smul, ← map_mul,
+    normalizeSingle_fst_mul_normalizeSingle_snd]
+  simp only [map_mul, mul_smul, Word.equivPair_head_smul_equivPair_tail]
+  rw [Word.cons_eq_smul]
+  rfl
+
 theorem toPermNormalWord_induction {C : NormalWord φ → Prop}
     (h_empty : C empty)
-    (h_summand : ∀ (i) (g : G i) (w), C w → C (summandToPermNormalWord hφ i g w))
-    (h_base : ∀ (h : H) (w), C w → C (baseToPermNormalWord h w))
-    (w : NormalWord φ) : C w := sorry
-
-
+    (h_summand : ∀ (i) (g : G i) (w), w.left = 1 → C w → C (toPermNormalWord hφ (of g) w))
+    (h_base : ∀ (h : H) (w), C w → C (toPermNormalWord hφ (base h) w))
+    (w : NormalWord φ) : C w := by
+  rcases w with ⟨⟨w, h1, h2⟩, left, h3⟩
+  convert h_base left ⟨⟨w, h1, h2⟩, 1, h3⟩ ?_
+  · simp [toPermNormalWord, baseToPermNormalWord_apply, empty]
+  · induction w with
+    | nil => exact h_empty
+    | cons g w ih =>
+      rw [cons_eq_toPermNormalWord]
+      refine h_summand g.1 g.2 (mkAux w 1 h1 h2 h3) rfl ?_
+      exact ih _ _ _
 
 def prod (w : NormalWord φ) : AmalgamatedProduct φ :=
   base w.left * ofCoprodI (w.toWord).prod
@@ -433,15 +464,15 @@ theorem prod_summandToPermNormalWord {i : ι} (g : G i) (w : NormalWord φ) :
       simp only [prod, rcons, equivPair, Word.rcons_eq_smul, Word.equivPair_symm,
         Word.prod_smul, Word.equivPair_smul_same]
       dsimp
-      simp only [Word.smul_eq_of_smul, Word.prod_smul, map_mul, ofCoprodI_of, ← mul_assoc]
+      simp only [Word.prod_smul, map_mul, ofCoprodI_of, ← mul_assoc]
       simp only [← of_apply_eq_base i, ← map_mul, normalizeSingle_fst_mul_normalizeSingle_snd]
     _ = of g * of ((φ i) w.left) * ofCoprodI
         (CoprodI.of ((Word.equivPair i) w.toWord).head *
           Word.prod ((Word.equivPair i) w.toWord).tail) := by
       rw [map_mul, map_mul, map_mul, ofCoprodI_of, mul_assoc]
     _ = _ := by
-      rw [← Word.prod_smul, ← Word.smul_eq_of_smul, ← Word.rcons_eq_smul, ← Word.equivPair_symm,
-        Equiv.symm_apply_apply, prod, of_apply_eq_base, mul_assoc]
+      rw [← Word.prod_smul, Word.equivPair_head_smul_equivPair_tail, prod, mul_assoc,
+        of_apply_eq_base]
 
 theorem prod_baseToPermNormalWord (h : H) (w : NormalWord φ) :
     (baseToPermNormalWord h w).prod = base h * w.prod := by
@@ -468,11 +499,11 @@ noncomputable def equiv : AmalgamatedProduct φ ≃ NormalWord φ :=
       dsimp
       refine toPermNormalWord_induction (C := fun w =>
         (toPermNormalWord hφ) (prod w) empty = w) hφ ?_ ?_ ?_ w
-      · simp [prod, empty]
-      · intro i g w ih
-        simp [prod_toPermNormalWord, *]
-      · intro h w hw
-        simp [prod_toPermNormalWord, *] }
+      · simp
+      · intro i g w _ ih
+        rw [prod_toPermNormalWord, map_mul, Equiv.Perm.mul_apply, ih]
+      · intro h w ih
+        rw [prod_toPermNormalWord, map_mul, Equiv.Perm.mul_apply, ih] }
 
 end NormalWord
 
@@ -500,8 +531,6 @@ end NormalWord
 
 open NormalWord
 
-
-
 theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
     Function.Injective (of (G := G) (φ := φ) (i := i)) := by
   let _ := Classical.decEq ι
@@ -509,7 +538,5 @@ theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
   refine Function.Injective.of_comp (f := toPermNormalWord hφ) ?_
   simp only [Function.comp, toPermNormalWord, lift_of]
   exact summandToPermNormalWord_injective hφ
-
-
 
 end AmalgamatedProduct
