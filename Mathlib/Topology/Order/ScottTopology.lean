@@ -227,10 +227,11 @@ end morphisms
 
 section preorder
 
-variable [Preorder α] [TopologicalSpace α] [ScottTopology α]
+variable [Preorder α] [TopologicalSpace α] [ScottTopology α] {u : Set α}
 
-lemma isOpen_iff_upper_and_Scott_Hausdorff_Open {u : Set α} : IsOpen u
-  ↔ IsUpperSet u ∧ ScottHausdorffTopology.IsOpen u := by erw [topology_eq α]; rfl
+lemma isOpen_iff_upper_and_Scott_Hausdorff_Open :
+    IsOpen u ↔
+      IsUpperSet u ∧ ScottHausdorffTopology.IsOpen u := by erw [topology_eq α]; rfl
 
 lemma isOpen_iff_upper_and_InaccessibleByDirectedJoins {u : Set α} :
     IsOpen u ↔ IsUpperSet u ∧ InaccessibleByDirectedJoins u := by
