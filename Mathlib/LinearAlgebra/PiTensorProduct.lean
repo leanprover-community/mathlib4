@@ -309,6 +309,7 @@ def tprod : MultilinearMap R s (⨂[R] i, s i) where
 variable {R}
 
 /-- pure tensor in tensor product over some index type -/
+-- TODO(kmill) The generated delaborator never applies; figure out why this doesn't pretty print.
 notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
 
 --Porting note: new theorem
