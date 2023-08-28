@@ -170,6 +170,10 @@ def matchFVar (userName : Name) : Matcher := fun s => do
   guard <| userName == (← fvarId.getUserName)
   return s
 
+/-- Matcher that checks that the type of the expression is matched by `matchTy`. -/
+def matchTypeOf (matchTy : Matcher) : Matcher := fun s => do
+  withType (matchTy s)
+
 /-- Matches raw nat lits. -/
 def natLitMatcher (n : Nat) : Matcher := fun s => do
   guard <| (← getExpr).natLit? == n
@@ -198,13 +202,14 @@ def matchLambda (n : Name) (matchDom matchBody : Matcher) : Matcher := fun s => 
   let s ← withBindingBody n <| matchBody s
   return s
 
-/-- Fully elaborates the term `patt`, allowing typeclass inference failure. -/
+/-- Fully elaborates the term `patt`, allowing typeclass inference failure.
+Instantiates all metavariables. -/
 def elabPattern (patt : Term) (expectedType? : Option Expr) : TermElabM Expr := do
   withTheReader Term.Context (fun ctx => { ctx with ignoreTCFailures := true }) <|
     Term.withSynthesizeLight do
       let t ← Term.elabTerm patt expectedType?
       Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
-      return t
+      instantiateMVars t
 
 /-- Adds all the names in `boundNames` to the local context
 with types that are fresh metavariables. -/
@@ -229,7 +234,13 @@ partial def exprToMatcher (boundFVars : HashMap FVarId Name) (e : Expr) :
     if let some n := boundFVars.find? fvarId then
       return ([], ← ``(matchVar $(quote n)))
     else
-      return ([`fvar], ← ``(matchFVar $(quote (← fvarId.getUserName))))
+      let n ← fvarId.getUserName
+      if n.hasMacroScopes then
+        -- Match by the type instead; this is likely an instance (should we check?)
+        let (_, m) ← exprToMatcher boundFVars (← instantiateMVars (← inferType e))
+        return ([`fvar], ← ``(matchTypeOf $m))
+      else
+        return ([`fvar], ← ``(matchFVar $(quote n)))
   | .app f arg =>
     let (keys, matchF) ← exprToMatcher boundFVars f
     let (_, matchArg) ← exprToMatcher boundFVars arg
@@ -264,7 +275,8 @@ partial def mkExprMatcher (stx : Term) (boundNames : HashSet Name) :
   let (lctx, boundFVars) ← setupLCtx (← getLCtx) boundNames
   withLCtx lctx (← getLocalInstances) do
     let patt ← elabPattern stx none
-    exprToMatcher boundFVars (← instantiateMVars patt)
+    trace[notation3] "Generating matcher for pattern {patt}"
+    exprToMatcher boundFVars patt
 
 /-- Matcher for processing `scoped` syntax. Assumes the expression to be matched
 against is in the `lit` variable.

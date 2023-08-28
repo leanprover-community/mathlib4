@@ -105,3 +105,15 @@ local notation3 "y" => x + 1
 /-- info: y : ℕ -/
 #guard_msgs in #check x + 1
 end
+
+section
+variable (α : Type u) [Add α]
+local notation3 x " +α " y => (x + y : α)
+variable (x y : α)
+/-- info: x +α y : α -/
+#guard_msgs in #check x +α y
+/-- info: x +α y : α -/
+#guard_msgs in #check x + y
+/-- info: 1 + 2 : ℕ -/
+#guard_msgs in #check 1 + 2
+end
