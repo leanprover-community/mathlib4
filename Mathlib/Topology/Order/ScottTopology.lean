@@ -66,7 +66,7 @@ variable {α β}
 variable [Preorder α] [Preorder β]
 
 def InaccessibleByDirectedJoins (u : Set α) : Prop :=
-  ∀ ⦃d : Set α⦄ ⦃a : α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a → a ∈ u → (d ∩ u).Nonempty
+  ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a → a ∈ u → (d ∩ u).Nonempty
 
 /--
 The Scott-Hausdorff topology is defined as the topological space where a set `u` is open if, when
