@@ -90,9 +90,9 @@ def directedClosure (s : Set α) : DirectedSet α := {
 }
 
 lemma subset_toDirectedSet {s : Set α} :
-    s ⊆ ↑(Set.ToDirectedSet s).set := by
+    s ⊆ ↑(directedClosure s).set := by
   intro a ha
-  rw [Set.ToDirectedSet]
+  rw [directedClosure]
   simp only [id_eq, exists_and_left, Set.mem_setOf_eq]
   use ({a} : Finset α)
   constructor
@@ -101,7 +101,7 @@ lemma subset_toDirectedSet {s : Set α} :
     rfl
 
 lemma Set_DirectedSet_upperBounds {s : Set α} :
-    upperBounds (Set.ToDirectedSet s).set = upperBounds s := by
+    upperBounds (directedClosure s).set = upperBounds s := by
   rw [subset_antisymm_iff]
   constructor
   · exact upperBounds_mono_set subset_toDirectedSet
@@ -114,7 +114,7 @@ lemma Set_DirectedSet_upperBounds {s : Set α} :
     exact hu (hFb.1 hc)
 
 lemma Set_DirectedSet_LUB [SemilatticeSup α] {s : Set α} {u : α} : IsLUB s u ↔
-    IsLUB (Set.ToDirectedSet s).set u := by
+    IsLUB (directedClosure s).set u := by
   constructor
   · intro hsu
     constructor
@@ -137,20 +137,20 @@ A join semi-lattice where every directed subset has a least upper bound is autom
 -/
 def SemilatticeSup.toCompleteSemilatticeSup (dSup : DirectedSet α → α)
     (h : ∀ (d : DirectedSet α), IsLUB d.set (dSup d)) : CompleteSemilatticeSup α where
-  sSup := fun s => dSup (Set.ToDirectedSet s)
+  sSup := fun s => dSup (directedClosure s)
   le_sSup := by
     intros s a ha
-    have e1: IsLUB (Set.ToDirectedSet s).set (dSup (Set.ToDirectedSet s)) := by
+    have e1: IsLUB (directedClosure s).set (dSup (directedClosure s)) := by
       rw [← Set_DirectedSet_LUB]
-      exact Iff.mpr Set_DirectedSet_LUB (h (Set.ToDirectedSet s))
+      exact Iff.mpr Set_DirectedSet_LUB (h (directedClosure s))
     simp only [ge_iff_le]
     rw [IsLUB, IsLeast] at e1
     exact e1.1 (subset_toDirectedSet ha)
   sSup_le := by
     intros s a ha
-    have e1: IsLUB (Set.ToDirectedSet s).set (dSup (Set.ToDirectedSet s)) := by
+    have e1: IsLUB (directedClosure s).set (dSup (directedClosure s)) := by
       rw [← Set_DirectedSet_LUB]
-      exact Iff.mpr Set_DirectedSet_LUB (h (Set.ToDirectedSet s))
+      exact Iff.mpr Set_DirectedSet_LUB (h (directedClosure s))
     simp only [ge_iff_le]
     rw [isLUB_le_iff e1, Set_DirectedSet_upperBounds]
     exact ha
