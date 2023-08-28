@@ -12,18 +12,24 @@ variable {C D H : Type _} [Category C] [Category D] [Category H]
 abbrev RightExtension (L : C ⥤ H) (F : C ⥤ D) :=
   CostructuredArrow ((whiskeringLeft C H D).obj L) F
 
+abbrev LeftExtension (L : C ⥤ H) (F : C ⥤ D) :=
+  StructuredArrow F ((whiskeringLeft C H D).obj L)
+
 @[simps!]
 def RightExtension.mk (F' : H ⥤ D) {L : C ⥤ H} {F : C ⥤ D} (α : L ⋙ F' ⟶ F) :
     RightExtension L F := CostructuredArrow.mk α
 
-variable (F' : H ⥤ D) {L : C ⥤ H} {F : C ⥤ D} (α : L ⋙ F' ⟶ F)
+@[simps!]
+def LeftExtension.mk (F' : H ⥤ D) {L : C ⥤ H} {F : C ⥤ D} (α : F ⟶ L ⋙ F') :
+    LeftExtension L F := StructuredArrow.mk α
+
+section
+
 
 class IsRightKanExtension (F' : H ⥤ D) {L : C ⥤ H} {F : C ⥤ D} (α : L ⋙ F' ⟶ F) : Prop where
   nonempty_isUniversal : Nonempty (RightExtension.mk F' α).IsUniversal
 
-section
-
-variable [F'.IsRightKanExtension α]
+variable (F' : H ⥤ D) {L : C ⥤ H} {F : C ⥤ D} (α : L ⋙ F' ⟶ F) [F'.IsRightKanExtension α]
 
 noncomputable def rightKanExtensionUniversal : (RightExtension.mk F' α).IsUniversal :=
     IsRightKanExtension.nonempty_isUniversal.some
@@ -46,6 +52,34 @@ lemma rightKanExtension_ext {G : H ⥤ D} (γ₁ γ₂ : G ⟶ F')
 
 end
 
+section
+
+class IsLeftKanExtension (F' : H ⥤ D) {L : C ⥤ H} {F : C ⥤ D} (α : F ⟶ L ⋙ F') : Prop where
+  nonempty_isUniversal : Nonempty (LeftExtension.mk F' α).IsUniversal
+
+variable (F' : H ⥤ D) {L : C ⥤ H} {F : C ⥤ D} (α : F ⟶ L ⋙ F') [F'.IsLeftKanExtension α]
+
+noncomputable def leftKanExtensionUniversal : (LeftExtension.mk F' α).IsUniversal :=
+    IsLeftKanExtension.nonempty_isUniversal.some
+
+noncomputable def leftKanExtensionDesc (G : H ⥤ D) (β : F ⟶ L ⋙ G) : F' ⟶ G :=
+  (F'.leftKanExtensionUniversal α).desc (LeftExtension.mk G β)
+
+lemma leftKanExtension_fac (G : H ⥤ D) (β : F ⟶ L ⋙ G) :
+    α ≫ whiskerLeft L (F'.leftKanExtensionDesc α G β) = β :=
+  (F'.leftKanExtensionUniversal α).fac (LeftExtension.mk G β)
+
+@[reassoc (attr := simp)]
+lemma leftKanExtension_fac_app (G : H ⥤ D) (β : F ⟶ L ⋙ G) (X : C) :
+    α.app X ≫ (F'.leftKanExtensionDesc α G β).app (L.obj X) = β.app X :=
+  NatTrans.congr_app (F'.leftKanExtension_fac α G β) X
+
+lemma leftKanExtension_ext {G : H ⥤ D} (γ₁ γ₂ : F' ⟶ G)
+    (hγ : α ≫ whiskerLeft L γ₁ = α ≫ whiskerLeft L γ₂) : γ₁ = γ₂ :=
+  (F'.leftKanExtensionUniversal α).hom_ext hγ
+
+end
+
 class HasRightKanExtension (L : C ⥤ H) (F : C ⥤ D) : Prop where
   hasTerminal : HasTerminal (RightExtension L F)
 
@@ -56,6 +90,17 @@ lemma HasRightKanExtension.mk' (F' : H ⥤ D) {L : C ⥤ H} {F : C ⥤ D} (α : 
 lemma hasRightKanExtension_iff (L : C ⥤ H) (F : C ⥤ D) :
     HasRightKanExtension L F ↔ HasTerminal (RightExtension L F) :=
   ⟨fun h => h.hasTerminal, fun h => ⟨h⟩⟩
+
+class HasLeftKanExtension (L : C ⥤ H) (F : C ⥤ D) : Prop where
+  hasInitial : HasInitial (LeftExtension L F)
+
+lemma HasLeftKanExtension.mk' (F' : H ⥤ D) {L : C ⥤ H} {F : C ⥤ D} (α : F ⟶ L ⋙ F')
+    [F'.IsLeftKanExtension α] : HasLeftKanExtension L F where
+  hasInitial := (F'.leftKanExtensionUniversal α).hasInitial
+
+lemma hasLeftKanExtension_iff (L : C ⥤ H) (F : C ⥤ D) :
+    HasLeftKanExtension L F ↔ HasInitial (LeftExtension L F) :=
+  ⟨fun h => h.hasInitial, fun h => ⟨h⟩⟩
 
 section
 
@@ -72,6 +117,24 @@ instance : (L.rightKanExtension F).IsRightKanExtension (L.rightKanExtensionCouni
   nonempty_isUniversal := ⟨by
     have : HasTerminal (RightExtension L F) := HasRightKanExtension.hasTerminal
     apply terminalIsTerminal⟩
+
+end
+
+section
+
+variable (L : C ⥤ H) (F : C ⥤ D) [HasLeftKanExtension L F]
+
+noncomputable def leftExtensionInitial : LeftExtension L F :=
+  have : HasInitial (LeftExtension L F) := HasLeftKanExtension.hasInitial
+  ⊥_ _
+
+noncomputable def leftKanExtension : H ⥤ D := (leftExtensionInitial L F).right
+noncomputable def leftKanExtensionUnit : F ⟶ L ⋙ leftKanExtension L F := (leftExtensionInitial L F).hom
+
+instance : (L.leftKanExtension F).IsLeftKanExtension (L.leftKanExtensionUnit F) where
+  nonempty_isUniversal := ⟨by
+    have : HasInitial (LeftExtension L F) := HasLeftKanExtension.hasInitial
+    apply initialIsInitial⟩
 
 end
 
@@ -121,6 +184,16 @@ lemma hasRightExtension_iff_postcomp₁ :
   simp only [hasRightKanExtension_iff,
     (rightExtensionEquivalenceOfPostcomp₁ L F e).hasTerminal_iff]
 
+noncomputable def leftExtensionEquivalenceOfPostcomp₁ :
+    LeftExtension (L ⋙ e.functor) F ≌ LeftExtension L F := by
+  have := StructuredArrow.isEquivalencePre F ((whiskeringLeft H H' D).obj e.functor) ((whiskeringLeft C H D).obj L)
+  exact Functor.asEquivalence (StructuredArrow.pre F ((whiskeringLeft H H' D).obj e.functor) ((whiskeringLeft C H D).obj L))
+
+lemma hasLeftExtension_iff_postcomp₁ :
+    HasLeftKanExtension L F ↔ HasLeftKanExtension (L ⋙ e.functor) F := by
+  simp only [hasLeftKanExtension_iff,
+    (leftExtensionEquivalenceOfPostcomp₁ L F e).hasInitial_iff]
+
 variable {L L'}
 
 def rightExtensionEquivalenceOfIso₁ :
@@ -132,6 +205,15 @@ lemma hasRightExtension_iff_of_iso₁ :
   simp only [hasRightKanExtension_iff,
     (rightExtensionEquivalenceOfIso₁ iso₁ F).hasTerminal_iff]
 
+def leftExtensionEquivalenceOfIso₁ :
+    LeftExtension L F ≌ LeftExtension L' F :=
+  StructuredArrow.mapNatIso ((whiskeringLeft C H D).mapIso iso₁)
+
+lemma hasLeftExtension_iff_of_iso₁ :
+    HasLeftKanExtension L F ↔ HasLeftKanExtension L' F := by
+  simp only [hasLeftKanExtension_iff,
+    (leftExtensionEquivalenceOfIso₁ iso₁ F).hasInitial_iff]
+
 variable (L) {F F'}
 
 def rightExtensionEquivalenceOfIso₂ :
@@ -142,6 +224,15 @@ lemma hasRightExtension_iff_of_iso₂ :
     HasRightKanExtension L F ↔ HasRightKanExtension L F' := by
   simp only [hasRightKanExtension_iff,
     (rightExtensionEquivalenceOfIso₂ L iso₂).hasTerminal_iff]
+
+def leftExtensionEquivalenceOfIso₂ :
+    LeftExtension L F ≌ LeftExtension L F' :=
+  StructuredArrow.mapIso iso₂
+
+lemma hasLeftExtension_iff_of_iso₂ :
+    HasLeftKanExtension L F ↔ HasLeftKanExtension L F' := by
+  simp only [hasLeftKanExtension_iff,
+    (leftExtensionEquivalenceOfIso₂ L iso₂).hasInitial_iff]
 
 end Functor
 
