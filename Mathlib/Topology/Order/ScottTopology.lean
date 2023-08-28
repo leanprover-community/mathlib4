@@ -229,7 +229,7 @@ lemma isOpen_iff_upper_and_InaccessibleByDirectedJoins {u : Set α} :
   rw [isOpen_iff_upper_and_Scott_Hausdorff_Open]
   constructor
   · refine' And.imp_right _
-    intros h d a d₁ d₂ d₃ ha
+    intros h d d₁ d₂ a d₃ ha
     obtain ⟨b, h_1_w, h_1_h⟩ := h d₁ d₂ d₃ ha
     use b
     exact ⟨h_1_w, mem_of_subset_of_mem h_1_h ⟨left_mem_Ici, h_1_w⟩⟩
@@ -256,7 +256,7 @@ lemma isClosed_iff_lower_and_subset_implies_LUB_mem {s : Set α} : IsClosed s
       exact inter_subset_inter_left _ d₄
     rw [c2] at c1
     simp only [Set.not_nonempty_empty] at c1
-  · intros h d a d₁ d₂ d₃ d₄
+  · intros h d d₁ d₂ a d₃ d₄
     rw [inter_compl_nonempty_iff]
     by_contra h'
     have c1: a ∈ s := h d₁ d₂ d₃ h'
@@ -314,7 +314,7 @@ lemma monotone_of_continuous {f : α → β} (hf : Continuous f) : Monotone f :=
     rw [isOpen_iff_upper_and_InaccessibleByDirectedJoins]
     constructor
     · exact IsUpperSet.preimage (isUpperSet_of_isOpen hu) h.monotone
-    · intros d a hd₁ hd₂ hd₃ ha
+    · intros d hd₁ hd₂ a hd₃ ha
       rw [isOpen_iff_upper_and_InaccessibleByDirectedJoins] at hu
       exact image_inter_nonempty_iff.mp $ hu.2 (hd₁.image f)
           (directedOn_image.mpr (hd₂.mono (by simp only [Order.Preimage]; apply h.monotone)))
@@ -375,7 +375,7 @@ lemma isOpen_iff_upper_and_sup_mem_implies_inter_nonempty
   rw [ScottTopology.isOpen_iff_upper_and_InaccessibleByDirectedJoins]
   apply and_congr_right'
   exact ⟨fun h d hd₁ hd₂ hd₃ => h hd₁ hd₂ (isLUB_sSup d) hd₃,
-    fun h d a hd₁ hd₂ hd₃ ha => h hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.sSup_eq hd₃) ha)⟩
+    fun h d hd₁ hd₂ a hd₃ ha => h hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.sSup_eq hd₃) ha)⟩
 
 lemma isClosed_iff_lower_and_closed_under_Directed_Sup {s : Set α} : IsClosed s
     ↔ IsLowerSet s ∧
