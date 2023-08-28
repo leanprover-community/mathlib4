@@ -92,16 +92,6 @@ theorem hom_ext_nonempty [hn : Nonempty ι]
       ext
       rw [← of_comp_eq_base i, ← MonoidHom.comp_assoc, h, MonoidHom.comp_assoc]
 
-noncomputable def rangeEquiv (h : ∀ i, Function.Injective (φ i)) (i j) :
-    (φ i).range ≃* (φ j).range :=
-  MulEquiv.trans
-    (MulEquiv.subgroupCongr (MonoidHom.range_eq_map _)) <|
-  MulEquiv.trans
-    (equivMapOfInjective _ _ (h _)).symm <|
-  MulEquiv.trans
-    (equivMapOfInjective _ _ (h j))
-    (MulEquiv.subgroupCongr (MonoidHom.range_eq_map _)).symm
-
 namespace NormalWord
 
 open Coset
@@ -380,12 +370,27 @@ theorem summandToPermNormalWord_app_eq {i : ι} (h : H) (w : NormalWord φ) :
 
 end NormalWord
 
-section Reduced
+-- section Reduced
 
-def Reduced : Word G → Prop :=
-  ∀ i ∈
+-- variable (φ)
 
-end Reduced
+-- def Reduced (w : Word G) : Prop :=
+--   ∀ i g, ⟨i, g⟩ ∈ w.toList → g ∉ (φ i).range
+
+-- variable {φ}
+
+-- def reducedWordToNormalWord (w : Word G) (hw : Reduced φ w) : NormalWord φ :=
+--   { toWord :=
+--       { toList := w.toList.map _
+--         ne_one := _
+--         chain_ne := _ },
+--     left := 1,
+--     normalized := fun i g hg => by
+--       dsimp only [NormalWord.toWord]
+--       rw [Word.mem_toList_iff] at hg
+--       exact hw _ _ hg }
+
+-- end Reduced
 
 open NormalWord
 
