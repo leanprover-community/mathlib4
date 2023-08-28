@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
 import Mathlib.Topology.UniformSpace.Equicontinuity
+import Mathlib.Topology.UniformSpace.Equiv
 
 /-!
 # Ascoli Theorem
@@ -126,10 +127,10 @@ theorem Equicontinuous.comap_uniformOnFun_eq {𝔖 : Set (Set X)} (h𝔖 : ∀ K
       (Pi.uniformSpace _).comap (K.restrict ∘ F) := fun K hK ↦ by
     have : CompactSpace K := isCompact_iff_compactSpace.mp (h𝔖 K hK)
     exact (hF K hK).comap_uniformFun_eq
-  -- Combining these three facts complete the proof.
+  -- Combining these three facts completes the proof.
   simp_rw [H1, H2, iInf_congr fun K ↦ iInf_congr fun hK ↦ H3 K hK]
 
-lemma Equicontinuous.uniformInducing_pi_iff_uniformOnFun' [UniformSpace ι] [CompactSpace X]
+lemma Equicontinuous.uniformInducing_pi_iff_uniformOnFun' [UniformSpace ι]
     {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
     (hF : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F)) :
     UniformInducing (UniformOnFun.ofFun 𝔖 ∘ F) ↔
@@ -138,12 +139,17 @@ lemma Equicontinuous.uniformInducing_pi_iff_uniformOnFun' [UniformSpace ι] [Com
       ← Equicontinuous.comap_uniformOnFun_eq h𝔖 hF]
   rfl
 
-lemma Equicontinuous.uniformInducing_pi_of_uniformOnFun [UniformSpace ι] [CompactSpace X]
+lemma Equicontinuous.uniformInducing_pi_iff_uniformOnFun [UniformSpace ι]
     {𝔖 : Set (Set X)} (𝔖_covers : ⋃₀ 𝔖 = univ) (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
     (hF : ∀ K ∈ 𝔖, Equicontinuous ((K.restrict : (X → α) → (K → α)) ∘ F)) :
     UniformInducing (UniformOnFun.ofFun 𝔖 ∘ F) ↔
-    UniformInducing F :=
-  sorry
+    UniformInducing F := by
+  rw [eq_univ_iff_forall] at 𝔖_covers
+  let φ : ((⋃₀ 𝔖) → α) ≃ᵤ (X → α) := UniformEquiv.piCongrLeft (β := fun _ ↦ α)
+    (Equiv.subtypeUnivEquiv 𝔖_covers)
+  rw [Equicontinuous.uniformInducing_pi_iff_uniformOnFun' h𝔖 hF,
+      show restrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl]
+  exact ⟨fun H ↦ φ.uniformInducing.comp H, fun H ↦ φ.symm.uniformInducing.comp H⟩
 
 #exit
 
