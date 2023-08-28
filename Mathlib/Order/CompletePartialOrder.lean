@@ -113,9 +113,16 @@ lemma subset_toDirectedSet {s : Set α} :
     intro c hc
     exact hu (hFb.1 hc)
 
-lemma Set_DirectedSet_LUB [SemilatticeSup α] {s : Set α} {u : α} : IsLUB s u ↔
-    IsLUB (directedClosure s).set u := by
+@[simp] lemma Set_DirectedSet_LUB [SemilatticeSup α] {s : Set α} {u : α} :
+    IsLUB (directedClosure s).set u ↔ IsLUB s u := by
   constructor
+  · intro h
+    constructor
+    · rw [← Set_DirectedSet_upperBounds]
+      exact Set.mem_of_mem_inter_left h
+    · intro v hv
+      rw [← Set_DirectedSet_upperBounds] at hv
+      exact Iff.mpr (isLUB_le_iff h) hv
   · intro hsu
     constructor
     · rw [Set_DirectedSet_upperBounds, mem_upperBounds]
@@ -124,13 +131,6 @@ lemma Set_DirectedSet_LUB [SemilatticeSup α] {s : Set α} {u : α} : IsLUB s u 
       intro b hb
       rw [isLUB_le_iff hsu]
       exact upperBounds_mono_set subset_toDirectedSet hb
-  · intro h
-    constructor
-    · rw [← Set_DirectedSet_upperBounds]
-      exact Set.mem_of_mem_inter_left h
-    · intro v hv
-      rw [← Set_DirectedSet_upperBounds] at hv
-      exact Iff.mpr (isLUB_le_iff h) hv
 
 /--
 A join semi-lattice where every directed subset has a least upper bound is automatically complete
