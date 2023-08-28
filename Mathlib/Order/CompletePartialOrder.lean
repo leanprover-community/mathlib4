@@ -100,7 +100,7 @@ lemma subset_toDirectedSet {s : Set α} :
   · use (Finset.singleton_nonempty a)
     rfl
 
-lemma Set_DirectedSet_upperBounds {s : Set α} :
+@[simp] lemma Set_DirectedSet_upperBounds (s : Set α) :
     upperBounds (directedClosure s).set = upperBounds s := by
   rw [subset_antisymm_iff]
   constructor
