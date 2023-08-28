@@ -22,9 +22,9 @@ This file introduces the Scott topology on a preorder.
 
 ## Main statements
 
-- `ScottTopology.isUpperSet_of_isOpen` - Scott open sets are upper.
-- `ScottTopology.isLowerSet_of_isClosed` - Scott closed sets are lower.
-- `ScottTopology.monotone_of_continuous` - functions continuous wrt the Scott topology are
+- `ScottTopology.isUpperSet_of_isOpen`: Scott open sets are upper.
+- `ScottTopology.isLowerSet_of_isClosed`: Scott closed sets are lower.
+- `ScottTopology.monotone_of_continuous`: Functions continuous wrt the Scott topology are
   monotone.
 - `ScottTopology.scottContinuous_iff_continuous` - a function is Scott continuous (preserves least
   upper bounds of directed sets) if and only if it is continuous wrt the Scott topology.
