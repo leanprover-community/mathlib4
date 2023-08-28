@@ -170,51 +170,88 @@ def matchFVar (userName : Name) : Matcher := fun s => do
   guard <| userName == (← fvarId.getUserName)
   return s
 
-/-- Matches raw nat lits and `OfNat.ofNat` expressions. -/
+/-- Matches raw nat lits. -/
 def natLitMatcher (n : Nat) : Matcher := fun s => do
-  let mut e ← getExpr
-  if e.isAppOfArity ``OfNat.ofNat 3 then
-    e := e.getArg! 1
-  guard <| e.natLit? == n
+  guard <| (← getExpr).natLit? == n
   return s
 
-/-- Given an identifier `f`, returns
-(1) the resolved constant (if it's not an fvar)
-(2) a Term for a matcher for the function
-(3) the arity
-(4) the positions at which the function takes an explicit argument -/
-def getExplicitArgIndices (f : Syntax) :
-    OptionT TermElabM (Option Name × Term × Nat × Array Nat) := do
-  let fe? ← try liftM <| Term.resolveId? f catch _ => pure none
-  match fe? with
-  | some fe@(.const f _) =>
-    return (some f, ← ``(matchConst $(quote f)), ← collectIdxs (← inferType fe))
-  | some fe@(.fvar fvarId) =>
-    let userName ← fvarId.getUserName
-    return (none, ← ``(matchFVar $(quote userName)), ← collectIdxs (← inferType fe))
+/-- Matches applications. -/
+def matchApp (matchFun matchArg : Matcher) : Matcher := fun s => do
+  guard <| (← getExpr).isApp
+  let s ← withAppFn <| matchFun s
+  let s ← withAppArg <| matchArg s
+  return s
+
+/-- Matches pi types. The name `n` should be unique, and `matchBody` should use `n`
+as the `userName` of its fvar. -/
+def matchForall (n : Name) (matchDom matchBody : Matcher) : Matcher := fun s => do
+  guard <| (← getExpr).isForall
+  let s ← withBindingDomain <| matchDom s
+  let s ← withBindingBody n <| matchBody s
+  return s
+
+/-- Matches lambdas. The name `n` should be unique, and `matchBody` should use `n`
+as the `userName` of its fvar. -/
+def matchLambda (n : Name) (matchDom matchBody : Matcher) : Matcher := fun s => do
+  guard <| (← getExpr).isLambda
+  let s ← withBindingDomain <| matchDom s
+  let s ← withBindingBody n <| matchBody s
+  return s
+
+/-- Fully elaborates the term `patt`, allowing typeclass inference failure. -/
+def elabPattern (patt : Term) (expectedType? : Option Expr) : TermElabM Expr := do
+  withTheReader Term.Context (fun ctx => { ctx with ignoreTCFailures := true }) <|
+    Term.withSynthesizeLight do
+      let t ← Term.elabTerm patt expectedType?
+      Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
+      return t
+
+/-- Adds all the names in `boundNames` to the local context
+with types that are fresh metavariables. -/
+def setupLCtx (lctx : LocalContext) (boundNames : HashSet Name) :
+    MetaM (LocalContext × HashMap FVarId Name) := do
+  let mut lctx := lctx
+  let mut boundFVars := {}
+  for name in boundNames do
+    let fvarId ← mkFreshFVarId
+    lctx := lctx.mkLocalDecl fvarId name (← mkFreshTypeMVar)
+    boundFVars := boundFVars.insert fvarId name
+  return (lctx, boundFVars)
+
+/-- Given an expression, generate a matcher for it.
+The `boundFVars` hash map records which state variables certain fvars correspond to. -/
+partial def exprToMatcher (boundFVars : HashMap FVarId Name) (e : Expr) :
+    OptionT TermElabM (List Name × Term) := do
+  match e with
+  | .mvar .. => return ([], ← `(pure))
+  | .const n _ => return ([`app ++ n], ← ``(matchConst $(quote n)))
+  | .fvar fvarId =>
+    if let some n := boundFVars.find? fvarId then
+      return ([], ← ``(matchVar $(quote n)))
+    else
+      return ([`fvar], ← ``(matchFVar $(quote (← fvarId.getUserName))))
+  | .app f arg =>
+    let (keys, matchF) ← exprToMatcher boundFVars f
+    let (_, matchArg) ← exprToMatcher boundFVars arg
+    return (if keys.isEmpty then [`app] else keys, ← ``(matchApp $matchF $matchArg))
+  | .lit (.natVal n) => return ([`lit], ← ``(natLitMatcher $(quote n)))
+  | .forallE _ t b bi =>
+    let (_, matchDom) ← exprToMatcher boundFVars t
+    let n ← mkFreshId
+    withLocalDecl n bi t fun arg => do
+      let body := b.instantiate1 arg
+      let (_, matchBody) ← exprToMatcher boundFVars body
+      return ([`forallE], ← ``(matchForall $(quote n) $matchDom $matchBody))
+  | .lam _ t b bi =>
+    let (_, matchDom) ← exprToMatcher boundFVars t
+    let n ← mkFreshId
+    withLocalDecl n bi t fun arg => do
+      let body := b.instantiate1 arg
+      let (_, matchBody) ← exprToMatcher boundFVars body
+      return ([`lam], ← ``(matchLambda $(quote n) $matchDom $matchBody))
   | _ =>
-    trace[notation3] "could not resolve name {f}"
+    trace[notation3] "can't generate matcher for {e}"
     failure
-where
-  collectIdxs (ty : Expr) : MetaM (Nat × Array Nat) := do
-    let (_, binderInfos, _) ← Meta.forallMetaTelescope ty
-    let mut idxs := #[]
-    for bi in binderInfos, i in [0:binderInfos.size] do
-      if bi.isExplicit then
-        idxs := idxs.push i
-    return (binderInfos.size, idxs)
-
-/-- A matcher that runs `matchf` for the function and the `matchers` for the associated
-argument indices. Fails if the function doesn't have exactly `arity` arguments. -/
-def fnArgMatcher (arity : Nat) (matchf : Matcher) (matchers : Array (Nat × Matcher)) :
-    Matcher := fun s => do
-  let mut s := s
-  let nargs := (← getExpr).getAppNumArgs
-  guard <| nargs == arity
-  s ← withNaryFn <| matchf s
-  for (i, matcher) in matchers do
-    s ← withNaryArg i <| matcher s
-  return s
 
 /-- Returns a `Term` that represents a `Matcher` for the given pattern `stx`.
 The `boundNames` set determines which identifiers are variables in the pattern.
@@ -224,42 +261,10 @@ Also returns constant names that could serve as a key for a delaborator.
 For example, if it's for a function `f`, then `app.f`. -/
 partial def mkExprMatcher (stx : Term) (boundNames : HashSet Name) :
     OptionT TermElabM (List Name × Term) := do
-  let stx'? ← liftM <| (liftMacroM <| expandMacro? stx : TermElabM (Option Syntax))
-  match stx'? with
-  | some stx' => mkExprMatcher ⟨stx'⟩ boundNames
-  | none =>
-    match stx with
-    | `(_) => return ([], ← `(pure))
-    | `($n:ident) =>
-      if boundNames.contains n.getId then
-        return ([], ← ``(matchVar $(quote n.getId)))
-      else
-        processFn n #[]
-    | `($f:ident $args*) => processFn f args
-    | `(term| $n:num) => return ([], ← ``(natLitMatcher $n))
-    | `(($stx)) =>
-      if Term.hasCDot stx then
-        failure
-      else
-        mkExprMatcher stx boundNames
-    | _ =>
-      trace[notation3] "mkExprMatcher can't handle {stx}"
-      failure
-where
-  processFn (f : Term) (args : TSyntaxArray `term) : OptionT TermElabM (List Name × Term) := do
-    let (name?, matchf, arity, idxs) ← getExplicitArgIndices f
-    unless args.size ≤ idxs.size do
-      trace[notation3] "Function {f} has been given more explicit arguments than expected"
-      failure
-    let mut matchers := #[]
-    for i in idxs, arg in args do
-      let (_, matcher) ← mkExprMatcher arg boundNames
-      matchers := matchers.push <| ← `(($(quote i), $matcher))
-    -- `arity'` is the number of arguments (including trailing implicits) given these
-    -- explicit arguments. This reflects how the function would be elaborated.
-    let arity' := if _ : args.size < idxs.size then idxs[args.size] else arity
-    let key? := name?.map (`app ++ ·)
-    return (key?.toList, ← ``(fnArgMatcher $(quote arity') $matchf #[$matchers,*]))
+  let (lctx, boundFVars) ← setupLCtx (← getLCtx) boundNames
+  withLCtx lctx (← getLocalInstances) do
+    let patt ← elabPattern stx none
+    exprToMatcher boundFVars (← instantiateMVars patt)
 
 /-- Matcher for processing `scoped` syntax. Assumes the expression to be matched
 against is in the `lit` variable.
