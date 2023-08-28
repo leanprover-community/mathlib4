@@ -45,7 +45,7 @@ variable [SemilatticeSup α]
 /--
 Every subset of a join-semilattice generates a directed set
 -/
-def Set.ToDirectedSet (s : Set α) : DirectedSet α := {
+def directedClosure (s : Set α) : DirectedSet α := {
   set := { a | ∃ F : Finset α, ∃ H : F.Nonempty, ↑F ⊆ s ∧  a = F.sup' H id   },
   directed := by classical
     intros a ha b hb
