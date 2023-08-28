@@ -222,7 +222,7 @@ open List
 variable (φ)
 
 structure _root_.AmalgamatedProduct.NormalWord extends CoprodI.Word G where
-  left : H ⧸ normalClosure (⋃ (i : ι), (φ i).ker)
+  left : H
   normalized : ∀ i g, ⟨i, g⟩ ∈ toList → (normalizeSingle φ g).2 = g
 
 variable {φ}
@@ -295,7 +295,7 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
         · simp [head?_eq_head _ hw, Word.fstIdx, hep hw]
 
 theorem ext_smul {w₁ w₂ : NormalWord φ} (i : ι)
-    (h : φ i w₁.left • w₁.toWord = φ i w₂.left • w₂.toWord) :
+    (h : (φ i w₁.left • w₁.toWord = φ i w₂.left • w₂.toWord) :
     w₁ = w₂ := by
   rcases w₁ with ⟨w₁, h₁, hw₁⟩
   rcases w₂ with ⟨w₂, h₂, hw₂⟩
