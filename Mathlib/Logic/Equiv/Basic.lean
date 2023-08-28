@@ -384,13 +384,13 @@ end Perm
 section LiftRel
 
 variable {r : α → γ → Prop} {s : β → δ → Prop} {a : α} {b : β} {c : γ} {d : δ}
-  {x : Sum α β} {y : Sum γ δ} {e : Sum α β ≃ Sum γ δ} {f : Sum γ δ ≃ Sum α β}
+  {x : Sum α β} {y : Sum γ δ}
 
-lemma liftRel_self_apply_iff_liftRel_apply_symm_self :
+lemma liftRel_self_apply_iff_liftRel_apply_symm_self {e : Sum α β ≃ Sum γ δ} :
 (∀ x, LiftRel r s x (e x)) ↔ ∀ y, LiftRel r s (e.symm y) y := by
 simp_rw [e.forall_congr_left', apply_symm_apply]
 
-lemma liftRel_apply_self_iff_liftRel_self_apply_symm :
+lemma liftRel_apply_self_iff_liftRel_self_apply_symm {f : Sum γ δ ≃ Sum α β} :
   (∀ x, LiftRel r s (f x) x) ↔ ∀ y, LiftRel r s y (f.symm y) :=
 f.symm_symm ▸ liftRel_self_apply_iff_liftRel_apply_symm_self.symm
 
