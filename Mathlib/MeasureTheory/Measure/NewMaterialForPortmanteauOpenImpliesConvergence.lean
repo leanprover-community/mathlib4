@@ -38,6 +38,8 @@ lemma Filter.isBounded_ge_map_of_bounded_range (F : Filter ι) {f : ι → ℝ}
 
 section boundedness_by_norm_bounds
 
+variable {ι : Type*} {E : Type*}
+
 #check Metric.Bounded
 #check Metric.bounded_closedBall
 #check Metric.bounded_ball
@@ -64,38 +66,32 @@ end boundedness_by_norm_bounds
 
 section layercake_for_integral
 
+variable {α : Type*}
+
+#check lintegral_indicator₀
+#check lintegral_indicator_const₀
+
+#check AEMeasurable.nullMeasurable
+#check nullMeasurableSet_lt
+#check NullMeasurable
+
 -- TODO: Generalize from ℝ to the usual type classes.
--- NOTE: This is currently a mess, because of mixing Measurable and AEStronglyMeasurable.
 lemma Integrable.measure_pos_le_norm_lt_top [MeasurableSpace α] {μ : Measure α} [SigmaFinite μ]
-    {f : α → ℝ} --(f_nn : 0 ≤ f)
-    (f_intble : Integrable f μ)
-    {t : ℝ} (t_pos : 0 < t) :
+    {f : α → ℝ} (f_intble : Integrable f μ) {t : ℝ} (t_pos : 0 < t) :
     μ {a : α | t ≤ ‖f a‖} < ∞ := by
-  have f_aemble := f_intble.1.aemeasurable
-  have norm_f_aemble : AEMeasurable (fun a ↦ ENNReal.ofReal ‖f a‖) μ := by
-    --have := ENNReal.measurable_ofReal.comp (@measurable_norm ℝ _ _ _)
-    exact (ENNReal.measurable_ofReal.comp measurable_norm).comp_aemeasurable f_aemble
-  obtain ⟨g, ⟨g_mble, ⟨g_nn, aeeq_g⟩⟩⟩ := @AEMeasurable.exists_measurable_nonneg α _ μ ℝ≥0∞ _ _ _ _
-    norm_f_aemble (eventually_of_forall (fun x ↦ zero_le _))
-  have foo : MeasurableSet {a : α | ENNReal.ofReal t < g a} := by
-    sorry
-  -- TODO: Generalize `lintegral_indicator_const` to null-measurable sets so there is no need
-  -- to use g instead of f. (Have already `lintegral_indicator₀` so easy!)
-  have aux := @lintegral_indicator_const _ _ μ _ foo (ENNReal.ofReal t)
-  have markov := @mul_meas_ge_le_lintegral₀ α _ μ
-                  (fun a ↦ ENNReal.ofReal ‖f a‖) norm_f_aemble (ENNReal.ofReal t)
-  have same : ∀ a, ENNReal.ofReal t ≤ ENNReal.ofReal ‖f a‖ ↔ t ≤ ‖f a‖ := by sorry
-  have also : ∫⁻ (a : α), ENNReal.ofReal ‖f a‖ ∂μ = ∫⁻ (a : α), ‖f a‖₊ ∂μ := by
+  have norm_f_aemble : AEMeasurable (fun a ↦ ENNReal.ofReal ‖f a‖) μ :=
+    (ENNReal.measurable_ofReal.comp measurable_norm).comp_aemeasurable f_intble.1.aemeasurable
+  have markov := mul_meas_ge_le_lintegral₀ (μ := μ) norm_f_aemble (ENNReal.ofReal t)
+  have obs : ∫⁻ (a : α), ENNReal.ofReal ‖f a‖ ∂μ = ∫⁻ (a : α), ‖f a‖₊ ∂μ := by
     apply lintegral_congr
-    intro x
-    sorry
-  simp_rw [same, also] at markov
+    exact fun x ↦ ofReal_norm_eq_coe_nnnorm (f x)
+  simp_rw [ENNReal.ofReal_le_ofReal_iff (norm_nonneg _), obs] at markov
   have almost := lt_of_le_of_lt markov f_intble.2
   have t_inv_ne_top : (ENNReal.ofReal t)⁻¹ ≠ ∞ := by
     exact ENNReal.inv_ne_top.mpr (ENNReal.ofReal_pos.mpr t_pos).ne.symm
-  convert ENNReal.mul_lt_top t_inv_ne_top almost.ne
-  simp [← mul_assoc,
-        ENNReal.inv_mul_cancel (ENNReal.ofReal_pos.mpr t_pos).ne.symm ENNReal.ofReal_ne_top]
+  simpa [← mul_assoc,
+         ENNReal.inv_mul_cancel (ENNReal.ofReal_pos.mpr t_pos).ne.symm ENNReal.ofReal_ne_top]
+    using ENNReal.mul_lt_top t_inv_ne_top almost.ne
 
 lemma Integrable.measure_pos_lt_norm_lt_top [MeasurableSpace α] {μ : Measure α} [SigmaFinite μ]
     {f : α → ℝ} (f_intble : Integrable f μ) {t : ℝ} (t_pos : 0 < t) :
