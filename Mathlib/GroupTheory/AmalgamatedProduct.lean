@@ -151,6 +151,10 @@ theorem normalizeSingle_fst_mul_normalizeSingle_snd {i : ι} (g : G i) :
     dsimp at this
     rw [this.2]
 
+theorem normalizeSingle_fst_eq {i : ι} (g : G i) :
+    φ i (normalizeSingle φ g).1 = g * (normalizeSingle φ g).2⁻¹ :=
+  eq_mul_inv_iff_mul_eq.2 (normalizeSingle_fst_mul_normalizeSingle_snd _ _)
+
 theorem normalizeSingle_snd_eq_of_rightCosetEquivalence {i : ι} {g₁ g₂ : G i}
     (h : RightCosetEquivalence (φ i).range g₁ g₂) :
     (normalizeSingle φ g₁).2 = (normalizeSingle φ g₂).2 := by
@@ -209,13 +213,20 @@ theorem normalize_single_mem_range {i : ι} (h : H) :
   apply hφ i
   rw [Classical.choose_spec (MonoidHom.mem_range.2 ⟨_, rfl⟩)]
 
-theorem normalizeSingle_one {i : ι} (hφ : ∀ i, Function.Injective (φ i)) :
+@[simp]
+theorem normalizeSingle_one {i : ι} :
     (normalizeSingle (i := i) φ 1) = (1, 1)  := by
   have h1 : 1 ∈ (φ i).range := one_mem  _
   rw [normalizeSingle, dif_pos (one_mem _)]
   simp only [Prod.mk.injEq, and_true]
   apply hφ i
   rw [Classical.choose_spec h1, map_one]
+
+theorem normalizeSingle_injective (i : ι) :
+    Function.Injective (normalizeSingle φ (i := i)) := by
+  intro g₁ g₂ H
+  rw [← normalizeSingle_fst_mul_normalizeSingle_snd φ g₁,
+    H, normalizeSingle_fst_mul_normalizeSingle_snd]
 
 open List
 
@@ -507,28 +518,6 @@ noncomputable def equiv : AmalgamatedProduct φ ≃ NormalWord φ :=
 
 end NormalWord
 
--- section Reduced
-
--- variable (φ)
-
--- def Reduced (w : Word G) : Prop :=
---   ∀ i g, ⟨i, g⟩ ∈ w.toList → g ∉ (φ i).range
-
--- variable {φ}
-
--- def reducedWordToNormalWord (w : Word G) (hw : Reduced φ w) : NormalWord φ :=
---   { toWord :=
---       { toList := w.toList.map _
---         ne_one := _
---         chain_ne := _ },
---     left := 1,
---     normalized := fun i g hg => by
---       dsimp only [NormalWord.toWord]
---       rw [Word.mem_toList_iff] at hg
---       exact hw _ _ hg }
-
--- end Reduced
-
 open NormalWord
 
 theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
@@ -538,5 +527,19 @@ theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
   refine Function.Injective.of_comp (f := toPermNormalWord hφ) ?_
   simp only [Function.comp, toPermNormalWord, lift_of]
   exact summandToPermNormalWord_injective hφ
+
+section Reduced
+
+open NormalWord
+
+variable (φ)
+
+def Reduced (w : Word G) : Prop :=
+  ∀ i g, ⟨i, g⟩ ∈ w.toList → g ∉ (φ i).range
+
+variable {φ}
+
+
+end Reduced
 
 end AmalgamatedProduct
