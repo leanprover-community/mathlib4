@@ -1344,7 +1344,7 @@ theorem Sigma.univ (X : α → Type*) : (Set.univ : Set (Σa, X a)) = ⋃ a, ran
     iff_of_true trivial ⟨range (Sigma.mk x.1), Set.mem_range_self _, x.2, Sigma.eta x⟩
 #align set.sigma.univ Set.Sigma.univ
 
-alias sUnion_subset_sUnion ← sUnion_mono
+alias sUnion_mono := sUnion_subset_sUnion
 #align set.sUnion_mono Set.sUnion_mono
 
 theorem iUnion_subset_iUnion_const {s : Set α} (h : ι → ι₂) : ⋃ _ : ι, s ⊆ ⋃ _ : ι₂, s :=

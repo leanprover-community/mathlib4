@@ -44,7 +44,7 @@ lemma eventuallyConst_iff_tendsto [Nonempty β] :
     EventuallyConst f l ↔ ∃ x, Tendsto f l (pure x) :=
   subsingleton_iff_exists_le_pure
 
-alias eventuallyConst_iff_tendsto ↔ EventuallyConst.exists_tendsto _
+alias ⟨EventuallyConst.exists_tendsto, _⟩ := eventuallyConst_iff_tendsto
 
 theorem EventuallyConst.of_tendsto {x : β} (h : Tendsto f l (pure x)) : EventuallyConst f l :=
   have : Nonempty β := ⟨x⟩; eventuallyConst_iff_tendsto.2 ⟨x, h⟩
@@ -53,7 +53,7 @@ theorem eventuallyConst_iff_exists_eventuallyEq [Nonempty β] :
     EventuallyConst f l ↔ ∃ c, f =ᶠ[l] fun _ ↦ c :=
   subsingleton_iff_exists_singleton_mem
 
-alias eventuallyConst_iff_exists_eventuallyEq ↔ EventuallyConst.eventuallyEq_const _
+alias ⟨EventuallyConst.eventuallyEq_const, _⟩ := eventuallyConst_iff_exists_eventuallyEq
 
 theorem eventuallyConst_pred' {p : α → Prop} :
     EventuallyConst p l ↔ (p =ᶠ[l] fun _ ↦ False) ∨ (p =ᶠ[l] fun _ ↦ True) := by

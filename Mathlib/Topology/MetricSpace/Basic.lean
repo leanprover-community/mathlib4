@@ -1487,7 +1487,7 @@ theorem Filter.Tendsto.congr_dist {ι : Type*} {f₁ f₂ : ι → α} {p : Filt
   h₁.congr_uniformity <| tendsto_uniformity_iff_dist_tendsto_zero.2 h
 #align filter.tendsto.congr_dist Filter.Tendsto.congr_dist
 
-alias Filter.Tendsto.congr_dist ← tendsto_of_tendsto_of_dist
+alias tendsto_of_tendsto_of_dist := Filter.Tendsto.congr_dist
 #align tendsto_of_tendsto_of_dist tendsto_of_tendsto_of_dist
 
 theorem tendsto_iff_of_dist {ι : Type*} {f₁ f₂ : ι → α} {p : Filter ι} {a : α}
@@ -2175,7 +2175,7 @@ theorem finite_cover_balls_of_compact {α : Type u} [PseudoMetricSpace α] {s : 
   ⟨t, hts, t.finite_toSet, ht⟩
 #align finite_cover_balls_of_compact finite_cover_balls_of_compact
 
-alias finite_cover_balls_of_compact ← IsCompact.finite_cover_balls
+alias IsCompact.finite_cover_balls := finite_cover_balls_of_compact
 #align is_compact.finite_cover_balls IsCompact.finite_cover_balls
 
 end Compact
@@ -2475,7 +2475,7 @@ theorem bounded_of_finite {s : Set α} (h : s.Finite) : Bounded s :=
   h.isCompact.bounded
 #align metric.bounded_of_finite Metric.bounded_of_finite
 
-alias bounded_of_finite ← _root_.Set.Finite.bounded
+alias _root_.Set.Finite.bounded := bounded_of_finite
 #align set.finite.bounded Set.Finite.bounded
 
 /-- A singleton is bounded -/
