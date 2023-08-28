@@ -74,13 +74,13 @@ the least upper bound of a directed set `d` lies in `u` then there is a tail of 
 subset of `u`.
 -/
 def ScottHausdorffTopology : TopologicalSpace α :=
-{ IsOpen := fun u => ∀ ⦃d : Set α⦄ ⦃a : α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a →
+{ IsOpen := fun u => ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
     a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u,
   isOpen_univ := by
-    rintro d _ ⟨b, hb⟩ _ _ _
+    rintro d ⟨b, hb⟩ _ _ _ _
     exact ⟨b, hb, (Ici b ∩ d).subset_univ⟩,
   isOpen_inter := by
-    intros s t hs ht d a hd₁ hd₂ hd₃ ha
+    intros s t hs ht d hd₁ hd₂ a hd₃ ha
     obtain ⟨b₁, hb₁_w, hb₁_h⟩ := hs hd₁ hd₂ hd₃ ha.1
     obtain ⟨b₂, hb₂_w, hb₂_h⟩ := ht hd₁ hd₂ hd₃ ha.2
     obtain ⟨c, hc_w, hc_h⟩ := hd₂ b₁ hb₁_w b₂ hb₂_w
@@ -92,14 +92,14 @@ def ScottHausdorffTopology : TopologicalSpace α :=
         _ = (Ici b₁ ∩ d) ∩ (Ici b₂ ∩ d) := by rw [inter_inter_distrib_right]
         _ ⊆ s ∩ t := inter_subset_inter hb₁_h hb₂_h
   isOpen_sUnion := by
-    rintro s h d a hd₁ hd₂ hd₃ ⟨s₀, hs₀_w, hs₀_h⟩
+    rintro s h d hd₁ hd₂ a hd₃ ⟨s₀, hs₀_w, hs₀_h⟩
     obtain ⟨b, hb_w, hb_h⟩ := h s₀ hs₀_w hd₁ hd₂ hd₃ hs₀_h
     use b
     exact ⟨hb_w, Set.subset_sUnion_of_subset s s₀ hb_h hs₀_w⟩ }
 
 lemma ScottHausdorffTopology.Lower_IsOpen {s : Set α} (h : IsLowerSet s) :
     ScottHausdorffTopology.IsOpen s := by
-  rintro d a ⟨b, hb⟩ _ hda ha
+  rintro d ⟨b, hb⟩ _ a hda ha
   use b
   exact ⟨hb,Subset.trans (inter_subset_right (Ici b) d)
     (fun c hc => h (mem_upperBounds.mp hda.1 _ hc) ha)⟩
@@ -236,7 +236,7 @@ lemma isOpen_iff_upper_and_InaccessibleByDirectedJoins {u : Set α} :
   · intros h
     constructor
     · exact h.1
-    · intros d a d₁ d₂ d₃ ha
+    · intros d d₁ d₂ a d₃ ha
       obtain ⟨b, e1_h_w, e1_h_h⟩ := h.2 d₁ d₂ d₃ ha
       use b
       exact ⟨e1_h_w, Subset.trans (inter_subset_left (Ici b) d) (h.1.Ici_subset e1_h_h)⟩
@@ -366,7 +366,7 @@ lemma isOpen_iff_isUpperSet_and_sup_mem_implies_tail_subset {u : Set α} :
   rw [ScottTopology.isOpen_iff_upper_and_Scott_Hausdorff_Open]
   apply and_congr_right'
   exact ⟨fun h d hd₁ hd₂ hd₃ => h hd₁ hd₂ (isLUB_sSup d) hd₃,
-    fun h d a hd₁ hd₂ hd₃ ha => h hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.sSup_eq hd₃) ha)⟩
+    fun h d hd₁ hd₂ a hd₃ ha => h hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.sSup_eq hd₃) ha)⟩
 
 lemma isOpen_iff_upper_and_sup_mem_implies_inter_nonempty
     {u : Set α} : IsOpen u ↔
