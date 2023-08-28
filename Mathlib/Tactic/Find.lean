@@ -205,7 +205,7 @@ declare_syntax_cat find_patterns
 syntax find_pattern,* : find_patterns
 
 /-- A variant of `Lean.Elab.Term.elabTerm` that does not complain for example
-when a type class constraint has not instances.  -/
+when a type class constraint has no instances.  -/
 def elabTerm' (t : Term) (expectedType? : Option Expr) : TermElabM Expr := do
   withTheReader Term.Context (fun ctx => { ctx with ignoreTCFailures := true }) do
     let t ← Term.elabTerm t expectedType?
