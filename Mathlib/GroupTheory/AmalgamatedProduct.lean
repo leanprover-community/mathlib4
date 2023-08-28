@@ -222,7 +222,7 @@ open List
 variable (φ)
 
 structure _root_.AmalgamatedProduct.NormalWord extends CoprodI.Word G where
-  left : H
+  left : H ⧸ normalClosure (⋃ (i : ι), (φ i).ker)
   normalized : ∀ i g, ⟨i, g⟩ ∈ toList → (normalizeSingle φ g).2 = g
 
 variable {φ}
@@ -414,8 +414,8 @@ noncomputable def toPermNormalWord [DecidableEq ι] [∀ i, DecidableEq (G i)] :
 
 theorem toPermNormalWord_induction {C : NormalWord φ → Prop}
     (h_empty : C empty)
-    (h_summand : ∀ (i) (g : G i) (w), C w → C (toPermNormalWord hφ (of g) w))
-    (h_base : ∀ (h : H) (w), C w → C (toPermNormalWord hφ (base h) w))
+    (h_summand : ∀ (i) (g : G i) (w), C w → C (summandToPermNormalWord hφ i g w))
+    (h_base : ∀ (h : H) (w), C w → C (baseToPermNormalWord h w))
     (w : NormalWord φ) : C w := sorry
 
 
