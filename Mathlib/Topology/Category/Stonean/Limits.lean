@@ -27,7 +27,7 @@ This section defines the finite Coproduct of a finite family
 of profinite spaces `X : α → Stonean.{u}`
 
 Notes: The content is mainly copied from
-`Mathlib/Topology/Category/CompHaus/ExplicitLimits.lean`
+`Mathlib/Topology/Category/CompHaus/Limits.lean`
 -/
 section FiniteCoproducts
 
