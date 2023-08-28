@@ -33,9 +33,11 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 has as its objects `D`-morphisms of the form `S ⟶ T Y`, for some `Y : C`,
 and morphisms `C`-morphisms `Y ⟶ Y'` making the obvious triangle commute.
 -/
+-- We explicitly come from `PUnit.{1}` here to obtain the correct universe for morphisms of
+-- structured arrows.
 -- @[nolint has_nonempty_instance]
 def StructuredArrow (S : D) (T : C ⥤ D) :=
-  Comma (Functor.fromPUnit S) T
+  Comma (Functor.fromPUnit.{0} S) T
 #align category_theory.structured_arrow CategoryTheory.StructuredArrow
 
 -- Porting note: not found by inferInstance
@@ -172,9 +174,6 @@ theorem ext_iff {A B : StructuredArrow S T} (f g : A ⟶ B) : f = g ↔ f.right 
 instance proj_faithful : Faithful (proj S T) where
   map_injective {_ _} := ext
 #align category_theory.structured_arrow.proj_faithful CategoryTheory.StructuredArrow.proj_faithful
-
-instance : LocallySmall.{v₁} (StructuredArrow S T) where
-  hom_small _ _ := small_of_injective ext
 
 /-- The converse of this is true with additional assumptions, see `mono_iff_mono_right`. -/
 theorem mono_of_mono_right {A B : StructuredArrow S T} (f : A ⟶ B) [h : Mono f.right] : Mono f :=
@@ -368,9 +367,11 @@ end StructuredArrow
 has as its objects `D`-morphisms of the form `S Y ⟶ T`, for some `Y : C`,
 and morphisms `C`-morphisms `Y ⟶ Y'` making the obvious triangle commute.
 -/
+-- We explicitly come from `PUnit.{1}` here to obtain the correct universe for morphisms of
+-- costructured arrows.
 -- @[nolint has_nonempty_instance] -- Porting note: removed
 def CostructuredArrow (S : C ⥤ D) (T : D) :=
-  Comma S (Functor.fromPUnit T)
+  Comma S (Functor.fromPUnit.{0} T)
 #align category_theory.costructured_arrow CategoryTheory.CostructuredArrow
 
 instance (S : C ⥤ D) (T : D) : Category (CostructuredArrow S T) := commaCategory
@@ -501,9 +502,6 @@ theorem ext_iff {A B : CostructuredArrow S T} (f g : A ⟶ B) : f = g ↔ f.left
 
 instance proj_faithful : Faithful (proj S T) where map_injective {_ _} := ext
 #align category_theory.costructured_arrow.proj_faithful CategoryTheory.CostructuredArrow.proj_faithful
-
-instance : LocallySmall.{v₁} (CostructuredArrow S T) where
-  hom_small _ _ := small_of_injective ext
 
 theorem mono_of_mono_left {A B : CostructuredArrow S T} (f : A ⟶ B) [h : Mono f.left] : Mono f :=
   (proj S T).mono_of_mono_map h
