@@ -387,7 +387,7 @@ variable {r : α → γ → Prop} {s : β → δ → Prop} {a : α} {b : β} {c 
   {x : Sum α β} {y : Sum γ δ}
 
 lemma liftRel_self_apply_iff_liftRel_apply_symm_self {e : Sum α β ≃ Sum γ δ} :
-(∀ x, LiftRel r s x (e x)) ↔ ∀ y, LiftRel r s (e.symm y) y := by
+  (∀ x, LiftRel r s x (e x)) ↔ ∀ y, LiftRel r s (e.symm y) y := by
 simp_rw [e.forall_congr_left', apply_symm_apply]
 
 lemma liftRel_apply_self_iff_liftRel_self_apply_symm {f : Sum γ δ ≃ Sum α β} :
