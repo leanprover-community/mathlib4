@@ -2,16 +2,13 @@
 Copyright (c) 2021 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
-
-! This file was ported from Lean 3 source module ring_theory.graded_algebra.homogeneous_ideal
-! leanprover-community/mathlib commit 4e861f25ba5ceef42ba0712d8ffeb32f38ad6441
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.GradedAlgebra.Basic
+
+#align_import ring_theory.graded_algebra.homogeneous_ideal from "leanprover-community/mathlib"@"4e861f25ba5ceef42ba0712d8ffeb32f38ad6441"
 
 /-!
 # Homogeneous ideals of a graded algebra
@@ -49,7 +46,7 @@ open SetLike DirectSum Set
 
 open BigOperators Pointwise DirectSum
 
-variable {ι σ R A : Type _}
+variable {ι σ R A : Type*}
 
 section HomogeneousDef
 
@@ -170,7 +167,7 @@ theorem Ideal.homogeneous_span (s : Set A) (h : ∀ x ∈ s, Homogeneous 𝒜 x)
   rw [Ideal.span, Finsupp.span_eq_range_total] at hr
   rw [LinearMap.mem_range] at hr
   obtain ⟨s, rfl⟩ := hr
-  rw [Finsupp.total_apply, Finsupp.sum, decompose_sum, Dfinsupp.finset_sum_apply,
+  rw [Finsupp.total_apply, Finsupp.sum, decompose_sum, DFinsupp.finset_sum_apply,
     AddSubmonoidClass.coe_finset_sum]
   refine' Ideal.sum_mem _ _
   rintro z hz1
@@ -274,7 +271,7 @@ theorem sup {I J : Ideal A} (HI : I.IsHomogeneous 𝒜) (HJ : J.IsHomogeneous �
   exact (Submodule.span_union _ _).symm
 #align ideal.is_homogeneous.sup Ideal.IsHomogeneous.sup
 
-protected theorem iSup {κ : Sort _} {f : κ → Ideal A} (h : ∀ i, (f i).IsHomogeneous 𝒜) :
+protected theorem iSup {κ : Sort*} {f : κ → Ideal A} (h : ∀ i, (f i).IsHomogeneous 𝒜) :
     (⨆ i, f i).IsHomogeneous 𝒜 := by
   simp_rw [iff_exists] at h ⊢
   choose s hs using h
@@ -284,19 +281,19 @@ protected theorem iSup {κ : Sort _} {f : κ → Ideal A} (h : ∀ i, (f i).IsHo
   exact funext hs
 #align ideal.is_homogeneous.supr Ideal.IsHomogeneous.iSup
 
-protected theorem iInf {κ : Sort _} {f : κ → Ideal A} (h : ∀ i, (f i).IsHomogeneous 𝒜) :
+protected theorem iInf {κ : Sort*} {f : κ → Ideal A} (h : ∀ i, (f i).IsHomogeneous 𝒜) :
     (⨅ i, f i).IsHomogeneous 𝒜 := by
   intro i x hx
   simp only [Ideal.mem_iInf] at hx ⊢
   exact fun j => h _ _ (hx j)
 #align ideal.is_homogeneous.infi Ideal.IsHomogeneous.iInf
 
-theorem iSup₂ {κ : Sort _} {κ' : κ → Sort _} {f : ∀ i, κ' i → Ideal A}
+theorem iSup₂ {κ : Sort*} {κ' : κ → Sort*} {f : ∀ i, κ' i → Ideal A}
     (h : ∀ i j, (f i j).IsHomogeneous 𝒜) : (⨆ (i) (j), f i j).IsHomogeneous 𝒜 :=
   IsHomogeneous.iSup fun i => IsHomogeneous.iSup <| h i
 #align ideal.is_homogeneous.supr₂ Ideal.IsHomogeneous.iSup₂
 
-theorem iInf₂ {κ : Sort _} {κ' : κ → Sort _} {f : ∀ i, κ' i → Ideal A}
+theorem iInf₂ {κ : Sort*} {κ' : κ → Sort*} {f : ∀ i, κ' i → Ideal A}
     (h : ∀ i j, (f i j).IsHomogeneous 𝒜) : (⨅ (i) (j), f i j).IsHomogeneous 𝒜 :=
   IsHomogeneous.iInf fun i => IsHomogeneous.iInf <| h i
 #align ideal.is_homogeneous.infi₂ Ideal.IsHomogeneous.iInf₂
@@ -391,25 +388,25 @@ theorem toIdeal_sInf (ℐ : Set (HomogeneousIdeal 𝒜)) : (sInf ℐ).toIdeal = 
 #align homogeneous_ideal.to_ideal_Inf HomogeneousIdeal.toIdeal_sInf
 
 @[simp]
-theorem toIdeal_iSup {κ : Sort _} (s : κ → HomogeneousIdeal 𝒜) :
+theorem toIdeal_iSup {κ : Sort*} (s : κ → HomogeneousIdeal 𝒜) :
     (⨆ i, s i).toIdeal = ⨆ i, (s i).toIdeal := by
   rw [iSup, toIdeal_sSup, iSup_range]
 #align homogeneous_ideal.to_ideal_supr HomogeneousIdeal.toIdeal_iSup
 
 @[simp]
-theorem toIdeal_iInf {κ : Sort _} (s : κ → HomogeneousIdeal 𝒜) :
+theorem toIdeal_iInf {κ : Sort*} (s : κ → HomogeneousIdeal 𝒜) :
     (⨅ i, s i).toIdeal = ⨅ i, (s i).toIdeal := by
   rw [iInf, toIdeal_sInf, iInf_range]
 #align homogeneous_ideal.to_ideal_infi HomogeneousIdeal.toIdeal_iInf
 
 -- @[simp] -- Porting note: simp can prove this
-theorem toIdeal_iSup₂ {κ : Sort _} {κ' : κ → Sort _} (s : ∀ i, κ' i → HomogeneousIdeal 𝒜) :
+theorem toIdeal_iSup₂ {κ : Sort*} {κ' : κ → Sort*} (s : ∀ i, κ' i → HomogeneousIdeal 𝒜) :
     (⨆ (i) (j), s i j).toIdeal = ⨆ (i) (j), (s i j).toIdeal := by
   simp_rw [toIdeal_iSup]
 #align homogeneous_ideal.to_ideal_supr₂ HomogeneousIdeal.toIdeal_iSup₂
 
 -- @[simp] -- Porting note: simp can prove this
-theorem toIdeal_iInf₂ {κ : Sort _} {κ' : κ → Sort _} (s : ∀ i, κ' i → HomogeneousIdeal 𝒜) :
+theorem toIdeal_iInf₂ {κ : Sort*} {κ' : κ → Sort*} (s : ∀ i, κ' i → HomogeneousIdeal 𝒜) :
     (⨅ (i) (j), s i j).toIdeal = ⨅ (i) (j), (s i j).toIdeal := by
   simp_rw [toIdeal_iInf]
 #align homogeneous_ideal.to_ideal_infi₂ HomogeneousIdeal.toIdeal_iInf₂

@@ -2,15 +2,12 @@
 Copyright (c) 2019 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Paul Lezeau, Junyan Xu
-
-! This file was ported from Lean 3 source module field_theory.minpoly.is_integrally_closed
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.AdjoinRoot
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.RingTheory.Polynomial.GaussLemma
+
+#align_import field_theory.minpoly.is_integrally_closed from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Minimal polynomials over a GCD monoid
@@ -38,11 +35,11 @@ open Polynomial Set Function minpoly
 
 namespace minpoly
 
-variable {R S : Type _} [CommRing R] [CommRing S] [IsDomain R] [Algebra R S]
+variable {R S : Type*} [CommRing R] [CommRing S] [IsDomain R] [Algebra R S]
 
 section
 
-variable (K L : Type _) [Field K] [Algebra R K] [IsFractionRing R K] [Field L] [Algebra R L]
+variable (K L : Type*) [Field K] [Algebra R K] [IsFractionRing R K] [Field L] [Algebra R L]
   [Algebra S L] [Algebra K L] [IsScalarTower R K L] [IsScalarTower R S L]
 
 variable [IsIntegrallyClosed R]
@@ -165,7 +162,7 @@ theorem ToAdjoin.injective (hx : IsIntegral R x) : Function.Injective (Minpoly.t
   rw [← hP, Minpoly.toAdjoin_apply', liftHom_mk, ← Subalgebra.coe_eq_zero, aeval_subalgebra_coe,
     isIntegrallyClosed_dvd_iff hx] at hP₁
   obtain ⟨Q, hQ⟩ := hP₁
-  rw [← hP, hQ, RingHom.map_mul, mk_self, MulZeroClass.zero_mul]
+  rw [← hP, hQ, RingHom.map_mul, mk_self, zero_mul]
 #align minpoly.to_adjoin.injective minpoly.ToAdjoin.injective
 
 /-- The algebra isomorphism `AdjoinRoot (minpoly R x) ≃ₐ[R] adjoin R x` -/

@@ -2,13 +2,10 @@
 Copyright (c) 2019 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module analysis.calculus.deriv.basic
-! leanprover-community/mathlib commit 3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Basic
+
+#align_import analysis.calculus.deriv.basic from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
 /-!
 
@@ -54,7 +51,7 @@ We also show the existence and compute the derivatives of:
   - sum of finitely many functions (in `Add.lean`)
   - negation (in `Add.lean`)
   - subtraction (in `Add.lean`)
-  - star  (in `Star.lean`)
+  - star (in `Star.lean`)
   - multiplication of two functions in `𝕜 → 𝕜` (in `Mul.lean`)
   - multiplication of a function in `𝕜 → 𝕜` and of a function in `𝕜 → E` (in `Mul.lean`)
   - powers of a function (in `Pow.lean` and `ZPow.lean`)
@@ -214,7 +211,7 @@ theorem hasStrictDerivAt_iff_hasStrictFDerivAt :
   Iff.rfl
 #align has_strict_deriv_at_iff_has_strict_fderiv_at hasStrictDerivAt_iff_hasStrictFDerivAt
 
-alias hasStrictDerivAt_iff_hasStrictFDerivAt ↔ HasStrictDerivAt.hasStrictFDerivAt _
+alias ⟨HasStrictDerivAt.hasStrictFDerivAt, _⟩ := hasStrictDerivAt_iff_hasStrictFDerivAt
 #align has_strict_deriv_at.has_strict_fderiv_at HasStrictDerivAt.hasStrictFDerivAt
 
 /-- Expressing `HasDerivAt f f' x` in terms of `HasFDerivAt` -/
@@ -223,7 +220,7 @@ theorem hasDerivAt_iff_hasFDerivAt {f' : F} :
   Iff.rfl
 #align has_deriv_at_iff_has_fderiv_at hasDerivAt_iff_hasFDerivAt
 
-alias hasDerivAt_iff_hasFDerivAt ↔ HasDerivAt.hasFDerivAt _
+alias ⟨HasDerivAt.hasFDerivAt, _⟩ := hasDerivAt_iff_hasFDerivAt
 #align has_deriv_at.has_fderiv_at HasDerivAt.hasFDerivAt
 
 theorem derivWithin_zero_of_not_differentiableWithinAt (h : ¬DifferentiableWithinAt 𝕜 f s x) :
@@ -314,7 +311,7 @@ theorem hasDerivWithinAt_congr_set {s t : Set 𝕜} (h : s =ᶠ[𝓝 x] t) :
   hasFDerivWithinAt_congr_set h
 #align has_deriv_within_at_congr_set hasDerivWithinAt_congr_set
 
-alias hasDerivWithinAt_congr_set ↔ HasDerivWithinAt.congr_set _
+alias ⟨HasDerivWithinAt.congr_set, _⟩ := hasDerivWithinAt_congr_set
 #align has_deriv_within_at.congr_set HasDerivWithinAt.congr_set
 
 @[simp]
@@ -329,7 +326,7 @@ theorem hasDerivWithinAt_Ioi_iff_Ici [PartialOrder 𝕜] :
   rw [← Ici_diff_left, hasDerivWithinAt_diff_singleton]
 #align has_deriv_within_at_Ioi_iff_Ici hasDerivWithinAt_Ioi_iff_Ici
 
-alias hasDerivWithinAt_Ioi_iff_Ici ↔ HasDerivWithinAt.Ici_of_Ioi HasDerivWithinAt.Ioi_of_Ici
+alias ⟨HasDerivWithinAt.Ici_of_Ioi, HasDerivWithinAt.Ioi_of_Ici⟩ := hasDerivWithinAt_Ioi_iff_Ici
 #align has_deriv_within_at.Ici_of_Ioi HasDerivWithinAt.Ici_of_Ioi
 #align has_deriv_within_at.Ioi_of_Ici HasDerivWithinAt.Ioi_of_Ici
 
@@ -339,7 +336,7 @@ theorem hasDerivWithinAt_Iio_iff_Iic [PartialOrder 𝕜] :
   rw [← Iic_diff_right, hasDerivWithinAt_diff_singleton]
 #align has_deriv_within_at_Iio_iff_Iic hasDerivWithinAt_Iio_iff_Iic
 
-alias hasDerivWithinAt_Iio_iff_Iic ↔ HasDerivWithinAt.Iic_of_Iio HasDerivWithinAt.Iio_of_Iic
+alias ⟨HasDerivWithinAt.Iic_of_Iio, HasDerivWithinAt.Iio_of_Iic⟩ := hasDerivWithinAt_Iio_iff_Iic
 #align has_deriv_within_at.Iic_of_Iio HasDerivWithinAt.Iic_of_Iio
 #align has_deriv_within_at.Iio_of_Iic HasDerivWithinAt.Iio_of_Iic
 
@@ -348,7 +345,7 @@ theorem HasDerivWithinAt.Ioi_iff_Ioo [LinearOrder 𝕜] [OrderClosedTopology �
   hasFDerivWithinAt_inter <| Iio_mem_nhds h
 #align has_deriv_within_at.Ioi_iff_Ioo HasDerivWithinAt.Ioi_iff_Ioo
 
-alias HasDerivWithinAt.Ioi_iff_Ioo ↔ HasDerivWithinAt.Ioi_of_Ioo HasDerivWithinAt.Ioo_of_Ioi
+alias ⟨HasDerivWithinAt.Ioi_of_Ioo, HasDerivWithinAt.Ioo_of_Ioi⟩ := HasDerivWithinAt.Ioi_iff_Ioo
 #align has_deriv_within_at.Ioi_of_Ioo HasDerivWithinAt.Ioi_of_Ioo
 #align has_deriv_within_at.Ioo_of_Ioi HasDerivWithinAt.Ioo_of_Ioi
 
@@ -371,6 +368,7 @@ theorem HasDerivWithinAt.mono_of_mem (h : HasDerivWithinAt f f' t x) (hst : t �
     HasDerivWithinAt f f' s x :=
   HasFDerivWithinAt.mono_of_mem h hst
 #align has_deriv_within_at.mono_of_mem HasDerivWithinAt.mono_of_mem
+#align has_deriv_within_at.nhds_within HasDerivWithinAt.mono_of_mem
 
 theorem HasDerivAt.hasDerivAtFilter (h : HasDerivAt f f' x) (hL : L ≤ 𝓝 x) :
     HasDerivAtFilter f f' x L :=
@@ -413,11 +411,6 @@ theorem HasDerivWithinAt.union (hs : HasDerivWithinAt f f' s x) (ht : HasDerivWi
     HasDerivWithinAt f f' (s ∪ t) x :=
   hs.hasFDerivWithinAt.union ht.hasFDerivWithinAt
 #align has_deriv_within_at.union HasDerivWithinAt.union
-
-theorem HasDerivWithinAt.nhdsWithin (h : HasDerivWithinAt f f' s x) (ht : s ∈ 𝓝[t] x) :
-    HasDerivWithinAt f f' t x :=
-  (hasDerivWithinAt_inter' ht).1 (h.mono (inter_subset_right _ _))
-#align has_deriv_within_at.nhds_within HasDerivWithinAt.nhdsWithin
 
 theorem HasDerivWithinAt.hasDerivAt (h : HasDerivWithinAt f f' s x) (hs : s ∈ 𝓝 x) :
     HasDerivAt f f' x :=
@@ -546,7 +539,7 @@ theorem differentiableWithinAt_Ioi_iff_Ici [PartialOrder 𝕜] :
 #align differentiable_within_at_Ioi_iff_Ici differentiableWithinAt_Ioi_iff_Ici
 
 -- Golfed while splitting the file
-theorem derivWithin_Ioi_eq_Ici {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] (f : ℝ → E)
+theorem derivWithin_Ioi_eq_Ici {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (f : ℝ → E)
     (x : ℝ) : derivWithin f (Ioi x) x = derivWithin f (Ici x) x := by
   by_cases H : DifferentiableWithinAt ℝ f (Ioi x) x
   · have A := H.hasDerivWithinAt.Ici_of_Ioi

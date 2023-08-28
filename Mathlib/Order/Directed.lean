@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module order.directed
-! leanprover-community/mathlib commit 3efd324a3a31eaa40c9d5bfc669c4fafee5f9423
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Image
 import Mathlib.Order.Lattice
 import Mathlib.Order.Max
 import Mathlib.Order.Bounds.Basic
+
+#align_import order.directed from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
 
 /-!
 # Directed indexed families and sets
@@ -57,10 +54,10 @@ def DirectedOn (s : Set α) :=
 variable {r r'}
 
 theorem directedOn_iff_directed {s} : @DirectedOn α r s ↔ Directed r (Subtype.val : s → α) := by
-  simp [Directed, DirectedOn] ; refine' ball_congr fun x _ => by simp [And.comm, and_assoc]
+  simp [Directed, DirectedOn]; refine' ball_congr fun x _ => by simp [And.comm, and_assoc]
 #align directed_on_iff_directed directedOn_iff_directed
 
-alias directedOn_iff_directed ↔ DirectedOn.directed_val _
+alias ⟨DirectedOn.directed_val, _⟩ := directedOn_iff_directed
 #align directed_on.directed_coe DirectedOn.directed_val
 
 theorem directedOn_range {f : ι → α} : Directed r f ↔ DirectedOn r (Set.range f) := by
@@ -68,7 +65,7 @@ theorem directedOn_range {f : ι → α} : Directed r f ↔ DirectedOn r (Set.ra
 #align directed_on_range directedOn_range
 
 -- porting note: This alias was misplaced in `order/compactly_generated.lean` in mathlib3
-alias directedOn_range ↔ Directed.directedOn_range _
+alias ⟨Directed.directedOn_range, _⟩ := directedOn_range
 #align directed.directed_on_range Directed.directedOn_range
 
 -- porting note: `attribute [protected]` doesn't work
@@ -172,7 +169,7 @@ theorem IsTotal.directed [IsTotal α r] (f : ι → α) : Directed r f := fun i 
 
 /-- `IsDirected α r` states that for any elements `a`, `b` there exists an element `c` such that
 `r a c` and `r b c`. -/
-class IsDirected (α : Type _) (r : α → α → Prop) : Prop where
+class IsDirected (α : Type*) (r : α → α → Prop) : Prop where
   /-- For every pair of elements `a` and `b` there is a `c` such that `r a c` and `r b c` -/
   directed (a b : α) : ∃ c, r a c ∧ r b c
 #align is_directed IsDirected
@@ -231,7 +228,7 @@ instance OrderDual.isDirected_le [LE α] [IsDirected α (· ≥ ·)] : IsDirecte
 
 section Reflexive
 
-theorem DirectedOn.insert (h : Reflexive r) (a : α) {s : Set α} (hd : DirectedOn r s)
+protected theorem DirectedOn.insert (h : Reflexive r) (a : α) {s : Set α} (hd : DirectedOn r s)
     (ha : ∀ b ∈ s, ∃ c ∈ s, a ≼ c ∧ b ≼ c) : DirectedOn r (insert a s) := by
   rintro x (rfl | hx) y (rfl | hy)
   · exact ⟨y, Set.mem_insert _ _, h _, h _⟩

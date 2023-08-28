@@ -2,16 +2,13 @@
 Copyright (c) 2022 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Junyan Xu, Jack McKoen
-
-! This file was ported from Lean 3 source module ring_theory.valuation.valuation_subring
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Localization.AsSubring
 import Mathlib.RingTheory.Subring.Pointwise
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
+
+#align_import ring_theory.valuation.valuation_subring from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
 
@@ -375,7 +372,7 @@ theorem idealOfLE_le_of_le (R S : ValuationSubring K) (hR : A ≤ R) (hS : A ≤
     idealOfLE A S hS ≤ idealOfLE A R hR := fun x hx =>
   (valuation_lt_one_iff R _).2
     (by
-      by_contra c; push_neg at c ; replace c := monotone_mapOfLE R S h c
+      by_contra c; push_neg at c; replace c := monotone_mapOfLE R S h c
       rw [(mapOfLE _ _ _).map_one, mapOfLE_valuation_apply] at c
       apply not_le_of_lt ((valuation_lt_one_iff S _).1 hx) c)
 #align valuation_subring.ideal_of_le_le_of_le ValuationSubring.idealOfLE_le_of_le
@@ -418,7 +415,7 @@ end ValuationSubring
 namespace Valuation
 
 variable {K}
-variable {Γ Γ₁ Γ₂ : Type _} [LinearOrderedCommGroupWithZero Γ]
+variable {Γ Γ₁ Γ₂ : Type*} [LinearOrderedCommGroupWithZero Γ]
   [LinearOrderedCommGroupWithZero Γ₁] [LinearOrderedCommGroupWithZero Γ₂] (v : Valuation K Γ)
   (v₁ : Valuation K Γ₁) (v₂ : Valuation K Γ₂)
 
@@ -618,7 +615,7 @@ theorem image_maximalIdeal : ((↑) : A → K) '' LocalRing.maximalIdeal A = A.n
   ext a
   simp only [Set.mem_image, SetLike.mem_coe, mem_nonunits_iff_exists_mem_maximalIdeal]
   erw [Subtype.exists]
-  simp_rw [Subtype.coe_mk, exists_and_right, exists_eq_right]
+  simp_rw [exists_and_right, exists_eq_right]
   -- Porting note: added
   simp
 #align valuation_subring.image_maximal_ideal ValuationSubring.image_maximalIdeal
@@ -800,7 +797,7 @@ section PointwiseActions
 
 open scoped Pointwise
 
-variable {G : Type _} [Group G] [MulSemiringAction G K]
+variable {G : Type*} [Group G] [MulSemiringAction G K]
 
 /-- The action on a valuation subring corresponding to applying the action to every element.
 
@@ -883,7 +880,7 @@ end PointwiseActions
 
 section
 
-variable {L J : Type _} [Field L] [Field J]
+variable {L J : Type*} [Field L] [Field J]
 
 /-- The pullback of a valuation subring `A` along a ring homomorphism `K →+* L`. -/
 def comap (A : ValuationSubring L) (f : K →+* L) : ValuationSubring K :=
@@ -909,7 +906,7 @@ end ValuationSubring
 
 namespace Valuation
 
-variable {Γ : Type _} [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) (x : Kˣ)
+variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) (x : Kˣ)
 
 -- @[simp] -- Porting note: not in simpNF
 theorem mem_unitGroup_iff : x ∈ v.valuationSubring.unitGroup ↔ v x = 1 :=

@@ -2,16 +2,13 @@
 Copyright (c) 2021 Roberto Alvarez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Roberto Alvarez
-
-! This file was ported from Lean 3 source module topology.homotopy.homotopy_group
-! leanprover-community/mathlib commit 4c3e1721c58ef9087bbc2c8c38b540f70eda2e53
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.Algebra.Group.Ext
+
+#align_import topology.homotopy.homotopy_group from "leanprover-community/mathlib"@"4c3e1721c58ef9087bbc2c8c38b540f70eda2e53"
 
 /-!
 # `n`th homotopy group
@@ -56,11 +53,11 @@ scoped[Topology] notation "I^" N => N → I
 namespace Cube
 
 /-- The points in a cube with at least one projection equal to 0 or 1. -/
-def boundary (N : Type _) : Set (I^N) :=
+def boundary (N : Type*) : Set (I^N) :=
   {y | ∃ i, y i = 0 ∨ y i = 1}
 #align cube.boundary Cube.boundary
 
-variable {N : Type _} [DecidableEq N]
+variable {N : Type*} [DecidableEq N]
 
 /-- The forward direction of the homeomorphism
   between the cube $I^N$ and $I × I^{N\setminus\{j\}}$. -/
@@ -85,7 +82,7 @@ theorem insertAt_boundary (i : N) {t₀ : I} {t}
 
 end Cube
 
-variable (N X : Type _) [TopologicalSpace X] (x : X)
+variable (N X : Type*) [TopologicalSpace X] (x : X)
 
 /-- The space of paths with both endpoints equal to a specified point `x : X`. -/
 @[reducible]
@@ -94,7 +91,7 @@ def LoopSpace :=
 #align loop_space LoopSpace
 
 -- mathport name: exprΩ
-scoped[Topology] notation "Ω" => LoopSpace
+scoped[Topology.Homotopy] notation "Ω" => LoopSpace
 
 instance LoopSpace.inhabited : Inhabited (Path x x) :=
   ⟨Path.refl x⟩
@@ -107,7 +104,9 @@ def GenLoop : Set C(I^N, X) :=
   {p | ∀ y ∈ Cube.boundary N, p y = x}
 #align gen_loop GenLoop
 
-scoped[Topology] notation "Ω^" => GenLoop
+scoped[Topology.Homotopy] notation "Ω^" => GenLoop
+
+open Topology.Homotopy
 
 variable {N X x}
 
@@ -393,7 +392,7 @@ end GenLoop
 
 /-- The `n`th homotopy group at `x` defined as the quotient of `Ω^n x` by the
   `GenLoop.Homotopic` relation. -/
-def HomotopyGroup (N X : Type _) [TopologicalSpace X] (x : X) : Type _ :=
+def HomotopyGroup (N X : Type*) [TopologicalSpace X] (x : X) : Type _ :=
   Quotient (GenLoop.Homotopic.setoid N x)
 #align homotopy_group HomotopyGroup
 
@@ -416,7 +415,7 @@ def homotopyGroupEquivFundamentalGroup (i : N) :
 
 /-- Homotopy group of finite index. -/
 @[reducible]
-def HomotopyGroup.Pi (n) (X : Type _) [TopologicalSpace X] (x : X) :=
+def HomotopyGroup.Pi (n) (X : Type*) [TopologicalSpace X] (x : X) :=
   HomotopyGroup (Fin n) _ x
 #align homotopy_group.pi HomotopyGroup.Pi
 
@@ -429,7 +428,7 @@ def genLoopHomeoOfIsEmpty (N x) [IsEmpty N] : Ω^ N X x ≃ₜ X where
   invFun y := ⟨ContinuousMap.const _ y, fun _ ⟨i, _⟩ => isEmptyElim i⟩
   left_inv f := by ext; exact congr_arg f (Subsingleton.elim _ _)
   right_inv _ := rfl
-  continuous_toFun := (ContinuousMap.continuous_eval_const' (0 : N → I)).comp continuous_induced_dom
+  continuous_toFun := (ContinuousMap.continuous_eval_const (0 : N → I)).comp continuous_induced_dom
   continuous_invFun := ContinuousMap.const'.2.subtype_mk _
 #align gen_loop_homeo_of_is_empty genLoopHomeoOfIsEmpty
 

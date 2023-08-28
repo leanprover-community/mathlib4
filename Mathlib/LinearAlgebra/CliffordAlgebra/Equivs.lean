@@ -2,11 +2,6 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.clifford_algebra.equivs
-! leanprover-community/mathlib commit cf7a7252c1989efe5800e0b3cdfeb4228ac6b40e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.DualNumber
 import Mathlib.Algebra.QuaternionBasis
@@ -14,6 +9,8 @@ import Mathlib.Data.Complex.Module
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 import Mathlib.LinearAlgebra.CliffordAlgebra.Star
 import Mathlib.LinearAlgebra.QuadraticForm.Prod
+
+#align_import linear_algebra.clifford_algebra.equivs from "leanprover-community/mathlib"@"cf7a7252c1989efe5800e0b3cdfeb4228ac6b40e"
 
 /-!
 # Other constructions isomorphic to Clifford Algebras
@@ -57,7 +54,7 @@ and vice-versa:
 
 ## Dual numbers
 
-* `CliffordAlgebraDualNumber.equiv`: `R[ε]` is is equivalent as an `R`-algebra to a clifford
+* `CliffordAlgebraDualNumber.equiv`: `R[ε]` is equivalent as an `R`-algebra to a clifford
   algebra over `R` where `Q = 0`.
 
 -/
@@ -72,7 +69,7 @@ namespace CliffordAlgebraRing
 
 open scoped ComplexConjugate
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 @[simp]
 theorem ι_eq_zero : ι (0 : QuadraticForm R Unit) = 0 :=
@@ -114,7 +111,7 @@ theorem involute_eq_id :
 protected def equiv : CliffordAlgebra (0 : QuadraticForm R Unit) ≃ₐ[R] R :=
   AlgEquiv.ofAlgHom
     (CliffordAlgebra.lift (0 : QuadraticForm R Unit) <|
-      ⟨0, fun m : Unit => (MulZeroClass.zero_mul (0 : R)).trans (algebraMap R _).map_zero.symm⟩)
+      ⟨0, fun m : Unit => (zero_mul (0 : R)).trans (algebraMap R _).map_zero.symm⟩)
     (Algebra.ofId R _) (by ext x; exact AlgHom.commutes _ x)
     (by ext : 1; rw [ι_eq_zero, LinearMap.comp_zero, LinearMap.comp_zero])
 #align clifford_algebra_ring.equiv CliffordAlgebraRing.equiv
@@ -257,7 +254,7 @@ open scoped Quaternion
 
 open QuaternionAlgebra
 
-variable {R : Type _} [CommRing R] (c₁ c₂ : R)
+variable {R : Type*} [CommRing R] (c₁ c₂ : R)
 
 /-- `Q c₁ c₂` is a quadratic form over `R × R` such that `CliffordAlgebra (Q c₁ c₂)` is isomorphic
 as an `R`-algebra to `ℍ[R,c₁,c₂]`. -/
@@ -399,7 +396,7 @@ open scoped DualNumber
 
 open DualNumber TrivSqZeroExt
 
-variable {R M : Type _} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 theorem ι_mul_ι (r₁ r₂) : ι (0 : QuadraticForm R R) r₁ * ι (0 : QuadraticForm R R) r₂ = 0 := by
   rw [← mul_one r₁, ← mul_one r₂, ← smul_eq_mul R, ← smul_eq_mul R, LinearMap.map_smul,

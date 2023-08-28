@@ -2,11 +2,6 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module measure_theory.group.measure
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.MeasureTheory.Measure.Regular
@@ -15,6 +10,8 @@ import Mathlib.MeasureTheory.Measure.OpenPos
 import Mathlib.MeasureTheory.Group.Action
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
 import Mathlib.Topology.ContinuousFunction.CocompactMap
+
+#align_import measure_theory.group.measure from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # Measures on Groups
@@ -37,7 +34,7 @@ open scoped NNReal ENNReal Pointwise BigOperators Topology
 
 open Inv Set Function MeasureTheory.Measure Filter
 
-variable {𝕜 G H : Type _} [MeasurableSpace G] [MeasurableSpace H]
+variable {𝕜 G H : Type*} [MeasurableSpace G] [MeasurableSpace H]
 
 namespace MeasureTheory
 
@@ -133,7 +130,7 @@ theorem measurePreserving_mul_left (μ : Measure G) [IsMulLeftInvariant μ] (g :
 #align measure_theory.measure_preserving_add_left MeasureTheory.measurePreserving_add_left
 
 @[to_additive]
-theorem MeasurePreserving.mul_left (μ : Measure G) [IsMulLeftInvariant μ] (g : G) {X : Type _}
+theorem MeasurePreserving.mul_left (μ : Measure G) [IsMulLeftInvariant μ] (g : G) {X : Type*}
     [MeasurableSpace X] {μ' : Measure X} {f : X → G} (hf : MeasurePreserving f μ' μ) :
     MeasurePreserving (fun x => g * f x) μ' μ :=
   (measurePreserving_mul_left μ g).comp hf
@@ -148,7 +145,7 @@ theorem measurePreserving_mul_right (μ : Measure G) [IsMulRightInvariant μ] (g
 #align measure_theory.measure_preserving_add_right MeasureTheory.measurePreserving_add_right
 
 @[to_additive]
-theorem MeasurePreserving.mul_right (μ : Measure G) [IsMulRightInvariant μ] (g : G) {X : Type _}
+theorem MeasurePreserving.mul_right (μ : Measure G) [IsMulRightInvariant μ] (g : G) {X : Type*}
     [MeasurableSpace X] {μ' : Measure X} {f : X → G} (hf : MeasurePreserving f μ' μ) :
     MeasurePreserving (fun x => f x * g) μ' μ :=
   (measurePreserving_mul_right μ g).comp hf
@@ -170,7 +167,7 @@ instance IsMulRightInvariant.toSMulInvariantMeasure_op [μ.IsMulRightInvariant] 
 #align measure_theory.is_mul_right_invariant.to_vadd_invariant_measure_op MeasureTheory.IsMulRightInvariant.toVAddInvariantMeasure_op
 
 @[to_additive]
-instance Subgroup.smulInvariantMeasure {G α : Type _} [Group G] [MulAction G α] [MeasurableSpace α]
+instance Subgroup.smulInvariantMeasure {G α : Type*} [Group G] [MulAction G α] [MeasurableSpace α]
     {μ : Measure α} [SMulInvariantMeasure G α μ] (H : Subgroup G) : SMulInvariantMeasure H α μ :=
   ⟨fun y s hs => by convert SMulInvariantMeasure.measure_preimage_smul (μ := μ) (y : G) hs⟩
 #align measure_theory.subgroup.smul_invariant_measure MeasureTheory.Subgroup.smulInvariantMeasure
@@ -203,7 +200,7 @@ theorem forall_measure_preimage_mul_right_iff (μ : Measure G) :
 #align measure_theory.forall_measure_preimage_add_right_iff MeasureTheory.forall_measure_preimage_add_right_iff
 
 @[to_additive]
-instance Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] [SigmaFinite μ] {H : Type _}
+instance Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] [SigmaFinite μ] {H : Type*}
     [Mul H] {mH : MeasurableSpace H} {ν : Measure H} [MeasurableMul H] [IsMulLeftInvariant ν]
     [SigmaFinite ν] : IsMulLeftInvariant (μ.prod ν) := by
   constructor
@@ -217,7 +214,7 @@ instance Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] [SigmaFinit
 #align measure_theory.measure.prod.measure.is_add_left_invariant MeasureTheory.Measure.prod.instIsAddLeftInvariant
 
 @[to_additive]
-instance Measure.prod.instIsMulRightInvariant [IsMulRightInvariant μ] [SigmaFinite μ] {H : Type _}
+instance Measure.prod.instIsMulRightInvariant [IsMulRightInvariant μ] [SigmaFinite μ] {H : Type*}
     [Mul H] {mH : MeasurableSpace H} {ν : Measure H} [MeasurableMul H] [IsMulRightInvariant ν]
     [SigmaFinite ν] : IsMulRightInvariant (μ.prod ν) := by
   constructor
@@ -231,7 +228,7 @@ instance Measure.prod.instIsMulRightInvariant [IsMulRightInvariant μ] [SigmaFin
 #align measure_theory.measure.prod.measure.is_add_right_invariant MeasureTheory.Measure.prod.instIsMulRightInvariant
 
 @[to_additive]
-theorem isMulLeftInvariant_map {H : Type _} [MeasurableSpace H] [Mul H] [MeasurableMul H]
+theorem isMulLeftInvariant_map {H : Type*} [MeasurableSpace H] [Mul H] [MeasurableMul H]
     [IsMulLeftInvariant μ] (f : G →ₙ* H) (hf : Measurable f) (h_surj : Surjective f) :
     IsMulLeftInvariant (Measure.map f μ) := by
   refine' ⟨fun h => _⟩
@@ -615,15 +612,13 @@ theorem measure_univ_of_isMulLeftInvariant [LocallyCompactSpace G] [NoncompactSp
     find `g = g (L)` such that `L` is disjoint from `g • K`. Iterating this, one finds
     infinitely many translates of `K` which are disjoint from each other. As they all have the
     same positive mass, it follows that the space has infinite measure. -/
-  obtain ⟨K, hK, Kclosed, Kint⟩ : ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ (1 : G) ∈ interior K := by
-    rcases local_isCompact_isClosed_nhds_of_group (isOpen_univ.mem_nhds (mem_univ (1 : G))) with
-      ⟨K, hK⟩
-    exact ⟨K, hK.1, hK.2.1, hK.2.2.2⟩
-  have K_pos : 0 < μ K := measure_pos_of_nonempty_interior _ ⟨_, Kint⟩
+  obtain ⟨K, hK, Kclosed, K1⟩ : ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ∈ 𝓝 1 :=
+    exists_isCompact_isClosed_nhds_one G
+  have K_pos : 0 < μ K := measure_pos_of_nonempty_interior _ ⟨_, mem_interior_iff_mem_nhds.2 K1⟩
   have A : ∀ L : Set G, IsCompact L → ∃ g : G, Disjoint L (g • K) := fun L hL =>
     exists_disjoint_smul_of_isCompact hL hK
   choose! g hg using A
-  set L : ℕ → Set G := fun n => ((fun T => T ∪ g T • K)^[n]) K
+  set L : ℕ → Set G := fun n => (fun T => T ∪ g T • K)^[n] K
   have Lcompact : ∀ n, IsCompact (L n) := by
     intro n
     induction' n with n IH
@@ -683,7 +678,7 @@ namespace Measure
 
 /-- A measure on an additive group is an additive Haar measure if it is left-invariant, and gives
 finite mass to compact sets and positive mass to open sets. -/
-class IsAddHaarMeasure {G : Type _} [AddGroup G] [TopologicalSpace G] [MeasurableSpace G]
+class IsAddHaarMeasure {G : Type*} [AddGroup G] [TopologicalSpace G] [MeasurableSpace G]
   (μ : Measure G) extends IsFiniteMeasureOnCompacts μ, IsAddLeftInvariant μ, IsOpenPosMeasure μ :
   Prop
 #align measure_theory.measure.is_add_haar_measure MeasureTheory.Measure.IsAddHaarMeasure
@@ -691,7 +686,7 @@ class IsAddHaarMeasure {G : Type _} [AddGroup G] [TopologicalSpace G] [Measurabl
 /-- A measure on a group is a Haar measure if it is left-invariant, and gives finite mass to compact
 sets and positive mass to open sets. -/
 @[to_additive existing]
-class IsHaarMeasure {G : Type _} [Group G] [TopologicalSpace G] [MeasurableSpace G]
+class IsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] [MeasurableSpace G]
   (μ : Measure G) extends IsFiniteMeasureOnCompacts μ, IsMulLeftInvariant μ, IsOpenPosMeasure μ :
   Prop
 #align measure_theory.measure.is_haar_measure MeasureTheory.Measure.IsHaarMeasure
@@ -707,7 +702,7 @@ as the fact that a measure which is finite on compacts is locally finite is not 
 instance, to avoid an instance loop.
 
 See Note [lower instance priority]"]
-instance (priority := 100) isLocallyFiniteMeasure_of_isHaarMeasure {G : Type _} [Group G]
+instance (priority := 100) isLocallyFiniteMeasure_of_isHaarMeasure {G : Type*} [Group G]
     [MeasurableSpace G] [TopologicalSpace G] [LocallyCompactSpace G] (μ : Measure G)
     [IsHaarMeasure μ] : IsLocallyFiniteMeasure μ :=
   isLocallyFiniteMeasure_of_isFiniteMeasureOnCompacts
@@ -751,7 +746,7 @@ a Haar measure. See also `MulEquiv.isHaarMeasure_map`. -/
 @[to_additive
 "The image of an additive Haar measure under a continuous surjective proper additive group
 homomorphism is again an additive Haar measure. See also `AddEquiv.isAddHaarMeasure_map`."]
-theorem isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type _} [Group H]
+theorem isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*} [Group H]
     [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H] [T2Space H] [TopologicalGroup H]
     (f : G →* H) (hf : Continuous f) (h_surj : Surjective f)
     (h_prop : Tendsto f (cocompact G) (cocompact H)) : IsHaarMeasure (Measure.map f μ) :=
@@ -766,7 +761,7 @@ theorem isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type _} [Grou
 
 /-- A convenience wrapper for `MeasureTheory.Measure.isHaarMeasure_map`. -/
 @[to_additive "A convenience wrapper for `MeasureTheory.Measure.isAddHaarMeasure_map`."]
-nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type _}
+nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*}
     [Group H] [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H] [T2Space H]
     [TopologicalGroup H] (e : G ≃* H) (he : Continuous e) (hesymm : Continuous e.symm) :
     IsHaarMeasure (Measure.map e μ) :=
@@ -791,8 +786,8 @@ instance (priority := 100) IsHaarMeasure.sigmaFinite [SigmaCompactSpace G] : Sig
 #align measure_theory.measure.is_add_haar_measure.sigma_finite MeasureTheory.Measure.IsAddHaarMeasure.sigmaFinite
 
 @[to_additive]
-instance prod.instIsHaarMeasure {G : Type _} [Group G] [TopologicalSpace G] {_ : MeasurableSpace G}
-    {H : Type _} [Group H] [TopologicalSpace H] {_ : MeasurableSpace H} (μ : Measure G)
+instance prod.instIsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] {_ : MeasurableSpace G}
+    {H : Type*} [Group H] [TopologicalSpace H] {_ : MeasurableSpace H} (μ : Measure G)
     (ν : Measure H) [IsHaarMeasure μ] [IsHaarMeasure ν] [SigmaFinite μ] [SigmaFinite ν]
     [MeasurableMul G] [MeasurableMul H] : IsHaarMeasure (μ.prod ν) where
 #align measure_theory.measure.prod.is_haar_measure MeasureTheory.Measure.prod.instIsHaarMeasure
@@ -812,32 +807,13 @@ real vector space has no atom."]
 instance (priority := 100) IsHaarMeasure.noAtoms [TopologicalGroup G] [BorelSpace G] [T1Space G]
     [LocallyCompactSpace G] [(𝓝[≠] (1 : G)).NeBot] (μ : Measure G) [μ.IsHaarMeasure] :
     NoAtoms μ := by
-  suffices H : μ {(1 : G)} ≤ 0; · constructor; simp [le_bot_iff.1 H]
-  obtain ⟨K, K_compact, K_int⟩ : ∃ K : Set G, IsCompact K ∧ (1 : G) ∈ interior K := by
-    rcases exists_compact_subset isOpen_univ (mem_univ (1 : G)) with ⟨K, hK⟩
-    exact ⟨K, hK.1, hK.2.1⟩
-  have K_inf : Set.Infinite K := infinite_of_mem_nhds (1 : G) (mem_interior_iff_mem_nhds.1 K_int)
-  have μKlt : μ K ≠ ∞ := K_compact.measure_lt_top.ne
-  have I : ∀ n : ℕ, μ {(1 : G)} ≤ μ K / n := by
-    intro n
-    obtain ⟨t, tK, tn⟩ : ∃ t : Finset G, ↑t ⊆ K ∧ t.card = n := K_inf.exists_subset_card_eq n
-    have A : μ t ≤ μ K := measure_mono tK
-    have B : μ t = n * μ {(1 : G)} := by
-      rw [← biUnion_of_singleton (t : Set G)]
-      change μ (⋃ x ∈ t, {x}) = n * μ {1}
-      rw [@measure_biUnion_finset G G _ μ t fun i => {i}]
-      · simp only [tn, Finset.sum_const, nsmul_eq_mul, haar_singleton]
-      · intro x _ y _ xy
-        simp only [onFun, xy.symm, mem_singleton_iff, not_false_iff, disjoint_singleton_right]
-      · intro b _; exact measurableSet_singleton b
-    rw [B] at A
-    rwa [ENNReal.le_div_iff_mul_le _ (Or.inr μKlt), mul_comm]
-    right
-    apply (measure_pos_of_nonempty_interior μ ⟨_, K_int⟩).ne'
-  have J : Tendsto (fun n : ℕ => μ K / n) atTop (𝓝 (μ K / ∞)) :=
-    ENNReal.Tendsto.const_div ENNReal.tendsto_nat_nhds_top (Or.inr μKlt)
-  simp only [ENNReal.div_top] at J
-  exact ge_of_tendsto' J I
+  cases eq_or_ne (μ 1) 0 with
+  | inl h => constructor; simpa
+  | inr h =>
+    obtain ⟨K, K_compact, K_nhds⟩ : ∃ K : Set G, IsCompact K ∧ K ∈ 𝓝 1 := exists_compact_mem_nhds 1
+    have K_inf : Set.Infinite K := infinite_of_mem_nhds (1 : G) K_nhds
+    exact absurd (K_inf.meas_eq_top ⟨_, h, fun x _ ↦ (haar_singleton _ _).ge⟩)
+      K_compact.measure_lt_top.ne
 #align measure_theory.measure.is_haar_measure.has_no_atoms MeasureTheory.Measure.IsHaarMeasure.noAtoms
 #align measure_theory.measure.is_add_haar_measure.has_no_atoms MeasureTheory.Measure.IsAddHaarMeasure.noAtoms
 

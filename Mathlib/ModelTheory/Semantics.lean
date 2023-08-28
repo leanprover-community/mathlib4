@@ -2,14 +2,11 @@
 Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
-
-! This file was ported from Lean 3 source module model_theory.semantics
-! leanprover-community/mathlib commit d565b3df44619c1498326936be16f1a935df0728
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Basic
 import Mathlib.ModelTheory.Syntax
+
+#align_import model_theory.semantics from "leanprover-community/mathlib"@"d565b3df44619c1498326936be16f1a935df0728"
 
 /-!
 # Basics on First-Order Semantics
@@ -60,7 +57,7 @@ namespace Language
 
 variable {L : Language.{u, v}} {L' : Language}
 
-variable {M : Type w} {N P : Type _} [L.Structure M] [L.Structure N] [L.Structure P]
+variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
 
 variable {α : Type u'} {β : Type v'}
 
@@ -100,7 +97,7 @@ theorem realize_relabel {t : L.Term α} {g : α → β} {v : β → M} :
 theorem realize_liftAt {n n' m : ℕ} {t : L.Term (Sum α (Fin n))} {v : Sum α (Fin (n + n')) → M} :
     (t.liftAt n' m).realize v =
       t.realize (v ∘ Sum.map id fun i : Fin _ =>
-        if ↑i < m then Fin.castAdd n' i else Fin.addNat n' i) :=
+        if ↑i < m then Fin.castAdd n' i else Fin.addNat i n') :=
   realize_relabel
 #align first_order.language.term.realize_lift_at FirstOrder.Language.Term.realize_liftAt
 
@@ -148,7 +145,7 @@ theorem realize_restrictVar [DecidableEq α] {t : L.Term α} {s : Set α} (h : �
 #align first_order.language.term.realize_restrict_var FirstOrder.Language.Term.realize_restrictVar
 
 @[simp]
-theorem realize_restrictVarLeft [DecidableEq α] {γ : Type _} {t : L.Term (Sum α γ)} {s : Set α}
+theorem realize_restrictVarLeft [DecidableEq α] {γ : Type*} {t : L.Term (Sum α γ)} {s : Set α}
     (h : ↑t.varFinsetLeft ⊆ s) {v : α → M} {xs : γ → M} :
     (t.restrictVarLeft (Set.inclusion h)).realize (Sum.elim (v ∘ (↑)) xs) =
       t.realize (Sum.elim v xs) := by
@@ -185,8 +182,8 @@ theorem realize_varsToConstants [L[[α]].Structure M] [(lhomWithConstants L α).
   induction' t with ab n f ts ih
   · cases' ab with a b
     --Porting note: both cases were `simp [Language.con]`
-    . simp [Language.con, realize, constantMap, funMap_eq_coe_constants]
-    . simp [realize, constantMap]
+    · simp [Language.con, realize, constantMap, funMap_eq_coe_constants]
+    · simp [realize, constantMap]
   · simp only [realize, constantsOn, mk₂_Functions, ih]
     --Porting note: below lemma does not work with simp for some reason
     rw [withConstants_funMap_sum_inl]
@@ -335,8 +332,7 @@ theorem realize_foldr_sup (l : List (L.BoundedFormula α n)) (v : α → M) (xs 
     (l.foldr (· ⊔ ·) ⊥).Realize v xs ↔ ∃ φ ∈ l, BoundedFormula.Realize φ v xs := by
   induction' l with φ l ih
   · simp
-  ·
-    simp_rw [List.foldr_cons, realize_sup, ih, exists_prop, List.mem_cons, or_and_right, exists_or,
+  · simp_rw [List.foldr_cons, realize_sup, ih, List.mem_cons, or_and_right, exists_or,
       exists_eq_left]
 #align first_order.language.bounded_formula.realize_foldr_sup FirstOrder.Language.BoundedFormula.realize_foldr_sup
 
@@ -356,11 +352,11 @@ theorem realize_iff : (φ.iff ψ).Realize v xs ↔ (φ.Realize v xs ↔ ψ.Reali
   simp only [BoundedFormula.iff, realize_inf, realize_imp, and_imp, ← iff_def]
 #align first_order.language.bounded_formula.realize_iff FirstOrder.Language.BoundedFormula.realize_iff
 
-theorem realize_castLe_of_eq {m n : ℕ} (h : m = n) {h' : m ≤ n} {φ : L.BoundedFormula α m}
-    {v : α → M} {xs : Fin n → M} : (φ.castLE h').Realize v xs ↔ φ.Realize v (xs ∘ Fin.cast h) := by
+theorem realize_castLE_of_eq {m n : ℕ} (h : m = n) {h' : m ≤ n} {φ : L.BoundedFormula α m}
+    {v : α → M} {xs : Fin n → M} : (φ.castLE h').Realize v xs ↔ φ.Realize v (xs ∘ castIso h) := by
   subst h
-  simp only [castLE_rfl, cast_refl, OrderIso.coe_refl, Function.comp.right_id]
-#align first_order.language.bounded_formula.realize_cast_le_of_eq FirstOrder.Language.BoundedFormula.realize_castLe_of_eq
+  simp only [castLE_rfl, castIso_refl, OrderIso.coe_refl, Function.comp.right_id]
+#align first_order.language.bounded_formula.realize_cast_le_of_eq FirstOrder.Language.BoundedFormula.realize_castLE_of_eq
 
 theorem realize_mapTermRel_id [L'.Structure M]
     {ft : ∀ n, L.Term (Sum α (Fin n)) → L'.Term (Sum β (Fin n))}
@@ -408,7 +404,7 @@ theorem realize_relabel {m n : ℕ} {φ : L.BoundedFormula α n} {g : α → Sum
 theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M} {xs : Fin (n + n') → M}
     (hmn : m + n' ≤ n + 1) :
     (φ.liftAt n' m).Realize v xs ↔
-      φ.Realize v (xs ∘ fun i => if ↑i < m then Fin.castAdd n' i else Fin.addNat n' i) := by
+      φ.Realize v (xs ∘ fun i => if ↑i < m then Fin.castAdd n' i else Fin.addNat i n') := by
   rw [liftAt]
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 k _ ih3
   · simp [mapTermRel, Realize]
@@ -416,10 +412,10 @@ theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M
   · simp [mapTermRel, Realize, realize_rel, realize_liftAt, Sum.elim_comp_map]
   · simp only [mapTermRel, Realize, ih1 hmn, ih2 hmn]
   · have h : k + 1 + n' = k + n' + 1 := by rw [add_assoc, add_comm 1 n', ← add_assoc]
-    simp only [mapTermRel, Realize, realize_castLe_of_eq h, ih3 (hmn.trans k.succ.le_succ)]
+    simp only [mapTermRel, Realize, realize_castLE_of_eq h, ih3 (hmn.trans k.succ.le_succ)]
     refine' forall_congr' fun x => iff_eq_eq.mpr (congr rfl (funext (Fin.lastCases _ fun i => _)))
     · simp only [Function.comp_apply, val_last, snoc_last]
-      by_cases k < m
+      by_cases h : k < m
       · rw [if_pos h]
         refine' (congr rfl (ext _)).trans (snoc_last _ _)
         simp only [coe_orderIso_apply, coe_castAdd, val_last, self_eq_add_right]
@@ -557,9 +553,9 @@ theorem realize_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) 
 theorem realize_toPrenex (φ : L.BoundedFormula α n) {v : α → M} :
     ∀ {xs : Fin n → M}, φ.toPrenex.Realize v xs ↔ φ.Realize v xs := by
   induction' φ with _ _ _ _ _ _ _ _ _ f1 f2 h1 h2 _ _ h
-  . exact Iff.rfl
-  . exact Iff.rfl
-  . exact Iff.rfl
+  · exact Iff.rfl
+  · exact Iff.rfl
+  · exact Iff.rfl
   · intros
     rw [toPrenex, realize_toPrenexImp f1.toPrenex_isPrenex f2.toPrenex_isPrenex, realize_imp,
       realize_imp, h1, h2]
@@ -680,7 +676,7 @@ theorem realize_relabel {φ : L.Formula α} {g : α → β} {v : β → M} :
 theorem realize_relabel_sum_inr (φ : L.Formula (Fin n)) {v : Empty → M} {x : Fin n → M} :
     (BoundedFormula.relabel Sum.inr φ).Realize v x ↔ φ.Realize x := by
   rw [BoundedFormula.realize_relabel, Formula.Realize, Sum.elim_comp_inr, Fin.castAdd_zero,
-    cast_refl, OrderIso.coe_refl, Function.comp.right_id,
+    cast_refl, Function.comp.right_id,
     Subsingleton.elim (x ∘ (natAdd n : Fin 0 → Fin n)) default]
 #align first_order.language.formula.realize_relabel_sum_inr FirstOrder.Language.Formula.realize_relabel_sum_inr
 
@@ -720,10 +716,9 @@ nonrec def Sentence.Realize (φ : L.Sentence) : Prop :=
   φ.Realize (default : _ → M)
 #align first_order.language.sentence.realize FirstOrder.Language.Sentence.Realize
 
+-- input using \|= or \vDash, but not using \models
 @[inherit_doc Sentence.Realize]
-infixl:51
-  " ⊨ " =>-- input using \|= or \vDash, but not using \models
-  Sentence.Realize
+infixl:51 " ⊨ " => Sentence.Realize
 
 @[simp]
 theorem Sentence.realize_not {φ : L.Sentence} : M ⊨ φ.not ↔ ¬M ⊨ φ :=
@@ -741,8 +736,8 @@ theorem realize_equivSentence_symm_con [L[[α]].Structure M]
   refine' _root_.trans _ BoundedFormula.realize_constantsVarsEquiv
   rw [iff_iff_eq]
   congr with (_ | a)
-  . simp
-  . cases a
+  · simp
+  · cases a
 #align first_order.language.formula.realize_equiv_sentence_symm_con FirstOrder.Language.Formula.realize_equivSentence_symm_con
 
 @[simp]
@@ -805,10 +800,9 @@ class Theory.Model (T : L.Theory) : Prop where
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Theory.model FirstOrder.Language.Theory.Model
 
+-- input using \|= or \vDash, but not using \models
 @[inherit_doc Theory.Model]
-infixl:51
-  " ⊨ " =>-- input using \|= or \vDash, but not using \models
-  Theory.Model
+infixl:51 " ⊨ " => Theory.Model
 
 variable {M} (T : L.Theory)
 
@@ -919,8 +913,7 @@ theorem realize_toFormula (φ : L.BoundedFormula α n) (v : Sum α (Fin n) → M
   · rfl
   · simp [BoundedFormula.Realize]
   · simp [BoundedFormula.Realize]
-  ·
-    rw [toFormula, Formula.Realize, realize_imp, ← Formula.Realize, ih1, ← Formula.Realize, ih2,
+  · rw [toFormula, Formula.Realize, realize_imp, ← Formula.Realize, ih1, ← Formula.Realize, ih2,
       realize_imp]
   · rw [toFormula, Formula.Realize, realize_all, realize_all]
     refine' forall_congr' fun a => _
@@ -1036,7 +1029,7 @@ section Cardinality
 
 variable (L)
 @[simp]
-theorem Sentence.realize_cardGe (n) : M ⊨ Sentence.cardGe L n ↔ ↑n ≤ (#M) := by
+theorem Sentence.realize_cardGe (n) : M ⊨ Sentence.cardGe L n ↔ ↑n ≤ #M := by
   rw [← lift_mk_fin, ← lift_le.{0}, lift_lift, lift_mk_le, Sentence.cardGe, Sentence.Realize,
     BoundedFormula.realize_exs]
   simp_rw [BoundedFormula.realize_foldr_inf]
@@ -1089,7 +1082,7 @@ theorem model_distinctConstantsTheory {M : Type w} [L[[α]].Structure M] (s : Se
 #align first_order.language.model_distinct_constants_theory FirstOrder.Language.model_distinctConstantsTheory
 
 theorem card_le_of_model_distinctConstantsTheory (s : Set α) (M : Type w) [L[[α]].Structure M]
-    [h : M ⊨ L.distinctConstantsTheory s] : Cardinal.lift.{w} (#s) ≤ Cardinal.lift.{u'} (#M) :=
+    [h : M ⊨ L.distinctConstantsTheory s] : Cardinal.lift.{w} #s ≤ Cardinal.lift.{u'} #M :=
   lift_mk_le'.2 ⟨⟨_, Set.injOn_iff_injective.1 ((L.model_distinctConstantsTheory s).1 h)⟩⟩
 #align first_order.language.card_le_of_model_distinct_constants_theory FirstOrder.Language.card_le_of_model_distinctConstantsTheory
 

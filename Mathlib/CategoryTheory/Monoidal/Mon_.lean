@@ -2,17 +2,14 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.monoidal.Mon_
-! leanprover-community/mathlib commit a836c6dba9bd1ee2a0cdc9af0006a596f243031c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided
 import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.Algebra.PUnitInstances
+
+#align_import category_theory.monoidal.Mon_ from "leanprover-community/mathlib"@"a836c6dba9bd1ee2a0cdc9af0006a596f243031c"
 
 /-!
 # The category of monoids in a monoidal category.
@@ -478,15 +475,15 @@ theorem mul_rightUnitor {M : Mon_ C} :
   simp only [Category.assoc, Category.id_comp]
 #align Mon_.mul_right_unitor Mon_.mul_rightUnitor
 
-instance monMonoidal : MonoidalCategory (Mon_ C) where
-  tensorObj M N :=
+instance monMonoidal : MonoidalCategory (Mon_ C) := .ofTensorHom
+  (tensorObj := fun M N ↦
     { X := M.X ⊗ N.X
       one := (λ_ (𝟙_ C)).inv ≫ (M.one ⊗ N.one)
       mul := tensor_μ C (M.X, N.X) (M.X, N.X) ≫ (M.mul ⊗ N.mul)
       one_mul := Mon_tensor_one_mul M N
       mul_one := Mon_tensor_mul_one M N
-      mul_assoc := Mon_tensor_mul_assoc M N }
-  tensorHom f g :=
+      mul_assoc := Mon_tensor_mul_assoc M N })
+  (tensorHom := fun f g ↦
     { hom := f.hom ⊗ g.hom
       one_hom := by
         dsimp
@@ -495,18 +492,18 @@ instance monMonoidal : MonoidalCategory (Mon_ C) where
         dsimp
         slice_rhs 1 2 => rw [tensor_μ_natural]
         slice_lhs 2 3 => rw [← tensor_comp, Hom.mul_hom f, Hom.mul_hom g, tensor_comp]
-        simp only [Category.assoc] }
-  tensor_id := by intros; ext; apply tensor_id
-  tensor_comp := by intros; ext; apply tensor_comp
-  tensorUnit' := trivial C
-  associator M N P := isoOfIso (α_ M.X N.X P.X) one_associator mul_associator
-  associator_naturality := by intros; ext; dsimp; apply associator_naturality
-  leftUnitor M := isoOfIso (λ_ M.X) one_leftUnitor mul_leftUnitor
-  leftUnitor_naturality := by intros; ext; dsimp; apply leftUnitor_naturality
-  rightUnitor M := isoOfIso (ρ_ M.X) one_rightUnitor mul_rightUnitor
-  rightUnitor_naturality := by intros; ext; dsimp; apply rightUnitor_naturality
-  pentagon := by intros; ext; dsimp; apply pentagon
-  triangle := by intros; ext; dsimp; apply triangle
+        simp only [Category.assoc] })
+  (tensor_id := by intros; ext; apply tensor_id)
+  (tensor_comp := by intros; ext; apply tensor_comp)
+  (tensorUnit' := trivial C)
+  (associator := fun M N P ↦ isoOfIso (α_ M.X N.X P.X) one_associator mul_associator)
+  (associator_naturality := by intros; ext; dsimp; apply associator_naturality)
+  (leftUnitor := fun M ↦ isoOfIso (λ_ M.X) one_leftUnitor mul_leftUnitor)
+  (leftUnitor_naturality := by intros; ext; dsimp; apply leftUnitor_naturality)
+  (rightUnitor := fun M ↦ isoOfIso (ρ_ M.X) one_rightUnitor mul_rightUnitor)
+  (rightUnitor_naturality := by intros; ext; dsimp; apply rightUnitor_naturality)
+  (pentagon := by intros; ext; dsimp; apply pentagon)
+  (triangle := by intros; ext; dsimp; apply triangle)
 #align Mon_.Mon_monoidal Mon_.monMonoidal
 
 end Mon_

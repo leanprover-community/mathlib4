@@ -2,16 +2,13 @@
 Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison
-
-! This file was ported from Lean 3 source module set_theory.game.pgame
-! leanprover-community/mathlib commit dc9e5ba64653e017743ba5d2c28e42f9f486bf99
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Logic.Relation
 import Mathlib.Order.GameAdd
+
+#align_import set_theory.game.pgame from "leanprover-community/mathlib"@"dc9e5ba64653e017743ba5d2c28e42f9f486bf99"
 
 /-!
 # Combinatorial (pre-)games.
@@ -98,9 +95,11 @@ An interested reader may like to formalise some of the material from
 * [André Joyal, *Remarques sur la théorie des jeux à deux personnes*][joyal1997]
 -/
 
+set_option autoImplicit true
+
 open Function Relation
 
--- This is file, we'd like to be able to use multi-character auto-implicits.
+-- We'd like to be able to use multi-character auto-implicits in this file.
 set_option relaxedAutoImplicit true
 
 /-! ### Pre-game moves -/
@@ -214,7 +213,7 @@ theorem ofLists_moveRight' {L R : List PGame} (i : (ofLists L R).RightMoves) :
 
 Both this and `PGame.recOn` describe Conway induction on games. -/
 @[elab_as_elim]
-def moveRecOn {C : PGame → Sort _} (x : PGame)
+def moveRecOn {C : PGame → Sort*} (x : PGame)
     (IH : ∀ y : PGame, (∀ i, C (y.moveLeft i)) → (∀ j, C (y.moveRight j)) → C y) : C x :=
   x.recOn <| fun yl yr yL yR => IH (mk yl yr yL yR)
 #align pgame.move_rec_on PGame.moveRecOn
@@ -252,7 +251,7 @@ def Subsequent : PGame → PGame → Prop :=
 #align pgame.subsequent PGame.Subsequent
 
 instance : IsTrans _ Subsequent :=
-  Relation.instIsTransTransGen
+  inferInstanceAs <| IsTrans _ (TransGen _)
 
 @[trans]
 theorem Subsequent.trans {x y z} : Subsequent x y → Subsequent y z → Subsequent x z :=
@@ -357,7 +356,7 @@ instance : Inhabited PGame :=
   ⟨0⟩
 
 /-- The pre-game `One` is defined by `1 = { 0 | }`. -/
-instance : One PGame :=
+instance instOnePGame : One PGame :=
   ⟨⟨PUnit, PEmpty, fun _ => 0, PEmpty.elim⟩⟩
 
 @[simp]
@@ -472,14 +471,14 @@ theorem moveLeft_lf_of_le {x y : PGame} (h : x ≤ y) (i) : x.moveLeft i ⧏ y :
   (le_iff_forall_lf.1 h).1 i
 #align pgame.move_left_lf_of_le PGame.moveLeft_lf_of_le
 
-alias moveLeft_lf_of_le ← _root_.LE.le.moveLeft_lf
+alias _root_.LE.le.moveLeft_lf := moveLeft_lf_of_le
 #align has_le.le.move_left_lf LE.le.moveLeft_lf
 
 theorem lf_moveRight_of_le {x y : PGame} (h : x ≤ y) (j) : x ⧏ y.moveRight j :=
   (le_iff_forall_lf.1 h).2 j
 #align pgame.lf_move_right_of_le PGame.lf_moveRight_of_le
 
-alias lf_moveRight_of_le ← _root_.LE.le.lf_moveRight
+alias _root_.LE.le.lf_moveRight := lf_moveRight_of_le
 #align has_le.le.lf_move_right LE.le.lf_moveRight
 
 theorem lf_of_moveRight_le {x y : PGame} {j} (h : x.moveRight j ≤ y) : x ⧏ y :=
@@ -548,7 +547,7 @@ theorem lf_of_lt {x y : PGame} (h : x < y) : x ⧏ y :=
   h.2
 #align pgame.lf_of_lt PGame.lf_of_lt
 
-alias lf_of_lt ← _root_.LT.lt.lf
+alias _root_.LT.lt.lf := lf_of_lt
 #align has_lt.lt.lf LT.lt.lf
 
 theorem lf_irrefl (x : PGame) : ¬x ⧏ x :=
@@ -576,10 +575,10 @@ theorem lf_of_lf_of_le {x y z : PGame} (h₁ : x ⧏ y) (h₂ : y ≤ z) : x ⧏
 -- Porting note: added
 instance : Trans (· ⧏ ·) (· ≤ ·) (· ⧏ ·) := ⟨lf_of_lf_of_le⟩
 
-alias lf_of_le_of_lf ← _root_.LE.le.trans_lf
+alias _root_.LE.le.trans_lf := lf_of_le_of_lf
 #align has_le.le.trans_lf LE.le.trans_lf
 
-alias lf_of_lf_of_le ← Lf.trans_le
+alias Lf.trans_le := lf_of_lf_of_le
 #align pgame.lf.trans_le PGame.Lf.trans_le
 
 @[trans]
@@ -592,10 +591,10 @@ theorem lf_of_lf_of_lt {x y z : PGame} (h₁ : x ⧏ y) (h₂ : y < z) : x ⧏ z
   h₁.trans_le h₂.le
 #align pgame.lf_of_lf_of_lt PGame.lf_of_lf_of_lt
 
-alias lf_of_lt_of_lf ← _root_.LT.lt.trans_lf
+alias _root_.LT.lt.trans_lf := lf_of_lt_of_lf
 #align has_lt.lt.trans_lf LT.lt.trans_lf
 
-alias lf_of_lf_of_lt ← Lf.trans_lt
+alias Lf.trans_lt := lf_of_lf_of_lt
 #align pgame.lf.trans_lt PGame.Lf.trans_lt
 
 theorem moveLeft_lf {x : PGame} : ∀ i, x.moveLeft i ⧏ x :=
@@ -738,7 +737,7 @@ def Equiv (x y : PGame) : Prop :=
 #align pgame.equiv PGame.Equiv
 
 -- Porting note: deleted the scoped notation due to notation overloading with the setoid
--- instance and this causes the the PGame.equiv docstring to not show up on hover.
+-- instance and this causes the PGame.equiv docstring to not show up on hover.
 
 instance : IsEquiv _ PGame.Equiv where
   refl _ := ⟨le_rfl, le_rfl⟩
@@ -790,10 +789,22 @@ theorem le_of_le_of_equiv {x y z : PGame} (h₁ : x ≤ y) (h₂ : y ≈ z) : x 
   h₁.trans h₂.1
 #align pgame.le_of_le_of_equiv PGame.le_of_le_of_equiv
 
+instance : Trans
+    ((· ≤ ·) : PGame → PGame → Prop)
+    ((· ≈ ·) : PGame → PGame → Prop)
+    ((· ≤ ·) : PGame → PGame → Prop) where
+  trans := le_of_le_of_equiv
+
 @[trans]
 theorem le_of_equiv_of_le {x y z : PGame} (h₁ : x ≈ y) : y ≤ z → x ≤ z :=
   h₁.1.trans
 #align pgame.le_of_equiv_of_le PGame.le_of_equiv_of_le
+
+instance : Trans
+    ((· ≈ ·) : PGame → PGame → Prop)
+    ((· ≤ ·) : PGame → PGame → Prop)
+    ((· ≤ ·) : PGame → PGame → Prop) where
+  trans := le_of_equiv_of_le
 
 theorem Lf.not_equiv {x y : PGame} (h : x ⧏ y) : ¬(x ≈ y) := fun h' => h.not_ge h'.2
 #align pgame.lf.not_equiv PGame.Lf.not_equiv
@@ -855,6 +866,12 @@ theorem lt_of_lt_of_equiv {x y z : PGame} (h₁ : x < y) (h₂ : y ≈ z) : x < 
 theorem lt_of_equiv_of_lt {x y z : PGame} (h₁ : x ≈ y) : y < z → x < z :=
   h₁.1.trans_lt
 #align pgame.lt_of_equiv_of_lt PGame.lt_of_equiv_of_lt
+
+instance : Trans
+    ((· ≈ ·) : PGame → PGame → Prop)
+    ((· < ·) : PGame → PGame → Prop)
+    ((· < ·) : PGame → PGame → Prop) where
+  trans := lt_of_equiv_of_lt
 
 theorem lt_congr_imp {x₁ y₁ x₂ y₂ : PGame} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) (h : x₁ < y₁) : x₂ < y₂ :=
   hx.2.trans_lt (h.trans_le hy.1)
@@ -940,7 +957,7 @@ theorem lf_of_fuzzy {x y : PGame} (h : x ‖ y) : x ⧏ y :=
   lf_iff_lt_or_fuzzy.2 (Or.inr h)
 #align pgame.lf_of_fuzzy PGame.lf_of_fuzzy
 
-alias lf_of_fuzzy ← Fuzzy.lf
+alias Fuzzy.lf := lf_of_fuzzy
 #align pgame.fuzzy.lf PGame.Fuzzy.lf
 
 theorem lt_or_fuzzy_of_lf {x y : PGame} : x ⧏ y → x < y ∨ x ‖ y :=

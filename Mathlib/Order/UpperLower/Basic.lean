@@ -2,15 +2,12 @@
 Copyright (c) 2022 Yaël Dillies, Sara Rousta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
-
-! This file was ported from Lean 3 source module order.upper_lower.basic
-! leanprover-community/mathlib commit e9ce88cd0d54891c714c604076084f763dd480ed
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Set.Intervals.OrdConnected
 import Mathlib.Data.Set.Intervals.OrderIso
+
+#align_import order.upper_lower.basic from "leanprover-community/mathlib"@"e9ce88cd0d54891c714c604076084f763dd480ed"
 
 /-!
 # Up-sets and down-sets
@@ -49,7 +46,7 @@ Lattice structure on antichains. Order equivalence between upper/lower sets and 
 
 open OrderDual Set
 
-variable {α β γ : Type _} {ι : Sort _} {κ : ι → Sort _}
+variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 /-! ### Unbundled upper/lower sets -/
 
@@ -82,21 +79,21 @@ theorem isUpperSet_univ : IsUpperSet (univ : Set α) := fun _ _ _ => id
 theorem isLowerSet_univ : IsLowerSet (univ : Set α) := fun _ _ _ => id
 #align is_lower_set_univ isLowerSet_univ
 
-theorem IsUpperSet.compl (hs : IsUpperSet s) : IsLowerSet (sᶜ) := fun _a _b h hb ha => hb <| hs h ha
+theorem IsUpperSet.compl (hs : IsUpperSet s) : IsLowerSet sᶜ := fun _a _b h hb ha => hb <| hs h ha
 #align is_upper_set.compl IsUpperSet.compl
 
-theorem IsLowerSet.compl (hs : IsLowerSet s) : IsUpperSet (sᶜ) := fun _a _b h hb ha => hb <| hs h ha
+theorem IsLowerSet.compl (hs : IsLowerSet s) : IsUpperSet sᶜ := fun _a _b h hb ha => hb <| hs h ha
 #align is_lower_set.compl IsLowerSet.compl
 
 @[simp]
-theorem isUpperSet_compl : IsUpperSet (sᶜ) ↔ IsLowerSet s :=
+theorem isUpperSet_compl : IsUpperSet sᶜ ↔ IsLowerSet s :=
   ⟨fun h => by
     convert h.compl
     rw [compl_compl], IsLowerSet.compl⟩
 #align is_upper_set_compl isUpperSet_compl
 
 @[simp]
-theorem isLowerSet_compl : IsLowerSet (sᶜ) ↔ IsUpperSet s :=
+theorem isLowerSet_compl : IsLowerSet sᶜ ↔ IsUpperSet s :=
   ⟨fun h => by
     convert h.compl
     rw [compl_compl], IsUpperSet.compl⟩
@@ -190,16 +187,16 @@ theorem isUpperSet_preimage_toDual_iff {s : Set αᵒᵈ} : IsUpperSet (toDual �
   Iff.rfl
 #align is_upper_set_preimage_to_dual_iff isUpperSet_preimage_toDual_iff
 
-alias isLowerSet_preimage_ofDual_iff ↔ _ IsUpperSet.ofDual
+alias ⟨_, IsUpperSet.ofDual⟩ := isLowerSet_preimage_ofDual_iff
 #align is_upper_set.of_dual IsUpperSet.ofDual
 
-alias isUpperSet_preimage_ofDual_iff ↔ _ IsLowerSet.ofDual
+alias ⟨_, IsLowerSet.ofDual⟩ := isUpperSet_preimage_ofDual_iff
 #align is_lower_set.of_dual IsLowerSet.ofDual
 
-alias isLowerSet_preimage_toDual_iff ↔ _ IsUpperSet.toDual
+alias ⟨_, IsUpperSet.toDual⟩ := isLowerSet_preimage_toDual_iff
 #align is_upper_set.to_dual IsUpperSet.toDual
 
-alias isUpperSet_preimage_toDual_iff ↔ _ IsLowerSet.toDual
+alias ⟨_, IsLowerSet.toDual⟩ := isUpperSet_preimage_toDual_iff
 #align is_lower_set.to_dual IsLowerSet.toDual
 
 end LE
@@ -228,10 +225,10 @@ theorem isLowerSet_iff_Iic_subset : IsLowerSet s ↔ ∀ ⦃a⦄, a ∈ s → Ii
   simp [IsLowerSet, subset_def, @forall_swap (_ ∈ s)]
 #align is_lower_set_iff_Iic_subset isLowerSet_iff_Iic_subset
 
-alias isUpperSet_iff_Ici_subset ↔ IsUpperSet.Ici_subset _
+alias ⟨IsUpperSet.Ici_subset, _⟩ := isUpperSet_iff_Ici_subset
 #align is_upper_set.Ici_subset IsUpperSet.Ici_subset
 
-alias isLowerSet_iff_Iic_subset ↔ IsLowerSet.Iic_subset _
+alias ⟨IsLowerSet.Iic_subset, _⟩ := isLowerSet_iff_Iic_subset
 #align is_lower_set.Iic_subset IsLowerSet.Iic_subset
 
 theorem IsUpperSet.ordConnected (h : IsUpperSet s) : s.OrdConnected :=
@@ -380,10 +377,10 @@ theorem isLowerSet_iff_Iio_subset : IsLowerSet s ↔ ∀ ⦃a⦄, a ∈ s → Ii
   simp [isLowerSet_iff_forall_lt, subset_def, @forall_swap (_ ∈ s)]
 #align is_lower_set_iff_Iio_subset isLowerSet_iff_Iio_subset
 
-alias isUpperSet_iff_Ioi_subset ↔ IsUpperSet.Ioi_subset _
+alias ⟨IsUpperSet.Ioi_subset, _⟩ := isUpperSet_iff_Ioi_subset
 #align is_upper_set.Ioi_subset IsUpperSet.Ioi_subset
 
-alias isLowerSet_iff_Iio_subset ↔ IsLowerSet.Iio_subset _
+alias ⟨IsLowerSet.Iio_subset, _⟩ := isLowerSet_iff_Iio_subset
 #align is_lower_set.Iio_subset IsLowerSet.Iio_subset
 
 end PartialOrder
@@ -396,7 +393,7 @@ section LE
 variable [LE α]
 
 /-- The type of upper sets of an order. -/
-structure UpperSet (α : Type _) [LE α] where
+structure UpperSet (α : Type*) [LE α] where
   /-- The carrier of an `UpperSet`. -/
   carrier : Set α
   /-- The carrier of an `UpperSet` is an upper set. -/
@@ -404,7 +401,7 @@ structure UpperSet (α : Type _) [LE α] where
 #align upper_set UpperSet
 
 /-- The type of lower sets of an order. -/
-structure LowerSet (α : Type _) [LE α] where
+structure LowerSet (α : Type*) [LE α] where
   /-- The carrier of a `LowerSet`. -/
   carrier : Set α
   /-- The carrier of a `LowerSet` is a lower set. -/
@@ -499,8 +496,8 @@ instance : SupSet (UpperSet α) :=
 instance : InfSet (UpperSet α) :=
   ⟨fun S => ⟨⋃ s ∈ S, ↑s, isUpperSet_iUnion₂ fun s _ => s.upper⟩⟩
 
-instance : CompleteDistribLattice (UpperSet α) :=
-  (toDual.injective.comp SetLike.coe_injective).completeDistribLattice _ (fun _ _ => rfl)
+instance : CompletelyDistribLattice (UpperSet α) :=
+  (toDual.injective.comp SetLike.coe_injective).completelyDistribLattice _ (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) rfl rfl
 
 instance : Inhabited (UpperSet α) :=
@@ -648,8 +645,8 @@ instance : SupSet (LowerSet α) :=
 instance : InfSet (LowerSet α) :=
   ⟨fun S => ⟨⋂ s ∈ S, ↑s, isLowerSet_iInter₂ fun s _ => s.lower⟩⟩
 
-instance : CompleteDistribLattice (LowerSet α) :=
-  SetLike.coe_injective.completeDistribLattice _ (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
+instance : CompletelyDistribLattice (LowerSet α) :=
+  SetLike.coe_injective.completelyDistribLattice _ (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ => rfl) rfl rfl
 
 instance : Inhabited (LowerSet α) :=
@@ -794,7 +791,7 @@ namespace UpperSet
 variable {s t : UpperSet α} {a : α}
 
 @[simp]
-theorem coe_compl (s : UpperSet α) : (s.compl : Set α) = ↑sᶜ :=
+theorem coe_compl (s : UpperSet α) : (s.compl : Set α) = (↑s)ᶜ :=
   rfl
 #align upper_set.coe_compl UpperSet.coe_compl
 
@@ -870,7 +867,7 @@ namespace LowerSet
 variable {s t : LowerSet α} {a : α}
 
 @[simp]
-theorem coe_compl (s : LowerSet α) : (s.compl : Set α) = ↑sᶜ :=
+theorem coe_compl (s : LowerSet α) : (s.compl : Set α) = (↑s)ᶜ :=
   rfl
 #align lower_set.coe_compl LowerSet.coe_compl
 
@@ -1339,13 +1336,13 @@ theorem lowerClosure_image (f : α ≃o β) :
 #align lower_closure_image lowerClosure_image
 
 @[simp]
-theorem UpperSet.iInf_Ici (s : Set α) : (⨅ a ∈ s, UpperSet.Ici a) = upperClosure s := by
+theorem UpperSet.iInf_Ici (s : Set α) : ⨅ a ∈ s, UpperSet.Ici a = upperClosure s := by
   ext
   simp
 #align upper_set.infi_Ici UpperSet.iInf_Ici
 
 @[simp]
-theorem LowerSet.iSup_Iic (s : Set α) : (⨆ a ∈ s, LowerSet.Iic a) = lowerClosure s := by
+theorem LowerSet.iSup_Iic (s : Set α) : ⨆ a ∈ s, LowerSet.Iic a = lowerClosure s := by
   ext
   simp
 #align lower_set.supr_Iic LowerSet.iSup_Iic
@@ -1492,11 +1489,11 @@ theorem bddBelow_upperClosure : BddBelow (upperClosure s : Set α) ↔ BddBelow 
   simp_rw [BddBelow, lowerBounds_upperClosure]
 #align bdd_below_upper_closure bddBelow_upperClosure
 
-alias bddAbove_lowerClosure ↔ BddAbove.of_lowerClosure BddAbove.lowerClosure
+alias ⟨BddAbove.of_lowerClosure, BddAbove.lowerClosure⟩ := bddAbove_lowerClosure
 #align bdd_above.of_lower_closure BddAbove.of_lowerClosure
 #align bdd_above.lower_closure BddAbove.lowerClosure
 
-alias bddBelow_upperClosure ↔ BddBelow.of_upperClosure BddBelow.upperClosure
+alias ⟨BddBelow.of_upperClosure, BddBelow.upperClosure⟩ := bddBelow_upperClosure
 #align bdd_below.of_upper_closure BddBelow.of_upperClosure
 #align bdd_below.upper_closure BddBelow.upperClosure
 

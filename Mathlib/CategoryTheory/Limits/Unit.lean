@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.limits.unit
-! leanprover-community/mathlib commit c85d2ff93210de84373ab4c9c6dba2b78494961e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Limits.HasLimits
+
+#align_import category_theory.limits.unit from "leanprover-community/mathlib"@"c85d2ff93210de84373ab4c9c6dba2b78494961e"
 
 /-!
 # `Discrete PUnit` has limits and colimits

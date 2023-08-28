@@ -2,17 +2,14 @@
 Copyright (c) 2018 Louis Carlin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.euclidean_domain.basic
-! leanprover-community/mathlib commit bf9bbbcf0c1c1ead18280b0d010e417b10abb1b6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.EuclideanDomain.Defs
 import Mathlib.Algebra.Ring.Divisibility
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Basic
+
+#align_import algebra.euclidean_domain.basic from "leanprover-community/mathlib"@"bf9bbbcf0c1c1ead18280b0d010e417b10abb1b6"
 
 /-!
 # Lemmas about Euclidean domains
@@ -237,13 +234,13 @@ theorem gcd_eq_gcd_ab (a b : R) : (gcd a b : R) = a * gcdA a b + b * gcdB a b :=
 #align euclidean_domain.gcd_eq_gcd_ab EuclideanDomain.gcd_eq_gcd_ab
 
 -- see Note [lower instance priority]
-instance (priority := 70) (R : Type _) [e : EuclideanDomain R] : NoZeroDivisors R :=
+instance (priority := 70) (R : Type*) [e : EuclideanDomain R] : NoZeroDivisors R :=
   haveI := Classical.decEq R
   { eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} h =>
       or_iff_not_and_not.2 fun h0 => h0.1 <| by rw [← mul_div_cancel a h0.2, h, zero_div] }
 
 -- see Note [lower instance priority]
-instance (priority := 70) (R : Type _) [e : EuclideanDomain R] : IsDomain R :=
+instance (priority := 70) (R : Type*) [e : EuclideanDomain R] : IsDomain R :=
   { e, NoZeroDivisors.to_isDomain R with }
 
 end GCD

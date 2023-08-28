@@ -2,14 +2,11 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
-
-! This file was ported from Lean 3 source module category_theory.natural_isomorphism
-! leanprover-community/mathlib commit 6eb334bd8f3433d5b08ba156b8ec3e6af47e1904
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Iso
+
+#align_import category_theory.natural_isomorphism from "leanprover-community/mathlib"@"6eb334bd8f3433d5b08ba156b8ec3e6af47e1904"
 
 /-!
 # Natural isomorphisms
@@ -52,7 +49,7 @@ namespace Iso
 
 /-- The application of a natural isomorphism to an object. We put this definition in a different
 namespace, so that we can use `α.app` -/
-@[simps]
+@[simps, pp_dot]
 def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     F.obj X ≅ G.obj X where
   hom := α.hom.app X
@@ -62,8 +59,6 @@ def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
 #align category_theory.iso.app CategoryTheory.Iso.app
 #align category_theory.iso.app_hom CategoryTheory.Iso.app_hom
 #align category_theory.iso.app_inv CategoryTheory.Iso.app_inv
-
-pp_extended_field_notation Iso.app
 
 @[reassoc (attr := simp)]
 theorem hom_inv_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :

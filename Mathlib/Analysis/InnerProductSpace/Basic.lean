@@ -2,11 +2,6 @@
 Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.basic
-! leanprover-community/mathlib commit 3f655f5297b030a87d641ad4e825af8d9679eb0b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Analysis.Complex.Basic
@@ -14,6 +9,8 @@ import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.NormedSpace.Completion
 import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
 import Mathlib.LinearAlgebra.BilinearForm
+
+#align_import analysis.inner_product_space.basic from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 
 /-!
 # Inner product space
@@ -37,7 +34,7 @@ product structure on `n → 𝕜` for `𝕜 = ℝ` or `ℂ`, see `EuclideanSpace
   properties, most notably the Cauchy-Schwarz inequality. Here `𝕜` is understood to be either `ℝ`
   or `ℂ`, through the `IsROrC` typeclass.
 - We show that the inner product is continuous, `continuous_inner`, and bundle it as the
-  the continuous sesquilinear map `innerSL` (see also `innerₛₗ` for the non-continuous version).
+  continuous sesquilinear map `innerSL` (see also `innerₛₗ` for the non-continuous version).
 - We define `Orthonormal`, a predicate on a function `v : ι → E`, and prove the existence of a
   maximal orthonormal set, `exists_maximal_orthonormal`.  Bessel's inequality,
   `Orthonormal.tsum_inner_products_le`, states that given an orthonormal set `v` and a vector `x`,
@@ -61,8 +58,8 @@ in the second.
 inner product space, Hilbert space, norm
 
 ## References
-*  [Clément & Martin, *The Lax-Milgram Theorem. A detailed proof to be formalized in Coq*]
-*  [Clément & Martin, *A Coq formal proof of the Lax–Milgram theorem*]
+* [Clément & Martin, *The Lax-Milgram Theorem. A detailed proof to be formalized in Coq*]
+* [Clément & Martin, *A Coq formal proof of the Lax–Milgram theorem*]
 
 The Coq code is available at the following address: <http://www.lri.fr/~sboldo/elfic/index.html>
 -/
@@ -74,10 +71,10 @@ open IsROrC Real Filter
 
 open BigOperators Topology ComplexConjugate
 
-variable {𝕜 E F : Type _} [IsROrC 𝕜]
+variable {𝕜 E F : Type*} [IsROrC 𝕜]
 
 /-- Syntactic typeclass for types endowed with an inner product -/
-class Inner (𝕜 E : Type _) where
+class Inner (𝕜 E : Type*) where
   /-- The inner product function. -/
   inner : E → E → 𝕜
 #align has_inner Inner
@@ -107,7 +104,7 @@ spaces.
 
 To construct a norm from an inner product, see `InnerProductSpace.ofCore`.
 -/
-class InnerProductSpace (𝕜 : Type _) (E : Type _) [IsROrC 𝕜] [NormedAddCommGroup E] extends
+class InnerProductSpace (𝕜 : Type*) (E : Type*) [IsROrC 𝕜] [NormedAddCommGroup E] extends
   NormedSpace 𝕜 E, Inner 𝕜 E where
   /-- The inner product induces the norm. -/
   norm_sq_eq_inner : ∀ x : E, ‖x‖ ^ 2 = re (inner x x)
@@ -141,7 +138,7 @@ instance defined on it, otherwise this will create a second non-defeq norm insta
 /-- A structure requiring that a scalar product is positive definite and symmetric, from which one
 can construct an `InnerProductSpace` instance in `InnerProductSpace.ofCore`. -/
 -- @[nolint HasNonemptyInstance] porting note: I don't think we have this linter anymore
-structure InnerProductSpace.Core (𝕜 : Type _) (F : Type _) [IsROrC 𝕜] [AddCommGroup F]
+structure InnerProductSpace.Core (𝕜 : Type*) (F : Type*) [IsROrC 𝕜] [AddCommGroup F]
   [Module 𝕜 F] extends Inner 𝕜 F where
   /-- The inner product is *hermitian*, taking the `conj` swaps the arguments. -/
   conj_symm : ∀ x y, conj (inner y x) = inner x y
@@ -248,7 +245,7 @@ theorem inner_smul_right (x y : F) {r : 𝕜} : ⟪x, r • y⟫ = r * ⟪x, y�
 
 theorem inner_zero_left (x : F) : ⟪0, x⟫ = 0 := by
   rw [← zero_smul 𝕜 (0 : F), inner_smul_left];
-    simp only [MulZeroClass.zero_mul, RingHom.map_zero]
+    simp only [zero_mul, RingHom.map_zero]
 #align inner_product_space.core.inner_zero_left InnerProductSpace.Core.inner_zero_left
 
 theorem inner_zero_right (x : F) : ⟪x, 0⟫ = 0 := by
@@ -272,8 +269,7 @@ theorem inner_self_ne_zero {x : F} : ⟪x, x⟫ ≠ 0 ↔ x ≠ 0 :=
 #align inner_product_space.core.inner_self_ne_zero InnerProductSpace.Core.inner_self_ne_zero
 
 theorem inner_self_ofReal_re (x : F) : (re ⟪x, x⟫ : 𝕜) = ⟪x, x⟫ := by
-  rw [ext_iff, inner_self_im]
-  norm_num
+  norm_num [ext_iff, inner_self_im]
 set_option linter.uppercaseLean3 false in
 #align inner_product_space.core.inner_self_re_to_K InnerProductSpace.Core.inner_self_ofReal_re
 
@@ -333,7 +329,7 @@ showing the core is a normed group.
 -/
 theorem inner_mul_inner_self_le (x y : F) : ‖⟪x, y⟫‖ * ‖⟪y, x⟫‖ ≤ re ⟪x, x⟫ * re ⟪y, y⟫ := by
   rcases eq_or_ne x 0 with (rfl | hx)
-  · simpa only [inner_zero_left, map_zero, MulZeroClass.zero_mul, norm_zero] using le_rfl
+  · simpa only [inner_zero_left, map_zero, zero_mul, norm_zero] using le_rfl
   · have hx' : 0 < normSqF x := inner_self_nonneg.lt_of_ne' (mt normSq_eq_zero.1 hx)
     rw [← sub_nonneg, ← mul_nonneg_iff_right_nonneg_of_pos hx', ← normSq, ← normSq,
       norm_inner_symm y, ← sq, ← cauchy_schwarz_aux]
@@ -519,46 +515,46 @@ def bilinFormOfRealInner : BilinForm ℝ F where
 #align bilin_form_of_real_inner bilinFormOfRealInner
 
 /-- An inner product with a sum on the left. -/
-theorem sum_inner {ι : Type _} (s : Finset ι) (f : ι → E) (x : E) :
+theorem sum_inner {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
     ⟪∑ i in s, f i, x⟫ = ∑ i in s, ⟪f i, x⟫ :=
   map_sum (sesqFormOfInner (𝕜 := 𝕜) (E := E) x) _ _
 #align sum_inner sum_inner
 
 /-- An inner product with a sum on the right. -/
-theorem inner_sum {ι : Type _} (s : Finset ι) (f : ι → E) (x : E) :
+theorem inner_sum {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
     ⟪x, ∑ i in s, f i⟫ = ∑ i in s, ⟪x, f i⟫ :=
   (LinearMap.flip sesqFormOfInner x).map_sum
 #align inner_sum inner_sum
 
 /-- An inner product with a sum on the left, `Finsupp` version. -/
-theorem Finsupp.sum_inner {ι : Type _} (l : ι →₀ 𝕜) (v : ι → E) (x : E) :
+theorem Finsupp.sum_inner {ι : Type*} (l : ι →₀ 𝕜) (v : ι → E) (x : E) :
     ⟪l.sum fun (i : ι) (a : 𝕜) => a • v i, x⟫ = l.sum fun (i : ι) (a : 𝕜) => conj a • ⟪v i, x⟫ := by
   convert _root_.sum_inner (𝕜 := 𝕜) l.support (fun a => l a • v a) x
   simp only [inner_smul_left, Finsupp.sum, smul_eq_mul]
 #align finsupp.sum_inner Finsupp.sum_inner
 
 /-- An inner product with a sum on the right, `Finsupp` version. -/
-theorem Finsupp.inner_sum {ι : Type _} (l : ι →₀ 𝕜) (v : ι → E) (x : E) :
+theorem Finsupp.inner_sum {ι : Type*} (l : ι →₀ 𝕜) (v : ι → E) (x : E) :
     ⟪x, l.sum fun (i : ι) (a : 𝕜) => a • v i⟫ = l.sum fun (i : ι) (a : 𝕜) => a • ⟪x, v i⟫ := by
   convert _root_.inner_sum (𝕜 := 𝕜) l.support (fun a => l a • v a) x
   simp only [inner_smul_right, Finsupp.sum, smul_eq_mul]
 #align finsupp.inner_sum Finsupp.inner_sum
 
-theorem Dfinsupp.sum_inner {ι : Type _} [dec : DecidableEq ι] {α : ι → Type _}
+theorem DFinsupp.sum_inner {ι : Type*} [dec : DecidableEq ι] {α : ι → Type*}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)
     (l : Π₀ i, α i) (x : E) : ⟪l.sum f, x⟫ = l.sum fun i a => ⟪f i a, x⟫ := by
-  simp (config := { contextual := true }) only [Dfinsupp.sum, _root_.sum_inner, smul_eq_mul]
-#align dfinsupp.sum_inner Dfinsupp.sum_inner
+  simp (config := { contextual := true }) only [DFinsupp.sum, _root_.sum_inner, smul_eq_mul]
+#align dfinsupp.sum_inner DFinsupp.sum_inner
 
-theorem Dfinsupp.inner_sum {ι : Type _} [dec : DecidableEq ι] {α : ι → Type _}
+theorem DFinsupp.inner_sum {ι : Type*} [dec : DecidableEq ι] {α : ι → Type*}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)
     (l : Π₀ i, α i) (x : E) : ⟪x, l.sum f⟫ = l.sum fun i a => ⟪x, f i a⟫ := by
-  simp (config := { contextual := true }) only [Dfinsupp.sum, _root_.inner_sum, smul_eq_mul]
-#align dfinsupp.inner_sum Dfinsupp.inner_sum
+  simp (config := { contextual := true }) only [DFinsupp.sum, _root_.inner_sum, smul_eq_mul]
+#align dfinsupp.inner_sum DFinsupp.inner_sum
 
 @[simp]
 theorem inner_zero_left (x : E) : ⟪0, x⟫ = 0 := by
-  rw [← zero_smul 𝕜 (0 : E), inner_smul_left, RingHom.map_zero, MulZeroClass.zero_mul]
+  rw [← zero_smul 𝕜 (0 : E), inner_smul_left, RingHom.map_zero, zero_mul]
 #align inner_zero_left inner_zero_left
 
 theorem inner_re_zero_left (x : E) : re ⟪0, x⟫ = 0 := by
@@ -724,7 +720,7 @@ theorem real_inner_mul_inner_self_le (x y : F) : ⟪x, y⟫_ℝ * ⟪x, y⟫_ℝ
 
 /-- A family of vectors is linearly independent if they are nonzero
 and orthogonal. -/
-theorem linearIndependent_of_ne_zero_of_inner_eq_zero {ι : Type _} {v : ι → E} (hz : ∀ i, v i ≠ 0)
+theorem linearIndependent_of_ne_zero_of_inner_eq_zero {ι : Type*} {v : ι → E} (hz : ∀ i, v i ≠ 0)
     (ho : ∀ i j, i ≠ j → ⟪v i, v j⟫ = 0) : LinearIndependent 𝕜 v := by
   rw [linearIndependent_iff']
   intro s g hg i hi
@@ -734,7 +730,7 @@ theorem linearIndependent_of_ne_zero_of_inner_eq_zero {ι : Type _} {v : ι → 
     convert Finset.sum_eq_single (β := 𝕜) i ?_ ?_
     · rw [inner_smul_right]
     · intro j _hj hji
-      rw [inner_smul_right, ho i j hji.symm, MulZeroClass.mul_zero]
+      rw [inner_smul_right, ho i j hji.symm, mul_zero]
     · exact fun h => False.elim (h hi)
   simpa [hg, hz] using h'
 #align linear_independent_of_ne_zero_of_inner_eq_zero linearIndependent_of_ne_zero_of_inner_eq_zero
@@ -743,7 +739,7 @@ end BasicProperties
 
 section OrthonormalSets
 
-variable {ι : Type _} [dec_ι : DecidableEq ι] (𝕜)
+variable {ι : Type*} [dec_ι : DecidableEq ι] (𝕜)
 
 /-- An orthonormal set of vectors in an `InnerProductSpace` -/
 def Orthonormal (v : ι → E) : Prop :=
@@ -876,7 +872,7 @@ theorem Orthonormal.linearIndependent {v : ι → E} (hv : Orthonormal 𝕜 v) :
 
 /-- A subfamily of an orthonormal family (i.e., a composition with an injective map) is an
 orthonormal family. -/
-theorem Orthonormal.comp {ι' : Type _} {v : ι → E} (hv : Orthonormal 𝕜 v) (f : ι' → ι)
+theorem Orthonormal.comp {ι' : Type*} {v : ι → E} (hv : Orthonormal 𝕜 v) (f : ι' → ι)
     (hf : Function.Injective f) : Orthonormal 𝕜 (v ∘ f) := by
   classical!
   rw [orthonormal_iff_ite] at hv ⊢
@@ -936,7 +932,7 @@ theorem orthonormal_empty : Orthonormal 𝕜 (fun x => x : (∅ : Set E) → E) 
 
 variable {𝕜 E}
 
-theorem orthonormal_iUnion_of_directed {η : Type _} {s : η → Set E} (hs : Directed (· ⊆ ·) s)
+theorem orthonormal_iUnion_of_directed {η : Type*} {s : η → Set E} (hs : Directed (· ⊆ ·) s)
     (h : ∀ i, Orthonormal 𝕜 (fun x => x : s i → E)) :
     Orthonormal 𝕜 (fun x => x : (⋃ i, s i) → E) := by
   classical!
@@ -1034,7 +1030,7 @@ theorem norm_add_sq (x y : E) : ‖x + y‖ ^ 2 = ‖x‖ ^ 2 + 2 * re ⟪x, y�
   rw [← inner_conj_symm, conj_re]
 #align norm_add_sq norm_add_sq
 
-alias norm_add_sq ← norm_add_pow_two
+alias norm_add_pow_two := norm_add_sq
 #align norm_add_pow_two norm_add_pow_two
 
 /-- Expand the square -/
@@ -1043,7 +1039,7 @@ theorem norm_add_sq_real (x y : F) : ‖x + y‖ ^ 2 = ‖x‖ ^ 2 + 2 * ⟪x, y
   simpa using h
 #align norm_add_sq_real norm_add_sq_real
 
-alias norm_add_sq_real ← norm_add_pow_two_real
+alias norm_add_pow_two_real := norm_add_sq_real
 #align norm_add_pow_two_real norm_add_pow_two_real
 
 /-- Expand the square -/
@@ -1066,7 +1062,7 @@ theorem norm_sub_sq (x y : E) : ‖x - y‖ ^ 2 = ‖x‖ ^ 2 - 2 * re ⟪x, y�
     sub_eq_add_neg]
 #align norm_sub_sq norm_sub_sq
 
-alias norm_sub_sq ← norm_sub_pow_two
+alias norm_sub_pow_two := norm_sub_sq
 #align norm_sub_pow_two norm_sub_pow_two
 
 /-- Expand the square -/
@@ -1074,7 +1070,7 @@ theorem norm_sub_sq_real (x y : F) : ‖x - y‖ ^ 2 = ‖x‖ ^ 2 - 2 * ⟪x, y
   @norm_sub_sq ℝ _ _ _ _ _ _
 #align norm_sub_sq_real norm_sub_sq_real
 
-alias norm_sub_sq_real ← norm_sub_pow_two_real
+alias norm_sub_pow_two_real := norm_sub_sq_real
 #align norm_sub_pow_two_real norm_sub_pow_two_real
 
 /-- Expand the square -/
@@ -1132,21 +1128,21 @@ theorem parallelogram_law_with_nnnorm (x y : E) :
 
 variable {𝕜}
 
-/-- Polarization identity: The real part of the  inner product, in terms of the norm. -/
+/-- Polarization identity: The real part of the inner product, in terms of the norm. -/
 theorem re_inner_eq_norm_add_mul_self_sub_norm_mul_self_sub_norm_mul_self_div_two (x y : E) :
     re ⟪x, y⟫ = (‖x + y‖ * ‖x + y‖ - ‖x‖ * ‖x‖ - ‖y‖ * ‖y‖) / 2 := by
   rw [@norm_add_mul_self 𝕜]
   ring
 #align re_inner_eq_norm_add_mul_self_sub_norm_mul_self_sub_norm_mul_self_div_two re_inner_eq_norm_add_mul_self_sub_norm_mul_self_sub_norm_mul_self_div_two
 
-/-- Polarization identity: The real part of the  inner product, in terms of the norm. -/
+/-- Polarization identity: The real part of the inner product, in terms of the norm. -/
 theorem re_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two (x y : E) :
     re ⟪x, y⟫ = (‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ - ‖x - y‖ * ‖x - y‖) / 2 := by
   rw [@norm_sub_mul_self 𝕜]
   ring
 #align re_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two re_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two
 
-/-- Polarization identity: The real part of the  inner product, in terms of the norm. -/
+/-- Polarization identity: The real part of the inner product, in terms of the norm. -/
 theorem re_inner_eq_norm_add_mul_self_sub_norm_sub_mul_self_div_four (x y : E) :
     re ⟪x, y⟫ = (‖x + y‖ * ‖x + y‖ - ‖x - y‖ * ‖x - y‖) / 4 := by
   rw [@norm_add_mul_self 𝕜, @norm_sub_mul_self 𝕜]
@@ -1210,7 +1206,7 @@ instance (priority := 100) InnerProductSpace.toUniformConvexSpace : UniformConve
 
 section Complex
 
-variable {V : Type _} [NormedAddCommGroup V] [InnerProductSpace ℂ V]
+variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℂ V]
 
 /-- A complex polarization identity, with a linear map
 -/
@@ -1266,11 +1262,11 @@ end Complex
 
 section
 
-variable {ι : Type _} {ι' : Type _} {ι'' : Type _}
+variable {ι : Type*} {ι' : Type*} {ι'' : Type*}
 
-variable {E' : Type _} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 
-variable {E'' : Type _} [NormedAddCommGroup E''] [InnerProductSpace 𝕜 E'']
+variable {E'' : Type*} [NormedAddCommGroup E''] [InnerProductSpace 𝕜 E'']
 
 /-- A linear isometry preserves the inner product. -/
 @[simp]
@@ -1404,7 +1400,7 @@ theorem Orthonormal.equiv_toLinearEquiv {v : Basis ι 𝕜 E} (hv : Orthonormal 
 #align orthonormal.equiv_to_linear_equiv Orthonormal.equiv_toLinearEquiv
 
 @[simp]
-theorem Orthonormal.equiv_apply {ι' : Type _} {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v)
+theorem Orthonormal.equiv_apply {ι' : Type*} {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v)
     {v' : Basis ι' 𝕜 E'} (hv' : Orthonormal 𝕜 v') (e : ι ≃ ι') (i : ι) :
     hv.equiv hv' e (v i) = v' (e i) :=
   Basis.equiv_apply _ _ _ _
@@ -1572,7 +1568,7 @@ theorem abs_real_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_ne_zero_mul {x : F
 itself, divided by the product of their norms, has value 1. -/
 theorem real_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_pos_mul {x : F} {r : ℝ} (hx : x ≠ 0)
     (hr : 0 < r) : ⟪x, r • x⟫_ℝ / (‖x‖ * ‖r • x‖) = 1 := by
-  rw [real_inner_smul_self_right, norm_smul, Real.norm_eq_abs, ← mul_assoc ‖x‖, mul_comm _ (|r|),
+  rw [real_inner_smul_self_right, norm_smul, Real.norm_eq_abs, ← mul_assoc ‖x‖, mul_comm _ |r|,
     mul_assoc, abs_of_nonneg hr.le, div_self]
   exact mul_ne_zero hr.ne' (mul_self_ne_zero.2 (norm_ne_zero_iff.2 hx))
 #align real_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_pos_mul real_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_pos_mul
@@ -1581,7 +1577,7 @@ theorem real_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_pos_mul {x : F} {r : �
 itself, divided by the product of their norms, has value -1. -/
 theorem real_inner_div_norm_mul_norm_eq_neg_one_of_ne_zero_of_neg_mul {x : F} {r : ℝ} (hx : x ≠ 0)
     (hr : r < 0) : ⟪x, r • x⟫_ℝ / (‖x‖ * ‖r • x‖) = -1 := by
-  rw [real_inner_smul_self_right, norm_smul, Real.norm_eq_abs, ← mul_assoc ‖x‖, mul_comm _ (|r|),
+  rw [real_inner_smul_self_right, norm_smul, Real.norm_eq_abs, ← mul_assoc ‖x‖, mul_comm _ |r|,
     mul_assoc, abs_of_neg hr, neg_mul, div_neg_eq_neg_div, div_self]
   exact mul_ne_zero hr.ne (mul_self_ne_zero.2 (norm_ne_zero_iff.2 hx))
 #align real_inner_div_norm_mul_norm_eq_neg_one_of_ne_zero_of_neg_mul real_inner_div_norm_mul_norm_eq_neg_one_of_ne_zero_of_neg_mul
@@ -1731,16 +1727,16 @@ theorem inner_lt_one_iff_real_of_norm_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖
 
 /-- The inner product of two weighted sums, where the weights in each
 sum add to 0, in terms of the norms of pairwise differences. -/
-theorem inner_sum_smul_sum_smul_of_sum_eq_zero {ι₁ : Type _} {s₁ : Finset ι₁} {w₁ : ι₁ → ℝ}
-    (v₁ : ι₁ → F) (h₁ : (∑ i in s₁, w₁ i) = 0) {ι₂ : Type _} {s₂ : Finset ι₂} {w₂ : ι₂ → ℝ}
-    (v₂ : ι₂ → F) (h₂ : (∑ i in s₂, w₂ i) = 0) :
+theorem inner_sum_smul_sum_smul_of_sum_eq_zero {ι₁ : Type*} {s₁ : Finset ι₁} {w₁ : ι₁ → ℝ}
+    (v₁ : ι₁ → F) (h₁ : ∑ i in s₁, w₁ i = 0) {ι₂ : Type*} {s₂ : Finset ι₂} {w₂ : ι₂ → ℝ}
+    (v₂ : ι₂ → F) (h₂ : ∑ i in s₂, w₂ i = 0) :
     ⟪∑ i₁ in s₁, w₁ i₁ • v₁ i₁, ∑ i₂ in s₂, w₂ i₂ • v₂ i₂⟫_ℝ =
       (-∑ i₁ in s₁, ∑ i₂ in s₂, w₁ i₁ * w₂ i₂ * (‖v₁ i₁ - v₂ i₂‖ * ‖v₁ i₁ - v₂ i₂‖)) / 2 := by
   simp_rw [sum_inner, inner_sum, real_inner_smul_left, real_inner_smul_right,
     real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two, ← div_sub_div_same,
     ← div_add_div_same, mul_sub_left_distrib, left_distrib, Finset.sum_sub_distrib,
-    Finset.sum_add_distrib, ← Finset.mul_sum, ← Finset.sum_mul, h₁, h₂, MulZeroClass.zero_mul,
-    MulZeroClass.mul_zero, Finset.sum_const_zero, zero_add, zero_sub, Finset.mul_sum, neg_div,
+    Finset.sum_add_distrib, ← Finset.mul_sum, ← Finset.sum_mul, h₁, h₂, zero_mul,
+    mul_zero, Finset.sum_const_zero, zero_add, zero_sub, Finset.mul_sum, neg_div,
     Finset.sum_div, mul_div_assoc, mul_assoc]
 #align inner_sum_smul_sum_smul_of_sum_eq_zero inner_sum_smul_sum_smul_of_sum_eq_zero
 
@@ -1799,8 +1795,6 @@ theorem innerSL_apply_norm (x : E) : ‖innerSL 𝕜 x‖ = ‖x‖ := by
 set_option linter.uppercaseLean3 false in
 #align innerSL_apply_norm innerSL_apply_norm
 
-set_option synthInstance.maxHeartbeats 80000 in
--- porting note: I'm not sure why the maxHeartbeats needed to be so high here
 /-- The inner product as a continuous sesquilinear map, with the two arguments flipped. -/
 def innerSLFlip : E →L[𝕜] E →L⋆[𝕜] 𝕜 :=
   @ContinuousLinearMap.flipₗᵢ' 𝕜 𝕜 𝕜 E E 𝕜 _ _ _ _ _ _ _ _ _ (RingHom.id 𝕜) (starRingEnd 𝕜) _ _
@@ -1818,13 +1812,13 @@ variable {𝕜}
 
 namespace ContinuousLinearMap
 
-variable {E' : Type _} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 
-set_option maxHeartbeats 500000 in
-set_option synthInstance.maxHeartbeats 100000 in
+-- Note: odd and expensive build behavior is explicitly turned off using `noncomputable`
+set_option synthInstance.maxHeartbeats 40000 in
 /-- Given `f : E →L[𝕜] E'`, construct the continuous sesquilinear form `fun x y ↦ ⟪x, A y⟫`, given
 as a continuous linear map. -/
-def toSesqForm : (E →L[𝕜] E') →L[𝕜] E' →L⋆[𝕜] E →L[𝕜] 𝕜 :=
+noncomputable def toSesqForm : (E →L[𝕜] E') →L[𝕜] E' →L⋆[𝕜] E →L[𝕜] 𝕜 :=
   (ContinuousLinearMap.flipₗᵢ' E E' 𝕜 (starRingEnd 𝕜) (RingHom.id 𝕜)).toContinuousLinearEquiv ∘L
     ContinuousLinearMap.compSL E E' (E' →L⋆[𝕜] 𝕜) (RingHom.id 𝕜) (RingHom.id 𝕜) (innerSLFlip 𝕜)
 #align continuous_linear_map.to_sesq_form ContinuousLinearMap.toSesqForm
@@ -1874,11 +1868,11 @@ end Norm
 
 section BesselsInequality
 
-variable {ι : Type _} (x : E) {v : ι → E}
+variable {ι : Type*} (x : E) {v : ι → E}
 
 /-- Bessel's inequality for finite sums. -/
 theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜 v) :
-    (∑ i in s, ‖⟪v i, x⟫‖ ^ 2) ≤ ‖x‖ ^ 2 := by
+    ∑ i in s, ‖⟪v i, x⟫‖ ^ 2 ≤ ‖x‖ ^ 2 := by
   have h₂ :
     (∑ i in s, ∑ j in s, ⟪v i, x⟫ * ⟪x, v j⟫ * ⟪v j, v i⟫) = (∑ k in s, ⟪v k, x⟫ * ⟪x, v k⟫ : 𝕜) :=
     by classical exact hv.inner_left_right_finset
@@ -1900,7 +1894,7 @@ theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜
 
 /-- Bessel's inequality. -/
 theorem Orthonormal.tsum_inner_products_le (hv : Orthonormal 𝕜 v) :
-    (∑' i, ‖⟪v i, x⟫‖ ^ 2) ≤ ‖x‖ ^ 2 := by
+    ∑' i, ‖⟪v i, x⟫‖ ^ 2 ≤ ‖x‖ ^ 2 := by
   refine' tsum_le_of_sum_le' _ fun s => hv.sum_inner_products_le x
   simp only [norm_nonneg, pow_nonneg]
 #align orthonormal.tsum_inner_products_le Orthonormal.tsum_inner_products_le
@@ -1955,12 +1949,12 @@ theorem Submodule.coe_inner (W : Submodule 𝕜 E) (x y : W) : ⟪x, y⟫ = ⟪(
   rfl
 #align submodule.coe_inner Submodule.coe_inner
 
-theorem Orthonormal.codRestrict {ι : Type _} {v : ι → E} (hv : Orthonormal 𝕜 v) (s : Submodule 𝕜 E)
+theorem Orthonormal.codRestrict {ι : Type*} {v : ι → E} (hv : Orthonormal 𝕜 v) (s : Submodule 𝕜 E)
     (hvs : ∀ i, v i ∈ s) : @Orthonormal 𝕜 s _ _ _ ι (Set.codRestrict v s hvs) :=
   s.subtypeₗᵢ.orthonormal_comp_iff.mp hv
 #align orthonormal.cod_restrict Orthonormal.codRestrict
 
-theorem orthonormal_span {ι : Type _} {v : ι → E} (hv : Orthonormal 𝕜 v) :
+theorem orthonormal_span {ι : Type*} {v : ι → E} (hv : Orthonormal 𝕜 v) :
     @Orthonormal 𝕜 (Submodule.span 𝕜 (Set.range v)) _ _ _ ι fun i : ι =>
       ⟨v i, Submodule.subset_span (Set.mem_range_self i)⟩ :=
   hv.codRestrict (Submodule.span 𝕜 (Set.range v)) fun i =>
@@ -1972,14 +1966,14 @@ theorem orthonormal_span {ι : Type _} {v : ι → E} (hv : Orthonormal 𝕜 v) 
 
 section OrthogonalFamily
 
-variable {ι : Type _} [dec_ι : DecidableEq ι] (𝕜)
+variable {ι : Type*} [dec_ι : DecidableEq ι] (𝕜)
 
 open DirectSum
 
 /-- An indexed family of mutually-orthogonal subspaces of an inner product space `E`.
 
 The simple way to express this concept would be as a condition on `V : ι → Submodule 𝕜 E`.  We
-We instead implement it as a condition on a family of inner product spaces each equipped with an
+instead implement it as a condition on a family of inner product spaces each equipped with an
 isometric embedding into `E`, thus making it a property of morphisms rather than subobjects.
 The connection to the subobject spelling is shown in `orthogonalFamily_iff_pairwise`.
 
@@ -1988,13 +1982,13 @@ product space structure on each of the submodules is important -- for example, w
 their Hilbert sum (`PiLp V 2`).  For example, given an orthonormal set of vectors `v : ι → E`,
 we have an associated orthogonal family of one-dimensional subspaces of `E`, which it is convenient
 to be able to discuss using `ι → 𝕜` rather than `Π i : ι, span 𝕜 (v i)`. -/
-def OrthogonalFamily (G : ι → Type _) [∀ i, NormedAddCommGroup (G i)]
+def OrthogonalFamily (G : ι → Type*) [∀ i, NormedAddCommGroup (G i)]
     [∀ i, InnerProductSpace 𝕜 (G i)] (V : ∀ i, G i →ₗᵢ[𝕜] E) : Prop :=
   ∀ ⦃i j⦄, i ≠ j → ∀ v : G i, ∀ w : G j, ⟪V i v, V j w⟫ = 0
 #align orthogonal_family OrthogonalFamily
 
 variable {𝕜}
-variable {G : ι → Type _} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
+variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
   {V : ∀ i, G i →ₗᵢ[𝕜] E} (hV : OrthogonalFamily 𝕜 G V) [dec_V : ∀ (i) (x : G i), Decidable (x ≠ 0)]
 
 theorem Orthonormal.orthogonalFamily {v : ι → E} (hv : Orthonormal 𝕜 v) :
@@ -2013,12 +2007,12 @@ theorem OrthogonalFamily.inner_right_dfinsupp (l : ⨁ i, G i) (i : ι) (v : G i
     ⟪V i v, l.sum fun j => V j⟫ = ⟪v, l i⟫ :=
   calc
     ⟪V i v, l.sum fun j => V j⟫ = l.sum fun j => fun w => ⟪V i v, V j w⟫ :=
-      Dfinsupp.inner_sum (fun j => V j) l (V i v)
+      DFinsupp.inner_sum (fun j => V j) l (V i v)
     _ = l.sum fun j => fun w => ite (i = j) ⟪V i v, V j w⟫ 0 :=
       (congr_arg l.sum <| funext fun j => funext <| hV.eq_ite v)
     _ = ⟪v, l i⟫ := by
-      simp only [Dfinsupp.sum, Submodule.coe_inner, Finset.sum_ite_eq, ite_eq_left_iff,
-        Dfinsupp.mem_support_toFun]
+      simp only [DFinsupp.sum, Submodule.coe_inner, Finset.sum_ite_eq, ite_eq_left_iff,
+        DFinsupp.mem_support_toFun]
       split_ifs with h
       · simp only [LinearIsometry.inner_map_map]
       · simp only [of_not_not h, inner_zero_right]
@@ -2060,12 +2054,12 @@ theorem OrthogonalFamily.norm_sum (l : ∀ i, G i) (s : Finset ι) :
 
 /-- The composition of an orthogonal family of subspaces with an injective function is also an
 orthogonal family. -/
-theorem OrthogonalFamily.comp {γ : Type _} {f : γ → ι} (hf : Function.Injective f) :
+theorem OrthogonalFamily.comp {γ : Type*} {f : γ → ι} (hf : Function.Injective f) :
     OrthogonalFamily 𝕜 (fun g => G (f g)) fun g => V (f g) :=
   fun _i _j hij v w => hV (hf.ne hij) v w
 #align orthogonal_family.comp OrthogonalFamily.comp
 
-theorem OrthogonalFamily.orthonormal_sigma_orthonormal {α : ι → Type _} {v_family : ∀ i, α i → G i}
+theorem OrthogonalFamily.orthonormal_sigma_orthonormal {α : ι → Type*} {v_family : ∀ i, α i → G i}
     (hv_family : ∀ i, Orthonormal 𝕜 (v_family i)) :
     Orthonormal 𝕜 fun a : Σi, α i => V a.1 (v_family a.1 a.2) := by
   constructor
@@ -2136,13 +2130,13 @@ theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : �
       refine' (abs_lt_of_sq_lt_sq' _ (le_of_lt hε)).2
       have has : a ≤ s₁ ⊓ s₂ := le_inf hs₁ hs₂
       rw [hV.norm_sq_diff_sum]
-      have Hs₁ : (∑ x : ι in s₁ \ s₂, ‖f x‖ ^ 2) < ε ^ 2 / 2 := by
+      have Hs₁ : ∑ x : ι in s₁ \ s₂, ‖f x‖ ^ 2 < ε ^ 2 / 2 := by
         convert H _ hs₁ _ has
         have : s₁ ⊓ s₂ ⊆ s₁ := Finset.inter_subset_left _ _
         rw [← Finset.sum_sdiff this, add_tsub_cancel_right, Finset.abs_sum_of_nonneg']
         · simp
         · exact fun i => sq_nonneg _
-      have Hs₂ : (∑ x : ι in s₂ \ s₁, ‖f x‖ ^ 2) < ε ^ 2 / 2 := by
+      have Hs₂ : ∑ x : ι in s₂ \ s₁, ‖f x‖ ^ 2 < ε ^ 2 / 2 := by
         convert H _ hs₂ _ has
         have : s₁ ⊓ s₂ ⊆ s₂ := Finset.inter_subset_right _ _
         rw [← Finset.sum_sdiff this, add_tsub_cancel_right, Finset.abs_sum_of_nonneg']
@@ -2166,15 +2160,15 @@ theorem OrthogonalFamily.independent {V : ι → Submodule 𝕜 E}
   ext i
   suffices ⟪(v i : E), v i⟫ = 0 by simpa only [inner_self_eq_zero] using this
   calc
-    ⟪(v i : E), v i⟫ = ⟪(v i : E), Dfinsupp.lsum ℕ (fun i => (V i).subtype) v⟫ := by
-      simpa only [Dfinsupp.sumAddHom_apply, Dfinsupp.lsum_apply_apply] using
+    ⟪(v i : E), v i⟫ = ⟪(v i : E), DFinsupp.lsum ℕ (fun i => (V i).subtype) v⟫ := by
+      simpa only [DFinsupp.sumAddHom_apply, DFinsupp.lsum_apply_apply] using
         (hV.inner_right_dfinsupp v i (v i)).symm
     _ = 0 := by simp only [hv, inner_zero_right]
 #align orthogonal_family.independent OrthogonalFamily.independent
 
 theorem DirectSum.IsInternal.collectedBasis_orthonormal {V : ι → Submodule 𝕜 E}
     (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
-    (hV_sum : DirectSum.IsInternal fun i => V i) {α : ι → Type _}
+    (hV_sum : DirectSum.IsInternal fun i => V i) {α : ι → Type*}
     {v_family : ∀ i, Basis (α i) 𝕜 (V i)} (hv_family : ∀ i, Orthonormal 𝕜 (v_family i)) :
     Orthonormal 𝕜 (hV_sum.collectedBasis v_family) := by
   simpa only [hV_sum.collectedBasis_coe] using hV.orthonormal_sigma_orthonormal hv_family
@@ -2184,7 +2178,7 @@ end OrthogonalFamily
 
 section IsROrCToReal
 
-variable {G : Type _}
+variable {G : Type*}
 
 variable (𝕜 E)
 
@@ -2255,7 +2249,7 @@ theorem continuous_inner : Continuous fun p : E × E => ⟪p.1, p.2⟫ :=
   isBoundedBilinearMap_inner.continuous
 #align continuous_inner continuous_inner
 
-variable {α : Type _}
+variable {α : Type*}
 
 theorem Filter.Tendsto.inner {f g : α → E} {l : Filter α} {x y : E} (hf : Tendsto f l (𝓝 x))
     (hg : Tendsto g l (𝓝 y)) : Tendsto (fun t => ⟪f t, g t⟫) l (𝓝 ⟪x, y⟫) :=
@@ -2315,7 +2309,7 @@ namespace UniformSpace.Completion
 
 open UniformSpace Function
 
-instance toInner {𝕜' E' : Type _} [TopologicalSpace 𝕜'] [UniformSpace E'] [Inner 𝕜' E'] :
+instance toInner {𝕜' E' : Type*} [TopologicalSpace 𝕜'] [UniformSpace E'] [Inner 𝕜' E'] :
     Inner 𝕜' (Completion E')
     where inner := curry <| (denseInducing_coe.prod denseInducing_coe).extend (uncurry inner)
 
@@ -2340,7 +2334,7 @@ protected theorem continuous_inner :
   exact (denseInducing_toCompl E).extend_Z_bilin (denseInducing_toCompl E) this
 #align uniform_space.completion.continuous_inner UniformSpace.Completion.continuous_inner
 
-protected theorem Continuous.inner {α : Type _} [TopologicalSpace α] {f g : α → Completion E}
+protected theorem Continuous.inner {α : Type*} [TopologicalSpace α] {f g : α → Completion E}
     (hf : Continuous f) (hg : Continuous g) : Continuous (fun x : α => inner (f x) (g x) : α → 𝕜) :=
   UniformSpace.Completion.continuous_inner.comp (hf.prod_mk hg : _)
 #align uniform_space.completion.continuous.inner UniformSpace.Completion.Continuous.inner

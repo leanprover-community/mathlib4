@@ -2,15 +2,12 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Frédéric Dupuis
-
-! This file was ported from Lean 3 source module analysis.convex.cone.basic
-! leanprover-community/mathlib commit 915591b2bb3ea303648db07284a161a7f2a9e3d4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Hull
 import Mathlib.Data.Real.Basic
 import Mathlib.LinearAlgebra.LinearPMap
+
+#align_import analysis.convex.cone.basic from "leanprover-community/mathlib"@"915591b2bb3ea303648db07284a161a7f2a9e3d4"
 
 /-!
 # Convex cones
@@ -68,7 +65,7 @@ open Set LinearMap
 
 open Classical Pointwise
 
-variable {𝕜 E F G : Type _}
+variable {𝕜 E F G : Type*}
 
 /-! ### Definition of `ConvexCone` and basic properties -/
 
@@ -157,11 +154,11 @@ theorem mem_sInf {x : E} {S : Set (ConvexCone 𝕜 E)} : x ∈ sInf S ↔ ∀ s 
 #align convex_cone.mem_Inf ConvexCone.mem_sInf
 
 @[simp]
-theorem coe_iInf {ι : Sort _} (f : ι → ConvexCone 𝕜 E) : ↑(iInf f) = ⋂ i, (f i : Set E) := by
+theorem coe_iInf {ι : Sort*} (f : ι → ConvexCone 𝕜 E) : ↑(iInf f) = ⋂ i, (f i : Set E) := by
   simp [iInf]
 #align convex_cone.coe_infi ConvexCone.coe_iInf
 
-theorem mem_iInf {ι : Sort _} {x : E} {f : ι → ConvexCone 𝕜 E} : x ∈ iInf f ↔ ∀ i, x ∈ f i :=
+theorem mem_iInf {ι : Sort*} {x : E} {f : ι → ConvexCone 𝕜 E} : x ∈ iInf f ↔ ∀ i, x ∈ f i :=
   mem_iInter₂.trans <| by simp
 #align convex_cone.mem_infi ConvexCone.mem_iInf
 

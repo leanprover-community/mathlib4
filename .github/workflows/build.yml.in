@@ -111,14 +111,14 @@ jobs:
         with:
           linters: gcc
           run: |
-            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build | tee stdout.log"
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build -KCI | tee stdout.log"
 
       - name: check for noisy stdout lines
         run: |
           ! grep "stdout:" stdout.log
 
       - name: build library_search cache
-        run: lake build MathlibExtras
+        run: lake build -KCI MathlibExtras
 
       - name: upload cache
         if: always()
@@ -133,6 +133,11 @@ jobs:
 
       - name: build counterexamples
         run: lake build Counterexamples
+
+      - name: check declarations in db files
+        run: |
+          python3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml
+          build/bin/checkYaml
 
       - name: test mathlib
         run: make -j 8 test
@@ -168,3 +173,14 @@ jobs:
           curl --request DELETE \
             --url https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.PR.outputs.number }}/labels/awaiting-CI \
             --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
+
+      - if: contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI')
+        name: If `auto-merge-after-CI` is present, add a `bors merge` comment.
+        uses: GrantBirki/comment@v2.0.1
+        with:
+          token: ${{ secrets.AUTO_MERGE_TOKEN }}
+          issue-number: ${{ steps.PR.outputs.number }}
+          body: |
+            As this PR is labelled `auto-merge-after-CI`, we are now sending it to bors:
+
+            bors merge

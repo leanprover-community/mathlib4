@@ -9,6 +9,8 @@ It might make sense to remove this when we have a proper theory of finite sets.
 -/
 import Mathlib.Data.List.Basic
 
+set_option autoImplicit true
+
 namespace List
 
 def inj_on (f : α → β) (as : List α) := ∀ {x y}, x ∈ as → y ∈ as → f x = f y → x = y
@@ -26,7 +28,7 @@ theorem equiv_iff_subset_and_subset {as bs : List α} : as.equiv bs ↔ as ⊆ b
 theorem insert_equiv_cons [DecidableEq α] (a : α) (as : List α) : (as.insert a).equiv (a :: as) :=
   fun x ↦ by simp
 
-theorem union_equiv_append [DecidableEq α] (as bs : List α) : (as.union bs).equiv (as ++ bs) :=
+theorem union_equiv_append [DecidableEq α] (as bs : List α) : (as ∪ bs).equiv (as ++ bs) :=
   fun x ↦ by simp
 
 section DecidableEq
@@ -149,7 +151,7 @@ theorem card_map_le (f : α → β) (as : List α) : card (as.map f) ≤ card as
       exact Nat.add_le_add_right ih _
 
 theorem card_map_eq_of_inj_on {f : α → β} {as : List α} :
-    inj_on f as →  card (as.map f) = card as := by
+    inj_on f as → card (as.map f) = card as := by
   induction as with
   | nil => simp
   | cons a as ih =>
@@ -186,7 +188,7 @@ theorem card_append_disjoint : ∀ {as bs : List α},
       rw [Nat.add_right_comm]
 
 theorem card_union_disjoint {as bs : List α} (h : Disjoint as bs) :
-    card (as.union bs) = card as + card bs := by
+    card (as ∪ bs) = card as + card bs := by
   rw [card_eq_of_equiv (union_equiv_append as bs), card_append_disjoint h]
 
 end DecidableEq

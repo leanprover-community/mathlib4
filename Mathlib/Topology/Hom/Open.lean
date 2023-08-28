@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module topology.hom.open
-! leanprover-community/mathlib commit 98e83c3d541c77cdb7da20d79611a780ff8e7d90
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.ContinuousFunction.Basic
+
+#align_import topology.hom.open from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 
 /-!
 # Continuous open maps
@@ -30,10 +27,10 @@ be satisfied by itself and all stricter types.
 
 open Function
 
-variable {F α β γ δ : Type _}
+variable {F α β γ δ : Type*}
 
 /-- The type of continuous open maps from `α` to `β`, aka Priestley homomorphisms. -/
-structure ContinuousOpenMap (α β : Type _) [TopologicalSpace α] [TopologicalSpace β] extends
+structure ContinuousOpenMap (α β : Type*) [TopologicalSpace α] [TopologicalSpace β] extends
   ContinuousMap α β where
   map_open' : IsOpenMap toFun
 #align continuous_open_map ContinuousOpenMap
@@ -45,7 +42,7 @@ section
 /-- `ContinuousOpenMapClass F α β` states that `F` is a type of continuous open maps.
 
 You should extend this class when you extend `ContinuousOpenMap`. -/
-class ContinuousOpenMapClass (F : Type _) (α β : outParam <| Type _) [TopologicalSpace α]
+class ContinuousOpenMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
   [TopologicalSpace β] extends ContinuousMapClass F α β where
   map_open (f : F) : IsOpenMap f
 #align continuous_open_map_class ContinuousOpenMapClass

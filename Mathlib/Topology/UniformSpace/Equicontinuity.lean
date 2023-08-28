@@ -2,13 +2,10 @@
 Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
-
-! This file was ported from Lean 3 source module topology.uniform_space.equicontinuity
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+
+#align_import topology.uniform_space.equicontinuity from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Equicontinuity of a family of functions
@@ -88,7 +85,7 @@ section
 
 open UniformSpace Filter Set Uniformity Topology UniformConvergence
 
-variable {ι κ X Y Z α β γ 𝓕 : Type _} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+variable {ι κ X Y Z α β γ 𝓕 : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
   [UniformSpace α] [UniformSpace β] [UniformSpace γ]
 
 /-- A family `F : ι → X → α` of functions from a topological space to a uniform space is
@@ -128,6 +125,18 @@ def UniformEquicontinuous (F : ι → β → α) : Prop :=
 protected abbrev Set.UniformEquicontinuous (H : Set <| β → α) : Prop :=
   UniformEquicontinuous ((↑) : H → β → α)
 #align set.uniform_equicontinuous Set.UniformEquicontinuous
+
+lemma equicontinuousAt_empty [h : IsEmpty ι] (F : ι → X → α) (x₀ : X) :
+    EquicontinuousAt F x₀ :=
+  fun _ _ ↦ eventually_of_forall (fun _ ↦ h.elim)
+
+lemma equicontinuous_empty [IsEmpty ι] (F : ι → X → α) :
+    Equicontinuous F :=
+  equicontinuousAt_empty F
+
+lemma uniformEquicontinuous_empty [h : IsEmpty ι] (F : ι → β → α) :
+    UniformEquicontinuous F :=
+  fun _ _ ↦ eventually_of_forall (fun _ ↦ h.elim)
 
 /-- Reformulation of equicontinuity at `x₀` comparing two variables near `x₀` instead of comparing
 only one with `x₀`. -/
@@ -270,9 +279,46 @@ theorem uniformEquicontinuous_iff_uniformContinuous {F : ι → β → α} :
   rfl
 #align uniform_equicontinuous_iff_uniform_continuous uniformEquicontinuous_iff_uniformContinuous
 
+theorem equicontinuousAt_iInf_rng {α' : Type*} {u : κ → UniformSpace α'} {F : ι → X → α'}
+    {x₀ : X} :
+    @EquicontinuousAt _ _ _ _ (⨅ k, u k) F x₀ ↔ ∀ k, @EquicontinuousAt _ _ _ _ (u k) F x₀ := by
+  simp [@equicontinuousAt_iff_continuousAt _ _ _ _ _, UniformFun.topologicalSpace]
+  unfold ContinuousAt
+  rw [UniformFun.iInf_eq, toTopologicalSpace_iInf, nhds_iInf, tendsto_iInf]
+
+theorem equicontinuous_iInf_rng {α' : Type*} {u : κ → UniformSpace α'} {F : ι → X → α'} :
+    @Equicontinuous _ _ _ _ (⨅ k, u k) F ↔ ∀ k, @Equicontinuous _ _ _ _ (u k) F := by
+  simp_rw [@equicontinuous_iff_continuous _ _ _ _ _, UniformFun.topologicalSpace]
+  rw [UniformFun.iInf_eq, toTopologicalSpace_iInf, continuous_iInf_rng]
+
+theorem uniformEquicontinuous_iInf_rng {α' : Type*} {u : κ → UniformSpace α'} {F : ι → β → α'} :
+    @UniformEquicontinuous _ _ _ (⨅ k, u k) _ F ↔ ∀ k, @UniformEquicontinuous _ _ _ (u k) _ F := by
+  simp_rw [@uniformEquicontinuous_iff_uniformContinuous _ _ _ _]
+  rw [UniformFun.iInf_eq, uniformContinuous_iInf_rng]
+
+theorem equicontinuousAt_iInf_dom {X' : Type*} {t : κ → TopologicalSpace X'} {F : ι → X' → α}
+    {x₀ : X'} {k : κ} (hk : @EquicontinuousAt _ _ _ (t k) _ F x₀) :
+    @EquicontinuousAt _ _ _ (⨅ k, t k) _ F x₀ := by
+  simp [@equicontinuousAt_iff_continuousAt _ _ _ _] at hk ⊢
+  unfold ContinuousAt at hk ⊢
+  rw [nhds_iInf]
+  exact tendsto_iInf' k hk
+
+theorem equicontinuous_iInf_dom {X' : Type*} {t : κ → TopologicalSpace X'} {F : ι → X' → α}
+    {k : κ} (hk : @Equicontinuous _ _ _ (t k) _ F) :
+    @Equicontinuous _ _ _ (⨅ k, t k) _ F := by
+  simp_rw [@equicontinuous_iff_continuous _ _ _ _] at hk ⊢
+  exact continuous_iInf_dom hk
+
+theorem uniform_equicontinuous_infi_dom {β' : Type*} {u : κ → UniformSpace β'} {F : ι → β' → α}
+    {k : κ} (hk : @UniformEquicontinuous _ _ _ _ (u k) F) :
+    @UniformEquicontinuous _ _ _ _ (⨅ k, u k) F := by
+  simp_rw [@uniformEquicontinuous_iff_uniformContinuous _ _ _ _ _] at hk ⊢
+  exact uniformContinuous_iInf_dom hk
+
 -- Porting note: changed from `∃ k (_ : p k), _` to `∃ k, p k ∧ _` since Lean 4 generates the
 -- second one when parsing expressions like `∃ δ > 0, _`.
-theorem Filter.HasBasis.equicontinuousAt_iff_left {κ : Type _} {p : κ → Prop} {s : κ → Set X}
+theorem Filter.HasBasis.equicontinuousAt_iff_left {κ : Type*} {p : κ → Prop} {s : κ → Set X}
     {F : ι → X → α} {x₀ : X} (hX : (𝓝 x₀).HasBasis p s) :
     EquicontinuousAt F x₀ ↔ ∀ U ∈ 𝓤 α, ∃ k, p k ∧ ∀ x ∈ s k, ∀ i, (F i x₀, F i x) ∈ U := by
   rw [equicontinuousAt_iff_continuousAt, ContinuousAt,
@@ -281,7 +327,7 @@ theorem Filter.HasBasis.equicontinuousAt_iff_left {κ : Type _} {p : κ → Prop
   rfl
 #align filter.has_basis.equicontinuous_at_iff_left Filter.HasBasis.equicontinuousAt_iff_left
 
-theorem Filter.HasBasis.equicontinuousAt_iff_right {κ : Type _} {p : κ → Prop} {s : κ → Set (α × α)}
+theorem Filter.HasBasis.equicontinuousAt_iff_right {κ : Type*} {p : κ → Prop} {s : κ → Set (α × α)}
     {F : ι → X → α} {x₀ : X} (hα : (𝓤 α).HasBasis p s) :
     EquicontinuousAt F x₀ ↔ ∀ k, p k → ∀ᶠ x in 𝓝 x₀, ∀ i, (F i x₀, F i x) ∈ s k := by
   rw [equicontinuousAt_iff_continuousAt, ContinuousAt,
@@ -291,7 +337,7 @@ theorem Filter.HasBasis.equicontinuousAt_iff_right {κ : Type _} {p : κ → Pro
 
 -- Porting note: changed from `∃ k (_ : p k), _` to `∃ k, p k ∧ _` since Lean 4 generates the
 -- second one when parsing expressions like `∃ δ > 0, _`.
-theorem Filter.HasBasis.equicontinuousAt_iff {κ₁ κ₂ : Type _} {p₁ : κ₁ → Prop} {s₁ : κ₁ → Set X}
+theorem Filter.HasBasis.equicontinuousAt_iff {κ₁ κ₂ : Type*} {p₁ : κ₁ → Prop} {s₁ : κ₁ → Set X}
     {p₂ : κ₂ → Prop} {s₂ : κ₂ → Set (α × α)} {F : ι → X → α} {x₀ : X} (hX : (𝓝 x₀).HasBasis p₁ s₁)
     (hα : (𝓤 α).HasBasis p₂ s₂) :
     EquicontinuousAt F x₀ ↔
@@ -304,7 +350,7 @@ theorem Filter.HasBasis.equicontinuousAt_iff {κ₁ κ₂ : Type _} {p₁ : κ�
 
 -- Porting note: changed from `∃ k (_ : p k), _` to `∃ k, p k ∧ _` since Lean 4 generates the
 -- second one when parsing expressions like `∃ δ > 0, _`.
-theorem Filter.HasBasis.uniformEquicontinuous_iff_left {κ : Type _} {p : κ → Prop}
+theorem Filter.HasBasis.uniformEquicontinuous_iff_left {κ : Type*} {p : κ → Prop}
     {s : κ → Set (β × β)} {F : ι → β → α} (hβ : (𝓤 β).HasBasis p s) :
     UniformEquicontinuous F ↔
       ∀ U ∈ 𝓤 α, ∃ k, p k ∧ ∀ x y, (x, y) ∈ s k → ∀ i, (F i x, F i y) ∈ U := by
@@ -314,7 +360,7 @@ theorem Filter.HasBasis.uniformEquicontinuous_iff_left {κ : Type _} {p : κ →
   rfl
 #align filter.has_basis.uniform_equicontinuous_iff_left Filter.HasBasis.uniformEquicontinuous_iff_left
 
-theorem Filter.HasBasis.uniformEquicontinuous_iff_right {κ : Type _} {p : κ → Prop}
+theorem Filter.HasBasis.uniformEquicontinuous_iff_right {κ : Type*} {p : κ → Prop}
     {s : κ → Set (α × α)} {F : ι → β → α} (hα : (𝓤 α).HasBasis p s) :
     UniformEquicontinuous F ↔ ∀ k, p k → ∀ᶠ xy : β × β in 𝓤 β, ∀ i, (F i xy.1, F i xy.2) ∈ s k := by
   rw [uniformEquicontinuous_iff_uniformContinuous, UniformContinuous,
@@ -324,7 +370,7 @@ theorem Filter.HasBasis.uniformEquicontinuous_iff_right {κ : Type _} {p : κ �
 
 -- Porting note: changed from `∃ k (_ : p k), _` to `∃ k, p k ∧ _` since Lean 4 generates the
 -- second one when parsing expressions like `∃ δ > 0, _`.
-theorem Filter.HasBasis.uniformEquicontinuous_iff {κ₁ κ₂ : Type _} {p₁ : κ₁ → Prop}
+theorem Filter.HasBasis.uniformEquicontinuous_iff {κ₁ κ₂ : Type*} {p₁ : κ₁ → Prop}
     {s₁ : κ₁ → Set (β × β)} {p₂ : κ₂ → Prop} {s₂ : κ₂ → Set (α × α)} {F : ι → β → α}
     (hβ : (𝓤 β).HasBasis p₁ s₁) (hα : (𝓤 α).HasBasis p₂ s₂) :
     UniformEquicontinuous F ↔
@@ -349,13 +395,8 @@ theorem UniformInducing.equicontinuousAt_iff {F : ι → X → α} {x₀ : X} {u
 family `𝓕'`, obtained by precomposing each function of `𝓕` by `u`, is equicontinuous. -/
 theorem UniformInducing.equicontinuous_iff {F : ι → X → α} {u : α → β} (hu : UniformInducing u) :
     Equicontinuous F ↔ Equicontinuous ((· ∘ ·) u ∘ F) := by
-  have : ∀ x, EquicontinuousAt F x ↔ EquicontinuousAt ((fun x x_1 => x ∘ x_1) u ∘ F) x := by
-    intro
-    rw [hu.equicontinuousAt_iff]
-  exact ⟨fun h x => (this x).mp (h x), fun h x => (this x).mpr (h x)⟩
-  -- Porting note: proof was:
-  -- congrm (∀ x, _ : Prop)
-  -- rw [hu.equicontinuousAt_iff]
+  congrm ∀ x, ?_
+  rw [hu.equicontinuousAt_iff]
 #align uniform_inducing.equicontinuous_iff UniformInducing.equicontinuous_iff
 
 /-- Given `u : α → γ` a uniform inducing map, a family `𝓕 : ι → β → α` is uniformly equicontinuous

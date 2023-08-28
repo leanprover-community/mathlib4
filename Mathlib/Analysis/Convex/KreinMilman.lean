@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.convex.krein_milman
-! leanprover-community/mathlib commit 279297937dede7b1b3451b7b0f1786352ad011fa
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Exposed
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
+
+#align_import analysis.convex.krein_milman from "leanprover-community/mathlib"@"279297937dede7b1b3451b7b0f1786352ad011fa"
 
 /-!
 # The Krein-Milman theorem
@@ -59,7 +56,7 @@ open Set
 
 open Classical
 
-variable {E : Type _} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [T2Space E]
+variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [T2Space E]
   [TopologicalAddGroup E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] {s : Set E}
 
 /-- **Krein-Milman lemma**: In a LCTVS, any nonempty compact set has an extreme point. -/

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Joël Riou
-
-! This file was ported from Lean 3 source module algebra.homology.quasi_iso
-! leanprover-community/mathlib commit 956af7c76589f444f2e1313911bad16366ea476d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.CategoryTheory.Abelian.Homology
+
+#align_import algebra.homology.quasi_iso from "leanprover-community/mathlib"@"956af7c76589f444f2e1313911bad16366ea476d"
 
 /-!
 # Quasi-isomorphisms
@@ -28,7 +25,7 @@ open CategoryTheory.Limits
 
 universe v u
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V] [HasZeroObject V]
 
@@ -70,7 +67,7 @@ namespace HomotopyEquiv
 
 section
 
-variable {W : Type _} [Category W] [Preadditive W] [HasCokernels W] [HasImages W] [HasEqualizers W]
+variable {W : Type*} [Category W] [Preadditive W] [HasCokernels W] [HasImages W] [HasEqualizers W]
   [HasZeroObject W] [HasImageMaps W]
 
 /-- A homotopy equivalence is a quasi-isomorphism. -/
@@ -98,7 +95,7 @@ namespace HomologicalComplex.Hom
 
 section ToSingle₀
 
-variable {W : Type _} [Category W] [Abelian W]
+variable {W : Type*} [Category W] [Abelian W]
 
 section
 
@@ -207,7 +204,7 @@ end ToSingle₀
 
 end HomologicalComplex.Hom
 
-variable {A : Type _} [Category A] [Abelian A] {B : Type _} [Category B] [Abelian B] (F : A ⥤ B)
+variable {A : Type*} [Category A] [Abelian A] {B : Type*} [Category B] [Abelian B] (F : A ⥤ B)
   [Functor.Additive F] [PreservesFiniteLimits F] [PreservesFiniteColimits F] [Faithful F]
 
 theorem CategoryTheory.Functor.quasiIso_of_map_quasiIso {C D : HomologicalComplex A c} (f : C ⟶ D)

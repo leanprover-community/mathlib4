@@ -2,13 +2,10 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.lex
-! leanprover-community/mathlib commit d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.RelClasses
+
+#align_import data.list.lex from "leanprover-community/mathlib"@"d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d"
 
 /-!
 # Lexicographic ordering of lists.
@@ -63,6 +60,15 @@ theorem cons_iff {r : α → α → Prop} [IsIrrefl α r] {a l₁ l₂} :
 theorem not_nil_right (r : α → α → Prop) (l : List α) : ¬Lex r l [] :=
   fun.
 #align list.lex.not_nil_right List.Lex.not_nil_right
+
+theorem nil_left_or_eq_nil {r : α → α → Prop} (l : List α) : List.Lex r [] l ∨ l = [] :=
+  match l with
+  | [] => Or.inr rfl
+  | (_ :: _) => Or.inl nil
+
+@[simp]
+theorem singleton_iff {r : α → α → Prop} (a b : α) : List.Lex r [a] [b] ↔ r a b :=
+  ⟨fun | rel h => h, List.Lex.rel⟩
 
 instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [IsTrichotomous α r] :
     IsOrderConnected (List α) (Lex r) where

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
-
-! This file was ported from Lean 3 source module measure_theory.integral.layercake
-! leanprover-community/mathlib commit 08a4542bec7242a5c60f179e4e49de8c0d677b1b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.Analysis.SpecialFunctions.Integrals
+
+#align_import measure_theory.integral.layercake from "leanprover-community/mathlib"@"08a4542bec7242a5c60f179e4e49de8c0d677b1b"
 
 /-!
 # The layer cake formula / Cavalieri's principle / tail probability formula
@@ -71,7 +68,7 @@ section Layercake
 
 namespace MeasureTheory
 
-variable {α : Type _} [MeasurableSpace α] {f : α → ℝ} {g : ℝ → ℝ} {s : Set α}
+variable {α : Type*} [MeasurableSpace α] {f : α → ℝ} {g : ℝ → ℝ} {s : Set α}
 
 /-- An auxiliary version of the layer cake formula (Cavalieri's principle, tail probability
 formula), with a measurability assumption that would also essentially follow from the
@@ -111,18 +108,16 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α) 
           (Ici s).indicator (fun _ : ℝ => (1 : ℝ≥0∞)) (f x) := by
       funext a
       by_cases s ∈ Ioc (0 : ℝ) (f a)
-      ·
-        simp only [h, show s ∈ Ioi (0 : ℝ) from h.1, show f a ∈ Ici s from h.2, indicator_of_mem,
+      · simp only [h, show s ∈ Ioi (0 : ℝ) from h.1, show f a ∈ Ici s from h.2, indicator_of_mem,
           mul_one]
       · have h_copy := h
         simp only [mem_Ioc, not_and, not_le] at h
         by_cases h' : 0 < s
-        ·
-          simp only [h_copy, h h', indicator_of_not_mem, not_false_iff, mem_Ici, not_le,
-            MulZeroClass.mul_zero]
+        · simp only [h_copy, h h', indicator_of_not_mem, not_false_iff, mem_Ici, not_le,
+            mul_zero]
         · have : s ∉ Ioi (0 : ℝ) := h'
-          simp only [this, h', indicator_of_not_mem, not_false_iff, MulZeroClass.mul_zero,
-            MulZeroClass.zero_mul, mem_Ioc, false_and_iff]
+          simp only [this, h', indicator_of_not_mem, not_false_iff, mul_zero,
+            zero_mul, mem_Ioc, false_and_iff]
     simp_rw [aux₁]
     rw [lintegral_const_mul']
     swap;
@@ -217,7 +212,7 @@ instead. -/
 theorem lintegral_eq_lintegral_meas_le (μ : Measure α) [SigmaFinite μ] (f_nn : 0 ≤ f)
     (f_mble : Measurable f) :
     (∫⁻ ω, ENNReal.ofReal (f ω) ∂μ) = ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} := by
-  set cst := fun t : ℝ => (1 : ℝ)
+  set cst := fun _ : ℝ => (1 : ℝ)
   have cst_intble : ∀ t > 0, IntervalIntegrable cst volume 0 t := fun _ _ =>
     intervalIntegrable_const
   have key :=
@@ -267,13 +262,13 @@ section LayercakeLT
 
 open MeasureTheory
 
-variable {α : Type _} [MeasurableSpace α] (μ : Measure α)
+variable {α : Type*} [MeasurableSpace α] (μ : Measure α)
 
-variable {β : Type _} [MeasurableSpace β] [MeasurableSingletonClass β]
+variable {β : Type*} [MeasurableSpace β] [MeasurableSingletonClass β]
 
 namespace Measure
 
-theorem meas_le_ne_meas_lt_subset_meas_pos {R : Type _} [LinearOrder R] [MeasurableSpace R]
+theorem meas_le_ne_meas_lt_subset_meas_pos {R : Type*} [LinearOrder R] [MeasurableSpace R]
     [MeasurableSingletonClass R] {g : α → R} (g_mble : Measurable g) {t : R}
     (ht : μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}) : 0 < μ {a : α | g a = t} := by
   have uni : {a : α | t ≤ g a} = {a : α | t < g a} ∪ {a : α | t = g a} := by
@@ -295,14 +290,14 @@ theorem meas_le_ne_meas_lt_subset_meas_pos {R : Type _} [LinearOrder R] [Measura
   exact ht μ_add
 #align measure.meas_le_ne_meas_lt_subset_meas_pos Measure.meas_le_ne_meas_lt_subset_meas_pos
 
-theorem countable_meas_le_ne_meas_lt [SigmaFinite μ] {R : Type _} [LinearOrder R]
+theorem countable_meas_le_ne_meas_lt [SigmaFinite μ] {R : Type*} [LinearOrder R]
     [MeasurableSpace R] [MeasurableSingletonClass R] {g : α → R} (g_mble : Measurable g) :
     {t : R | μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}}.Countable :=
   Countable.mono (show _ from fun _ ht => meas_le_ne_meas_lt_subset_meas_pos μ g_mble ht)
     (Measure.countable_meas_level_set_pos g_mble)
 #align measure.countable_meas_le_ne_meas_lt Measure.countable_meas_le_ne_meas_lt
 
-theorem meas_le_ae_eq_meas_lt [SigmaFinite μ] {R : Type _} [LinearOrder R] [MeasurableSpace R]
+theorem meas_le_ae_eq_meas_lt [SigmaFinite μ] {R : Type*} [LinearOrder R] [MeasurableSpace R]
     [MeasurableSingletonClass R] (ν : Measure R) [NoAtoms ν] {g : α → R} (g_mble : Measurable g) :
     (fun t => μ {a : α | t ≤ g a}) =ᵐ[ν] fun t => μ {a : α | t < g a} :=
   Set.Countable.measure_zero (Measure.countable_meas_le_ne_meas_lt μ g_mble) _

@@ -2,16 +2,13 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Sébastien Gouëzel, Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.pi_L2
-! leanprover-community/mathlib commit 13bce9a6b6c44f6b4c91ac1c1d2a816e2533d395
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.NormedSpace.PiLp
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.UnitaryGroup
+
+#align_import analysis.inner_product_space.pi_L2 from "leanprover-community/mathlib"@"13bce9a6b6c44f6b4c91ac1c1d2a816e2533d395"
 
 /-!
 # `L²` inner product space structure on finite products of inner product spaces
@@ -56,7 +53,7 @@ For consequences in infinite dimension (Hilbert bases, etc.), see the file
 
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 set_option linter.uppercaseLean3 false
 
@@ -65,17 +62,17 @@ open Real Set Filter IsROrC Submodule Function BigOperators Uniformity Topology 
 
 noncomputable section
 
-variable {ι : Type _} {ι' : Type _}
+variable {ι : Type*} {ι' : Type*}
 
-variable {𝕜 : Type _} [IsROrC 𝕜]
+variable {𝕜 : Type*} [IsROrC 𝕜]
 
-variable {E : Type _} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-variable {E' : Type _} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 
-variable {F : Type _} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
-variable {F' : Type _} [NormedAddCommGroup F'] [InnerProductSpace ℝ F']
+variable {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F']
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
@@ -84,7 +81,7 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 then `Π i, f i` is an inner product space as well. Since `Π i, f i` is endowed with the sup norm,
 we use instead `PiLp 2 f` for the product space, which is endowed with the `L^2` norm.
 -/
-instance PiLp.innerProductSpace {ι : Type _} [Fintype ι] (f : ι → Type _)
+instance PiLp.innerProductSpace {ι : Type*} [Fintype ι] (f : ι → Type*)
     [∀ i, NormedAddCommGroup (f i)] [∀ i, InnerProductSpace 𝕜 (f i)] :
     InnerProductSpace 𝕜 (PiLp 2 f) where
   inner x y := ∑ i, inner (x i) (y i)
@@ -106,7 +103,7 @@ instance PiLp.innerProductSpace {ι : Type _} [Fintype ι] (f : ι → Type _)
 #align pi_Lp.inner_product_space PiLp.innerProductSpace
 
 @[simp]
-theorem PiLp.inner_apply {ι : Type _} [Fintype ι] {f : ι → Type _} [∀ i, NormedAddCommGroup (f i)]
+theorem PiLp.inner_apply {ι : Type*} [Fintype ι] {f : ι → Type*} [∀ i, NormedAddCommGroup (f i)]
     [∀ i, InnerProductSpace 𝕜 (f i)] (x y : PiLp 2 f) : ⟪x, y⟫ = ∑ i, ⟪x i, y i⟫ :=
   rfl
 #align pi_Lp.inner_apply PiLp.inner_apply
@@ -114,31 +111,31 @@ theorem PiLp.inner_apply {ι : Type _} [Fintype ι] {f : ι → Type _} [∀ i, 
 /-- The standard real/complex Euclidean space, functions on a finite type. For an `n`-dimensional
 space use `EuclideanSpace 𝕜 (Fin n)`. -/
 @[reducible, nolint unusedArguments]
-def EuclideanSpace (𝕜 : Type _) [IsROrC 𝕜] (n : Type _) [Fintype n] : Type _ :=
+def EuclideanSpace (𝕜 : Type*) [IsROrC 𝕜] (n : Type*) [Fintype n] : Type _ :=
   PiLp 2 fun _ : n => 𝕜
 #align euclidean_space EuclideanSpace
 
-theorem EuclideanSpace.nnnorm_eq {𝕜 : Type _} [IsROrC 𝕜] {n : Type _} [Fintype n]
+theorem EuclideanSpace.nnnorm_eq {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n]
     (x : EuclideanSpace 𝕜 n) : ‖x‖₊ = NNReal.sqrt (∑ i, ‖x i‖₊ ^ 2) :=
   PiLp.nnnorm_eq_of_L2 x
 #align euclidean_space.nnnorm_eq EuclideanSpace.nnnorm_eq
 
-theorem EuclideanSpace.norm_eq {𝕜 : Type _} [IsROrC 𝕜] {n : Type _} [Fintype n]
+theorem EuclideanSpace.norm_eq {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n]
     (x : EuclideanSpace 𝕜 n) : ‖x‖ = Real.sqrt (∑ i, ‖x i‖ ^ 2) := by
   simpa only [Real.coe_sqrt, NNReal.coe_sum] using congr_arg ((↑) : ℝ≥0 → ℝ) x.nnnorm_eq
 #align euclidean_space.norm_eq EuclideanSpace.norm_eq
 
-theorem EuclideanSpace.dist_eq {𝕜 : Type _} [IsROrC 𝕜] {n : Type _} [Fintype n]
+theorem EuclideanSpace.dist_eq {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n]
     (x y : EuclideanSpace 𝕜 n) : dist x y = (∑ i, dist (x i) (y i) ^ 2).sqrt :=
   PiLp.dist_eq_of_L2 x y
 #align euclidean_space.dist_eq EuclideanSpace.dist_eq
 
-theorem EuclideanSpace.nndist_eq {𝕜 : Type _} [IsROrC 𝕜] {n : Type _} [Fintype n]
+theorem EuclideanSpace.nndist_eq {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n]
     (x y : EuclideanSpace 𝕜 n) : nndist x y = NNReal.sqrt (∑ i, nndist (x i) (y i) ^ 2) :=
   PiLp.nndist_eq_of_L2 x y
 #align euclidean_space.nndist_eq EuclideanSpace.nndist_eq
 
-theorem EuclideanSpace.edist_eq {𝕜 : Type _} [IsROrC 𝕜] {n : Type _} [Fintype n]
+theorem EuclideanSpace.edist_eq {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n]
     (x y : EuclideanSpace 𝕜 n) : edist x y = (∑ i, edist (x i) (y i) ^ 2) ^ (1 / 2 : ℝ) :=
   PiLp.edist_eq_of_L2 x y
 #align euclidean_space.edist_eq EuclideanSpace.edist_eq
@@ -161,7 +158,7 @@ instance EuclideanSpace.instInnerProductSpace : InnerProductSpace 𝕜 (Euclidea
 @[simp]
 theorem finrank_euclideanSpace :
     FiniteDimensional.finrank 𝕜 (EuclideanSpace 𝕜 ι) = Fintype.card ι := by
-  simp [EuclideanSpace, PiLp]
+  simp [EuclideanSpace, PiLp, WithLp]
 #align finrank_euclidean_space finrank_euclideanSpace
 
 theorem finrank_euclideanSpace_fin {n : ℕ} :
@@ -207,25 +204,22 @@ theorem DirectSum.IsInternal.isometryL2OfOrthogonalFamily_symm_apply [DecidableE
     let e₂ := LinearEquiv.ofBijective (DirectSum.coeLinearMap V) hV
     suffices ∀ v : ⨁ i, V i, e₂ v = ∑ i, e₁ v i by exact this (e₁.symm w)
     intro v
-    -- Porting note: added `Dfinsupp.lsum`
-    simp [DirectSum.coeLinearMap, DirectSum.toModule, Dfinsupp.lsum, Dfinsupp.sumAddHom_apply]
+    -- Porting note: added `DFinsupp.lsum`
+    simp [DirectSum.coeLinearMap, DirectSum.toModule, DFinsupp.lsum, DFinsupp.sumAddHom_apply]
 #align direct_sum.is_internal.isometry_L2_of_orthogonal_family_symm_apply DirectSum.IsInternal.isometryL2OfOrthogonalFamily_symm_apply
 
 end
 
 variable (ι 𝕜)
 
--- TODO : This should be generalized to `PiLp` with finite dimensional factors.
-/-- `PiLp.linearEquiv` upgraded to a continuous linear map between `EuclideanSpace 𝕜 ι`
-and `ι → 𝕜`. -/
-@[simps! toLinearEquiv_apply apply toLinearEquiv_symm_apply symm_apply]
-def EuclideanSpace.equiv : EuclideanSpace 𝕜 ι ≃L[𝕜] ι → 𝕜 :=
-  (PiLp.linearEquiv 2 𝕜 fun _ : ι => 𝕜).toContinuousLinearEquiv
+/-- A shorthand for `PiLp.continuousLinearEquiv`. -/
+abbrev EuclideanSpace.equiv : EuclideanSpace 𝕜 ι ≃L[𝕜] ι → 𝕜 :=
+  PiLp.continuousLinearEquiv 2 𝕜 _
 #align euclidean_space.equiv EuclideanSpace.equiv
-#align euclidean_space.equiv_to_linear_equiv_apply EuclideanSpace.equiv_toLinearEquiv_apply
-#align euclidean_space.equiv_apply EuclideanSpace.equiv_apply
-#align euclidean_space.equiv_to_linear_equiv_symm_apply EuclideanSpace.equiv_toLinearEquiv_symm_apply
-#align euclidean_space.equiv_symm_apply EuclideanSpace.equiv_symm_apply
+#noalign euclidean_space.equiv_to_linear_equiv_apply
+#noalign euclidean_space.equiv_apply
+#noalign euclidean_space.equiv_to_linear_equiv_symm_apply
+#noalign euclidean_space.equiv_symm_apply
 
 variable {ι 𝕜}
 
@@ -319,7 +313,7 @@ theorem EuclideanSpace.orthonormal_single [DecidableEq ι] :
   trivial
 #align euclidean_space.orthonormal_single EuclideanSpace.orthonormal_single
 
-theorem EuclideanSpace.piLpCongrLeft_single [DecidableEq ι] {ι' : Type _} [Fintype ι']
+theorem EuclideanSpace.piLpCongrLeft_single [DecidableEq ι] {ι' : Type*} [Fintype ι']
     [DecidableEq ι'] (e : ι' ≃ ι) (i' : ι') (v : 𝕜) :
     LinearIsometryEquiv.piLpCongrLeft 2 𝕜 𝕜 e (EuclideanSpace.single i' v) =
       EuclideanSpace.single (e i') v :=
@@ -364,7 +358,7 @@ instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι fun _ => E where
         rw [this, Pi.single_smul]
         replace h := congr_fun h i
         simp only [LinearEquiv.comp_coe, SMulHomClass.map_smul, LinearEquiv.coe_coe,
-          LinearEquiv.trans_apply, PiLp.linearEquiv_symm_apply, PiLp.equiv_symm_single,
+          LinearEquiv.trans_apply, WithLp.linearEquiv_symm_apply, PiLp.equiv_symm_single,
           LinearIsometryEquiv.coe_toLinearEquiv] at h ⊢
         rw [h]
 
@@ -436,17 +430,17 @@ protected theorem coe_toBasis_repr_apply (b : OrthonormalBasis ι 𝕜 E) (x : E
     LinearIsometryEquiv.coe_toLinearEquiv]
 #align orthonormal_basis.coe_to_basis_repr_apply OrthonormalBasis.coe_toBasis_repr_apply
 
-protected theorem sum_repr (b : OrthonormalBasis ι 𝕜 E) (x : E) : (∑ i, b.repr x i • b i) = x := by
+protected theorem sum_repr (b : OrthonormalBasis ι 𝕜 E) (x : E) : ∑ i, b.repr x i • b i = x := by
   simp_rw [← b.coe_toBasis_repr_apply, ← b.coe_toBasis]
   exact b.toBasis.sum_repr x
 #align orthonormal_basis.sum_repr OrthonormalBasis.sum_repr
 
 protected theorem sum_repr_symm (b : OrthonormalBasis ι 𝕜 E) (v : EuclideanSpace 𝕜 ι) :
-    (∑ i, v i • b i) = b.repr.symm v := by simpa using (b.toBasis.equivFun_symm_apply v).symm
+    ∑ i, v i • b i = b.repr.symm v := by simpa using (b.toBasis.equivFun_symm_apply v).symm
 #align orthonormal_basis.sum_repr_symm OrthonormalBasis.sum_repr_symm
 
 protected theorem sum_inner_mul_inner (b : OrthonormalBasis ι 𝕜 E) (x y : E) :
-    (∑ i, ⟪x, b i⟫ * ⟪b i, y⟫) = ⟪x, y⟫ := by
+    ∑ i, ⟪x, b i⟫ * ⟪b i, y⟫ = ⟪x, y⟫ := by
   have := congr_arg (innerSL 𝕜 x) (b.sum_repr y)
   rw [map_sum] at this
   convert this
@@ -462,19 +456,19 @@ protected theorem orthogonalProjection_eq_sum {U : Submodule 𝕜 E} [CompleteSp
 #align orthonormal_basis.orthogonal_projection_eq_sum OrthonormalBasis.orthogonalProjection_eq_sum
 
 /-- Mapping an orthonormal basis along a `LinearIsometryEquiv`. -/
-protected def map {G : Type _} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+protected def map {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
     (b : OrthonormalBasis ι 𝕜 E) (L : E ≃ₗᵢ[𝕜] G) : OrthonormalBasis ι 𝕜 G where
   repr := L.symm.trans b.repr
 #align orthonormal_basis.map OrthonormalBasis.map
 
 @[simp]
-protected theorem map_apply {G : Type _} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+protected theorem map_apply {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
     (b : OrthonormalBasis ι 𝕜 E) (L : E ≃ₗᵢ[𝕜] G) (i : ι) : b.map L i = L (b i) :=
   rfl
 #align orthonormal_basis.map_apply OrthonormalBasis.map_apply
 
 @[simp]
-protected theorem toBasis_map {G : Type _} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+protected theorem toBasis_map {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
     (b : OrthonormalBasis ι 𝕜 E) (L : E ≃ₗᵢ[𝕜] G) :
     (b.map L).toBasis = b.toBasis.map L.toLinearEquiv :=
   rfl
@@ -748,7 +742,7 @@ of the components of the direct sum, the disjoint union of these orthonormal bas
 orthonormal basis for `M`. -/
 noncomputable def DirectSum.IsInternal.collectedOrthonormalBasis
     (hV : OrthogonalFamily 𝕜 (fun i => A i) fun i => (A i).subtypeₗᵢ) [DecidableEq ι]
-    (hV_sum : DirectSum.IsInternal fun i => A i) {α : ι → Type _} [∀ i, Fintype (α i)]
+    (hV_sum : DirectSum.IsInternal fun i => A i) {α : ι → Type*} [∀ i, Fintype (α i)]
     (v_family : ∀ i, OrthonormalBasis (α i) 𝕜 (A i)) : OrthonormalBasis (Σi, α i) 𝕜 E :=
   (hV_sum.collectedBasis fun i => (v_family i).toBasis).toOrthonormalBasis <| by
     simpa using
@@ -756,7 +750,7 @@ noncomputable def DirectSum.IsInternal.collectedOrthonormalBasis
 #align direct_sum.is_internal.collected_orthonormal_basis DirectSum.IsInternal.collectedOrthonormalBasis
 
 theorem DirectSum.IsInternal.collectedOrthonormalBasis_mem [DecidableEq ι]
-    (h : DirectSum.IsInternal A) {α : ι → Type _} [∀ i, Fintype (α i)]
+    (h : DirectSum.IsInternal A) {α : ι → Type*} [∀ i, Fintype (α i)]
     (hV : OrthogonalFamily 𝕜 (fun i => A i) fun i => (A i).subtypeₗᵢ)
     (v : ∀ i, OrthonormalBasis (α i) 𝕜 (A i)) (a : Σi, α i) :
     h.collectedOrthonormalBasis hV v a ∈ A a.1 := by
@@ -782,7 +776,7 @@ theorem Orthonormal.exists_orthonormalBasis_extension (hv : Orthonormal 𝕜 ((�
   · simp
 #align orthonormal.exists_orthonormal_basis_extension Orthonormal.exists_orthonormalBasis_extension
 
-theorem Orthonormal.exists_orthonormalBasis_extension_of_card_eq {ι : Type _} [Fintype ι]
+theorem Orthonormal.exists_orthonormalBasis_extension_of_card_eq {ι : Type*} [Fintype ι]
     (card_ι : finrank 𝕜 E = Fintype.card ι) {v : ι → E} {s : Set ι}
     (hv : Orthonormal 𝕜 (s.restrict v)) : ∃ b : OrthonormalBasis ι 𝕜 E, ∀ i ∈ s, b i = v i := by
   have hsv : Injective (s.restrict v) := hv.linearIndependent.injective
@@ -890,7 +884,7 @@ def OrthonormalBasis.fromOrthogonalSpanSingleton (n : ℕ) [Fact (finrank 𝕜 E
 
 section LinearIsometry
 
-variable {V : Type _} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [FiniteDimensional 𝕜 V]
+variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [FiniteDimensional 𝕜 V]
 
 variable {S : Submodule 𝕜 V} {L : S →ₗᵢ[𝕜] V}
 
@@ -969,7 +963,7 @@ section Matrix
 
 open Matrix
 
-variable {m n : Type _}
+variable {m n : Type*}
 
 namespace Matrix
 
@@ -1007,16 +1001,16 @@ end Matrix
 local notation "⟪" x ", " y "⟫ₑ" =>
   @inner 𝕜 _ _ (Equiv.symm (PiLp.equiv 2 _) x) (Equiv.symm (PiLp.equiv 2 _) y)
 
-/-- The inner product of a row of `A` and a row of `B` is an entry of `B ⬝ Aᴴ`. -/
+/-- The inner product of a row of `A` and a row of `B` is an entry of `B * Aᴴ`. -/
 theorem inner_matrix_row_row [Fintype n] (A B : Matrix m n 𝕜) (i j : m) :
-    ⟪A i, B j⟫ₑ = (B ⬝ Aᴴ) j i := by
+    ⟪A i, B j⟫ₑ = (B * Aᴴ) j i := by
   simp_rw [EuclideanSpace.inner_piLp_equiv_symm, Matrix.mul_apply', Matrix.dotProduct_comm,
     Matrix.conjTranspose_apply, Pi.star_def]
 #align inner_matrix_row_row inner_matrix_row_row
 
-/-- The inner product of a column of `A` and a column of `B` is an entry of `Aᴴ ⬝ B`. -/
+/-- The inner product of a column of `A` and a column of `B` is an entry of `Aᴴ * B`. -/
 theorem inner_matrix_col_col [Fintype m] (A B : Matrix m n 𝕜) (i j : n) :
-    ⟪Aᵀ i, Bᵀ j⟫ₑ = (Aᴴ ⬝ B) i j :=
+    ⟪Aᵀ i, Bᵀ j⟫ₑ = (Aᴴ * B) i j :=
   rfl
 #align inner_matrix_col_col inner_matrix_col_col
 

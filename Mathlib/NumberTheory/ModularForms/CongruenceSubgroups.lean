@@ -2,16 +2,13 @@
 Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
-
-! This file was ported from Lean 3 source module number_theory.modular_forms.congruence_subgroups
-! leanprover-community/mathlib commit ae690b0c236e488a0043f6faa8ce3546e7f2f9c5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.Subgroup.Pointwise
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+
+#align_import number_theory.modular_forms.congruence_subgroups from "leanprover-community/mathlib"@"ae690b0c236e488a0043f6faa8ce3546e7f2f9c5"
 
 /-!
 # Congruence subgroups
@@ -100,8 +97,7 @@ def Gamma0 (N : ℕ) : Subgroup SL(2, ℤ) where
     intro a b ha hb
     simp only [Set.mem_setOf_eq]
     have h := (Matrix.two_mul_expl a.1 b.1).2.2.1
-    simp only [coe_matrix_coe, coe_mul, Int.coe_castRingHom, map_apply, Set.mem_setOf_eq,
-      mul_eq_mul] at *
+    simp only [coe_matrix_coe, coe_mul, Int.coe_castRingHom, map_apply, Set.mem_setOf_eq] at *
     rw [h]
     simp [ha, hb]
   inv_mem' := by
@@ -129,8 +125,7 @@ def Gamma0Map (N : ℕ) : Gamma0 N →* ZMod N where
   map_mul' := by
     intro A B
     have := (two_mul_expl A.1.1 B.1.1).2.2.2
-    simp only [Subgroup.coe_mul, coe_matrix_coe, coe_mul, Int.coe_castRingHom, map_apply,
-      mul_eq_mul] at *
+    simp only [Subgroup.coe_mul, coe_matrix_coe, coe_mul, Int.coe_castRingHom, map_apply] at *
     rw [this]
     have ha := A.property
     simp only [Int.cast_add, Int.cast_mul, add_left_eq_self, Gamma0_mem,
@@ -161,7 +156,7 @@ theorem Gamma1_to_Gamma0_mem (N : ℕ) (A : Gamma0 N) : A ∈ Gamma1' N ↔
     simp only [Gamma0Map, coe_matrix_coe, Int.coe_castRingHom, map_apply, Gamma1_mem',
       MonoidHom.coe_mk, OneHom.coe_mk, Int.cast_sub, Int.cast_mul] at *
     rw [hA, ha] at adet
-    simp only [mul_one, MulZeroClass.mul_zero, sub_zero] at adet
+    simp only [mul_one, mul_zero, sub_zero] at adet
     simp only [adet, hA, ha, eq_self_iff_true, and_self_iff]
   · intro ha
     simp only [Gamma1_mem', Gamma0Map, MonoidHom.coe_mk, coe_matrix_coe,

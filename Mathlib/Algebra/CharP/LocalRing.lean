@@ -2,16 +2,13 @@
 Copyright (c) 2022 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster
-
-! This file was ported from Lean 3 source module algebra.char_p.local_ring
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Data.Nat.Factorization.Basic
+
+#align_import algebra.char_p.local_ring from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Characteristics of local rings
@@ -25,7 +22,7 @@ import Mathlib.Data.Nat.Factorization.Basic
 
 
 /-- In a local ring the characteristics is either zero or a prime power. -/
-theorem charP_zero_or_prime_power (R : Type _) [CommRing R] [LocalRing R] (q : ℕ)
+theorem charP_zero_or_prime_power (R : Type*) [CommRing R] [LocalRing R] (q : ℕ)
     [char_R_q : CharP R q] : q = 0 ∨ IsPrimePow q := by
   -- Assume `q := char(R)` is not zero.
   apply or_iff_not_imp_left.2

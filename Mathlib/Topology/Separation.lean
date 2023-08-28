@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module topology.separation
-! leanprover-community/mathlib commit d91e7f7a7f1c7e9f0e18fdb6bde4f652004c735d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.Connected
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.Inseparable
+
+#align_import topology.separation from "leanprover-community/mathlib"@"d91e7f7a7f1c7e9f0e18fdb6bde4f652004c735d"
 
 /-!
 # Separation properties of topological spaces.
@@ -112,7 +109,7 @@ theorem separatedNhds_iff_disjoint {s t : Set α} : SeparatedNhds s t ↔ Disjoi
     exists_and_left, and_assoc, and_comm, and_left_comm]
 #align separated_nhds_iff_disjoint separatedNhds_iff_disjoint
 
-alias separatedNhds_iff_disjoint ↔ SeparatedNhds.disjoint_nhdsSet _
+alias ⟨SeparatedNhds.disjoint_nhdsSet, _⟩ := separatedNhds_iff_disjoint
 
 namespace SeparatedNhds
 
@@ -232,6 +229,17 @@ theorem inseparable_eq_eq [T0Space α] : Inseparable = @Eq α :=
   funext₂ fun _ _ => propext inseparable_iff_eq
 #align inseparable_eq_eq inseparable_eq_eq
 
+theorem TopologicalSpace.IsTopologicalBasis.inseparable_iff {b : Set (Set α)}
+    (hb : IsTopologicalBasis b) {x y : α} : Inseparable x y ↔ ∀ s ∈ b, (x ∈ s ↔ y ∈ s) :=
+  ⟨fun h s hs ↦ inseparable_iff_forall_open.1 h _ (hb.isOpen hs),
+    fun h ↦ hb.nhds_hasBasis.eq_of_same_basis $ by
+      convert hb.nhds_hasBasis using 2
+      exact and_congr_right (h _)⟩
+
+theorem TopologicalSpace.IsTopologicalBasis.eq_iff [T0Space α] {b : Set (Set α)}
+    (hb : IsTopologicalBasis b) {x y : α} : x = y ↔ ∀ s ∈ b, (x ∈ s ↔ y ∈ s) :=
+  inseparable_iff_eq.symm.trans hb.inseparable_iff
+
 theorem t0Space_iff_exists_isOpen_xor'_mem (α : Type u) [TopologicalSpace α] :
     T0Space α ↔ ∀ x y, x ≠ y → ∃ U : Set α, IsOpen U ∧ Xor' (x ∈ U) (y ∈ U) := by
   simp only [t0Space_iff_not_inseparable, xor_iff_not_iff, not_forall, exists_prop,
@@ -244,7 +252,7 @@ theorem exists_isOpen_xor'_mem [T0Space α] {x y : α} (h : x ≠ y) :
 #align exists_is_open_xor_mem exists_isOpen_xor'_mem
 
 /-- Specialization forms a partial order on a t0 topological space. -/
-def specializationOrder (α : Type _) [TopologicalSpace α] [T0Space α] : PartialOrder α :=
+def specializationOrder (α : Type*) [TopologicalSpace α] [T0Space α] : PartialOrder α :=
   { specializationPreorder α, PartialOrder.lift (OrderDual.toDual ∘ 𝓝) nhds_injective with }
 #align specialization_order specializationOrder
 
@@ -272,7 +280,7 @@ theorem minimal_nonempty_closed_eq_singleton [T0Space α] {s : Set α} (hs : IsC
 
 /-- Given a closed set `S` in a compact T₀ space, there is some `x ∈ S` such that `{x}` is
 closed. -/
-theorem IsClosed.exists_closed_singleton {α : Type _} [TopologicalSpace α] [T0Space α]
+theorem IsClosed.exists_closed_singleton {α : Type*} [TopologicalSpace α] [T0Space α]
     [CompactSpace α] {S : Set α} (hS : IsClosed S) (hne : S.Nonempty) :
     ∃ x : α, x ∈ S ∧ IsClosed ({x} : Set α) := by
   obtain ⟨V, Vsub, Vne, Vcls, hV⟩ := hS.exists_minimal_nonempty_closed_subset hne
@@ -343,7 +351,7 @@ theorem t0Space_iff_or_not_mem_closure (α : Type u) [TopologicalSpace α] :
 instance [TopologicalSpace β] [T0Space α] [T0Space β] : T0Space (α × β) :=
   ⟨fun _ _ h => Prod.ext (h.map continuous_fst).eq (h.map continuous_snd).eq⟩
 
-instance Pi.instT0Space {ι : Type _} {π : ι → Type _} [∀ i, TopologicalSpace (π i)]
+instance Pi.instT0Space {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
     [∀ i, T0Space (π i)] :
     T0Space (∀ i, π i) :=
   ⟨fun _ _ h => funext fun i => (h.map (continuous_apply i)).eq⟩
@@ -494,7 +502,7 @@ theorem t1Space_TFAE (α : Type u) [ TopologicalSpace α ] :
   tfae_finish
 #align t1_space_tfae t1Space_TFAE
 
-theorem t1Space_iff_continuous_cofinite_of {α : Type _} [TopologicalSpace α] :
+theorem t1Space_iff_continuous_cofinite_of {α : Type*} [TopologicalSpace α] :
     T1Space α ↔ Continuous (@CofiniteTopology.of α) :=
   (t1Space_TFAE α).out 0 3
 #align t1_space_iff_continuous_cofinite_of t1Space_iff_continuous_cofinite_of
@@ -550,10 +558,10 @@ theorem nhds_le_nhds_iff [T1Space α] {a b : α} : 𝓝 a ≤ 𝓝 b ↔ a = b :
   specializes_iff_eq
 #align nhds_le_nhds_iff nhds_le_nhds_iff
 
-instance {α : Type _} : T1Space (CofiniteTopology α) :=
+instance {α : Type*} : T1Space (CofiniteTopology α) :=
   t1Space_iff_continuous_cofinite_of.mpr continuous_id
 
-theorem t1Space_antitone {α : Type _} : Antitone (@T1Space α) := fun a _ h _ =>
+theorem t1Space_antitone {α : Type*} : Antitone (@T1Space α) := fun a _ h _ =>
   @T1Space.mk _ a fun x => (T1Space.t1 x).mono h
 #align t1_space_antitone t1Space_antitone
 
@@ -604,7 +612,7 @@ instance Subtype.t1Space {α : Type u} [TopologicalSpace α] [T1Space α] {p : �
 instance [TopologicalSpace β] [T1Space α] [T1Space β] : T1Space (α × β) :=
   ⟨fun ⟨a, b⟩ => @singleton_prod_singleton _ _ a b ▸ isClosed_singleton.prod isClosed_singleton⟩
 
-instance {ι : Type _} {π : ι → Type _} [∀ i, TopologicalSpace (π i)] [∀ i, T1Space (π i)] :
+instance {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)] [∀ i, T1Space (π i)] :
     T1Space (∀ i, π i) :=
   ⟨fun f => univ_pi_singleton f ▸ isClosed_set_pi fun _ _ => isClosed_singleton⟩
 
@@ -663,13 +671,13 @@ theorem insert_mem_nhdsWithin_of_subset_insert [T1Space α] {x y : α} {s t : Se
   exact mem_of_superset self_mem_nhdsWithin (subset_insert x s)
 #align insert_mem_nhds_within_of_subset_insert insert_mem_nhdsWithin_of_subset_insert
 
-theorem biInter_basis_nhds [T1Space α] {ι : Sort _} {p : ι → Prop} {s : ι → Set α} {x : α}
-    (h : (𝓝 x).HasBasis p s) : (⋂ (i) (_ : p i), s i) = {x} := by
-  simp only [eq_singleton_iff_unique_mem, mem_iInter]
-  refine' ⟨fun i hi => mem_of_mem_nhds <| h.mem_of_mem hi, fun y hy => _⟩
-  contrapose! hy
-  rcases h.mem_iff.1 (compl_singleton_mem_nhds hy.symm) with ⟨i, hi, hsub⟩
-  exact ⟨i, hi, fun h => hsub h rfl⟩
+@[simp]
+theorem sInter_sets_nhds [T1Space α] (x : α) : ⋂₀ (𝓝 x).sets = {x} := by
+  simp [sInter_nhds_sets_eq_specializes]
+
+theorem biInter_basis_nhds [T1Space α] {ι : Sort*} {p : ι → Prop} {s : ι → Set α} {x : α}
+    (h : (𝓝 x).HasBasis p s) : ⋂ (i) (_ : p i), s i = {x} := by
+  rw [← h.sInter_sets, sInter_sets_nhds]
 #align bInter_basis_nhds biInter_basis_nhds
 
 @[simp]
@@ -681,7 +689,7 @@ theorem compl_singleton_mem_nhdsSet_iff [T1Space α] {x : α} {s : Set α} : {x}
 theorem nhdsSet_le_iff [T1Space α] {s t : Set α} : 𝓝ˢ s ≤ 𝓝ˢ t ↔ s ⊆ t := by
   refine' ⟨_, fun h => monotone_nhdsSet h⟩
   simp_rw [Filter.le_def]; intro h x hx
-  specialize h ({x}ᶜ)
+  specialize h {x}ᶜ
   simp_rw [compl_singleton_mem_nhdsSet_iff] at h
   by_contra hxt
   exact h hxt hx
@@ -717,7 +725,7 @@ obtains a dense set. -/
 theorem Dense.diff_finset [T1Space α] [∀ x : α, NeBot (𝓝[≠] x)] {s : Set α} (hs : Dense s)
     (t : Finset α) : Dense (s \ t) := by
   induction t using Finset.induction_on with
-  | empty =>  simpa using hs
+  | empty => simpa using hs
   | insert _ ih =>
     rw [Finset.coe_insert, ← union_singleton, ← diff_diff]
     exact ih.diff_singleton _
@@ -741,7 +749,7 @@ theorem eq_of_tendsto_nhds [TopologicalSpace β] [T1Space β] {f : α → β} {a
     fact₂ fact₁ (Eq.refl <| f a)
 #align eq_of_tendsto_nhds eq_of_tendsto_nhds
 
-theorem Filter.Tendsto.eventually_ne [TopologicalSpace β] [T1Space β] {α : Type _} {g : α → β}
+theorem Filter.Tendsto.eventually_ne [TopologicalSpace β] [T1Space β] {α : Type*} {g : α → β}
     {l : Filter α} {b₁ b₂ : β} (hg : Tendsto g l (𝓝 b₁)) (hb : b₁ ≠ b₂) : ∀ᶠ z in l, g z ≠ b₂ :=
   hg.eventually (isOpen_compl_singleton.eventually_mem hb)
 #align filter.tendsto.eventually_ne Filter.Tendsto.eventually_ne
@@ -771,7 +779,7 @@ theorem tendsto_const_nhds_iff [T1Space α] {l : Filter β} [NeBot l] {c d : α}
 #align tendsto_const_nhds_iff tendsto_const_nhds_iff
 
 /-- A point with a finite neighborhood has to be isolated. -/
-theorem isOpen_singleton_of_finite_mem_nhds {α : Type _} [TopologicalSpace α] [T1Space α] (x : α)
+theorem isOpen_singleton_of_finite_mem_nhds {α : Type*} [TopologicalSpace α] [T1Space α] (x : α)
     {s : Set α} (hs : s ∈ 𝓝 x) (hsf : s.Finite) : IsOpen ({x} : Set α) := by
   have A : {x} ⊆ s := by simp only [singleton_subset_iff, mem_of_mem_nhds hs]
   have B : IsClosed (s \ {x}) := (hsf.subset (diff_subset _ _)).isClosed
@@ -789,7 +797,7 @@ theorem infinite_of_mem_nhds {α} [TopologicalSpace α] [T1Space α] (x : α) [h
   exact isOpen_singleton_of_finite_mem_nhds x hs hsf
 #align infinite_of_mem_nhds infinite_of_mem_nhds
 
-theorem discrete_of_t1_of_finite {X : Type _} [TopologicalSpace X] [T1Space X] [Finite X] :
+theorem discrete_of_t1_of_finite {X : Type*} [TopologicalSpace X] [T1Space X] [Finite X] :
     DiscreteTopology X := by
   apply singletons_open_iff_discrete.mp
   intro x
@@ -816,6 +824,16 @@ theorem ConnectedSpace.infinite [ConnectedSpace α] [Nontrivial α] [T1Space α]
   infinite_univ_iff.mp <| isPreconnected_univ.infinite_of_nontrivial nontrivial_univ
 #align connected_space.infinite ConnectedSpace.infinite
 
+/-- A non-trivial connected T1 space has no isolated points. -/
+instance ConnectedSpace.neBot_nhdsWithin_compl_of_nontrivial_of_t1space
+    [ConnectedSpace α] [Nontrivial α] [T1Space α] (x : α) :
+    NeBot (𝓝[≠] x) := by
+  by_contra contra
+  rw [not_neBot, ← isOpen_singleton_iff_punctured_nhds] at contra
+  replace contra := nonempty_inter isOpen_compl_singleton
+    contra (compl_union_self _) (Set.nonempty_compl_of_nontrivial _) (singleton_nonempty _)
+  simp [compl_inter_self {x}] at contra
+
 theorem singleton_mem_nhdsWithin_of_mem_discrete {s : Set α} [DiscreteTopology s] {x : α}
     (hx : x ∈ s) : {x} ∈ 𝓝[s] x := by
   have : ({⟨x, hx⟩} : Set s) ∈ 𝓝 (⟨x, hx⟩ : s) := by simp [nhds_discrete]
@@ -830,7 +848,7 @@ theorem nhdsWithin_of_mem_discrete {s : Set α} [DiscreteTopology s] {x : α} (h
   le_antisymm (le_pure_iff.2 <| singleton_mem_nhdsWithin_of_mem_discrete hx) (pure_le_nhdsWithin hx)
 #align nhds_within_of_mem_discrete nhdsWithin_of_mem_discrete
 
-theorem Filter.HasBasis.exists_inter_eq_singleton_of_mem_discrete {ι : Type _} {p : ι → Prop}
+theorem Filter.HasBasis.exists_inter_eq_singleton_of_mem_discrete {ι : Type*} {p : ι → Prop}
     {t : ι → Set α} {s : Set α} [DiscreteTopology s] {x : α} (hb : (𝓝 x).HasBasis p t)
     (hx : x ∈ s) : ∃ i, p i ∧ t i ∩ s = {x} := by
   rcases (nhdsWithin_hasBasis hb s).mem_iff.1 (singleton_mem_nhdsWithin_of_mem_discrete hx) with
@@ -861,7 +879,7 @@ theorem disjoint_nhdsWithin_of_mem_discrete {s : Set α} [DiscreteTopology s] {x
 `t ⊆ s`, then the topological space structure on `t` induced by `X` is the same as the one
 obtained by the induced topological space structure on `s`. Use `embedding_inclusion` instead. -/
 @[deprecated embedding_inclusion]
-theorem TopologicalSpace.subset_trans {X : Type _} [TopologicalSpace X] {s t : Set X}
+theorem TopologicalSpace.subset_trans {X : Type*} [TopologicalSpace X] {s t : Set X}
     (ts : t ⊆ s) :
     (instTopologicalSpaceSubtype : TopologicalSpace t) =
       (instTopologicalSpaceSubtype : TopologicalSpace s).induced (Set.inclusion ts) :=
@@ -1118,19 +1136,19 @@ Hausdorff spaces:
 
 
 -- see Note [lower instance priority]
-instance (priority := 100) DiscreteTopology.toT2Space {α : Type _} [TopologicalSpace α]
+instance (priority := 100) DiscreteTopology.toT2Space {α : Type*} [TopologicalSpace α]
     [DiscreteTopology α] : T2Space α :=
   ⟨fun x y h => ⟨{x}, {y}, isOpen_discrete _, isOpen_discrete _, rfl, rfl, disjoint_singleton.2 h⟩⟩
 #align discrete_topology.to_t2_space DiscreteTopology.toT2Space
 
-theorem separated_by_continuous {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β]
+theorem separated_by_continuous {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
     [T2Space β] {f : α → β} (hf : Continuous f) {x y : α} (h : f x ≠ f y) :
     ∃ u v : Set α, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ Disjoint u v :=
   let ⟨u, v, uo, vo, xu, yv, uv⟩ := t2_separation h
   ⟨f ⁻¹' u, f ⁻¹' v, uo.preimage hf, vo.preimage hf, xu, yv, uv.preimage _⟩
 #align separated_by_continuous separated_by_continuous
 
-theorem separated_by_openEmbedding {α β : Type _} [TopologicalSpace α] [TopologicalSpace β]
+theorem separated_by_openEmbedding {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
     [T2Space α] {f : α → β} (hf : OpenEmbedding f) {x y : α} (h : x ≠ y) :
     ∃ u v : Set β, IsOpen u ∧ IsOpen v ∧ f x ∈ u ∧ f y ∈ v ∧ Disjoint u v :=
   let ⟨u, v, uo, vo, xu, yv, uv⟩ := t2_separation h
@@ -1138,21 +1156,29 @@ theorem separated_by_openEmbedding {α β : Type _} [TopologicalSpace α] [Topol
     mem_image_of_mem _ yv, disjoint_image_of_injective hf.inj uv⟩
 #align separated_by_open_embedding separated_by_openEmbedding
 
-instance {α : Type _} {p : α → Prop} [TopologicalSpace α] [T2Space α] : T2Space (Subtype p) :=
+instance {α : Type*} {p : α → Prop} [TopologicalSpace α] [T2Space α] : T2Space (Subtype p) :=
   ⟨fun _ _ h => separated_by_continuous continuous_subtype_val (mt Subtype.eq h)⟩
 
-instance Prod.t2Space {α : Type _} {β : Type _} [TopologicalSpace α] [T2Space α]
+instance Prod.t2Space {α : Type*} {β : Type*} [TopologicalSpace α] [T2Space α]
     [TopologicalSpace β] [T2Space β] : T2Space (α × β) :=
   ⟨fun _ _ h => Or.elim (not_and_or.mp (mt Prod.ext_iff.mpr h))
     (fun h₁ => separated_by_continuous continuous_fst h₁) fun h₂ =>
     separated_by_continuous continuous_snd h₂⟩
 
+/-- If the codomain of an injective continuous function is a Hausdorff space, then so is its
+domain. -/
+theorem T2Space.of_injective_continuous [TopologicalSpace β] [T2Space β] {f : α → β}
+    (hinj : Injective f) (hc : Continuous f) : T2Space α :=
+  ⟨fun _ _ h => separated_by_continuous hc (hinj.ne h)⟩
+
+/-- If the codomain of a topological embedding is a Hausdorff space, then so is its domain.
+See also `T2Space.of_continuous_injective`. -/
 theorem Embedding.t2Space [TopologicalSpace β] [T2Space β] {f : α → β} (hf : Embedding f) :
     T2Space α :=
-  ⟨fun _ _ h => separated_by_continuous hf.continuous (hf.inj.ne h)⟩
+  .of_injective_continuous hf.inj hf.continuous
 #align embedding.t2_space Embedding.t2Space
 
-instance {α β : Type _} [TopologicalSpace α] [T2Space α] [TopologicalSpace β] [T2Space β] :
+instance {α β : Type*} [TopologicalSpace α] [T2Space α] [TopologicalSpace β] [T2Space β] :
     T2Space (α ⊕ β) := by
   constructor
   rintro (x | x) (y | y) h
@@ -1161,14 +1187,14 @@ instance {α β : Type _} [TopologicalSpace α] [T2Space α] [TopologicalSpace �
   · exact separated_by_continuous continuous_isLeft <| by simp
   · exact separated_by_openEmbedding openEmbedding_inr <| ne_of_apply_ne _ h
 
-instance Pi.t2Space {α : Type _} {β : α → Type v} [∀ a, TopologicalSpace (β a)]
+instance Pi.t2Space {α : Type*} {β : α → Type v} [∀ a, TopologicalSpace (β a)]
     [∀ a, T2Space (β a)] : T2Space (∀ a, β a) :=
   ⟨fun _ _ h =>
     let ⟨i, hi⟩ := not_forall.mp (mt funext h)
     separated_by_continuous (continuous_apply i) hi⟩
 #align Pi.t2_space Pi.t2Space
 
-instance Sigma.t2Space {ι} {α : ι → Type _} [∀ i, TopologicalSpace (α i)] [∀ a, T2Space (α a)] :
+instance Sigma.t2Space {ι} {α : ι → Type*} [∀ i, TopologicalSpace (α i)] [∀ a, T2Space (α a)] :
     T2Space (Σi, α i) := by
   constructor
   rintro ⟨i, x⟩ ⟨j, y⟩ neq
@@ -1179,7 +1205,7 @@ instance Sigma.t2Space {ι} {α : ι → Type _} [∀ i, TopologicalSpace (α i)
     exact separated_by_continuous (continuous_def.2 fun u _ => isOpen_sigma_fst_preimage u) h
 #align sigma.t2_space Sigma.t2Space
 
-variable {γ : Type _} [TopologicalSpace β] [TopologicalSpace γ]
+variable {γ : Type*} [TopologicalSpace β] [TopologicalSpace γ]
 
 theorem isClosed_eq [T2Space α] {f g : β → α} (hf : Continuous f) (hg : Continuous g) :
     IsClosed { x : β | f x = g x } :=
@@ -1289,7 +1315,7 @@ theorem Bornology.relativelyCompact_eq_inCompact [T2Space α] :
 `⋂ i, V i` contains some `V i`. This is a version of `exists_subset_nhds_of_isCompact'` where we
 don't need to assume each `V i` closed because it follows from compactness since `α` is
 assumed to be Hausdorff. -/
-theorem exists_subset_nhds_of_isCompact [T2Space α] {ι : Type _} [Nonempty ι] {V : ι → Set α}
+theorem exists_subset_nhds_of_isCompact [T2Space α] {ι : Type*} [Nonempty ι] {V : ι → Set α}
     (hV : Directed (· ⊇ ·) V) (hV_cpct : ∀ i, IsCompact (V i)) {U : Set α}
     (hU : ∀ x ∈ ⋂ i, V i, U ∈ 𝓝 x) : ∃ i, V i ⊆ U :=
   exists_subset_nhds_of_isCompact' hV hV_cpct (fun i => (hV_cpct i).isClosed) hU
@@ -1424,7 +1450,7 @@ theorem exists_open_superset_and_isCompact_closure [LocallyCompactSpace α] [T2S
     ⟨interior K', isOpen_interior, hKK', isCompact_closure_of_subset_compact hK' interior_subset⟩
 #align exists_open_superset_and_is_compact_closure exists_open_superset_and_isCompact_closure
 
-/-- In a locally compact T₂ space, given a compact set `K` inside an open set `U`, we can find a
+/-- In a locally compact T₂ space, given a compact set `K` inside an open set `U`, we can find an
 open set `V` between these sets with compact closure: `K ⊆ V` and the closure of `V` is inside `U`.
 -/
 theorem exists_open_between_and_isCompact_closure [LocallyCompactSpace α] [T2Space α] {K U : Set α}
@@ -1513,7 +1539,7 @@ theorem RegularSpace.ofLift'_closure (h : ∀ a : α, (𝓝 a).lift' closure = �
   Iff.mpr ((regularSpace_TFAE α).out 0 5) h
 #align regular_space.of_lift'_closure RegularSpace.ofLift'_closure
 
-theorem RegularSpace.ofBasis {ι : α → Sort _} {p : ∀ a, ι a → Prop} {s : ∀ a, ι a → Set α}
+theorem RegularSpace.ofBasis {ι : α → Sort*} {p : ∀ a, ι a → Prop} {s : ∀ a, ι a → Set α}
     (h₁ : ∀ a, (𝓝 a).HasBasis (p a) (s a)) (h₂ : ∀ a i, p a i → IsClosed (s a i)) :
     RegularSpace α :=
   RegularSpace.ofLift'_closure fun a => (h₁ a).lift'_closure_eq_self (h₂ a)
@@ -1549,7 +1575,7 @@ theorem lift'_nhds_closure (a : α) : (𝓝 a).lift' closure = 𝓝 a :=
   (closed_nhds_basis a).lift'_closure_eq_self fun _ => And.right
 #align lift'_nhds_closure lift'_nhds_closure
 
-theorem Filter.HasBasis.nhds_closure {ι : Sort _} {a : α} {p : ι → Prop} {s : ι → Set α}
+theorem Filter.HasBasis.nhds_closure {ι : Sort*} {a : α} {p : ι → Prop} {s : ι → Set α}
     (h : (𝓝 a).HasBasis p s) : (𝓝 a).HasBasis p fun i => closure (s i) :=
   lift'_nhds_closure a ▸ h.lift'_closure
 #align filter.has_basis.nhds_closure Filter.HasBasis.nhds_closure
@@ -1582,7 +1608,7 @@ theorem specializes_comm {a b : α} : a ⤳ b ↔ b ⤳ a := by
   simp only [← (disjoint_nhds_nhds_iff_not_specializes (α := α)).not_left, disjoint_comm]
 #align specializes_comm specializes_comm
 
-alias specializes_comm ↔ Specializes.symm _
+alias ⟨Specializes.symm, _⟩ := specializes_comm
 #align specializes.symm Specializes.symm
 
 theorem specializes_iff_inseparable {a b : α} : a ⤳ b ↔ Inseparable a b :=
@@ -1641,7 +1667,7 @@ instance {p : α → Prop} : RegularSpace (Subtype p) :=
 instance [TopologicalSpace β] [RegularSpace β] : RegularSpace (α × β) :=
   (regularSpace_induced (@Prod.fst α β)).inf (regularSpace_induced (@Prod.snd α β))
 
-instance {ι : Type _} {π : ι → Type _} [∀ i, TopologicalSpace (π i)] [∀ i, RegularSpace (π i)] :
+instance {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)] [∀ i, RegularSpace (π i)] :
     RegularSpace (∀ i, π i) :=
   regularSpace_iInf fun _ => regularSpace_induced _
 
@@ -1676,7 +1702,7 @@ instance Subtype.t3Space [T3Space α] {p : α → Prop} : T3Space (Subtype p) :=
 
 instance [TopologicalSpace β] [T3Space α] [T3Space β] : T3Space (α × β) := ⟨⟩
 
-instance {ι : Type _} {π : ι → Type _} [∀ i, TopologicalSpace (π i)] [∀ i, T3Space (π i)] :
+instance {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)] [∀ i, T3Space (π i)] :
     T3Space (∀ i, π i) := ⟨⟩
 
 /-- Given two points `x ≠ y`, we can find neighbourhoods `x ∈ V₁ ⊆ U₁` and `y ∈ V₂ ⊆ U₂`,
@@ -1720,7 +1746,7 @@ theorem normal_separation [NormalSpace α] {s t : Set α} (H1 : IsClosed s) (H2 
 
 theorem normal_exists_closure_subset [NormalSpace α] {s t : Set α} (hs : IsClosed s) (ht : IsOpen t)
     (hst : s ⊆ t) : ∃ u, IsOpen u ∧ s ⊆ u ∧ closure u ⊆ t := by
-  have : Disjoint s (tᶜ) := Set.disjoint_left.mpr fun x hxs hxt => hxt (hst hxs)
+  have : Disjoint s tᶜ := Set.disjoint_left.mpr fun x hxs hxt => hxt (hst hxs)
   rcases normal_separation hs (isClosed_compl_iff.2 ht) this with
     ⟨s', t', hs', ht', hss', htt', hs't'⟩
   refine ⟨s', hs', hss', Subset.trans (closure_minimal ?_ (isClosed_compl_iff.2 ht'))
@@ -1912,7 +1938,7 @@ theorem connectedComponent_eq_iInter_clopen [T2Space α] [CompactSpace α] (x : 
     have H2 := isClopen_inter_of_disjoint_cover_clopen H.1 H.2.2 hv hu huv.symm
     by_cases hxu : x ∈ u <;> [left; right]
     -- The x ∈ u case.
-    · suffices (⋂ Z : { Z : Set α // IsClopen Z ∧ x ∈ Z }, ↑Z) ⊆ u
+    · suffices ⋂ Z : { Z : Set α // IsClopen Z ∧ x ∈ Z }, ↑Z ⊆ u
         from Disjoint.left_le_of_le_sup_right hab (huv.mono this hbv)
       · apply Subset.trans _ (inter_subset_right Z u)
         exact iInter_subset (fun Z : { Z : Set α // IsClopen Z ∧ x ∈ Z } => Z.1)
@@ -1920,7 +1946,7 @@ theorem connectedComponent_eq_iInter_clopen [T2Space α] [CompactSpace α] (x : 
     -- If x ∉ u, we get x ∈ v since x ∈ u ∪ v. The rest is then like the x ∈ u case.
     · have h1 : x ∈ v :=
         (hab.trans (union_subset_union hau hbv) (mem_iInter.2 fun i => i.2.2)).resolve_left hxu
-      suffices (⋂ Z : { Z : Set α // IsClopen Z ∧ x ∈ Z }, ↑Z) ⊆ v
+      suffices ⋂ Z : { Z : Set α // IsClopen Z ∧ x ∈ Z }, ↑Z ⊆ v
         from (huv.symm.mono this hau).left_le_of_le_sup_left hab
       · refine Subset.trans ?_ (inter_subset_right Z v)
         exact iInter_subset (fun Z : { Z : Set α // IsClopen Z ∧ x ∈ Z } => Z.1)
@@ -1952,11 +1978,14 @@ theorem compact_t2_tot_disc_iff_tot_sep : TotallyDisconnectedSpace α ↔ Totall
   rw [connectedComponent_eq_iInter_clopen, mem_iInter]
   rintro ⟨w : Set α, hw : IsClopen w, hy : y ∈ w⟩
   by_contra hx
-  exact hyp (wᶜ) w hw.2.isOpen_compl hw.1 hx hy (@isCompl_compl _ w _).symm.codisjoint.top_le
+  exact hyp wᶜ w hw.2.isOpen_compl hw.1 hx hy (@isCompl_compl _ w _).symm.codisjoint.top_le
     disjoint_compl_left
 #align compact_t2_tot_disc_iff_tot_sep compact_t2_tot_disc_iff_tot_sep
 
 variable [TotallyDisconnectedSpace α]
+
+/-- A totally disconnected compact Hausdorff space is totally separated. -/
+instance : TotallySeparatedSpace α := compact_t2_tot_disc_iff_tot_sep.mp inferInstance
 
 theorem nhds_basis_clopen (x : α) : (𝓝 x).HasBasis (fun s : Set α => x ∈ s ∧ IsClopen s) id :=
   ⟨fun U => by
@@ -1967,7 +1996,7 @@ theorem nhds_basis_clopen (x : α) : (𝓝 x).HasBasis (fun s : Set α => x ∈ 
       intro hU
       let N := { Z // IsClopen Z ∧ x ∈ Z }
       suffices : ∃ Z : N, Z.val ⊆ U
-      · rcases this with  ⟨⟨s, hs, hs'⟩, hs''⟩; exact ⟨s, ⟨hs', hs⟩, hs''⟩
+      · rcases this with ⟨⟨s, hs, hs'⟩, hs''⟩; exact ⟨s, ⟨hs', hs⟩, hs''⟩
       haveI : Nonempty N := ⟨⟨univ, isClopen_univ, mem_univ x⟩⟩
       have hNcl : ∀ Z : N, IsClosed Z.val := fun Z => Z.property.1.2
       have hdir : Directed Superset fun Z : N => Z.val := by
@@ -2002,7 +2031,7 @@ end Profinite
 
 section LocallyCompact
 
-variable {H : Type _} [TopologicalSpace H] [LocallyCompactSpace H] [T2Space H]
+variable {H : Type*} [TopologicalSpace H] [LocallyCompactSpace H] [T2Space H]
 
 /-- A locally compact Hausdorff totally disconnected space has a basis with clopen elements. -/
 theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
@@ -2060,12 +2089,12 @@ instance ConnectedComponents.t2 [T2Space α] [CompactSpace α] : T2Space (Connec
   -- Now we show that this can be reduced to some clopen containing `↑b` being disjoint to `↑a`
   obtain ⟨U, V, hU, ha, hb, rfl⟩ : ∃ (U : Set α) (V : Set (ConnectedComponents α)),
       IsClopen U ∧ connectedComponent a ∩ U = ∅ ∧ connectedComponent b ⊆ U ∧ (↑) ⁻¹' V = U := by
-    have h := by
-      refine isClosed_connectedComponent.isCompact.elim_finite_subfamily_closed ?_ _ h
-      exact fun Z => Z.2.1.2
+    have h :=
+      (isClosed_connectedComponent (α := α)).isCompact.elim_finite_subfamily_closed
+        _ (fun Z : { Z : Set α // IsClopen Z ∧ b ∈ Z } => Z.2.1.2) h
     cases' h with fin_a ha
     -- This clopen and its complement will separate the connected components of `a` and `b`
-    set U : Set α := ⋂ (i : { Z // IsClopen Z ∧ b ∈ Z }) (H : i ∈ fin_a), i
+    set U : Set α := ⋂ (i : { Z // IsClopen Z ∧ b ∈ Z }) (_ : i ∈ fin_a), i
     have hU : IsClopen U := isClopen_biInter_finset fun i _ => i.2.1
     exact ⟨U, (↑) '' U, hU, ha, subset_iInter₂ fun Z _ => Z.2.1.connectedComponent_subset Z.2.2,
       (connectedComponents_preimage_image U).symm ▸ hU.biUnion_connectedComponent_eq⟩

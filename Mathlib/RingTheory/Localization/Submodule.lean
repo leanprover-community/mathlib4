@@ -2,15 +2,12 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.localization.submodule
-! leanprover-community/mathlib commit 1ebb20602a8caef435ce47f6373e1aa40851a177
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.PrincipalIdealDomain
+
+#align_import ring_theory.localization.submodule from "leanprover-community/mathlib"@"1ebb20602a8caef435ce47f6373e1aa40851a177"
 
 /-!
 # Submodules in localizations of commutative rings
@@ -25,9 +22,9 @@ commutative ring, field of fractions
 -/
 
 
-variable {R : Type _} [CommRing R] (M : Submonoid R) (S : Type _) [CommRing S]
+variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
 
-variable [Algebra R S] {P : Type _} [CommRing P]
+variable [Algebra R S] {P : Type*} [CommRing P]
 
 namespace IsLocalization
 
@@ -90,7 +87,7 @@ theorem coeSubmodule_span_singleton (x : R) :
 
 variable {g : R →+* P}
 
-variable {T : Submonoid P} (hy : M ≤ T.comap g) {Q : Type _} [CommRing Q]
+variable {T : Submonoid P} (hy : M ≤ T.comap g) {Q : Type*} [CommRing Q]
 
 variable [Algebra P Q] [IsLocalization T Q]
 
@@ -140,7 +137,7 @@ theorem coeSubmodule_isPrincipal {I : Ideal R} (h : M ≤ nonZeroDivisors R) :
 
 variable {S} (M)
 
-theorem mem_span_iff {N : Type _} [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N]
+theorem mem_span_iff {N : Type*} [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N]
     {x : N} {a : Set N} :
     x ∈ Submodule.span S a ↔ ∃ y ∈ Submodule.span R a, ∃ z : M, x = mk' S 1 z • y := by
   constructor; intro h
@@ -185,7 +182,7 @@ namespace IsFractionRing
 
 open IsLocalization
 
-variable {A K : Type _} [CommRing A]
+variable {A K : Type*} [CommRing A]
 
 section CommRing
 

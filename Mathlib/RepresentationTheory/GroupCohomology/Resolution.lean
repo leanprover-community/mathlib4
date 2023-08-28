@@ -2,16 +2,13 @@
 Copyright (c) 2022 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
-
-! This file was ported from Lean 3 source module representation_theory.group_cohomology.resolution
-! leanprover-community/mathlib commit cec81510e48e579bde6acd8568c06a87af045b63
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.AlgebraicTopology.ExtraDegeneracy
 import Mathlib.CategoryTheory.Abelian.Ext
 import Mathlib.RepresentationTheory.Rep
+
+#align_import representation_theory.group_cohomology.resolution from "leanprover-community/mathlib"@"cec81510e48e579bde6acd8568c06a87af045b63"
 
 /-!
 # The structure of the `k[G]`-module `k[Gⁿ]`
@@ -229,7 +226,7 @@ theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
   · intro a b x ha hb hx
     simp only [lift_apply, smul_single', mul_one, TensorProduct.tmul_add, map_add,
       diagonalSucc_inv_single_single, hx, Finsupp.sum_single_index, mul_comm b,
-      MulZeroClass.zero_mul, single_zero] -/
+      zero_mul, single_zero] -/
   · rw [TensorProduct.tmul_zero, map_zero, map_zero]
   · intro _ _ _ _ _ hx
     rw [TensorProduct.tmul_add, map_add, map_add, hx]
@@ -246,7 +243,7 @@ theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
   · simp only [TensorProduct.zero_tmul, map_zero]
   · intro a b x ha hb hx
     simp only [lift_apply, smul_single', map_add, hx, diagonalSucc_inv_single_single,
-      TensorProduct.add_tmul, Finsupp.sum_single_index, MulZeroClass.zero_mul, single_zero] -/
+      TensorProduct.add_tmul, Finsupp.sum_single_index, zero_mul, single_zero] -/
   · rw [TensorProduct.zero_tmul, map_zero, map_zero]
   · intro _ _ _ _ _ hx
     rw [TensorProduct.add_tmul, map_add, map_add, hx]
@@ -345,7 +342,7 @@ theorem diagonalHomEquiv_apply (f : Rep.ofMulAction k G (Fin (n + 1) → G) ⟶ 
 set_option linter.uppercaseLean3 false in
 #align Rep.diagonal_hom_equiv_apply Rep.diagonalHomEquiv_apply
 
-set_option maxHeartbeats 800000
+set_option maxHeartbeats 400000 in
 /-- Given a `k`-linear `G`-representation `A`, `diagonalHomEquiv` is a `k`-linear isomorphism of
 the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that the
 inverse map sends a function `f : Gⁿ → A` to the representation morphism sending
@@ -428,7 +425,6 @@ def cechNerveTerminalFromIso :
   NatIso.ofComponents (fun n => limit.isoLimitCone (Action.ofMulActionLimitCone _ _)) fun f => by
     refine' IsLimit.hom_ext (Action.ofMulActionLimitCone.{u, 0} G fun _ => G).2 fun j => _
     dsimp only [cechNerveTerminalFrom, Pi.lift]
-    dsimp
     rw [Category.assoc, limit.isoLimitCone_hom_π, limit.lift_π, Category.assoc]
     exact (limit.isoLimitCone_hom_π _ _).symm
 #align classifying_space_universal_cover.cech_nerve_terminal_from_iso classifyingSpaceUniversalCover.cechNerveTerminalFromIso
@@ -623,8 +619,8 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
     simp only [Iso.symm_hom, eqToIso.inv, HomologicalComplex.eqToHom_f, eqToHom_refl]
   trans (Finsupp.total _ _ _ fun _ => (1 : k)).comp ((ModuleCat.free k).map (terminal.from _))
   · dsimp
-    erw [@Finsupp.lmapDomain_total (Fin 1 → G) k k (⊤_ Type u) k _ _ _ _ _ (fun _ => (1 : k))
-        (fun _ => (1 : k))
+    erw [Finsupp.lmapDomain_total (α := Fin 1 → G) (R := k) (α' := ⊤_ Type u)
+        (v := fun _ => (1 : k)) (v' := fun _ => (1 : k))
         (terminal.from
           ((classifyingSpaceUniversalCover G).obj (Opposite.op (SimplexCategory.mk 0))).V)
         LinearMap.id fun i => rfl,
@@ -704,9 +700,7 @@ def GroupCohomology.extIso (V : Rep k G) (n : ℕ) :
     ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
       (((((linearYoneda k (Rep k G)).obj V).rightOp.mapHomologicalComplex _).obj
               (GroupCohomology.resolution k G)).homology
-          n).unop := by
-  let E := (((linearYoneda k (Rep k G)).obj V).rightOp.leftDerivedObjIso n
+          n).unop := (((linearYoneda k (Rep k G)).obj V).rightOp.leftDerivedObjIso n
      (GroupCohomology.projectiveResolution k G)).unop.symm
-  exact E
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.Ext_iso GroupCohomology.extIso

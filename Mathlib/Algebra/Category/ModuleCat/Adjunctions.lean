@@ -2,17 +2,14 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johan Commelin
-
-! This file was ported from Lean 3 source module algebra.category.Module.adjunctions
-! leanprover-community/mathlib commit 95a87616d63b3cb49d3fe678d416fbe9c4217bf4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 import Mathlib.CategoryTheory.Monoidal.Functorial
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.CategoryTheory.Linear.LinearFunctor
+
+#align_import algebra.category.Module.adjunctions from "leanprover-community/mathlib"@"95a87616d63b3cb49d3fe678d416fbe9c4217bf4"
 
 /-!
 The functor of forming finitely supported functions on a type with values in a `[Ring R]`
@@ -45,8 +42,8 @@ free `R`-module with generators `x : X`, implemented as the type `X →₀ R`.
 def free : Type u ⥤ ModuleCat R where
   obj X := ModuleCat.of R (X →₀ R)
   map {X Y} f := Finsupp.lmapDomain _ _ f
-  map_id := by intros ; exact Finsupp.lmapDomain_id _ _
-  map_comp := by intros ; exact Finsupp.lmapDomain_comp _ _ _ _
+  map_id := by intros; exact Finsupp.lmapDomain_id _ _
+  map_comp := by intros; exact Finsupp.lmapDomain_comp _ _ _ _
 #align Module.free ModuleCat.free
 
 /-- The free-forgetful adjunction for R-modules.
@@ -127,7 +124,7 @@ theorem left_unitality (X : Type u) :
   change q x' = Finsupp.mapDomain (λ_ X).hom (finsuppTensorFinsupp' R (𝟙_ (Type u)) X
     (Finsupp.single PUnit.unit 1 ⊗ₜ[R] Finsupp.single x 1)) x'
   simp_rw [finsuppTensorFinsupp'_single_tmul_single,
-    ModuleCat.MonoidalCategory.leftUnitor_hom_apply, Finsupp.smul_single', mul_one,
+    ModuleCat.MonoidalCategory.leftUnitor_hom_apply, mul_one,
     Finsupp.mapDomain_single, CategoryTheory.leftUnitor_hom_apply, one_smul]
 #align Module.free.left_unitality ModuleCat.Free.left_unitality
 
@@ -148,7 +145,7 @@ theorem right_unitality (X : Type u) :
   change q x' = Finsupp.mapDomain (ρ_ X).hom (finsuppTensorFinsupp' R X (𝟙_ (Type u))
     (Finsupp.single x 1 ⊗ₜ[R] Finsupp.single PUnit.unit 1)) x'
   simp_rw [finsuppTensorFinsupp'_single_tmul_single,
-    ModuleCat.MonoidalCategory.rightUnitor_hom_apply, Finsupp.smul_single', mul_one,
+    ModuleCat.MonoidalCategory.rightUnitor_hom_apply, mul_one,
     Finsupp.mapDomain_single, CategoryTheory.rightUnitor_hom_apply, one_smul]
 #align Module.free.right_unitality ModuleCat.Free.right_unitality
 
@@ -243,7 +240,7 @@ of the morphisms in `C`.
 -/
 -- Porting note: Removed has_nonempty_instance nolint
 @[nolint unusedArguments]
-def Free (_ : Type _) (C : Type u) :=
+def Free (_ : Type*) (C : Type u) :=
   C
 #align category_theory.Free CategoryTheory.Free
 
@@ -252,11 +249,11 @@ def Free (_ : Type _) (C : Type u) :=
 It may be preferable to use `(Free.embedding R C).obj X` instead;
 this functor can also be used to lift morphisms.
 -/
-def Free.of (R : Type _) {C : Type u} (X : C) : Free R C :=
+def Free.of (R : Type*) {C : Type u} (X : C) : Free R C :=
   X
 #align category_theory.Free.of CategoryTheory.Free.of
 
-variable (R : Type _) [CommRing R] (C : Type u) [Category.{v} C]
+variable (R : Type*) [CommRing R] (C : Type u) [Category.{v} C]
 
 open Finsupp
 
@@ -273,7 +270,7 @@ instance categoryFree : Category (Free R C) where
     -- This imitates the proof of associativity for `MonoidAlgebra`.
     simp only [sum_sum_index, sum_single_index, single_zero, single_add, eq_self_iff_true,
       forall_true_iff, forall₃_true_iff, add_mul, mul_add, Category.assoc, mul_assoc,
-      MulZeroClass.zero_mul, MulZeroClass.mul_zero, sum_zero, sum_add]
+      zero_mul, mul_zero, sum_zero, sum_add]
 #align category_theory.category_Free CategoryTheory.categoryFree
 
 namespace Free
@@ -348,10 +345,10 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
       dsimp at *
       rw [Finsupp.sum_add_index', Finsupp.sum_add_index']
       · simp only [w₁, w₂, add_comp]
-      · intros ; rw [zero_smul]
-      · intros ; simp only [add_smul]
-      · intros ; rw [zero_smul]
-      · intros ; simp only [add_smul]
+      · intros; rw [zero_smul]
+      · intros; simp only [add_smul]
+      · intros; rw [zero_smul]
+      · intros; simp only [add_smul]
     · intro f' r
       apply Finsupp.induction_linear g
       · -- Porting note: simp used to be able to close this goal
@@ -362,10 +359,10 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
         dsimp at *
         rw [Finsupp.sum_add_index', Finsupp.sum_add_index']
         · simp only [w₁, w₂, comp_add]
-        · intros ; rw [zero_smul]
-        · intros ; simp only [add_smul]
-        · intros ; rw [zero_smul]
-        · intros ; simp only [add_smul]
+        · intros; rw [zero_smul]
+        · intros; simp only [add_smul]
+        · intros; rw [zero_smul]
+        · intros; simp only [add_smul]
       · intro g' s
         rw [single_comp_single _ _ f' g' r s]
         simp [mul_comm r s, mul_smul]

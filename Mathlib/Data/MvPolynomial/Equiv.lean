@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.mv_polynomial.equiv
-! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.Polynomial.AlgebraMap
@@ -14,6 +9,8 @@ import Mathlib.Data.MvPolynomial.Variables
 import Mathlib.Data.Finsupp.Fin
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Algebra.BigOperators.Fin
+
+#align_import data.mv_polynomial.equiv from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
 /-!
 # Equivalences between polynomial rings
@@ -25,9 +22,9 @@ based on equivalences between the underlying types.
 
 As in other polynomial files, we typically use the notation:
 
-+ `σ : Type _` (indexing the variables)
++ `σ : Type*` (indexing the variables)
 
-+ `R : Type _` `[CommSemiring R]` (the coefficients)
++ `R : Type*` `[CommSemiring R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
 This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
@@ -55,7 +52,7 @@ variable {R : Type u} {S₁ : Type v} {S₂ : Type w} {S₃ : Type x}
 
 namespace MvPolynomial
 
-variable {σ : Type _} {a a' a₁ a₂ : R} {e : ℕ} {s : σ →₀ ℕ}
+variable {σ : Type*} {a a' a₁ a₂ : R} {e : ℕ} {s : σ →₀ ℕ}
 
 section Equiv
 
@@ -123,7 +120,7 @@ theorem mapEquiv_trans [CommSemiring S₁] [CommSemiring S₂] [CommSemiring S�
       map_map]
 #align mv_polynomial.map_equiv_trans MvPolynomial.mapEquiv_trans
 
-variable {A₁ A₂ A₃ : Type _} [CommSemiring A₁] [CommSemiring A₂] [CommSemiring A₃]
+variable {A₁ A₂ A₃ : Type*} [CommSemiring A₁] [CommSemiring A₂] [CommSemiring A₃]
 
 variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
 

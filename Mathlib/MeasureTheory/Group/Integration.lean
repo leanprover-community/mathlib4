@@ -2,15 +2,11 @@
 Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module measure_theory.group.integration
-! leanprover-community/mathlib commit ec247d43814751ffceb33b758e8820df2372bf6f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Group.Measure
-import Mathlib.MeasureTheory.Group.Action
+
+#align_import measure_theory.group.integration from "leanprover-community/mathlib"@"ec247d43814751ffceb33b758e8820df2372bf6f"
 
 /-!
 # Integration on Groups
@@ -26,7 +22,7 @@ open Measure TopologicalSpace
 
 open scoped ENNReal
 
-variable {𝕜 M α G E F : Type _} [MeasurableSpace G]
+variable {𝕜 M α G E F : Type*} [MeasurableSpace G]
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] [NormedAddCommGroup F]
 
@@ -45,7 +41,7 @@ theorem Integrable.comp_inv [IsInvInvariant μ] {f : G → F} (hf : Integrable f
 
 @[to_additive]
 theorem integral_inv_eq_self (f : G → E) (μ : Measure G) [IsInvInvariant μ] :
-    (∫ x, f x⁻¹ ∂μ) = ∫ x, f x ∂μ := by
+    ∫ x, f x⁻¹ ∂μ = ∫ x, f x ∂μ := by
   have h : MeasurableEmbedding fun x : G => x⁻¹ := (MeasurableEquiv.inv G).measurableEmbedding
   rw [← h.integral_map, map_inv_eq_self]
 #align measure_theory.integral_inv_eq_self MeasureTheory.integral_inv_eq_self
@@ -130,7 +126,7 @@ to a left-invariant measure is 0. -/
       "If some left-translate of a function negates it, then the integral of the function with
       respect to a left-invariant measure is 0."]
 theorem integral_eq_zero_of_mul_left_eq_neg [IsMulLeftInvariant μ] (hf' : ∀ x, f (g * x) = -f x) :
-    (∫ x, f x ∂μ) = 0 := by
+    ∫ x, f x ∂μ = 0 := by
   simp_rw [← self_eq_neg ℝ E, ← integral_neg, ← hf', integral_mul_left_eq_self]
 #align measure_theory.integral_eq_zero_of_mul_left_eq_neg MeasureTheory.integral_eq_zero_of_mul_left_eq_neg
 #align measure_theory.integral_eq_zero_of_add_left_eq_neg MeasureTheory.integral_eq_zero_of_add_left_eq_neg
@@ -141,7 +137,7 @@ to a right-invariant measure is 0. -/
       "If some right-translate of a function negates it, then the integral of the function with
       respect to a right-invariant measure is 0."]
 theorem integral_eq_zero_of_mul_right_eq_neg [IsMulRightInvariant μ] (hf' : ∀ x, f (x * g) = -f x) :
-    (∫ x, f x ∂μ) = 0 := by
+    ∫ x, f x ∂μ = 0 := by
   simp_rw [← self_eq_neg ℝ E, ← integral_neg, ← hf', integral_mul_right_eq_self]
 #align measure_theory.integral_eq_zero_of_mul_right_eq_neg MeasureTheory.integral_eq_zero_of_mul_right_eq_neg
 #align measure_theory.integral_eq_zero_of_add_right_eq_neg MeasureTheory.integral_eq_zero_of_add_right_eq_neg
@@ -221,7 +217,7 @@ variable [TopologicalSpace G] [Group G] [TopologicalGroup G] [BorelSpace G] [IsM
       "For nonzero regular left invariant measures, the integral of a continuous nonnegative
       function `f` is 0 iff `f` is 0."]
 theorem lintegral_eq_zero_of_isMulLeftInvariant [Regular μ] (hμ : μ ≠ 0) {f : G → ℝ≥0∞}
-    (hf : Continuous f) : (∫⁻ x, f x ∂μ) = 0 ↔ f = 0 := by
+    (hf : Continuous f) : ∫⁻ x, f x ∂μ = 0 ↔ f = 0 := by
   haveI := isOpenPosMeasure_of_mulLeftInvariant_of_regular hμ
   rw [lintegral_eq_zero_iff hf.measurable, hf.ae_eq_iff_eq μ continuous_zero]
 #align measure_theory.lintegral_eq_zero_of_is_mul_left_invariant MeasureTheory.lintegral_eq_zero_of_isMulLeftInvariant

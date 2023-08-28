@@ -2,14 +2,11 @@
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-
-! This file was ported from Lean 3 source module number_theory.padics.padic_numbers
-! leanprover-community/mathlib commit b9b2114f7711fec1c1e055d507f082f8ceb2c3b7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.Padics.PadicNorm
 import Mathlib.Analysis.Normed.Field.Basic
+
+#align_import number_theory.padics.padic_numbers from "leanprover-community/mathlib"@"b9b2114f7711fec1c1e055d507f082f8ceb2c3b7"
 
 /-!
 # p-adic numbers
@@ -43,7 +40,7 @@ A small special-purpose simplification tactic, `padic_index_simp`, is used to ma
 indices in the proof that the norm extends.
 
 `padicNormE` is the rational-valued `p`-adic norm on `ℚ_[p]`.
-To instantiate `ℚ_[p]` as a normed field, we must cast this into a `ℝ`-valued norm.
+To instantiate `ℚ_[p]` as a normed field, we must cast this into an `ℝ`-valued norm.
 The `ℝ`-valued norm, using notation `‖ ‖` from normed spaces,
 is the canonical representation of this norm.
 
@@ -284,11 +281,11 @@ variable {p : ℕ} [hp : Fact p.Prime]
 theorem norm_mul (f g : PadicSeq p) : (f * g).norm = f.norm * g.norm :=
   if hf : f ≈ 0 then by
     have hg : f * g ≈ 0 := mul_equiv_zero' _ hf
-    simp only [hf, hg, norm, dif_pos, MulZeroClass.zero_mul]
+    simp only [hf, hg, norm, dif_pos, zero_mul]
   else
     if hg : g ≈ 0 then by
       have hf : f * g ≈ 0 := mul_equiv_zero _ hg
-      simp only [hf, hg, norm, dif_pos, MulZeroClass.mul_zero]
+      simp only [hf, hg, norm, dif_pos, mul_zero]
     else by
       unfold norm
       split_ifs with hfg
@@ -899,7 +896,7 @@ theorem norm_rat_le_one : ∀ {q : ℚ} (_ : ¬p ∣ q.den), ‖(q : ℚ_[p])‖
   | ⟨n, d, hn, hd⟩ => fun hq : ¬p ∣ d ↦
     if hnz : n = 0 then by
       have : (⟨n, d, hn, hd⟩ : ℚ) = 0 := Rat.zero_iff_num_zero.mpr hnz
-      rw [this]; norm_num
+      norm_num [this]
     else by
       have hnz' : (⟨n, d, hn, hd⟩ : ℚ) ≠ 0 := mt Rat.zero_iff_num_zero.1 hnz
       rw [padicNormE.eq_padicNorm]
@@ -1122,9 +1119,9 @@ theorem AddValuation.map_mul (x y : ℚ_[p]) :
     addValuationDef (x * y : ℚ_[p]) = addValuationDef x + addValuationDef y := by
   simp only [addValuationDef]
   by_cases hx : x = 0
-  · rw [hx, if_pos (Eq.refl _), MulZeroClass.zero_mul, if_pos (Eq.refl _), WithTop.top_add]
+  · rw [hx, if_pos (Eq.refl _), zero_mul, if_pos (Eq.refl _), WithTop.top_add]
   · by_cases hy : y = 0
-    · rw [hy, if_pos (Eq.refl _), MulZeroClass.mul_zero, if_pos (Eq.refl _), WithTop.add_top]
+    · rw [hy, if_pos (Eq.refl _), mul_zero, if_pos (Eq.refl _), WithTop.add_top]
     · rw [if_neg hx, if_neg hy, if_neg (mul_ne_zero hx hy), ← WithTop.coe_add, WithTop.coe_eq_coe,
         valuation_map_mul hx hy]
 #align padic.add_valuation.map_mul Padic.AddValuation.map_mul

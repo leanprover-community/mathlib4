@@ -2,14 +2,11 @@
 Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module analysis.normed.group.add_circle
-! leanprover-community/mathlib commit 084f76e20c88eae536222583331abd9468b08e1c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Quotient
 import Mathlib.Topology.Instances.AddCircle
+
+#align_import analysis.normed.group.add_circle from "leanprover-community/mathlib"@"084f76e20c88eae536222583331abd9468b08e1c"
 
 /-!
 # The additive circle as a normed group
@@ -59,7 +56,7 @@ theorem norm_coe_mul (x : ℝ) (t : ℝ) :
   ext z
   rw [mem_smul_set_iff_inv_smul_mem₀ ht']
   show
-    (∃ y, y - t * x ∈ zmultiples (t * p) ∧ |y| = z) ↔ ∃ w, w - x ∈ zmultiples p ∧ |w| = (|t|)⁻¹ * z
+    (∃ y, y - t * x ∈ zmultiples (t * p) ∧ |y| = z) ↔ ∃ w, w - x ∈ zmultiples p ∧ |w| = |t|⁻¹ * z
   constructor
   · rintro ⟨y, hy, rfl⟩
     refine' ⟨t⁻¹ * y, _, by rw [abs_mul, abs_inv]⟩
@@ -231,7 +228,7 @@ theorem coe_real_preimage_closedBall_inter_eq {x ε : ℝ} (s : Set ℝ)
       · have : p ≤ ↑z * p
         nlinarith
         linarith [abs_eq_self.mpr hp.le]
-    · simp only [MulZeroClass.mul_zero, add_zero, abs_zero, zero_div] at hy₁ hy₂ hε
+    · simp only [mul_zero, add_zero, abs_zero, zero_div] at hy₁ hy₂ hε
       linarith
     · cases' Int.cast_le_neg_one_or_one_le_cast_of_ne_zero ℝ hz with hz' hz'
       · have : -p ≤ ↑z * p
@@ -271,7 +268,7 @@ theorem le_add_order_smul_norm_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFi
   rw [hn, nsmul_eq_mul, ← mul_assoc, mul_comm _ p, mul_assoc, mul_div_cancel' _ hu,
     mul_le_mul_left hp.out, Nat.one_le_cast, Nat.one_le_iff_ne_zero]
   contrapose! hu'
-  simpa only [hu', Nat.cast_zero, zero_div, MulZeroClass.mul_zero, norm_eq_zero] using hn
+  simpa only [hu', Nat.cast_zero, zero_div, mul_zero, norm_eq_zero] using hn
 #align add_circle.le_add_order_smul_norm_of_is_of_fin_add_order AddCircle.le_add_order_smul_norm_of_isOfFinAddOrder
 
 end FiniteOrderPoints

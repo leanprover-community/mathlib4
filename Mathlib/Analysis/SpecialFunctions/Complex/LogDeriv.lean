@@ -2,15 +2,12 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
-
-! This file was ported from Lean 3 source module analysis.special_functions.complex.log_deriv
-! leanprover-community/mathlib commit 6a5c85000ab93fe5dcfdf620676f614ba8e18c26
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Inverse
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+
+#align_import analysis.special_functions.complex.log_deriv from "leanprover-community/mathlib"@"6a5c85000ab93fe5dcfdf620676f614ba8e18c26"
 
 /-!
 # Differentiability of the complex `log` function
@@ -41,7 +38,7 @@ noncomputable def expLocalHomeomorph : LocalHomeomorph ℂ ℂ :=
         rintro ⟨x, y⟩ ⟨h₁ : -π < y, h₂ : y < π⟩
         refine' (not_or_of_imp fun hz => _).symm
         obtain rfl : y = 0 := by
-          rw [exp_im] at hz 
+          rw [exp_im] at hz
           simpa [(Real.exp_pos _).ne', Real.sin_eq_zero_iff_of_lt_of_lt h₁ h₂] using hz
         rw [mem_setOf_eq, ← ofReal_def, exp_ofReal_re]
         exact Real.exp_pos x
@@ -77,7 +74,7 @@ open Complex Filter
 
 open scoped Topology
 
-variable {α : Type _} [TopologicalSpace α] {E : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {α : Type*} [TopologicalSpace α] {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 theorem HasStrictFDerivAt.clog {f : E → ℂ} {f' : E →L[ℂ] ℂ} {x : E} (h₁ : HasStrictFDerivAt f f' x)
     (h₂ : 0 < (f x).re ∨ (f x).im ≠ 0) : HasStrictFDerivAt (fun t => log (f t)) ((f x)⁻¹ • f') x :=

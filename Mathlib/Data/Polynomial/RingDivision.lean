@@ -2,11 +2,6 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker, Johan Commelin
-
-! This file was ported from Lean 3 source module data.polynomial.ring_division
-! leanprover-community/mathlib commit 8efcf8022aac8e01df8d302dcebdbc25d6a886c8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Data.Polynomial.AlgebraMap
@@ -14,6 +9,8 @@ import Mathlib.Data.Polynomial.Degree.Lemmas
 import Mathlib.Data.Polynomial.Div
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.Algebra.Polynomial.BigOperators
+
+#align_import data.polynomial.ring_division from "leanprover-community/mathlib"@"8efcf8022aac8e01df8d302dcebdbc25d6a886c8"
 
 /-!
 # Theory of univariate polynomials
@@ -33,6 +30,8 @@ This file starts looking like the ring theory of $ R[X] $
   ranges through its roots.
 
 -/
+
+set_option autoImplicit true
 
 
 noncomputable section
@@ -115,7 +114,7 @@ variable [Ring S]
 theorem aeval_modByMonic_eq_self_of_root [Algebra R S] {p q : R[X]} (hq : q.Monic) {x : S}
     (hx : aeval x q = 0) : aeval x (p %ₘ q) = aeval x p := by
     --`eval₂_modByMonic_eq_self_of_root` doesn't work here as it needs commutativity
-  rw [modByMonic_eq_sub_mul_div p hq, _root_.map_sub, _root_.map_mul, hx, MulZeroClass.zero_mul,
+  rw [modByMonic_eq_sub_mul_div p hq, _root_.map_sub, _root_.map_mul, hx, zero_mul,
     sub_zero]
 #align polynomial.aeval_mod_by_monic_eq_self_of_root Polynomial.aeval_modByMonic_eq_self_of_root
 
@@ -141,9 +140,9 @@ theorem natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p*q).natDegree = p.natDeg
 
 theorem trailingDegree_mul : (p * q).trailingDegree = p.trailingDegree + q.trailingDegree := by
   by_cases hp : p = 0
-  · rw [hp, MulZeroClass.zero_mul, trailingDegree_zero, top_add]
+  · rw [hp, zero_mul, trailingDegree_zero, top_add]
   by_cases hq : q = 0
-  · rw [hq, MulZeroClass.mul_zero, trailingDegree_zero, add_top]
+  · rw [hq, mul_zero, trailingDegree_zero, add_top]
   · rw [trailingDegree_eq_natTrailingDegree hp, trailingDegree_eq_natTrailingDegree hq,
     trailingDegree_eq_natTrailingDegree (mul_ne_zero hp hq), natTrailingDegree_mul hp hq]
     apply WithTop.coe_add
@@ -162,7 +161,7 @@ theorem natDegree_pow (p : R[X]) (n : ℕ) : natDegree (p ^ n) = n * natDegree p
 
 theorem degree_le_mul_left (p : R[X]) (hq : q ≠ 0) : degree p ≤ degree (p * q) := by
   classical
-  exact if hp : p = 0 then by simp only [hp, MulZeroClass.zero_mul, le_refl]
+  exact if hp : p = 0 then by simp only [hp, zero_mul, le_refl]
   else by
     rw [degree_mul, degree_eq_natDegree hp, degree_eq_natDegree hq];
       exact WithBot.coe_le_coe.2 (Nat.le_add_right _ _)
@@ -228,6 +227,8 @@ theorem degree_coe_units [Nontrivial R] (u : R[X]ˣ) : degree (u : R[X]) = 0 :=
   degree_eq_zero_of_isUnit ⟨u, rfl⟩
 #align polynomial.degree_coe_units Polynomial.degree_coe_units
 
+/-- Characterization of a unit of a polynomial ring over an integral domain `R`.
+See `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent` when `R` is a commutative ring. -/
 theorem isUnit_iff : IsUnit p ↔ ∃ r : R, IsUnit r ∧ C r = p :=
   ⟨fun hp =>
     ⟨p.coeff 0,
@@ -284,8 +285,7 @@ theorem irreducible_of_monic (hp : p.Monic) (hp1 : p ≠ 1) :
           (isUnit_of_mul_eq_one g _)⟩⟩
   · rwa [Monic, leadingCoeff_mul, leadingCoeff_C, ← leadingCoeff_mul, mul_comm, ← hfg, ← Monic]
   · rwa [Monic, leadingCoeff_mul, leadingCoeff_C, ← leadingCoeff_mul, ← hfg, ← Monic]
-  ·
-    rw [mul_mul_mul_comm, ← C_mul, ← leadingCoeff_mul, ← hfg, hp.leadingCoeff, C_1, mul_one,
+  · rw [mul_mul_mul_comm, ← C_mul, ← leadingCoeff_mul, ← hfg, hp.leadingCoeff, C_1, mul_one,
       mul_comm, ← hfg]
 #align polynomial.irreducible_of_monic Polynomial.irreducible_of_monic
 
@@ -364,7 +364,7 @@ variable [CommRing R]
 inferred type and synthesized type for `DecidableRel` when using `Nat.le_find_iff` from
 `Mathlib.Data.Polynomial.Div` After some discussion on [Zulip]
 (https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/decidability.20leakage)
-introduced  `Polynomial.rootMultiplicity_eq_nat_find_of_nonzero` to contain the issue
+introduced `Polynomial.rootMultiplicity_eq_nat_find_of_nonzero` to contain the issue
 -/
 /-- The multiplicity of `a` as root of a nonzero polynomial `p` is at least `n` iff
   `(X - a) ^ n` divides `p`. -/
@@ -491,7 +491,7 @@ theorem exists_multiset_roots [DecidableEq R] :
       let ⟨x, hx⟩ := h
       have hpd : 0 < degree p := degree_pos_of_root hp hx
       have hd0 : p /ₘ (X - C x) ≠ 0 := fun h => by
-        rw [← mul_divByMonic_eq_iff_isRoot.2 hx, h, MulZeroClass.mul_zero] at hp; exact hp rfl
+        rw [← mul_divByMonic_eq_iff_isRoot.2 hx, h, mul_zero] at hp; exact hp rfl
       have wf : degree (p /ₘ (X - C x)) < degree p :=
         degree_divByMonic_lt _ (monic_X_sub_C x) hp ((degree_X_sub_C x).symm ▸ by decide)
       let ⟨t, htd, htr⟩ := @exists_multiset_roots _ (p /ₘ (X - C x)) hd0
@@ -698,7 +698,7 @@ theorem roots_one : (1 : R[X]).roots = ∅ :=
 theorem roots_C_mul (p : R[X]) (ha : a ≠ 0) : (C a * p).roots = p.roots := by
   by_cases hp : p = 0 <;>
     simp only [roots_mul, *, Ne.def, mul_eq_zero, C_eq_zero, or_self_iff, not_false_iff, roots_C,
-      zero_add, MulZeroClass.mul_zero]
+      zero_add, mul_zero]
 set_option linter.uppercaseLean3 false in
 #align polynomial.roots_C_mul Polynomial.roots_C_mul
 
@@ -720,7 +720,7 @@ theorem roots_multiset_prod (m : Multiset R[X]) : (0 : R[X]) ∉ m → m.prod.ro
   simpa only [Multiset.coe_prod, quot_mk_to_coe''] using roots_list_prod L
 #align polynomial.roots_multiset_prod Polynomial.roots_multiset_prod
 
-theorem roots_prod {ι : Type _} (f : ι → R[X]) (s : Finset ι) :
+theorem roots_prod {ι : Type*} (f : ι → R[X]) (s : Finset ι) :
     s.prod f ≠ 0 → (s.prod f).roots = s.val.bind fun i => roots (f i) := by
   rcases s with ⟨m, hm⟩
   simpa [Multiset.prod_eq_zero_iff, Multiset.bind_map] using roots_multiset_prod (m.map f)
@@ -732,8 +732,7 @@ theorem roots_pow (p : R[X]) (n : ℕ) : (p ^ n).roots = n • p.roots := by
   · rw [pow_zero, roots_one, Nat.zero_eq, zero_smul, empty_eq_zero]
   · rcases eq_or_ne p 0 with (rfl | hp)
     · rw [zero_pow n.succ_pos, roots_zero, smul_zero]
-    ·
-      rw [pow_succ', roots_mul (mul_ne_zero (pow_ne_zero _ hp) hp), ihn, Nat.succ_eq_add_one,
+    · rw [pow_succ', roots_mul (mul_ne_zero (pow_ne_zero _ hp) hp), ihn, Nat.succ_eq_add_one,
         add_smul, one_smul]
 #align polynomial.roots_pow Polynomial.roots_pow
 
@@ -835,13 +834,13 @@ theorem nthRoots_two_eq_zero_iff {r : R} : nthRoots 2 r = 0 ↔ ¬IsSquare r := 
 #align polynomial.nth_roots_two_eq_zero_iff Polynomial.nthRoots_two_eq_zero_iff
 
 /-- The multiset `nthRoots ↑n (1 : R)` as a Finset. -/
-def nthRootsFinset (n : ℕ) (R : Type _) [CommRing R] [IsDomain R] : Finset R :=
+def nthRootsFinset (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] : Finset R :=
   haveI := Classical.decEq R
   Multiset.toFinset (nthRoots n (1 : R))
 #align polynomial.nth_roots_finset Polynomial.nthRootsFinset
 
 -- porting note: new
-lemma nthRootsFinset_def (n : ℕ) (R : Type _) [CommRing R] [IsDomain R] [DecidableEq R] :
+lemma nthRootsFinset_def (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] [DecidableEq R] :
     nthRootsFinset n R = Multiset.toFinset (nthRoots n (1 : R)) := by
   unfold nthRootsFinset
   convert rfl
@@ -895,8 +894,7 @@ theorem comp_eq_zero_iff : p.comp q = 0 ↔ p = 0 ∨ p.eval (q.coeff 0) = 0 ∧
       exact Or.inl (key.trans h)
     · rw [key, comp_C, C_eq_zero] at h
       exact Or.inr ⟨h, key⟩
-  ·
-    exact fun h =>
+  · exact fun h =>
       Or.rec (fun h => by rw [h, zero_comp]) (fun h => by rw [h.2, comp_C, h.1, C_0]) h
 #align polynomial.comp_eq_zero_iff Polynomial.comp_eq_zero_iff
 
@@ -943,19 +941,19 @@ theorem rootSet_zero (S) [CommRing S] [IsDomain S] [Algebra T S] : (0 : T[X]).ro
   rw [← C_0, rootSet_C]
 #align polynomial.root_set_zero Polynomial.rootSet_zero
 
-instance rootSetFintype (p : T[X]) (S : Type _) [CommRing S] [IsDomain S] [Algebra T S] :
+instance rootSetFintype (p : T[X]) (S : Type*) [CommRing S] [IsDomain S] [Algebra T S] :
     Fintype (p.rootSet S) :=
   FinsetCoe.fintype _
 #align polynomial.root_set_fintype Polynomial.rootSetFintype
 
-theorem rootSet_finite (p : T[X]) (S : Type _) [CommRing S] [IsDomain S] [Algebra T S] :
+theorem rootSet_finite (p : T[X]) (S : Type*) [CommRing S] [IsDomain S] [Algebra T S] :
     (p.rootSet S).Finite :=
   Set.toFinite _
 #align polynomial.root_set_finite Polynomial.rootSet_finite
 
 /-- The set of roots of all polynomials of bounded degree and having coefficients in a finite set
 is finite. -/
-theorem bUnion_roots_finite {R S : Type _} [Semiring R] [CommRing S] [IsDomain S] [DecidableEq S]
+theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S] [DecidableEq S]
     (m : R →+* S) (d : ℕ) {U : Set R} (h : U.Finite) :
     (⋃ (f : R[X]) (_ : f.natDegree ≤ d ∧ ∀ i, f.coeff i ∈ U),
         ((f.map m).roots.toFinset.toSet : Set S)).Finite :=
@@ -971,20 +969,20 @@ theorem bUnion_roots_finite {R S : Type _} [Semiring R] [CommRing S] [IsDomain S
     fun i _ => Finset.finite_toSet _
 #align polynomial.bUnion_roots_finite Polynomial.bUnion_roots_finite
 
-theorem mem_rootSet' {p : T[X]} {S : Type _} [CommRing S] [IsDomain S] [Algebra T S] {a : S} :
+theorem mem_rootSet' {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S] {a : S} :
     a ∈ p.rootSet S ↔ p.map (algebraMap T S) ≠ 0 ∧ aeval a p = 0 := by
   classical
   rw [rootSet_def, Finset.mem_coe, mem_toFinset, mem_roots', IsRoot.def, ← eval₂_eq_eval_map,
     aeval_def]
 #align polynomial.mem_root_set' Polynomial.mem_rootSet'
 
-theorem mem_rootSet {p : T[X]} {S : Type _} [CommRing S] [IsDomain S] [Algebra T S]
+theorem mem_rootSet {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S]
     [NoZeroSMulDivisors T S] {a : S} : a ∈ p.rootSet S ↔ p ≠ 0 ∧ aeval a p = 0 := by
   rw [mem_rootSet',
     (map_injective _ (NoZeroSMulDivisors.algebraMap_injective T S)).ne_iff' (Polynomial.map_zero _)]
 #align polynomial.mem_root_set Polynomial.mem_rootSet
 
-theorem mem_rootSet_of_ne {p : T[X]} {S : Type _} [CommRing S] [IsDomain S] [Algebra T S]
+theorem mem_rootSet_of_ne {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S]
     [NoZeroSMulDivisors T S] (hp : p ≠ 0) {a : S} : a ∈ p.rootSet S ↔ aeval a p = 0 :=
   mem_rootSet.trans <| and_iff_right hp
 #align polynomial.mem_root_set_of_ne Polynomial.mem_rootSet_of_ne
@@ -1145,7 +1143,7 @@ theorem exists_prod_multiset_X_sub_C_mul (p : R[X]) :
   obtain ⟨q, he⟩ := p.prod_multiset_X_sub_C_dvd
   use q, he.symm
   obtain rfl | hq := eq_or_ne q 0
-  · rw [MulZeroClass.mul_zero] at he
+  · rw [mul_zero] at he
     subst he
     simp
   constructor
@@ -1180,7 +1178,7 @@ end CommRing
 
 section
 
-variable {A B : Type _} [CommRing A] [CommRing B]
+variable {A B : Type*} [CommRing A] [CommRing B]
 
 theorem le_rootMultiplicity_map {p : A[X]} {f : A →+* B} (hmap : map f p ≠ 0) (a : A) :
     rootMultiplicity a p ≤ rootMultiplicity (f a) (p.map f) := by
@@ -1208,7 +1206,7 @@ theorem count_map_roots [IsDomain A] [DecidableEq B] {p : A[X]} {f : A →+* B} 
     (Multiset.prod_dvd_prod_of_le <| Multiset.map_le_map <| Multiset.filter_le (Eq b) _).trans ?_
   convert Polynomial.map_dvd f p.prod_multiset_X_sub_C_dvd
   simp only [Polynomial.map_multiset_prod, Multiset.map_map]
-  congr ; ext1
+  congr; ext1
   simp only [Function.comp_apply, Polynomial.map_sub, map_X, map_C]
 #align polynomial.count_map_roots Polynomial.count_map_roots
 
@@ -1221,7 +1219,7 @@ theorem count_map_roots_of_injective [IsDomain A] [DecidableEq B] (p : A[X]) {f 
   · exact count_map_roots ((Polynomial.map_ne_zero_iff hf).mpr hp0) b
 #align polynomial.count_map_roots_of_injective Polynomial.count_map_roots_of_injective
 
-theorem map_roots_le [IsDomain A] [IsDomain B]  {p : A[X]} {f : A →+* B} (h : p.map f ≠ 0) :
+theorem map_roots_le [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B} (h : p.map f ≠ 0) :
     p.roots.map f ≤ (p.map f).roots := by
   classical
   exact Multiset.le_iff_count.2 fun b => by

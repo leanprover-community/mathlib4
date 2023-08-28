@@ -2,17 +2,14 @@
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
-
-! This file was ported from Lean 3 source module data.set.pointwise.basic
-! leanprover-community/mathlib commit 5e526d18cea33550268dcbbddcb822d5cde40654
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Nat.Order.Basic
+
+#align_import data.set.pointwise.basic from "leanprover-community/mathlib"@"5e526d18cea33550268dcbbddcb822d5cde40654"
 
 /-!
 # Pointwise operations of sets
@@ -69,7 +66,7 @@ nat and int actions.
 
 open Function
 
-variable {F α β γ : Type _}
+variable {F α β γ : Type*}
 
 namespace Set
 
@@ -175,7 +172,7 @@ open Pointwise
 
 section Inv
 
-variable {ι : Sort _} [Inv α] {s t : Set α} {a : α}
+variable {ι : Sort*} [Inv α] {s t : Set α} {a : α}
 
 @[to_additive (attr := simp)]
 theorem mem_inv : a ∈ s⁻¹ ↔ a⁻¹ ∈ s :=
@@ -226,7 +223,7 @@ theorem iUnion_inv (s : ι → Set α) : (⋃ i, s i)⁻¹ = ⋃ i, (s i)⁻¹ :
 #align set.Union_neg Set.iUnion_neg
 
 @[to_additive (attr := simp)]
-theorem compl_inv : (sᶜ)⁻¹ = s⁻¹ᶜ :=
+theorem compl_inv : sᶜ⁻¹ = s⁻¹ᶜ :=
   preimage_compl
 #align set.compl_inv Set.compl_inv
 #align set.compl_neg Set.compl_neg
@@ -288,7 +285,7 @@ theorem inv_insert (a : α) (s : Set α) : (insert a s)⁻¹ = insert a⁻¹ s�
 #align set.neg_insert Set.neg_insert
 
 @[to_additive]
-theorem inv_range {ι : Sort _} {f : ι → α} : (range f)⁻¹ = range fun i => (f i)⁻¹ := by
+theorem inv_range {ι : Sort*} {f : ι → α} : (range f)⁻¹ = range fun i => (f i)⁻¹ := by
   rw [← image_inv]
   exact (range_comp _ _).symm
 #align set.inv_range Set.inv_range
@@ -313,7 +310,7 @@ open Pointwise
 
 section Mul
 
-variable {ι : Sort _} {κ : ι → Sort _} [Mul α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
+variable {ι : Sort*} {κ : ι → Sort*} [Mul α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
 /-- The pointwise multiplication of sets `s * t` and `t` is defined as `{x * y | x ∈ s, y ∈ t}` in
 locale `Pointwise`. -/
@@ -474,13 +471,13 @@ theorem union_mul_inter_subset_union : (s₁ ∪ s₂) * (t₁ ∩ t₂) ⊆ s�
 #align set.union_add_inter_subset_union Set.union_add_inter_subset_union
 
 @[to_additive]
-theorem iUnion_mul_left_image : (⋃ a ∈ s, (· * ·) a '' t) = s * t :=
+theorem iUnion_mul_left_image : ⋃ a ∈ s, (· * ·) a '' t = s * t :=
   iUnion_image_left _
 #align set.Union_mul_left_image Set.iUnion_mul_left_image
 #align set.Union_add_left_image Set.iUnion_add_left_image
 
 @[to_additive]
-theorem iUnion_mul_right_image : (⋃ a ∈ t, (· * a) '' s) = s * t :=
+theorem iUnion_mul_right_image : ⋃ a ∈ t, (· * a) '' s = s * t :=
   iUnion_image_right _
 #align set.Union_mul_right_image Set.iUnion_mul_right_image
 #align set.Union_add_right_image Set.iUnion_add_right_image
@@ -579,7 +576,7 @@ end Mul
 
 section Div
 
-variable {ι : Sort _} {κ : ι → Sort _} [Div α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
+variable {ι : Sort*} {κ : ι → Sort*} [Div α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
 /-- The pointwise division of sets `s / t` is defined as `{x / y | x ∈ s, y ∈ t}` in locale
 `Pointwise`. -/
@@ -740,13 +737,13 @@ theorem union_div_inter_subset_union : (s₁ ∪ s₂) / (t₁ ∩ t₂) ⊆ s�
 #align set.union_sub_inter_subset_union Set.union_sub_inter_subset_union
 
 @[to_additive]
-theorem iUnion_div_left_image : (⋃ a ∈ s, (· / ·) a '' t) = s / t :=
+theorem iUnion_div_left_image : ⋃ a ∈ s, (· / ·) a '' t = s / t :=
   iUnion_image_left _
 #align set.Union_div_left_image Set.iUnion_div_left_image
 #align set.Union_sub_left_image Set.iUnion_sub_left_image
 
 @[to_additive]
-theorem iUnion_div_right_image : (⋃ a ∈ t, (· / a) '' s) = s / t :=
+theorem iUnion_div_right_image : ⋃ a ∈ t, (· / a) '' s = s / t :=
   iUnion_image_right _
 #align set.Union_div_right_image Set.iUnion_div_right_image
 #align set.Union_sub_right_image Set.iUnion_sub_right_image
@@ -999,7 +996,7 @@ theorem univ_mul_univ : (univ : Set α) * univ = univ :=
 
 --TODO: `to_additive` trips up on the `1 : ℕ` used in the pattern-matching.
 @[simp]
-theorem nsmul_univ {α : Type _} [AddMonoid α] : ∀ {n : ℕ}, n ≠ 0 → n • (univ : Set α) = univ
+theorem nsmul_univ {α : Type*} [AddMonoid α] : ∀ {n : ℕ}, n ≠ 0 → n • (univ : Set α) = univ
   | 0 => fun h => (h rfl).elim
   | 1 => fun _ => one_nsmul _
   | n + 2 => fun _ => by rw [succ_nsmul, nsmul_univ n.succ_ne_zero, univ_add_univ]
@@ -1170,7 +1167,7 @@ theorem not_one_mem_div_iff : (1 : α) ∉ s / t ↔ Disjoint s t :=
 #align set.not_one_mem_div_iff Set.not_one_mem_div_iff
 #align set.not_zero_mem_sub_iff Set.not_zero_mem_sub_iff
 
-alias not_one_mem_div_iff ↔ _ _root_.Disjoint.one_not_mem_div_set
+alias ⟨_, _root_.Disjoint.one_not_mem_div_set⟩ := not_one_mem_div_iff
 #align disjoint.one_not_mem_div_set Disjoint.one_not_mem_div_set
 
 attribute [to_additive] Disjoint.one_not_mem_div_set

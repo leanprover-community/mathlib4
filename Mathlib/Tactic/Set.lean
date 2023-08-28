@@ -53,11 +53,12 @@ elab_rules : tactic
       pure (fvar, [goal])
     Term.addTermInfo' (isBinder := true) a (mkFVar fvar)
     if rw.isNone then
-      evalTactic (← `(tactic| try rewrite [(id rfl : $val = $a)] at *))
-    let tt ← Term.exprToSyntax ty
+      evalTactic (← `(tactic| try rewrite [show $(← Term.exprToSyntax vale) = $a from rfl] at *))
     match h, rev with
     | some h, some none =>
-      evalTactic (← `(tactic| have%$tk $h : $a = ($val : $tt) := rfl))
+      evalTactic (← `(tactic| have%$tk
+        $h : $a = ($(← Term.exprToSyntax vale) : $(← Term.exprToSyntax ty)) := rfl))
     | some h, some (some _) =>
-      evalTactic (← `(tactic| have%$tk $h : ($val : $tt) = $a := rfl))
+      evalTactic (← `(tactic| have%$tk
+        $h : ($(← Term.exprToSyntax vale) : $(← Term.exprToSyntax ty)) = $a := rfl))
     | _, _ => pure ()

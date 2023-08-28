@@ -2,11 +2,6 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes
-
-! This file was ported from Lean 3 source module ring_theory.adjoin_root
-! leanprover-community/mathlib commit 5c4b3d41a84bd2a1d79c7d9265e58a891e71be89
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Data.Polynomial.FieldDivision
@@ -18,6 +13,8 @@ import Mathlib.RingTheory.PowerBasis
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.QuotientNoetherian
 
+#align_import ring_theory.adjoin_root from "leanprover-community/mathlib"@"5c4b3d41a84bd2a1d79c7d9265e58a891e71be89"
+
 /-!
 # Adjoining roots of polynomials
 
@@ -25,8 +22,8 @@ This file defines the commutative ring `AdjoinRoot f`, the ring R[X]/(f) obtaine
 commutative ring `R` and a polynomial `f : R[X]`. If furthermore `R` is a field and `f` is
 irreducible, the field structure on `AdjoinRoot f` is constructed.
 
-We suggest stating results on `is_adjoin_root` instead of `AdjoinRoot` to achieve higher
-generality, since `is_adjoin_root` works for all different constructions of `R[α]`
+We suggest stating results on `IsAdjoinRoot` instead of `AdjoinRoot` to achieve higher
+generality, since `IsAdjoinRoot` works for all different constructions of `R[α]`
 including `AdjoinRoot f = R[X]/(f)` itself.
 
 ## Main definitions and results
@@ -108,11 +105,11 @@ def of : R →+* AdjoinRoot f :=
   (mk f).comp C
 #align adjoin_root.of AdjoinRoot.of
 
-instance [DistribSMul S R] [IsScalarTower S R R] : SMul S (AdjoinRoot f) :=
-  Submodule.Quotient.hasSmul' _
+instance instSMulAdjoinRoot [DistribSMul S R] [IsScalarTower S R R] : SMul S (AdjoinRoot f) :=
+  Submodule.Quotient.instSMul' _
 
 instance [DistribSMul S R] [IsScalarTower S R R] : DistribSMul S (AdjoinRoot f) :=
-  Submodule.Quotient.distribSmul' _
+  Submodule.Quotient.distribSMul' _
 
 @[simp]
 theorem smul_mk [DistribSMul S R] [IsScalarTower S R R] (a : S) (x : R[X]) :
@@ -124,12 +121,12 @@ theorem smul_of [DistribSMul S R] [IsScalarTower S R R] (a : S) (x : R) :
     a • of f x = of f (a • x) := by rw [of, RingHom.comp_apply, RingHom.comp_apply, smul_mk, smul_C]
 #align adjoin_root.smul_of AdjoinRoot.smul_of
 
-instance (R₁ R₂ : Type _) [SMul R₁ R₂] [DistribSMul R₁ R] [DistribSMul R₂ R] [IsScalarTower R₁ R R]
+instance (R₁ R₂ : Type*) [SMul R₁ R₂] [DistribSMul R₁ R] [DistribSMul R₂ R] [IsScalarTower R₁ R R]
     [IsScalarTower R₂ R R] [IsScalarTower R₁ R₂ R] (f : R[X]) :
     IsScalarTower R₁ R₂ (AdjoinRoot f) :=
   Submodule.Quotient.isScalarTower _ _
 
-instance (R₁ R₂ : Type _) [DistribSMul R₁ R] [DistribSMul R₂ R] [IsScalarTower R₁ R R]
+instance (R₁ R₂ : Type*) [DistribSMul R₁ R] [DistribSMul R₂ R] [IsScalarTower R₁ R R]
     [IsScalarTower R₂ R R] [SMulCommClass R₁ R₂ R] (f : R[X]) :
     SMulCommClass R₁ R₂ (AdjoinRoot f) :=
   Submodule.Quotient.smulCommClass _ _
@@ -240,7 +237,7 @@ theorem aeval_eq (p : R[X]) : aeval (root f) p = mk f p :=
 theorem adjoinRoot_eq_top : Algebra.adjoin R ({root f} : Set (AdjoinRoot f)) = ⊤ := by
   refine Algebra.eq_top_iff.2 fun x => ?_
   induction x using AdjoinRoot.induction_on with
-    | ih p =>  exact (Algebra.adjoin_singleton_eq_range_aeval R (root f)).symm ▸ ⟨p, aeval_eq p⟩
+    | ih p => exact (Algebra.adjoin_singleton_eq_range_aeval R (root f)).symm ▸ ⟨p, aeval_eq p⟩
 #align adjoin_root.adjoin_root_eq_top AdjoinRoot.adjoinRoot_eq_top
 
 @[simp]
@@ -276,7 +273,7 @@ def lift (i : R →+* S) (x : S) (h : f.eval₂ i x = 0) : AdjoinRoot f →+* S 
   apply Ideal.Quotient.lift _ (eval₂RingHom i x)
   intro g H
   rcases mem_span_singleton.1 H with ⟨y, hy⟩
-  rw [hy, RingHom.map_mul, coe_eval₂RingHom, h, MulZeroClass.zero_mul]
+  rw [hy, RingHom.map_mul, coe_eval₂RingHom, h, zero_mul]
 #align adjoin_root.lift AdjoinRoot.lift
 
 variable {i : R →+* S} {a : S} (h : f.eval₂ i a = 0)
@@ -355,7 +352,7 @@ theorem root_isInv (r : R) : of _ r * root (C r * X - 1) = 1 := by
     simp only [eval₂_mul, eval₂_C, eval₂_X, eval₂_one]
 #align adjoin_root.root_is_inv AdjoinRoot.root_isInv
 
-theorem algHom_subsingleton {S : Type _} [CommRing S] [Algebra R S] {r : R} :
+theorem algHom_subsingleton {S : Type*} [CommRing S] [Algebra R S] {r : R} :
     Subsingleton (AdjoinRoot (C r * X - 1) →ₐ[R] S) :=
   ⟨fun f g =>
     algHom_ext
@@ -402,8 +399,8 @@ noncomputable instance field [Fact (Irreducible f)] : Field (AdjoinRoot f) :=
       -- porting note: was
       -- `rw [Rat.cast_mk' (K := ℚ), _root_.map_mul, _root_.map_intCast, map_inv₀, map_natCast]`
       convert_to ((Rat.mk' a b h1 h2 : K) : AdjoinRoot f) = ((↑a * (↑b)⁻¹ : K) : AdjoinRoot f)
-      . simp only [_root_.map_mul, map_intCast, map_inv₀, map_natCast]
-      . simp only [Rat.cast_mk', _root_.map_mul, map_intCast, map_inv₀, map_natCast]
+      · simp only [_root_.map_mul, map_intCast, map_inv₀, map_natCast]
+      · simp only [Rat.cast_mk', _root_.map_mul, map_intCast, map_inv₀, map_natCast]
     qsmul := (· • ·)
     qsmul_eq_mul' := fun a x =>
       -- porting note: I gave the explicit motive and changed `rw` to `simp`.
@@ -547,7 +544,7 @@ theorem isIntegral_root (hf : f ≠ 0) : IsIntegral K (root f) :=
 theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff⁻¹ := by
   have f'_monic : Monic _ := monic_mul_leadingCoeff_inv hf
   refine' (minpoly.unique K _ f'_monic _ _).symm
-  · rw [AlgHom.map_mul, aeval_eq, mk_self, MulZeroClass.zero_mul]
+  · rw [AlgHom.map_mul, aeval_eq, mk_self, zero_mul]
   intro q q_monic q_aeval
   have commutes : (lift (algebraMap K (AdjoinRoot f)) (root f) q_aeval).comp (mk q) = mk f := by
     ext
@@ -616,7 +613,7 @@ open Algebra Polynomial
 
 /-- The surjective algebra morphism `R[X]/(minpoly R x) → R[x]`.
 If `R` is a GCD domain and `x` is integral, this is an isomorphism,
-see `adjoin_root.minpoly.equiv_adjoin`. -/
+see `minpoly.equivAdjoin`. -/
 @[simps!]
 def Minpoly.toAdjoin : AdjoinRoot (minpoly R x) →ₐ[R] adjoin R ({x} : Set S) :=
   liftHom _ ⟨x, self_mem_adjoin_singleton R x⟩
@@ -665,9 +662,7 @@ guaranteed to be identical to `g`. -/
 @[simps (config := { fullyApplied := false })]
 def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g = 0) :
     AdjoinRoot g ≃ₐ[R] S :=
-  {
-    AdjoinRoot.liftHom g pb.gen
-      h₂ with
+  { AdjoinRoot.liftHom g pb.gen h₂ with
     toFun := AdjoinRoot.liftHom g pb.gen h₂
     invFun := pb.lift (root g) h₁
     -- porting note: another term-mode proof converted to tactic-mode.
@@ -696,7 +691,7 @@ end Equiv'
 
 section Field
 
-variable (K) (L F : Type _) [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L]
+variable (K) (L F : Type*) [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L]
 
 variable (pb : PowerBasis F K)
 

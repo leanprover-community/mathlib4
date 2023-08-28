@@ -2,11 +2,6 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module representation_theory.Action
-! leanprover-community/mathlib commit 95a87616d63b3cb49d3fe678d416fbe9c4217bf4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.CategoryTheory.SingleObj
@@ -24,6 +19,8 @@ import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Abelian.Transfer
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Linear.FunctorCategory
+
+#align_import representation_theory.Action from "leanprover-community/mathlib"@"95a87616d63b3cb49d3fe678d416fbe9c4217bf4"
 
 /-!
 # `Action V G`, the category of actions of a monoid `G` inside some category `V`.
@@ -162,7 +159,7 @@ set_option linter.uppercaseLean3 false in
 #align Action.comp_hom Action.comp_hom
 
 /-- Construct an isomorphism of `G` actions/representations
-from an isomorphism of the the underlying objects,
+from an isomorphism of the underlying objects,
 where the forward direction commutes with the group action. -/
 @[simps]
 def mkIso {M N : Action V G} (f : M.V ≅ N.V)
@@ -172,7 +169,7 @@ def mkIso {M N : Action V G} (f : M.V ≅ N.V)
       comm := comm }
   inv :=
     { hom := f.inv
-      comm := fun g => by have w := comm g =≫ f.inv; simp at w ; simp [w] }
+      comm := fun g => by have w := comm g =≫ f.inv; simp at w; simp [w] }
 set_option linter.uppercaseLean3 false in
 #align Action.mk_iso Action.mkIso
 
@@ -412,7 +409,7 @@ set_option linter.uppercaseLean3 false in
 #align Action.add_hom Action.add_hom
 
 @[simp]
-theorem sum_hom {X Y : Action V G} {ι : Type _} (f : ι → (X ⟶ Y)) (s : Finset ι) :
+theorem sum_hom {X Y : Action V G} {ι : Type*} (f : ι → (X ⟶ Y)) (s : Finset ι) :
     (s.sum f).hom = s.sum fun i => (f i).hom :=
   (forget V G).map_sum f s
 set_option linter.uppercaseLean3 false in
@@ -422,7 +419,7 @@ end Preadditive
 
 section Linear
 
-variable [Preadditive V] {R : Type _} [Semiring R] [Linear R V]
+variable [Preadditive V] {R : Type*} [Semiring R] [Linear R V]
 
 instance : Linear R (Action V G) where
   homModule X Y :=
@@ -611,7 +608,7 @@ attribute [local simp] MonoidalPreadditive.tensor_add MonoidalPreadditive.add_te
 
 instance : MonoidalPreadditive (Action V G) where
 
-variable {R : Type _} [Semiring R] [Linear R V] [MonoidalLinear R V]
+variable {R : Type*} [Semiring R] [Linear R V] [MonoidalLinear R V]
 
 instance : MonoidalLinear R (Action V G) where
 
@@ -820,7 +817,7 @@ instance res_additive [Preadditive V] : (res V f).Additive where
 set_option linter.uppercaseLean3 false in
 #align Action.res_additive Action.res_additive
 
-variable {R : Type _} [Semiring R]
+variable {R : Type*} [Semiring R]
 
 instance res_linear [Preadditive V] [Linear R V] : (res V f).Linear R where
 set_option linter.uppercaseLean3 false in
@@ -967,7 +964,7 @@ instance mapAction_preadditive [F.Additive] : (F.mapAction G).Additive where
 set_option linter.uppercaseLean3 false in
 #align category_theory.functor.map_Action_preadditive CategoryTheory.Functor.mapAction_preadditive
 
-variable {R : Type _} [Semiring R] [CategoryTheory.Linear R V] [CategoryTheory.Linear R W]
+variable {R : Type*} [Semiring R] [CategoryTheory.Linear R V] [CategoryTheory.Linear R W]
 
 instance mapAction_linear [F.Additive] [F.Linear R] : (F.mapAction G).Linear R where
 set_option linter.uppercaseLean3 false in

@@ -2,14 +2,11 @@
 Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison, Apurva Nakade
-
-! This file was ported from Lean 3 source module set_theory.game.basic
-! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Game.PGame
 import Mathlib.Tactic.Abel
+
+#align_import set_theory.game.basic from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
 /-!
 # Combinatorial games.
@@ -53,7 +50,7 @@ namespace Game
 /-- Negation of games. -/
 def neg : Game → Game := Quot.lift (fun x => ⟦-x⟧) fun _ _ h => Quot.sound ((neg_equiv_neg_iff).2 h)
 
-instance : AddCommGroupWithOne Game where
+instance instAddCommGroupWithOneGame : AddCommGroupWithOne Game where
   zero := ⟦0⟧
   one := ⟦1⟧
   neg := neg
@@ -79,7 +76,7 @@ instance : AddCommGroupWithOne Game where
 instance : Inhabited Game :=
   ⟨0⟩
 
-instance : PartialOrder Game where
+instance instPartialOrderGame : PartialOrder Game where
   le := Quotient.lift₂ (· ≤ ·) fun x₁ y₁ x₂ y₂ hx hy => propext (le_congr hx hy)
   le_refl := by
     rintro ⟨x⟩
@@ -223,7 +220,6 @@ theorem quot_sub (a b : PGame) : ⟦a - b⟧ = (⟦a⟧ : Game) - ⟦b⟧ :=
 theorem quot_eq_of_mk'_quot_eq {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
     (R : x.RightMoves ≃ y.RightMoves) (hl : ∀ i, (⟦x.moveLeft i⟧ : Game) = ⟦y.moveLeft (L i)⟧)
     (hr : ∀ j, (⟦x.moveRight j⟧ : Game) = ⟦y.moveRight (R j)⟧) : (⟦x⟧ : Game) = ⟦y⟧ := by
-  simp_rw [Quotient.eq'] at hl hr
   exact Quot.sound (equiv_of_mk_equiv L R (fun _ => Game.PGame.equiv_iff_game_eq.2 (hl _))
                                           (fun _ => Game.PGame.equiv_iff_game_eq.2 (hr _)))
 #align pgame.quot_eq_of_mk_quot_eq PGame.quot_eq_of_mk'_quot_eq

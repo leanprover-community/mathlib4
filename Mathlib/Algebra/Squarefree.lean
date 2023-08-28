@@ -2,13 +2,10 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module algebra.squarefree
-! leanprover-community/mathlib commit 00d163e35035c3577c1c79fa53b68de17781ffc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.UniqueFactorizationDomain
+
+#align_import algebra.squarefree from "leanprover-community/mathlib"@"00d163e35035c3577c1c79fa53b68de17781ffc1"
 
 /-!
 # Squarefree elements of monoids
@@ -32,7 +29,7 @@ squarefree, multiplicity
 -/
 
 
-variable {R : Type _}
+variable {R : Type*}
 
 /-- An element of a monoid is squarefree if the only squares that
   divide it are the squares of units. -/
@@ -90,7 +87,7 @@ theorem Squarefree.squarefree_of_dvd [CommMonoid R] {x y : R} (hdvd : x ∣ y) (
 
 section SquarefreeGcdOfSquarefree
 
-variable {α : Type _} [CancelCommMonoidWithZero α] [GCDMonoid α]
+variable {α : Type*} [CancelCommMonoidWithZero α] [GCDMonoid α]
 
 theorem Squarefree.gcd_right (a : α) {b : α} (hb : Squarefree b) : Squarefree (gcd a b) :=
   hb.squarefree_of_dvd (gcd_dvd_right _ _)
@@ -166,7 +163,7 @@ theorem irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree (r 
   have : x ≠ 0 := by
     rintro rfl
     apply hr
-    simpa only [zero_dvd_iff, MulZeroClass.mul_zero] using hx
+    simpa only [zero_dvd_iff, mul_zero] using hx
   obtain ⟨j, hj₁, hj₂⟩ := WfDvdMonoid.exists_irreducible_factor i this
   exact h _ hj₁ ((mul_dvd_mul hj₂ hj₂).trans hx)
 #align irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree

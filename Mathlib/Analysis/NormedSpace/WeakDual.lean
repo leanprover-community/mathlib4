@@ -2,15 +2,12 @@
 Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.normed_space.weak_dual
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Module.WeakDual
 import Mathlib.Analysis.NormedSpace.Dual
 import Mathlib.Analysis.NormedSpace.OperatorNorm
+
+#align_import analysis.normed_space.weak_dual from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Weak dual of normed space
@@ -107,9 +104,9 @@ by the dual-norm (i.e. the operator-norm).
 -/
 
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-variable {E : Type _} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 namespace NormedSpace
 

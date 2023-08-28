@@ -2,13 +2,10 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.localization.predicate
-! leanprover-community/mathlib commit 8efef279998820353694feb6ff5631ed0d309ecc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Localization.Construction
+
+#align_import category_theory.localization.predicate from "leanprover-community/mathlib"@"8efef279998820353694feb6ff5631ed0d309ecc"
 
 /-!
 
@@ -42,7 +39,7 @@ namespace CategoryTheory
 
 open Category
 
-variable {C D : Type _} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProperty C) (E : Type _)
+variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProperty C) (E : Type*)
   [Category E]
 
 namespace Functor
@@ -236,7 +233,7 @@ instance : IsEquivalence (whiskeringLeftFunctor L W E) := by
         dsimp [Construction.whiskeringLeftEquivalence, equivalenceFromModel, whiskerLeft]
         erw [NatTrans.comp_app, NatTrans.comp_app, eqToHom_app, eqToHom_app, eqToHom_refl,
           eqToHom_refl, comp_id, id_comp]
-        . rfl
+        · rfl
         all_goals
           change (W.Q ⋙ Localization.Construction.lift L (inverts L W)) ⋙ _ = L ⋙ _
           rw [Construction.fac]
@@ -251,7 +248,7 @@ def functorEquivalence : D ⥤ E ≌ W.FunctorsInverting E :=
 /-- The functor `(D ⥤ E) ⥤ (C ⥤ E)` given by the composition with a localization
 functor `L : C ⥤ D` with respect to `W : MorphismProperty C`. -/
 @[nolint unusedArguments]
-def whiskeringLeftFunctor' (_ : MorphismProperty C) (E : Type _) [Category E] :
+def whiskeringLeftFunctor' (_ : MorphismProperty C) (E : Type*) [Category E] :
   (D ⥤ E) ⥤ C ⥤ E :=
   (whiskeringLeft C D E).obj L
 #align category_theory.localization.whiskering_left_functor' CategoryTheory.Localization.whiskeringLeftFunctor'
@@ -379,7 +376,7 @@ def liftNatIso (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E) [h₁ : Lifting L W
 namespace Lifting
 
 @[simps]
-instance compRight {E' : Type _} [Category E'] (F : C ⥤ E) (F' : D ⥤ E) [Lifting L W F F']
+instance compRight {E' : Type*} [Category E'] (F : C ⥤ E) (F' : D ⥤ E) [Lifting L W F F']
     (G : E ⥤ E') : Lifting L W (F ⋙ G) (F' ⋙ G) :=
   ⟨isoWhiskerRight (iso L W F F') G⟩
 #align category_theory.localization.lifting.comp_right CategoryTheory.Localization.Lifting.compRight
@@ -421,7 +418,7 @@ theorem of_iso {L₁ L₂ : C ⥤ D} (e : L₁ ≅ L₂) [L₁.IsLocalization W]
 
 /-- If `L : C ⥤ D` is a localization for `W : MorphismProperty C`, then it is also
 the case of a functor obtained by post-composing `L` with an equivalence of categories. -/
-theorem of_equivalence_target {E : Type _} [Category E] (L' : C ⥤ E) (eq : D ≌ E)
+theorem of_equivalence_target {E : Type*} [Category E] (L' : C ⥤ E) (eq : D ≌ E)
     [L.IsLocalization W] (e : L ⋙ eq.functor ≅ L') : L'.IsLocalization W := by
   have h : W.IsInvertedBy L' := by
     rw [← MorphismProperty.IsInvertedBy.iff_of_iso W e]

@@ -2,15 +2,12 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module linear_algebra.adic_completion
-! leanprover-community/mathlib commit 2bbc7e3884ba234309d2a43b19144105a753292e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.LinearAlgebra.SModEq
 import Mathlib.RingTheory.JacobsonIdeal
+
+#align_import linear_algebra.adic_completion from "leanprover-community/mathlib"@"2bbc7e3884ba234309d2a43b19144105a753292e"
 
 /-!
 # Completion of a module with respect to an ideal.
@@ -33,11 +30,11 @@ with respect to an ideal `I`:
 
 open Submodule
 
-variable {R : Type _} [CommRing R] (I : Ideal R)
+variable {R : Type*} [CommRing R] (I : Ideal R)
 
-variable (M : Type _) [AddCommGroup M] [Module R M]
+variable (M : Type*) [AddCommGroup M] [Module R M]
 
-variable {N : Type _} [AddCommGroup N] [Module R N]
+variable {N : Type*} [AddCommGroup N] [Module R N]
 
 /-- A module `M` is Hausdorff with respect to an ideal `I` if `⋂ I^n M = 0`. -/
 class IsHausdorff : Prop where

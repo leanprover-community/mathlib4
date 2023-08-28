@@ -2,11 +2,6 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Justus Springer
-
-! This file was ported from Lean 3 source module algebraic_geometry.Spec
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.LocallyRingedSpace
 import Mathlib.AlgebraicGeometry.StructureSheaf
@@ -14,6 +9,8 @@ import Mathlib.RingTheory.Localization.LocalizationLocalization
 import Mathlib.Topology.Sheaves.SheafCondition.Sites
 import Mathlib.Topology.Sheaves.Functors
 import Mathlib.Algebra.Module.LocalizedModule
+
+#align_import algebraic_geometry.Spec from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # $Spec$ as a functor to locally ringed spaces.
@@ -190,8 +187,6 @@ theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
         toOpen R U ≫ β.c.app (op U)) :
     α = β := by
   ext : 1
-  -- See https://github.com/leanprover/std4/pull/158
-  swap
   · exact w
   · apply
       ((TopCat.Sheaf.pushforward β.base).obj X.sheaf).hom_ext _ PrimeSpectrum.isBasis_basic_opens
@@ -321,7 +316,7 @@ set_option linter.uppercaseLean3 false in
 @[reassoc]
 theorem Spec_Γ_naturality {R S : CommRingCat} (f : R ⟶ S) :
     f ≫ toSpecΓ S = toSpecΓ R ≫ Γ.map (Spec.toLocallyRingedSpace.map f.op).op := by
-  -- Porting note : `ext` failed to pickup one the three lemmas
+  -- Porting note : `ext` failed to pick up one of the three lemmas
   refine RingHom.ext fun x => Subtype.ext <| funext fun x' => ?_; symm;
   apply Localization.localRingHom_to_map
 set_option linter.uppercaseLean3 false in
@@ -420,7 +415,7 @@ theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
           ⟨p, hpr⟩ _).trans e
   set s' := (Spec.topMap (algebraMap R S) _* (structureSheaf S).1).map (homOfLE hrU).op s with h
   replace e : ((Spec.topMap (algebraMap R S) _* (structureSheaf S).val).germ ⟨p, hpr⟩) s' = y
-  . rw [h]; exact e
+  · rw [h]; exact e
   clear_value s'; clear! U
   obtain ⟨⟨s, ⟨_, n, rfl⟩⟩, hsn⟩ :=
     @IsLocalization.surj _ _ _ _ _ _

@@ -2,17 +2,14 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.ordmap.ordset
-! leanprover-community/mathlib commit 47b51515e69f59bca5cf34ef456e6000fe205a69
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Ordmap.Ordnode
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Nat.Dist
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Abel
+
+#align_import data.ordmap.ordset from "leanprover-community/mathlib"@"47b51515e69f59bca5cf34ef456e6000fe205a69"
 
 /-!
 # Verification of the `Ordnode α` datatype
@@ -71,7 +68,7 @@ ordered map, ordered set, data structure, verified programming
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Ordnode
 
@@ -190,6 +187,7 @@ instance Balanced.dec : DecidablePred (@Balanced α)
     infer_instance
 #align ordnode.balanced.dec Ordnode.Balanced.dec
 
+@[symm]
 theorem BalancedSz.symm {l r : ℕ} : BalancedSz l r → BalancedSz r l :=
   Or.imp (by rw [add_comm]; exact id) And.symm
 #align ordnode.balanced_sz.symm Ordnode.BalancedSz.symm
@@ -1196,7 +1194,7 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
       · rw [Nat.succ_add] at mm; rcases mm with (_ | ⟨⟨⟩⟩)
     rcases hm.3.1.resolve_left mm with ⟨mm₁, mm₂⟩
     cases' Nat.eq_zero_or_pos (size ml) with ml0 ml0
-    · rw [ml0, MulZeroClass.mul_zero, le_zero_iff] at mm₂
+    · rw [ml0, mul_zero, le_zero_iff] at mm₂
       rw [ml0, mm₂] at mm; cases mm (by decide)
     have : 2 * size l ≤ size ml + size mr + 1 := by
       have := Nat.mul_le_mul_left ratio lr₁
@@ -1246,7 +1244,7 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
       (or_iff_right_of_imp fun h => (mul_le_mul_left (by decide)).1 (le_trans h (by decide))).1 H3
   have H3p : size l > 0 → 2 * (size rl + size rr) ≤ 9 * size l + 3 := fun l0 : 1 ≤ size l =>
     (or_iff_left_of_imp <| by intro; linarith).1 H3
-  have ablem : ∀ {a b : ℕ}, 1 ≤ a → a + b ≤ 2 → b ≤ 1 := by intros ; linarith
+  have ablem : ∀ {a b : ℕ}, 1 ≤ a → a + b ≤ 2 → b ≤ 1 := by intros; linarith
   have hlp : size l > 0 → ¬size rl + size rr ≤ 1 := fun l0 hb =>
     absurd (le_trans (le_trans (Nat.mul_le_mul_left _ l0) H2) hb) (by decide)
   rw [rotateL]; split_ifs with h
@@ -1341,7 +1339,7 @@ theorem Valid'.balance' {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : 
 #align ordnode.valid'.balance' Ordnode.Valid'.balance'
 
 theorem Valid'.balance {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Valid' x r o₂)
-    (H : ∃ l' r',  BalancedSz l' r' ∧
+    (H : ∃ l' r', BalancedSz l' r' ∧
           (Nat.dist (size l) l' ≤ 1 ∧ size r = r' ∨ Nat.dist (size r) r' ≤ 1 ∧ size l = l')) :
     Valid' o₁ (@balance α l x r) o₂ := by
   rw [balance_eq_balance' hl.3 hr.3 hl.2 hr.2]; exact hl.balance' hr H
@@ -1681,7 +1679,7 @@ end Ordnode
 maintain that the tree is balanced and correctly stores subtree sizes at each level. The
 correctness property of the tree is baked into the type, so all operations on this type are correct
 by construction. -/
-def Ordset (α : Type _) [Preorder α] :=
+def Ordset (α : Type*) [Preorder α] :=
   { t : Ordnode α // t.Valid }
 #align ordset Ordset
 

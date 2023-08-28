@@ -2,11 +2,6 @@
 Copyright (c) 2021 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
-
-! This file was ported from Lean 3 source module data.nat.factorization.basic
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Data.Finsupp.Multiset
@@ -14,6 +9,8 @@ import Mathlib.Data.Nat.PrimeFin
 import Mathlib.NumberTheory.Padics.PadicVal
 import Mathlib.Data.Nat.Interval
 import Mathlib.Tactic.IntervalCases
+
+#align_import data.nat.factorization.basic from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Prime factorizations
@@ -186,7 +183,8 @@ theorem dvd_of_factorization_pos {n p : ℕ} (hn : n.factorization p ≠ 0) : p 
 #align nat.dvd_of_factorization_pos Nat.dvd_of_factorization_pos
 
 theorem Prime.factorization_pos_of_dvd {n p : ℕ} (hp : p.Prime) (hn : n ≠ 0) (h : p ∣ n) :
-    0 < n.factorization p := by rwa [← factors_count_eq, count_pos, mem_factors_iff_dvd hn hp]
+    0 < n.factorization p := by
+    rwa [← factors_count_eq, count_pos_iff_mem, mem_factors_iff_dvd hn hp]
 #align nat.prime.factorization_pos_of_dvd Nat.Prime.factorization_pos_of_dvd
 
 theorem factorization_eq_zero_of_remainder {p r : ℕ} (i : ℕ) (hr : ¬p ∣ r) :
@@ -233,7 +231,7 @@ theorem factorization_mul_support {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
 
 /-- If a product over `n.factorization` doesn't use the multiplicities of the prime factors
 then it's equal to the corresponding product over `n.factors.toFinset` -/
-theorem prod_factorization_eq_prod_factors {n : ℕ} {β : Type _} [CommMonoid β] (f : ℕ → β) :
+theorem prod_factorization_eq_prod_factors {n : ℕ} {β : Type*} [CommMonoid β] (f : ℕ → β) :
     (n.factorization.prod fun p _ => f p) = ∏ p in n.factors.toFinset, f p := by
   apply prod_congr support_factorization
   simp
@@ -242,7 +240,7 @@ theorem prod_factorization_eq_prod_factors {n : ℕ} {β : Type _} [CommMonoid �
 /-- For any `p : ℕ` and any function `g : α → ℕ` that's non-zero on `S : Finset α`,
 the power of `p` in `S.prod g` equals the sum over `x ∈ S` of the powers of `p` in `g x`.
 Generalises `factorization_mul`, which is the special case where `S.card = 2` and `g = id`. -/
-theorem factorization_prod {α : Type _} {S : Finset α} {g : α → ℕ} (hS : ∀ x ∈ S, g x ≠ 0) :
+theorem factorization_prod {α : Type*} {S : Finset α} {g : α → ℕ} (hS : ∀ x ∈ S, g x ≠ 0) :
     (S.prod g).factorization = S.sum fun x => (g x).factorization := by
   classical
     ext p
@@ -695,7 +693,7 @@ theorem factorization_lcm {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
 #align nat.factorization_lcm Nat.factorization_lcm
 
 @[to_additive sum_factors_gcd_add_sum_factors_mul]
-theorem prod_factors_gcd_mul_prod_factors_mul {β : Type _} [CommMonoid β] (m n : ℕ) (f : ℕ → β) :
+theorem prod_factors_gcd_mul_prod_factors_mul {β : Type*} [CommMonoid β] (m n : ℕ) (f : ℕ → β) :
     (m.gcd n).factors.toFinset.prod f * (m * n).factors.toFinset.prod f =
       m.factors.toFinset.prod f * n.factors.toFinset.prod f := by
   rcases eq_or_ne n 0 with (rfl | hm0)
@@ -793,9 +791,9 @@ theorem factorization_mul_support_of_coprime {a b : ℕ} (hab : coprime a b) :
 /-- Given `P 0, P 1` and a way to extend `P a` to `P (p ^ n * a)` for prime `p` not dividing `a`,
 we can define `P` for all natural numbers. -/
 @[elab_as_elim]
-def recOnPrimePow {P : ℕ → Sort _} (h0 : P 0) (h1 : P 1)
+def recOnPrimePow {P : ℕ → Sort*} (h0 : P 0) (h1 : P 1)
     (h : ∀ a p n : ℕ, p.Prime → ¬p ∣ a → 0 < n → P a → P (p ^ n * a)) : ∀ a : ℕ, P a := fun a =>
-  Nat.strong_rec_on a fun n =>
+  Nat.strongRecOn a fun n =>
     match n with
     | 0 => fun _ => h0
     | 1 => fun _ => h1
@@ -828,7 +826,7 @@ def recOnPrimePow {P : ℕ → Sort _} (h0 : P 0) (h1 : P 1)
 /-- Given `P 0`, `P 1`, and `P (p ^ n)` for positive prime powers, and a way to extend `P a` and
 `P b` to `P (a * b)` when `a, b` are positive coprime, we can define `P` for all natural numbers. -/
 @[elab_as_elim]
-def recOnPosPrimePosCoprime {P : ℕ → Sort _} (hp : ∀ p n : ℕ, Prime p → 0 < n → P (p ^ n))
+def recOnPosPrimePosCoprime {P : ℕ → Sort*} (hp : ∀ p n : ℕ, Prime p → 0 < n → P (p ^ n))
     (h0 : P 0) (h1 : P 1) (h : ∀ a b, 1 < a → 1 < b → coprime a b → P a → P b → P (a * b)) :
     ∀ a, P a :=
   recOnPrimePow h0 h1 <| by
@@ -845,7 +843,7 @@ def recOnPosPrimePosCoprime {P : ℕ → Sort _} (hp : ∀ p n : ℕ, Prime p �
 /-- Given `P 0`, `P (p ^ n)` for all prime powers, and a way to extend `P a` and `P b` to
 `P (a * b)` when `a, b` are positive coprime, we can define `P` for all natural numbers. -/
 @[elab_as_elim]
-def recOnPrimeCoprime {P : ℕ → Sort _} (h0 : P 0) (hp : ∀ p n : ℕ, Prime p → P (p ^ n))
+def recOnPrimeCoprime {P : ℕ → Sort*} (h0 : P 0) (hp : ∀ p n : ℕ, Prime p → P (p ^ n))
     (h : ∀ a b, 1 < a → 1 < b → coprime a b → P a → P b → P (a * b)) : ∀ a, P a :=
   recOnPosPrimePosCoprime (fun p n h _ => hp p n h) h0 (hp 2 0 prime_two) h
 #align nat.rec_on_prime_coprime Nat.recOnPrimeCoprime
@@ -853,7 +851,7 @@ def recOnPrimeCoprime {P : ℕ → Sort _} (h0 : P 0) (hp : ∀ p n : ℕ, Prime
 /-- Given `P 0`, `P 1`, `P p` for all primes, and a way to extend `P a` and `P b` to
 `P (a * b)`, we can define `P` for all natural numbers. -/
 @[elab_as_elim]
-noncomputable def recOnMul {P : ℕ → Sort _} (h0 : P 0) (h1 : P 1) (hp : ∀ p, Prime p → P p)
+noncomputable def recOnMul {P : ℕ → Sort*} (h0 : P 0) (h1 : P 1) (hp : ∀ p, Prime p → P p)
     (h : ∀ a b, P a → P b → P (a * b)) : ∀ a, P a :=
   let hp : ∀ p n : ℕ, Prime p → P (p ^ n) := fun p n hp' =>
     n.recOn h1 (fun n hn => by rw [pow_succ]; apply h _ _ hn (hp p hp'))
@@ -866,7 +864,7 @@ noncomputable def recOnMul {P : ℕ → Sort _} (h0 : P 0) (h1 : P 1) (hp : ∀ 
 
 /-- For any multiplicative function `f` with `f 1 = 1` and any `n ≠ 0`,
 we can evaluate `f n` by evaluating `f` at `p ^ k` over the factorization of `n` -/
-theorem multiplicative_factorization {β : Type _} [CommMonoid β] (f : ℕ → β)
+theorem multiplicative_factorization {β : Type*} [CommMonoid β] (f : ℕ → β)
     (h_mult : ∀ x y : ℕ, coprime x y → f (x * y) = f x * f y) (hf : f 1 = 1) :
     ∀ {n : ℕ}, n ≠ 0 → f n = n.factorization.prod fun p k => f (p ^ k) := by
   apply Nat.recOnPosPrimePosCoprime
@@ -886,7 +884,7 @@ theorem multiplicative_factorization {β : Type _} [CommMonoid β] (f : ℕ → 
 
 /-- For any multiplicative function `f` with `f 1 = 1` and `f 0 = 1`,
 we can evaluate `f n` by evaluating `f` at `p ^ k` over the factorization of `n` -/
-theorem multiplicative_factorization' {β : Type _} [CommMonoid β] (f : ℕ → β)
+theorem multiplicative_factorization' {β : Type*} [CommMonoid β] (f : ℕ → β)
     (h_mult : ∀ x y : ℕ, coprime x y → f (x * y) = f x * f y) (hf0 : f 0 = 1) (hf1 : f 1 = 1) :
     ∀ {n : ℕ}, f n = n.factorization.prod fun p k => f (p ^ k) := by
   apply Nat.recOnPosPrimePosCoprime

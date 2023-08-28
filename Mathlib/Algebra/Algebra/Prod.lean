@@ -2,13 +2,10 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.algebra.prod
-! leanprover-community/mathlib commit 28aa996fc6fb4317f0083c4e6daf79878d81be33
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Hom
+
+#align_import algebra.algebra.prod from "leanprover-community/mathlib"@"28aa996fc6fb4317f0083c4e6daf79878d81be33"
 
 /-!
 # The R-algebra structure on products of R-algebras
@@ -23,7 +20,7 @@ The R-algebra structure on `(i : I) → A i` when each `A i` is an R-algebra.
 -/
 
 
-variable {R A B C : Type _}
+variable {R A B C : Type*}
 
 variable [CommSemiring R]
 
@@ -36,7 +33,7 @@ variable (R A B)
 open Algebra
 
 instance algebra : Algebra R (A × B) :=
-  { Prod.module,
+  { Prod.instModule,
     RingHom.prod (algebraMap R A) (algebraMap R B) with
     commutes' := by
       rintro r ⟨a, b⟩

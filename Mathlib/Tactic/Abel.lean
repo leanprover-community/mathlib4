@@ -14,6 +14,8 @@ Evaluate expressions in the language of additive, commutative monoids and groups
 
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic.Abel
 open Lean Elab Meta Tactic Qq
 

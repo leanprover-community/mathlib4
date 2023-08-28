@@ -2,15 +2,12 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes, Floris van Doorn, Yaël Dillies
-
-! This file was ported from Lean 3 source module data.nat.factorial.basic
-! leanprover-community/mathlib commit d012cd09a9b256d870751284dd6a29882b0be105
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Pow
 import Mathlib.Tactic.GCongr.Core
+
+#align_import data.nat.factorial.basic from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
 
 /-!
 # Factorial and variants
@@ -409,7 +406,7 @@ theorem descFactorial_eq_zero_iff_lt {n : ℕ} : ∀ {k : ℕ}, n.descFactorial 
     exact fun h _ => h
 #align nat.desc_factorial_eq_zero_iff_lt Nat.descFactorial_eq_zero_iff_lt
 
-alias descFactorial_eq_zero_iff_lt ↔ _ descFactorial_of_lt
+alias ⟨_, descFactorial_of_lt⟩ := descFactorial_eq_zero_iff_lt
 #align nat.desc_factorial_of_lt Nat.descFactorial_of_lt
 
 theorem add_descFactorial_eq_ascFactorial (n : ℕ) :

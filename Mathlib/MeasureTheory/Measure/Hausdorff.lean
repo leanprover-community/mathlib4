@@ -2,11 +2,6 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.measure.hausdorff
-! leanprover-community/mathlib commit 3d5c4a7a5fb0d982f97ed953161264f1dbd90ead
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Between
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
@@ -14,6 +9,8 @@ import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.Topology.MetricSpace.Holder
 import Mathlib.Topology.MetricSpace.MetricSeparated
+
+#align_import measure_theory.measure.hausdorff from "leanprover-community/mathlib"@"3d5c4a7a5fb0d982f97ed953161264f1dbd90ead"
 
 /-!
 # Hausdorff measure and metric (outer) measures
@@ -119,7 +116,7 @@ open EMetric Set Function Filter Encodable FiniteDimensional TopologicalSpace
 
 noncomputable section
 
-variable {ι X Y : Type _} [EMetricSpace X] [EMetricSpace Y]
+variable {ι X Y : Type*} [EMetricSpace X] [EMetricSpace Y]
 
 namespace MeasureTheory
 
@@ -177,7 +174,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
       μ (s ∩ t) + μ (S n) = μ (s ∩ t ∪ S n) := Eq.symm <| hm _ _ <| (Ssep' n).symm
       _ ≤ μ (s ∩ t ∪ s \ t) := μ.mono <| union_subset_union_right _ <| S_sub n
       _ = μ s := by rw [inter_union_diff]
-  have iUnion_S : (⋃ n, S n) = s \ t := by
+  have iUnion_S : ⋃ n, S n = s \ t := by
     refine' Subset.antisymm (iUnion_subset S_sub) _
     rintro x ⟨hxs, hxt⟩
     rw [mem_iff_infEdist_zero_of_closed ht] at hxt
@@ -523,7 +520,7 @@ theorem mkMetric_apply (m : ℝ≥0∞ → ℝ≥0∞) (s : Set X) :
     congr 1 with n : 1
     simp only [iInf_eq_if, htr n, id, if_true, iSup_and']
   · rw [iInf_eq_if, if_neg htr]
-    push_neg at htr ; rcases htr with ⟨n, hn⟩
+    push_neg at htr; rcases htr with ⟨n, hn⟩
     refine' ENNReal.tsum_eq_top_of_eq_top ⟨n, _⟩
     rw [iSup_eq_if, if_pos, iInf_eq_if, if_neg]
     exact hn.not_le
@@ -540,7 +537,7 @@ theorem le_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) (μ : Measure X) (ε : ℝ�
 /-- To bound the Hausdorff measure (or, more generally, for a measure defined using
 `MeasureTheory.Measure.mkMetric`) of a set, one may use coverings with maximum diameter tending to
 `0`, indexed by any sequence of countable types. -/
-theorem mkMetric_le_liminf_tsum {β : Type _} {ι : β → Type _} [∀ n, Countable (ι n)] (s : Set X)
+theorem mkMetric_le_liminf_tsum {β : Type*} {ι : β → Type*} [∀ n, Countable (ι n)] (s : Set X)
     {l : Filter β} (r : β → ℝ≥0∞) (hr : Tendsto r l (𝓝 0)) (t : ∀ n : β, ι n → Set X)
     (ht : ∀ᶠ n in l, ∀ i, diam (t n i) ≤ r n) (hst : ∀ᶠ n in l, s ⊆ ⋃ i, t n i) (m : ℝ≥0∞ → ℝ≥0∞) :
     mkMetric m s ≤ liminf (fun n => ∑' i, m (diam (t n i))) l := by
@@ -566,7 +563,7 @@ theorem mkMetric_le_liminf_tsum {β : Type _} {ι : β → Type _} [∀ n, Count
 /-- To bound the Hausdorff measure (or, more generally, for a measure defined using
 `MeasureTheory.Measure.mkMetric`) of a set, one may use coverings with maximum diameter tending to
 `0`, indexed by any sequence of finite types. -/
-theorem mkMetric_le_liminf_sum {β : Type _} {ι : β → Type _} [hι : ∀ n, Fintype (ι n)] (s : Set X)
+theorem mkMetric_le_liminf_sum {β : Type*} {ι : β → Type*} [hι : ∀ n, Fintype (ι n)] (s : Set X)
     {l : Filter β} (r : β → ℝ≥0∞) (hr : Tendsto r l (𝓝 0)) (t : ∀ n : β, ι n → Set X)
     (ht : ∀ᶠ n in l, ∀ i, diam (t n i) ≤ r n) (hst : ∀ᶠ n in l, s ⊆ ⋃ i, t n i) (m : ℝ≥0∞ → ℝ≥0∞) :
     mkMetric m s ≤ liminf (fun n => ∑ i, m (diam (t n i))) l := by
@@ -602,7 +599,7 @@ theorem hausdorffMeasure_apply (d : ℝ) (s : Set X) :
 
 /-- To bound the Hausdorff measure of a set, one may use coverings with maximum diameter tending
 to `0`, indexed by any sequence of countable types. -/
-theorem hausdorffMeasure_le_liminf_tsum {β : Type _} {ι : β → Type _} [∀ n, Countable (ι n)]
+theorem hausdorffMeasure_le_liminf_tsum {β : Type*} {ι : β → Type*} [∀ n, Countable (ι n)]
     (d : ℝ) (s : Set X) {l : Filter β} (r : β → ℝ≥0∞) (hr : Tendsto r l (𝓝 0))
     (t : ∀ n : β, ι n → Set X) (ht : ∀ᶠ n in l, ∀ i, diam (t n i) ≤ r n)
     (hst : ∀ᶠ n in l, s ⊆ ⋃ i, t n i) : μH[d] s ≤ liminf (fun n => ∑' i, diam (t n i) ^ d) l :=
@@ -611,7 +608,7 @@ theorem hausdorffMeasure_le_liminf_tsum {β : Type _} {ι : β → Type _} [∀ 
 
 /-- To bound the Hausdorff measure of a set, one may use coverings with maximum diameter tending
 to `0`, indexed by any sequence of finite types. -/
-theorem hausdorffMeasure_le_liminf_sum {β : Type _} {ι : β → Type _} [∀ n, Fintype (ι n)]
+theorem hausdorffMeasure_le_liminf_sum {β : Type*} {ι : β → Type*} [∀ n, Fintype (ι n)]
     (d : ℝ) (s : Set X) {l : Filter β} (r : β → ℝ≥0∞) (hr : Tendsto r l (𝓝 0))
     (t : ∀ n : β, ι n → Set X) (ht : ∀ᶠ n in l, ∀ i, diam (t n i) ≤ r n)
     (hst : ∀ᶠ n in l, s ⊆ ⋃ i, t n i) : μH[d] s ≤ liminf (fun n => ∑ i, diam (t n i) ^ d) l :=
@@ -738,13 +735,13 @@ theorem hausdorffMeasure_image_le (h : HolderOnWith C r f s) (hr : 0 < r) {d : �
   -- We start with the trivial case `C = 0`
   rcases (zero_le C).eq_or_lt with (rfl | hC0)
   · rcases eq_empty_or_nonempty s with (rfl | ⟨x, hx⟩)
-    · simp only [measure_empty, nonpos_iff_eq_zero, MulZeroClass.mul_zero, image_empty]
+    · simp only [measure_empty, nonpos_iff_eq_zero, mul_zero, image_empty]
     have : f '' s = {f x} :=
       haveI : (f '' s).Subsingleton := by simpa [diam_eq_zero_iff] using h.ediam_image_le
       (subsingleton_iff_singleton (mem_image_of_mem f hx)).1 this
     rw [this]
     rcases eq_or_lt_of_le hd with (rfl | h'd)
-    · simp only [ENNReal.rpow_zero, one_mul, MulZeroClass.mul_zero]
+    · simp only [ENNReal.rpow_zero, one_mul, mul_zero]
       rw [hausdorffMeasure_zero_singleton]
       exact one_le_hausdorffMeasure_zero_of_nonempty ⟨x, hx⟩
     · haveI := noAtoms_hausdorff Y h'd
@@ -804,7 +801,7 @@ end LipschitzWith
 
 open scoped Pointwise
 
-theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type _} [NormedAddCommGroup E]
+theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormedAddCommGroup E]
     [NormedField 𝕜] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E] {d : ℝ} (hd : 0 ≤ d)
     {r : 𝕜} (hr : r ≠ 0) (s : Set E) : μH[d] (r • s) = NNReal.rpow ‖r‖₊ d • μH[d] s := by
   suffices ∀ {r : 𝕜}, r ≠ 0 → ∀ s : Set E, μH[d] (r • s) ≤ NNReal.rpow ‖r‖₊ d • μH[d] s by
@@ -840,7 +837,7 @@ theorem hausdorffMeasure_preimage_le (hf : AntilipschitzWith K f) (hd : 0 ≤ d)
       exact (subsingleton_iff_singleton hx).1 this
     rw [this]
     rcases eq_or_lt_of_le hd with (rfl | h'd)
-    · simp only [ENNReal.rpow_zero, one_mul, MulZeroClass.mul_zero]
+    · simp only [ENNReal.rpow_zero, one_mul, mul_zero]
       rw [hausdorffMeasure_zero_singleton]
       exact one_le_hausdorffMeasure_zero_of_nonempty ⟨f x, hx⟩
     · haveI := noAtoms_hausdorff X h'd
@@ -930,7 +927,7 @@ end IsometryEquiv
 namespace MeasureTheory
 
 @[to_additive]
-theorem hausdorffMeasure_smul {α : Type _} [SMul α X] [IsometricSMul α X] {d : ℝ} (c : α)
+theorem hausdorffMeasure_smul {α : Type*} [SMul α X] [IsometricSMul α X] {d : ℝ} (c : α)
     (h : 0 ≤ d ∨ Surjective ((· • ·) c : X → X)) (s : Set X) : μH[d] (c • s) = μH[d] s :=
   (isometry_smul X c).hausdorffMeasure_image h _
 #align measure_theory.hausdorff_measure_smul MeasureTheory.hausdorffMeasure_smul
@@ -951,7 +948,7 @@ instance {d : ℝ} [Group X] [IsometricSMul Xᵐᵒᵖ X] : IsMulRightInvariant 
 
 /-- In the space `ι → ℝ`, the Hausdorff measure coincides exactly with the Lebesgue measure. -/
 @[simp]
-theorem hausdorffMeasure_pi_real {ι : Type _} [Fintype ι] :
+theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
     (μH[Fintype.card ι] : Measure (ι → ℝ)) = volume := by
   classical
   -- it suffices to check that the two measures coincide on products of rational intervals
@@ -1051,7 +1048,7 @@ theorem hausdorffMeasure_measurePreserving_funUnique [Unique ι]
   (IsometryEquiv.funUnique ι X).measurePreserving_hausdorffMeasure _
 #align measure_theory.hausdorff_measure_measure_preserving_fun_unique MeasureTheory.hausdorffMeasure_measurePreserving_funUnique
 
-theorem hausdorffMeasure_measurePreserving_piFinTwo (α : Fin 2 → Type _)
+theorem hausdorffMeasure_measurePreserving_piFinTwo (α : Fin 2 → Type*)
     [∀ i, MeasurableSpace (α i)] [∀ i, EMetricSpace (α i)] [∀ i, BorelSpace (α i)]
     [∀ i, TopologicalSpace.SecondCountableTopology (α i)] (d : ℝ) :
     MeasurePreserving (MeasurableEquiv.piFinTwo α) μH[d] μH[d] :=
@@ -1079,7 +1076,7 @@ theorem hausdorffMeasure_prod_real : (μH[2] : Measure (ℝ × ℝ)) = volume :=
 
 section Geometric
 
-variable {𝕜 E P : Type _}
+variable {𝕜 E P : Type*}
 theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace ℝ E]
     [MeasurableSpace E] [BorelSpace E] (v : E) (s : Set ℝ) :
     μH[1] ((fun r => r • v) '' s) = ‖v‖₊ • μH[1] s := by
@@ -1174,7 +1171,7 @@ end RealAffine
 
 /-- The measure of a segment is the distance between its endpoints. -/
 @[simp]
-theorem hausdorffMeasure_segment {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem hausdorffMeasure_segment {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [MeasurableSpace E] [BorelSpace E] (x y : E) : μH[1] (segment ℝ x y) = edist x y := by
   rw [← affineSegment_eq_segment, hausdorffMeasure_affineSegment]
 #align measure_theory.hausdorff_measure_segment MeasureTheory.hausdorffMeasure_segment

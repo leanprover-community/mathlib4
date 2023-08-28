@@ -2,14 +2,11 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
-
-! This file was ported from Lean 3 source module analysis.special_functions.complex.log
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Complex.Arg
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
+
+#align_import analysis.special_functions.complex.log from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # The complex `log` function
@@ -124,7 +121,7 @@ theorem log_inv_eq_ite (x : ℂ) : log x⁻¹ = if x.arg = π then -conj (log x)
   · simp [hx]
   rw [inv_def, log_mul_ofReal, Real.log_inv, ofReal_neg, ← sub_eq_neg_add, log_conj_eq_ite]
   · simp_rw [log, map_add, map_mul, conj_ofReal, conj_I, normSq_eq_abs, Real.log_pow,
-      Nat.cast_two, ofReal_mul, ofReal_bit0, ofReal_one, neg_add, mul_neg, two_mul, neg_neg]
+      Nat.cast_two, ofReal_mul, neg_add, mul_neg, neg_neg]
     norm_num; rw [two_mul] -- Porting note: added to simplify `↑2`
     split_ifs
     · rw [add_sub_right_comm, sub_add_cancel']
@@ -136,7 +133,7 @@ theorem log_inv_eq_ite (x : ℂ) : log x⁻¹ = if x.arg = π then -conj (log x)
 theorem log_inv (x : ℂ) (hx : x.arg ≠ π) : log x⁻¹ = -log x := by rw [log_inv_eq_ite, if_neg hx]
 #align complex.log_inv Complex.log_inv
 
-theorem two_pi_I_ne_zero : (2 * π * I : ℂ) ≠ 0 := by norm_num; simp [Real.pi_ne_zero, I_ne_zero]
+theorem two_pi_I_ne_zero : (2 * π * I : ℂ) ≠ 0 := by norm_num [Real.pi_ne_zero, I_ne_zero]
 set_option linter.uppercaseLean3 false in
 #align complex.two_pi_I_ne_zero Complex.two_pi_I_ne_zero
 
@@ -176,7 +173,7 @@ theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Co
       simp [Set.preimage, hne]
 #align complex.countable_preimage_exp Complex.countable_preimage_exp
 
-alias countable_preimage_exp ↔ _ _root_.Set.Countable.preimage_cexp
+alias ⟨_, _root_.Set.Countable.preimage_cexp⟩ := countable_preimage_exp
 #align set.countable.preimage_cexp Set.Countable.preimage_cexp
 
 theorem tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0)
@@ -190,8 +187,7 @@ theorem tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re
   · simp [sub_eq_add_neg]
   · lift z to ℝ using him
     simpa using hre.ne
-#align complex.tendsto_log_nhds_within_im_neg_of_re_neg_of_im_zero
-Complex.tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero
+#align complex.tendsto_log_nhds_within_im_neg_of_re_neg_of_im_zero Complex.tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero
 
 theorem continuousWithinAt_log_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0) (him : z.im = 0) :
     ContinuousWithinAt log { z : ℂ | 0 ≤ z.im } z := by
@@ -210,8 +206,7 @@ theorem tendsto_log_nhdsWithin_im_nonneg_of_re_neg_of_im_zero {z : ℂ} (hre : z
     (him : z.im = 0) : Tendsto log (𝓝[{ z : ℂ | 0 ≤ z.im }] z) (𝓝 <| Real.log (abs z) + π * I) := by
   simpa only [log, arg_eq_pi_iff.2 ⟨hre, him⟩] using
     (continuousWithinAt_log_of_re_neg_of_im_zero hre him).tendsto
-#align complex.tendsto_log_nhds_within_im_nonneg_of_re_neg_of_im_zero
-Complex.tendsto_log_nhdsWithin_im_nonneg_of_re_neg_of_im_zero
+#align complex.tendsto_log_nhds_within_im_nonneg_of_re_neg_of_im_zero Complex.tendsto_log_nhdsWithin_im_nonneg_of_re_neg_of_im_zero
 
 @[simp]
 theorem map_exp_comap_re_atBot : map exp (comap re atBot) = 𝓝[≠] 0 := by
@@ -232,7 +227,7 @@ open Complex Filter
 
 open Topology
 
-variable {α : Type _}
+variable {α : Type*}
 
 theorem continuousAt_clog {x : ℂ} (h : 0 < x.re ∨ x.im ≠ 0) : ContinuousAt log x := by
   refine' ContinuousAt.add _ _

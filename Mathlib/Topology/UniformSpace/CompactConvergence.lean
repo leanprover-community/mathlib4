@@ -2,14 +2,11 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module topology.uniform_space.compact_convergence
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.UniformSpace.UniformConvergence
+
+#align_import topology.uniform_space.compact_convergence from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Compact convergence (uniform convergence on compact sets)
@@ -43,9 +40,9 @@ $$
 $$
 Using this notation we can describe the uniform space structure and the topology it induces.
 Specifically:
- *  A subset `X ⊆ C(α, β) × C(α, β)` is an entourage for the uniform space structure on `C(α, β)`
+  * A subset `X ⊆ C(α, β) × C(α, β)` is an entourage for the uniform space structure on `C(α, β)`
     iff there exists a compact `K` and entourage `V` such that `E(K, V) ⊆ X`.
- *  A subset `Y ⊆ C(α, β)` is a neighbourhood of `f` iff there exists a compact `K` and entourage
+  * A subset `Y ⊆ C(α, β)` is a neighbourhood of `f` iff there exists a compact `K` and entourage
     `V` such that `N(K, V, f) ⊆ Y`.
 
 The topology on `C(α, β)` thus has a natural subbasis (the compact-open subbasis) and a natural
@@ -226,7 +223,7 @@ theorem iInter_compactOpen_gen_subset_compactConvNhd (hK : IsCompact K) (hV : V 
     ∃ (ι : Sort (u₁ + 1)) (_ : Fintype ι) (C : ι → Set α) (_hC : ∀ i, IsCompact (C i))
       (U : ι → Set β) (_hU : ∀ i, IsOpen (U i)),
       (f ∈ ⋂ i, CompactOpen.gen (C i) (U i)) ∧
-        (⋂ i, CompactOpen.gen (C i) (U i)) ⊆ compactConvNhd K V f := by
+        ⋂ i, CompactOpen.gen (C i) (U i) ⊆ compactConvNhd K V f := by
   obtain ⟨W, hW₁, hW₄, hW₂, hW₃⟩ := comp_open_symm_mem_uniformity_sets hV
   obtain ⟨Z, hZ₁, hZ₄, hZ₂, hZ₃⟩ := comp_open_symm_mem_uniformity_sets hW₁
   let U : α → Set α := fun x => f ⁻¹' ball (f x) Z
@@ -369,7 +366,7 @@ theorem hasBasis_compactConvergenceUniformity :
   hasBasis_compactConvergenceUniformity_aux
 #align continuous_map.has_basis_compact_convergence_uniformity ContinuousMap.hasBasis_compactConvergenceUniformity
 
-theorem _root_.Filter.HasBasis.compactConvergenceUniformity {ι : Type _} {pi : ι → Prop}
+theorem _root_.Filter.HasBasis.compactConvergenceUniformity {ι : Type*} {pi : ι → Prop}
     {s : ι → Set (β × β)} (h : (𝓤 β).HasBasis pi s) :
     HasBasis (𝓤 C(α, β)) (fun p : Set α × ι => IsCompact p.1 ∧ pi p.2) fun p =>
       { fg : C(α, β) × C(α, β) | ∀ x ∈ p.1, (fg.1 x, fg.2 x) ∈ s p.2 } := by

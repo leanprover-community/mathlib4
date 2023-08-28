@@ -2,13 +2,10 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.clifford_algebra.fold
-! leanprover-community/mathlib commit 446eb51ce0a90f8385f260d2b52e760e2004246b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
+
+#align_import linear_algebra.clifford_algebra.fold from "leanprover-community/mathlib"@"446eb51ce0a90f8385f260d2b52e760e2004246b"
 
 /-!
 # Recursive computation rules for the Clifford algebra
@@ -36,7 +33,7 @@ For convenience, this file also provides `CliffordAlgebra.foldl`, implemented vi
 
 universe u1 u2 u3
 
-variable {R M N : Type _}
+variable {R M N : Type*}
 
 variable [CommRing R] [AddCommGroup M] [AddCommGroup N]
 
@@ -102,15 +99,13 @@ def foldl (f : M →ₗ[R] N →ₗ[R] N) (hf : ∀ m x, f m (f m x) = Q m • x
 
 @[simp]
 theorem foldl_reverse (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (x : CliffordAlgebra Q) :
-    -- porting note: cannot infer `Q`
-    foldl Q f hf n (reverse (Q := Q) x) = foldr Q f hf n x :=
+    foldl Q f hf n (reverse x) = foldr Q f hf n x :=
   FunLike.congr_arg (foldr Q f hf n) <| reverse_reverse _
 #align clifford_algebra.foldl_reverse CliffordAlgebra.foldl_reverse
 
 @[simp]
 theorem foldr_reverse (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (x : CliffordAlgebra Q) :
-    -- porting note: cannot infer `Q`
-    foldr Q f hf n (reverse (Q := Q) x) = foldl Q f hf n x :=
+    foldr Q f hf n (reverse x) = foldl Q f hf n x :=
   rfl
 #align clifford_algebra.foldr_reverse CliffordAlgebra.foldr_reverse
 

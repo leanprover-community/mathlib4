@@ -2,16 +2,13 @@
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module measure_theory.function.continuous_map_dense
-! leanprover-community/mathlib commit e0736bb5b48bdadbca19dbd857e12bee38ccfbb8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.MeasureTheory.Integral.Bochner
+
+#align_import measure_theory.function.continuous_map_dense from "leanprover-community/mathlib"@"e0736bb5b48bdadbca19dbd857e12bee38ccfbb8"
 
 /-!
 # Approximation in Lᵖ by continuous functions
@@ -66,9 +63,9 @@ open scoped ENNReal NNReal Topology BoundedContinuousFunction
 
 open MeasureTheory TopologicalSpace ContinuousMap Set
 
-variable {α : Type _} [MeasurableSpace α] [TopologicalSpace α] [NormalSpace α] [BorelSpace α]
+variable {α : Type*} [MeasurableSpace α] [TopologicalSpace α] [NormalSpace α] [BorelSpace α]
 
-variable {E : Type _} [NormedAddCommGroup E] {μ : Measure α} {p : ℝ≥0∞}
+variable {E : Type*} [NormedAddCommGroup E] {μ : Measure α} {p : ℝ≥0∞}
 
 namespace MeasureTheory
 
@@ -172,8 +169,8 @@ theorem Memℒp.exists_hasCompactSupport_snorm_sub_le [LocallyCompactSpace α] [
   have I1 : snorm ((s.indicator fun _y => c) - t.indicator fun _y => c) p μ ≤ δ := by
     rw [← snorm_neg, neg_sub, ← indicator_diff st]
     exact hη _ μs.le
-  obtain ⟨k, k_compact, sk, -⟩ : ∃ k : Set α, IsCompact k ∧ s ⊆ interior k ∧ k ⊆ univ
-  exact exists_compact_between s_compact isOpen_univ (subset_univ _)
+  obtain ⟨k, k_compact, sk⟩ : ∃ k : Set α, IsCompact k ∧ s ⊆ interior k :=
+    exists_compact_superset s_compact
   rcases exists_continuous_snorm_sub_le_of_closed hp s_compact.isClosed isOpen_interior sk hsμ.ne c
       δpos.ne' with
     ⟨f, f_cont, I2, _f_bound, f_support, f_mem⟩
@@ -359,7 +356,7 @@ end MeasureTheory
 
 variable [SecondCountableTopologyEither α E] [_i : Fact (1 ≤ p)] (hp : p ≠ ∞)
 
-variable (𝕜 : Type _) [NormedField 𝕜] [NormedAlgebra ℝ 𝕜] [NormedSpace 𝕜 E]
+variable (𝕜 : Type*) [NormedField 𝕜] [NormedAlgebra ℝ 𝕜] [NormedSpace 𝕜 E]
 
 variable (E) (μ)
 

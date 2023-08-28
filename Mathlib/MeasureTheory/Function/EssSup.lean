@@ -2,14 +2,11 @@
 Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module measure_theory.function.ess_sup
-! leanprover-community/mathlib commit bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.Order.Filter.ENNReal
+
+#align_import measure_theory.function.ess_sup from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
 /-!
 # Essential supremum and infimum
@@ -36,7 +33,7 @@ open MeasureTheory Filter Set TopologicalSpace
 
 open ENNReal MeasureTheory NNReal
 
-variable {α β : Type _} {m : MeasurableSpace α} {μ ν : Measure α}
+variable {α β : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
 
 section ConditionallyCompleteLattice
 
@@ -63,23 +60,21 @@ theorem essInf_congr_ae {f g : α → β} (hfg : f =ᵐ[μ] g) : essInf f μ = e
 #align ess_inf_congr_ae essInf_congr_ae
 
 @[simp]
-theorem essSup_const' [μ.ae.NeBot] (c : β) : essSup (fun _ : α => c) μ = c :=
+theorem essSup_const' [NeZero μ] (c : β) : essSup (fun _ : α => c) μ = c :=
   limsup_const _
 #align ess_sup_const' essSup_const'
 
 @[simp]
-theorem essInf_const' [μ.ae.NeBot] (c : β) : essInf (fun _ : α => c) μ = c :=
+theorem essInf_const' [NeZero μ] (c : β) : essInf (fun _ : α => c) μ = c :=
   liminf_const _
 #align ess_inf_const' essInf_const'
 
-theorem essSup_const (c : β) (hμ : μ ≠ 0) : essSup (fun _ : α => c) μ = c := by
-  rw [← ae_neBot] at hμ
-  exact essSup_const' _
+theorem essSup_const (c : β) (hμ : μ ≠ 0) : essSup (fun _ : α => c) μ = c :=
+  have := NeZero.mk hμ; essSup_const' _
 #align ess_sup_const essSup_const
 
-theorem essInf_const (c : β) (hμ : μ ≠ 0) : essInf (fun _ : α => c) μ = c := by
-  rw [← ae_neBot] at hμ
-  exact essInf_const' _
+theorem essInf_const (c : β) (hμ : μ ≠ 0) : essInf (fun _ : α => c) μ = c :=
+  have := NeZero.mk hμ; essInf_const' _
 #align ess_inf_const essInf_const
 
 end ConditionallyCompleteLattice
@@ -199,7 +194,7 @@ theorem essSup_mono_measure {f : α → β} (hμν : ν ≪ μ) : essSup f ν �
   all_goals isBoundedDefault
 #align ess_sup_mono_measure essSup_mono_measure
 
-theorem essSup_mono_measure' {α : Type _} {β : Type _} {_ : MeasurableSpace α}
+theorem essSup_mono_measure' {α : Type*} {β : Type*} {_ : MeasurableSpace α}
     {μ ν : MeasureTheory.Measure α} [CompleteLattice β] {f : α → β} (hμν : ν ≤ μ) :
     essSup f ν ≤ essSup f μ :=
   essSup_mono_measure (Measure.absolutelyContinuous_of_le hμν)
@@ -221,7 +216,7 @@ theorem essSup_smul_measure {f : α → β} {c : ℝ≥0∞} (hc : c ≠ 0) :
 
 section TopologicalSpace
 
-variable {γ : Type _} {mγ : MeasurableSpace γ} {f : α → γ} {g : γ → β}
+variable {γ : Type*} {mγ : MeasurableSpace γ} {f : α → γ} {g : γ → β}
 
 theorem essSup_comp_le_essSup_map_measure (hf : AEMeasurable f μ) :
     essSup (g ∘ f) μ ≤ essSup g (Measure.map f μ) := by

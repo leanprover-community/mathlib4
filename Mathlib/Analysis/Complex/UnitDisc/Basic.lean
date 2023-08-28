@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.complex.unit_disc.basic
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.NormedSpace.BallAction
+
+#align_import analysis.complex.unit_disc.basic from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Poincaré disc
@@ -101,8 +98,8 @@ theorem mk_neg (z : ℂ) (hz : abs (-z) < 1) : mk (-z) hz = -mk z (abs.map_neg z
 instance : SemigroupWithZero 𝔻 :=
   { instCommSemigroup with
     zero := mk 0 <| (map_zero _).trans_lt one_pos
-    zero_mul := fun _ => coe_injective <| MulZeroClass.zero_mul _
-    mul_zero := fun _ => coe_injective <| MulZeroClass.mul_zero _ }
+    zero_mul := fun _ => coe_injective <| zero_mul _
+    mul_zero := fun _ => coe_injective <| mul_zero _ }
 
 @[simp]
 theorem coe_zero : ((0 : 𝔻) : ℂ) = 0 :=

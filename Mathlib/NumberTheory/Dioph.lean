@@ -2,16 +2,13 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module number_theory.dioph
-! leanprover-community/mathlib commit a66d07e27d5b5b8ac1147cacfe353478e5c14002
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.PFun
 import Mathlib.Data.Vector3
 import Mathlib.NumberTheory.PellMatiyasevic
+
+#align_import number_theory.dioph from "leanprover-community/mathlib"@"a66d07e27d5b5b8ac1147cacfe353478e5c14002"
 
 /-!
 # Diophantine functions and Matiyasevic's theorem
@@ -72,7 +69,7 @@ Note that this duplicates `MvPolynomial`.
 
 section Polynomials
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 /-- A predicate asserting that a function is a multivariate integer polynomial.
   (We are being a bit lazy here by allowing many representations for multiplication,
@@ -195,7 +192,7 @@ theorem sub_apply (f g : Poly α) (x : α → ℕ) : (f - g) x = f x - g x := rf
 theorem mul_apply (f g : Poly α) (x : α → ℕ) : (f * g) x = f x * g x := rfl
 #align poly.mul_apply Poly.mul_apply
 
-instance (α : Type _) : Inhabited (Poly α) := ⟨0⟩
+instance (α : Type*) : Inhabited (Poly α) := ⟨0⟩
 
 instance : AddCommGroup (Poly α) := by
   refine' { add := ((· + ·) : Poly α → Poly α → Poly α)

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.metric_space.hausdorff_dimension
-! leanprover-community/mathlib commit 8f9fea08977f7e450770933ee6abb20733b47c92
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.ContDiff
 import Mathlib.MeasureTheory.Measure.Hausdorff
+
+#align_import topology.metric_space.hausdorff_dimension from "leanprover-community/mathlib"@"8f9fea08977f7e450770933ee6abb20733b47c92"
 
 /-!
 # Hausdorff dimension
@@ -91,7 +88,7 @@ open scoped MeasureTheory ENNReal NNReal Topology
 
 open MeasureTheory MeasureTheory.Measure Set TopologicalSpace FiniteDimensional Filter
 
-variable {ι X Y : Type _} [EMetricSpace X] [EMetricSpace Y]
+variable {ι X Y : Type*} [EMetricSpace X] [EMetricSpace Y]
 
 /-- Hausdorff dimension of a set in an (e)metric space. -/
 @[irreducible] noncomputable def dimH (s : Set X) : ℝ≥0∞ := by
@@ -182,7 +179,7 @@ theorem dimH_subsingleton {s : Set X} (h : s.Subsingleton) : dimH s = 0 := by
 set_option linter.uppercaseLean3 false in
 #align dimH_subsingleton dimH_subsingleton
 
-alias dimH_subsingleton ← Set.Subsingleton.dimH_zero
+alias Set.Subsingleton.dimH_zero := dimH_subsingleton
 set_option linter.uppercaseLean3 false in
 #align set.subsingleton.dimH_zero Set.Subsingleton.dimH_zero
 
@@ -235,7 +232,7 @@ theorem dimH_countable {s : Set X} (hs : s.Countable) : dimH s = 0 :=
 set_option linter.uppercaseLean3 false in
 #align dimH_countable dimH_countable
 
-alias dimH_countable ← Set.Countable.dimH_zero
+alias Set.Countable.dimH_zero := dimH_countable
 set_option linter.uppercaseLean3 false in
 #align set.countable.dimH_zero Set.Countable.dimH_zero
 
@@ -244,7 +241,7 @@ theorem dimH_finite {s : Set X} (hs : s.Finite) : dimH s = 0 :=
 set_option linter.uppercaseLean3 false in
 #align dimH_finite dimH_finite
 
-alias dimH_finite ← Set.Finite.dimH_zero
+alias Set.Finite.dimH_zero := dimH_finite
 set_option linter.uppercaseLean3 false in
 #align set.finite.dimH_zero Set.Finite.dimH_zero
 
@@ -254,7 +251,7 @@ theorem dimH_coe_finset (s : Finset X) : dimH (s : Set X) = 0 :=
 set_option linter.uppercaseLean3 false in
 #align dimH_coe_finset dimH_coe_finset
 
-alias dimH_coe_finset ← Finset.dimH_zero
+alias Finset.dimH_zero := dimH_coe_finset
 set_option linter.uppercaseLean3 false in
 #align finset.dimH_zero Finset.dimH_zero
 
@@ -284,7 +281,7 @@ set_option linter.uppercaseLean3 false in
 /-- In an (extended) metric space with second countable topology, the Hausdorff dimension
 of a set `s` is the supremum over `x ∈ s` of the limit superiors of `dimH t` along
 `(𝓝[s] x).smallSets`. -/
-theorem bsupr_limsup_dimH (s : Set X) : (⨆ x ∈ s, limsup dimH (𝓝[s] x).smallSets) = dimH s := by
+theorem bsupr_limsup_dimH (s : Set X) : ⨆ x ∈ s, limsup dimH (𝓝[s] x).smallSets = dimH s := by
   refine le_antisymm (iSup₂_le fun x _ => ?_) ?_
   · refine limsup_le_of_le isCobounded_le_of_bot ?_
     exact eventually_smallSets.2 ⟨s, self_mem_nhdsWithin, fun t => dimH_mono⟩
@@ -299,7 +296,7 @@ set_option linter.uppercaseLean3 false in
 /-- In an (extended) metric space with second countable topology, the Hausdorff dimension
 of a set `s` is the supremum over all `x` of the limit superiors of `dimH t` along
 `(𝓝[s] x).smallSets`. -/
-theorem iSup_limsup_dimH (s : Set X) : (⨆ x, limsup dimH (𝓝[s] x).smallSets) = dimH s := by
+theorem iSup_limsup_dimH (s : Set X) : ⨆ x, limsup dimH (𝓝[s] x).smallSets = dimH s := by
   refine le_antisymm (iSup_le fun x => ?_) ?_
   · refine limsup_le_of_le isCobounded_le_of_bot ?_
     exact eventually_smallSets.2 ⟨s, self_mem_nhdsWithin, fun t => dimH_mono⟩
@@ -483,7 +480,7 @@ end IsometryEquiv
 
 namespace ContinuousLinearEquiv
 
-variable {𝕜 E F : Type _} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 @[simp]
@@ -513,7 +510,7 @@ end ContinuousLinearEquiv
 
 namespace Real
 
-variable {E : Type _} [Fintype ι] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E : Type*} [Fintype ι] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
 
 theorem dimH_ball_pi (x : ι → ℝ) {r : ℝ} (hr : 0 < r) :
     dimH (Metric.ball x r) = Fintype.card ι := by
@@ -534,7 +531,7 @@ theorem dimH_ball_pi_fin {n : ℕ} (x : Fin n → ℝ) {r : ℝ} (hr : 0 < r) :
 set_option linter.uppercaseLean3 false in
 #align real.dimH_ball_pi_fin Real.dimH_ball_pi_fin
 
-theorem dimH_univ_pi (ι : Type _) [Fintype ι] : dimH (univ : Set (ι → ℝ)) = Fintype.card ι := by
+theorem dimH_univ_pi (ι : Type*) [Fintype ι] : dimH (univ : Set (ι → ℝ)) = Fintype.card ι := by
   simp only [← Metric.iUnion_ball_nat_succ (0 : ι → ℝ), dimH_iUnion,
     dimH_ball_pi _ (Nat.cast_add_one_pos _), iSup_const]
 set_option linter.uppercaseLean3 false in
@@ -577,10 +574,10 @@ set_option linter.uppercaseLean3 false in
 
 end Real
 
-variable {E F : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
 
-theorem dense_compl_of_dimH_lt_finrank {s : Set E} (hs : dimH s < finrank ℝ E) : Dense (sᶜ) := by
+theorem dense_compl_of_dimH_lt_finrank {s : Set E} (hs : dimH s < finrank ℝ E) : Dense sᶜ := by
   refine fun x => mem_closure_iff_nhds.2 fun t ht => nonempty_iff_ne_empty.2 fun he => hs.not_le ?_
   rw [← diff_eq, diff_eq_empty] at he
   rw [← Real.dimH_of_mem_nhds ht]
@@ -624,7 +621,7 @@ vector spaces. Suppose that `f` is `C¹` smooth on a convex set `s` of Hausdorff
 less than the dimension of `F`. Then the complement of the image `f '' s` is dense in `F`. -/
 theorem ContDiffOn.dense_compl_image_of_dimH_lt_finrank [FiniteDimensional ℝ F] {f : E → F}
     {s t : Set E} (h : ContDiffOn ℝ 1 f s) (hc : Convex ℝ s) (ht : t ⊆ s)
-    (htF : dimH t < finrank ℝ F) : Dense ((f '' t)ᶜ) :=
+    (htF : dimH t < finrank ℝ F) : Dense (f '' t)ᶜ :=
   dense_compl_of_dimH_lt_finrank <| (h.dimH_image_le hc ht).trans_lt htF
 set_option linter.uppercaseLean3 false in
 #align cont_diff_on.dense_compl_image_of_dimH_lt_finrank ContDiffOn.dense_compl_image_of_dimH_lt_finrank
@@ -633,6 +630,6 @@ set_option linter.uppercaseLean3 false in
 real vector space `F` of strictly larger dimension, then the complement of the range of `f` is dense
 in `F`. -/
 theorem ContDiff.dense_compl_range_of_finrank_lt_finrank [FiniteDimensional ℝ F] {f : E → F}
-    (h : ContDiff ℝ 1 f) (hEF : finrank ℝ E < finrank ℝ F) : Dense (range fᶜ) :=
+    (h : ContDiff ℝ 1 f) (hEF : finrank ℝ E < finrank ℝ F) : Dense (range f)ᶜ :=
   dense_compl_of_dimH_lt_finrank <| h.dimH_range_le.trans_lt <| Nat.cast_lt.2 hEF
 #align cont_diff.dense_compl_range_of_finrank_lt_finrank ContDiff.dense_compl_range_of_finrank_lt_finrank

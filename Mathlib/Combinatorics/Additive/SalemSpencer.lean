@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module combinatorics.additive.salem_spencer
-! leanprover-community/mathlib commit acf5258c81d0bc7cb254ed026c1352e685df306c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Freiman
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.Convex.StrictConvexSpace
+
+#align_import combinatorics.additive.salem_spencer from "leanprover-community/mathlib"@"acf5258c81d0bc7cb254ed026c1352e685df306c"
 
 /-!
 # Salem-Spencer sets and Roth numbers
@@ -48,7 +45,7 @@ open Finset Function Metric Nat
 
 open Pointwise
 
-variable {F α β 𝕜 E : Type _}
+variable {F α β 𝕜 E : Type*}
 
 section SalemSpencer
 
@@ -69,7 +66,7 @@ def MulSalemSpencer : Prop :=
 
 /-- Whether a given finset is Salem-Spencer is decidable. -/
 @[to_additive "Whether a given finset is Salem-Spencer is decidable."]
-instance {α : Type _} [DecidableEq α] [Monoid α] {s : Finset α} :
+instance {α : Type*} [DecidableEq α] [Monoid α] {s : Finset α} :
     Decidable (MulSalemSpencer (s : Set α)) :=
   decidable_of_iff (∀ a ∈ s, ∀ b ∈ s, ∀ c ∈ s, a * b = c * c → a = b)
     ⟨fun h a b c ha hb hc => h a ha b hb c hc, fun h _ ha _ hb _ hc => h ha hb hc⟩
@@ -107,7 +104,7 @@ theorem MulSalemSpencer.prod {t : Set β} (hs : MulSalemSpencer s) (ht : MulSale
 #align add_salem_spencer.prod AddSalemSpencer.prod
 
 @[to_additive]
-theorem mulSalemSpencer_pi {ι : Type _} {α : ι → Type _} [∀ i, Monoid (α i)] {s : ∀ i, Set (α i)}
+theorem mulSalemSpencer_pi {ι : Type*} {α : ι → Type*} [∀ i, Monoid (α i)] {s : ∀ i, Set (α i)}
     (hs : ∀ i, MulSalemSpencer (s i)) : MulSalemSpencer ((univ : Set ι).pi s) :=
   fun _ _ _ ha hb hc h =>
   funext fun i => hs i (ha i trivial) (hb i trivial) (hc i trivial) <| congr_fun h i

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Winston Yin
-
-! This file was ported from Lean 3 source module analysis.ODE.picard_lindelof
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Integrals
 import Mathlib.Topology.MetricSpace.Contracting
+
+#align_import analysis.ODE.picard_lindelof from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Picard-Lindelöf (Cauchy-Lipschitz) Theorem
@@ -37,7 +34,7 @@ related theorems in `Mathlib/Analysis/ODE/Gronwall.lean`.
 differential equation
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Filter Function Set Metric TopologicalSpace intervalIntegral MeasureTheory
 open MeasureTheory.MeasureSpace (volume)
@@ -45,13 +42,13 @@ open scoped Filter Topology NNReal ENNReal Nat Interval
 
 noncomputable section
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- `Prop` structure holding the hypotheses of the Picard-Lindelöf theorem.
 
 The similarly named `PicardLindelof` structure is part of the internal API for convenience, so as
 not to constantly invoke choice, but is not intended for public use. -/
-structure IsPicardLindelof {E : Type _} [NormedAddCommGroup E] (v : ℝ → E → E) (tMin t₀ tMax : ℝ)
+structure IsPicardLindelof {E : Type*} [NormedAddCommGroup E] (v : ℝ → E → E) (tMin t₀ tMax : ℝ)
     (x₀ : E) (L : ℝ≥0) (R C : ℝ) : Prop where
   ht₀ : t₀ ∈ Icc tMin tMax
   hR : 0 ≤ R
@@ -69,7 +66,7 @@ of using this structure.
 The similarly named `IsPicardLindelof` is a bundled `Prop` holding the long hypotheses of the
 Picard-Lindelöf theorem as named arguments. It is used as part of the public API.
 -/
-structure PicardLindelof (E : Type _) [NormedAddCommGroup E] [NormedSpace ℝ E] where
+structure PicardLindelof (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E] where
   toFun : ℝ → E → E
   (tMin tMax : ℝ)
   t₀ : Icc tMin tMax
@@ -323,7 +320,7 @@ theorem dist_next_apply_le_of_le {f₁ f₂ : FunSpace v} {n : ℕ} {d : ℝ}
 #align picard_lindelof.fun_space.dist_next_apply_le_of_le PicardLindelof.FunSpace.dist_next_apply_le_of_le
 
 theorem dist_iterate_next_apply_le (f₁ f₂ : FunSpace v) (n : ℕ) (t : Icc v.tMin v.tMax) :
-    dist ((next^[n]) f₁ t) ((next^[n]) f₂ t) ≤ (v.L * |t.1 - v.t₀|) ^ n / n ! * dist f₁ f₂ := by
+    dist (next^[n] f₁ t) (next^[n] f₂ t) ≤ (v.L * |t.1 - v.t₀|) ^ n / n ! * dist f₁ f₂ := by
   induction' n with n ihn generalizing t
   · rw [Nat.zero_eq, pow_zero, Nat.factorial_zero, Nat.cast_one, div_one, one_mul]
     exact dist_apply_le_dist f₁ f₂ t
@@ -332,7 +329,7 @@ theorem dist_iterate_next_apply_le (f₁ f₂ : FunSpace v) (n : ℕ) (t : Icc v
 #align picard_lindelof.fun_space.dist_iterate_next_apply_le PicardLindelof.FunSpace.dist_iterate_next_apply_le
 
 theorem dist_iterate_next_le (f₁ f₂ : FunSpace v) (n : ℕ) :
-    dist ((next^[n]) f₁) ((next^[n]) f₂) ≤ (v.L * v.tDist) ^ n / n ! * dist f₁ f₂ := by
+    dist (next^[n] f₁) (next^[n] f₂) ≤ (v.L * v.tDist) ^ n / n ! * dist f₁ f₂ := by
   refine' dist_le_of_forall fun t => (dist_iterate_next_apply_le _ _ _ _).trans _
   have : |(t - v.t₀ : ℝ)| ≤ v.tDist := v.dist_t₀_le t
   gcongr
@@ -345,7 +342,7 @@ variable [CompleteSpace E]
 section
 
 theorem exists_contracting_iterate :
-    ∃ (N : ℕ) (K : _), ContractingWith K ((FunSpace.next : v.FunSpace → v.FunSpace)^[N]) := by
+    ∃ (N : ℕ) (K : _), ContractingWith K (FunSpace.next : v.FunSpace → v.FunSpace)^[N] := by
   rcases ((Real.tendsto_pow_div_factorial_atTop (v.L * v.tDist)).eventually
     (gt_mem_nhds zero_lt_one)).exists with ⟨N, hN⟩
   have : (0 : ℝ) ≤ (v.L * v.tDist) ^ N / N ! :=
@@ -376,7 +373,7 @@ theorem exists_solution :
 
 end PicardLindelof
 
-theorem IsPicardLindelof.norm_le₀ {E : Type _} [NormedAddCommGroup E] {v : ℝ → E → E}
+theorem IsPicardLindelof.norm_le₀ {E : Type*} [NormedAddCommGroup E] {v : ℝ → E → E}
     {tMin t₀ tMax : ℝ} {x₀ : E} {C R : ℝ} {L : ℝ≥0}
     (hpl : IsPicardLindelof v tMin t₀ tMax x₀ L R C) : ‖v t₀ x₀‖ ≤ C :=
   hpl.norm_le t₀ hpl.ht₀ x₀ <| mem_closedBall_self hpl.hR

@@ -2,14 +2,11 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Yaël Dillies
-
-! This file was ported from Lean 3 source module data.finset.locally_finite
-! leanprover-community/mathlib commit 52fa514ec337dd970d71d8de8d0fd68b455a1e54
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.LocallyFinite
 import Mathlib.Data.Set.Intervals.Monoid
+
+#align_import data.finset.locally_finite from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
 /-!
 # Intervals as finsets
@@ -33,7 +30,7 @@ open Function OrderDual
 
 open BigOperators FinsetInterval
 
-variable {ι α : Type _}
+variable {ι α : Type*}
 
 namespace Finset
 
@@ -85,13 +82,13 @@ theorem Ioo_eq_empty_iff [DenselyOrdered α] : Ioo a b = ∅ ↔ ¬a < b := by
   rw [← coe_eq_empty, coe_Ioo, Set.Ioo_eq_empty_iff]
 #align finset.Ioo_eq_empty_iff Finset.Ioo_eq_empty_iff
 
-alias Icc_eq_empty_iff ↔ _ Icc_eq_empty
+alias ⟨_, Icc_eq_empty⟩ := Icc_eq_empty_iff
 #align finset.Icc_eq_empty Finset.Icc_eq_empty
 
-alias Ico_eq_empty_iff ↔ _ Ico_eq_empty
+alias ⟨_, Ico_eq_empty⟩ := Ico_eq_empty_iff
 #align finset.Ico_eq_empty Finset.Ico_eq_empty
 
-alias Ioc_eq_empty_iff ↔ _ Ioc_eq_empty
+alias ⟨_, Ioc_eq_empty⟩ := Ioc_eq_empty_iff
 #align finset.Ioc_eq_empty Finset.Ioc_eq_empty
 
 @[simp]

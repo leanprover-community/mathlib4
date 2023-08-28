@@ -2,21 +2,18 @@
 Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module algebra.order.sub.canonical
-! leanprover-community/mathlib commit 62a5626868683c104774de8d85b9855234ac807c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Sub.Defs
+
+#align_import algebra.order.sub.canonical from "leanprover-community/mathlib"@"62a5626868683c104774de8d85b9855234ac807c"
 
 /-!
 # Lemmas about subtraction in canonically ordered monoids
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 section ExistsAddOfLE
 
@@ -328,7 +325,7 @@ theorem tsub_eq_zero_iff_le : a - b = 0 ↔ a ≤ b := by
   rw [← nonpos_iff_eq_zero, tsub_le_iff_left, add_zero]
 #align tsub_eq_zero_iff_le tsub_eq_zero_iff_le
 
-alias tsub_eq_zero_iff_le ↔ _ tsub_eq_zero_of_le
+alias ⟨_, tsub_eq_zero_of_le⟩ := tsub_eq_zero_iff_le
 #align tsub_eq_zero_of_le tsub_eq_zero_of_le
 
 attribute [simp] tsub_eq_zero_of_le
@@ -398,7 +395,7 @@ theorem tsub_right_inj (hba : b ≤ a) (hca : c ≤ a) : a - b = a - c ↔ b = c
 variable (α)
 
 /-- A `CanonicallyOrderedAddMonoid` with ordered subtraction and order-reflecting addition is
-cancellative. This is not an instance at it would form a typeclass loop.
+cancellative. This is not an instance as it would form a typeclass loop.
 
 See note [reducible non-instances]. -/
 @[reducible]

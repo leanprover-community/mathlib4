@@ -33,6 +33,8 @@ This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean
 
 -/
 
+set_option autoImplicit true
+
 def Set (α : Type u) := α → Prop
 #align set Set
 
@@ -94,7 +96,7 @@ instance : Insert α (Set α) := ⟨Set.insert⟩
 
 protected def singleton (a : α) : Set α := {b | b = a}
 
-instance : Singleton α (Set α) := ⟨Set.singleton⟩
+instance instSingletonSet : Singleton α (Set α) := ⟨Set.singleton⟩
 
 protected def union (s₁ s₂ : Set α) : Set α := {a | a ∈ s₁ ∨ a ∈ s₂}
 

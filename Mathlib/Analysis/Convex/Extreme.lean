@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module analysis.convex.extreme
-! leanprover-community/mathlib commit c5773405394e073885e2a144c9ca14637e8eb963
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Hull
+
+#align_import analysis.convex.extreme from "leanprover-community/mathlib"@"c5773405394e073885e2a144c9ca14637e8eb963"
 
 /-!
 # Extreme sets
@@ -50,7 +47,7 @@ open Function Set
 
 open Affine Classical
 
-variable {𝕜 E F ι : Type _} {π : ι → Type _}
+variable {𝕜 E F ι : Type*} {π : ι → Type*}
 
 section SMul
 
@@ -110,7 +107,7 @@ protected theorem IsExtreme.mono (hAC : IsExtreme 𝕜 A C) (hBA : B ⊆ A) (hCB
   ⟨hCB, fun _ hx₁B _ hx₂B _ hxC hx ↦ hAC.2 (hBA hx₁B) (hBA hx₂B) hxC hx⟩
 #align is_extreme.mono IsExtreme.mono
 
-theorem isExtreme_iInter {ι : Sort _} [Nonempty ι] {F : ι → Set E}
+theorem isExtreme_iInter {ι : Sort*} [Nonempty ι] {F : ι → Set E}
     (hAF : ∀ i : ι, IsExtreme 𝕜 A (F i)) : IsExtreme 𝕜 A (⋂ i : ι, F i) := by
   obtain i := Classical.arbitrary ι
   refine' ⟨iInter_subset_of_subset i (hAF i).1, fun x₁ hx₁A x₂ hx₂A x hxF hx ↦ _⟩

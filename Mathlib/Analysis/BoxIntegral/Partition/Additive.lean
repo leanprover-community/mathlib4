@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.box_integral.partition.additive
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.BoxIntegral.Partition.Split
 import Mathlib.Analysis.NormedSpace.OperatorNorm
+
+#align_import analysis.box_integral.partition.additive from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Box additive functions
@@ -38,17 +35,17 @@ open Classical BigOperators Function Set
 
 namespace BoxIntegral
 
-variable {ι M : Type _} {n : ℕ}
+variable {ι M : Type*} {n : ℕ}
 
 /-- A function on `Box ι` is called box additive if for every box `J` and a partition `π` of `J`
 we have `f J = ∑ Ji in π.boxes, f Ji`. A function is called box additive on subboxes of `I : Box ι`
 if the same property holds for `J ≤ I`. We formalize these two notions in the same definition
 using `I : WithBot (Box ι)`: the value `I = ⊤` corresponds to functions box additive on the whole
 space. -/
-structure BoxAdditiveMap (ι M : Type _) [AddCommMonoid M] (I : WithTop (Box ι)) where
+structure BoxAdditiveMap (ι M : Type*) [AddCommMonoid M] (I : WithTop (Box ι)) where
   toFun : Box ι → M
   sum_partition_boxes' : ∀ J : Box ι, ↑J ≤ I → ∀ π : Prepartition J, π.IsPartition →
-    (∑ Ji in π.boxes, toFun Ji) = toFun J
+    ∑ Ji in π.boxes, toFun Ji = toFun J
 #align box_integral.box_additive_map BoxIntegral.BoxAdditiveMap
 
 scoped notation:25 ι " →ᵇᵃ " M => BoxIntegral.BoxAdditiveMap ι M ⊤
@@ -58,7 +55,7 @@ namespace BoxAdditiveMap
 
 open Box Prepartition Finset
 
-variable {N : Type _} [AddCommMonoid M] [AddCommMonoid N] {I₀ : WithTop (Box ι)} {I J : Box ι}
+variable {N : Type*} [AddCommMonoid M] [AddCommMonoid N] {I₀ : WithTop (Box ι)} {I J : Box ι}
   {i : ι}
 
 instance : FunLike (ι →ᵇᵃ[I₀] M) (Box ι) (fun _ ↦ M) where
@@ -82,7 +79,7 @@ theorem coe_inj {f g : ι →ᵇᵃ[I₀] M} : (f : Box ι → M) = g ↔ f = g 
 #align box_integral.box_additive_map.coe_inj BoxIntegral.BoxAdditiveMap.coe_inj
 
 theorem sum_partition_boxes (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) {π : Prepartition I}
-    (h : π.IsPartition) : (∑ J in π.boxes, f J) = f I :=
+    (h : π.IsPartition) : ∑ J in π.boxes, f J = f I :=
   f.sum_partition_boxes' I hI π h
 #align box_integral.box_additive_map.sum_partition_boxes BoxIntegral.BoxAdditiveMap.sum_partition_boxes
 
@@ -154,14 +151,14 @@ def map (f : ι →ᵇᵃ[I₀] M) (g : M →+ N) : ι →ᵇᵃ[I₀] N where
 /-- If `f` is a box additive function on subboxes of `I` and `π₁`, `π₂` are two prepartitions of
 `I` that cover the same part of `I`, then `∑ J in π₁.boxes, f J = ∑ J in π₂.boxes, f J`. -/
 theorem sum_boxes_congr [Finite ι] (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) {π₁ π₂ : Prepartition I}
-    (h : π₁.iUnion = π₂.iUnion) : (∑ J in π₁.boxes, f J) = ∑ J in π₂.boxes, f J := by
+    (h : π₁.iUnion = π₂.iUnion) : ∑ J in π₁.boxes, f J = ∑ J in π₂.boxes, f J := by
   rcases exists_splitMany_inf_eq_filter_of_finite {π₁, π₂} ((finite_singleton _).insert _) with
     ⟨s, hs⟩
   simp only [inf_splitMany] at hs
   rcases hs _ (Or.inl rfl), hs _ (Or.inr rfl) with ⟨h₁, h₂⟩; clear hs
   rw [h] at h₁
   calc
-    (∑ J in π₁.boxes, f J) = ∑ J in π₁.boxes, ∑ J' in (splitMany J s).boxes, f J' :=
+    ∑ J in π₁.boxes, f J = ∑ J in π₁.boxes, ∑ J' in (splitMany J s).boxes, f J' :=
       Finset.sum_congr rfl fun J hJ => (f.sum_partition_boxes ?_ (isPartition_splitMany _ _)).symm
     _ = ∑ J in (π₁.biUnion fun J => splitMany J s).boxes, f J := (sum_biUnion_boxes _ _ _).symm
     _ = ∑ J in (π₂.biUnion fun J => splitMany J s).boxes, f J := by rw [h₁, h₂]
@@ -174,7 +171,7 @@ theorem sum_boxes_congr [Finite ι] (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I�
 
 section ToSMul
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- If `f` is a box-additive map, then so is the map sending `I` to the scalar multiplication
 by `f I` as a continuous linear map from `E` to itself. -/
@@ -216,7 +213,7 @@ def upperSubLower.{u} {G : Type u} [AddCommGroup G] (I₀ : Box (Fin (n + 1))) (
         simp only [Box.splitLower_def hx, Box.splitUpper_def hx, Box.splitLower_def hx',
           Box.splitUpper_def hx', ← WithBot.some_eq_coe, Option.elim', Box.face_mk,
           update_noteq (Fin.succAbove_ne _ _).symm, sub_add_sub_comm,
-          update_comp_eq_of_injective _ i.succAbove.injective j x, ← hf]
+          update_comp_eq_of_injective _ (Fin.strictMono_succAbove i).injective j x, ← hf]
         simp only [Box.face])
 #align box_integral.box_additive_map.upper_sub_lower BoxIntegral.BoxAdditiveMap.upperSubLower
 

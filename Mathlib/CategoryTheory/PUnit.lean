@@ -2,14 +2,11 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.punit
-! leanprover-community/mathlib commit 2738d2ca56cbc63be80c3bd48e9ed90ad94e947d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.CategoryTheory.DiscreteCategory
+
+#align_import category_theory.punit from "leanprover-community/mathlib"@"2738d2ca56cbc63be80c3bd48e9ed90ad94e947d"
 
 /-!
 # The category `Discrete PUnit`
@@ -78,11 +75,11 @@ theorem equiv_punit_iff_unique :
   constructor
   · rintro ⟨h⟩
     refine' ⟨⟨h.inverse.obj ⟨⟨⟩⟩⟩, fun x y => Nonempty.intro _⟩
-    let f : x ⟶  y := by
+    let f : x ⟶ y := by
       have hx : x ⟶ h.inverse.obj ⟨⟨⟩⟩ := by convert h.unit.app x
       have hy : h.inverse.obj ⟨⟨⟩⟩ ⟶ y := by convert h.unitInv.app y
       exact hx ≫ hy
-    suffices sub : Subsingleton (x ⟶  y) from uniqueOfSubsingleton f
+    suffices sub : Subsingleton (x ⟶ y) from uniqueOfSubsingleton f
     have : ∀ z, z = h.unit.app x ≫ (h.functor ⋙ h.inverse).map z ≫ h.unitInv.app y := by
       intro z
       simp [congrArg (· ≫ h.unitInv.app y) (h.unit.naturality z)]

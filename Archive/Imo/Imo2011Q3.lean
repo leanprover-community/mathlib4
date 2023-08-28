@@ -2,13 +2,10 @@
 Copyright (c) 2021 David Renshaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
-
-! This file was ported from Lean 3 source module imo.imo2011_q3
-! leanprover-community/mathlib commit 5f25c089cb34db4db112556f23c50d12da81b297
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Basic
+
+#align_import imo.imo2011_q3 from "leanprover-community/mathlib"@"5f25c089cb34db4db112556f23c50d12da81b297"
 
 /-!
 # IMO 2011 Q3
@@ -57,7 +54,7 @@ theorem imo2011_q3 (f : ℝ → ℝ) (hf : ∀ x y, f (x + y) ≤ y * f x + f (f
   · suffices 0 ≤ f 0 from le_antisymm (h_f_nonpos 0) this
     have hno : f (-1) = 0 := h_fx_zero_of_neg (-1) neg_one_lt_zero
     have hp := hxt (-1) (-1)
-    rw [hno] at hp 
+    rw [hno] at hp
     linarith
 #align imo2011_q3 imo2011_q3
 

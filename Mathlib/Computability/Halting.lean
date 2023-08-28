@@ -2,13 +2,10 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module computability.halting
-! leanprover-community/mathlib commit a50170a88a47570ed186b809ca754110590f9476
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Computability.PartrecCode
+
+#align_import computability.halting from "leanprover-community/mathlib"@"a50170a88a47570ed186b809ca754110590f9476"
 
 /-!
 # Computability theory and the halting problem
@@ -64,7 +61,7 @@ end Nat.Partrec
 
 namespace Partrec
 
-variable {α : Type _} {β : Type _} {γ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
@@ -164,7 +161,7 @@ theorem ComputablePred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : Com
 
 namespace ComputablePred
 
-variable {α : Type _} {σ : Type _}
+variable {α : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable σ]
 
@@ -336,8 +333,6 @@ protected theorem map {n f} {g : Vector ℕ (n + 1) → ℕ} (hf : @Partrec' n f
   simp [(Part.bind_some_eq_map _ _).symm]; exact hf.bind hg
 #align nat.partrec'.map Nat.Partrec'.map
 
-attribute [-instance] Part.instZeroPart
-
 /-- Analogous to `Nat.Partrec'` for `ℕ`-valued functions, a predicate for partial recursive
   vector-valued functions.-/
 def Vec {n m} (f : Vector ℕ n → Vector ℕ m) :=
@@ -382,7 +377,6 @@ theorem rfindOpt {n} {f : Vector ℕ (n + 1) → ℕ} (hf : @Partrec' (n + 1) f)
         exists_congr fun a => (and_congr (iff_of_eq _) Iff.rfl).trans (and_congr_right fun h => _)
       · congr
         funext n
-        simp only [Part.some_inj, PFun.coe_val]
         cases f (n ::ᵥ v) <;> simp [Nat.succ_le_succ]; rfl
       · have := Nat.rfind_spec h
         simp only [Part.coe_some, Part.mem_some_iff] at this

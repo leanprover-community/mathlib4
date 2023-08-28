@@ -2,27 +2,24 @@
 Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis, Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.pi_tensor_product
-! leanprover-community/mathlib commit ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Congruence
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 import Mathlib.Tactic.LibrarySearch
 
+#align_import linear_algebra.pi_tensor_product from "leanprover-community/mathlib"@"ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a"
+
 /-!
 # Tensor product of an indexed family of modules over commutative semirings
 
-We define the tensor product of an indexed family `s : ι → Type _` of modules over commutative
+We define the tensor product of an indexed family `s : ι → Type*` of modules over commutative
 semirings. We denote this space by `⨂[R] i, s i` and define it as `FreeAddMonoid (R × ∀ i, s i)`
 quotiented by the appropriate equivalence relation. The treatment follows very closely that of the
 binary tensor product in `LinearAlgebra/TensorProduct.lean`.
 
 ## Main definitions
 
-* `PiTensorProduct R s` with `R` a commutative semiring and `s : ι → Type _` is the tensor product
+* `PiTensorProduct R s` with `R` a commutative semiring and `s : ι → Type*` is the tensor product
   of all the `s i`'s. This is denoted by `⨂[R] i, s i`.
 * `tprod R f` with `f : ∀ i, s i` is the tensor product of the vectors `f i` over all `i : ι`.
   This is bundled as a multilinear map from `∀ i, s i` to `⨂[R] i, s i`.
@@ -70,19 +67,19 @@ open Function
 
 section Semiring
 
-variable {ι ι₂ ι₃ : Type _}
+variable {ι ι₂ ι₃ : Type*}
 
-variable {R : Type _} [CommSemiring R]
+variable {R : Type*} [CommSemiring R]
 
-variable {R₁ R₂ : Type _}
+variable {R₁ R₂ : Type*}
 
-variable {s : ι → Type _} [∀ i, AddCommMonoid (s i)] [∀ i, Module R (s i)]
+variable {s : ι → Type*} [∀ i, AddCommMonoid (s i)] [∀ i, Module R (s i)]
 
-variable {M : Type _} [AddCommMonoid M] [Module R M]
+variable {M : Type*} [AddCommMonoid M] [Module R M]
 
-variable {E : Type _} [AddCommMonoid E] [Module R E]
+variable {E : Type*} [AddCommMonoid E] [Module R E]
 
-variable {F : Type _} [AddCommMonoid F]
+variable {F : Type*} [AddCommMonoid F]
 
 namespace PiTensorProduct
 
@@ -107,7 +104,7 @@ end PiTensorProduct
 
 variable (R) (s)
 
-/-- `PiTensorProduct R s` with `R` a commutative semiring and `s : ι → Type _` is the tensor
+/-- `PiTensorProduct R s` with `R` a commutative semiring and `s : ι → Type*` is the tensor
   product of all the `s i`'s. This is denoted by `⨂[R] i, s i`. -/
 def PiTensorProduct : Type _ :=
   (addConGen (PiTensorProduct.Eqv R s)).Quotient
@@ -115,7 +112,7 @@ def PiTensorProduct : Type _ :=
 
 variable {R}
 
--- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product, given `s : ι → Type _`.
+-- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product, given `s : ι → Type*`.
 --scoped[TensorProduct] -- Porting note: `scoped` caused an error, so I commented it out.
 /-- notation for tensor product over some indexed type -/
 notation3:100"⨂["R"] "(...)", "r:(scoped f => PiTensorProduct R f) => r
@@ -533,7 +530,7 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] _ : ι, M) ≃ₗ[R] R where
         smul_eq_mul, mul_one]
       congr
       aesop
-    . simp only
+    · simp only
       intro x y hx hy
       rw [map_add, add_smul, hx, hy]
   right_inv t := by simp
@@ -663,9 +660,9 @@ open PiTensorProduct
 
 open TensorProduct
 
-variable {ι : Type _} {R : Type _} [CommRing R]
+variable {ι : Type*} {R : Type*} [CommRing R]
 
-variable {s : ι → Type _} [∀ i, AddCommGroup (s i)] [∀ i, Module R (s i)]
+variable {s : ι → Type*} [∀ i, AddCommGroup (s i)] [∀ i, Module R (s i)]
 
 /- Unlike for the binary tensor product, we require `R` to be a `CommRing` here, otherwise
 this is false in the case where `ι` is empty. -/

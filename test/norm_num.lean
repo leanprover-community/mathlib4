@@ -9,6 +9,7 @@ import Mathlib.Tactic.NormNum
 /-!
 # Tests for `norm_num` extensions
 -/
+set_option autoImplicit true
 
 -- We deliberately mock R and C here so that we don't have to import the deps
 axiom Real : Type
@@ -410,9 +411,9 @@ end Nat.div
 # Numbers in algebraic structures
 -/
 
--- noncomputable def foo : ℝ := 1
+noncomputable def foo : ℝ := 1
 
--- example : foo = 1 := by norm_num [foo]
+example : foo = 1 := by norm_num [foo]
 
 section
   variable [AddMonoidWithOne α]
@@ -657,10 +658,21 @@ example : ((- - (28 + 48) / 75) + ((- 59 - 14) - 0)) = (-5399/75 : α) := by nor
 example : (- ((- (((66 - 86) - 36) / 94) - 3) / - - (77 / (56 - - - 79))) + 87) =
   (312254/3619 : α) := by norm_num1
 
--- example : 2 ^ 13 - 1 = Int.ofNat 8191 := by norm_num1
+example : 2 ^ 13 - 1 = Int.ofNat 8191 := by norm_num1
+
+example : 1 + 1 = 2 := by
+  fail_if_success
+    norm_num [this_doesnt_exist]
+  sorry
+
+example : 1 + 100 + a = a + 101 := by
+  norm_num [add_comm]
 
 def R : Type u → Type v → Sort (max (u+1) (v+1)) := sorry
 instance : LinearOrderedField (R a b) := sorry
 
 example : (1 : R PUnit.{u+1} PUnit.{v+1}) <= 2 := by
   norm_num
+
+-- Check that we avoid deep recursion in evaluating large powers.
+example : 10^40000000 = 10^40000000 := by norm_num

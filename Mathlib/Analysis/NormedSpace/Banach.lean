@@ -2,15 +2,12 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module analysis.normed_space.banach
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Baire
 import Mathlib.Analysis.NormedSpace.OperatorNorm
 import Mathlib.Analysis.NormedSpace.AffineIsometry
+
+#align_import analysis.normed_space.banach from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Banach open mapping theorem
@@ -24,8 +21,8 @@ open Function Metric Set Filter Finset Classical Topology BigOperators NNReal
 
 open LinearMap (range ker)
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F] (f : E →L[𝕜] F)
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] (f : E →L[𝕜] F)
 
 namespace ContinuousLinearMap
 
@@ -85,7 +82,7 @@ For further use, we will only need such an element whose image
 is within distance `‖y‖/2` of `y`, to apply an iterative process. -/
 theorem exists_approx_preimage_norm_le (surj : Surjective f) :
     ∃ C ≥ 0, ∀ y, ∃ x, dist (f x) y ≤ 1 / 2 * ‖y‖ ∧ ‖x‖ ≤ C * ‖y‖ := by
-  have A : (⋃ n : ℕ, closure (f '' ball 0 n)) = Set.univ := by
+  have A : ⋃ n : ℕ, closure (f '' ball 0 n) = Set.univ := by
     refine' Subset.antisymm (subset_univ _) fun y _ => _
     rcases surj y with ⟨x, hx⟩
     rcases exists_nat_gt ‖x‖ with ⟨n, hn⟩
@@ -185,7 +182,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
     rw [← dist_eq_norm, dist_comm]
     exact (hg y).1
   refine' ⟨2 * C + 1, by linarith, fun y => _⟩
-  have hnle : ∀ n : ℕ, ‖(h^[n]) y‖ ≤ (1 / 2) ^ n * ‖y‖ := by
+  have hnle : ∀ n : ℕ, ‖h^[n] y‖ ≤ (1 / 2) ^ n * ‖y‖ := by
     intro n
     induction' n with n IH
     · simp only [one_div, Nat.zero_eq, one_mul, iterate_zero_apply, pow_zero, le_rfl]
@@ -194,12 +191,12 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
       rw [pow_succ, mul_assoc]
       apply mul_le_mul_of_nonneg_left IH
       norm_num
-  let u n := g ((h^[n]) y)
+  let u n := g (h^[n] y)
   have ule : ∀ n, ‖u n‖ ≤ (1 / 2) ^ n * (C * ‖y‖) := by
     intro n
     apply le_trans (hg _).2 _
     calc
-      C * ‖(h^[n]) y‖ ≤ C * ((1 / 2) ^ n * ‖y‖) := mul_le_mul_of_nonneg_left (hnle n) C0
+      C * ‖h^[n] y‖ ≤ C * ((1 / 2) ^ n * ‖y‖) := mul_le_mul_of_nonneg_left (hnle n) C0
       _ = (1 / 2) ^ n * (C * ‖y‖) := by ring
   have sNu : Summable fun n => ‖u n‖ := by
     refine' summable_of_nonneg_of_le (fun n => norm_nonneg _) ule _
@@ -215,7 +212,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
       _ = 2 * C * ‖y‖ := by rw [tsum_geometric_two, mul_assoc]
       _ ≤ 2 * C * ‖y‖ + ‖y‖ := (le_add_of_nonneg_right (norm_nonneg y))
       _ = (2 * C + 1) * ‖y‖ := by ring
-  have fsumeq : ∀ n : ℕ, f (∑ i in Finset.range n, u i) = y - (h^[n]) y := by
+  have fsumeq : ∀ n : ℕ, f (∑ i in Finset.range n, u i) = y - h^[n] y := by
     intro n
     induction' n with n IH
     · simp [f.map_zero]
@@ -224,12 +221,12 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
   have L₁ : Tendsto (fun n => f (∑ i in Finset.range n, u i)) atTop (𝓝 (f x)) :=
     (f.continuous.tendsto _).comp this
   simp only [fsumeq] at L₁
-  have L₂ : Tendsto (fun n => y - (h^[n]) y) atTop (𝓝 (y - 0)) := by
+  have L₂ : Tendsto (fun n => y - h^[n] y) atTop (𝓝 (y - 0)) := by
     refine' tendsto_const_nhds.sub _
     rw [tendsto_iff_norm_tendsto_zero]
     simp only [sub_zero]
     refine' squeeze_zero (fun _ => norm_nonneg _) hnle _
-    rw [← MulZeroClass.zero_mul ‖y‖]
+    rw [← zero_mul ‖y‖]
     refine' (_root_.tendsto_pow_atTop_nhds_0_of_lt_1 _ _).mul tendsto_const_nhds <;> norm_num
   have feq : f x = y - 0 := tendsto_nhds_unique L₁ L₂
   rw [sub_zero] at feq
@@ -266,7 +263,7 @@ protected theorem quotientMap (surj : Surjective f) : QuotientMap f :=
   (f.isOpenMap surj).to_quotientMap f.continuous surj
 #align continuous_linear_map.quotient_map ContinuousLinearMap.quotientMap
 
-theorem _root_.AffineMap.isOpenMap {P Q : Type _} [MetricSpace P] [NormedAddTorsor E P]
+theorem _root_.AffineMap.isOpenMap {P Q : Type*} [MetricSpace P] [NormedAddTorsor E P]
     [MetricSpace Q] [NormedAddTorsor F Q] (f : P →ᵃ[𝕜] Q) (hf : Continuous f)
     (surj : Surjective f) : IsOpenMap f :=
   AffineMap.isOpenMap_linear_iff.mp <|
