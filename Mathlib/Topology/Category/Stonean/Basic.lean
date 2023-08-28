@@ -10,7 +10,7 @@ import Mathlib.Topology.Category.Profinite.Basic
 /-!
 # Extremally disconnected sets
 
-This file develops some of the basic theory of extremally disconnected sets.
+This file develops some of the basic theory of extremally disconnected compact Hausdorff spaces.
 
 ## Overview
 
@@ -237,8 +237,7 @@ instance (X : Stonean) : Projective X.compHaus where
   factors := by
     intro B C φ f _
     haveI : ExtremallyDisconnected X.compHaus.toTop := X.extrDisc
-    have hf : f.1.Surjective
-    · rwa [CompHaus.epi_iff_surjective] at *
+    have hf : Function.Surjective f := by rwa [← CompHaus.epi_iff_surjective]
     obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.continuous f.continuous hf
     use ⟨f', h.left⟩
     ext
@@ -249,8 +248,7 @@ instance (X : Stonean) : Projective (toProfinite.obj X) where
   factors := by
     intro B C φ f _
     haveI : ExtremallyDisconnected (toProfinite.obj X) := X.extrDisc
-    have hf : f.1.Surjective
-    · rwa [Profinite.epi_iff_surjective] at *
+    have hf : Function.Surjective f := by rwa [← Profinite.epi_iff_surjective]
     obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.continuous f.continuous hf
     use ⟨f', h.left⟩
     ext
@@ -261,8 +259,8 @@ end Stonean
 namespace CompHaus
 
 /-- If `X` is compact Hausdorff, `presentation X` is a Stonean space equipped with an epimorphism
-  down to `X`. It is a "constructive" witness to the fact that `CompHaus` has enough
-  projectives.  -/
+  down to `X` (see `CompHaus.presentation.π` and `CompHaus.presentation.epi_π`). It is a
+  "constructive" witness to the fact that `CompHaus` has enough projectives. -/
 noncomputable
 def presentation (X : CompHaus) : Stonean where
   compHaus := (projectivePresentation X).p
@@ -296,9 +294,9 @@ instance presentation.epi_π (X : CompHaus) : Epi (π X) :=
                \/
   Z ---(e)---> Y
 ```
-If `Z` is a Stonean space, X, Y are compact Hausdorff, if `f : X ⟶ Y` is an epi and
-`e : Z ⟶ Y` is arbitrary, then `lift e f` is a fixed (but arbitrary) lift of `e` to a morphism
-`Z ⟶ X`. It exists because `Z` is a projective object in `CompHaus`.
+If `Z` is a Stonean space, `f : X ⟶ Y` an epi in `CompHaus` and `e : Z ⟶ Y` is arbitrary, then
+`lift e f` is a fixed (but arbitrary) lift of `e` to a morphism `Z ⟶ X`. It exists because
+`Z` is a projective object in `CompHaus`.
 -/
 noncomputable
 def lift {X Y : CompHaus} {Z : Stonean} (e : Z.compHaus ⟶ Y) (f : X ⟶ Y) [Epi f] :
@@ -324,9 +322,8 @@ end CompHaus
 
 namespace Profinite
 
-/-- If `X` is compact Hausdorff, `presentation X` is an extremally disconnected space
-  equipped with an epimorphism down to `X`. It is a "constructive" witness to the
-  fact that `CompHaus` has enough projectives.  -/
+/-- If `X` is profinite, `presentation X` is a Stonean space equipped with an epimorphism down to
+    `X` (see `Profinite.presentation.π` and `Profinite.presentation.epi_π`). -/
 noncomputable
 def presentation (X : Profinite) : Stonean where
   compHaus := X.toCompHaus.projectivePresentation.p
@@ -354,9 +351,9 @@ instance presentation.epi_π (X : Profinite) : Epi (π X) := by
                \/
   Z ---(e)---> Y
 ```
-If `Z` is extremally disconnected, X, Y are profinite, if `f : X ⟶ Y` is an epi and
-`e : Z ⟶ Y` is arbitrary, then `lift e f` is a fixed (but arbitrary) lift of `e` to a morphism
-`Z ⟶ X`. It exists because `Z` is a projective object in `CompHaus`.
+If `Z` is a Stonean space, `f : X ⟶ Y` an epi in `Profinite` and `e : Z ⟶ Y` is arbitrary,
+then `lift e f` is a fixed (but arbitrary) lift of `e` to a morphism `Z ⟶ X`. It is
+`CompHaus.lift e f` as a morphism in `Profinite`.
 -/
 noncomputable
 def lift {X Y : Profinite} {Z : Stonean} (e : Stonean.toProfinite.obj Z ⟶ Y) (f : X ⟶ Y) [Epi f] :
@@ -368,8 +365,7 @@ lemma lift_lifts {X Y : Profinite} {Z : Stonean} (e : Stonean.toProfinite.obj Z 
 
 lemma projective_of_extrDisc {X : Profinite.{u}} (hX : ExtremallyDisconnected X) :
     Projective X:= by
-  let X' : Stonean := ⟨X.toCompHaus⟩
-  show Projective (Stonean.toProfinite.obj X')
+  show Projective (Stonean.toProfinite.obj ⟨X.toCompHaus⟩)
   exact inferInstance
 
 end Profinite
