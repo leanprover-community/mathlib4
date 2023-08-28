@@ -469,7 +469,7 @@ noncomputable def equiv : AmalgamatedProduct φ ≃ NormalWord φ :=
       refine toPermNormalWord_induction (C := fun w =>
         (toPermNormalWord hφ) (prod w) empty = w) hφ ?_ ?_ ?_ w
       · simp [prod, empty]
-      · intro i g w _ ih
+      · intro i g w ih
         simp [prod_toPermNormalWord, *]
       · intro h w hw
         simp [prod_toPermNormalWord, *] }
