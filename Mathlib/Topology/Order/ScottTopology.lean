@@ -394,14 +394,6 @@ lemma scottHausdorffTopology_le_of_scottTopology [TopologicalSpace α] [ScottTop
   rw [ScottTopology.topology_eq α, ScottTopology']
   apply le_sup_right
 
-lemma ScottOpen_implies_ScottHausdorffOpen {s : Set α} :
-    IsOpen (WithScottTopology.ofScott ⁻¹' s) → ScottHausdorffTopology.IsOpen s :=
-  scottHausdorffTopology_le_of_scottTopology _
-
 lemma scottHausdorffTopology_le_Lower [TopologicalSpace α] [LowerTopology α] :
     ScottHausdorffTopology ≤ ‹TopologicalSpace α› :=
   fun _ h => ScottHausdorffTopology.Lower_IsOpen (LowerTopology.isLowerSet_of_isOpen h)
-
-lemma ScottHausdorffOpen_implies_LowerOpen {s : Set α} :
-    IsOpen (WithLowerTopology.ofLower ⁻¹' s) → ScottHausdorffTopology.IsOpen s :=
-  scottHausdorffTopology_le_Lower _
