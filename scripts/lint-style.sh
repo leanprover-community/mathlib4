@@ -53,3 +53,13 @@ then
 	echo "$executable_files"
 	exit 1
 fi
+
+# 2.2 Check that there are no filenames with the same lower-case reduction
+
+upper_lower_clashes="$(git ls-files | sort --ignore-case | uniq -D --ignore-case)"
+
+if [ -n "${upper_lower_clashes}" ]; then
+	printf $'The following files have the same lower-case form:\n\n%s\n
+Please, make sure to avoid such clashes!\n' "${upper_lower_clashes}"
+	exit 1
+fi
