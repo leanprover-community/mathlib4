@@ -5,6 +5,7 @@ Authors: Sebastian Ullrich, Joachim Breitner
 -/
 import Lean
 import Std.Lean.Delaborator
+import Std.Data.String.Basic
 import Mathlib.Tactic.Cache
 import Mathlib.Lean.Data.NameRel
 import Mathlib.Lean.Data.RBTree
@@ -15,19 +16,8 @@ import Mathlib.Lean.Data.RBTree
 
 open Lean Meta Elab
 
-/-- Returns `true` if `needle` is a substring of `hey` -/
-def String.isInfixOf (needle : String) (hey : String) := Id.run do
-  -- until https://github.com/leanprover/std4/pull/178 lands
-  let mut i := hey.mkIterator
-  while not i.atEnd do
-    if needle.isPrefixOf i.remainingToString
-    then return true
-    else i := i.next
-  return false
-
-
 /-!
-## Formattnig utilities
+## Formatting utilities
 -/
 
 /-- Puts `MessageData` into a bulleted list -/
@@ -162,8 +152,9 @@ def find (args : Arguments) (maxShown := 200) :
       (m₁.find needle).union (m₂.find needle)
 
     -- Filter by name patterns
-    let hits2 := hits.toArray.filter fun n => args.namePats.all fun p =>
-      p.isInfixOf n.toString
+    let nameMatchers := args.namePats.map String.Matcher.ofString
+    let hits2 := hits.toArray.filter fun n => nameMatchers.all fun m =>
+      m.find? n.toString |>.isSome
 
     -- Filter by term patterns
     let hits3 ← hits2.filterM fun n => do
