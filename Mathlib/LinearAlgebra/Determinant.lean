@@ -650,7 +650,7 @@ theorem Basis.det_smul_mk_coord_eq_det_update {v : ι → M} (hli : LinearIndepe
       MultilinearMap.toLinearMap_apply]
   · rw [Basis.mk_coord_apply_eq, mul_one, update_eq_self]
     congr
-  · rw [Basis.mk_coord_apply_ne hik, MulZeroClass.mul_zero, eq_comm]
+  · rw [Basis.mk_coord_apply_ne hik, mul_zero, eq_comm]
     exact e.det.map_eq_zero_of_eq _ (by simp [hik, Function.update_apply]) hik
 #align basis.det_smul_mk_coord_eq_det_update Basis.det_smul_mk_coord_eq_det_update
 

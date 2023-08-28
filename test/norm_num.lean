@@ -411,9 +411,9 @@ end Nat.div
 # Numbers in algebraic structures
 -/
 
--- noncomputable def foo : ℝ := 1
+noncomputable def foo : ℝ := 1
 
--- example : foo = 1 := by norm_num [foo]
+example : foo = 1 := by norm_num [foo]
 
 section
   variable [AddMonoidWithOne α]
@@ -659,6 +659,14 @@ example : (- ((- (((66 - 86) - 36) / 94) - 3) / - - (77 / (56 - - - 79))) + 87) 
   (312254/3619 : α) := by norm_num1
 
 example : 2 ^ 13 - 1 = Int.ofNat 8191 := by norm_num1
+
+example : 1 + 1 = 2 := by
+  fail_if_success
+    norm_num [this_doesnt_exist]
+  sorry
+
+example : 1 + 100 + a = a + 101 := by
+  norm_num [add_comm]
 
 def R : Type u → Type v → Sort (max (u+1) (v+1)) := sorry
 instance : LinearOrderedField (R a b) := sorry

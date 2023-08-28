@@ -169,7 +169,7 @@ theorem edist_eq [DilationClass F α β] (f : F) (x y : α) :
   · rcases DilationClass.edist_eq' f with ⟨r, hne, hr⟩
     replace hr := hr x y
     cases' key x y with h h
-    · simp only [hr, h, MulZeroClass.mul_zero]
+    · simp only [hr, h, mul_zero]
     · simp [hr, h, hne]
   exact (DilationClass.edist_eq' f).choose_spec.2 x y
 #align dilation.edist_eq Dilation.edist_eq
