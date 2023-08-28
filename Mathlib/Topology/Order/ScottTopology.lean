@@ -54,7 +54,7 @@ coincides with the one given here in some special cases, in general they are not
 Scott topology, preorder
 -/
 
-variable (α β : Type _)
+variable (α β : Type*)
 
 open Set
 
