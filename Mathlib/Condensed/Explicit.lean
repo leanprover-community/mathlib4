@@ -9,9 +9,9 @@ universe v v₁ u u₁ w
 
 /-
 - The sections `isSheafForPullBackSieve` and `ProdCoprod` are independent and can be PR-ed
-  separately (DONE, see #6750 (awaiting review) and #6758 (merged)).
+  separately (DONE, see #6750 (merged) and #6758 (merged)).
 - The section `ExtensiveRegular` depends on section `isSheafForPullBackSieve` but does not
-  mention `Stonean`, `Profinite` or `CompHaus` explicitly. TODO: PR (depending on #6750)
+  mention `Stonean`, `Profinite` or `CompHaus` explicitly. TODO: PR
 - The code in section `OpenEmbedding` should be added to `Mathlib.Topology.Category.Stonean.Limits`
   in a separate PR and does not depend on any of the previous stuff in this file
   (DONE, see #6771 (merged) and #6774 (awaiting review)).
@@ -24,124 +24,7 @@ universe v v₁ u u₁ w
 - The section `StoneanExplicitSheaves` is similar to its counterparts for `Profinite` and
   `CompHaus` but additionally depends on sections `OpenEmbedding`, `StoneanProjective` and
   `StoneanPrecoherent`
-- TODO: add the code from `Condensed/Equivalence` in the Copenhagen repo
 -/
-
-section isSheafForPullBackSieve -- This section is PR #6750
-
-namespace CategoryTheory
-
-open Opposite CategoryTheory Category Limits Sieve
-
-variable {C : Type u₁} [Category.{v₁} C]
-
-variable {X : C} (S : Presieve X)
-
-def isPullbackPresieve : Prop :=
-  ∀ {Y Z} {f : Y ⟶ X} (_ : S f) {g : Z ⟶ X} (_ : S g),
-  HasPullback f g
-
-variable (P : Cᵒᵖ ⥤ Type max v₁ u₁)
-
-variable (hS : isPullbackPresieve S) {S}
-namespace Presieve
-
-def FamilyOfElements.PullbackCompatible' (x : FamilyOfElements P S) : Prop :=
-  ∀ ⦃Y₁ Y₂⦄ ⦃f₁ : Y₁ ⟶ X⦄ ⦃f₂ : Y₂ ⟶ X⦄ (h₁ : S f₁) (h₂ : S f₂),
-    have := hS h₁ h₂
-    P.map (pullback.fst : Limits.pullback f₁ f₂ ⟶ _).op (x f₁ h₁) = P.map pullback.snd.op (x f₂ h₂)
-
-theorem pullbackCompatible_iff' (x : FamilyOfElements P S) :
-    x.Compatible ↔ x.PullbackCompatible' hS := by
-  constructor
-  · intro t Y₁ Y₂ f₁ f₂ hf₁ hf₂
-    apply t
-    have := hS hf₁ hf₂
-    apply pullback.condition
-  · intro t Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ comm
-    have := hS hf₁ hf₂
-    rw [← pullback.lift_fst _ _ comm, op_comp, FunctorToTypes.map_comp_apply, t hf₁ hf₂,
-      ← FunctorToTypes.map_comp_apply, ← op_comp, pullback.lift_snd]
-
-end Presieve
-
-namespace Equalizer
-
-namespace Presieve
-
-/-- The rightmost object of the fork diagram of https://stacks.math.columbia.edu/tag/00VM, which
-contains the data used to check a family of elements for a presieve is compatible.
--/
-@[simp] def SecondObj' : Type max v₁ u₁ :=
-  ∏ fun fg : (ΣY, { f : Y ⟶ X // S f }) × ΣZ, { g : Z ⟶ X // S g } =>
-    have := hS fg.1.2.2 fg.2.2.2
-    P.obj (op (pullback fg.1.2.1 fg.2.2.1))
-
-/-- The map `pr₀*` of <https://stacks.math.columbia.edu/tag/00VL>. -/
-noncomputable
-def firstMap' : FirstObj P S ⟶ SecondObj' P hS :=
-    Pi.lift fun fg =>
-    have := hS fg.1.2.2 fg.2.2.2
-    Pi.π _ _ ≫ P.map pullback.fst.op
-
-/-- The map `pr₁*` of <https://stacks.math.columbia.edu/tag/00VL>. -/
-noncomputable def secondMap' : FirstObj P S ⟶ SecondObj' P hS :=
-  Pi.lift fun fg =>
-    have := hS fg.1.2.2 fg.2.2.2
-    Pi.π _ _ ≫ P.map pullback.snd.op
-
-theorem w' : forkMap P S ≫ firstMap' P hS = forkMap P S ≫ secondMap' P hS := by
-  dsimp
-  ext fg
-  simp only [firstMap', secondMap', forkMap]
-  simp only [limit.lift_π, limit.lift_π_assoc, assoc, Fan.mk_π_app]
-  have := hS fg.1.2.2 fg.2.2.2
-  rw [← P.map_comp, ← op_comp, pullback.condition]
-  simp
-
-/--
-The family of elements given by `x : FirstObj P S` is compatible iff `firstMap'` and `secondMap'`
-map it to the same point.
--/
-theorem compatible_iff' (x : FirstObj P S) :
-    ((firstObjEqFamily P S).hom x).Compatible ↔ firstMap' P hS x = secondMap' P hS x := by
-  rw [Presieve.pullbackCompatible_iff' _ hS]
-  constructor
-  . intro t
-    apply Limits.Types.limit_ext
-    rintro ⟨⟨Y, f, hf⟩, Z, g, hg⟩
-    simpa [firstMap', secondMap'] using t hf hg
-  · intro t Y Z f g hf hg
-    rw [Types.limit_ext_iff'] at t
-    simpa [firstMap', secondMap'] using t ⟨⟨⟨Y, f, hf⟩, Z, g, hg⟩⟩
-
-/-- `P` is a sheaf for `R`, iff the fork given by `w` is an equalizer.
-See <https://stacks.math.columbia.edu/tag/00VM>.
--/
-theorem sheaf_condition' : S.IsSheafFor P ↔ Nonempty (IsLimit (Fork.ofι _ (w' P hS))) := by
-  rw [Types.type_equalizer_iff_unique]
-  erw [← Equiv.forall_congr_left (firstObjEqFamily P S).toEquiv.symm]
-  simp_rw [← compatible_iff', ← Iso.toEquiv_fun, Equiv.apply_symm_apply]
-  apply ball_congr
-  intro x _
-  apply exists_unique_congr
-  intro t
-  rw [Equiv.eq_symm_apply]
-  constructor
-  · intro q
-    funext Y f hf
-    simpa [forkMap] using q _ _
-  · intro q Y f hf
-    rw [← q]
-    simp [forkMap]
-
-end Presieve
-
-end Equalizer
-
-end CategoryTheory
-
-end isSheafForPullBackSieve
 
 section ExtensiveRegular
 
@@ -151,23 +34,32 @@ open CategoryTheory Opposite CategoryTheory.Limits Functor
 
 variable (C : Type u) [Category.{v, u} C]
 
-class HasPullbackOfIsIsodesc : Prop where
+class HasPullbacksOfInclusions : Prop where
     HasPullback : ∀ {X Z : C} {α : Type _} (f : X ⟶ Z) {Y : (a : α) → C}
     (i : (a : α) → Y a ⟶ Z) [Fintype α] [HasCoproduct Y] [IsIso (Sigma.desc i)] (a : α),
     HasPullback f (i a)
 
-instance [HasPullbackOfIsIsodesc C] {X Z : C} {α : Type _} (f : X ⟶ Z) {Y : (a : α) → C}
+instance [HasPullbacksOfInclusions C] {X Z : C} {α : Type _} (f : X ⟶ Z) {Y : (a : α) → C}
     (i : (a : α) → Y a ⟶ Z) [Fintype α] [HasCoproduct Y] [IsIso (Sigma.desc i)] (a : α) :
-    HasPullback f (i a) := HasPullbackOfIsIsodesc.HasPullback f i a
+    HasPullback f (i a) := HasPullbacksOfInclusions.HasPullback f i a
 
-instance [HasPullbacks C] : HasPullbackOfIsIsodesc C := ⟨fun _ _ _ => inferInstance⟩
+instance [HasPullbacks C] : HasPullbacksOfInclusions C := ⟨fun _ _ _ => inferInstance⟩
+
+class Extensive [HasFiniteCoproducts C] [HasPullbacksOfInclusions C] : Prop where
+  sigma_desc_iso : ∀ {α : Type} [Fintype α] {X : C} {Z : α → C} (π : (a : α) → Z a ⟶ X)
+    {Y : C} (f : Y ⟶ X) (_ : IsIso (Sigma.desc π)),
+    IsIso (Sigma.desc ((fun _ ↦ pullback.fst) : (a : α) → pullback f (π a) ⟶ _))
+
+class Regular : Prop where
+  exists_fac : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Z ⟶ Y) [Epi g],
+    (∃ (W : C) (h : W ⟶ X) (_ : Epi h) (i : W ⟶ Z), i ≫ g = h ≫ f)
 
 end HasPullbackOfRightMono
 
 section Coverage
 namespace CategoryTheory
 
-variable (C : Type u) [Category.{v} C]
+variable {C : Type u} [Category.{v} C]
 
 open Sieve CategoryTheory.Limits Opposite
 
@@ -185,32 +77,31 @@ def union (x y : Coverage C) : Coverage C where
 
 end Coverage
 
-variable {C}
+namespace Presieve
 
-def ExtensiveSieve [HasFiniteCoproducts C] (B : C) := { S | ∃ (α : Type) (_ : Fintype α) (X : α → C)
-  (π : (a : α) → (X a ⟶ B)), S = Presieve.ofArrows X π ∧ IsIso (Sigma.desc π) }
+class extensive [HasFiniteCoproducts C] {B : C} (S : Presieve B) : Prop where
+  arrows_sigma_desc_iso : ∃ (α : Type) (_ : Fintype α) (X : α → C) (π : (a : α) → (X a ⟶ B)),
+    S = Presieve.ofArrows X π ∧ IsIso (Sigma.desc π)
 
-def RegularSieve (B : C) := { S | ∃ (X : C) (f : X ⟶ B), S = Presieve.ofArrows (fun (_ : Unit) ↦ X)
-      (fun (_ : Unit) ↦ f) ∧ Epi f }
+class regular {B : C} (S : Presieve B) : Prop where
+  single_epi : ∃ (X : C) (f : X ⟶ B), S = Presieve.ofArrows (fun (_ : Unit) ↦ X)
+    (fun (_ : Unit) ↦ f) ∧ Epi f
+
+end Presieve
 
 variable (C)
 
-def Extensivity [HasFiniteCoproducts C] [HasPullbackOfIsIsodesc C] : Prop :=
-    ∀ {α : Type} [Fintype α] {X : C} {Z : α → C} (π : (a : α) → Z a ⟶ X)
-    {Y : C} (f : Y ⟶ X) (_ : IsIso (Sigma.desc π)),
-    IsIso (Sigma.desc ((fun _ ↦ pullback.fst) : (a : α) → pullback f (π a) ⟶ _))
-
 @[simps]
-def ExtensiveCoverage [HasFiniteCoproducts C] [HasPullbackOfIsIsodesc C] (h_ext : Extensivity C) :
+def ExtensiveCoverage [HasFiniteCoproducts C] [HasPullbacksOfInclusions C] [Extensive C] :
     Coverage C where
-  covering B := ExtensiveSieve B
+  covering B := {S : Presieve B | S.extensive}
   pullback := by
     intro X Y f S ⟨α, hα, Z, π, hS, h_iso⟩
     let Z' : α → C := fun a ↦ pullback f (π a)
     let π' : (a : α) → Z' a ⟶ Y := fun a ↦ pullback.fst
     refine ⟨@Presieve.ofArrows C _ _ α Z' π', ⟨?_, ?_⟩⟩
     · constructor
-      exact ⟨hα, Z', π', ⟨by simp only, h_ext (fun x => π x) f h_iso⟩⟩
+      exact ⟨α, hα, Z', π', ⟨by simp only, Extensive.sigma_desc_iso (fun x => π x) f h_iso⟩⟩
     · intro W g hg
       rcases hg with ⟨a⟩
       refine ⟨Z a, pullback.snd, π a, ?_, by rw [CategoryTheory.Limits.pullback.condition]⟩
@@ -218,55 +109,36 @@ def ExtensiveCoverage [HasFiniteCoproducts C] [HasPullbackOfIsIsodesc C] (h_ext 
       refine Presieve.ofArrows.mk a
 
 @[simps]
-def RegularCoverage (h_proj : ∀ X : C, Projective X) : Coverage C where
-  covering B := RegularSieve B
+def RegularCoverage [Regular C] : Coverage C where
+  covering B := {S : Presieve B | S.regular}
   pullback := by
     intro X Y f S ⟨Z, π, hπ, h_epi⟩
-    refine ⟨Presieve.singleton (𝟙 Y), ⟨?_, ?_⟩⟩
-    · exact ⟨Y, 𝟙 _, by {rw [Presieve.ofArrows_pUnit (𝟙 Y)]}, instEpiIdToCategoryStruct Y⟩
+    have := Regular.exists_fac f π
+    obtain ⟨W, h, _, i, this⟩ := this
+    refine ⟨Presieve.singleton h, ⟨?_, ?_⟩⟩
+    · exact ⟨W, h, by {rw [Presieve.ofArrows_pUnit h]}, inferInstance⟩
     · intro W g hg
       cases hg
-      simp only [Category.id_comp]
-      refine ⟨Z, @Projective.factorThru C _ Y X Z (h_proj Y) f π h_epi,
-        ⟨π, ?_, @Projective.factorThru_comp C _ Y X Z (h_proj Y) f π h_epi⟩⟩
+      refine ⟨Z, i, π, ⟨?_, this⟩⟩
       cases hπ
       rw [Presieve.ofArrows_pUnit]
       exact Presieve.singleton.mk
 
-def EpiPullbackOfEpi [HasPullbacks C] : Prop := ∀ {X Y Z : C} (f : Y ⟶ X) (π : Z ⟶ X) [Epi π],
-    Epi (pullback.fst (f := f) (g := π))
-
-@[simps]
-def RegularCoverage' [HasPullbacks C] (h_epi_epi : EpiPullbackOfEpi C) : Coverage C where
-  covering B := (RegularSieve B)
-  pullback := by
-    intro X Y f S ⟨Z, π, hπ, h_epi⟩
-    refine ⟨Presieve.singleton (pullback.fst (f := f) (g := π)), ?_, ?_⟩
-    · refine' ⟨(pullback f π), _, by {rw [Presieve.ofArrows_pUnit _]}, h_epi_epi f π⟩
-    · rintro _ _ ⟨⟩
-      refine' ⟨Z, pullback.snd, π, ⟨_, by rw [pullback.condition]⟩⟩
-      rw [hπ]
-      exact Presieve.ofArrows.mk ()
-
 @[simps!]
-def ExtensiveRegularCoverage [HasFiniteCoproducts C] [HasPullbackOfIsIsodesc C]
-    (h_proj : ∀ X : C, Projective X) (h_ext : Extensivity C) : Coverage C :=
-  (ExtensiveCoverage C h_ext).union C (RegularCoverage C h_proj)
+def ExtensiveRegularCoverage [HasFiniteCoproducts C] [HasPullbacksOfInclusions C] [Regular C]
+    [Extensive C] : Coverage C :=
+  (ExtensiveCoverage C).union (RegularCoverage C)
 
-@[simps!]
-def ExtensiveRegularCoverage' [HasFiniteCoproducts C] [HasPullbacks C]
-    (h_epi_epi : EpiPullbackOfEpi C) (h_ext : Extensivity C) : Coverage C :=
-  (ExtensiveCoverage C h_ext).union C (RegularCoverage' C h_epi_epi)
+variable [HasFiniteCoproducts C] [HasPullbacksOfInclusions C] {C}
 
-variable [HasFiniteCoproducts C] [HasPullbackOfIsIsodesc C] {C}
-
-lemma isPullbackSieve_ExtensiveSieve {X : C} {S : Presieve X}
-    (hS : S ∈ ExtensiveSieve X) : isPullbackPresieve S := by
-  rcases hS with ⟨α, _, Z, π, hS, HIso⟩
-  intro Y₁ Y₂ f hf g hg
-  rw [hS] at hf hg
-  cases' hg with b
-  apply HasPullbackOfIsIsodesc.HasPullback f
+instance hasPullbacks_extensiveSieve {X : C} (S : Presieve X) [hS : S.extensive] :
+    S.hasPullbacks where
+  has_pullbacks := by
+    rcases hS with ⟨α, _, Z, π, hS, HIso⟩
+    intro Y₁ Y₂ f hf g hg
+    rw [hS] at hf hg
+    cases' hg with b
+    apply HasPullbacksOfInclusions.HasPullback f
 
 def v {α : Type} {Z : α → C} {X : C} {π : (a : α) → Z a ⟶ X} {S : Presieve X}
     (hS: S = Presieve.ofArrows Z π) : α → Σ(Y : C), { f : Y ⟶ X // S f } :=
@@ -325,10 +197,8 @@ lemma PreservesProduct.isoInvCompMap {C : Type u} [Category C] {D : Type v} [Cat
     (PreservesProduct.iso F f).inv ≫ F.map (Pi.π _ j) = Pi.π _ j :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ (limit.isLimit _) (⟨j⟩ : Discrete J)
 
-lemma isSheafForDagurSieveIsIsoFork {X : C} {S : Presieve X} (hS : S ∈ ExtensiveSieve X)
-    {F : Cᵒᵖ ⥤ Type max u v}
-    (hF : PreservesFiniteProducts F) :
-    IsIso (Equalizer.forkMap F S) := by
+lemma isSheafForDagurSieveIsIsoFork {X : C} (S : Presieve X) [hS : S.extensive]
+    {F : Cᵒᵖ ⥤ Type max u v} (hF : PreservesFiniteProducts F) : IsIso (Equalizer.forkMap F S) := by
   rcases hS with ⟨α, _, Z, π, hS, HIso⟩
   haveI : PreservesLimit (Discrete.functor fun a => op (Z a)) F := by
       haveI := (hF.preserves α); infer_instance
@@ -361,11 +231,10 @@ lemma isSheafForDagurSieveIsIsoFork {X : C} {S : Presieve X} (hS : S ∈ Extensi
     simp only [comparisoninv, op_id, limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
     erw [F.map_id, Category.comp_id]
 
-lemma isSheafForExtensiveSieve {X : C} {S : Presieve X} (hS : S ∈ ExtensiveSieve X)
-    {F : Cᵒᵖ ⥤ Type max u v}
-    (hF : PreservesFiniteProducts F) :
+lemma isSheafForExtensiveSieve {X : C} {S : Presieve X} [S.extensive]
+    {F : Cᵒᵖ ⥤ Type max u v} (hF : PreservesFiniteProducts F) :
     Presieve.IsSheafFor F S := by
-  refine' (Equalizer.Presieve.sheaf_condition' F <| isPullbackSieve_ExtensiveSieve hS).2 _
+  refine' (Equalizer.Presieve.sheaf_condition F S).2 _
   rw [Limits.Types.type_equalizer_iff_unique]
   dsimp [Equalizer.FirstObj]
   suffices IsIso (Equalizer.forkMap F S) by
@@ -376,7 +245,7 @@ lemma isSheafForExtensiveSieve {X : C} {S : Presieve X} (hS : S ∈ ExtensiveSie
       · replace hy₁ := congr_arg (inv (Equalizer.forkMap F S)) hy₁
         change ((Equalizer.forkMap F S) ≫ inv (Equalizer.forkMap F S)) _ = _ at hy₁
         rwa [IsIso.hom_inv_id, types_id_apply] at hy₁
-  exact isSheafForDagurSieveIsIsoFork hS hF
+  exact isSheafForDagurSieveIsIsoFork S hF
 
 end CategoryTheory
 
@@ -638,40 +507,6 @@ end Stonean
 
 end StoneanPullback
 
-section -- TODO: PR
-
-open CategoryTheory Limits
-
-namespace Stonean
-
-lemma clopen_extremallyDisconnected {X : Stonean} {U : Set X} (hU : IsClopen U) :
-    ExtremallyDisconnected U := by
-  constructor
-  intro V hV
-  have hV' : IsOpen (Subtype.val '' V) := hU.1.openEmbedding_subtype_val.isOpenMap V hV
-  have := ExtremallyDisconnected.open_closure _ hV'
-  rw [hU.2.closedEmbedding_subtype_val.closure_image_eq V] at this
-  suffices hhU : closure V = Subtype.val ⁻¹' (Subtype.val '' (closure V))
-  · rw [hhU]
-    exact isOpen_induced this
-  exact ((closure V).preimage_image_eq Subtype.coe_injective).symm
-
-instance : HasPullbackOfIsIsodesc Stonean := by
-  constructor
-  intro X Z α f Y i _ _ _ a
-  apply HasPullbackOpenEmbedding
-  have h₁ : OpenEmbedding (Sigma.desc i) :=
-    (Stonean.homeoOfIso (asIso (Sigma.desc i))).openEmbedding
-  have h₂ : OpenEmbedding (Sigma.ι Y a) := Stonean.openEmbedding_ι _ _
-  have := OpenEmbedding.comp h₁ h₂
-  erw [← CategoryTheory.coe_comp (Sigma.ι Y a) (Sigma.desc i)] at this
-  simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app] at this
-  assumption
-
-end Stonean
-
-end
-
 section CompHausExplicitSheaves
 
 open CategoryTheory CompHaus Opposite CategoryTheory.Limits Functor Presieve
@@ -755,43 +590,42 @@ lemma extensivity_explicit {α : Type} [Fintype α] {X : CompHaus.{u}}
   intro a
   simp only [IsIso.comp_inv_eq, finiteCoproduct.ι_desc]
 
-lemma extensivity : Extensivity CompHaus := @fun α _ X Z i Y f H => by
-  let θ := Sigma.mapIso (fun a => pullbackIsoPullback f (i a))
-  suffices IsIso (θ.hom ≫ Sigma.desc fun x => Limits.pullback.fst) by
-    · apply IsIso.of_isIso_comp_left θ.hom
-  let δ := coproductIsoCoproduct (fun a => CompHaus.pullback f (i a))
-  suffices IsIso <| δ.hom ≫ (θ.hom ≫ Sigma.desc fun x => Limits.pullback.fst) by
-    · apply IsIso.of_isIso_comp_left δ.hom
-  have HIso : IsIso (finiteCoproduct.desc _ i) := by
-    suffices IsIso <| (coproductIsoCoproduct Z).inv ≫ (finiteCoproduct.desc _ i) by
-      · apply IsIso.of_isIso_comp_left (coproductIsoCoproduct Z).inv
-    convert H
-    refine' Sigma.hom_ext _ _ (fun a => _)
-    simp only [coproductIsoCoproduct, colimit.comp_coconePointUniqueUpToIso_inv_assoc,
-      Discrete.functor_obj, finiteCoproduct.cocone_pt, finiteCoproduct.cocone_ι,
-      Discrete.natTrans_app, finiteCoproduct.ι_desc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
-  convert extensivity_explicit f HIso
-  refine' finiteCoproduct.hom_ext _ _ _ (fun a => _)
-  rw [finiteCoproduct.ι_desc, ← Category.assoc, ← Sigma.ι_comp_toFiniteCoproduct]
-  simp only [Category.assoc, Iso.inv_hom_id, Category.comp_id, pullbackIsoPullback, mapIso_hom,
-    colim_map, colimit.map_desc, colimit.ι_desc, Cocones.precompose_obj_pt, Cofan.mk_pt,
-    Cocones.precompose_obj_ι, NatTrans.comp_app, Discrete.functor_obj, const_obj_obj,
-    Discrete.natIso_hom_app, Cofan.mk_ι_app, limit.conePointUniqueUpToIso_hom_comp,
-    pullback.cone_pt, pullback.cone_π]
+instance : Extensive CompHaus where
+  sigma_desc_iso := @fun α _ X Z i Y f H => by
+    let θ := Sigma.mapIso (fun a => pullbackIsoPullback f (i a))
+    suffices IsIso (θ.hom ≫ Sigma.desc fun x => Limits.pullback.fst) by
+      · apply IsIso.of_isIso_comp_left θ.hom
+    let δ := coproductIsoCoproduct (fun a => CompHaus.pullback f (i a))
+    suffices IsIso <| δ.hom ≫ (θ.hom ≫ Sigma.desc fun x => Limits.pullback.fst) by
+      · apply IsIso.of_isIso_comp_left δ.hom
+    have HIso : IsIso (finiteCoproduct.desc _ i) := by
+      suffices IsIso <| (coproductIsoCoproduct Z).inv ≫ (finiteCoproduct.desc _ i) by
+        · apply IsIso.of_isIso_comp_left (coproductIsoCoproduct Z).inv
+      convert H
+      refine' Sigma.hom_ext _ _ (fun a => _)
+      simp only [coproductIsoCoproduct, colimit.comp_coconePointUniqueUpToIso_inv_assoc,
+        Discrete.functor_obj, finiteCoproduct.cocone_pt, finiteCoproduct.cocone_ι,
+        Discrete.natTrans_app, finiteCoproduct.ι_desc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+    convert extensivity_explicit f HIso
+    refine' finiteCoproduct.hom_ext _ _ _ (fun a => _)
+    rw [finiteCoproduct.ι_desc, ← Category.assoc, ← Sigma.ι_comp_toFiniteCoproduct]
+    simp only [Category.assoc, Iso.inv_hom_id, Category.comp_id, pullbackIsoPullback, mapIso_hom,
+      colim_map, colimit.map_desc, colimit.ι_desc, Cocones.precompose_obj_pt, Cofan.mk_pt,
+      Cocones.precompose_obj_ι, NatTrans.comp_app, Discrete.functor_obj, const_obj_obj,
+      Discrete.natIso_hom_app, Cofan.mk_ι_app, limit.conePointUniqueUpToIso_hom_comp,
+      pullback.cone_pt, pullback.cone_π]
 
-lemma epi_pullback_of_epi : EpiPullbackOfEpi CompHaus := by
-  intro X Y Z f π hπ
-  suffices : Epi ((pullbackIsoPullback f π).hom ≫ (Limits.pullback.fst : Limits.pullback f π ⟶ Y))
-  · exact @epi_of_epi _ _ _ _ _ _ _ this
-  rw [CompHaus.epi_iff_surjective] at hπ ⊢
-  intro y
-  obtain ⟨z,hz⟩ := hπ (f y)
-  simp only [pullbackIsoPullback, limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt,
-    pullback.cone_π]
-  exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
+instance : Regular CompHaus where
+  exists_fac := by
+    intro X Y Z f π hπ
+    refine ⟨pullback f π, pullback.fst f π, ?_, pullback.snd f π, (pullback.condition _ _).symm⟩
+    rw [CompHaus.epi_iff_surjective] at hπ ⊢
+    intro y
+    obtain ⟨z,hz⟩ := hπ (f y)
+    exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
 
 lemma extensiveRegular_generates_coherent :
-    (ExtensiveRegularCoverage' CompHaus epi_pullback_of_epi extensivity).toGrothendieck =
+    (ExtensiveRegularCoverage CompHaus).toGrothendieck =
     (coherentTopology CompHaus) := by
   ext X S
   constructor
@@ -801,7 +635,7 @@ lemma extensiveRegular_generates_coherent :
     | of Y T hT =>
       · apply Coverage.saturate.of
         dsimp [coherentCoverage]
-        dsimp [ExtensiveRegularCoverage'] at hT
+        dsimp [ExtensiveRegularCoverage] at hT
         apply Or.elim hT
         <;> intro h
         · obtain ⟨α, x, Xmap, π, h⟩ := h
@@ -851,7 +685,7 @@ lemma extensiveRegular_generates_coherent :
           (Presieve.ofArrows (fun (_ : Unit) ↦ Xs) (fun (_ : Unit) ↦ F))
         apply Coverage.saturate.transitive Y Zf
         · apply Coverage.saturate.of
-          dsimp [ExtensiveRegularCoverage']
+          dsimp [ExtensiveRegularCoverage]
           simp only [Set.mem_union, Set.mem_setOf_eq]
           right
           use Xs
@@ -864,16 +698,16 @@ lemma extensiveRegular_generates_coherent :
           induction hW
           rw [← hW', Sieve.pullback_comp Z]
           suffices : Sieve.pullback ψ ((Sieve.pullback F) Z) ∈ GrothendieckTopology.sieves
-            (ExtensiveRegularCoverage' _ _ _).toGrothendieck R
+            (ExtensiveRegularCoverage _).toGrothendieck R
           · exact this
           apply GrothendieckTopology.pullback_stable'
           dsimp [Coverage.toGrothendieck]
-          suffices : Coverage.saturate (ExtensiveRegularCoverage' _ _ _) Xs (Z.pullback F)
+          suffices : Coverage.saturate (ExtensiveRegularCoverage _) Xs (Z.pullback F)
           · exact this
           suffices : Sieve.generate (Presieve.ofArrows Xmap φ) ≤ Z.pullback F
           · apply Coverage.saturate_of_superset _ this
             apply Coverage.saturate.of
-            dsimp [ExtensiveRegularCoverage']
+            dsimp [ExtensiveRegularCoverage]
             left
             refine' ⟨I, hI, Xmap, φ, ⟨rfl, _⟩⟩
             suffices : Sigma.desc φ = 𝟙 _
@@ -949,15 +783,17 @@ def EqualizerSecondObjIso (F : CompHaus.{u}ᵒᵖ ⥤ Type (u+1)) {B X : CompHau
     op (Limits.pullback π π) ≅ op (CompHaus.pullback π π)))
 
 lemma isSheafFor_of_Dagur {B : CompHaus} {S : Presieve B}
-    (hS : S ∈ (ExtensiveRegularCoverage' CompHaus epi_pullback_of_epi extensivity).covering B)
+    (hS : S ∈ (ExtensiveRegularCoverage CompHaus).covering B)
     {F : CompHaus.{u}ᵒᵖ ⥤ Type (u+1)} (hFpfp : PreservesFiniteProducts F)
     (hFecs : EqualizerCondition F) :
     S.IsSheafFor F := by
   cases' hS with hSIso hSSingle
-  · exact isSheafForExtensiveSieve hSIso hFpfp
+  · simp only [ExtensiveCoverage_covering, Set.mem_setOf_eq] at hSIso
+    haveI := hSIso
+    exact isSheafForExtensiveSieve hFpfp
   · rw [Equalizer.Presieve.sheaf_condition, Limits.Types.type_equalizer_iff_unique]
     intro y h
-    dsimp [RegularSieve] at hSSingle
+    simp only [RegularCoverage_covering, Set.mem_setOf_eq] at hSSingle
     obtain ⟨X, π, ⟨hS, πsurj⟩⟩ := hSSingle
     rw [Presieve.ofArrows_pUnit] at hS
     subst hS
@@ -1139,43 +975,42 @@ lemma extensivity_explicit {α : Type} [Fintype α] {X : Profinite.{u}}
   intro a
   simp only [IsIso.comp_inv_eq, finiteCoproduct.ι_desc]
 
-lemma extensivity : Extensivity Profinite := @fun α _ X Z i Y f H => by
-  let θ := Sigma.mapIso (fun a => pullbackIsoPullback f (i a))
-  suffices IsIso (θ.hom ≫ Sigma.desc fun x => Limits.pullback.fst) by
-    · apply IsIso.of_isIso_comp_left θ.hom
-  let δ := coproductIsoCoproduct (fun a => Profinite.pullback f (i a))
-  suffices IsIso <| δ.hom ≫ (θ.hom ≫ Sigma.desc fun x => Limits.pullback.fst) by
-    · apply IsIso.of_isIso_comp_left δ.hom
-  have HIso : IsIso (finiteCoproduct.desc _ i) := by
-    suffices IsIso <| (coproductIsoCoproduct Z).inv ≫ (finiteCoproduct.desc _ i) by
-      · apply IsIso.of_isIso_comp_left (coproductIsoCoproduct Z).inv
-    convert H
-    refine' Sigma.hom_ext _ _ (fun a => _)
-    simp only [coproductIsoCoproduct, colimit.comp_coconePointUniqueUpToIso_inv_assoc,
-      Discrete.functor_obj, finiteCoproduct.cocone_pt, finiteCoproduct.cocone_ι,
-      Discrete.natTrans_app, finiteCoproduct.ι_desc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
-  convert extensivity_explicit f HIso
-  refine' finiteCoproduct.hom_ext _ _ _ (fun a => _)
-  rw [finiteCoproduct.ι_desc, ← Category.assoc, ← Sigma.ι_comp_toFiniteCoproduct]
-  simp only [Category.assoc, Iso.inv_hom_id, Category.comp_id, pullbackIsoPullback, mapIso_hom,
-    colim_map, colimit.map_desc, colimit.ι_desc, Cocones.precompose_obj_pt, Cofan.mk_pt,
-    Cocones.precompose_obj_ι, NatTrans.comp_app, Discrete.functor_obj, const_obj_obj,
-    Discrete.natIso_hom_app, Cofan.mk_ι_app, limit.conePointUniqueUpToIso_hom_comp,
-    pullback.cone_pt, pullback.cone_π]
+instance : Extensive Profinite where
+  sigma_desc_iso := @fun α _ X Z i Y f H => by
+    let θ := Sigma.mapIso (fun a => pullbackIsoPullback f (i a))
+    suffices IsIso (θ.hom ≫ Sigma.desc fun x => Limits.pullback.fst) by
+      · apply IsIso.of_isIso_comp_left θ.hom
+    let δ := coproductIsoCoproduct (fun a => Profinite.pullback f (i a))
+    suffices IsIso <| δ.hom ≫ (θ.hom ≫ Sigma.desc fun x => Limits.pullback.fst) by
+      · apply IsIso.of_isIso_comp_left δ.hom
+    have HIso : IsIso (finiteCoproduct.desc _ i) := by
+      suffices IsIso <| (coproductIsoCoproduct Z).inv ≫ (finiteCoproduct.desc _ i) by
+        · apply IsIso.of_isIso_comp_left (coproductIsoCoproduct Z).inv
+      convert H
+      refine' Sigma.hom_ext _ _ (fun a => _)
+      simp only [coproductIsoCoproduct, colimit.comp_coconePointUniqueUpToIso_inv_assoc,
+        Discrete.functor_obj, finiteCoproduct.cocone_pt, finiteCoproduct.cocone_ι,
+        Discrete.natTrans_app, finiteCoproduct.ι_desc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+    convert extensivity_explicit f HIso
+    refine' finiteCoproduct.hom_ext _ _ _ (fun a => _)
+    rw [finiteCoproduct.ι_desc, ← Category.assoc, ← Sigma.ι_comp_toFiniteCoproduct]
+    simp only [Category.assoc, Iso.inv_hom_id, Category.comp_id, pullbackIsoPullback, mapIso_hom,
+      colim_map, colimit.map_desc, colimit.ι_desc, Cocones.precompose_obj_pt, Cofan.mk_pt,
+      Cocones.precompose_obj_ι, NatTrans.comp_app, Discrete.functor_obj, const_obj_obj,
+      Discrete.natIso_hom_app, Cofan.mk_ι_app, limit.conePointUniqueUpToIso_hom_comp,
+      pullback.cone_pt, pullback.cone_π]
 
-lemma epi_pullback_of_epi : EpiPullbackOfEpi Profinite := by
-  intro X Y Z f π hπ
-  suffices : Epi ((pullbackIsoPullback f π).hom ≫ (Limits.pullback.fst : Limits.pullback f π ⟶ Y))
-  · exact @epi_of_epi _ _ _ _ _ _ _ this
-  rw [Profinite.epi_iff_surjective] at hπ ⊢
-  intro y
-  obtain ⟨z,hz⟩ := hπ (f y)
-  simp only [pullbackIsoPullback, limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt,
-    pullback.cone_π]
-  exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
+instance : Regular Profinite where
+  exists_fac := by
+    intro X Y Z f π hπ
+    refine ⟨pullback f π, pullback.fst f π, ?_, pullback.snd f π, (pullback.condition _ _).symm⟩
+    rw [Profinite.epi_iff_surjective] at hπ ⊢
+    intro y
+    obtain ⟨z,hz⟩ := hπ (f y)
+    exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
 
 lemma extensiveRegular_generates_coherent :
-    (ExtensiveRegularCoverage' Profinite epi_pullback_of_epi extensivity).toGrothendieck =
+    (ExtensiveRegularCoverage Profinite).toGrothendieck =
     (coherentTopology Profinite) := by
   ext X S
   constructor
@@ -1185,7 +1020,7 @@ lemma extensiveRegular_generates_coherent :
     | of Y T hT =>
       · apply Coverage.saturate.of
         dsimp [coherentCoverage]
-        dsimp [ExtensiveRegularCoverage'] at hT
+        dsimp [ExtensiveRegularCoverage] at hT
         apply Or.elim hT
         <;> intro h
         · obtain ⟨α, x, Xmap, π, h⟩ := h
@@ -1235,7 +1070,7 @@ lemma extensiveRegular_generates_coherent :
           (Presieve.ofArrows (fun (_ : Unit) ↦ Xs) (fun (_ : Unit) ↦ F))
         apply Coverage.saturate.transitive Y Zf
         · apply Coverage.saturate.of
-          dsimp [ExtensiveRegularCoverage']
+          dsimp [ExtensiveRegularCoverage]
           simp only [Set.mem_union, Set.mem_setOf_eq]
           right
           use Xs
@@ -1248,16 +1083,16 @@ lemma extensiveRegular_generates_coherent :
           induction hW
           rw [← hW', Sieve.pullback_comp Z]
           suffices : Sieve.pullback ψ ((Sieve.pullback F) Z) ∈ GrothendieckTopology.sieves
-            (ExtensiveRegularCoverage' _ _ _).toGrothendieck R
+            (ExtensiveRegularCoverage _).toGrothendieck R
           · exact this
           apply GrothendieckTopology.pullback_stable'
           dsimp [Coverage.toGrothendieck]
-          suffices : Coverage.saturate (ExtensiveRegularCoverage' _ _ _) Xs (Z.pullback F)
+          suffices : Coverage.saturate (ExtensiveRegularCoverage _) Xs (Z.pullback F)
           · exact this
           suffices : Sieve.generate (Presieve.ofArrows Xmap φ) ≤ Z.pullback F
           · apply Coverage.saturate_of_superset _ this
             apply Coverage.saturate.of
-            dsimp [ExtensiveRegularCoverage']
+            dsimp [ExtensiveRegularCoverage]
             left
             refine' ⟨I, hI, Xmap, φ, ⟨rfl, _⟩⟩
             suffices : Sigma.desc φ = 𝟙 _
@@ -1333,15 +1168,17 @@ def EqualizerSecondObjIso (F : Profinite.{u}ᵒᵖ ⥤ Type (u+1)) {B X : Profin
     op (Limits.pullback π π) ≅ op (Profinite.pullback π π)))
 
 lemma isSheafFor_of_Dagur {B : Profinite} {S : Presieve B}
-    (hS : S ∈ (ExtensiveRegularCoverage' Profinite epi_pullback_of_epi extensivity).covering B)
+    (hS : S ∈ (ExtensiveRegularCoverage Profinite).covering B)
     {F : Profinite.{u}ᵒᵖ ⥤ Type (u+1)} (hFpfp : PreservesFiniteProducts F)
     (hFecs : EqualizerCondition F) :
     S.IsSheafFor F := by
   cases' hS with hSIso hSSingle
-  · exact isSheafForExtensiveSieve hSIso hFpfp
+  · simp only [ExtensiveCoverage_covering, Set.mem_setOf_eq] at hSIso
+    haveI := hSIso
+    exact isSheafForExtensiveSieve hFpfp
   · rw [Equalizer.Presieve.sheaf_condition, Limits.Types.type_equalizer_iff_unique]
     intro y h
-    dsimp [RegularSieve] at hSSingle
+    simp only [RegularCoverage_covering, Set.mem_setOf_eq] at hSSingle
     obtain ⟨X, π, ⟨hS, πsurj⟩⟩ := hSSingle
     rw [Presieve.ofArrows_pUnit] at hS
     subst hS
@@ -1459,7 +1296,7 @@ lemma openEmbedding_of_sigma_desc_iso {α : Type} [Fintype α] {X : Stonean.{u}}
   simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app] at this
   assumption
 
-instance : HasPullbackOfIsIsodesc Stonean := by
+instance : HasPullbacksOfInclusions Stonean := by
   constructor
   intro X Z α f Y i _ _ _ a
   apply HasPullbackOpenEmbedding
@@ -1515,30 +1352,31 @@ theorem Sigma.ι_comp_toFiniteCoproduct {α : Type} [Fintype α] {Z : α → Sto
   simp only [coproductIsoCoproduct, colimit.comp_coconePointUniqueUpToIso_inv,
     finiteCoproduct.explicitCocone_pt, finiteCoproduct.explicitCocone_ι, Discrete.natTrans_app]
 
-lemma extensivity : Extensivity Stonean := @fun α _ X Z i Y f H => by
-  have hOpen := openEmbedding_of_sigma_desc_iso H
-  let θ := Sigma.mapIso (fun a => fromExplicitIso f (hOpen a))
-  suffices IsIso (θ.hom ≫ Sigma.desc fun x => Limits.pullback.fst) by
-    · apply IsIso.of_isIso_comp_left θ.hom
-  let δ := coproductIsoCoproduct (fun a => (OpenEmbeddingCone f (hOpen a)).pt)
-  suffices IsIso <| δ.hom ≫ (θ.hom ≫ Sigma.desc fun x => Limits.pullback.fst) by
-    · apply IsIso.of_isIso_comp_left δ.hom
-  have HIso : IsIso (finiteCoproduct.desc _ i) := by
-    suffices IsIso <| (coproductIsoCoproduct Z).inv ≫ (finiteCoproduct.desc _ i) by
-      · apply IsIso.of_isIso_comp_left (coproductIsoCoproduct Z).inv
-    convert H
-    refine' Sigma.hom_ext _ _ (fun a => _)
-    simp only [coproductIsoCoproduct, colimit.comp_coconePointUniqueUpToIso_inv_assoc, Discrete.functor_obj,
-      finiteCoproduct.explicitCocone_pt, finiteCoproduct.explicitCocone_ι, Discrete.natTrans_app,
-      finiteCoproduct.ι_desc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
-  convert extensivity_explicit f HIso hOpen
-  refine' Stonean.finiteCoproduct.hom_ext _ _ _ (fun a => _)
-  rw [finiteCoproduct.ι_desc, ← Category.assoc, ← Sigma.ι_comp_toFiniteCoproduct]
-  simp only [Category.assoc, Iso.inv_hom_id, Category.comp_id, fromExplicitIso, fromExplicit._eq_1,
-    mapIso_hom, colim_map, colimit.map_desc, Eq.ndrec, id_eq, colimit.ι_desc,
-    Cocones.precompose_obj_pt, Cofan.mk_pt, Cocones.precompose_obj_ι, NatTrans.comp_app,
-    Discrete.functor_obj, const_obj_obj, Discrete.natIso_hom_app, Cofan.mk_ι_app,
-    limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
+instance : Extensive Stonean where
+  sigma_desc_iso := @fun α _ X Z i Y f H => by
+    have hOpen := openEmbedding_of_sigma_desc_iso H
+    let θ := Sigma.mapIso (fun a => fromExplicitIso f (hOpen a))
+    suffices IsIso (θ.hom ≫ Sigma.desc fun x => Limits.pullback.fst) by
+      · apply IsIso.of_isIso_comp_left θ.hom
+    let δ := coproductIsoCoproduct (fun a => (OpenEmbeddingCone f (hOpen a)).pt)
+    suffices IsIso <| δ.hom ≫ (θ.hom ≫ Sigma.desc fun x => Limits.pullback.fst) by
+      · apply IsIso.of_isIso_comp_left δ.hom
+    have HIso : IsIso (finiteCoproduct.desc _ i) := by
+      suffices IsIso <| (coproductIsoCoproduct Z).inv ≫ (finiteCoproduct.desc _ i) by
+        · apply IsIso.of_isIso_comp_left (coproductIsoCoproduct Z).inv
+      convert H
+      refine' Sigma.hom_ext _ _ (fun a => _)
+      simp only [coproductIsoCoproduct, colimit.comp_coconePointUniqueUpToIso_inv_assoc, Discrete.functor_obj,
+        finiteCoproduct.explicitCocone_pt, finiteCoproduct.explicitCocone_ι, Discrete.natTrans_app,
+        finiteCoproduct.ι_desc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+    convert extensivity_explicit f HIso hOpen
+    refine' Stonean.finiteCoproduct.hom_ext _ _ _ (fun a => _)
+    rw [finiteCoproduct.ι_desc, ← Category.assoc, ← Sigma.ι_comp_toFiniteCoproduct]
+    simp only [Category.assoc, Iso.inv_hom_id, Category.comp_id, fromExplicitIso, fromExplicit._eq_1,
+      mapIso_hom, colim_map, colimit.map_desc, Eq.ndrec, id_eq, colimit.ι_desc,
+      Cocones.precompose_obj_pt, Cofan.mk_pt, Cocones.precompose_obj_ι, NatTrans.comp_app,
+      Discrete.functor_obj, const_obj_obj, Discrete.natIso_hom_app, Cofan.mk_ι_app,
+      limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
 
 instance everything_proj (X : Stonean) : Projective X where
   factors := by
@@ -1550,8 +1388,14 @@ instance everything_proj (X : Stonean) : Projective X where
     ext
     exact congr_fun h.right _
 
+instance : Regular Stonean where
+  exists_fac := by
+    intro X Y Z f π hπ
+    refine ⟨X, 𝟙 X, inferInstance, ?_⟩
+    exact Projective.factors f π
+
 lemma extensiveRegular_generates_coherent :
-    (ExtensiveRegularCoverage Stonean everything_proj extensivity).toGrothendieck =
+    (ExtensiveRegularCoverage Stonean).toGrothendieck =
     (coherentTopology Stonean) := by
   ext X S
   constructor
@@ -1624,11 +1468,11 @@ lemma extensiveRegular_generates_coherent :
           induction hW
           rw [← hW', Sieve.pullback_comp Z]
           suffices : Sieve.pullback ψ ((Sieve.pullback F) Z) ∈ GrothendieckTopology.sieves
-            (ExtensiveRegularCoverage _ _ _).toGrothendieck R
+            (ExtensiveRegularCoverage _).toGrothendieck R
           · exact this
           apply GrothendieckTopology.pullback_stable'
           dsimp [Coverage.toGrothendieck]
-          suffices : Coverage.saturate (ExtensiveRegularCoverage _ _ _) Xs (Z.pullback F)
+          suffices : Coverage.saturate (ExtensiveRegularCoverage _) Xs (Z.pullback F)
           · exact this
           suffices : Sieve.generate (Presieve.ofArrows Xmap φ) ≤ Z.pullback F
           · apply Coverage.saturate_of_superset _ this
@@ -1660,7 +1504,7 @@ lemma extensiveRegular_generates_coherent :
         · assumption
         · assumption
 
-lemma isSheafForRegularSieve {X : Stonean} {S : Presieve X} (hS : S ∈ RegularSieve X)
+lemma isSheafForRegularSieve {X : Stonean} (S : Presieve X) [hS : S.regular]
     (F : Stonean.{u}ᵒᵖ ⥤ Type (u+1)) : IsSheafFor F S := by
   obtain ⟨Y, f, rfl, hf⟩ := hS
   have proj : Projective (toCompHaus.obj X) := inferInstanceAs (Projective X.compHaus)
@@ -1685,11 +1529,15 @@ lemma isSheafForRegularSieve {X : Stonean} {S : Presieve X} (hS : S ∈ RegularS
       F.map_id, types_id_apply] at this
 
 lemma isSheafFor_of_extensiveRegular {X : Stonean} {S : Presieve X}
-  (hS : S ∈ (ExtensiveRegularCoverage Stonean everything_proj extensivity).covering X)
+  (hS : S ∈ (ExtensiveRegularCoverage Stonean).covering X)
   {F : Stonean.{u}ᵒᵖ ⥤ Type (u+1)} (hF : PreservesFiniteProducts F) : S.IsSheafFor F := by
   cases' hS with hSIso hSSingle
-  · exact isSheafForExtensiveSieve hSIso hF
-  · exact isSheafForRegularSieve hSSingle F
+  · simp only [ExtensiveCoverage_covering, Set.mem_setOf_eq] at hSIso
+    haveI := hSIso
+    exact isSheafForExtensiveSieve hF
+  · simp only [RegularCoverage_covering, Set.mem_setOf_eq] at hSSingle
+    haveI := hSSingle
+    exact isSheafForRegularSieve S F
 
 theorem final (A : Type (u+2)) [Category.{u+1} A] {F : Stonean.{u}ᵒᵖ ⥤ A}
     (hF : PreservesFiniteProducts F) : Presheaf.IsSheaf (coherentTopology Stonean) F := by
