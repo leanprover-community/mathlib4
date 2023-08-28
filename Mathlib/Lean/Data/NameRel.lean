@@ -25,18 +25,10 @@ instance : EmptyCollection NameRel :=
 instance : Inhabited NameRel :=
   inferInstanceAs $ Inhabited (NameMap NameSet)
 
-/-- For all names `n` mentioned in the type of the constant `c`, add `c.name` to the set associated
-with `n`. -/
-def NameRel.addDecl (c : ConstantInfo) (m : NameRel) := do
-  if ← c.name.isBlackListed then
-    return m
-  let consts := c.type.foldConsts {} (flip NameSet.insert)
-  return consts.fold (init := m) fun m n =>
-    m.insert n (
-      m.findD n {} |> flip .insert c.name
-    )
-
 /-- Finds the set of names associated with the given one -/
 def NameRel.find (m : NameRel) (n : Name) : NameSet := m.findD n {}
+
+def NameRel.insert (m : NameRel) (n₁ n₂ : Name) : NameRel :=
+  m.find n₁ |>.insert n₂ |> NameMap.insert m n₁
 
 end Lean

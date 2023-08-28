@@ -102,6 +102,14 @@ def matchConclusion (t : Expr) : MetaM ConstMatcher := withReducible do
 ## The find tactic engine: Cache and matching
 -/
 
+/-- For all names `n` mentioned in the type of the constant `c`, add a mapping from
+`n` to `c.name` to the relation. -/
+private def addDecl (c : ConstantInfo) (m : NameRel) : CoreM NameRel := do
+  if ← c.name.isBlackListed then
+    return m
+  let consts := c.type.foldConsts {} (flip NameSet.insert)
+  return consts.fold (init := m) fun m n => m.insert n c.name
+
 /-- The declaration cache used by `#find`, stores `NameRel` mapping names to the name
 of constants they are mentinend in.
 
@@ -111,8 +119,9 @@ initialize findDeclsByConsts : DeclCache (NameRel × NameRel) ←
   DeclCache.mk
     (profilingName := "#find: init cache")
     (empty := ({}, {}))
-    (addLibraryDecl := fun _ c (m₁, m₂) ↦ return (← NameRel.addDecl c m₁, m₂))
-    (addDecl := fun _ c (m₁, m₂) ↦ return (m₁, ← NameRel.addDecl c m₂))
+    (addLibraryDecl := fun _ c (m₁, m₂) ↦ return (← addDecl c m₁, m₂))
+    (addDecl := fun _ c (m₁, m₂) ↦ return (m₁, ← addDecl c m₂))
+
 
 -- NB: In large files it may be slightly wasteful to calculate a full NameSet for the local
 -- definition upon every invocation of `#find`, and a linear scan might work better. For now,
