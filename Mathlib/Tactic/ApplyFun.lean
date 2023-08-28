@@ -22,8 +22,9 @@ open Lean Parser Tactic Elab Tactic Meta
 initialize registerTraceClass `apply_fun
 
 /-- Apply a function to a hypothesis. -/
-def applyFunHyp (f : Term) (using? : Option Expr) (h : FVarId) (g : MVarId) :
+def applyFunHyp (f : Term) (using? : Option Term) (h : FVarId) (g : MVarId) :
     TacticM (List MVarId) := do
+  let using? ← using?.mapM (elabTerm · none)
   let d ← h.getDecl
   let (prf, newGoals) ← match (← whnfR (← instantiateMVars d.type)).getAppFnArgs with
   | (``Eq, #[_, lhs, rhs]) => do
@@ -91,7 +92,7 @@ alias ⟨ApplyFun.le_of_le, _⟩ := OrderIso.le_iff_le
 alias ⟨ApplyFun.lt_of_lt, _⟩ := OrderIso.lt_iff_lt
 
 /-- Apply a function to the main goal. -/
-def applyFunTarget (f : Term) (using? : Option Expr) (g : MVarId) : TacticM (List MVarId) := do
+def applyFunTarget (f : Term) (using? : Option Term) (g : MVarId) : TacticM (List MVarId) := do
   -- handle applying a two-argument theorem whose first argument is f
   let handle (thm : Name) : TacticM (List MVarId) := do
     let ng ← mkFreshExprMVar none
@@ -127,6 +128,7 @@ def applyFunTarget (f : Term) (using? : Option Expr) (g : MVarId) : TacticM (Lis
         let pf ← Term.elabAppArgs ginj #[] #[.expr g'] (← g.getType) false false
         let pf ← Term.ensureHasType (← g.getType) pf
         -- In the current context, let's try proving injectivity since it might fill in some holes
+        let using? ← using?.mapM (Term.elabTerm · (some inj))
         _ ← withAssignableSyntheticOpaque <| maybeProveInjective ginj using?
         Term.synthesizeSyntheticMVarsUsingDefault
         gDefer.mvarId!.assign pf
@@ -173,7 +175,6 @@ placeholders. Named placeholders (like `?a` or `?_`) will produce new goals.
 syntax (name := applyFun) "apply_fun " term (location)? (" using " term)? : tactic
 
 elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do
-  let P ← withMainContext <| P.mapM (elabTerm · none)
   withLocation (expandOptLocation (Lean.mkOptionalNode loc))
     (atLocal := fun h ↦ do replaceMainGoal <| ← applyFunHyp f P h (← getMainGoal))
     (atTarget := withMainContext do
