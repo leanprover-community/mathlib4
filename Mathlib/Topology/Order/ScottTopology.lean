@@ -61,7 +61,7 @@ open Set
 
 section preorder
 
-variable {α} {β}
+variable {α β}
 
 variable [Preorder α] [Preorder β]
 
