@@ -935,6 +935,17 @@ theorem rank_eq_card_chooseBasisIndex : Module.rank K V = #(ChooseBasisIndex K V
   (chooseBasis K V).mk_eq_rank''.symm
 #align module.free.rank_eq_card_choose_basis_index Module.Free.rank_eq_card_chooseBasisIndex
 
+/-- The rank of a free module `V` over an infinite scalar ring `K` is the cardinality of `V`
+whenever `#R < #V`. -/
+lemma rank_eq_mk_of_infinite_lt [Infinite K] (h_lt : lift.{v} #K < lift.{u} #V) :
+    Module.rank K V = #V := by
+  have : Infinite V := infinite_iff.mpr <| lift_le.mp <| le_trans (by simp) h_lt.le
+  have h : lift #V = lift #(ChooseBasisIndex K V →₀ K) := lift_mk_eq'.mpr ⟨(chooseBasis K V).repr⟩
+  simp only [mk_finsupp_lift_of_infinite', lift_id', ← rank_eq_card_chooseBasisIndex, lift_max,
+    lift_lift] at h
+  refine lift_inj.mp ((max_eq_iff.mp h.symm).resolve_right <| not_and_of_not_left _ ?_).left
+  exact (lift_umax.{v, u}.symm ▸ h_lt).ne
+
 end Module.Free
 
 open Module.Free
@@ -1104,6 +1115,42 @@ theorem rank_eq_of_surjective (f : V →ₗ[K] V₁) (h : Surjective f) :
     Module.rank K V = Module.rank K V₁ + Module.rank K (LinearMap.ker f) := by
   rw [← rank_range_add_rank_ker f, ← rank_range_of_surjective f h]
 #align rank_eq_of_surjective rank_eq_of_surjective
+
+/-- Given a family of `n` linearly independent vectors in a space of dimension `> n`, one may extend
+the family by another vector while retaining linear independence. -/
+theorem exists_linear_independent_cons_of_lt_rank {n : ℕ} {v : Fin n → V}
+    (hv : LinearIndependent K v) (h : n < Module.rank K V) :
+    ∃ (x : V), LinearIndependent K (Fin.cons x v) := by
+  have A : Submodule.span K (range v) ≠ ⊤ := by
+    intro H
+    rw [← rank_top, ← H] at h
+    have : Module.rank K (Submodule.span K (range v)) ≤ n := by
+      have := Cardinal.mk_range_le_lift (f := v)
+      simp only [Cardinal.lift_id'] at this
+      exact (rank_span_le _).trans (this.trans (by simp))
+    exact lt_irrefl _ (h.trans_le this)
+  obtain ⟨x, hx⟩ : ∃ x, x ∉ Submodule.span K (range v) := by
+    contrapose! A
+    exact Iff.mpr Submodule.eq_top_iff' A
+  exact ⟨x, linearIndependent_fin_cons.2 ⟨hv, hx⟩⟩
+
+/-- Given a family of `n` linearly independent vectors in a space of dimension `> n`, one may extend
+the family by another vector while retaining linear independence. -/
+theorem exists_linear_independent_snoc_of_lt_rank {n : ℕ} {v : Fin n → V}
+    (hv : LinearIndependent K v) (h : n < Module.rank K V) :
+    ∃ (x : V), LinearIndependent K (Fin.snoc v x) := by
+  simpa [linearIndependent_fin_cons, ← linearIndependent_fin_snoc]
+    using exists_linear_independent_cons_of_lt_rank hv h
+
+/-- Given a nonzero vector in a space of dimension `> 1`, one may find another vector linearly
+independent of the first one. -/
+theorem exists_linear_independent_pair_of_one_lt_rank
+    (h : 1 < Module.rank K V) {x : V} (hx : x ≠ 0) :
+    ∃ y, LinearIndependent K ![x, y] := by
+  obtain ⟨y, hy⟩ := exists_linear_independent_snoc_of_lt_rank (linearIndependent_unique ![x] hx) h
+  have : Fin.snoc ![x] y = ![x, y] := Iff.mp List.ofFn_inj rfl
+  rw [this] at hy
+  exact ⟨y, hy⟩
 
 section
 

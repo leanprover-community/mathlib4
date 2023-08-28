@@ -1797,7 +1797,7 @@ theorem diagonal_mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSem
     (j : n) (x : R) : (diagonal v).mulVec (Pi.single j x) = Pi.single j (v j * x) := by
   ext i
   rw [mulVec_diagonal]
-  exact Pi.apply_single (fun i x => v i * x) (fun i => MulZeroClass.mul_zero _) j x i
+  exact Pi.apply_single (fun i x => v i * x) (fun i => mul_zero _) j x i
 #align matrix.diagonal_mul_vec_single Matrix.diagonal_mulVec_single
 
 -- @[simp] -- Porting note: not in simpNF
@@ -1805,7 +1805,7 @@ theorem single_vecMul_diagonal [Fintype n] [DecidableEq n] [NonUnitalNonAssocSem
     (j : n) (x : R) : vecMul (Pi.single j x) (diagonal v) = Pi.single j (x * v j) := by
   ext i
   rw [vecMul_diagonal]
-  exact Pi.apply_single (fun i x => x * v i) (fun i => MulZeroClass.zero_mul _) j x i
+  exact Pi.apply_single (fun i x => x * v i) (fun i => zero_mul _) j x i
 #align matrix.single_vec_mul_diagonal Matrix.single_vecMul_diagonal
 
 end NonUnitalNonAssocSemiring

@@ -216,8 +216,7 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : LocalHomeomorph (B × F) (B �
   refine' ⟨Φ, U, hU', hΦ, h2Φ, hU, fun p hp => _⟩
   rw [hU] at hp
   rw [heuφ ⟨p.fst, hp.1⟩ ⟨hux _, hp.2⟩]
-  -- porting note: replaced `congrm` with manual `congr_arg`
-  refine congr_arg (Prod.mk _) ?_
+  congrm (_, ?_)
   rw [hΦφ]
   apply hux
 #align smooth_fiberwise_linear.locality_aux₂ SmoothFiberwiseLinear.locality_aux₂

@@ -68,7 +68,7 @@ def vanishingIdeal (V : Set (σ → k)) : Ideal (MvPolynomial σ k) where
   zero_mem' x _ := RingHom.map_zero _
   add_mem' {p q} hp hq x hx := by simp only [hq x hx, hp x hx, add_zero, RingHom.map_add]
   smul_mem' p q hq x hx := by
-    simp only [hq x hx, Algebra.id.smul_eq_mul, MulZeroClass.mul_zero, RingHom.map_mul]
+    simp only [hq x hx, Algebra.id.smul_eq_mul, mul_zero, RingHom.map_mul]
 #align mv_polynomial.vanishing_ideal MvPolynomial.vanishingIdeal
 
 @[simp]

@@ -131,7 +131,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
   have γ_le_d_s : γ ≤ d s := by
     have hγ : Tendsto (fun m : ℕ => γ - 2 * (1 / 2) ^ m) atTop (𝓝 γ) := by
       suffices Tendsto (fun m : ℕ => γ - 2 * (1 / 2) ^ m) atTop (𝓝 (γ - 2 * 0)) by
-        simpa only [MulZeroClass.mul_zero, tsub_zero]
+        simpa only [mul_zero, tsub_zero]
       exact
         tendsto_const_nhds.sub <|
           tendsto_const_nhds.mul <|
