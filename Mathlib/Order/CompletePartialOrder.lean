@@ -89,7 +89,7 @@ def Set.ToDirectedSet (s : Set α) : DirectedSet α := {
       · exact le_sup_right
 }
 
-lemma Set_subseteq_DirectedSet {s : Set α} :
+lemma subset_toDirectedSet {s : Set α} :
     s ⊆ ↑(Set.ToDirectedSet s).set := by
   intro a ha
   rw [Set.ToDirectedSet]
