@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.FieldTheory.Normal
-import Mathlib.FieldTheory.PerfectClosure
+import Mathlib.FieldTheory.Perfect
 import Mathlib.RingTheory.Localization.Integral
 
 #align_import field_theory.is_alg_closed.basic from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
@@ -193,6 +193,8 @@ instance (priority := 100) IsAlgClosure.separable (R K : Type*) [Field R] [Field
     (minpoly.irreducible (isAlgebraic_iff_isIntegral.mp (IsAlgClosure.algebraic _))).separable⟩
 #align is_alg_closure.separable IsAlgClosure.separable
 
+namespace IsAlgClosed
+
 namespace lift
 
 /- In this section, the homomorphism from any algebraic extension into an algebraically
@@ -208,9 +210,11 @@ open Subalgebra AlgHom Function
 /-- This structure is used to prove the existence of a homomorphism from any algebraic extension
 into an algebraic closure -/
 structure SubfieldWithHom where
+  /-- The corresponding `Subalgebra` -/
   carrier : Subalgebra K L
+  /-- The embedding into the algebraically closed field -/
   emb : carrier →ₐ[K] M
-#align lift.subfield_with_hom lift.SubfieldWithHom
+#align lift.subfield_with_hom IsAlgClosed.lift.SubfieldWithHom
 
 variable {K L M hL}
 
@@ -227,11 +231,11 @@ noncomputable instance : Inhabited (SubfieldWithHom K L M) :=
 
 theorem le_def : E₁ ≤ E₂ ↔ ∃ h : E₁.carrier ≤ E₂.carrier, ∀ x, E₂.emb (inclusion h x) = E₁.emb x :=
   Iff.rfl
-#align lift.subfield_with_hom.le_def lift.SubfieldWithHom.le_def
+#align lift.subfield_with_hom.le_def IsAlgClosed.lift.SubfieldWithHom.le_def
 
 theorem compat (h : E₁ ≤ E₂) : ∀ x, E₂.emb (inclusion h.fst x) = E₁.emb x := by
   rw [le_def] at h; cases h; assumption
-#align lift.subfield_with_hom.compat lift.SubfieldWithHom.compat
+#align lift.subfield_with_hom.compat IsAlgClosed.lift.SubfieldWithHom.compat
 
 instance : Preorder (SubfieldWithHom K L M) where
   le := (· ≤ ·)
@@ -268,24 +272,24 @@ theorem maximal_subfieldWithHom_chain_bounded (c : Set (SubfieldWithHom K L M))
          ⟨(le_iSup (fun i : c => (i : SubfieldWithHom K L M).carrier) ⟨N, hN⟩ : _), by
            intro x
            simp⟩⟩
-#align lift.subfield_with_hom.maximal_subfield_with_hom_chain_bounded lift.SubfieldWithHom.maximal_subfieldWithHom_chain_bounded
+#align lift.subfield_with_hom.maximal_subfield_with_hom_chain_bounded IsAlgClosed.lift.SubfieldWithHom.maximal_subfieldWithHom_chain_bounded
 
 variable (K L M)
 
 theorem exists_maximal_subfieldWithHom : ∃ E : SubfieldWithHom K L M, ∀ N, E ≤ N → N ≤ E :=
   exists_maximal_of_chains_bounded maximal_subfieldWithHom_chain_bounded le_trans
-#align lift.subfield_with_hom.exists_maximal_subfield_with_hom lift.SubfieldWithHom.exists_maximal_subfieldWithHom
+#align lift.subfield_with_hom.exists_maximal_subfield_with_hom IsAlgClosed.lift.SubfieldWithHom.exists_maximal_subfieldWithHom
 
 /-- The maximal `SubfieldWithHom`. We later prove that this is equal to `⊤`. -/
 noncomputable def maximalSubfieldWithHom : SubfieldWithHom K L M :=
   Classical.choose (exists_maximal_subfieldWithHom K L M)
-#align lift.subfield_with_hom.maximal_subfield_with_hom lift.SubfieldWithHom.maximalSubfieldWithHom
+#align lift.subfield_with_hom.maximal_subfield_with_hom IsAlgClosed.lift.SubfieldWithHom.maximalSubfieldWithHom
 
 theorem maximalSubfieldWithHom_is_maximal :
     ∀ N : SubfieldWithHom K L M,
       maximalSubfieldWithHom K L M ≤ N → N ≤ maximalSubfieldWithHom K L M :=
   Classical.choose_spec (exists_maximal_subfieldWithHom K L M)
-#align lift.subfield_with_hom.maximal_subfield_with_hom_is_maximal lift.SubfieldWithHom.maximalSubfieldWithHom_is_maximal
+#align lift.subfield_with_hom.maximal_subfield_with_hom_is_maximal IsAlgClosed.lift.SubfieldWithHom.maximalSubfieldWithHom_is_maximal
 
 -- Porting note: split out this definition from `maximalSubfieldWithHom_eq_top`
 /-- Produce an algebra homomorphism `Adjoin R {x} →ₐ[R] T` sending `x` to
@@ -332,13 +336,11 @@ theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier =
   refine' (maximalSubfieldWithHom_is_maximal K L M O' hO').fst _
   show x ∈ Algebra.adjoin N {(x : L)}
   exact Algebra.subset_adjoin (Set.mem_singleton x)
-#align lift.subfield_with_hom.maximal_subfield_with_hom_eq_top lift.SubfieldWithHom.maximalSubfieldWithHom_eq_top
+#align lift.subfield_with_hom.maximal_subfield_with_hom_eq_top IsAlgClosed.lift.SubfieldWithHom.maximalSubfieldWithHom_eq_top
 
 end SubfieldWithHom
 
 end lift
-
-namespace IsAlgClosed
 
 variable {K : Type u} [Field K] {L : Type v} {M : Type w} [Field L] [Algebra K L] [Field M]
   [Algebra K M] [IsAlgClosed M] (hL : Algebra.IsAlgebraic K L)

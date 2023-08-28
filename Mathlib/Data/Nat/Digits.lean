@@ -29,6 +29,8 @@ A basic `norm_digits` tactic is also provided for proving goals of the form
 `Nat.digits a b = l` where `a` and `b` are numerals.
 -/
 
+set_option autoImplicit true
+
 
 namespace Nat
 

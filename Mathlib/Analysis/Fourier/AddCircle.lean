@@ -109,7 +109,7 @@ theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := 
   obtain ⟨m, hm⟩ := expMapCircle_eq_expMapCircle.mp h.symm
   rw [QuotientAddGroup.eq]; simp_rw [AddSubgroup.mem_zmultiples_iff, zsmul_eq_mul]
   use m
-  field_simp [Real.two_pi_pos.ne'] at hm
+  field_simp at hm
   rw [← mul_right_inj' Real.two_pi_pos.ne']
   linarith
 #align add_circle.injective_to_circle AddCircle.injective_toCircle
@@ -186,7 +186,7 @@ theorem fourier_zero' {x : AddCircle T} : @toCircle T 0 = (1 : ℂ) := by
 
 -- @[simp] -- Porting note: simp normal form is *also* `fourier_zero'`
 theorem fourier_eval_zero (n : ℤ) : fourier n (0 : AddCircle T) = 1 := by
-  rw [← QuotientAddGroup.mk_zero, fourier_coe_apply, Complex.ofReal_zero, MulZeroClass.mul_zero,
+  rw [← QuotientAddGroup.mk_zero, fourier_coe_apply, Complex.ofReal_zero, mul_zero,
     zero_div, Complex.exp_zero]
 #align fourier_eval_zero fourier_eval_zero
 

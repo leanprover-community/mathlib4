@@ -27,6 +27,8 @@ role in the proof that the functor
 `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ))`
 reflects isomorphisms.
 
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
+
 -/
 
 

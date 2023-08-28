@@ -263,7 +263,7 @@ theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] 
       let ⟨m, hm⟩ := Nat.gcd_dvd_right n (Fintype.card α)
       have hm0 : 0 < m :=
         Nat.pos_of_ne_zero fun hm0 => by
-          rw [hm0, MulZeroClass.mul_zero, Fintype.card_eq_zero_iff] at hm
+          rw [hm0, mul_zero, Fintype.card_eq_zero_iff] at hm
           exact hm.elim' 1
       simp only [Set.toFinset_card, SetLike.coe_sort_coe]
       rw [← orderOf_eq_card_zpowers, orderOf_pow g, orderOf_eq_card_of_forall_mem_zpowers hg]

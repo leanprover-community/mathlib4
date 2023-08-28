@@ -442,7 +442,7 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
   -- since `μ` and `ν` are not mutually singular, `μ A = 0` implies `ν Aᶜ > 0`
   rw [MutuallySingular] at h; push_neg at h
   have := h _ hAmeas hμ
-  simp_rw [hA₁, compl_iInter, compl_compl] at this
+  simp_rw [compl_iInter, compl_compl] at this
   -- as `Aᶜ = ⋃ n, f n`, `ν Aᶜ > 0` implies there exists some `n` such that `ν (f n) > 0`
   obtain ⟨n, hn⟩ := exists_measure_pos_of_not_measure_iUnion_null this
   -- thus, choosing `f n` as the set `E` suffices

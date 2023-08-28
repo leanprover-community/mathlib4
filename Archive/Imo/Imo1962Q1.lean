@@ -43,7 +43,7 @@ abbrev ProblemPredicate' (c n : ℕ) : Prop :=
 theorem without_digits {n : ℕ} (h1 : ProblemPredicate n) : ∃ c : ℕ, ProblemPredicate' c n := by
   use n / 10
   cases' n with n
-  · have h2 : ¬ProblemPredicate 0 := by rw [ProblemPredicate]; norm_num
+  · have h2 : ¬ProblemPredicate 0 := by norm_num [ProblemPredicate]
     contradiction
   · rw [ProblemPredicate, digits_def' (by decide : 2 ≤ 10) n.succ_pos, List.headI, List.tail_cons,
       List.concat_eq_append] at h1
@@ -131,7 +131,7 @@ Now we combine these cases to show that 153846 is the smallest solution.
 
 
 theorem satisfied_by_153846 : ProblemPredicate 153846 := by
-  dsimp [ProblemPredicate]; norm_num
+  norm_num [ProblemPredicate]
 #align imo1962_q1.satisfied_by_153846 Imo1962Q1.satisfied_by_153846
 
 theorem no_smaller_solutions (n : ℕ) (h1 : ProblemPredicate n) : n ≥ 153846 := by

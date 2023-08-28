@@ -19,6 +19,8 @@ The `congr!` tactic is used by the `convert` and `convert_to` tactics.
 See the syntax docstring for more details.
 -/
 
+set_option autoImplicit true
+
 open Lean Meta Elab Tactic
 
 initialize registerTraceClass `congr!

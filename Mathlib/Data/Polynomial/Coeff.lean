@@ -75,12 +75,12 @@ theorem support_smul [Monoid S] [DistribMulAction S R] (r : S) (p : R[X]) :
 def lsum {R A M : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [Module R A] [Module R M]
     (f : ℕ → A →ₗ[R] M) : A[X] →ₗ[R] M
     where
-  toFun p := p.sum fun n r => f n r
+  toFun p := p.sum (f · ·)
   map_add' p q := sum_add_index p q _ (fun n => (f n).map_zero) fun n _ _ => (f n).map_add _ _
   map_smul' c p := by
     -- Porting note: `dsimp only []` is required for beta reduction.
     dsimp only []
-    rw [sum_eq_of_subset _ (fun n r => f n r) (fun n => (f n).map_zero) _ (support_smul c p)]
+    rw [sum_eq_of_subset (f · ·) (fun n => (f n).map_zero) (support_smul c p)]
     simp only [sum_def, Finset.smul_sum, coeff_smul, LinearMap.map_smul, RingHom.id_apply]
 #align polynomial.lsum Polynomial.lsum
 #align polynomial.lsum_apply Polynomial.lsum_apply

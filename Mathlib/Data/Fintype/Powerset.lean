@@ -36,6 +36,7 @@ theorem Finset.powerset_eq_univ [Fintype α] {s : Finset α} : s.powerset = univ
   rw [← Finset.powerset_univ, powerset_inj]
 #align finset.powerset_eq_univ Finset.powerset_eq_univ
 
+@[simp]
 theorem Finset.mem_powerset_len_univ_iff [Fintype α] {s : Finset α} {k : ℕ} :
     s ∈ powersetLen k (univ : Finset α) ↔ card s = k :=
   mem_powersetLen.trans <| and_iff_right <| subset_univ _

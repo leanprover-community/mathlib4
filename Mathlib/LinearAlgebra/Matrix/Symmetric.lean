@@ -53,12 +53,12 @@ theorem IsSymm.apply {A : Matrix n n α} (h : A.IsSymm) (i j : n) : A j i = A i 
 #align matrix.is_symm.apply Matrix.IsSymm.apply
 
 theorem isSymm_mul_transpose_self [Fintype n] [CommSemiring α] (A : Matrix n n α) :
-    (A ⬝ Aᵀ).IsSymm :=
+    (A * Aᵀ).IsSymm :=
   transpose_mul _ _
 #align matrix.is_symm_mul_transpose_self Matrix.isSymm_mul_transpose_self
 
 theorem isSymm_transpose_mul_self [Fintype n] [CommSemiring α] (A : Matrix n n α) :
-    (Aᵀ ⬝ A).IsSymm :=
+    (Aᵀ * A).IsSymm :=
   transpose_mul _ _
 #align matrix.is_symm_transpose_mul_self Matrix.isSymm_transpose_mul_self
 
