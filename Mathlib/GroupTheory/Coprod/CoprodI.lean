@@ -379,7 +379,7 @@ theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
     exact Word.ext _ _ h
 #align free_product.word.rcons_inj Monoid.CoprodI.Word.rcons_inj
 
-theorem mem_rcons_toList_iff {i j : ι} (p : Pair M i) (m : M j) :
+theorem mem_rcons_iff {i j : ι} (p : Pair M i) (m : M j) :
     ⟨_, m⟩ ∈ (rcons p).toList ↔ ⟨_, m⟩ ∈ p.tail.toList ∨
       m ≠ 1 ∧ (∃ h : i = j, m = h ▸ p.head) := by
   simp [rcons]
@@ -427,7 +427,7 @@ theorem equivPair_eq_of_fstIdx_ne {i} {w : Word M} (h : fstIdx w ≠ some i) :
   (equivPair i).apply_eq_iff_eq_symm_apply.mpr <| Eq.symm (dif_pos rfl)
 #align free_product.word.equiv_pair_eq_of_fst_idx_ne Monoid.CoprodI.Word.equivPair_eq_of_fstIdx_ne
 
-theorem mem_equivPair_tail_toList_iff {i j : ι} {w : Word M} (m : M i) :
+theorem mem_equivPair_tail_iff {i j : ι} {w : Word M} (m : M i) :
     (⟨i, m⟩ ∈ (equivPair j w).tail.toList) ↔ ⟨i, m⟩ ∈ w.toList.tail
       ∨ i ≠ j ∧ ∃ h : w.toList ≠ [], w.toList.head h = ⟨i, m⟩ := by
   simp [equivPair, equivPairAux, mkAux]
@@ -445,9 +445,9 @@ theorem mem_equivPair_tail_toList_iff {i j : ι} {w : Word M} (m : M i) :
       · subst i; simp_all [eq_comm, or_comm]
       · simp_all [Ne.symm hik]
 
-theorem mem_of_mem_equivPair_tail_toList {i j : ι} {w : Word M} (m : M i) :
+theorem mem_of_mem_equivPair_tail {i j : ι} {w : Word M} (m : M i) :
     (⟨i, m⟩ ∈ (equivPair j w).tail.toList) → ⟨i, m⟩ ∈ w.toList := by
-  rw [mem_equivPair_tail_toList_iff]
+  rw [mem_equivPair_tail_iff]
   rintro (h | h)
   · exact List.mem_of_mem_tail h
   · revert h; cases w.toList <;> simp (config := {contextual := true})
@@ -507,8 +507,7 @@ theorem mem_smul_iff' {i j : ι} {m₁ : M i} {w : Word M} {m₂ : M j} :
         (m₂ * (if h : ∃ (h : w.toList ≠ []), (w.toList.head h).1 = j
           then h.snd ▸ (w.toList.head h.1).2
           else 1))) := by
-  rw [smul_def, mem_rcons_toList_iff, mem_equivPair_tail_toList_iff,
-    equivPair_head, or_assoc]
+  rw [smul_def, mem_rcons_iff, mem_equivPair_tail_iff, equivPair_head, or_assoc]
 
 theorem mem_smul_iff_of_ne {i j : ι} (hij : i ≠ j) {m₁ : M i} {w : Word M} {m₂ : M j} :
     ⟨_, m₁⟩ ∈ (m₂ • w).toList ↔ ⟨i, m₁⟩ ∈ w.toList := by

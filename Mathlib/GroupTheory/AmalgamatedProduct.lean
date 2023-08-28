@@ -286,7 +286,7 @@ noncomputable def rcons {i : ι} (p : Pair φ i) : NormalWord φ :=
     left := n.1
     normalized := fun i g hg => by
         dsimp at hg
-        rw [Word.equivPair_symm, Word.mem_rcons_toList_iff] at hg
+        rw [Word.equivPair_symm, Word.mem_rcons_iff] at hg
         dsimp at hg
         rcases hg with hg | ⟨_, rfl, rfl⟩
         · exact p.normalized _ _ hg
@@ -311,7 +311,7 @@ noncomputable def equivPair (i) : NormalWord φ ≃ Pair φ i :=
           dsimp only at hg
           rw [Word.smul_def, ← Word.equivPair_symm, Equiv.apply_symm_apply] at hg
           dsimp at hg
-          exact w.normalized _ _ (Word.mem_of_mem_equivPair_tail_toList _ hg) }
+          exact w.normalized _ _ (Word.mem_of_mem_equivPair_tail _ hg) }
   have leftInv : Function.LeftInverse (rcons (φ := φ)) toFun :=
     fun w => ext_smul hφ i <| by
       simp [rcons, Word.equivPair_symm, Word.rcons_eq_smul, ← mul_smul,
@@ -380,6 +380,13 @@ theorem summandToPermNormalWord_app_eq {i : ι} (h : H) (w : NormalWord φ) :
 
 end NormalWord
 
+section Reduced
+
+def Reduced : Word G → Prop :=
+  ∀ i ∈
+
+end Reduced
+
 open NormalWord
 
 noncomputable def toPermNormalWord [DecidableEq ι] [∀ i, DecidableEq (G i)]
@@ -394,5 +401,7 @@ theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
   refine Function.Injective.of_comp (f := toPermNormalWord hφ) ?_
   simp only [Function.comp, toPermNormalWord, lift_of]
   exact summandToPermNormalWord_injective hφ
+
+
 
 end AmalgamatedProduct
