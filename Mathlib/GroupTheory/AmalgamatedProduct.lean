@@ -206,7 +206,7 @@ theorem normalizeSingle_mul {i : ι} (h : H) (g : G i) :
       map_mul, mul_assoc, normalizeSingle_fst_mul_normalizeSingle_snd]
   · exact this
 
-theorem normalize_single_mem_range {i : ι} (h : H) :
+theorem normalizeSingle_app {i : ι} (h : H) :
     (normalizeSingle φ (φ i h)) = (h, 1)  := by
   rw [normalizeSingle, dif_pos (MonoidHom.mem_range.2 ⟨_, rfl⟩)]
   simp only [Prod.mk.injEq, and_true]
@@ -227,6 +227,14 @@ theorem normalizeSingle_injective (i : ι) :
   intro g₁ g₂ H
   rw [← normalizeSingle_fst_mul_normalizeSingle_snd φ g₁,
     H, normalizeSingle_fst_mul_normalizeSingle_snd]
+
+theorem mem_range_iff_normalizeSingle_snd_eq_one {i : ι} (g : G i) :
+    (normalizeSingle φ g).snd = 1 ↔ g ∈ (φ i).range := by
+  rw [← mul_right_inj (φ i (normalizeSingle φ g).fst),
+    normalizeSingle_fst_mul_normalizeSingle_snd, mul_one]
+  constructor
+  · intro h; rw [h]; simp
+  · rintro ⟨_, rfl⟩; simp [normalizeSingle_app hφ]
 
 open List
 
@@ -318,6 +326,19 @@ theorem ext_smul {w₁ w₂ : NormalWord φ} (i : ι)
   have : h₁⁻¹ * h₂ = 1 := eq_one_of_smul_normalized hφ _ (h₁⁻¹ * h₂) hw₂ hw₁
   rw [inv_mul_eq_one] at this; subst this
   simp
+
+noncomputable def cons {i} (g : G i) (w : NormalWord φ) (hmw : w.fstIdx ≠ some i)
+    (hgr : g ∉ (φ i).range) :  NormalWord φ :=
+  let n := normalizeSingle φ g
+  let w' := Word.cons n.2 w.toWord hmw
+    (mt (mem_range_iff_normalizeSingle_snd_eq_one hφ _).1 hgr)
+  { toWord := w'
+    left := n.1
+    normalized := fun i g hg => by
+      simp only [Word.cons, mem_cons, Sigma.mk.inj_iff] at hg
+      rcases hg with ⟨rfl, hg | hg⟩
+      · simp
+      · exact w.normalized _ _ (by assumption) }
 
 noncomputable def rcons {i : ι} (p : Pair φ i) : NormalWord φ :=
   let n := normalizeSingle φ p.head
@@ -516,6 +537,9 @@ noncomputable def equiv : AmalgamatedProduct φ ≃ NormalWord φ :=
       · intro h w ih
         rw [prod_toPermNormalWord, map_mul, Equiv.Perm.mul_apply, ih] }
 
+theorem prod_injective : Function.Injective (prod : NormalWord φ → AmalgamatedProduct φ) :=
+  (equiv hφ).symm.injective
+
 end NormalWord
 
 open NormalWord
@@ -537,7 +561,45 @@ variable (φ)
 def Reduced (w : Word G) : Prop :=
   ∀ i g, ⟨i, g⟩ ∈ w.toList → g ∉ (φ i).range
 
-variable {φ}
+variable {φ} (hφ : ∀ _i, Function.Injective (φ _i))
+
+theorem Reduced.exists_normalWord_prod_eq {w : Word G} (hw : Reduced φ w) :
+    ∃ w' : NormalWord φ, w'.prod = ofCoprodI w.prod ∧
+      w'.toList.map Sigma.fst = w.toList.map Sigma.fst := by
+  letI := Classical.decEq ι
+  letI := fun i => Classical.decEq (G i)
+  induction w using Word.consRecOn with
+  | h_empty => exact ⟨empty, by simp, rfl⟩
+  | h_cons i g w hIdx hg1 ih =>
+    rcases ih (fun _ _ hg => hw _ _ (List.mem_cons_of_mem _ hg)) with
+      ⟨w', hw'prod, hw'map⟩
+    refine ⟨cons hφ g w' ?_ ?_, ?_⟩
+    · admit
+    · exact hw _ _ (List.mem_cons_self _ _)
+    · simp_all
+
+
+
+theorem Reduced.not_mem_range {w : Word G} (hw : Reduced φ w) :
+    ofCoprodI w.prod ∈ (base (φ := φ)).range → w = .empty := by
+  rcases w with ⟨w, h1, chain_ne⟩
+  dsimp [Reduced] at hw
+  simp only [Word.prod, Word.empty, ← Word.toList_injective.eq_iff]
+  clear h1
+  letI := Classical.decEq ι
+  letI := fun i => Classical.decEq (G i)
+  induction w with
+  | nil => exact fun _ => rfl
+  | cons g w ih =>
+    specialize ih (List.chain'_cons'.1 chain_ne).2
+      (fun _ _ hg => hw _ _ (List.mem_cons_of_mem _ hg))
+    simp only [List.map, List.prod_cons, map_mul, ofCoprodI_of,
+      MonoidHom.mem_range, forall_exists_index]
+    intro h hbase
+    rw [← inv_mul_eq_iff_eq_mul] at hbase
+    rw [← hbase, Subgroup.mul_mem_cancel_right _ (MonoidHom.mem_range.2 ⟨h, rfl⟩),
+      inv_mem_iff (x := of g.2) (H := (base (φ := φ)).range)] at ih
+    have := hw g.1 g.2 (List.mem_cons_self _ _)
 
 
 end Reduced
