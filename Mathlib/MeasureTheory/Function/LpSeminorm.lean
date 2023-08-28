@@ -848,26 +848,22 @@ theorem snorm_add_le' {f g : α → E} (hf : AEStronglyMeasurable f μ) (hg : AE
 
 variable (μ E)
 
-/-- Technical lemma to control the addition of functions in `L^p` even for `p < 1`: Given `δ > 0`,
-there exists `η` such that two functions bounded by `η` in `L^p` have a sum bounded by `δ`. One
-could take `η = δ / 2` for `p ≥ 1`, but the point of the lemma is that it works also for `p < 1`.
+/-- Technical lemma to control the addition of functions in `L^p` even for `p < 1`.
+Given `δ > 0`, there exists `η` such that two functions bounded by `η` in `L^p`
+have a sum bounded by `δ`. One could take any `η < δ / 2` for `p ≥ 1`,
+but the point of the lemma is that it works also for `p < 1`.
 -/
 theorem exists_Lp_half (p : ℝ≥0∞) {δ : ℝ≥0∞} (hδ : δ ≠ 0) :
-    ∃ η : ℝ≥0,
-      0 < η ∧
-        ∀ (f g : α → E), AEStronglyMeasurable f μ → AEStronglyMeasurable g μ →
-          snorm f p μ ≤ η → snorm g p μ ≤ η → snorm (f + g) p μ < δ := by
-  have :
-    Tendsto (fun η : ℝ≥0 => LpAddConst p * (η + η)) (𝓝[>] 0) (𝓝 (LpAddConst p * (0 + 0))) :=
-    (ENNReal.Tendsto.const_mul (tendsto_id.add tendsto_id) (Or.inr ENNReal.coe_ne_top)).mono_left
-      nhdsWithin_le_nhds
-  simp only [add_zero, mul_zero] at this
-  rcases (((tendsto_order.1 this).2 δ hδ.bot_lt).and self_mem_nhdsWithin).exists with ⟨η, hη, ηpos⟩
-  refine' ⟨η, ηpos, fun f g hf hg Hf Hg => _⟩
+    ∃ η : ℝ≥0, 0 < η ∧ ∀ (f g : α → E), AEStronglyMeasurable f μ → AEStronglyMeasurable g μ →
+      snorm f p μ ≤ η → snorm g p μ ≤ η → snorm (f + g) p μ < δ := by
+  obtain ⟨η, hη₀, hηδ⟩ : ∃ η : ℝ≥0, 0 < η ∧ η * (2 * LpAddConst p) < δ :=
+    ENNReal.exists_nnreal_pos_mul_lt (ENNReal.mul_ne_top ENNReal.coe_ne_top ENNReal.coe_ne_top) hδ
+  refine ⟨η, hη₀, fun f g hfm hgm hf hg ↦ ?_⟩
   calc
-    snorm (f + g) p μ ≤ LpAddConst p * (snorm f p μ + snorm g p μ) := snorm_add_le' hf hg p
-    _ ≤ LpAddConst p * (η + η) := (mul_le_mul_of_nonneg_left (add_le_add Hf Hg) bot_le)
-    _ < δ := hη
+    snorm (f + g) p μ ≤ LpAddConst p * (snorm f p μ + snorm g p μ) := snorm_add_le' hfm hgm p
+    _ ≤ LpAddConst p * (η + η) := by gcongr
+    _ = η * (2 * LpAddConst p) := by ring
+    _ < δ := hηδ
 #align measure_theory.exists_Lp_half MeasureTheory.exists_Lp_half
 
 variable {μ E}

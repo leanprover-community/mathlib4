@@ -66,7 +66,7 @@ set_option linter.uppercaseLean3 false
 
 open TopologicalSpace MeasureTheory Filter
 
-open NNReal ENNReal BigOperators Topology MeasureTheory
+open scoped NNReal ENNReal BigOperators Topology MeasureTheory Uniformity
 
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
@@ -447,21 +447,46 @@ protected lemma nnnorm_add_le (f g : Lp E p μ) : ‖f + g‖₊ ≤ LpAddConst 
 protected lemma norm_add_le (f g : Lp E p μ) : ‖f + g‖ ≤ LpAddConst p * (‖f‖ + ‖g‖) :=
   Lp.nnnorm_add_le f g
 
-instance : UniformSpace (Lp E p μ) :=
+instance instUniformSpace : UniformSpace (Lp E p μ) :=
   .ofCore
     { uniformity := ⨅ (ε : ℝ) (_ : 0 < ε), (𝓟 {x | dist x.1 x.2 < ε}),
       refl := le_iInf₂ fun ε hε ↦ principal_mono.2 <| idRel_subset.2 fun x ↦ by simpa [dist_def],
       symm := tendsto_iInf_iInf fun r => tendsto_iInf_iInf fun _ => tendsto_principal_principal.2
         fun x hx => by rwa [Set.mem_setOf, Lp.dist_def, ← snorm_neg, neg_sub, ← Lp.dist_def],
-      comp := le_iInf₂ fun ε hε => by
+      comp := le_iInf₂ fun ε hε => le_principal_iff.2 <| by
         lift ε to ℝ≥0 using hε.le; rw [NNReal.coe_pos] at hε
         rcases exists_Lp_half E μ p (ENNReal.coe_ne_zero.2 hε.ne') with ⟨δ, δ0, hδ⟩
-        
---let ⟨δ, h0, hδε⟩ := exists_Lp_half (ENNReal.ofReal r) hr; le_principal_iff.2 <|
---      mem_of_superset (mem_lift' <| mem_iInf_of_mem δ <| mem_iInf_of_mem h0 <| mem_principal_self _)
---        fun (x, z) ⟨y, h₁, h₂⟩ => (triangle _ _ _).trans_lt (hδr _ h₁ _ h₂) }
-    }
+        refine mem_of_superset
+          (mem_lift' <| mem_iInf_of_mem (δ : ℝ) <| mem_iInf_of_mem δ0 (mem_principal_self _)) ?_
+        rintro ⟨f₁, f₃⟩ ⟨f₂, h₁₂, h₂₃⟩
+        simp only [Set.mem_setOf_eq, dist, ← sub_add_sub_cancel f₁ f₂ f₃, ← Lp.coe_nnnorm,
+          Lp.nnnorm_coe_ennreal, NNReal.coe_lt_coe, ← ENNReal.coe_lt_coe, AddSubgroup.coe_add,
+          snorm_congr_ae (AEEqFun.coeFn_add (f₁ - f₂).1 (f₂ - f₃).1)] at h₁₂ h₂₃ ⊢
+        exact hδ _ _ (Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _) h₁₂.le h₂₃.le }
+
+
+protected theorem uniformity_basis_dist :
+    (𝓤 (Lp E p μ)).HasBasis (0 < ·) ({x | dist x.1 x.2 < ·}) :=
+  hasBasis_biInf_principal' (fun ε hε ε' hε' ↦
+    ⟨min ε ε', lt_min hε hε', fun _ h ↦ h.out.trans_le (min_le_left ..), fun _ h ↦
+      h.out.trans_le (min_le_right ..)⟩)
+    ⟨1, one_pos⟩
+
+protected theorem uniformity_basis_edist :
+    (𝓤 (Lp E p μ)).HasBasis (0 < ·) ({x | edist x.1 x.2 < ·}) :=
+  Lp.uniformity_basis_dist.to_hasBasis
+    (fun ε hε ↦ ⟨.ofReal ε, ENNReal.ofReal_pos.2 hε, fun _x hx ↦ (Lp.dist_edist _ _).trans_lt <|
+      ENNReal.toReal_lt_of_lt_ofReal hx⟩)
+    fun _ε hε ↦ let ⟨δ, hδ, hδε⟩ := ENNReal.lt_iff_exists_nnreal_btwn.1 hε
+    ⟨δ, ENNReal.coe_pos.1 hδ, fun _x hx ↦ (Lp.edist_dist _ _).trans_lt <|
+      lt_trans ((ENNReal.ofReal_lt_coe_iff ENNReal.toReal_nonneg).2 hx) hδε⟩
+
+instance instUniformAddGroup : UniformAddGroup (Lp E p μ) := by
+  constructor
+  rw [UniformContinuous, uniformity_prod_eq_prod, tendsto_map'_iff,
+    Lp.uniformity_basis_dist.prod_self.tendsto_iff Lp.uniformity_basis_dist]
   
+
 
 instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E p μ) :=
   { AddGroupNorm.toNormedAddCommGroup
@@ -469,15 +494,13 @@ instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E
         map_zero' := norm_zero
         neg' := by simp
         add_le' := fun f g => by
-          simp only [norm_def]
-          rw [← ENNReal.toReal_add (snorm_ne_top f) (snorm_ne_top g)]
-          suffices h_snorm : snorm (⇑(f + g)) p μ ≤ snorm (⇑f) p μ + snorm (⇑g) p μ
-          · rwa [ENNReal.toReal_le_toReal (snorm_ne_top (f + g))]
-            exact ENNReal.add_ne_top.mpr ⟨snorm_ne_top f, snorm_ne_top g⟩
-          rw [snorm_congr_ae (coeFn_add _ _)]
-          exact snorm_add_le (Lp.aestronglyMeasurable f) (Lp.aestronglyMeasurable g) hp.1
+          suffices (‖f + g‖₊ : ℝ≥0∞) ≤ ‖f‖₊ + ‖g‖₊ by exact_mod_cast this
+          simp only [Lp.nnnorm_coe_ennreal]
+          exact (snorm_congr_ae (AEEqFun.coeFn_add _ _)).trans_le
+            (snorm_add_le (Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _) hp.out)
         eq_zero_of_map_eq_zero' := fun f =>
           (norm_eq_zero_iff <| zero_lt_one.trans_le hp.1).1 } with
+    toUniformSpace := instUniformSpace
     edist := edist
     edist_dist := Lp.edist_dist }
 #align measure_theory.Lp.normed_add_comm_group MeasureTheory.Lp.instNormedAddCommGroup
@@ -725,15 +748,14 @@ theorem exists_snorm_indicator_le (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (h�
   · exact ⟨1, zero_lt_one, fun s _ => by simp⟩
   have hp₀ : 0 < p := bot_lt_iff_ne_bot.2 h'p
   have hp₀' : 0 ≤ 1 / p.toReal := div_nonneg zero_le_one ENNReal.toReal_nonneg
-  have hp₀'' : 0 < p.toReal := by
-    simpa [← ENNReal.toReal_lt_toReal ENNReal.zero_ne_top hp] using hp₀
+  have hp₀'' : 0 < p.toReal := ENNReal.toReal_pos hp₀.ne' hp
   obtain ⟨η, hη_pos, hη_le⟩ :
       ∃ η : ℝ≥0, 0 < η ∧ (‖c‖₊ : ℝ≥0∞) * (η : ℝ≥0∞) ^ (1 / p.toReal) ≤ ε := by
     have :
       Filter.Tendsto (fun x : ℝ≥0 => ((‖c‖₊ * x ^ (1 / p.toReal) : ℝ≥0) : ℝ≥0∞)) (𝓝 0)
         (𝓝 (0 : ℝ≥0)) := by
       rw [ENNReal.tendsto_coe]
-      convert(NNReal.continuousAt_rpow_const (Or.inr hp₀')).tendsto.const_mul _
+      convert (NNReal.continuousAt_rpow_const (Or.inr hp₀')).tendsto.const_mul _
       simp [hp₀''.ne']
     have hε' : 0 < ε := hε.bot_lt
     obtain ⟨δ, hδ, hδε'⟩ :=
