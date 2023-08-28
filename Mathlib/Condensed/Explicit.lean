@@ -14,7 +14,7 @@ universe v v₁ u u₁ w
   mention `Stonean`, `Profinite` or `CompHaus` explicitly. TODO: PR
 - The code in section `OpenEmbedding` should be added to `Mathlib.Topology.Category.Stonean.Limits`
   in a separate PR and does not depend on any of the previous stuff in this file
-  (DONE, see #6771 (merged) and #6774 (awaiting review)).
+  (DONE, see #6771 (merged) and #6774 (merged)).
 - The section `StoneanPullback` can be PR-ed (DONE, see #6779 (awaiting review)).
 - The section `StoneanProjective` can be removed once #5808 is merged. (DONE)
 - The section `StoneanPrecoherent` can be removed once #6725 is merged. (DONE)
@@ -252,29 +252,6 @@ end CategoryTheory
 end Coverage
 
 end ExtensiveRegular
-
-section OpenEmbedding -- This section is PR #6774
-
-open CategoryTheory Limits
-
-namespace Stonean
-
-lemma finiteCoproduct.ιOpenEmbedding {α : Type} [Fintype α] (Z : α → Stonean.{u}) (a : α) :
-    OpenEmbedding (finiteCoproduct.ι Z a) := by
-  exact openEmbedding_sigmaMk (σ := fun a => (Z a))
-
-lemma openEmbedding_ι {α : Type} [Fintype α] (Z : α → Stonean.{u}) (a : α) :
-    OpenEmbedding (Sigma.ι Z a) := by
-  refine' OpenEmbedding.of_comp _ (homeoOfIso (coproductIsoCoproduct Z).symm).openEmbedding _
-  convert finiteCoproduct.ιOpenEmbedding Z a
-  ext x
-  change ((Sigma.ι Z a) ≫ (coproductIsoCoproduct Z).inv) x = _
-  simp only [coproductIsoCoproduct, colimit.comp_coconePointUniqueUpToIso_inv,
-    finiteCoproduct.explicitCocone_pt, finiteCoproduct.explicitCocone_ι, Discrete.natTrans_app]
-
-end Stonean
-
-end OpenEmbedding
 
 section StoneanPullback -- This section is PR #6779
 
@@ -1290,7 +1267,7 @@ lemma openEmbedding_of_sigma_desc_iso {α : Type} [Fintype α] {X : Stonean.{u}}
   intro a
   have h₁ : OpenEmbedding (Sigma.desc i) :=
     (Stonean.homeoOfIso (asIso (Sigma.desc i))).openEmbedding
-  have h₂ : OpenEmbedding (Sigma.ι Z a) := openEmbedding_ι _ _
+  have h₂ : OpenEmbedding (Sigma.ι Z a) := Sigma.openEmbedding_ι _ _
   have := OpenEmbedding.comp h₁ h₂
   erw [← CategoryTheory.coe_comp (Sigma.ι Z a) (Sigma.desc i)] at this
   simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app] at this
