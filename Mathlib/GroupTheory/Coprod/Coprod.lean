@@ -193,7 +193,8 @@ theorem inv_def (x : G ∗ H) :
   rfl
 
 instance : Group (G ∗ H) :=
-  { inferInstanceAs (Inv (G ∗ H)), inferInstanceAs (Monoid (G ∗ H)) with
+  { toInv := inferInstanceAs (Inv (G ∗ H))
+    toMonoid := inferInstanceAs (Monoid (G ∗ H))
     mul_left_inv := by
       intro m
       rw [inv_def]
