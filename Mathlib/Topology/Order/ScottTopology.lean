@@ -51,6 +51,7 @@ coincides with the one given here in some special cases, in general they are not
 * [Abramsky and Jung, *Domain Theory*][abramsky_gabbay_maibaum_1994]
 
 ## Tags
+
 Scott topology, preorder
 -/
 
