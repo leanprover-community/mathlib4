@@ -79,10 +79,7 @@ def ScottHausdorffTopology : TopologicalSpace α :=
   isOpen_univ := by
     intros d _ hd₁ _ _ _
     cases' hd₁ with b hb
-    use b
-    constructor
-    · exact hb
-    · exact (Ici b ∩ d).subset_univ,
+    exact ⟨b, hb, (Ici b ∩ d).subset_univ⟩,
   isOpen_inter := by
     intros s t hs ht d a hd₁ hd₂ hd₃ ha
     obtain ⟨b₁, hb₁_w, hb₁_h⟩ := hs hd₁ hd₂ hd₃ ha.1
