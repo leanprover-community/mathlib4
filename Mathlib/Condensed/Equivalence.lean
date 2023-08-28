@@ -23,9 +23,19 @@ construction of the equivalence of the categories of sheaves, given these three 
 
 ## Main theorems
 
-* `Condensed.coverDense`, `Condensed.coverPreserving`, `Condensed.coverLifting`: the
-three conditions needed to guarantee the equivalence of the categories of sheaves
-on the two sites.
+* `Condensed.StoneanCompHaus.coverDense`, `Condensed.StoneanCompHaus.coverPreserving`,
+  `Condensed.StoneanCompHaus.coverLifting`: the three conditions needed to guarantee the equivalence
+  of the categories of sheaves on the coherent site on `Stonean` on the one hand and `CompHaus` on
+  the other.
+* `Condensed.StoneanProfinite.coverDense`, `Condensed.StoneanProfinite.coverPreserving`,
+  `Condensed.StoneanProfinite.coverLifting`: the corresponding conditions comparing the coherent
+  sites on `Stonean` and `Profinite`.
+* `Condensed.StoneanCompHaus.equivalence`: the equivalence from coherent sheaves on `Stonean` to
+  coherent sheaves on `CompHaus` (i.e. condensed sets).
+* `Condensed.StoneanProfinite.equivalence`: the equivalence from coherent sheaves on `Stonean` to
+  coherent sheaves on `Profinite`.
+* `Condensed.ProfiniteCompHaus.equivalence`: the equivalence from coherent sheaves on `Profinite` to
+  coherent sheaves on `CompHaus` (i.e. condensed sets).
 -/
 
 open CategoryTheory Limits
@@ -111,6 +121,8 @@ lemma coverLifting :
   rw [coherentTopology_is_induced]
   exact LocallyCoverDense.inducedTopology_coverLifting (CoverDense.locallyCoverDense coverDense)
 
+/-- The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `CompHaus`
+    (i.e. condensed sets). -/
 noncomputable
 def equivalence (A : Type _) [Category.{u+1} A] [HasLimits A] :
     Sheaf (coherentTopology Stonean) A ≌ Condensed.{u} A :=
@@ -119,6 +131,8 @@ def equivalence (A : Type _) [Category.{u+1} A] [HasLimits A] :
 end StoneanCompHaus
 
 end Condensed
+
+section ProjectiveProfinite -- This section is PR #6809
 
 namespace Stonean
 
@@ -193,6 +207,8 @@ lemma projective_of_extrDisc {X : Profinite} (hX : ExtremallyDisconnected X) :
   exact inferInstance
 
 end Profinite
+
+end ProjectiveProfinite
 
 namespace Condensed
 
@@ -272,6 +288,7 @@ lemma coverLifting :
   rw [coherentTopology_is_induced]
   exact LocallyCoverDense.inducedTopology_coverLifting (CoverDense.locallyCoverDense coverDense)
 
+/-- The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `Profinite`. -/
 noncomputable
 def equivalence (A : Type _) [Category.{u+1} A] [HasLimits A] :
     Sheaf (coherentTopology Stonean) A ≌ Sheaf (coherentTopology Profinite) A :=
@@ -279,6 +296,8 @@ def equivalence (A : Type _) [Category.{u+1} A] [HasLimits A] :
 
 end StoneanProfinite
 
+/-- The equivalence from coherent sheaves on `Profinite` to coherent sheaves on `CompHaus`
+    (i.e. condensed sets). -/
 noncomputable
 def ProfiniteCompHaus.equivalence (A : Type _) [Category.{u+1} A] [HasLimits A] :
     Sheaf (coherentTopology Profinite) A ≌ Condensed.{u} A :=
