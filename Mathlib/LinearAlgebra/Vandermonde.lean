@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.GeomSum
+import Mathlib.Data.Nat.Factorial.SuperFactorial
 import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 
@@ -136,6 +137,19 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
       rw [mul_left_comm (v 0), Nat.succ_sub, pow_succ]
       exact Nat.lt_succ_iff.mp (Finset.mem_range.mp hi')
 #align matrix.det_vandermonde Matrix.det_vandermonde
+
+theorem det_vandermonde_id_eq_superFactorial (n : ℕ) :
+  (Matrix.vandermonde (fun (i : Fin (n + 1)) ↦ (i : R))).det = Nat.superFactorial n := by
+  induction' n with n hn
+  · simp [det_vandermonde]
+  · rw [Nat.superFactorial, det_vandermonde, Fin.prod_univ_succAbove _ 0]
+    push_cast
+    congr
+    · simp only [Fin.val_zero, Nat.cast_zero, sub_zero]
+      norm_cast
+      simp [Fin.prod_univ_eq_prod_range (fun i ↦ (↑i + 1)) (n + 1)]
+    · rw [Matrix.det_vandermonde] at hn
+      simp [hn]
 
 theorem det_vandermonde_eq_zero_iff [IsDomain R] {n : ℕ} {v : Fin n → R} :
     det (vandermonde v) = 0 ↔ ∃ i j : Fin n, v i = v j ∧ i ≠ j := by
