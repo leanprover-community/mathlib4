@@ -203,7 +203,7 @@ def matchLambda (n : Name) (matchDom matchBody : Matcher) : Matcher := fun s => 
   return s
 
 /-- Fully elaborates the term `patt`, allowing typeclass inference failure.
-Instantiates all metavariables. -/
+Instantiates all assigned metavariables. -/
 def elabPattern (patt : Term) (expectedType? : Option Expr) : TermElabM Expr := do
   withTheReader Term.Context (fun ctx => { ctx with ignoreTCFailures := true }) <|
     Term.withSynthesizeLight do
