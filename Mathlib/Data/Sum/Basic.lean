@@ -240,6 +240,32 @@ isLeft_eq_of_liftRel h
 theorem isRight_apply_eq_of_LiftRel_apply (h : LiftRel r s x (g k)) :
     (g k).isRight = x.isRight := (isRight_eq_of_liftRel h).symm
 
+theorem liftRel_of_left (h : ∃ a c, r a c ∧ x = inl a ∧ y = inl c) : LiftRel r s x y :=
+(Sum.liftRel_iff ..).mpr (Or.inl h)
+
+theorem liftRel_of_right (h : ∃ b d, s b d ∧ x = inr b ∧ y = inr d) : LiftRel r s x y :=
+(Sum.liftRel_iff ..).mpr (Or.inr h)
+
+theorem exists_of_liftRel_left_isLeft (h₁ : LiftRel r s x y) (h₂ : x.isLeft) :
+∃ a c, r a c ∧ x = inl a ∧ y = inl c := by
+  rcases (isLeft_iff.mp h₂) with ⟨_, rfl⟩
+  simp only [liftRel_iff, false_and, and_false, exists_false, or_false] at h₁
+  exact h₁
+
+theorem exists_of_liftRel_right_isLeft (h₁ : LiftRel r s x y) (h₂ : y.isLeft) :
+∃ a c, r a c ∧ x = inl a ∧ y = inl c :=
+exists_of_liftRel_left_isLeft h₁ (isLeft_eq_of_liftRel h₁ ▸ h₂)
+
+theorem exists_of_liftRel_left_isRight (h₁ : LiftRel r s x y) (h₂ : x.isRight) :
+∃ b d, s b d ∧ x = inr b ∧ y = inr d := by
+  rcases (isRight_iff.mp h₂) with ⟨_, rfl⟩
+  simp only [liftRel_iff, false_and, and_false, exists_false, false_or] at h₁
+  exact h₁
+
+theorem exists_of_liftRel_right_isRight (h₁ : LiftRel r s x y) (h₂ : y.isRight) :
+∃ b d, s b d ∧ x = inr b ∧ y = inr d :=
+exists_of_liftRel_left_isRight h₁ (isRight_eq_of_liftRel h₁ ▸ h₂)
+
 end LiftRel
 
 section Lex
