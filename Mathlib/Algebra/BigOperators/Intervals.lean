@@ -203,7 +203,7 @@ theorem prod_Ico_id_eq_superFactorial : ∀ n : ℕ, (∏ x in Ico 1 (n + 1), x 
       prod_Ico_id_eq_superFactorial n, superFactorial, factorial, Nat.succ_eq_add_one, mul_comm]
 
 @[simp]
-theorem prod_range_add_one_eq_superFactorial : ∀ n : ℕ, (∏ x in range n, (x.succ) * x !) = sf n
+theorem prod_range_add_one_eq_superFactorial : ∀ n : ℕ, (∏ x in range n, x.succ * x !) = sf n
   | 0 => rfl
   | n + 1 => by
     rw [Finset.prod_range_succ, prod_range_add_one_eq_superFactorial n, superFactorial, mul_comm,
