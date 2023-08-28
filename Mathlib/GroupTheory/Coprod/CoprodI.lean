@@ -234,7 +234,8 @@ theorem inv_def (x : CoprodI G) :
 #align free_product.inv_def Monoid.CoprodI.inv_def
 
 instance : Group (CoprodI G) :=
-  { inferInstanceAs (Inv (CoprodI G)), inferInstanceAs (Monoid (CoprodI G)) with
+  { toInv := inferInstanceAs (Inv (CoprodI G)),
+    toMonoid := inferInstanceAs (Monoid (CoprodI G)),
     mul_left_inv := by
       intro m
       rw [inv_def]
