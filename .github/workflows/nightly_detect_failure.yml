@@ -1,4 +1,4 @@
-name: Post to zulip if the nightly branch is failing.
+name: Post to zulip if the nightly-testing branch is failing.
 
 on:
   workflow_run:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   handle_failure:
-    if: ${{ github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.head_branch == 'nightly' }}
+    if: ${{ github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.head_branch == 'nightly-testing' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -23,6 +23,6 @@ jobs:
         organization-url: 'https://leanprover.zulipchat.com'
         to: 'mathlib reviewers'
         type: 'stream'
-        topic: 'CI failure on the nightly branch'
+        topic: 'CI failure on the nightly-testing branch'
         content: |
-          The latest CI for the nightly branch has [failed](${{ github.event.workflow_run.html_url }}).
+          The latest CI for branch#nightly-testing has [failed](${{ github.event.workflow_run.html_url }}).

@@ -1,4 +1,4 @@
-# This job merges every commit to `master` into `nightly`, resolving merge conflicts in favour of `nightly`.
+# This job merges every commit to `master` into `nightly-testing`, resolving merge conflicts in favour of `nightly-testing`.
 
 name: Merge master to nightly
 
@@ -23,12 +23,12 @@ jobs:
 
       - name: Merge master to nightly favoring nightly changes
         run: |
-          git checkout nightly
+          git checkout nightly-testing
           git merge master --strategy-option theirs --no-commit --allow-unrelated-histories
-          git commit -m "Merge master into nightly"
+          git commit -m "Merge master into nightly-testing"
 
       - name: Push changes
         uses: ad-m/github-push-action@v0.5.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: nightly
+          branch: nightly-testing

@@ -1,4 +1,4 @@
-name: Update lean-toolchain on nightly
+name: Bump lean-toolchain on nightly-testing
 
 on:
   schedule:
@@ -12,7 +12,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
       with:
-        ref: nightly # checkout nightly branch
+        ref: nightly-testing # checkout nightly-testing branch
 
     - name: Get latest release tag from leanprover/lean4-nightly
       id: get-latest-release
@@ -30,4 +30,4 @@ jobs:
         git config user.email "leanprover-community-mathlib4-bot@users.noreply.github.com"
         git add lean-toolchain
         git commit -m "chore: bump to ${RELEASE_TAG}"
-        git push origin nightly
+        git push origin nightly-testing
