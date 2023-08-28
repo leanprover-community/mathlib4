@@ -35,13 +35,13 @@ general hypotheses) are:
       the measures of B under μs tend to the measure of B under μ, i.e., limᵢ μsᵢ(B) = μ(B).
 
 The separate implications are:
- * `MeasureTheory.FiniteMeasure.limsup_measure_closed_le_of_tendsto` is the implication (W) → (C).
+ * `MeasureTheory.FiniteMeasure.limsup_measure_closed_le_of_tendsto` is the implication (T) → (C).
  * `MeasureTheory.limsup_measure_closed_le_iff_liminf_measure_open_ge` is the equivalence (C) ↔ (O).
  * `MeasureTheory.tendsto_measure_of_null_frontier` is the implication (O) → (B).
  * `MeasureTheory.limsup_measure_closed_le_of_forall_tendsto_measure` is the implication (B) → (C).
 
 TODO:
- * Prove the remaining implication (O) → (W) to complete the proof of equivalence of the conditions.
+ * Prove the remaining implication (O) → (T) to complete the proof of equivalence of the conditions.
 
 ## Implementation notes
 
