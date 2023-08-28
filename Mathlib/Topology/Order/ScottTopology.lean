@@ -81,21 +81,21 @@ def ScottHausdorffTopology : TopologicalSpace α :=
     exact ⟨b, hb, (Ici b ∩ d).subset_univ⟩,
   isOpen_inter := by
     intros s t hs ht d hd₁ hd₂ a hd₃ ha
-    obtain ⟨b₁, hb₁_w, hb₁_h⟩ := hs hd₁ hd₂ hd₃ ha.1
-    obtain ⟨b₂, hb₂_w, hb₂_h⟩ := ht hd₁ hd₂ hd₃ ha.2
-    obtain ⟨c, hc_w, hc_h⟩ := hd₂ b₁ hb₁_w b₂ hb₂_w
-    refine ⟨c, hc_w, ?_⟩
+    obtain ⟨b₁, hb₁d, hb₁ds⟩ := hs hd₁ hd₂ hd₃ ha.1
+    obtain ⟨b₂, hb₂d, hb₂dt⟩ := ht hd₁ hd₂ hd₃ ha.2
+    obtain ⟨c, hcd, hc⟩ := hd₂ b₁ hb₁d b₂ hb₂d
+    refine ⟨c, hcd, ?_⟩
     · calc
         Ici c ∩ d ⊆ Ici b₁ ∩ Ici b₂ ∩ d := by
         { apply inter_subset_inter_left d
-          apply subset_inter (Ici_subset_Ici.mpr hc_h.1) (Ici_subset_Ici.mpr hc_h.2) }
+          apply subset_inter (Ici_subset_Ici.mpr hc.1) (Ici_subset_Ici.mpr hc.2) }
         _ = (Ici b₁ ∩ d) ∩ (Ici b₂ ∩ d) := by rw [inter_inter_distrib_right]
-        _ ⊆ s ∩ t := inter_subset_inter hb₁_h hb₂_h
+        _ ⊆ s ∩ t := inter_subset_inter hb₁ds hb₂dt
   isOpen_sUnion := by
-    rintro s h d hd₁ hd₂ a hd₃ ⟨s₀, hs₀_w, hs₀_h⟩
-    obtain ⟨b, hb_w, hb_h⟩ := h s₀ hs₀_w hd₁ hd₂ hd₃ hs₀_h
+    rintro s h d hd₁ hd₂ a hd₃ ⟨s₀, hs₀s, has₀⟩
+    obtain ⟨b, hbd, hbds₀⟩ := h s₀ hs₀s hd₁ hd₂ hd₃ has₀
     use b
-    exact ⟨hb_w, Set.subset_sUnion_of_subset s s₀ hb_h hs₀_w⟩ }
+    exact ⟨hbd, Set.subset_sUnion_of_subset s s₀ hbds₀ hs₀s⟩ }
 
 lemma ScottHausdorffTopology.Lower_IsOpen {s : Set α} (h : IsLowerSet s) :
     ScottHausdorffTopology.IsOpen s := by
@@ -231,16 +231,16 @@ lemma isOpen_iff_upper_and_InaccessibleByDirectedJoins {u : Set α} :
   constructor
   · refine' And.imp_right _
     intros h d d₁ d₂ a d₃ ha
-    obtain ⟨b, h_1_w, h_1_h⟩ := h d₁ d₂ d₃ ha
+    obtain ⟨b, hbd, hbdu⟩ := h d₁ d₂ d₃ ha
     use b
-    exact ⟨h_1_w, mem_of_subset_of_mem h_1_h ⟨left_mem_Ici, h_1_w⟩⟩
+    exact ⟨hbd, mem_of_subset_of_mem hbdu ⟨left_mem_Ici, hbd⟩⟩
   · intros h
     constructor
     · exact h.1
     · intros d d₁ d₂ a d₃ ha
-      obtain ⟨b, e1_h_w, e1_h_h⟩ := h.2 d₁ d₂ d₃ ha
+      obtain ⟨b, hbd, hbu⟩ := h.2 d₁ d₂ d₃ ha
       use b
-      exact ⟨e1_h_w, Subset.trans (inter_subset_left (Ici b) d) (h.1.Ici_subset e1_h_h)⟩
+      exact ⟨hbd, Subset.trans (inter_subset_left (Ici b) d) (h.1.Ici_subset hbu)⟩
 
 lemma isClosed_iff_lower_and_subset_implies_LUB_mem {s : Set α} : IsClosed s
     ↔ (IsLowerSet s ∧
@@ -333,11 +333,11 @@ lemma monotone_of_continuous {f : α → β} (hf : Continuous f) : Monotone f :=
         exact isClosed_closure
       have s2 : IsOpen (f⁻¹'  u) := IsOpen.preimage hf s1
       rw [isOpen_iff_upper_and_InaccessibleByDirectedJoins] at s2
-      obtain ⟨c, h_1_left, h_1_right⟩ := s2.2 d₁ d₂ d₃ h
-      simp at h_1_right
+      obtain ⟨c, hcd, hfcb⟩ := s2.2 d₁ d₂ d₃ h
+      simp at hfcb
       rw [upperBounds] at hb
       simp at hb
-      have c1: f c ≤ b := hb _ h_1_left
+      have c1: f c ≤ b := hb _ hcd
       contradiction
 
 end preorder
