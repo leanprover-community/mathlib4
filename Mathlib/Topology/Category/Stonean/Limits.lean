@@ -152,8 +152,7 @@ def pullback : Stonean where
       exact IsCompact.image isCompact_univ i.continuous
     is_hausdorff := by
       dsimp [TopCat.of]
-      exact inferInstance
-  }
+      exact inferInstance }
   extrDisc := by
     constructor
     intro U hU
