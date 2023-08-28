@@ -92,21 +92,17 @@ def ScottHausdorffTopology : TopologicalSpace α :=
         _ = (Ici b₁ ∩ d) ∩ (Ici b₂ ∩ d) := by rw [inter_inter_distrib_right]
         _ ⊆ s ∩ t := inter_subset_inter hb₁_h hb₂_h
   isOpen_sUnion := by
-    intros s h d a hd₁ hd₂ hd₃ ha
-    obtain ⟨s₀, hs₀_w, hs₀_h⟩ := ha
+    rintro s h d a hd₁ hd₂ hd₃ ⟨s₀, hs₀_w, hs₀_h⟩
     obtain ⟨b, hb_w, hb_h⟩ := h s₀ hs₀_w hd₁ hd₂ hd₃ hs₀_h
     use b
     exact ⟨hb_w, Set.subset_sUnion_of_subset s s₀ hb_h hs₀_w⟩ }
-
 
 lemma ScottHausdorffTopology.Lower_IsOpen {s : Set α} (h : IsLowerSet s) :
     ScottHausdorffTopology.IsOpen s := by
   rintro d a ⟨b, hb⟩ _ hda ha
   use b
-  constructor
-  · exact hb
-  · apply Subset.trans (inter_subset_right (Ici b) d)
-      (fun c hc => h (mem_upperBounds.mp hda.1 _ hc) ha)
+  exact ⟨hb,Subset.trans (inter_subset_right (Ici b) d)
+    (fun c hc => h (mem_upperBounds.mp hda.1 _ hc) ha)⟩
 
 /--
 The Scott topology is defined as the join of the topology of upper sets and the Scott Hausdorff
@@ -148,7 +144,6 @@ Iff.rfl
 /-- A recursor for `WithScottTopology`. Use as `induction x using WithScottTopology.rec`. -/
 protected def rec {β : WithScottTopology α → Sort _}
   (h : ∀ a, β (toScott a)) : ∀ a, β a := fun a => h (ofScott a)
-
 
 instance [Nonempty α] : Nonempty (WithScottTopology α) := ‹Nonempty α›
 instance [Inhabited α] : Inhabited (WithScottTopology α) := ‹Inhabited α›
@@ -197,7 +192,6 @@ def withScottTopologyHomeomorph : WithScottTopology α ≃ₜ α :=
 
 end preorder
 
-
 section morphisms
 
 variable [Preorder α] [Preorder β]
@@ -222,7 +216,6 @@ lemma Monotone_From_UpperSetTopology_Continuous {t₁ : TopologicalSpace α} [Up
 
 end morphisms
 
-
 section preorder
 
 variable [Preorder α] [TopologicalSpace α] [ScottTopology α] {u : Set α}
@@ -239,21 +232,14 @@ lemma isOpen_iff_upper_and_InaccessibleByDirectedJoins {u : Set α} :
     intros h d a d₁ d₂ d₃ ha
     obtain ⟨b, h_1_w, h_1_h⟩ := h d₁ d₂ d₃ ha
     use b
-    constructor
-    · exact h_1_w
-    · apply mem_of_subset_of_mem h_1_h
-      constructor
-      · exact left_mem_Ici
-      · exact h_1_w
+    exact ⟨h_1_w, mem_of_subset_of_mem h_1_h ⟨left_mem_Ici, h_1_w⟩⟩
   · intros h
     constructor
     · exact h.1
     · intros d a d₁ d₂ d₃ ha
       obtain ⟨b, e1_h_w, e1_h_h⟩ := h.2 d₁ d₂ d₃ ha
       use b
-      constructor
-      · exact e1_h_w
-      · exact Subset.trans (inter_subset_left (Ici b) d) (h.1.Ici_subset e1_h_h)
+      exact ⟨e1_h_w, Subset.trans (inter_subset_left (Ici b) d) (h.1.Ici_subset e1_h_h)⟩
 
 lemma isClosed_iff_lower_and_subset_implies_LUB_mem {s : Set α} : IsClosed s
     ↔ (IsLowerSet s ∧
@@ -379,9 +365,8 @@ lemma isOpen_iff_isUpperSet_and_sup_mem_implies_tail_subset {u : Set α} :
     d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u := by
   rw [ScottTopology.isOpen_iff_upper_and_Scott_Hausdorff_Open]
   apply and_congr_right'
-  constructor
-  · exact fun h d hd₁ hd₂ hd₃ => h hd₁ hd₂ (isLUB_sSup d) hd₃
-  · exact fun h d a hd₁ hd₂ hd₃ ha => h hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.sSup_eq hd₃) ha)
+  exact ⟨fun h d hd₁ hd₂ hd₃ => h hd₁ hd₂ (isLUB_sSup d) hd₃,
+    fun h d a hd₁ hd₂ hd₃ ha => h hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.sSup_eq hd₃) ha)⟩
 
 lemma isOpen_iff_upper_and_sup_mem_implies_inter_nonempty
     {u : Set α} : IsOpen u ↔
@@ -389,19 +374,16 @@ lemma isOpen_iff_upper_and_sup_mem_implies_inter_nonempty
     (d∩u).Nonempty := by
   rw [ScottTopology.isOpen_iff_upper_and_InaccessibleByDirectedJoins]
   apply and_congr_right'
-  constructor
-  · exact fun h d hd₁ hd₂ hd₃ => h hd₁ hd₂ (isLUB_sSup d) hd₃
-  · exact fun h d a hd₁ hd₂ hd₃ ha => h hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.sSup_eq hd₃) ha)
+  exact ⟨fun h d hd₁ hd₂ hd₃ => h hd₁ hd₂ (isLUB_sSup d) hd₃,
+    fun h d a hd₁ hd₂ hd₃ ha => h hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.sSup_eq hd₃) ha)⟩
 
 lemma isClosed_iff_lower_and_closed_under_Directed_Sup {s : Set α} : IsClosed s
     ↔ IsLowerSet s ∧
     ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → d ⊆ s → sSup d ∈ s := by
   rw [ScottTopology.isClosed_iff_lower_and_subset_implies_LUB_mem]
   apply and_congr_right'
-  constructor
-  · exact fun h d hd₁ hd₂ hd₃ => h hd₁ hd₂ (isLUB_sSup d) hd₃
-  · exact fun h d a h₁ h₂ h₃ ha => Set.mem_of_eq_of_mem (IsLUB.sSup_eq h₃).symm (h h₁ h₂ ha)
-
+  exact ⟨fun h d hd₁ hd₂ hd₃ => h hd₁ hd₂ (isLUB_sSup d) hd₃,
+    fun h d a h₁ h₂ h₃ ha => Set.mem_of_eq_of_mem (IsLUB.sSup_eq h₃).symm (h h₁ h₂ ha)⟩
 
 end complete_lattice
 
