@@ -38,7 +38,7 @@ We define a mixin class `ScottTopology` for the class of types which are both a 
 topology and where the topology is the `ScottTopology'`.
 It is shown that `WithScottTopology α` is an instance of `ScottTopology`.
 
-A class `Scott` is defined in `topology.omega_complete_partial_order` and made an instance of a
+A class `Scott` is defined in `Topology.OmegaCompletePartialOrder` and made an instance of a
 topological space by defining the open sets to be those which have characteristic functions which
 are monotone and preserve limits of countable chains. Whilst this definition of the Scott topology
 coincides with the one given here in some special cases, in general they are not the same
