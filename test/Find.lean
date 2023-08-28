@@ -30,7 +30,7 @@ Of these, 1 have a name containing "eq".
 • uniquenameforthistest_eq_true
 -/
 #guard_msgs in
-#find uniquenameforthistest "eq"
+#find uniquenameforthistest, "eq"
 
 /--
 info: Found 1 definitions mentioning uniquenameforthistest and Eq.
@@ -38,7 +38,7 @@ Of these, 1 match your patterns.
 • uniquenameforthistest_eq_true
 -/
 #guard_msgs in
-#find (uniquenameforthistest = _)
+#find uniquenameforthistest = _
 
 /--
 info: Found 1 definitions mentioning uniquenameforthistest and Eq.
@@ -57,7 +57,7 @@ Of these, 0 match your patterns.
 
 /-- error: Cannot search for _. Did you forget to put a term pattern in parentheses? -/
 #guard_msgs in
-#find uniquenameforthistest _
+#find uniquenameforthistest, _
 
 /-- warning: declaration uses 'sorry' -/
 #guard_msgs in
@@ -77,7 +77,7 @@ Of these, 1 match your patterns.
 • non_linear_pattern_test1
 -/
 #guard_msgs in
-#find uniquenameforthistest (List.replicate ?n _ ++ List.replicate ?n _)
+#find uniquenameforthistest, List.replicate ?n _ ++ List.replicate ?n _
 
 /--
 info: Found 2 definitions mentioning List.replicate, uniquenameforthistest and HAppend.hAppend.
@@ -86,7 +86,7 @@ Of these, 2 match your patterns.
 • non_linear_pattern_test2
 -/
 #guard_msgs in
-#find uniquenameforthistest (List.replicate ?n _ ++ List.replicate ?m _)
+#find uniquenameforthistest, List.replicate ?n _ ++ List.replicate ?m _
 
 /--
 info: Found 2 definitions mentioning List.replicate, uniquenameforthistest, Eq and HAppend.hAppend.
@@ -94,7 +94,7 @@ Of these, 1 match your patterns.
 • non_linear_pattern_test1
 -/
 #guard_msgs in
-#find uniquenameforthistest |- (_ = List.replicate ?n _ ++ List.replicate ?m _)
+#find uniquenameforthistest, |- _ = List.replicate ?n _ ++ List.replicate ?m _
 
 /--
 info: Found 2 definitions mentioning List.replicate, uniquenameforthistest, Eq and HAppend.hAppend.
@@ -102,7 +102,7 @@ Of these, 1 match your patterns.
 • non_linear_pattern_test2
 -/
 #guard_msgs in
-#find uniquenameforthistest |- (List.replicate ?n _ ++ List.replicate ?m _ = _)
+#find uniquenameforthistest, |- List.replicate ?n _ ++ List.replicate ?m _ = _
 
 theorem hyp_ordering_test1 {n : Nat} (_ : uniquenameforthistest = true) (h : 0 < n) :
   0 ≤ n := Nat.le_of_lt h
@@ -117,7 +117,7 @@ Of these, 2 match your patterns.
 • hyp_ordering_test2
 -/
 #guard_msgs in
-#find ⊢ (uniquenameforthistest = _ → 0 < ?n → _ ≤ ?n)
+#find ⊢ uniquenameforthistest = _ → 0 < ?n → _ ≤ ?n
 
 
 -- Regression test
@@ -137,7 +137,7 @@ Of these, 1 match your patterns.
 • star_comm_self'
 -/
 #guard_msgs in
-#find (star _)
+#find star _
 
 /--
 info: Found 1 definitions mentioning HMul.hMul, Eq and Star.star.
@@ -145,7 +145,7 @@ Of these, 1 match your patterns.
 • star_comm_self'
 -/
 #guard_msgs in
-#find (star ?a * ?a = ?a * star ?_)
+#find star ?a * ?a = ?a * star ?_
 
 -- The following does not work for some strange reason
 
@@ -155,7 +155,7 @@ Of these, 1 match your patterns.
 • star_comm_self'
 -/
 #guard_msgs in
-#find (star ?a * ?a = ?a * star ?a)
+#find star ?a * ?a = ?a * star ?a
 
 
 end LinearPatternTest

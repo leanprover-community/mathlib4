@@ -194,23 +194,15 @@ def find (args : Arguments) (maxShown := 200) :
 
 open Parser
 
-/-- `#find` name pattern: `"substring"` -/
-syntax name_pattern := strLit
-/-- `#find` identifier pattern: `Real.sqrt`, `sqrt` -/
-syntax ident_pattern := ident
-/-- The turnstyle for `conclusion_pattern` -/
+/-- The turnstyle for `conclusion_pattern`, unicode or ascii allowed -/
 syntax turnstyle := "⊢ " <|> "|- "
-/-- `#find` conclusion pattern: `⊢ (tsum _ = _)` -/
-syntax conclusion_pattern := turnstyle term:max
-/-- `#find` subexpression pattern: `(_ * (_ + _))` -/
-syntax term_pattern := term:max
 /-- a single `#find` pattern -/
-syntax find_pattern := name_pattern <|> ident_pattern <|> conclusion_pattern <|> term_pattern
+syntax find_pattern := (turnstyle term) <|> term
 
 /-- A syntax category for the argument to `#find`, so that it can be used by external tools. -/
 declare_syntax_cat find_patterns
 /-- `#find` patterns -/
-syntax find_pattern* : find_patterns
+syntax find_pattern,* : find_patterns
 
 /-- A variant of `Lean.Elab.Term.elabTerm` that does not complain for example
 when a type class constraint has not instances.  -/
@@ -227,9 +219,12 @@ def parseFindPatterns (args : TSyntax `find_patterns) : TermElabM Arguments :=
     let mut namePats := #[]
     let mut terms := #[]
     match args with
-    | `(find_patterns| $args':find_pattern*) =>
-      for arg in args' do
+    | `(find_patterns| $args':find_pattern,*) =>
+      for arg in args'.getElems do
         match arg with
+        | `(find_pattern| $_:turnstyle $s:term) => do
+          let t ← elabTerm' s none
+          terms := terms.push (true, t)
         | `(find_pattern| $ss:str) => do
           let str := Lean.TSyntax.getString ss
           namePats := namePats.push str
@@ -241,13 +236,10 @@ def parseFindPatterns (args : TSyntax `find_patterns) : TermElabM Arguments :=
         | `(find_pattern| _) => do
             throwErrorAt arg ("Cannot search for _. " ++
               "Did you forget to put a term pattern in parentheses?")
-        | `(find_pattern| $_:turnstyle $s:term) => do
-          let t ← elabTerm' s none
-          terms := terms.push (true, t)
         | `(find_pattern| $s:term) => do
           let t ← elabTerm' s none
           terms := terms.push (false, t)
-        | _ => throwErrorAt arg "unexpected argument to #find"
+        | _ => throwErrorAt args "unexpected argument to #find"
     | _ => throwErrorAt args "unexpected argument to #find"
     pure {idents, namePats, terms}
 
@@ -258,7 +250,7 @@ open Command
 The `#find` command finds definitions and lemmas in various ways. One can search by: the constants
 involved in the type; a substring of the name; a subexpression of the type; or a subexpression
 located in the return type or a hypothesis specifically. All of these search methods can be
-combined in a single query.
+combined in a single query, comma-separated.
 
 1. By constant:
    ```lean
@@ -268,7 +260,7 @@ combined in a single query.
 
 2. By lemma name substring:
    ```lean
-   #find Real.sin "two"
+   #find Real.sin, "two"
    ```
    restricts the search above to those lemmas that have `"two"` as part of the lemma _name_.
 
@@ -276,29 +268,29 @@ combined in a single query.
 
 3. By subexpression:
    ```lean
-   #find (_ * (_ ^ _))
+   #find _ * (_ ^ _)
    ```
    finds all lemmas whose statements somewhere include a product where the second argument is
    raised to some power. The pattern can also be non-linear, as in
    ```lean
-   #find (Real.sqrt ?a * Real.sqrt ?a)
+   #find Real.sqrt ?a * Real.sqrt ?a
    ```
 
 4. By conclusion and/or hypothesis:
    ```lean
-   #find ⊢ (tsum _ = _ * tsum _)
+   #find ⊢ tsum _ = _ * tsum _
    ```
    finds all lemmas where the conclusion (the subexpression to the right of all `→` and `∀`) has the
    given shape. If the pattern has hypotheses, they are matched against the hypotheses of
    the lemma in any order; for example,
    ```lean
-   #find ⊢ (_ < _ → tsum _ < tsum _)
+   #find ⊢ _ < _ → tsum _ < tsum _
    ```
    will find `tsum_lt_tsum` even though the hypothesis `f i < g i` is not the last.
 
 5. In combination:
    ```lean
-   #find Real.sin "two" tsum  (_ * _) (_ ^ _) ⊢ (_ < _ → _)
+   #find Real.sin, "two", tsum,  _ * _, _ ^ _, ⊢ _ < _ → _
    ```
    will find all lemmas which mention the constants `Real.sin` and `tsum`, have `"two"` as a
    substring of the lemma name, include a product and a power somewhere in the type, *and* have a
