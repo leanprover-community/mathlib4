@@ -75,9 +75,9 @@ variable {α : Type*}
 #check nullMeasurableSet_lt
 #check NullMeasurable
 
--- TODO: Generalize from ℝ to the usual type classes.
 lemma Integrable.measure_pos_le_norm_lt_top [MeasurableSpace α] {μ : Measure α} [SigmaFinite μ]
-    {f : α → ℝ} (f_intble : Integrable f μ) {t : ℝ} (t_pos : 0 < t) :
+    {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
+    {f : α → E} (f_intble : Integrable f μ) {t : ℝ} (t_pos : 0 < t) :
     μ {a : α | t ≤ ‖f a‖} < ∞ := by
   have norm_f_aemble : AEMeasurable (fun a ↦ ENNReal.ofReal ‖f a‖) μ :=
     (ENNReal.measurable_ofReal.comp measurable_norm).comp_aemeasurable f_intble.1.aemeasurable
