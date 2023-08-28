@@ -161,11 +161,11 @@ end NumberField.canonicalEmbedding
 
 namespace NumberField.mixedEmbedding
 
-open NumberField NumberField.InfinitePlace NumberField.ComplexEmbedding
+open NumberField NumberField.InfinitePlace NumberField.ComplexEmbedding FiniteDimensional
 
 /-- The ambient space `ℝ^r₁ × ℂ^r₂` with `(r₁, r₂)` the signature of `K`. -/
 local notation "E" K =>
-  ({ w : InfinitePlace K // IsReal w } → ℝ) × ({ w : InfinitePlace K // IsComplex w } → ℂ)
+  ({w : InfinitePlace K // IsReal w} → ℝ) × ({w : InfinitePlace K // IsComplex w} → ℂ)
 
 /-- The mixed embedding of a number field `K` of signature `(r₁, r₂)` into `ℝ^r₁ × ℂ^r₂`. -/
 noncomputable def _root_.NumberField.mixedEmbedding : K →+* (E K) :=
@@ -179,6 +179,13 @@ instance [NumberField K] :  Nontrivial (E K) := by
     exact nontrivial_prod_left
   · have : Nonempty {w : InfinitePlace K // IsComplex w} := ⟨⟨w, hw⟩⟩
     exact nontrivial_prod_right
+
+theorem rank_space [NumberField K] : finrank ℝ (E K) = finrank ℚ K := by
+  classical
+  rw [finrank_prod, finrank_pi, finrank_pi_fintype, Complex.finrank_real_complex, Finset.sum_const,
+    Finset.card_univ, ← card_real_embeddings, Algebra.id.smul_eq_mul, mul_comm,
+    ← card_complex_embeddings, ← NumberField.Embeddings.card K ℂ, Fintype.card_subtype_compl,
+    Nat.add_sub_of_le (Fintype.card_subtype_le _)]
 
 theorem _root_.NumberField.mixedEmbedding_injective [NumberField K] :
     Function.Injective (NumberField.mixedEmbedding K) := by
@@ -281,7 +288,7 @@ theorem mem_span_latticeBasis [NumberField K] (x : (E K)) :
 
 end integerLattice
 
-section convex_body
+section convex_body_lt
 
 open Metric ENNReal NNReal
 
@@ -290,8 +297,8 @@ variable (f : InfinitePlace K → ℝ≥0)
 /-- The convex body defined by `f`: the set of points `x : E` such that `‖x w‖ < f w` for all
 infinite places `w`. -/
 abbrev convex_body_lt : Set (E K) :=
-  (Set.pi Set.univ (fun w : { w : InfinitePlace K // IsReal w } => ball 0 (f w))) ×ˢ
-  (Set.pi Set.univ (fun w : { w : InfinitePlace K // IsComplex w } => ball 0 (f w)))
+  (Set.univ.pi (fun w : { w : InfinitePlace K // IsReal w } => ball 0 (f w))) ×ˢ
+  (Set.univ.pi (fun w : { w : InfinitePlace K // IsComplex w } => ball 0 (f w)))
 
 theorem convex_body_lt_mem {x : K} :
     mixedEmbedding K x ∈ (convex_body_lt K f) ↔ ∀ w : InfinitePlace K, w x < f w := by
@@ -321,8 +328,6 @@ variable [NumberField K]
 noncomputable def constant_factor : ℝ≥0∞ :=
   (2 : ℝ≥0∞) ^ card {w : InfinitePlace K // IsReal w} *
     volume (ball (0 : ℂ) 1) ^ card {w : InfinitePlace K // IsComplex w}
-
-instance : IsAddHaarMeasure (@volume ℂ Complex.measureSpace) := MapLinearEquiv.isAddHaarMeasure _ _
 
 theorem constant_factor_pos : 0 < (constant_factor K) := by
   refine mul_pos (NeZero.ne _) ?_
@@ -381,22 +386,22 @@ theorem adjust_f {w₁ : InfinitePlace K} (B : ℝ≥0) (hf : ∀ w, w ≠ w₁�
       exact fun w hw => pow_ne_zero _ (hf w (Finset.ne_of_mem_erase hw))
     · rw [mult]; split_ifs <;> norm_num
 
-end convex_body
+end convex_body_lt
 
 section minkowski
 
-open MeasureTheory MeasureTheory.Measure Classical NNReal ENNReal FiniteDimensional
+open MeasureTheory MeasureTheory.Measure Classical NNReal ENNReal FiniteDimensional Zspan
 
 variable [NumberField K]
 
 /-- The bound that appears in Minkowski theorem, see
 `MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure`. -/
 noncomputable def minkowski_bound : ℝ≥0∞ :=
-  volume (Zspan.fundamentalDomain (latticeBasis K)) * 2 ^ (finrank ℝ (E K))
+  volume (fundamentalDomain (latticeBasis K)) * 2 ^ (finrank ℝ (E K))
 
 theorem minkowski_bound_lt_top : minkowski_bound K < ⊤ := by
   refine mul_lt_top ?_ ?_
-  · exact ne_of_lt (Zspan.fundamentalDomain_bounded (latticeBasis K)).measure_lt_top
+  · exact ne_of_lt (fundamentalDomain_bounded (latticeBasis K)).measure_lt_top
   · exact ne_of_lt (pow_lt_top (lt_top_iff_ne_top.mpr two_ne_top) _)
 
 variable {f : InfinitePlace K → ℝ≥0}
