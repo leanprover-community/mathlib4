@@ -94,7 +94,8 @@ lemma Integrable.measure_pos_le_norm_lt_top [MeasurableSpace α] {μ : Measure �
     using ENNReal.mul_lt_top t_inv_ne_top almost.ne
 
 lemma Integrable.measure_pos_lt_norm_lt_top [MeasurableSpace α] {μ : Measure α} [SigmaFinite μ]
-    {f : α → ℝ} (f_intble : Integrable f μ) {t : ℝ} (t_pos : 0 < t) :
+    {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
+    {f : α → E} (f_intble : Integrable f μ) {t : ℝ} (t_pos : 0 < t) :
     μ {a : α | t < ‖f a‖} < ∞ :=
   lt_of_le_of_lt (measure_mono (fun _ h ↦ (Set.mem_setOf_eq ▸ h).le))
     (Integrable.measure_pos_le_norm_lt_top f_intble t_pos)
@@ -102,8 +103,10 @@ lemma Integrable.measure_pos_lt_norm_lt_top [MeasurableSpace α] {μ : Measure �
 lemma Integrable.measure_pos_le_lt_top [MeasurableSpace α] {μ : Measure α} [SigmaFinite μ]
     {f : α → ℝ} (f_intble : Integrable f μ) {t : ℝ} (t_pos : 0 < t) :
     μ {a : α | t ≤ f a} < ∞ := by
-  -- Need to do separately positive and negative parts?
-  sorry
+  refine lt_of_le_of_lt (measure_mono ?_) (Integrable.measure_pos_le_norm_lt_top f_intble t_pos)
+  intro x hx
+  simp only [Real.norm_eq_abs, Set.mem_setOf_eq] at hx ⊢
+  exact hx.trans (le_abs_self _)
 
 lemma Integrable.measure_pos_lt_lt_top [MeasurableSpace α] {μ : Measure α} [SigmaFinite μ]
     {f : α → ℝ} (f_intble : Integrable f μ) {t : ℝ} (t_pos : 0 < t) :
@@ -119,6 +122,35 @@ lemma Integrable.measure_pos_lt_lt_top [MeasurableSpace α] {μ : Measure α} [S
 -- TODO: Should remove `Measurable` assumption and just embrace the `AEStronglyMeasurable`
 -- which comes from `Integrable`. This is not pleasant in the proof, but pays off for the user...
 theorem integral_eq_integral_meas_lt [MeasurableSpace α] (μ : Measure α) [SigmaFinite μ]
+    {f : α → ℝ} (f_nn : 0 ≤ f) (f_mble : Measurable f) (f_intble : Integrable f μ) :
+    (∫ ω, f ω ∂μ) = ∫ t in Set.Ioi 0, ENNReal.toReal (μ {a : α | t < f a}) := by
+  have key := lintegral_eq_lintegral_meas_lt μ f_nn f_mble -- should use `Integrable`
+  have lhs_finite : ∫⁻ (ω : α), ENNReal.ofReal (f ω) ∂μ < ∞ := Integrable.lintegral_lt_top f_intble
+  have rhs_finite : ∫⁻ (t : ℝ) in Set.Ioi 0, μ {a | t < f a} < ∞ := by simp only [← key, lhs_finite]
+  have rhs_integrand_decr : Antitone (fun t ↦ (μ {a : α | t < f a})) :=
+    fun _ _ hst ↦ measure_mono (fun _ h ↦ lt_of_le_of_lt hst h)
+  have rhs_integrand_finite : ∀ (t : ℝ), t > 0 → μ {a | t < f a} < ∞ := by
+    exact fun t ht ↦ Integrable.measure_pos_lt_lt_top f_intble ht
+  convert (ENNReal.toReal_eq_toReal lhs_finite.ne rhs_finite.ne).mpr key
+  · refine integral_eq_lintegral_of_nonneg_ae ?_ ?_
+    · -- TODO: Maybe should relax the assumption to ae nonnegativity.
+      exact eventually_of_forall f_nn
+    · --exact f_mble.aestronglyMeasurable
+      exact f_intble.aestronglyMeasurable
+  · have aux := @integral_eq_lintegral_of_nonneg_ae _ _ ((volume : Measure ℝ).restrict (Set.Ioi 0))
+      (fun t ↦ ENNReal.toReal (μ {a : α | t < f a})) ?_ ?_
+    · rw [aux]
+      apply congrArg ENNReal.toReal
+      apply set_lintegral_congr_fun measurableSet_Ioi
+      apply eventually_of_forall
+      exact fun t t_pos ↦ ENNReal.ofReal_toReal (rhs_integrand_finite t t_pos).ne
+    · exact eventually_of_forall (fun x ↦ by simp only [Pi.zero_apply, ENNReal.toReal_nonneg])
+    · apply Measurable.aestronglyMeasurable
+      refine Measurable.ennreal_toReal ?_
+      apply Antitone.measurable
+      exact rhs_integrand_decr
+
+theorem integral_eq_integral_meas_lt' [MeasurableSpace α] (μ : Measure α) [SigmaFinite μ]
     {f : α → ℝ} (f_nn : 0 ≤ f) (f_mble : Measurable f) (f_intble : Integrable f μ) :
     (∫ ω, f ω ∂μ) = ∫ t in Set.Ioi 0, ENNReal.toReal (μ {a : α | t < f a}) := by
   have key := lintegral_eq_lintegral_meas_lt μ f_nn f_mble -- should use `Integrable`
