@@ -237,3 +237,4 @@ example : 1 = 1 := by
   have g : ∀ f, Function.Injective f
   · sorry
   apply_fun f using (g f)
+  rfl
