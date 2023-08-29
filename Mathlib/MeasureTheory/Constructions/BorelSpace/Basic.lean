@@ -1167,14 +1167,14 @@ theorem Measurable.isLUB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g'
         · simp [hb, hg' hb]
       rw [this]
       exact Measurable.piecewise hs measurable_const g'_meas
-  · set f' : ι → δ → α := fun i ↦ s.piecewise (f i) g' with hf'
+  · let f' : ι → δ → α := fun i ↦ s.piecewise (f i) g'
     suffices ∀ b, IsLUB { a | ∃ i, f' i b = a } (g b) from
       Measurable.isLUB (fun i ↦ Measurable.piecewise hs (hf i) g'_meas) this
     intro b
     by_cases hb : b ∈ s
-    · have A : ∀ i, f' i b = f i b := fun i ↦ by simp [hf', hb]
+    · have A : ∀ i, f' i b = f i b := fun i ↦ by simp [hb]
       simpa [A] using hg b hb
-    · have A : ∀ i, f' i b = g' b := fun i ↦ by simp [hf', hb]
+    · have A : ∀ i, f' i b = g' b := fun i ↦ by simp [hb]
       have : {a | ∃ (_i : ι), g' b = a} = {g' b} := by
         apply Subset.antisymm
         · rintro - ⟨_j, rfl⟩
@@ -1523,6 +1523,15 @@ def liminf_reparam {ι ι' : Type*} (f : ι → α) (s : ι' → Set ι) [Counta
       exact ⟨0, Or.inr H⟩
   if j ∈ m then j else g (Nat.find Z)
 
+theorem Filter.HasBasis.liminf_eq_sSup {ι ι' : Type*} {f : ι → α} {v : Filter ι}
+    {p : ι' → Prop} {s : ι' → Set ι} (hv : v.HasBasis p s) :
+    liminf f v = sSup (⋃ (j : Subtype p), ⋂ (i : s j), Iic (f i)) := by
+  simp_rw [liminf_eq, hv.eventually_iff]
+  congr
+  ext x
+  simp only [mem_setOf_eq, iInter_coe_set, mem_iUnion, mem_iInter, mem_Iic, Subtype.exists,
+    exists_prop]
+
 theorem Filter.HasBasis.liminf_eq_ciSup_ciInf {ι ι' : Type*} {f : ι → α} {v : Filter ι}
     {p : ι' → Prop} {s : ι' → Set ι} [Countable (Subtype p)] [Nonempty (Subtype p)]
     (hv : v.HasBasis p s) (hs : ∀ (j : Subtype p), (s j).Nonempty)
@@ -1531,44 +1540,35 @@ theorem Filter.HasBasis.liminf_eq_ciSup_ciInf {ι ι' : Type*} {f : ι → α} {
       ⨆ (j : Subtype p), ⨅ (i : s ((liminf_reparam f (fun (j : Subtype p) ↦ s j)) j)), f i := by
   rcases H with ⟨j0, hj0⟩
   let m : Set (Subtype p) := {j | BddBelow (range (fun (i : s j) ↦ f i))}
-  let g : ℕ → Subtype p := choose (exists_surjective_nat (Subtype p))
-  have Z : ∃ n, g n ∈ m ∨ ∀ j, j ∉ m := by
-    rcases choose_spec (exists_surjective_nat (Subtype p)) j0 with ⟨n, rfl⟩
-    exact ⟨n, Or.inl hj0⟩
-  set reparam : Subtype p → Subtype p := fun j ↦ if j ∈ m then j else g (Nat.find Z) with hr
+  let reparam : Subtype p → Subtype p := liminf_reparam f (fun (j : Subtype p) ↦ s j)
   have : ∀ (j : Subtype p), Nonempty (s j) := fun j ↦ Nonempty.coe_sort (hs j)
-  change liminf f v = ⨆ (j : Subtype p), ⨅ (i : s (reparam j)), f i
-  have A : liminf f v = sSup (⋃ (j : Subtype p), ⋂ (i : s j), Iic (f i)) := by
-    simp_rw [liminf_eq, hv.eventually_iff]
-    congr
-    ext x
-    simp only [mem_setOf_eq, iInter_coe_set, mem_iUnion, mem_iInter, mem_Iic, Subtype.exists,
-      exists_prop]
-  have B : ⋃ (j : Subtype p), ⋂ (i : s j), Iic (f i) =
+  have A : ⋃ (j : Subtype p), ⋂ (i : s j), Iic (f i) =
          ⋃ (j : Subtype p), ⋂ (i : s (reparam j)), Iic (f i) := by
     apply Subset.antisymm
     · apply iUnion_subset (fun j ↦ ?_)
       by_cases hj : j ∈ m
-      · have : j = reparam j := by simp only [hj, ite_true]
+      · have : j = reparam j := by simp only [liminf_reparam, hj, ite_true]
         conv_lhs => rw [this]
         apply subset_iUnion _ j
       · simp only [mem_setOf_eq, ← nonempty_iInter_Iic_iff, not_nonempty_iff_eq_empty] at hj
         simp only [hj, empty_subset]
     · apply iUnion_subset (fun j ↦ ?_)
       exact subset_iUnion (fun (k : Subtype p) ↦ (⋂ (i : s k), Iic (f i))) (reparam j)
-  have C : ∀ (j : Subtype p), ⋂ (i : s (reparam j)), Iic (f i) =
-      Iic (⨅ (i : s (reparam j)), f i) := by
+  have B : ∀ (j : Subtype p), ⋂ (i : s (reparam j)), Iic (f i) =
+                                Iic (⨅ (i : s (reparam j)), f i) := by
     intro j
-    apply Eq.symm
-    apply Iic_ciInf
+    apply (Iic_ciInf _).symm
     change reparam j ∈ m
     by_cases Hj : j ∈ m
-    · simpa only [hr, if_pos Hj] using Hj
-    · simp only [hr, if_neg Hj]
+    · simpa only [liminf_reparam, if_pos Hj] using Hj
+    · simp only [liminf_reparam, if_neg Hj]
+      have Z : ∃ n, choose (exists_surjective_nat (Subtype p)) n ∈ m ∨ ∀ j, j ∉ m := by
+        rcases choose_spec (exists_surjective_nat (Subtype p)) j0 with ⟨n, rfl⟩
+        exact ⟨n, Or.inl hj0⟩
       rcases Nat.find_spec Z with hZ|hZ
       · exact hZ
       · exact (hZ j0 hj0).elim
-  simp_rw [A, B, C, sSup_iUnion_Iic]
+  simp_rw [hv.liminf_eq_sSup, A, B, sSup_iUnion_Iic]
 
 theorem Filter.HasBasis.liminf_eq_ite {ι ι' : Type*} {f : ι → α} {v : Filter ι}
     {p : ι' → Prop} {s : ι' → Set ι} [Countable (Subtype p)] [Nonempty (Subtype p)]
@@ -1585,13 +1585,7 @@ theorem Filter.HasBasis.liminf_eq_ite {ι ι' : Type*} {f : ι → α} {v : Filt
   · have A : ∀ (j : Subtype p), ⋂ (i : s j), Iic (f i) = ∅ := by
       simp_rw [← not_nonempty_iff_eq_empty, nonempty_iInter_Iic_iff]
       exact H'
-    have B : liminf f v = sSup (⋃ (j : Subtype p), ⋂ (i : s j), Iic (f i)) := by
-      simp_rw [liminf_eq, hv.eventually_iff]
-      congr
-      ext x
-      simp only [mem_setOf_eq, iInter_coe_set, mem_iUnion, mem_iInter, mem_Iic, Subtype.exists,
-        exists_prop]
-    simp_rw [if_pos H', B, A, iUnion_empty]
+    simp_rw [if_pos H', hv.liminf_eq_sSup, A, iUnion_empty]
   rw [if_neg H']
   apply hv.liminf_eq_ciSup_ciInf
   · push_neg at H
@@ -1599,193 +1593,55 @@ theorem Filter.HasBasis.liminf_eq_ite {ι ι' : Type*} {f : ι → α} {v : Filt
   · push_neg at H'
     exact H'
 
-#exit
-
-
-  by_cases H : ∀ j, j ∉ m
-  · have I : ∀ (j : Subtype p), ⋂ (i : s j), Iic (f i) = ∅ := by
-      intro j
-      rw [← not_nonempty_iff_eq_empty, iInter_Iic]
-      simpa using H j
-    have J : ∀ (j : Subtype p), ⨅ (i : s j), f i = sInf ∅ := by
-      intro j
-      apply csInf_of_not_bddBelow
-      simpa using H j
-    simp only [I, iUnion_empty, J]
-    simp
-    sorry
-
-
 /-- `liminf` over a general filter is measurable. See `measurable_liminf` for the version over `ℕ`.
 -/
 theorem measurable_liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf : ∀ i, Measurable (f i))
     {p : ι' → Prop} {s : ι' → Set ι} (hv : v.HasCountableBasis p s) (hs : ∀ j, (s j).Countable) :
     Measurable fun x => liminf (fun i => f i x) v := by
-  by_cases H : ∃ i, p i ∧ s i = ∅
-  · rcases H with ⟨i, hi, h'i⟩
-    simp [hv.toHasBasis.liminf_eq_sSup_univ_of_empty i hi h'i]
-  push_neg at H
-  have : ∀ (j : Subtype p), Nonempty (s j) := sorry
-  have : ∀ x, liminf (fun i ↦ f i x) v = sSup (⋃ (j : Subtype p), ⋂ (i : s j), Iic (f i x)) := by
-    sorry /-intro x
-    simp_rw [liminf_eq, hv.toHasBasis.eventually_iff]
-    congr
-    ext x
-    simp only [mem_setOf_eq, iInter_coe_set, mem_iUnion, mem_iInter, mem_Iic, Subtype.exists,
-      exists_prop] -/
-  simp_rw [this]
-  rcases isEmpty_or_nonempty (Subtype p) with hp|hp; simp
   have : Countable (Subtype p) := Encodable.nonempty_encodable.1 hv.countable
-  have : Encodable (Subtype p) := Encodable.ofCountable (Subtype p)
+  rcases isEmpty_or_nonempty (Subtype p) with hp|hp
+  · simp [hv.liminf_eq_sSup]
+  by_cases H : ∃ (j : Subtype p), s j = ∅
+  · simp_rw [hv.liminf_eq_ite, if_pos H, measurable_const]
+  simp_rw [hv.liminf_eq_ite, if_neg H]
   have : ∀ i, Countable (s i) := fun i ↦ countable_coe_iff.2 (hs i)
-  /- have B : ∀ x j, ⋂ (i : s j), Iic (f i x) =
-      if BddBelow (range (fun (i : s j) ↦ f i x)) then Iic (⨅ (i : s j), f i x) else ∅ := by
-    intro x j
-    split_ifs with h1
-    · sorry
-    · ext y
-      contrapose! h1
-      simp only [iInter_coe_set, mem_iInter, mem_Iic, mem_empty_iff_false, not_false_eq_true,
-        and_true, not_forall, not_le, exists_prop, and_false, or_false] at h1
-      refine ⟨y, ?_⟩
-      rintro - ⟨i, rfl⟩
-      exact h1 i i.2 -/
-  let m0 := {x | BddAbove (⋃ (j : Subtype p), ⋂ (i : s j), Iic (f i x))}
-  have m0_meas : MeasurableSet m0 :=
-    measurableSet_bddAbove_iUnion_iInter_Iic (fun (j : Subtype p) ↦ hs j) hf
   let m : Subtype p → Set δ := fun j ↦ {x | BddBelow (range (fun (i : s j) ↦ f i x))}
   have m_meas : ∀ j, MeasurableSet (m j) :=
     fun j ↦ measurableSet_bddBelow_range (fun (i : s j) ↦ hf i)
-  obtain ⟨param, hparam⟩ : ∃ (fℕ : ℕ → Subtype p), Function.Surjective fℕ :=
-    exists_surjective_nat (Subtype p)
-  have Exists_param : ∀ x, ∃ n, x ∈ m (param n) ∪ (⋃ j, m j)ᶜ := by
-    intro x
-    by_cases hx : ∃ n, x ∈ m (param n)
-    · rcases hx with ⟨n, hn⟩
-      exact ⟨n, mem_union_left _ hn⟩
-    · refine ⟨0, mem_union_right _ ?_⟩
-      contrapose! hx
-      simp only [compl_iUnion, mem_iInter, mem_compl_iff, mem_setOf_eq, not_forall,
-        not_not] at hx
-      rcases hx with ⟨j, hj⟩
-      obtain ⟨n, rfl⟩ : ∃ n, param n = j := hparam j
-      exact ⟨n, hj⟩
-  let newj : δ → Subtype p := fun x ↦ param (Nat.find (Exists_param x))
-  let reparam : δ → Subtype p → Subtype p := fun x j ↦ if x ∈ m j then j else newj x
+  have mc_meas : MeasurableSet {x | ∀ (j : Subtype p), x ∉ m j} := by
+    rw [setOf_forall]
+    exact MeasurableSet.iInter (fun j ↦ (m_meas j).compl)
+  apply Measurable.piecewise mc_meas measurable_const
+  apply measurable_iSup (fun j ↦ ?_)
+  let reparam : δ → Subtype p → Subtype p :=
+    fun x ↦ liminf_reparam (fun i ↦ f i x) (fun (j : Subtype p) ↦ s j)
   let F0 : Subtype p → δ → α := fun j x ↦ ⨅ (i : s j), f i x
   have F0_meas : ∀ j, Measurable (F0 j) := fun j ↦ measurable_iInf (fun (i : s j) ↦ hf i)
-  let F1 : Subtype p → δ → α := fun j x ↦ F0 (reparam x j) x
-  have F1_meas : ∀ j, Measurable (F1 j) := by
-    intro j
-    have : F1 = fun j x ↦ if x ∈ m j then F0 j x else F0 (newj x) x := by
-      sorry
-    rw [this]
-    apply Measurable.piecewise (m_meas j) (F0_meas j)
-    apply Measurable.find (f := fun n ↦ F0 (param n))
-      (p := fun n x ↦ x ∈ m (param n) ∪ (⋃ j, m j)ᶜ) (fun n ↦ F0_meas _) (fun n ↦ ?_)
-    exact MeasurableSet.union (m_meas _)
-      (MeasurableSet.iUnion (fun (j : Subtype p) ↦ m_meas j)).compl
-  have : ∀ x ∈ (⋃ j, m j), sSup (⋃ (j : Subtype p), ⋂ (i : s j), Iic (f i x))
-          = ⨆ (j : Subtype p), F1 j x := by
-    intro x hx
-    have : ⋃ (j : Subtype p), ⋂ (i : s j), Iic (f i x) =
-           ⋃ (j : Subtype p), ⋂ (i : s (reparam x j)), Iic (f i x) := by
-      apply Subset.antisymm
-      · apply iUnion_subset (fun j ↦ ?_)
-        by_cases hj : x ∈ m j
-        · have : j = reparam x j := sorry
-          conv_lhs => rw [this]
-          apply subset_iUnion _ j
-        · have : ⋂ (i : s j), Iic (f i x) = ∅ := sorry
-          simp only [this, empty_subset]
-      · apply iUnion_subset (fun j ↦ ?_)
-        exact subset_iUnion (fun (k : Subtype p) ↦ (⋂ (i : s k), Iic (f i x))) (reparam x j)
-    rw [this]
-    have : ∀ j, ⋂ (i : s (reparam x j)), Iic (f i x) = Iic (F1 j x) := by
-      intro j
-      apply (Iic_ciInf _).symm
-      have : x ∈ m (reparam x j) := by
-        by_cases h'x : x ∈ m j
-        · simp only [h'x]
-          exact h'x
-        · have : x ∈ m (newj x) := sorry
-          convert this
-          simp only [h'x]
-          simp only [compl_iUnion, mem_union, mem_setOf_eq, mem_iInter, mem_compl_iff,
-            Subtype.forall, ite_false]
-
-
-      exact this
-
-
-      sorry
-    sorry
-
-  have : ∀ x, x ∈ m0 ∩ (⋃ (j : Subtype p), m j) →
-      sSup (⋃ (j : Subtype p), ⋂ (i : s j), Iic (f i x))
-        = ⨆ (j : Subtype p), ⨅ (i : s j), f i x := by
-    intro x hx
-    sorry
-  have : ∀ x, x ∉ m0 ∩ (⋃ (j : Subtype p), m j) →
-      sSup (⋃ (j : Subtype p), ⋂ (i : s j), Iic (f i x)) = sSup ∅ := by
-    intro x hx
-    simp only [mem_inter_iff, Decidable.not_and] at hx
-
-    -- rcases hx with hx1|hx1
-    sorry
-
-
-
-
-
-
-
-
-#exit
-
-
-  have B : ∀ x j, ⋂ (i : ι) (hi : i ∈ s j), {a | a ≤ f i x} =
-      if BddBelow (range (fun (i : s j) ↦ f i x)) then Iic (⨅ (i : s j), f i x) else ∅ := by
-    intro x j
-    split_ifs
-
-  have : ∀ x j, MeasurableSet (⋂ (i : ι) (hi : i ∈ s j), {a | a ≤ f i x}) := by
-    intro x j
-    apply MeasurableSet.biInter (hs j) (fun i hi ↦ ?_)
-    apply measurableSet_le measurable_id measurable_const
-  have A : ∀ c j, MeasurableSet {x | ⋂ (i : ι) (_ : i ∈ s j), {a | a ≤ f i x} ⊆ Iic c} := by
-
-  have B : ∀ c, MeasurableSet {x | ⋃ (j : ι') (_ : p j),
-      ⋂ (i : ι) (_ : i ∈ s j), {a | a ≤ f i x} ⊆ Iic c} := by
-    intro c
-    simp only [iUnion_subset_iff, setOf_forall]
-    apply MeasurableSet.biInter hv.countable
-    rintro i (hi : p i)
-
-
-
-
-  have : MeasurableSet {x |
-      BddAbove (⋃ (j : ι') (hj : p j), ⋂ (i : ι) (hi : i ∈ s j), {a | a ≤ f i x})} := by
-    obtain ⟨u, hu⟩ : ∃ (u : ℕ → α), Tendsto u atTop atTop := exists_seq_tendsto (atTop : Filter α)
-    have : {x | BddAbove (⋃ (j : ι') (hj : p j), ⋂ (i : ι) (hi : i ∈ s j), {a | a ≤ f i x})} =
-        {x | ∃ n, (⋃ (j : ι') (hj : p j), ⋂ (i : ι) (hi : i ∈ s j), {a | a ≤ f i x}) ⊆ Iic (u n)} :=
-      by sorry
-    rw [this, setOf_exists]
-    apply MeasurableSet.iUnion (fun n ↦ ?_)
-
-
-
-
-
-
-  /-simp_rw [hu.toHasBasis.liminf_eq_iSup_iInf]
-  refine' measurable_biSup _ hu.countable _
-  exact fun i => measurable_biInf _ (hs i) hf-/
-  sorry
+  set F1 : δ → α := fun x ↦ F0 (reparam x j) x with hF1
+  change Measurable F1
+  let g : ℕ → Subtype p := choose (exists_surjective_nat (Subtype p))
+  have Z : ∀ x, ∃ n, x ∈ m (g n) ∨ ∀ k, x ∉ m k := by
+    intro x
+    by_cases H : ∃ k, x ∈ m k
+    · rcases H with ⟨k, hk⟩
+      rcases choose_spec (exists_surjective_nat (Subtype p)) k with ⟨n, rfl⟩
+      exact ⟨n, Or.inl hk⟩
+    · push_neg at H
+      exact ⟨0, Or.inr H⟩
+  have A : ∀ x, reparam x j = if x ∈ m j then j else g (Nat.find (Z x)) := by
+    intro x; rfl
+  have : F1 = fun x ↦ if x ∈ m j then F0 j x else F0 (g (Nat.find (Z x))) x := by
+    ext x
+    split_ifs with hjx
+    · have : reparam x j = j := by rw [A, if_pos hjx]
+      simp only [hF1, this]
+    · have : reparam x j = g (Nat.find (Z x)) := by rw [A, if_neg hjx]
+      simp only [hF1, this]
+  rw [this]
+  apply Measurable.piecewise (m_meas j) (F0_meas j)
+  apply Measurable.find (fun n ↦ F0_meas (g n)) (fun n ↦ ?_)
+  exact (m_meas (g n)).union mc_meas
 #align measurable_liminf' measurable_liminf'
-
-#exit
 
 /-- `limsup` over a general filter is measurable. See `measurable_limsup` for the version over `ℕ`.
 -/
