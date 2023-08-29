@@ -1,14 +1,24 @@
+/-
+Copyright (c) 2021 Johan Commelin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johan Commelin, Eric Rodriguez
+-/
 import Mathlib.GroupTheory.ClassEquation
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
-import Mathlib.Tactic.ByContra
 
 /-!
-# Little Wedderburn TODO
+# Wedderburn's Little Theorem
+
+This file proves Wedderburn's Little Theorem.
+
+## Main Declarations
+
+* `littleWedderburn`: a finite division ring is a field.
 -/
 
 
-open scoped NNReal BigOperators Polynomial
+open scoped BigOperators Polynomial
 
 namespace LittleWedderburn
 
@@ -26,13 +36,14 @@ open FiniteDimensional Polynomial
 
 variable {D}
 
-
-open scoped Classical in
-protected noncomputable def field [Fintype D] (hD : InductionHyp D) (R : Subring D) (hR : R < ⊤) :
+protected def field (hD : InductionHyp D) (R : Subring D) (hR : R < ⊤)
+  [Fintype D] [DecidableEq D] [DecidablePred (· ∈ R)] :
     Field R :=
   { show DivisionRing R from Fintype.divisionRingOfIsDomain R with
     mul_comm := fun x y ↦ Subtype.ext <| hD R hR x.2 y.2 }
 
+-- this proof is currently hard to read through because of `(config := {zeta := false})` expanding
+-- all local definitions.
 theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ := by
   classical
   cases nonempty_fintype D
@@ -48,7 +59,9 @@ theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ 
     rcases hn with ⟨x, hx⟩
     refine' not_le_of_lt hZ _
     rintro y - z
-    obtain ⟨r, rfl⟩ := hx y; obtain ⟨s, rfl⟩ := hx z
+    obtain ⟨r, rfl⟩ := hx y
+    obtain ⟨s, rfl⟩ := hx z
+    -- is there `rw` lemmas for this?
     show s.1 * x * (r.1 * x) = r.1 * x * (s.1 * x)
     rw [← r.2, ← s.2, mul_assoc, mul_assoc, ← r.2, ← s.2, mul_assoc, mul_assoc, r.2]
   have card_D : Fintype.card D = q ^ n := card_eq_pow_finrank
@@ -67,9 +80,8 @@ theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ 
   simp only [Int.natAbs_ofNat, Int.coe_nat_dvd] at aux
   · refine' (Nat.le_of_dvd _ aux).not_lt (sub_one_lt_natAbs_cyclotomic_eval hn hq.ne')
     exact tsub_pos_of_lt hq
-  suffices Φ.eval ↑q ∣ ↑(∑ x in (ConjClasses.noncenter (Dˣ)).toFinset, Fintype.card x.carrier)
-    by
-    convert this using 2
+  suffices : Φ.eval ↑q ∣ ↑(∑ x in (ConjClasses.noncenter (Dˣ)).toFinset, Fintype.card x.carrier)
+  · convert this using 2
     convert finsum_cond_eq_sum_of_cond_iff _ _
     simp only [iff_self_iff, Set.mem_toFinset, imp_true_iff]
   simp only [Nat.cast_sum]
@@ -117,28 +129,23 @@ theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
   classical
   cases nonempty_fintype D
   suffices
-    ∀ (n : ℕ) (D : Type _) [DivisionRing D] [Fintype D], Fintype.card D ≤ n → Subring.center D = ⊤
-    by exact this _ D le_rfl
+    ∀ (n : ℕ) (D : Type _) [DivisionRing D] [Fintype D], Fintype.card D = n → Subring.center D = ⊤
+    from this _ D rfl
   clear! D
   intro n
   induction' n using Nat.strong_induction_on with n IH
-  intros D _D_dr _D_fin hD
+  rintro D _D_dr _D_fin rfl
   apply InductionHyp.center_eq_top
   intro R hR x y hx hy
   suffices (⟨y, hy⟩ : R) ∈ Subring.center R by exact congr_arg Subtype.val (this ⟨x, hx⟩)
   letI R_dr : DivisionRing R := Fintype.divisionRingOfIsDomain R
-  rw [IH (Fintype.card R) _ R le_rfl]
+  rw [IH (Fintype.card R) _ R rfl]
   · trivial
-  obtain ⟨b, -, hb⟩ := SetLike.exists_of_lt hR
-  refine' (Fintype.card_lt_of_injective_of_not_mem _ Subtype.val_injective _).trans_le hD
-  · exact b
-  simp only [not_exists, Set.mem_range]
-  rintro y rfl
-  exact hb y.2
-
+  rw [←Subring.card_top D]
+  exact Set.card_lt_card hR
 
 end LittleWedderburn
 
-def littleWedderburn (D : Type _) [hD : DivisionRing D] [Finite D] : Field D :=
-  { hD with
+instance littleWedderburn (D : Type _) [DivisionRing D] [Finite D] : Field D :=
+  { ‹DivisionRing D› with
     mul_comm := fun x y ↦ eq_top_iff.mp (LittleWedderburn.center_eq_top D) (Subring.mem_top y) x }
