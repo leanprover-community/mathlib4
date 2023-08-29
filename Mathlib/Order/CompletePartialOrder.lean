@@ -44,7 +44,8 @@ Every subset of a join-semilattice generates a directed set
 def directedClosure (s : Set α) :=
   { a | ∃ F : Finset α, ∃ H : F.Nonempty, ↑F ⊆ s ∧  a = F.sup' H id }
 
-lemma directedClosure_directedOn (s : Set α) : DirectedOn (. ≤ .) (directedClosure s) := by classical
+lemma directedClosure_directedOn (s : Set α) :
+    DirectedOn (. ≤ .) (directedClosure s) := by classical
   rintro a ⟨Fa,hFa⟩ b ⟨Fb,hFb⟩
   use a⊔b
   constructor
@@ -190,21 +191,21 @@ lemma CompletePartialOrder.ScottContinuous {β : Type*} [Preorder β] {f : α �
 
 open OmegaCompletePartialOrder
 
-
 /-
 A complete partial order is a ω-complete partial order
 -/
-/-
 instance : OmegaCompletePartialOrder α where
-  ωSup := fun c => CompletePartialOrder.dSup (Chain.to_DirectedSet c)
-  le_ωSup := fun c => fun i => CompletePartialOrder.le_dSup (Chain.to_DirectedSet c) (c i)
-    (by rw [Chain_Set, Set.mem_range]; use i)
+  ωSup := fun c => CompletePartialOrder.dSup (Set.range c)
+  le_ωSup := fun c => fun i =>
+      CompletePartialOrder.le_dSup (Set.range c) (IsChain.directedOn (Chain.isChain_range c)) (c i)
+    (by rw [Set.mem_range]; use i)
   ωSup_le := fun c => fun x => by
     intros h
-    apply CompletePartialOrder.dSup_le (Chain.to_DirectedSet c) x
+    apply CompletePartialOrder.dSup_le (Set.range c) (IsChain.directedOn (Chain.isChain_range c)) x
     intros a ha
-    rw [Chain_Set, Set.mem_range] at ha
+    rw [Set.mem_range] at ha
     obtain ⟨i,hi⟩:= ha
     rw [← hi]
     exact h i
--/
+
+end CompletePartialOrder
