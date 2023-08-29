@@ -745,7 +745,7 @@ theorem quotMapOfEquivQuotMapCMapSpanMk_symm_mk (x : AdjoinRoot f) :
         (Ideal.Quotient.mk ((I.map (C : R →+* R[X])).map (Ideal.Quotient.mk (span {f}))) x) =
       Ideal.Quotient.mk (I.map (of f)) x := by
   rw [quotMapOfEquivQuotMapCMapSpanMk, Ideal.quotEquivOfEq_symm]
-  exact Ideal.quotEquivOfEq_mk _ _
+  exact Ideal.quotEquivOfEq_mk _ x
 set_option linter.uppercaseLean3 false in
 #align adjoin_root.quot_map_of_equiv_quot_map_C_map_span_mk_symm_mk AdjoinRoot.quotMapOfEquivQuotMapCMapSpanMk_symm_mk
 
@@ -788,21 +788,23 @@ def Polynomial.quotQuotEquivComm :
         polynomialQuotientEquivQuotientPolynomial_map_mk I f])
 #align adjoin_root.polynomial.quot_quot_equiv_comm AdjoinRoot.Polynomial.quotQuotEquivComm
 
+set_option maxHeartbeats 0 in
 @[simp]
 theorem Polynomial.quotQuotEquivComm_mk (p : R[X]) :
     (Polynomial.quotQuotEquivComm I f) (Ideal.Quotient.mk _ (p.map (Ideal.Quotient.mk I))) =
       Ideal.Quotient.mk (span ({(Ideal.Quotient.mk (I.map C)) f} : Set (R[X] ⧸ (I.map C))))
       (Ideal.Quotient.mk (I.map C) p) := by
-  simp only [Polynomial.quotQuotEquivComm, quotientEquiv_mk,
+  rw [Polynomial.quotQuotEquivComm, quotientEquiv_mk,
     polynomialQuotientEquivQuotientPolynomial_map_mk]
 #align adjoin_root.polynomial.quot_quot_equiv_comm_mk AdjoinRoot.Polynomial.quotQuotEquivComm_mk
 
+set_option maxHeartbeats 0 in
 @[simp]
 theorem Polynomial.quotQuotEquivComm_symm_mk_mk (p : R[X]) :
     (Polynomial.quotQuotEquivComm I f).symm (Ideal.Quotient.mk (span
     ({(Ideal.Quotient.mk (I.map C)) f} : Set (R[X] ⧸ (I.map C)))) (Ideal.Quotient.mk (I.map C) p)) =
       Ideal.Quotient.mk (span {f.map (Ideal.Quotient.mk I)}) (p.map (Ideal.Quotient.mk I)) := by
-  simp only [Polynomial.quotQuotEquivComm, quotientEquiv_symm_mk,
+  rw [Polynomial.quotQuotEquivComm, quotientEquiv_symm_mk,
     polynomialQuotientEquivQuotientPolynomial_symm_mk]
 #align adjoin_root.polynomial.quot_quot_equiv_comm_symm_mk_mk AdjoinRoot.Polynomial.quotQuotEquivComm_symm_mk_mk
 
@@ -825,7 +827,7 @@ theorem quotAdjoinRootEquivQuotPolynomialQuot_mk_of (p : R[X]) :
       (p.map (Ideal.Quotient.mk I)) := rfl
 #align adjoin_root.quot_adjoin_root_equiv_quot_polynomial_quot_mk_of AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot_mk_of
 
-set_option maxHeartbeats 300000 in
+set_option maxHeartbeats 0 in
 @[simp]
 theorem quotAdjoinRootEquivQuotPolynomialQuot_symm_mk_mk (p : R[X]) :
     (quotAdjoinRootEquivQuotPolynomialQuot I f).symm
