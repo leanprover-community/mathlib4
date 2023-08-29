@@ -85,7 +85,7 @@ structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Categ
   unitIso : 𝟭 C ≅ functor ⋙ inverse
   /-- The composition `inverse ⋙ functor` is also isomorphic to the identity -/
   counitIso : inverse ⋙ functor ≅ 𝟭 D
-  /-- The natural isomorphism compose to the identity -/
+  /-- The natural isomorphisms compose to the identity. -/
   functor_unitIso_comp :
     ∀ X : C, functor.map (unitIso.hom.app X) ≫ counitIso.hom.app (functor.obj X) =
       𝟙 (functor.obj X) := by aesop_cat
@@ -475,9 +475,9 @@ class IsEquivalence (F : C ⥤ D) where mk' ::
   inverse : D ⥤ C
   /-- Composition `F ⋙ inverse` is isomorphic to the identity. -/
   unitIso : 𝟭 C ≅ F ⋙ inverse
-  /-- Composition `inverse ⋙ F` is isomorphic to the identity. =-/
+  /-- Composition `inverse ⋙ F` is isomorphic to the identity. -/
   counitIso : inverse ⋙ F ≅ 𝟭 D
-  /-- We natural isomorphisms are inverse -/
+  /-- The natural isomorphisms are inverse. -/
   functor_unitIso_comp :
     ∀ X : C,
       F.map ((unitIso.hom : 𝟭 C ⟶ F ⋙ inverse).app X) ≫ counitIso.hom.app (F.obj X) =
@@ -659,7 +659,7 @@ def equivOfIso {F G : C ⥤ D} (e : F ≅ G) : IsEquivalence F ≃ IsEquivalence
 
 /-- If `G` and `F ⋙ G` are equivalence of categories, then `F` is also an equivalence. -/
 @[simp]
-def cancelCompRight {E : Type _} [Category E] (F : C ⥤ D) (G : D ⥤ E) (hG : IsEquivalence G)
+def cancelCompRight {E : Type*} [Category E] (F : C ⥤ D) (G : D ⥤ E) (hG : IsEquivalence G)
     (_ : IsEquivalence (F ⋙ G)) : IsEquivalence F :=
   ofIso (Functor.associator F G G.inv ≪≫ NatIso.hcomp (Iso.refl F) hG.unitIso.symm ≪≫ rightUnitor F)
     (Functor.isEquivalenceTrans (F ⋙ G) G.inv)
@@ -667,7 +667,7 @@ def cancelCompRight {E : Type _} [Category E] (F : C ⥤ D) (G : D ⥤ E) (hG : 
 
 /-- If `F` and `F ⋙ G` are equivalence of categories, then `G` is also an equivalence. -/
 @[simp]
-def cancelCompLeft {E : Type _} [Category E] (F : C ⥤ D) (G : D ⥤ E) (hF : IsEquivalence F)
+def cancelCompLeft {E : Type*} [Category E] (F : C ⥤ D) (G : D ⥤ E) (hF : IsEquivalence F)
     (_ : IsEquivalence (F ⋙ G)) : IsEquivalence G :=
   ofIso
     ((Functor.associator F.inv F G).symm ≪≫ NatIso.hcomp hF.counitIso (Iso.refl G) ≪≫ leftUnitor G)
@@ -748,11 +748,11 @@ theorem inverse_map_inj_iff (e : C ≌ D) {X Y : D} (f g : X ⟶ Y) :
   functor_map_inj_iff e.symm f g
 #align category_theory.equivalence.inverse_map_inj_iff CategoryTheory.Equivalence.inverse_map_inj_iff
 
-instance essSurjInducedFunctor {C' : Type _} (e : C' ≃ D) : EssSurj (inducedFunctor e) where
+instance essSurjInducedFunctor {C' : Type*} (e : C' ≃ D) : EssSurj (inducedFunctor e) where
   mem_essImage Y := ⟨e.symm Y, by simpa using ⟨default⟩⟩
 #align category_theory.equivalence.ess_surj_induced_functor CategoryTheory.Equivalence.essSurjInducedFunctor
 
-noncomputable instance inducedFunctorOfEquiv {C' : Type _} (e : C' ≃ D) :
+noncomputable instance inducedFunctorOfEquiv {C' : Type*} (e : C' ≃ D) :
     IsEquivalence (inducedFunctor e) :=
   Equivalence.ofFullyFaithfullyEssSurj _
 #align category_theory.equivalence.induced_functor_of_equiv CategoryTheory.Equivalence.inducedFunctorOfEquiv

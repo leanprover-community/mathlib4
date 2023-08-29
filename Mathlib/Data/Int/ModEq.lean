@@ -101,7 +101,7 @@ theorem modEq_iff_add_fac {a b n : ℤ} : a ≡ b [ZMOD n] ↔ ∃ t, b = a + n 
   exact exists_congr fun t => sub_eq_iff_eq_add'
 #align int.modeq_iff_add_fac Int.modEq_iff_add_fac
 
-alias modEq_iff_dvd ↔ ModEq.dvd modEq_of_dvd
+alias ⟨ModEq.dvd, modEq_of_dvd⟩ := modEq_iff_dvd
 #align int.modeq.dvd Int.ModEq.dvd
 #align int.modeq_of_dvd Int.modEq_of_dvd
 
@@ -285,6 +285,10 @@ theorem modEq_add_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a + n * 
     _ ≡ b + 0 [ZMOD n] := (dvd_mul_right _ _).modEq_zero_int.add_left _
     _ ≡ b [ZMOD n] := by rw [add_zero]
 #align int.modeq_add_fac Int.modEq_add_fac
+
+theorem modEq_sub_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a - n * c ≡ b [ZMOD n] := by
+  convert Int.modEq_add_fac (-c) ha using 1
+  ring
 
 theorem modEq_add_fac_self {a t n : ℤ} : a + n * t ≡ a [ZMOD n] :=
   modEq_add_fac _ ModEq.rfl

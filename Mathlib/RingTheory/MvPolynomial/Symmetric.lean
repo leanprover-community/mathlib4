@@ -23,15 +23,20 @@ We also prove some basic facts about them.
 
 * `MvPolynomial.esymm`
 
+* `MvPolynomial.psum`
+
 ## Notation
 
-+ `esymm σ R n`, is the `n`th elementary symmetric polynomial in `MvPolynomial σ R`.
++ `esymm σ R n` is the `n`th elementary symmetric polynomial in `MvPolynomial σ R`.
+
++ `psum σ R n` is the degree-`n` power sum in `MvPolynomial σ R`, i.e. the sum of monomials
+  `(X i)^n` over `i ∈ σ`.
 
 As in other polynomial files, we typically use the notation:
 
-+ `σ τ : Type _` (indexing the variables)
++ `σ τ : Type*` (indexing the variables)
 
-+ `R S : Type _` `[CommSemiring R]` `[CommSemiring S]` (the coefficients)
++ `R S : Type*` `[CommSemiring R]` `[CommSemiring S]` (the coefficients)
 
 + `r : R` elements of the coefficient ring
 
@@ -50,7 +55,7 @@ noncomputable section
 
 namespace Multiset
 
-variable {R : Type _} [CommSemiring R]
+variable {R : Type*} [CommSemiring R]
 
 /-- The `n`th elementary symmetric function evaluated at the elements of `s` -/
 def esymm (s : Multiset R) (n : ℕ) : R :=
@@ -67,9 +72,9 @@ end Multiset
 
 namespace MvPolynomial
 
-variable {σ : Type _} {R : Type _}
+variable {σ : Type*} {R : Type*}
 
-variable {τ : Type _} {S : Type _}
+variable {τ : Type*} {S : Type*}
 
 /-- A `MvPolynomial φ` is symmetric if it is invariant under
 permutations of its variables by the `rename` operation -/
@@ -233,7 +238,6 @@ theorem support_esymm'' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
   have hs := biUnion_congr (of_eq_true (eq_self s)) (hsingle s)
   have ht := biUnion_congr (of_eq_true (eq_self t)) (hsingle t)
   rw [hs, ht] at this
-  simp only [Finsupp.support_single_ne_zero _ one_ne_zero] at this
   · simp only [biUnion_singleton_eq_self] at this
     exact absurd this hst.symm
   all_goals intro x y; simp [Finsupp.support_single_disjoint]
@@ -272,9 +276,37 @@ theorem degrees_esymm [Nontrivial R] (n : ℕ) (hpos : 0 < n) (hn : n ≤ Fintyp
       · rfl
     rw [← this]
     obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hpos.ne'
-    simpa using powerset_len_sup _ _ (Nat.lt_of_succ_le hn)
+    simpa using powersetLen_sup _ _ (Nat.lt_of_succ_le hn)
 #align mv_polynomial.degrees_esymm MvPolynomial.degrees_esymm
 
 end ElementarySymmetric
+
+section PowerSum
+
+open Finset
+
+variable (σ R) [CommSemiring R] [Fintype σ] [Fintype τ]
+
+/-- The degree-`n` power sum -/
+def psum (n : ℕ) : MvPolynomial σ R := ∑ i, X i ^ n
+
+lemma psum_def (n : ℕ) : psum σ R n = ∑ i, X i ^ n := rfl
+
+@[simp]
+theorem psum_zero : psum σ R 0 = Fintype.card σ := by
+  simp only [psum, _root_.pow_zero, ← cast_card]
+  exact rfl
+
+@[simp]
+theorem psum_one : psum σ R 1 = ∑ i, X i := by
+  simp only [psum, _root_.pow_one]
+
+@[simp]
+theorem rename_psum (n : ℕ) (e : σ ≃ τ) : rename e (psum σ R n) = psum τ R n := by
+  simp_rw [psum, map_sum, map_pow, rename_X, e.sum_comp (X · ^ n)]
+
+theorem psum_isSymmetric (n : ℕ) : IsSymmetric (psum σ R n) := rename_psum _ _ n
+
+end PowerSum
 
 end MvPolynomial

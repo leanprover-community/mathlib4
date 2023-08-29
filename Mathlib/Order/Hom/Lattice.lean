@@ -42,10 +42,10 @@ Do we need more intersections between `BotHom`, `TopHom` and lattice homomorphis
 
 open Function OrderDual
 
-variable {F ι α β γ δ : Type _}
+variable {F ι α β γ δ : Type*}
 
 /-- The type of `⊔`-preserving functions from `α` to `β`. -/
-structure SupHom (α β : Type _) [Sup α] [Sup β] where
+structure SupHom (α β : Type*) [Sup α] [Sup β] where
   /-- The underlying function of a `SupHom` -/
   toFun : α → β
   /-- A `SupHom` preserves suprema. -/
@@ -53,7 +53,7 @@ structure SupHom (α β : Type _) [Sup α] [Sup β] where
 #align sup_hom SupHom
 
 /-- The type of `⊓`-preserving functions from `α` to `β`. -/
-structure InfHom (α β : Type _) [Inf α] [Inf β] where
+structure InfHom (α β : Type*) [Inf α] [Inf β] where
   /-- The underlying function of an `InfHom` -/
   toFun : α → β
   /-- An `InfHom` preserves infima. -/
@@ -61,25 +61,25 @@ structure InfHom (α β : Type _) [Inf α] [Inf β] where
 #align inf_hom InfHom
 
 /-- The type of finitary supremum-preserving homomorphisms from `α` to `β`. -/
-structure SupBotHom (α β : Type _) [Sup α] [Sup β] [Bot α] [Bot β] extends SupHom α β where
+structure SupBotHom (α β : Type*) [Sup α] [Sup β] [Bot α] [Bot β] extends SupHom α β where
   /-- A `SupBotHom` preserves the bottom element. -/
   map_bot' : toFun ⊥ = ⊥
 #align sup_bot_hom SupBotHom
 
 /-- The type of finitary infimum-preserving homomorphisms from `α` to `β`. -/
-structure InfTopHom (α β : Type _) [Inf α] [Inf β] [Top α] [Top β] extends InfHom α β where
+structure InfTopHom (α β : Type*) [Inf α] [Inf β] [Top α] [Top β] extends InfHom α β where
   /-- An `InfTopHom` preserves the top element. -/
   map_top' : toFun ⊤ = ⊤
 #align inf_top_hom InfTopHom
 
 /-- The type of lattice homomorphisms from `α` to `β`. -/
-structure LatticeHom (α β : Type _) [Lattice α] [Lattice β] extends SupHom α β where
+structure LatticeHom (α β : Type*) [Lattice α] [Lattice β] extends SupHom α β where
   /-- A `LatticeHom` preserves infima. -/
   map_inf' (a b : α) : toFun (a ⊓ b) = toFun a ⊓ toFun b
 #align lattice_hom LatticeHom
 
 /-- The type of bounded lattice homomorphisms from `α` to `β`. -/
-structure BoundedLatticeHom (α β : Type _) [Lattice α] [Lattice β] [BoundedOrder α]
+structure BoundedLatticeHom (α β : Type*) [Lattice α] [Lattice β] [BoundedOrder α]
   [BoundedOrder β] extends LatticeHom α β where
   /-- A `BoundedLatticeHom` preserves the top element. -/
   map_top' : toFun ⊤ = ⊤
@@ -99,7 +99,7 @@ section
 /-- `SupHomClass F α β` states that `F` is a type of `⊔`-preserving morphisms.
 
 You should extend this class when you extend `SupHom`. -/
-class SupHomClass (F : Type _) (α β : outParam <| Type _) [Sup α] [Sup β] extends
+class SupHomClass (F : Type*) (α β : outParam <| Type*) [Sup α] [Sup β] extends
   FunLike F α fun _ => β where
   /-- A `SupHomClass` morphism preserves suprema. -/
   map_sup (f : F) (a b : α) : f (a ⊔ b) = f a ⊔ f b
@@ -108,7 +108,7 @@ class SupHomClass (F : Type _) (α β : outParam <| Type _) [Sup α] [Sup β] ex
 /-- `InfHomClass F α β` states that `F` is a type of `⊓`-preserving morphisms.
 
 You should extend this class when you extend `InfHom`. -/
-class InfHomClass (F : Type _) (α β : outParam <| Type _) [Inf α] [Inf β] extends
+class InfHomClass (F : Type*) (α β : outParam <| Type*) [Inf α] [Inf β] extends
   FunLike F α fun _ => β where
   /-- An `InfHomClass` morphism preserves infima. -/
   map_inf (f : F) (a b : α) : f (a ⊓ b) = f a ⊓ f b
@@ -117,7 +117,7 @@ class InfHomClass (F : Type _) (α β : outParam <| Type _) [Inf α] [Inf β] ex
 /-- `SupBotHomClass F α β` states that `F` is a type of finitary supremum-preserving morphisms.
 
 You should extend this class when you extend `SupBotHom`. -/
-class SupBotHomClass (F : Type _) (α β : outParam <| Type _) [Sup α] [Sup β] [Bot α]
+class SupBotHomClass (F : Type*) (α β : outParam <| Type*) [Sup α] [Sup β] [Bot α]
   [Bot β] extends SupHomClass F α β where
   /-- A `SupBotHomClass` morphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
@@ -126,7 +126,7 @@ class SupBotHomClass (F : Type _) (α β : outParam <| Type _) [Sup α] [Sup β]
 /-- `InfTopHomClass F α β` states that `F` is a type of finitary infimum-preserving morphisms.
 
 You should extend this class when you extend `SupBotHom`. -/
-class InfTopHomClass (F : Type _) (α β : outParam <| Type _) [Inf α] [Inf β] [Top α]
+class InfTopHomClass (F : Type*) (α β : outParam <| Type*) [Inf α] [Inf β] [Top α]
   [Top β] extends InfHomClass F α β where
   /-- An `InfTopHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
@@ -135,7 +135,7 @@ class InfTopHomClass (F : Type _) (α β : outParam <| Type _) [Inf α] [Inf β]
 /-- `LatticeHomClass F α β` states that `F` is a type of lattice morphisms.
 
 You should extend this class when you extend `LatticeHom`. -/
-class LatticeHomClass (F : Type _) (α β : outParam <| Type _) [Lattice α] [Lattice β] extends
+class LatticeHomClass (F : Type*) (α β : outParam <| Type*) [Lattice α] [Lattice β] extends
   SupHomClass F α β where
   /-- A `LatticeHomClass` morphism preserves infima. -/
   map_inf (f : F) (a b : α) : f (a ⊓ b) = f a ⊓ f b
@@ -144,7 +144,7 @@ class LatticeHomClass (F : Type _) (α β : outParam <| Type _) [Lattice α] [La
 /-- `BoundedLatticeHomClass F α β` states that `F` is a type of bounded lattice morphisms.
 
 You should extend this class when you extend `BoundedLatticeHom`. -/
-class BoundedLatticeHomClass (F : Type _) (α β : outParam <| Type _) [Lattice α] [Lattice β]
+class BoundedLatticeHomClass (F : Type*) (α β : outParam <| Type*) [Lattice α] [Lattice β]
   [BoundedOrder α] [BoundedOrder β] extends LatticeHomClass F α β where
   /-- A `BoundedLatticeHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
@@ -292,9 +292,9 @@ theorem map_sdiff' (a b : α) : f (a \ b) = f a \ f b := by
 #align map_sdiff' map_sdiff'
 
 /-- Special case of `map_symmDiff` for boolean algebras. -/
-theorem map_symm_diff' (a b : α) : f (a ∆ b) = f a ∆ f b := by
+theorem map_symmDiff' (a b : α) : f (a ∆ b) = f a ∆ f b := by
   rw [symmDiff, symmDiff, map_sup, map_sdiff', map_sdiff']
-#align map_symm_diff' map_symm_diff'
+#align map_symm_diff' map_symmDiff'
 
 end BooleanAlgebra
 

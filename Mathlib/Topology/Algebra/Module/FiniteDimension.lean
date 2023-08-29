@@ -52,7 +52,7 @@ open Set FiniteDimensional TopologicalSpace Filter BigOperators
 
 section Field
 
-variable {𝕜 E F : Type _} [Field 𝕜] [TopologicalSpace 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable {𝕜 E F : Type*} [Field 𝕜] [TopologicalSpace 𝕜] [AddCommGroup E] [Module 𝕜 E]
   [TopologicalSpace E] [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [TopologicalAddGroup F]
   [ContinuousSMul 𝕜 F]
 
@@ -145,7 +145,7 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
       exact Submodule.ker_liftQ_eq_bot _ _ _ (le_refl _)
     have hs : Function.Surjective ((LinearMap.ker l).liftQ l (le_refl _)) := by
       rw [← LinearMap.range_eq_top, Submodule.range_liftQ]
-      exact eq_top_of_finrank_eq ((finrank_self 𝕜).symm ▸ this)
+      exact Submodule.eq_top_of_finrank_eq ((finrank_self 𝕜).symm ▸ this)
     let φ : (E ⧸ LinearMap.ker l) ≃ₗ[𝕜] 𝕜 :=
       LinearEquiv.ofBijective ((LinearMap.ker l).liftQ l (le_refl _)) ⟨hi, hs⟩
     have hlφ : (l : E → 𝕜) = φ ∘ (LinearMap.ker l).mkQ := by ext; rfl
@@ -271,7 +271,7 @@ instance LinearMap.continuousLinearMapClassOfFiniteDimensional [T2Space E] [Fini
 This is the key fact which makes all linear maps from a T2 finite dimensional TVS over such a field
 continuous (see `LinearMap.continuous_of_finiteDimensional`), which in turn implies that all
 norms are equivalent in finite dimensions. -/
-theorem continuous_equivFun_basis [T2Space E] {ι : Type _} [Fintype ι] (ξ : Basis ι 𝕜 E) :
+theorem continuous_equivFun_basis [T2Space E] {ι : Type*} [Fintype ι] (ξ : Basis ι 𝕜 E) :
     Continuous ξ.equivFun :=
   haveI : FiniteDimensional 𝕜 E := of_fintype_basis ξ
   ξ.equivFun.toLinearMap.continuous_of_finiteDimensional
@@ -434,7 +434,7 @@ namespace Basis
 
 set_option linter.uppercaseLean3 false
 
-variable {ι : Type _} [Fintype ι] [T2Space E]
+variable {ι : Type*} [Fintype ι] [T2Space E]
 
 /-- Construct a continuous linear map given the value at a finite basis. -/
 def constrL (v : Basis ι 𝕜 E) (f : ι → F) : E →L[𝕜] F :=

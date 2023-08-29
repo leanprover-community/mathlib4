@@ -234,8 +234,6 @@ theorem of_le_succ {n m : ℕ} (H : n ≤ m.succ) : n ≤ m ∨ n = m.succ :=
   H.lt_or_eq_dec.imp le_of_lt_succ id
 #align nat.of_le_succ Nat.of_le_succ
 
-theorem succ_lt_succ_iff {m n : ℕ} : succ m < succ n ↔ m < n :=
-  ⟨lt_of_succ_lt_succ, succ_lt_succ⟩
 #align nat.succ_lt_succ_iff Nat.succ_lt_succ_iff
 
 theorem div_le_iff_le_mul_add_pred {m n k : ℕ} (n0 : 0 < n) : m / n ≤ k ↔ m ≤ n * k + (n - 1) := by
@@ -462,11 +460,11 @@ protected def strongRec' {p : ℕ → Sort u} (H : ∀ n, (∀ m, m < n → p m)
 
 /-- Recursion principle based on `<` applied to some natural number. -/
 @[elab_as_elim]
-def strongRecOn' {P : ℕ → Sort _} (n : ℕ) (h : ∀ n, (∀ m, m < n → P m) → P n) : P n :=
+def strongRecOn' {P : ℕ → Sort*} (n : ℕ) (h : ∀ n, (∀ m, m < n → P m) → P n) : P n :=
   Nat.strongRec' h n
 #align nat.strong_rec_on' Nat.strongRecOn'
 
-theorem strongRecOn'_beta {P : ℕ → Sort _} {h} {n : ℕ} :
+theorem strongRecOn'_beta {P : ℕ → Sort*} {h} {n : ℕ} :
     (strongRecOn' n h : P n) = h n fun m _ => (strongRecOn' m h : P m) := by
   simp only [strongRecOn']
   rw [Nat.strongRec']
@@ -489,20 +487,20 @@ theorem le_induction {m} {P : ∀ (n : Nat) (_ : m ≤ n), Prop} (base : P m le_
 Also works for functions to `Sort*`. For a version assuming only the assumption for `k < n`, see
 `decreasing_induction'`. -/
 @[elab_as_elim]
-def decreasingInduction {P : ℕ → Sort _} (h : ∀ n, P (n + 1) → P n) {m n : ℕ} (mn : m ≤ n)
+def decreasingInduction {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n) {m n : ℕ} (mn : m ≤ n)
     (hP : P n) : P m :=
   leRecOn mn (fun {k} ih hsk => ih <| h k hsk) (fun h => h) hP
 #align nat.decreasing_induction Nat.decreasingInduction
 
 @[simp]
-theorem decreasingInduction_self {P : ℕ → Sort _} (h : ∀ n, P (n + 1) → P n) {n : ℕ} (nn : n ≤ n)
+theorem decreasingInduction_self {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n) {n : ℕ} (nn : n ≤ n)
     (hP : P n) :
     (decreasingInduction h nn hP : P n) = hP := by
   dsimp only [decreasingInduction]
   rw [leRecOn_self]
 #align nat.decreasing_induction_self Nat.decreasingInduction_self
 
-theorem decreasingInduction_succ {P : ℕ → Sort _} (h : ∀ n, P (n + 1) → P n) {m n : ℕ} (mn : m ≤ n)
+theorem decreasingInduction_succ {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n) {m n : ℕ} (mn : m ≤ n)
     (msn : m ≤ n + 1) (hP : P (n + 1)) :
     (decreasingInduction h msn hP : P m) = decreasingInduction h mn (h n hP) := by
   dsimp only [decreasingInduction]
@@ -510,13 +508,13 @@ theorem decreasingInduction_succ {P : ℕ → Sort _} (h : ∀ n, P (n + 1) → 
 #align nat.decreasing_induction_succ Nat.decreasingInduction_succ
 
 @[simp]
-theorem decreasingInduction_succ' {P : ℕ → Sort _} (h : ∀ n, P (n + 1) → P n) {m : ℕ}
+theorem decreasingInduction_succ' {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n) {m : ℕ}
     (msm : m ≤ m + 1) (hP : P (m + 1)) : (decreasingInduction h msm hP : P m) = h m hP := by
   dsimp only [decreasingInduction]
   rw [leRecOn_succ']
 #align nat.decreasing_induction_succ' Nat.decreasingInduction_succ'
 
-theorem decreasingInduction_trans {P : ℕ → Sort _} (h : ∀ n, P (n + 1) → P n) {m n k : ℕ}
+theorem decreasingInduction_trans {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n) {m n k : ℕ}
     (mn : m ≤ n) (nk : n ≤ k) (hP : P k) :
     (decreasingInduction h (le_trans mn nk) hP : P m) =
     decreasingInduction h mn (decreasingInduction h nk hP) := by
@@ -525,7 +523,7 @@ theorem decreasingInduction_trans {P : ℕ → Sort _} (h : ∀ n, P (n + 1) →
   · rw [decreasingInduction_succ h (le_trans mn nk), ih, decreasingInduction_succ]
 #align nat.decreasing_induction_trans Nat.decreasingInduction_trans
 
-theorem decreasingInduction_succ_left {P : ℕ → Sort _} (h : ∀ n, P (n + 1) → P n) {m n : ℕ}
+theorem decreasingInduction_succ_left {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n) {m n : ℕ}
     (smn : m + 1 ≤ n) (mn : m ≤ n) (hP : P n) :
     (decreasingInduction h mn hP : P m) = h m (decreasingInduction h smn hP) := by
   rw [Subsingleton.elim mn (le_trans (le_succ m) smn), decreasingInduction_trans,
@@ -537,7 +535,7 @@ theorem decreasingInduction_succ_left {P : ℕ → Sort _} (h : ∀ n, P (n + 1)
 strictly below `(a,b)` to `P a b`, then we have `P n m` for all `n m : ℕ`.
 Note that for non-`Prop` output it is preferable to use the equation compiler directly if possible,
 since this produces equation lemmas. -/
-def strongSubRecursion {P : ℕ → ℕ → Sort _} (H : ∀ a b, (∀ x y, x < a → y < b → P x y) → P a b) :
+def strongSubRecursion {P : ℕ → ℕ → Sort*} (H : ∀ a b, (∀ x y, x < a → y < b → P x y) → P a b) :
     ∀ n m : ℕ, P n m
   | n, m => H n m fun x y _ _ => strongSubRecursion H x y
 #align nat.strong_sub_recursion Nat.strongSubRecursion
@@ -552,7 +550,7 @@ and for any `x y : ℕ` we can extend `P` from `(x,y+1)` and `(x+1,y)` to `(x+1,
 then we have `P n m` for all `n m : ℕ`.
 Note that for non-`Prop` output it is preferable to use the equation compiler directly if possible,
 since this produces equation lemmas. -/
-def pincerRecursion {P : ℕ → ℕ → Sort _} (Ha0 : ∀ a : ℕ, P a 0) (H0b : ∀ b : ℕ, P 0 b)
+def pincerRecursion {P : ℕ → ℕ → Sort*} (Ha0 : ∀ a : ℕ, P a 0) (H0b : ∀ b : ℕ, P 0 b)
     (H : ∀ x y : ℕ, P x y.succ → P x.succ y → P x.succ y.succ) : ∀ n m : ℕ, P n m
   | a, 0 => Ha0 a
   | 0, b => H0b b
@@ -568,7 +566,7 @@ attribute [elab_as_elim] pincerRecursion
 /-- Recursion starting at a non-zero number: given a map `C k → C (k+1)` for each `k ≥ n`,
 there is a map from `C n` to each `C m`, `n ≤ m`. -/
 @[elab_as_elim]
-def leRecOn' {C : ℕ → Sort _} {n : ℕ} :
+def leRecOn' {C : ℕ → Sort*} {n : ℕ} :
     ∀ {m : ℕ}, n ≤ m → (∀ ⦃k⦄, n ≤ k → C k → C (k + 1)) → C n → C m
   | 0, H, _, x => Eq.recOn (Nat.eq_zero_of_le_zero H) x
   | m + 1, H, next, x =>
@@ -579,7 +577,7 @@ def leRecOn' {C : ℕ → Sort _} {n : ℕ} :
 /-- Decreasing induction: if `P (k+1)` implies `P k` for all `m ≤ k < n`, then `P n` implies `P m`.
 Also works for functions to `Sort*`. Weakens the assumptions of `decreasing_induction`. -/
 @[elab_as_elim]
-def decreasingInduction' {P : ℕ → Sort _} {m n : ℕ} (h : ∀ k < n, m ≤ k → P (k + 1) → P k)
+def decreasingInduction' {P : ℕ → Sort*} {m n : ℕ} (h : ∀ k < n, m ≤ k → P (k + 1) → P k)
     (mn : m ≤ n) (hP : P n) :
     P m := by
   revert h hP

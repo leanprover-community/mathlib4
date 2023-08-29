@@ -13,7 +13,7 @@ import Mathlib.Algebra.Order.Ring.Defs
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 -- see Note [lower instance priority]
 instance (priority := 100) StrictOrderedSemiring.to_charZero [StrictOrderedSemiring α] :

@@ -5,7 +5,7 @@ Authors: Adam Topaz
 -/
 
 import Mathlib.CategoryTheory.Sites.Coherent
-import Mathlib.Topology.Category.CompHaus.ExplicitLimits
+import Mathlib.Topology.Category.CompHaus.Limits
 
 /-!
 
@@ -26,6 +26,8 @@ As a consequence, we also show that `CompHaus` is precoherent.
 - Define coherent categories, and show that `CompHaus` is actually coherent.
 
 -/
+
+set_option autoImplicit true
 
 open CategoryTheory Limits
 

@@ -126,7 +126,7 @@ theorem pullback_singleton [HasPullbacks C] (g : Z ⟶ X) :
 #align category_theory.presieve.pullback_singleton CategoryTheory.Presieve.pullback_singleton
 
 /-- Construct the presieve given by the family of arrows indexed by `ι`. -/
-inductive ofArrows {ι : Type _} (Y : ι → C) (f : ∀ i, Y i ⟶ X) : Presieve X
+inductive ofArrows {ι : Type*} (Y : ι → C) (f : ∀ i, Y i ⟶ X) : Presieve X
   | mk (i : ι) : ofArrows _ _ (f i)
 #align category_theory.presieve.of_arrows CategoryTheory.Presieve.ofArrows
 
@@ -140,7 +140,7 @@ theorem ofArrows_pUnit : (ofArrows _ fun _ : PUnit => f) = singleton f := by
     exact ofArrows.mk PUnit.unit
 #align category_theory.presieve.of_arrows_punit CategoryTheory.Presieve.ofArrows_pUnit
 
-theorem ofArrows_pullback [HasPullbacks C] {ι : Type _} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X) :
+theorem ofArrows_pullback [HasPullbacks C] {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X) :
     (ofArrows (fun i => pullback (g i) f) fun i => pullback.snd) =
       pullbackArrows f (ofArrows Z g) := by
   funext T
@@ -153,8 +153,8 @@ theorem ofArrows_pullback [HasPullbacks C] {ι : Type _} (Z : ι → C) (g : ∀
     apply ofArrows.mk
 #align category_theory.presieve.of_arrows_pullback CategoryTheory.Presieve.ofArrows_pullback
 
-theorem ofArrows_bind {ι : Type _} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X)
-    (j : ∀ ⦃Y⦄ (f : Y ⟶ X), ofArrows Z g f → Type _) (W : ∀ ⦃Y⦄ (f : Y ⟶ X) (H), j f H → C)
+theorem ofArrows_bind {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X)
+    (j : ∀ ⦃Y⦄ (f : Y ⟶ X), ofArrows Z g f → Type*) (W : ∀ ⦃Y⦄ (f : Y ⟶ X) (H), j f H → C)
     (k : ∀ ⦃Y⦄ (f : Y ⟶ X) (H i), W f H i ⟶ Y) :
     ((ofArrows Z g).bind fun Y f H => ofArrows (W f H) (k f H)) =
       ofArrows (fun i : Σi, j _ (ofArrows.mk i) => W (g i.1) _ i.2) fun ij =>
@@ -182,6 +182,14 @@ theorem functorPullback_mem (R : Presieve (F.obj X)) {Y} (f : Y ⟶ X) :
 theorem functorPullback_id (R : Presieve X) : R.functorPullback (𝟭 _) = R :=
   rfl
 #align category_theory.presieve.functor_pullback_id CategoryTheory.Presieve.functorPullback_id
+
+/-- Given a presieve `R` on `X`, the predicate `R.hasPullbacks` means that for all arrows `f` and
+    `g` in `R`, the pullback of `f` and `g` exists. -/
+class hasPullbacks (R : Presieve X) : Prop where
+  /-- For all arrows `f` and `g` in `R`, the pullback of `f` and `g` exists. -/
+  has_pullbacks : ∀ {Y Z} {f : Y ⟶ X} (_ : R f) {g : Z ⟶ X} (_ : R g), HasPullback f g
+
+instance (R : Presieve X) [HasPullbacks C] : R.hasPullbacks := ⟨fun _ _ ↦ inferInstance⟩
 
 section FunctorPushforward
 

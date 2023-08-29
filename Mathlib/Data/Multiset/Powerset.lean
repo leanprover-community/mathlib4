@@ -12,12 +12,14 @@ import Mathlib.Data.Multiset.Nodup
 # The powerset of a multiset
 -/
 
+set_option autoImplicit true
+
 
 namespace Multiset
 
 open List
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-! ### powerset -/
 
@@ -279,7 +281,7 @@ theorem powersetLen_mono (n : ℕ) {s t : Multiset α} (h : s ≤ t) :
 #align multiset.powerset_len_mono Multiset.powersetLen_mono
 
 @[simp]
-theorem powersetLen_empty {α : Type _} (n : ℕ) {s : Multiset α} (h : card s < n) :
+theorem powersetLen_empty {α : Type*} (n : ℕ) {s : Multiset α} (h : card s < n) :
     powersetLen n s = 0 :=
   card_eq_zero.mp (Nat.choose_eq_zero_of_lt h ▸ card_powersetLen _ _)
 #align multiset.powerset_len_empty Multiset.powersetLen_empty
@@ -290,7 +292,7 @@ theorem powersetLen_card_add (s : Multiset α) {i : ℕ} (hi : 0 < i) :
   powersetLen_empty _ (lt_add_of_pos_right (card s) hi)
 #align multiset.powerset_len_card_add Multiset.powersetLen_card_add
 
-theorem powersetLen_map {β : Type _} (f : α → β) (n : ℕ) (s : Multiset α) :
+theorem powersetLen_map {β : Type*} (f : α → β) (n : ℕ) (s : Multiset α) :
     powersetLen n (s.map f) = (powersetLen n s).map (map f) := by
   induction' s using Multiset.induction with t s ih generalizing n
   · cases n <;> simp [powersetLen_zero_left, powersetLen_zero_right]
@@ -303,7 +305,7 @@ theorem pairwise_disjoint_powersetLen (s : Multiset α) :
   h (Eq.trans (Multiset.mem_powersetLen.mp hi).right.symm (Multiset.mem_powersetLen.mp hj).right)
 #align multiset.pairwise_disjoint_powerset_len Multiset.pairwise_disjoint_powersetLen
 
-theorem bind_powerset_len {α : Type _} (S : Multiset α) :
+theorem bind_powerset_len {α : Type*} (S : Multiset α) :
     (bind (Multiset.range (card S + 1)) fun k => S.powersetLen k) = S.powerset := by
   induction S using Quotient.inductionOn
   simp_rw [quot_mk_to_coe, powerset_coe', powersetLen_coe, ← coe_range, coe_bind, ← List.bind_map,
@@ -321,7 +323,7 @@ theorem nodup_powerset {s : Multiset α} : Nodup (powerset s) ↔ Nodup s :=
         (h.sublist_ext (mem_sublists'.1 sx) (mem_sublists'.1 sy)).1 (Quotient.exact e)⟩
 #align multiset.nodup_powerset Multiset.nodup_powerset
 
-alias nodup_powerset ↔ Nodup.ofPowerset Nodup.powerset
+alias ⟨Nodup.ofPowerset, Nodup.powerset⟩ := nodup_powerset
 #align multiset.nodup.of_powerset Multiset.Nodup.ofPowerset
 #align multiset.nodup.powerset Multiset.Nodup.powerset
 
