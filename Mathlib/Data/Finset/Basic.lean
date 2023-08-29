@@ -170,15 +170,13 @@ instance decidableEq [DecidableEq α] : DecidableEq (Finset α)
   | _, _ => decidable_of_iff _ val_inj
 #align finset.has_decidable_eq Finset.decidableEq
 
-/-! ### SetLike instance -/
+/-! ### Membership -/
 
 instance : SetLike (Finset α) α where
   coe := fun s => { x | x ∈ s.1 }
   coe_injective' := fun s s' hss' ↦ by
     rw [← val_inj, s.nodup.ext s'.nodup]
     simpa [Set.ext_iff] using hss'
-
-/-! ### Membership -/
 
 theorem mem_def {a : α} {s : Finset α} : a ∈ s ↔ a ∈ s.1 :=
   Iff.rfl
@@ -199,15 +197,6 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 #align finset.decidable_mem Finset.decidableMem
 
 /-! ### set coercion -/
-
---Porting note: new definition
-/-- Convert a finset to a set in the natural way. -/
-@[coe] def toSet (s : Finset α) : Set α :=
-  { a | a ∈ s }
-
-/-- Convert a finset to a set in the natural way. -/
-instance : CoeTC (Finset α) (Set α) :=
-  ⟨toSet⟩
 
 @[simp, norm_cast]
 theorem mem_coe {a : α} {s : Finset α} : a ∈ (s : Set α) ↔ a ∈ (s : Finset α) :=
@@ -1330,10 +1319,6 @@ theorem inf_eq_inter : (Inf.inf : Finset α → Finset α → Finset α) = Inter
 theorem disjoint_iff_inter_eq_empty : Disjoint s t ↔ s ∩ t = ∅ :=
   disjoint_iff
 #align finset.disjoint_iff_inter_eq_empty Finset.disjoint_iff_inter_eq_empty
-
-instance decidableDisjoint (U V : Finset α) : Decidable (Disjoint U V) :=
-  decidable_of_iff _ disjoint_left.symm
-#align finset.decidable_disjoint Finset.decidableDisjoint
 
 /-! #### union -/
 
@@ -2619,6 +2604,10 @@ instance decidableDforallFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a �
     Decidable (∀ (a) (h : a ∈ s), p a h) :=
   Multiset.decidableDforallMultiset
 #align finset.decidable_dforall_finset Finset.decidableDforallFinset
+
+instance decidableDisjoint [DecidableEq α] (U V : Finset α) : Decidable (Disjoint U V) :=
+  decidable_of_iff _ disjoint_left.symm
+#align finset.decidable_disjoint Finset.decidableDisjoint
 
 -- porting notes: In lean3, the above was picked up when decidability of s ⊆ t was needed
 -- in lean4 it seems this is not the case.
