@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
 import Mathlib.Order.Bounds.Basic
-import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Data.Set.Intervals.Image
 
 #align_import data.set.intervals.unordered_interval from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
 
@@ -184,23 +184,41 @@ variable [LinearOrder α]
 section Lattice
 variable [Lattice β] {f : α → β} {s : Set α} {a b : α}
 
-theorem _root_.MonotoneOn.image_uIcc_subset (hf : MonotoneOn f (uIcc a b)) :
-    f '' uIcc a b ⊆ uIcc (f a) (f b) :=
-  hf.image_Icc_subset.trans <| by
-    rw [hf.map_sup left_mem_uIcc right_mem_uIcc, hf.map_inf left_mem_uIcc right_mem_uIcc, uIcc]
+lemma _root_.MonotoneOn.mapsTo_uIcc (hf : MonotoneOn f (uIcc a b)) :
+  MapsTo f (uIcc a b) (uIcc (f a) (f b)) := by
+  rw [uIcc, uIcc, ←hf.map_sup, ←hf.map_inf] <;>
+    apply_rules [left_mem_uIcc, right_mem_uIcc, hf.mapsTo_Icc]
+#align monotone_on.maps_to_uIcc MonotoneOn.mapsTo_uIcc
+
+lemma _root_.AntitoneOn.mapsTo_uIcc (hf : AntitoneOn f (uIcc a b)) :
+  MapsTo f (uIcc a b) (uIcc (f a) (f b)) := by
+  rw [uIcc, uIcc, ←hf.map_sup, ←hf.map_inf] <;>
+    apply_rules [left_mem_uIcc, right_mem_uIcc, hf.mapsTo_Icc]
+#align antitone_on.maps_to_uIcc AntitoneOn.mapsTo_uIcc
+
+lemma _root_.Monotone.mapsTo_uIcc (hf : Monotone f) : MapsTo f (uIcc a b) (uIcc (f a) (f b)) :=
+  (hf.monotoneOn _).mapsTo_uIcc
+#align monotone.maps_to_uIcc Monotone.mapsTo_uIcc
+
+lemma _root_.Antitone.mapsTo_uIcc (hf : Antitone f) : MapsTo f (uIcc a b) (uIcc (f a) (f b)) :=
+  (hf.antitoneOn _).mapsTo_uIcc
+#align antitone.maps_to_uIcc Antitone.mapsTo_uIcc
+
+lemma _root_.MonotoneOn.image_uIcc_subset (hf : MonotoneOn f (uIcc a b)) :
+  f '' uIcc a b ⊆ uIcc (f a) (f b) :=
+hf.mapsTo_uIcc.image_subset
 #align monotone_on.image_uIcc_subset MonotoneOn.image_uIcc_subset
 
-theorem _root_.AntitoneOn.image_uIcc_subset (hf : AntitoneOn f (uIcc a b)) :
-    f '' uIcc a b ⊆ uIcc (f a) (f b) :=
-  hf.image_Icc_subset.trans <| by
-    rw [hf.map_sup left_mem_uIcc right_mem_uIcc, hf.map_inf left_mem_uIcc right_mem_uIcc, uIcc]
+lemma _root_.AntitoneOn.image_uIcc_subset (hf : AntitoneOn f (uIcc a b)) :
+  f '' uIcc a b ⊆ uIcc (f a) (f b) :=
+hf.mapsTo_uIcc.image_subset
 #align antitone_on.image_uIcc_subset AntitoneOn.image_uIcc_subset
 
-theorem _root_.Monotone.image_uIcc_subset (hf : Monotone f) : f '' uIcc a b ⊆ uIcc (f a) (f b) :=
+lemma _root_.Monotone.image_uIcc_subset (hf : Monotone f) : f '' uIcc a b ⊆ uIcc (f a) (f b) :=
   (hf.monotoneOn _).image_uIcc_subset
 #align monotone.image_uIcc_subset Monotone.image_uIcc_subset
 
-theorem _root_.Antitone.image_uIcc_subset (hf : Antitone f) : f '' uIcc a b ⊆ uIcc (f a) (f b) :=
+lemma _root_.Antitone.image_uIcc_subset (hf : Antitone f) : f '' uIcc a b ⊆ uIcc (f a) (f b) :=
   (hf.antitoneOn _).image_uIcc_subset
 #align antitone.image_uIcc_subset Antitone.image_uIcc_subset
 
