@@ -177,7 +177,7 @@ theorem coe_eq : (f : Germ l β) = g ↔ f =ᶠ[l] g :=
   Quotient.eq''
 #align filter.germ.coe_eq Filter.Germ.coe_eq
 
-alias coe_eq ↔ _ _root_.Filter.EventuallyEq.germ_eq
+alias ⟨_, _root_.Filter.EventuallyEq.germ_eq⟩ := coe_eq
 #align filter.eventually_eq.germ_eq Filter.EventuallyEq.germ_eq
 
 /-- Lift a function `β → γ` to a function `Germ l β → Germ l γ`. -/
@@ -224,7 +224,7 @@ theorem coe_tendsto {f : α → β} {lb : Filter β} : (f : Germ l β).Tendsto l
   Iff.rfl
 #align filter.germ.coe_tendsto Filter.Germ.coe_tendsto
 
-alias coe_tendsto ↔ _ _root_.Filter.Tendsto.germ_tendsto
+alias ⟨_, _root_.Filter.Tendsto.germ_tendsto⟩ := coe_tendsto
 #align filter.tendsto.germ_tendsto Filter.Tendsto.germ_tendsto
 
 /-- Given two germs `f : Germ l β`, and `g : Germ lc α`, where `l : Filter α`, if `g` tends to `l`,

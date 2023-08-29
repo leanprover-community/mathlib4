@@ -20,6 +20,9 @@ which allow for plugging in new normalization functionality around a simp-based 
 The actual behavior is in `@[norm_num]`-tagged definitions in `Tactic.NormNum.Basic`
 and elsewhere.
 -/
+
+set_option autoImplicit true
+
 open Lean hiding Rat mkRat
 open Lean.Meta Qq Lean.Elab Term
 
@@ -815,7 +818,7 @@ def getSimpContext (args : Syntax) (simpOnly := false) :
     TacticM Simp.Context := do
   let simpTheorems ←
     if simpOnly then simpOnlyBuiltins.foldlM (·.addConst ·) {} else getSimpTheorems
-  let mut { ctx, starArg } ← elabSimpArgs args (eraseLocal := false) (kind := .simp)
+  let mut { ctx, starArg } ← elabSimpArgs args[0] (eraseLocal := false) (kind := .simp)
     { simpTheorems := #[simpTheorems], congrTheorems := ← getSimpCongrTheorems }
   unless starArg do return ctx
   let mut simpTheorems := ctx.simpTheorems

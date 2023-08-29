@@ -230,7 +230,7 @@ of the equation `x^2 - a*y^2 = 0` with `y ≠ 0`. -/
 theorem eq_one_of_sq_sub_mul_sq_eq_zero {p : ℕ} [Fact p.Prime] {a : ℤ} (ha : (a : ZMod p) ≠ 0)
     {x y : ZMod p} (hy : y ≠ 0) (hxy : x ^ 2 - a * y ^ 2 = 0) : legendreSym p a = 1 := by
   apply_fun (· * y⁻¹ ^ 2) at hxy
-  simp only [MulZeroClass.zero_mul] at hxy
+  simp only [zero_mul] at hxy
   rw [(by ring : (x ^ 2 - ↑a * y ^ 2) * y⁻¹ ^ 2 = (x * y⁻¹) ^ 2 - a * (y * y⁻¹) ^ 2),
     mul_inv_cancel hy, one_pow, mul_one, sub_eq_zero, pow_two] at hxy
   exact (eq_one_iff p ha).mpr ⟨x * y⁻¹, hxy.symm⟩
@@ -242,7 +242,7 @@ theorem eq_one_of_sq_sub_mul_sq_eq_zero' {p : ℕ} [Fact p.Prime] {a : ℤ} (ha 
     {x y : ZMod p} (hx : x ≠ 0) (hxy : x ^ 2 - a * y ^ 2 = 0) : legendreSym p a = 1 := by
   haveI hy : y ≠ 0 := by
     rintro rfl
-    rw [zero_pow' 2 (by norm_num), MulZeroClass.mul_zero, sub_zero, pow_eq_zero_iff
+    rw [zero_pow' 2 (by norm_num), mul_zero, sub_zero, pow_eq_zero_iff
         (by norm_num : 0 < 2)] at hxy
     exact hx hxy
   exact eq_one_of_sq_sub_mul_sq_eq_zero ha hy hxy

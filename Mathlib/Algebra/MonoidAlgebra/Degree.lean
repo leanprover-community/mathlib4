@@ -235,19 +235,16 @@ using the maximum of the exponents. -/
 @[reducible]
 def supDegree (f : AddMonoidAlgebra R A) : B :=
   f.support.sup D
-#noalign AddMonoidAlgebra.supDegree
 
 theorem supDegree_add_le (f g : AddMonoidAlgebra R A) :
     (f + g).supDegree D ≤ (f.supDegree D) ⊔ (g.supDegree D) :=
   sup_support_add_le D f g
-#noalign AddMonoidAlgebra.supDegree_add_le
 
 variable [CovariantClass B B (· + ·) (· ≤ ·)] [CovariantClass B B (Function.swap (· + ·)) (· ≤ ·)]
   (D : A →+ B) in
 theorem supDegree_mul_le (f g : AddMonoidAlgebra R A) :
     (f * g).supDegree D ≤ f.supDegree D + g.supDegree D :=
   sup_support_mul_le (fun {_ _} => (AddMonoidHom.map_add D _ _).le) f g
-#noalign AddMonoidAlgebra.supDegree_mul_le
 
 end SupDegree
 
@@ -265,12 +262,10 @@ using the minimum of the exponents. -/
 @[reducible]
 def infDegree (D : A → T) (f : AddMonoidAlgebra R A) : T :=
   f.support.inf D
-#noalign AddMonoidAlgebra.infDegree
 
 theorem le_infDegree_add (D : A → T) (f g : AddMonoidAlgebra R A) :
     (f.infDegree D) ⊓ (g.infDegree D) ≤ (f + g).infDegree D :=
   le_inf_support_add D f g
-#noalign AddMonoidAlgebra.le_infDegree_add
 
 variable [CovariantClass T T (· + ·) (· ≤ ·)] [CovariantClass T T (Function.swap (· + ·)) (· ≤ ·)]
   (D : A →+ T) in
@@ -278,7 +273,6 @@ theorem le_infDegree_mul (f g : AddMonoidAlgebra R A) :
     f.infDegree D + g.infDegree D ≤ (f * g).infDegree D :=
   --  Porting note: added `a b` in `AddMonoidHom.map_add D a b`, was `AddMonoidHom.map_add D _ _`
   le_inf_support_mul (fun {a b : A} => (AddMonoidHom.map_add D a b).ge) _ _
-#noalign AddMonoidAlgebra.le_infDegree_mul
 
 end InfDegree
 

@@ -353,6 +353,24 @@ theorem ModelsBoundedFormula.realize_sentence {φ : L.Sentence} (h : T ⊨ᵇ φ
   exact Model.isSatisfiable M
 #align first_order.language.Theory.models_bounded_formula.realize_sentence FirstOrder.Language.Theory.ModelsBoundedFormula.realize_sentence
 
+/-- An alternative statement of the Compactness Theorem. A formula `φ` is modeled by a
+theory iff there is a finite subset `T0` of the theory such that `φ` is modeled by `T0` -/
+theorem models_iff_finset_models {φ : L.Sentence} :
+    T ⊨ᵇ φ ↔ ∃ T0 : Finset L.Sentence, (T0 : L.Theory) ⊆ T ∧ (T0 : L.Theory) ⊨ᵇ φ := by
+  simp only [models_iff_not_satisfiable]
+  rw [← not_iff_not, not_not, isSatisfiable_iff_isFinitelySatisfiable, IsFinitelySatisfiable]
+  push_neg
+  letI := Classical.decEq (Sentence L)
+  constructor
+  · intro h T0 hT0
+    simpa using h (T0 ∪ {Formula.not φ})
+      (by
+        simp only [Finset.coe_union, Finset.coe_singleton]
+        exact Set.union_subset_union hT0 (Set.Subset.refl _))
+  · intro h T0 hT0
+    exact IsSatisfiable.mono (h (T0.erase (Formula.not φ))
+      (by simpa using hT0)) (by simp)
+
 /-- A theory is complete when it is satisfiable and models each sentence or its negation. -/
 def IsComplete (T : L.Theory) : Prop :=
   T.IsSatisfiable ∧ ∀ φ : L.Sentence, T ⊨ᵇ φ ∨ T ⊨ᵇ φ.not

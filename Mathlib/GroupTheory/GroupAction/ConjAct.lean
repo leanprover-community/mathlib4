@@ -267,6 +267,8 @@ end DivisionRing
 
 variable [Group G]
 
+-- todo: this file is not in good order; I will refactor this after the PR
+
 -- porting note: very slow without `simp only` and need to separate `smul_def`
 -- so that things trigger appropriately
 instance : MulDistribMulAction (ConjAct G) G where
@@ -308,6 +310,11 @@ theorem mem_orbit_conjAct {g h : G} : g ∈ orbit (ConjAct G) h ↔ IsConj g h :
 theorem orbitRel_conjAct : (orbitRel (ConjAct G) G).Rel = IsConj :=
   funext₂ fun g h => by rw [orbitRel_apply, mem_orbit_conjAct]
 #align conj_act.orbit_rel_conj_act ConjAct.orbitRel_conjAct
+
+theorem orbit_eq_carrier_conjClasses [Group G] (g : G) :
+    orbit (ConjAct G) g = (ConjClasses.mk g).carrier := by
+  ext h
+  rw [ConjClasses.mem_carrier_iff_mk_eq, ConjClasses.mk_eq_mk_iff_isConj, mem_orbit_conjAct]
 
 theorem stabilizer_eq_centralizer (g : G) :
     stabilizer (ConjAct G) g = centralizer (zpowers (toConjAct g) : Set (ConjAct G)) :=
@@ -370,3 +377,31 @@ instance normal_of_characteristic_of_normal {H : Subgroup G} [hH : H.Normal] {K 
 #align conj_act.normal_of_characteristic_of_normal ConjAct.normal_of_characteristic_of_normal
 
 end ConjAct
+
+section Units
+
+variable [Monoid M]
+
+/-- The stabilizer of `Mˣ` acting on itself by conjugation at `x : Mˣ` is exactly the
+units of the centralizer of `x : M`. -/
+@[simps! apply_coe_val symm_apply_val_coe]
+def unitsCentralizerEquiv (x : Mˣ) :
+    (Submonoid.centralizer ({↑x} : Set M))ˣ ≃* MulAction.stabilizer (ConjAct Mˣ) x :=
+  MulEquiv.symm
+  { toFun := MonoidHom.toHomUnits <|
+      { toFun := fun u ↦ ⟨↑(ConjAct.ofConjAct u.1 : Mˣ), by
+          rintro x ⟨rfl⟩
+          have : (u : ConjAct Mˣ) • x = x := u.2
+          rwa [ConjAct.smul_def, mul_inv_eq_iff_eq_mul, Units.ext_iff, eq_comm] at this⟩,
+        map_one' := rfl,
+        map_mul' := fun a b ↦ rfl }
+    invFun := fun u ↦
+      ⟨ConjAct.toConjAct (Units.map (Submonoid.centralizer ({↑x} : Set M)).subtype u), by
+      change _ • _ = _
+      simp only [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct, mul_inv_eq_iff_eq_mul]
+      exact Units.ext <| (u.1.2 x <| Set.mem_singleton _).symm⟩
+    left_inv := fun _ ↦ by ext; rfl
+    right_inv := fun _ ↦ by ext; rfl
+    map_mul' := map_mul _ }
+
+end Units

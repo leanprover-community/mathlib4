@@ -64,7 +64,7 @@ initialize new `simps` projections. -/
 def Bornology.cobounded (α : Type*) [Bornology α] : Filter α := Bornology.cobounded'
 #align bornology.cobounded Bornology.cobounded
 
-alias Bornology.cobounded ← Bornology.Simps.cobounded
+alias Bornology.Simps.cobounded := Bornology.cobounded
 
 lemma Bornology.le_cofinite (α : Type*) [Bornology α] : cobounded α ≤ cofinite :=
 Bornology.le_cofinite'
@@ -159,11 +159,11 @@ theorem isCobounded_compl_iff : IsCobounded sᶜ ↔ IsBounded s :=
   Iff.rfl
 #align bornology.is_cobounded_compl_iff Bornology.isCobounded_compl_iff
 
-alias isBounded_compl_iff ↔ IsBounded.of_compl IsCobounded.compl
+alias ⟨IsBounded.of_compl, IsCobounded.compl⟩ := isBounded_compl_iff
 #align bornology.is_bounded.of_compl Bornology.IsBounded.of_compl
 #align bornology.is_cobounded.compl Bornology.IsCobounded.compl
 
-alias isCobounded_compl_iff ↔ IsCobounded.of_compl IsBounded.compl
+alias ⟨IsCobounded.of_compl, IsBounded.compl⟩ := isCobounded_compl_iff
 #align bornology.is_cobounded.of_compl Bornology.IsCobounded.of_compl
 #align bornology.is_bounded.compl Bornology.IsBounded.compl
 
