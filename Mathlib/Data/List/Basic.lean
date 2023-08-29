@@ -25,7 +25,7 @@ namespace List
 
 universe u v w
 
-variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
+variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ l₃ : List α}
 
 -- Porting note: Delete this attribute
 -- attribute [inline] List.head!
@@ -411,6 +411,14 @@ theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
 #align list.append_left_inj List.append_left_inj
 
 #align list.map_eq_append_split List.map_eq_append_split
+
+lemma length_append_append :
+    (l₁ ++ l₂ ++ l₃).length = l₁.length + l₂.length + l₃.length := by
+  rw [length_append, length_append]
+
+lemma reverse_append_append :
+    (l₁ ++ l₂ ++ l₃).reverse = l₃.reverse ++ l₂.reverse ++ l₁.reverse := by
+  rw [reverse_append, reverse_append, append_assoc]
 
 /-! ### replicate -/
 
@@ -2558,6 +2566,66 @@ theorem foldlRecOn_nil {C : β → Sort*} (op : β → α → β) (b) (hb : C b)
     foldlRecOn [] op b hb hl = hb :=
   rfl
 #align list.foldl_rec_on_nil List.foldlRecOn_nil
+
+private lemma middle_xYz_left {x₁ x₂ z₁ z₂ : List α} {Y₁ Y₂ : α}
+    (together : x₁ ++ [Y₁] ++ z₁ = x₂ ++ [Y₂] ++ z₂) (longer : x₂.length < x₁.length) :
+    Y₂ ∈ x₁ := by
+  have middle := congr_fun (congr_arg get? together) x₂.length
+  rw [
+    append_assoc x₂,
+    get?_append_right x₂.length.le_refl,
+    Nat.sub_self,
+    singleton_append,
+    get?_cons_zero,
+    append_assoc x₁,
+    get?_append longer,
+  ] at middle
+  exact get?_mem middle
+
+lemma todo_refactor {a b c d : ℕ}
+    (total : a + b = c + d) (a_lt_c : a < c) :
+    d < b := by
+  by_contra contr
+  rw [not_lt] at contr
+  have impossi : a + b < c + d
+  · exact add_lt_add_of_lt_of_le a_lt_c contr
+  have neq : a + b ≠ c + d
+  · exact Nat.ne_of_lt impossi
+  exact neq total
+
+lemma match_xYz {x₁ x₂ z₁ z₂ : List α} {Y₁ Y₂ : α}
+    (together : x₁ ++ [Y₁] ++ z₁ = x₂ ++ [Y₂] ++ z₂) (notin_x : Y₂ ∉ x₁) (notin_z : Y₂ ∉ z₁) :
+    x₁ = x₂ ∧ z₁ = z₂ := by
+  have xlens : x₁.length = x₂.length
+  · have not_gt : ¬ x₁.length > x₂.length
+    · intro contra_gt
+      apply notin_x
+      exact middle_xYz_left together contra_gt
+    have not_lt : ¬ x₁.length < x₂.length
+    · intro contra_lt
+      apply notin_z
+      have rv := congr_arg reverse together
+      rw [reverse_append_append, reverse_append_append, reverse_singleton, reverse_singleton] at rv
+      rw [← mem_reverse]
+      apply middle_xYz_left rv
+      rw [length_reverse, length_reverse]
+      have total := congr_arg length together
+      rw [length_append_append, length_append_append, length_singleton, length_singleton] at total
+      have xlt : x₁.length + 1 < x₂.length + 1
+      · exact Nat.add_lt_add_right contra_lt 1
+      exact todo_refactor total xlt
+    rw [Nat.not_lt] at not_gt not_lt
+    exact Nat.le_antisymm not_gt not_lt
+  constructor
+  · rw [append_assoc, append_assoc] at together
+    convert congr_arg (take x₁.length) together
+    · rw [take_left]
+    · rw [xlens, take_left]
+  · convert congr_arg (drop x₁.length.succ) together
+    · rw [drop_left']
+      rw [length_append, length_singleton]
+    · rw [xlens, drop_left']
+      rw [length_append, length_singleton]
 
 section Scanl
 
